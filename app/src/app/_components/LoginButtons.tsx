@@ -4,7 +4,7 @@ import { type BuiltInProviderType } from "next-auth/providers";
 import { signIn, type LiteralUnion } from "next-auth/react";
 import { useState } from "react";
 import { FaSpinner } from "react-icons/fa";
-import Button from "../../components/Button";
+import Button from "./Button";
 
 interface Props {
   activeProviders: LiteralUnion<BuiltInProviderType>[];

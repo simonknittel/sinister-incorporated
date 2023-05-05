@@ -14,13 +14,13 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
-  FaRegTrashAlt,
   FaSortAlphaDown,
   FaSortAlphaUpAlt,
   FaSpinner,
+  FaTrashAlt,
 } from "react-icons/fa";
-import Avatar from "~/components/Avatar";
-import Button from "~/components/Button";
+import Avatar from "~/app/_components/Avatar";
+import Button from "~/app/_components/Button";
 import { type UserRole } from "~/types";
 
 interface Props {
@@ -159,7 +159,7 @@ const UsersTable = ({ users }: Props) => {
                 {isLoadingRemove === props.row.original.id ? (
                   <FaSpinner className="animate-spin" />
                 ) : (
-                  <FaRegTrashAlt />
+                  <FaTrashAlt />
                 )}
               </Button>
             </div>

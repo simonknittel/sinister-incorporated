@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "~/server/auth";
-import Avatar from "../../../components/Avatar";
+import Avatar from "../../_components/Avatar";
 import LogoutButton from "./LogoutButton";
 
 const Account = async () => {

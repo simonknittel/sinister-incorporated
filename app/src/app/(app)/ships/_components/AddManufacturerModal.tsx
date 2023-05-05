@@ -1,6 +1,6 @@
 "use client";
 
-import { type Manufacturer, type Series } from "@prisma/client";
+import { type Manufacturer } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -12,15 +12,13 @@ import Modal from "~/app/_components/Modal";
 interface Props {
   isOpen: boolean;
   onRequestClose: () => void;
-  manufacturers: Manufacturer[];
 }
 
 interface FormValues {
-  manufacturerId: Manufacturer["id"];
-  name: Series["name"];
+  name: Manufacturer["name"];
 }
 
-const AddSeriesModal = ({ isOpen, onRequestClose, manufacturers }: Props) => {
+const AddManufacturerModal = ({ isOpen, onRequestClose }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -29,11 +27,10 @@ const AddSeriesModal = ({ isOpen, onRequestClose, manufacturers }: Props) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/series", {
+      const response = await fetch("/api/manufacturer", {
         method: "POST",
         body: JSON.stringify({
           name: data.name,
-          manufacturerId: data.manufacturerId,
         }),
       });
 
@@ -59,27 +56,10 @@ const AddSeriesModal = ({ isOpen, onRequestClose, manufacturers }: Props) => {
       onRequestClose={onRequestClose}
       className="w-[480px]"
     >
-      <h2 className="text-xl font-bold">Add new series</h2>
+      <h2 className="text-xl font-bold">Add new manufacturer</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="block mt-6" htmlFor="manufacturer_id">
-          Manufacturer
-        </label>
-
-        <select
-          id="manufacturer_id"
-          className="p-2 rounded bg-neutral-900 w-full mt-2"
-          {...register("manufacturerId", { required: true })}
-          autoFocus
-        >
-          {manufacturers.map((manufacturer) => (
-            <option key={manufacturer.id} value={manufacturer.id}>
-              {manufacturer.name}
-            </option>
-          ))}
-        </select>
-
-        <label className="block mt-4" htmlFor="name">
+        <label className="mt-6 block" htmlFor="name">
           Name
         </label>
 
@@ -91,7 +71,7 @@ const AddSeriesModal = ({ isOpen, onRequestClose, manufacturers }: Props) => {
           autoFocus
         />
 
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-8">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Add
@@ -102,4 +82,4 @@ const AddSeriesModal = ({ isOpen, onRequestClose, manufacturers }: Props) => {
   );
 };
 
-export default AddSeriesModal;
+export default AddManufacturerModal;

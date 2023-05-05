@@ -6,8 +6,8 @@ import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
-import Button from "~/components/Button";
-import Modal from "~/components/Modal";
+import Button from "~/app/_components/Button";
+import Modal from "~/app/_components/Modal";
 
 interface Props {
   isOpen: boolean;
@@ -61,15 +61,19 @@ const AddVariantModal = ({ isOpen, onRequestClose, seriesId }: Props) => {
       <h2 className="text-xl font-bold">Add new variant</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
+        <label className="mt-6 block" htmlFor="name">
+          Name
+        </label>
+
         <input
+          id="name"
           type="text"
-          className="p-2 rounded bg-neutral-900 w-full mt-4"
-          placeholder="Name"
+          className="p-2 rounded bg-neutral-900 w-full mt-2"
           {...register("name", { required: true })}
           autoFocus
         />
 
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-8">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Add

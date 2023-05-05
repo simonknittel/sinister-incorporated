@@ -8,7 +8,7 @@ interface Props {
 const VariantTag = ({ data }: Props) => {
   return (
     <li className="bg-neutral-800 rounded flex gap-2 items-center">
-      <p className="p-2">{data.name}</p>
+      <p className="py-2 pl-4 pr-2">{data.name}</p>
 
       <DeleteVariantButton variant={data} />
     </li>

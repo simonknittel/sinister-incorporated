@@ -32,7 +32,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
           "h-8 text-xs": variant === "tertiary",
           "bg-sinister-red-500 text-base text-neutral-50 hover:bg-sinister-red-300 active:bg-sinister-red-300":
             variant === "primary" && colorScheme === "sinister-red",
-          "border-sinister-red-300 text-sinister-red-500 hover:border-sinister-red-500 active:border-sinister-red-500":
+          "border-sinister-red-500 text-sinister-red-500 hover:border-sinister-red-300 active:border-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300":
             variant === "secondary" && colorScheme === "sinister-red",
           "text-sinister-red-500 hover:bg-sinisterborder-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300":
             variant === "tertiary" && colorScheme === "sinister-red",

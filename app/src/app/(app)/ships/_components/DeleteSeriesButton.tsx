@@ -1,16 +1,16 @@
 "use client";
 
-import { type Variant } from "@prisma/client";
+import { type Series } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 
 interface Props {
-  variant: Variant;
+  series: Series;
 }
 
-const DeleteVariantButton = ({ variant }: Props) => {
+const DeleteSeriesButton = ({ series }: Props) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,7 +19,7 @@ const DeleteVariantButton = ({ variant }: Props) => {
 
     try {
       const confirmation = window.confirm(
-        `You are about to remove "${variant.name}". Do you want to continue?`
+        `You are about to remove "${series.name}". Do you want to continue?`
       );
 
       if (!confirmation) {
@@ -27,7 +27,7 @@ const DeleteVariantButton = ({ variant }: Props) => {
         return;
       }
 
-      const response = await fetch(`/api/variant/${variant.id}`, {
+      const response = await fetch(`/api/series/${series.id}`, {
         method: "DELETE",
       });
 
@@ -51,11 +51,11 @@ const DeleteVariantButton = ({ variant }: Props) => {
       disabled={isLoading}
       onClick={() => void handleClick()}
       type="button"
-      className="py-2 px-4 border-l-2 border-neutral-900 text-neutral-500 hover:text-neutral-50"
+      className="px-4 py-2 border-l-2 border-neutral-900 text-neutral-500 hover:text-neutral-50"
     >
       {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}
     </button>
   );
 };
 
-export default DeleteVariantButton;
+export default DeleteSeriesButton;

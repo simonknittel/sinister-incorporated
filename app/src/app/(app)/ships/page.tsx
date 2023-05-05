@@ -3,8 +3,9 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import CreateManufacturerForm from "./_components/CreateManufacturerForm";
-import ManufacturerSection from "./_components/ManufacturerSection";
+import AddManufacturer from "./_components/AddManufacturer";
+import AddSeries from "./_components/AddSeries";
+import SeriesSection from "./_components/SeriesSection";
 
 export const metadata: Metadata = {
   title: "Schiffe | Sinister Incorporated",
@@ -26,17 +27,26 @@ export default async function Page() {
 
   return (
     <main>
-      <h1 className="text-xl font-bold">Schiffe</h1>
-
-      <section className="p-8 bg-neutral-900 rounded max-w-4xl mt-8">
-        <CreateManufacturerForm />
-      </section>
+      <h1 className="text-xl font-bold mb-8">Schiffe</h1>
 
       {data
         .sort((a, b) => a.name.localeCompare(b.name))
-        .map((data) => (
-          <ManufacturerSection key={data.id} data={data} />
-        ))}
+        .map((data) => {
+          return data.series
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((series) => (
+              <SeriesSection
+                key={series.id}
+                manufacturer={data}
+                data={series}
+              />
+            ));
+        })}
+
+      <div className="mt-8 flex items-center justify-center max-w-4xl gap-4">
+        <AddManufacturer />
+        <AddSeries manufacturers={data} />
+      </div>
     </main>
   );
 }

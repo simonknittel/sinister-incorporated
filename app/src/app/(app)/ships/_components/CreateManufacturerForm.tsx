@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
-import Button from "~/components/Button";
+import Button from "~/app/_components/Button";
 
 interface Props {
   className?: string;
@@ -53,7 +53,7 @@ const CreateManufacturerForm = ({ className }: Props) => {
       <form className="flex gap-2" onSubmit={handleSubmit(onSubmit)}>
         <input
           type="text"
-          className="p-2 rounded bg-neutral-800 w-full"
+          className="py-2 px-4 rounded bg-neutral-800 w-full"
           placeholder="Manufacturer name"
           {...register("name", { required: true })}
         />

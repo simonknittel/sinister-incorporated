@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import UsersTable from "./_components/MembersTable";
+import UsersTable from "./_components/UsersTable";
 
 export const metadata: Metadata = {
   title: "Mitglieder | Sinister Incorporated",
@@ -18,7 +18,7 @@ export default async function Page() {
 
   return (
     <main>
-      <h1>Mitglieder</h1>
+      <h1 className="text-xl font-bold">Mitglieder</h1>
 
       <section className="p-8 bg-neutral-900 rounded max-w-4xl mt-8">
         <UsersTable users={members} />

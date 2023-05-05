@@ -1,31 +1,25 @@
 "use client";
 
-import { type Manufacturer } from "@prisma/client";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import Button from "~/app/_components/Button";
-import AddSeriesModal from "./AddSeriesModal";
+import AddManufacturerModal from "./AddManufacturerModal";
 
-interface Props {
-  manufacturers: Manufacturer[];
-}
-
-const AddSeries = ({ manufacturers }: Props) => {
+const AddManufacturer = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
       <Button variant="secondary" onClick={() => setIsOpen(true)}>
-        Add series <FaPlus />
+        Add manufacturer <FaPlus />
       </Button>
 
-      <AddSeriesModal
+      <AddManufacturerModal
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
-        manufacturers={manufacturers}
       />
     </>
   );
 };
 
-export default AddSeries;
+export default AddManufacturer;
