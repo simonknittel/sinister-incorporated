@@ -15,7 +15,7 @@ export default async function Page() {
   const activeProviders = authOptions.providers.map((provider) => provider.id);
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
+    <div className="h-full flex justify-center items-center">
       <main className="w-full max-w-md py-8">
         <h1 className="mb-4 text-center text-4xl text-sinister-red font-bold">
           Sinister Incorporated
