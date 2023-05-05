@@ -23,15 +23,19 @@ model Series {
     manufacturerId String
     manufacturer   Manufacturer @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
     variants       Variant[]
+
+    @@unique([name, manufacturerId])
 }
 
 model Variant {
     id       String           @id @default(cuid())
-    name     String           @unique
+    name     String
     image    String?
     seriesId String
     series   Series           @relation(fields: [seriesId], references: [id], onDelete: Cascade)
     owners   FleetOwnership[]
+
+    @@unique([name, seriesId])
 }
 
 model FleetOwnership {
