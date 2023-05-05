@@ -9,6 +9,41 @@ datasource db {
     relationMode = "prisma"
 }
 
+model Manufacturer {
+    id     String   @id @default(cuid())
+    name   String   @unique
+    image  String?
+    series Series[]
+}
+
+model Series {
+    id             String       @id @default(cuid())
+    name           String       @unique
+    image          String?
+    manufacturerId String
+    manufacturer   Manufacturer @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+    variants       Variant[]
+}
+
+model Variant {
+    id       String           @id @default(cuid())
+    name     String           @unique
+    image    String?
+    seriesId String
+    series   Series           @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+    owners   FleetOwnership[]
+}
+
+model FleetOwnership {
+    userId    String
+    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    variantId String
+    variant   Variant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+    count     Int     @default(1)
+
+    @@unique([userId, variantId])
+}
+
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -37,14 +72,15 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String           @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?          @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
-    role          String    @default("new")
+    role          String           @default("new")
+    fleet         FleetOwnership[]
 }
 
 model VerificationToken {

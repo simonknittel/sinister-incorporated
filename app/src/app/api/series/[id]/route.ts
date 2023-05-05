@@ -13,12 +13,7 @@ interface Params {
 const patchParamsSchema = z.string().cuid2();
 
 const patchBodySchema = z.object({
-  role: z.union([
-    z.literal("new"),
-    z.literal("member"),
-    z.literal("leadership"),
-    z.literal("admin"),
-  ]),
+  name: z.string().min(1),
 });
 
 export async function PATCH(request: Request, { params }: { params: Params }) {
@@ -32,7 +27,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Authorize the request.
      */
-    authorize(session.user, "update", "User");
+    authorize(session.user, "update", "Series");
 
     /**
      * Validate the request params
@@ -48,7 +43,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Make sure the item exists.
      */
-    const item = await prisma.user.findUnique({
+    const item = await prisma.series.findUnique({
       where: {
         id: paramsData,
       },
@@ -58,7 +53,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Update
      */
-    const updatedItem = await prisma.user.update({
+    const updatedItem = await prisma.series.update({
       where: {
         id: params.id,
       },
@@ -84,7 +79,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Authorize the request.
      */
-    authorize(session.user, "delete", "User");
+    authorize(session.user, "delete", "Series");
 
     /**
      * Validate the request params
@@ -94,7 +89,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Make sure the item exists.
      */
-    const item = await prisma.user.findUnique({
+    const item = await prisma.series.findUnique({
       where: {
         id: paramsData,
       },
@@ -104,7 +99,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Delete
      */
-    await prisma.user.delete({
+    await prisma.series.delete({
       where: {
         id: paramsData,
       },
