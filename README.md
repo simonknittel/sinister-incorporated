@@ -2,8 +2,6 @@
 
 ## Technologies
 
-This project has been setup with the [T3 App](https://create.t3.gg/) stack initially.
-
 - [Next.js](https://nextjs.org/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS](https://tailwindcss.com/)

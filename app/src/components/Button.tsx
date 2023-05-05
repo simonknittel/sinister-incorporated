@@ -6,7 +6,7 @@ import { forwardRef } from "react";
 
 interface Props extends ComponentPropsWithoutRef<"button"> {
   variant?: "primary" | "secondary" | "tertiary" | null;
-  colorScheme?: "sky" | "red" | null;
+  colorScheme?: "sinister-red" | null;
   iconOnly?: boolean | null;
 }
 
@@ -16,7 +16,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
 ) {
   const {
     variant = "primary",
-    colorScheme = "sky",
+    colorScheme = "sinister-red",
     iconOnly,
     className,
     ...other
@@ -30,18 +30,12 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
           "h-11 text-base font-bold": variant === "primary",
           "h-11 border text-base": variant === "secondary",
           "h-8 text-xs": variant === "tertiary",
-          "bg-sky-500 text-base text-slate-50 hover:bg-sky-600 active:bg-sky-700":
-            variant === "primary" && colorScheme === "sky",
-          "border-sky-800 text-sky-500 hover:bg-sky-800 active:bg-sky-900":
-            variant === "secondary" && colorScheme === "sky",
-          "text-sky-500 hover:bg-sky-800 active:bg-sky-900":
-            variant === "tertiary" && colorScheme === "sky",
-          "bg-red-500 text-slate-50 hover:bg-red-600 active:bg-red-700":
-            variant === "primary" && colorScheme === "red",
-          "border-red-800 text-red-500 hover:bg-red-800 active:bg-red-900":
-            variant === "secondary" && colorScheme === "red",
-          "text-red-500 hover:bg-red-800 active:bg-red-900":
-            variant === "tertiary" && colorScheme === "red",
+          "bg-sinister-red-500 text-base text-neutral-50 hover:bg-sinister-red-300 active:bg-sinister-red-300":
+            variant === "primary" && colorScheme === "sinister-red",
+          "border-sinister-red-300 text-sinister-red-500 hover:border-sinister-red-500 active:border-sinister-red-500":
+            variant === "secondary" && colorScheme === "sinister-red",
+          "text-sinister-red-500 hover:bg-sinisterborder-sinister-red-300 active:bg-sinister-red-300":
+            variant === "tertiary" && colorScheme === "sinister-red",
           "w-11": iconOnly,
           "px-6": !iconOnly,
         },

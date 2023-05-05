@@ -10,7 +10,7 @@ interface Props {
 export default function RootLayout({ children }: Props) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-slate-800 text-white">
+      <body className="min-h-screen bg-neutral-800 text-neutral-50">
         {children}
         <ToasterContainer />
         <AnalyticsContainer />

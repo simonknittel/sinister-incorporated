@@ -44,6 +44,7 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    role          String    @default("new")
 }
 
 model VerificationToken {

@@ -20,41 +20,15 @@ const LoginButtons = ({ activeProviders }: Props) => {
 
   return (
     <>
-      {activeProviders.includes("azure-ad-b2c") && (
+      {activeProviders.includes("discord") && (
         <Button
-          onClick={() => void handleClick("azure-ad-b2c")}
+          onClick={() => void handleClick("discord")}
           disabled={Boolean(isLoggingIn)}
         >
-          {isLoggingIn === "azure-ad-b2c" ? (
+          {isLoggingIn === "discord" ? (
             <FaSpinner className="animate-spin" />
           ) : (
-            "Login with Microsoft"
-          )}
-        </Button>
-      )}
-
-      {activeProviders.includes("google") && (
-        <Button
-          onClick={() => void handleClick("google")}
-          disabled={Boolean(isLoggingIn)}
-        >
-          {isLoggingIn === "google" ? (
-            <FaSpinner className="animate-spin" />
-          ) : (
-            "Login with Google"
-          )}
-        </Button>
-      )}
-
-      {activeProviders.includes("github") && (
-        <Button
-          onClick={() => void handleClick("github")}
-          disabled={Boolean(isLoggingIn)}
-        >
-          {isLoggingIn === "github" ? (
-            <FaSpinner className="animate-spin" />
-          ) : (
-            "Login with GitHub"
+            "Mit Discord anmelden"
           )}
         </Button>
       )}
