@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
-  if (session) redirect("/dashboard");
+  if (session) redirect("/events");
 
   const activeProviders = authOptions.providers.map((provider) => provider.id);
 

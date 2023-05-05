@@ -88,7 +88,6 @@ const AddSeriesModal = ({ isOpen, onRequestClose, manufacturers }: Props) => {
           type="text"
           className="p-2 rounded bg-neutral-900 w-full mt-2"
           {...register("name", { required: true })}
-          autoFocus
         />
 
         <div className="flex justify-end mt-4">
