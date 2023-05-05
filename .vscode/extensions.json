@@ -1,0 +1,12 @@
+{
+	"recommendations": [
+		"codezombiech.gitignore",
+		"prisma.prisma",
+		"deque-systems.vscode-axe-linter",
+		"esbenp.prettier-vscode",
+		"bradlc.vscode-tailwindcss",
+		"dbaeumer.vscode-eslint",
+		"dotenv.dotenv-vscode",
+		"github.vscode-github-actions"
+	]
+}

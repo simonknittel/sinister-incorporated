@@ -1,0 +1,11 @@
+{
+	"cSpell.words": [
+		"clsx"
+	],
+	"eslint.workingDirectories": [
+		{
+			"pattern": "./app/"
+		}
+	],
+	"dotenv.enableAutocloaking": false
+}
