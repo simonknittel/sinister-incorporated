@@ -22,13 +22,11 @@ const ShipTile = ({ ownership, nonInteractive = false }: Props) => {
   return (
     <article className="bg-neutral-900 rounded overflow-hidden">
       <h3 className="flex gap-4 items-center font-bold">
-        <span className="bg-sinister-red-500 py-2 px-4 rounded-br">
+        <span className="bg-neutral-950 py-2 px-4 rounded-br">
           {ownership.variant.series.manufacturer.name}
         </span>
 
-        <span>{ownership.variant.series.name}</span>
-
-        <span className="text-neutral-500">{ownership.variant.name}</span>
+        <span>{ownership.variant.name}</span>
       </h3>
 
       <div className="flex gap-2 items-center justify-center">

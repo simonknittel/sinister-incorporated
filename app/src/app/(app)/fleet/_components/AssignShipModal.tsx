@@ -69,7 +69,7 @@ const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
           manufacturer,
           series,
           variant,
-          name: `${manufacturer.name} ${series.name} ${variant.name}`,
+          name: `${manufacturer.name} ${variant.name}`,
         });
       });
     });

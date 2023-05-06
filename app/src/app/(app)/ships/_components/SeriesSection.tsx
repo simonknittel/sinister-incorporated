@@ -15,7 +15,7 @@ const SeriesSection = ({ manufacturer, data }: Props) => {
     <div className="mt-2 bg-neutral-900 rounded overflow-hidden max-w-4xl">
       <div className="flex justify-between items-center">
         <h2 className="flex gap-4 items-center font-bold">
-          <span className="bg-sinister-red-500 py-2 px-4 rounded-br">
+          <span className="bg-neutral-950 py-2 px-4 rounded-br">
             {manufacturer.name}
           </span>
 
