@@ -3,7 +3,13 @@
 import { Analytics } from "@vercel/analytics/react";
 
 const AnalyticsContainer = () => {
-  return <Analytics />;
+  return (
+    <Analytics
+      beforeSend={(e) =>
+        localStorage.getItem("va-disabled") === "true" ? null : e
+      }
+    />
+  );
 };
 
 export default AnalyticsContainer;
