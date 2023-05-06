@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { FaCalendarDay, FaUsers } from "react-icons/fa";
+import { FaCalendarDay, FaCog, FaUsers } from "react-icons/fa";
 import { RiSpaceShipFill } from "react-icons/ri";
 import { authOptions } from "~/server/auth";
 import Account from "./Account";
@@ -68,6 +68,16 @@ const Sidebar = async () => {
                   >
                     <RiSpaceShipFill />
                     Schiffe
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    href="/settings"
+                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                  >
+                    <FaCog />
+                    Settings
                   </Link>
                 </li>
               </ul>

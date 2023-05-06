@@ -6,7 +6,7 @@ const AnalyticsContainer = () => {
   return (
     <Analytics
       beforeSend={(e) =>
-        localStorage.getItem("va-disabled") === "true" ? null : e
+        localStorage.getItem("va-disable") === "true" ? null : e
       }
     />
   );
