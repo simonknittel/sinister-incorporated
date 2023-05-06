@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { FaUsers } from "react-icons/fa";
+import { FaCalendarDay, FaUsers } from "react-icons/fa";
 import { RiSpaceShipFill } from "react-icons/ri";
 import { authOptions } from "~/server/auth";
 import Account from "./Account";
@@ -14,7 +14,7 @@ const Sidebar = async () => {
         <Account />
 
         <nav className="p-4 border-t-2 border-neutral-800">
-          {/* <ul>
+          <ul>
             <li>
               <Link
                 href="/events"
@@ -24,7 +24,7 @@ const Sidebar = async () => {
                 Events
               </Link>
             </li>
-          </ul> */}
+          </ul>
 
           <ul>
             <li>
