@@ -1,6 +1,7 @@
 "use client";
 
 import { type Manufacturer, type Series, type Variant } from "@prisma/client";
+import { flatten } from "lodash";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -60,14 +61,22 @@ const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
     variants: Variant[];
   }[] = [];
 
-  data.forEach((manufacturer) => {
-    manufacturer.series.forEach((series) => {
+  data
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .forEach((manufacturer) => {
       options.push({
         manufacturer,
-        variants: series.variants.map((variant) => variant),
+        variants: flatten(
+          manufacturer.series
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((series) =>
+              series.variants
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((variant) => variant)
+            )
+        ),
       });
     });
-  });
 
   return (
     <Modal
@@ -88,24 +97,18 @@ const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
           {...register("variantId", { required: true })}
           autoFocus
         >
-          {options
-            .sort((a, b) =>
-              a.manufacturer.name.localeCompare(b.manufacturer.name)
-            )
-            .map((option) => (
-              <optgroup
-                key={option.manufacturer.id}
-                label={option.manufacturer.name}
-              >
-                {option.variants
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((variant) => (
-                    <option key={variant.id} value={variant.id}>
-                      {variant.name}
-                    </option>
-                  ))}
-              </optgroup>
-            ))}
+          {options.map((option) => (
+            <optgroup
+              key={option.manufacturer.id}
+              label={option.manufacturer.name}
+            >
+              {option.variants.map((variant) => (
+                <option key={variant.id} value={variant.id}>
+                  {variant.name}
+                </option>
+              ))}
+            </optgroup>
+          ))}
         </select>
 
         <div className="flex justify-end mt-8">
