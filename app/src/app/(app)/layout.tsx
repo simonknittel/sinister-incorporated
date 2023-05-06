@@ -22,9 +22,7 @@ export default async function AppLayout({ children }: Props) {
           <Sidebar />
         </SidebarContainer>
 
-        <div className="lg:ml-96 min-h-screen p-8 pt-24 lg:pt-8">
-          {children}
-        </div>
+        <div className="lg:ml-96 min-h-screen p-4 lg:p-8 pt-20">{children}</div>
       </div>
     </SessionProviderContainer>
   );

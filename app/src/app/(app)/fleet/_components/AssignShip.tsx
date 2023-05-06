@@ -23,7 +23,7 @@ const AssignShip = ({ className, data = [] }: Props) => {
       <button
         className={clsx(
           className,
-          "flex items-center justify-center gap-2 text-sinister-red-500 border-sinister-red-500 border-2 rounded font-bold uppercase hover:text-sinister-red-300 hover:border-sinister-red-300 min-h-[6rem]"
+          "flex items-center justify-center gap-2 text-sinister-red-500 border-sinister-red-500 border-2 rounded font-bold uppercase hover:text-sinister-red-300 hover:border-sinister-red-300 min-h-[3rem] lg:min-h-[6rem]"
         )}
         onClick={() => setIsOpen(true)}
       >

@@ -186,7 +186,7 @@ const UsersTable = ({ users }: Props) => {
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             key={headerGroup.id}
-            className="grid grid-cols-[1fr_1fr_8rem] items-center gap-4"
+            className="grid grid-cols-[1fr_1fr_4rem] items-center gap-4"
           >
             {headerGroup.headers.map((header) => (
               <th key={header.id} className="text-left text-neutral-400">
@@ -219,7 +219,7 @@ const UsersTable = ({ users }: Props) => {
         {table.getRowModel().rows.map((row) => (
           <tr
             key={row.id}
-            className="grid grid-cols-[1fr_1fr_8rem] items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
+            className="grid grid-cols-[1fr_1fr_4rem] items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
           >
             {row.getVisibleCells().map((cell) => (
               <td key={cell.id} className="overflow-hidden text-ellipsis">

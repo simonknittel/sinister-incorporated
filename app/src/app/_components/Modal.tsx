@@ -26,7 +26,7 @@ export default function Modal({
     >
       <div
         className={clsx(
-          "max-h-full max-w-full cursor-auto overflow-auto rounded bg-neutral-800 p-8 text-neutral-50",
+          "max-h-full max-w-full cursor-auto overflow-auto rounded bg-neutral-800 p-4 lg:p-8 text-neutral-50",
           className
         )}
         onClick={(e) => e.stopPropagation()}
