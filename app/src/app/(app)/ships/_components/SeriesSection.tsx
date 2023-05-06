@@ -25,7 +25,7 @@ const SeriesSection = ({ manufacturer, data }: Props) => {
         <DeleteSeriesButton series={data} />
       </div>
 
-      <ul className="flex gap-2 items-center p-4 lg:pt-8 flex-wrap">
+      <ul className="flex gap-2 items-center p-4 lg:p-8 flex-wrap">
         {data.variants
           .sort((a, b) => a.name.localeCompare(b.name))
           .map((variant) => (
