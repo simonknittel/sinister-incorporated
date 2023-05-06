@@ -24,6 +24,7 @@
     "react-hook-form": "^7.43.9",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^4.8.0",
+    "react-timeago": "^7.1.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

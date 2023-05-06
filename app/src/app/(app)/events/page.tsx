@@ -1,7 +1,12 @@
 import { type Metadata } from "next";
+import dynamic from "next/dynamic";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
+
+const TimeAgoContainer = dynamic(() => import("./_components/TimeAgo"), {
+  ssr: false,
+});
 
 export const metadata: Metadata = {
   title: "Events | Sinister Incorporated",
@@ -65,6 +70,10 @@ export default async function Page() {
       {events.map((event) => (
         <Event key={event.id} event={event} className="mt-4 max-w-4xl" />
       ))}
+
+      <p className="text-neutral-500 mt-4">
+        Letzte Aktualisierung: <TimeAgoContainer date={new Date()} />
+      </p>
     </main>
   );
 }

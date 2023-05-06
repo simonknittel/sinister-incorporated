@@ -1,11 +1,16 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import ShipTile from "../../../_components/ShipTile";
+
+const TimeAgoContainer = dynamic(() => import("../../_components/TimeAgo"), {
+  ssr: false,
+});
 
 const scheduledEventResponseSchema = z.object({
   id: z.string(),
@@ -177,6 +182,10 @@ export default async function Page({ params }: Props) {
           />
         ))}
       </div>
+
+      <p className="text-neutral-500 mt-4">
+        Letzte Aktualisierung: <TimeAgoContainer date={new Date()} />
+      </p>
     </main>
   );
 }
