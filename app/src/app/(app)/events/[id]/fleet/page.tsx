@@ -31,7 +31,7 @@ async function getEvent(id: string) {
       {
         headers,
         next: {
-          revalidate: 60,
+          revalidate: 30,
         },
       }
     );
@@ -81,7 +81,7 @@ export default async function Page({ params }: Props) {
     {
       headers,
       next: {
-        revalidate: 60,
+        revalidate: 30,
       },
     }
   );

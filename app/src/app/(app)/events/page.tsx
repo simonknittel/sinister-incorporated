@@ -43,7 +43,7 @@ async function getEvents() {
       {
         headers,
         next: {
-          revalidate: 60,
+          revalidate: 30,
         },
       }
     );
