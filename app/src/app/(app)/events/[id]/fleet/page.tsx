@@ -12,6 +12,14 @@ const scheduledEventResponseSchema = z.object({
   name: z.string(),
 });
 
+const scheduledEventUsersResponseSchema = z.array(
+  z.object({
+    user: z.object({
+      id: z.string(),
+    }),
+  })
+);
+
 async function getEvent(id: string) {
   if (env.NODE_ENV === "development") {
     const body = {
@@ -43,6 +51,40 @@ async function getEvent(id: string) {
   }
 }
 
+async function getEventUsers(id: string) {
+  if (env.NODE_ENV === "development") {
+    const body = [
+      {
+        user: {
+          id: "117890449187930113",
+        },
+      },
+    ];
+
+    const users = await scheduledEventUsersResponseSchema.parseAsync(body);
+
+    return users;
+  } else {
+    const headers = new Headers();
+    headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
+
+    const response = await fetch(
+      `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}/users`,
+      {
+        headers,
+        next: {
+          revalidate: 30,
+        },
+      }
+    );
+
+    const body: unknown = await response.json();
+    const users = await scheduledEventUsersResponseSchema.parseAsync(body);
+
+    return users;
+  }
+}
+
 interface Params {
   id: string;
 }
@@ -59,34 +101,13 @@ export async function generateMetadata({
   };
 }
 
-const scheduledEventUsersResponseSchema = z.array(
-  z.object({
-    user: z.object({
-      id: z.string(),
-    }),
-  })
-);
-
 interface Props {
   params: Params;
 }
 
 export default async function Page({ params }: Props) {
   const event = await getEvent(params.id);
-
-  const headers = new Headers();
-  headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
-  const usersResponse = await fetch(
-    `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${event.id}/users`,
-    {
-      headers,
-      next: {
-        revalidate: 30,
-      },
-    }
-  );
-  const usersBody: unknown = await usersResponse.json();
-  const users = await scheduledEventUsersResponseSchema.parseAsync(usersBody);
+  const users = await getEventUsers(params.id);
 
   const userIds = users.map((user) => user.user.id);
 
