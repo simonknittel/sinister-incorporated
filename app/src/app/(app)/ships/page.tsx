@@ -27,7 +27,7 @@ export default async function Page() {
 
   return (
     <main>
-      <h1 className="text-xl font-bold mb-8">Schiffe</h1>
+      <h1 className="text-xl font-bold mb-4">Schiffe</h1>
 
       {data
         .sort((a, b) => a.name.localeCompare(b.name))
@@ -43,7 +43,7 @@ export default async function Page() {
             ));
         })}
 
-      <div className="mt-8 flex items-center justify-center max-w-4xl gap-4">
+      <div className="mt-4 flex items-center justify-center max-w-4xl gap-4">
         <AddManufacturer />
         <AddSeries manufacturers={data} />
       </div>

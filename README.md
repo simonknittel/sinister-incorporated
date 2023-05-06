@@ -39,6 +39,10 @@
 2. Install dependencies: `cd playwright && npm ci`
 3. Run the tests: `npx playwright test --debug`
 
+### Bot Invite Link with required scopes
+
+- <https://discord.com/api/oauth2/authorize?client_id=1103960804782514206&permissions=0&scope=bot>
+
 ## License
 
 See [LICENSE](./LICENSE)

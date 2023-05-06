@@ -4,8 +4,8 @@ import {
   type Series,
   type Variant,
 } from "@prisma/client";
-import DecrementOwnership from "./DecrementOwnership";
-import IncrementOwnership from "./IncrementOwnership";
+import DecrementOwnership from "../fleet/_components/DecrementOwnership";
+import IncrementOwnership from "../fleet/_components/IncrementOwnership";
 
 interface Props {
   ownership: FleetOwnership & {

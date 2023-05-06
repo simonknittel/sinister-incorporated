@@ -1,0 +1,158 @@
+import { groupBy } from "lodash";
+import { type Metadata } from "next";
+import Link from "next/link";
+import { FaChevronLeft } from "react-icons/fa";
+import { z } from "zod";
+import { env } from "~/env.mjs";
+import { prisma } from "~/server/db";
+import ShipTile from "../../../_components/ShipTile";
+
+export const revalidate = 60;
+
+const scheduledEventResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+async function getEvent(id: string) {
+  if (env.NODE_ENV === "development") {
+    const body = {
+      id: "1104301095754403840",
+      name: "Test",
+    };
+
+    const event = await scheduledEventResponseSchema.parseAsync(body);
+
+    return event;
+  } else {
+    const headers = new Headers();
+    headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
+
+    const response = await fetch(
+      `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}`,
+      {
+        headers,
+      }
+    );
+
+    const body: unknown = await response.json();
+    const event = await scheduledEventResponseSchema.parseAsync(body);
+
+    return event;
+  }
+}
+
+interface Params {
+  id: string;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const event = await getEvent(params.id);
+
+  return {
+    title: `Verfügbare Flotte - ${event.name} | Sinister Incorporated`,
+  };
+}
+
+const scheduledEventUsersResponseSchema = z.array(
+  z.object({
+    user: z.object({
+      id: z.string(),
+    }),
+  })
+);
+
+interface Props {
+  params: Params;
+}
+
+export default async function Page({ params }: Props) {
+  const event = await getEvent(params.id);
+
+  const headers = new Headers();
+  headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
+  const usersResponse = await fetch(
+    `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${event.id}/users`,
+    {
+      headers,
+    }
+  );
+  const usersBody: unknown = await usersResponse.json();
+  const users = await scheduledEventUsersResponseSchema.parseAsync(usersBody);
+
+  const userIds = users.map((user) => user.user.id);
+  console.log(userIds);
+
+  const ownerships = await prisma.fleetOwnership.findMany({
+    where: {
+      user: {
+        accounts: {
+          some: {
+            providerAccountId: {
+              in: userIds,
+            },
+          },
+        },
+      },
+    },
+    include: {
+      variant: {
+        include: {
+          series: {
+            include: {
+              manufacturer: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const groupedOwnerships = groupBy(
+    ownerships,
+    (ownership) => ownership.variant.id
+  );
+  const ships = Object.values(groupedOwnerships).map((ownerships) => {
+    const ownership = ownerships[0];
+
+    return {
+      ...ownership,
+      count: ownerships.reduce((acc, curr) => acc + curr.count, 0),
+    };
+  });
+
+  return (
+    <main>
+      <ul className="flex items-center gap-2">
+        <li>
+          <Link
+            href="/events"
+            className="flex items-center gap-1 hover:underline"
+          >
+            <FaChevronLeft className="text-xs" /> Events
+          </Link>
+        </li>
+
+        <li className="text-neutral-500">/</li>
+
+        <li className="underline">{event.name}</li>
+      </ul>
+
+      <h1 className="font-bold text-xl mt-8">Verfügbare Flotte</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">
+        {ships.map((ownership) => (
+          <ShipTile
+            key={ownership.variantId}
+            ownership={ownership}
+            nonInteractive={true}
+          />
+        ))}
+      </div>
+    </main>
+  );
+}

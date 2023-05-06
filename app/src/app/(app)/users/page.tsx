@@ -20,7 +20,7 @@ export default async function Page() {
     <main>
       <h1 className="text-xl font-bold">Mitglieder</h1>
 
-      <section className="p-8 bg-neutral-900 rounded max-w-4xl mt-8">
+      <section className="p-8 bg-neutral-900 rounded max-w-4xl mt-4">
         <UsersTable users={members} />
       </section>
     </main>
