@@ -33,7 +33,7 @@ const SeriesSection = ({ manufacturer, data }: Props) => {
           ))}
 
         <li>
-          <AddVariant seriesId={data.id} />
+          <AddVariant series={data} />
         </li>
       </ul>
     </div>

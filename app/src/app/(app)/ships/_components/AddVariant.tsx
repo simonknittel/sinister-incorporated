@@ -9,10 +9,10 @@ import AddVariantModal from "./AddVariantModal";
 
 interface Props {
   className?: string;
-  seriesId: Series["id"];
+  series: Series;
 }
 
-const AddVariant = ({ className, seriesId }: Props) => {
+const AddVariant = ({ className, series }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -24,7 +24,7 @@ const AddVariant = ({ className, seriesId }: Props) => {
       <AddVariantModal
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
-        seriesId={seriesId}
+        series={series}
       />
     </div>
   );

@@ -12,16 +12,20 @@ import Modal from "~/app/_components/Modal";
 interface Props {
   isOpen: boolean;
   onRequestClose: () => void;
-  seriesId: Series["id"];
+  series: Series;
 }
 
 interface FormValues {
   name: Variant["name"];
 }
 
-const AddVariantModal = ({ isOpen, onRequestClose, seriesId }: Props) => {
+const AddVariantModal = ({ isOpen, onRequestClose, series }: Props) => {
   const router = useRouter();
-  const { register, handleSubmit, reset } = useForm<FormValues>();
+  const { register, handleSubmit, reset } = useForm<FormValues>({
+    defaultValues: {
+      name: `${series.name} `,
+    },
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -32,7 +36,7 @@ const AddVariantModal = ({ isOpen, onRequestClose, seriesId }: Props) => {
         method: "POST",
         body: JSON.stringify({
           name: data.name,
-          seriesId,
+          seriesId: series.id,
         }),
       });
 
