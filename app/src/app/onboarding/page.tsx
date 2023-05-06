@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/");
-  if (session.user.role !== "new") redirect("/events");
+  if (session.user.role !== "new") redirect("/fleet");
 
   return (
     <div className="min-h-screen flex justify-center items-center">

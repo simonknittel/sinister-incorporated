@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
-  if (["admin"].includes(session!.user.role) === false) redirect("/events");
+  if (["admin"].includes(session!.user.role) === false) redirect("/fleet");
 
   const data = await prisma.manufacturer.findMany({
     include: {
