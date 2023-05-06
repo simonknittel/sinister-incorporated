@@ -3,8 +3,6 @@ import { z } from "zod";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
 
-export const revalidate = 60;
-
 export const metadata: Metadata = {
   title: "Events | Sinister Incorporated",
 };
@@ -44,6 +42,9 @@ async function getEvents() {
       `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events?with_user_count=true`,
       {
         headers,
+        next: {
+          revalidate: 60,
+        },
       }
     );
 

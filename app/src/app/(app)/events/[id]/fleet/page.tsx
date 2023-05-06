@@ -7,8 +7,6 @@ import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import ShipTile from "../../../_components/ShipTile";
 
-export const revalidate = 60;
-
 const scheduledEventResponseSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -32,6 +30,9 @@ async function getEvent(id: string) {
       `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}`,
       {
         headers,
+        next: {
+          revalidate: 60,
+        },
       }
     );
 
@@ -79,6 +80,9 @@ export default async function Page({ params }: Props) {
     `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${event.id}/users`,
     {
       headers,
+      next: {
+        revalidate: 60,
+      },
     }
   );
   const usersBody: unknown = await usersResponse.json();
