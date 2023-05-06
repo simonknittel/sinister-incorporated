@@ -11,7 +11,7 @@ const scheduledEventsResponseSchema = z.array(
   z.object({
     id: z.string(),
     name: z.string(),
-    image: z.string().optional(),
+    image: z.string().optional().nullable(),
     scheduled_start_time: z.coerce.date(),
     scheduled_end_time: z.coerce.date(),
     user_count: z.number(),
