@@ -85,7 +85,6 @@ export default async function Page({ params }: Props) {
   const users = await scheduledEventUsersResponseSchema.parseAsync(usersBody);
 
   const userIds = users.map((user) => user.user.id);
-  console.log(userIds);
 
   const ownerships = await prisma.fleetOwnership.findMany({
     where: {

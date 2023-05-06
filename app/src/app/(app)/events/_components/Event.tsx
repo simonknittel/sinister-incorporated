@@ -17,7 +17,7 @@ interface Props {
 
 const Event = ({ className, event }: Props) => {
   return (
-    <a className={clsx(className, "block bg-neutral-900 rounded")}>
+    <article className={clsx(className, "block bg-neutral-900 rounded")}>
       <span className="flex gap-4 items-center font-bold">
         <p className="bg-neutral-950 py-2 px-4 rounded-br">
           {event.scheduled_start_time.toLocaleDateString("de-DE", {
@@ -55,7 +55,7 @@ const Event = ({ className, event }: Props) => {
           Verfügbare Flotte <RiSpaceShipFill />
         </Link>
       </span>
-    </a>
+    </article>
   );
 };
 
