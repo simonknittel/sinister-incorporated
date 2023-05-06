@@ -57,20 +57,14 @@ const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
 
   const options: {
     manufacturer: Manufacturer;
-    series: Series;
-    variant: Variant;
-    name: string;
+    variants: Variant[];
   }[] = [];
 
   data.forEach((manufacturer) => {
     manufacturer.series.forEach((series) => {
-      series.variants.forEach((variant) => {
-        options.push({
-          manufacturer,
-          series,
-          variant,
-          name: `${manufacturer.name} ${variant.name}`,
-        });
+      options.push({
+        manufacturer,
+        variants: series.variants.map((variant) => variant),
       });
     });
   });
@@ -95,11 +89,22 @@ const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
           autoFocus
         >
           {options
-            .sort((a, b) => a.name.localeCompare(b.name))
+            .sort((a, b) =>
+              a.manufacturer.name.localeCompare(b.manufacturer.name)
+            )
             .map((option) => (
-              <option key={option.variant.id} value={option.variant.id}>
-                {option.name}
-              </option>
+              <optgroup
+                key={option.manufacturer.id}
+                label={option.manufacturer.name}
+              >
+                {option.variants
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((variant) => (
+                    <option key={variant.id} value={variant.id}>
+                      {variant.name}
+                    </option>
+                  ))}
+              </optgroup>
             ))}
         </select>
 
