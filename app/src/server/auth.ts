@@ -131,7 +131,13 @@ export const authOptions: NextAuthOptions = {
             }),
           ]);
         } catch (error) {
-          // User doesn't exist yet, e.g. first login of a new user -> no update needed
+          // User doesn't exist yet, e.g. first login of a new user
+          const guildMember = await getGuildMember(account.access_token);
+          const avatar = getAvatar(profile, guildMember);
+
+          user.email = profile.email!.toLocaleLowerCase();
+          user.name = guildMember.nick || profile.username;
+          user.image = avatar;
         }
       }
 
