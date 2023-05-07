@@ -13,10 +13,8 @@ export function authorize<T extends Actions>(
 ) {
   if (!user) throw new Error("Unauthorized");
 
-  if (resourceType === "User") {
+  if (["User", "Manufacturer", "Series", "Variant"].includes(resourceType)) {
     if (["leadership", "admin"].includes(user.role)) return true;
-  } else if (["Manufacturer", "Series", "Variant"].includes(resourceType)) {
-    if (["admin"].includes(user.role)) return true;
   }
 
   throw new Error("Unauthorized");

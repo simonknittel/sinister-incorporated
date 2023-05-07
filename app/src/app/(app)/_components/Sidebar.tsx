@@ -40,7 +40,7 @@ const Sidebar = async () => {
 
           {["leadership", "admin"].includes(session!.user.role) && (
             <div className="border-t-2 border-neutral-800 mt-4">
-              <p className="p-4 text-neutral-500">Leitung</p>
+              <p className="p-4 text-neutral-500 mt-4">Leitung</p>
 
               <ul>
                 <li>
@@ -52,15 +52,7 @@ const Sidebar = async () => {
                     Mitglieder
                   </Link>
                 </li>
-              </ul>
-            </div>
-          )}
 
-          {["admin"].includes(session!.user.role) && (
-            <div className="border-t-2 border-neutral-800 mt-4">
-              <p className="p-4 text-neutral-500">Admin</p>
-
-              <ul>
                 <li>
                   <Link
                     href="/ships"
@@ -70,7 +62,15 @@ const Sidebar = async () => {
                     Schiffe
                   </Link>
                 </li>
+              </ul>
+            </div>
+          )}
 
+          {["admin"].includes(session!.user.role) && (
+            <div className="border-t-2 border-neutral-800 mt-4">
+              <p className="p-4 text-neutral-500 mt-4">Admin</p>
+
+              <ul>
                 <li>
                   <Link
                     href="/settings"
