@@ -11,10 +11,16 @@ import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import { type UserRole } from "~/types";
 
-const guildMemberResponseSchema = z.object({
-  avatar: z.string().nullable(),
-  nick: z.string().nullable(),
-});
+const guildMemberResponseSchema = z.union([
+  z.object({
+    avatar: z.string().nullable(),
+    nick: z.string().nullable(),
+  }),
+
+  z.object({
+    message: z.string(),
+  }),
+]);
 
 async function getGuildMember(access_token: string) {
   const headers = new Headers();
@@ -88,57 +94,69 @@ export const authOptions: NextAuthOptions = {
     }),
 
     async signIn({ user, account, profile }) {
-      // Update account and user on login
-      if (profile) {
-        /**
-         * This callback doesn't tell us if the user already exists in the
-         * database. Also, this callback gets called before a new user gets
-         * created in the database. Therefore, we have to figure out ourselves
-         * if we can update an existing user or not. We do this by just trying
-         * with `try ... catch`.
-         */
-        try {
-          // User already exists
+      /**
+       * Update account and user on login
+       *
+       * This callback doesn't tell us if the user already exists in the
+       * database. Also, this callback gets called before a new user gets
+       * created in the database. Therefore, we have to figure out ourselves
+       * if we can update an existing user or not.
+       */
 
-          const guildMember = await getGuildMember(account.access_token);
-          const avatar = getAvatar(profile, guildMember);
+      const existingUser = await prisma.user.findUnique({
+        where: {
+          id: user.id,
+        },
+      });
 
-          await prisma.$transaction([
-            prisma.account.update({
-              where: {
-                provider_providerAccountId: {
-                  provider: account!.provider,
-                  providerAccountId: account!.providerAccountId,
-                },
-              },
-              data: {
-                refresh_token: account!.refresh_token,
-                access_token: account!.access_token,
-                expires_at: account!.expires_at,
-                scope: account!.scope,
-              },
-            }),
+      if (existingUser) {
+        const guildMember = await getGuildMember(account.access_token);
 
-            prisma.user.update({
-              where: {
-                id: user.id,
-              },
-              data: {
-                email: profile.email!.toLocaleLowerCase(),
-                name: guildMember.nick || profile.username,
-                image: avatar,
-              },
-            }),
-          ]);
-        } catch (error) {
-          // User doesn't exist yet, e.g. first login of a new user
-          const guildMember = await getGuildMember(account.access_token);
-          const avatar = getAvatar(profile, guildMember);
-
-          user.email = profile.email!.toLocaleLowerCase();
-          user.name = guildMember.nick || profile.username;
-          user.image = avatar;
+        if ("message" in guildMember) {
+          throw new Error(guildMember.message);
         }
+
+        const avatar = getAvatar(profile, guildMember);
+
+        await prisma.$transaction([
+          prisma.account.update({
+            where: {
+              provider_providerAccountId: {
+                provider: account!.provider,
+                providerAccountId: account!.providerAccountId,
+              },
+            },
+            data: {
+              refresh_token: account!.refresh_token,
+              access_token: account!.access_token,
+              expires_at: account!.expires_at,
+              scope: account!.scope,
+            },
+          }),
+
+          prisma.user.update({
+            where: {
+              id: user.id,
+            },
+            data: {
+              email: profile.email!.toLocaleLowerCase(),
+              name: guildMember.nick || profile.username,
+              image: avatar,
+            },
+          }),
+        ]);
+      } else {
+        const guildMember = await getGuildMember(account.access_token);
+
+        if ("message" in guildMember) {
+          throw new Error(guildMember.message);
+        }
+
+        const avatar = getAvatar(profile, guildMember);
+
+        user.email = profile.email!.toLocaleLowerCase();
+        user.name = guildMember.nick || profile.username;
+        user.image = avatar;
       }
 
       return true;
@@ -153,6 +171,10 @@ export const authOptions: NextAuthOptions = {
         "https://discord.com/api/oauth2/authorize?scope=identify+email+guilds.members.read",
     }),
   ],
+  pages: {
+    error: "/",
+    newUser: "/onboarding",
+  },
 };
 
 /**
