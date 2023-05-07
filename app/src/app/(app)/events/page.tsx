@@ -71,6 +71,12 @@ export default async function Page() {
         <Event key={event.id} event={event} className="mt-4 max-w-4xl" />
       ))}
 
+      {events.length === 0 && (
+        <div className="bg-neutral-900 rounded p-4 lg:p-8 max-w-4xl mt-4">
+          <p>Aktuell sind keine Events geplant.</p>
+        </div>
+      )}
+
       <p className="text-neutral-500 mt-4">
         Letzte Aktualisierung: <TimeAgoContainer date={new Date()} />
       </p>

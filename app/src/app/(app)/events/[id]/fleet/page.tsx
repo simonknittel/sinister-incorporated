@@ -15,6 +15,7 @@ const TimeAgoContainer = dynamic(() => import("../../_components/TimeAgo"), {
 const scheduledEventResponseSchema = z.object({
   id: z.string(),
   name: z.string(),
+  user_count: z.number(),
 });
 
 const scheduledEventUsersResponseSchema = z.array(
@@ -30,6 +31,7 @@ async function getEvent(id: string) {
     const body = {
       id: "1104301095754403840",
       name: "Test",
+      user_count: 1,
     };
 
     const event = await scheduledEventResponseSchema.parseAsync(body);
@@ -40,7 +42,7 @@ async function getEvent(id: string) {
     headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
 
     const response = await fetch(
-      `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}`,
+      `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}?with_user_count=true`,
       {
         headers,
         next: {
@@ -172,6 +174,8 @@ export default async function Page({ params }: Props) {
       </ul>
 
       <h1 className="font-bold text-xl mt-8">Verfügbare Flotte</h1>
+
+      <p className="mt-2">Teilnehmer: {event.user_count}</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">
         {ships.map((ownership) => (
