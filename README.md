@@ -1,5 +1,14 @@
 # Sinister Incorporated
 
+Tools of the Star Citizen organization _Sinister Incorporated_.
+
+## Features
+
+- Fleetmanager
+- Discord Event integration
+  - Shows the available fleet based on the participants' ships
+- Discord Login
+
 ## Technologies
 
 - [Next.js](https://nextjs.org/)
@@ -12,8 +21,6 @@
 - [React Table](https://github.com/TanStack/table)
 - [react-hot-toast](https://github.com/timolins/react-hot-toast)
 - [React Icons](https://github.com/react-icons/react-icons)
-- [Playwright](https://playwright.dev/)
-- [Terraform](https://www.terraform.io/)
 - [Zod](https://github.com/colinhacks/zod)
 
 ## Usage
