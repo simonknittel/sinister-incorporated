@@ -187,9 +187,9 @@ export default async function Page({ params }: Props) {
         ))}
       </div>
 
-      <p className="text-neutral-500 mt-4">
+      {/* <p className="text-neutral-500 mt-4">
         Letzte Aktualisierung: <TimeAgoContainer date={new Date()} />
-      </p>
+      </p> */}
     </main>
   );
 }

@@ -12,16 +12,21 @@ export const metadata: Metadata = {
   title: "Events | Sinister Incorporated",
 };
 
-const scheduledEventsResponseSchema = z.array(
+const scheduledEventsResponseSchema = z.union([
+  z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      image: z.string().optional().nullable(),
+      scheduled_start_time: z.coerce.date(),
+      scheduled_end_time: z.coerce.date(),
+      user_count: z.number(),
+    })
+  ),
   z.object({
-    id: z.string(),
-    name: z.string(),
-    image: z.string().optional().nullable(),
-    scheduled_start_time: z.coerce.date(),
-    scheduled_end_time: z.coerce.date(),
-    user_count: z.number(),
-  })
-);
+    message: z.string(),
+  }),
+]);
 
 async function getEvents() {
   if (env.NODE_ENV === "development") {
@@ -54,9 +59,25 @@ async function getEvents() {
     );
 
     const body: unknown = await response.json();
-    const events = await scheduledEventsResponseSchema.parseAsync(body);
+    const data = await scheduledEventsResponseSchema.parseAsync(body);
 
-    return events;
+    if ("message" in data) {
+      if (data.message === "You are being rate limited.") {
+        throw new Error("Rate Limiting der Discord API");
+      } else if (data.message === "Unknown Guild") {
+        throw new Error(
+          `Der Discord Server \"${env.DISCORD_GUILD_ID}\" existiert nicht.`
+        );
+      } else if (data.message === "Missing Access") {
+        throw new Error(
+          `Diese Anwendung hat keinen Zugriff auf den Discord Server \"${env.DISCORD_GUILD_ID}\".`
+        );
+      } else {
+        throw new Error(data.message);
+      }
+    }
+
+    return data;
   }
 }
 
@@ -77,9 +98,9 @@ export default async function Page() {
         </div>
       )}
 
-      <p className="text-neutral-500 mt-4">
+      {/* <p className="text-neutral-500 mt-4">
         Letzte Aktualisierung: <TimeAgoContainer date={new Date()} />
-      </p>
+      </p> */}
     </main>
   );
 }
