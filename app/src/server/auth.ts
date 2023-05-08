@@ -165,8 +165,8 @@ export const authOptions: NextAuthOptions = {
         user.email = profile.email!.toLocaleLowerCase();
         user.name = guildMember.nick || profile.username;
         user.image = avatar;
-        discordUsername = profile.username;
-        discordDiscriminator = profile.discriminator;
+        user.discordUsername = profile.username;
+        user.discordDiscriminator = profile.discriminator;
       }
 
       return true;
