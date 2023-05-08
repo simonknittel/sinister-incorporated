@@ -1,5 +1,6 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
 import { z } from "zod";
@@ -7,9 +8,9 @@ import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import ShipTile from "../../../_components/ShipTile";
 
-// const TimeAgoContainer = dynamic(() => import("../../_components/TimeAgo"), {
-//   ssr: false,
-// });
+const TimeAgoContainer = dynamic(() => import("../../_components/TimeAgo"), {
+  ssr: false,
+});
 
 const scheduledEventResponseSchema = z.union([
   z.object({
@@ -49,7 +50,7 @@ async function getEvent(id: string) {
 
     if ("message" in data) throw new Error(data.message);
 
-    return data;
+    return { date: new Date(), data };
   } else {
     const headers = new Headers();
     headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
@@ -83,7 +84,7 @@ async function getEvent(id: string) {
       }
     }
 
-    return data;
+    return { date: response.headers.get("Date"), data };
   }
 }
 
@@ -149,7 +150,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   try {
-    const event = await getEvent(params.id);
+    const { data: event } = await getEvent(params.id);
 
     return {
       title: `Verfügbare Flotte - ${event.name} | Sinister Incorporated`,
@@ -168,7 +169,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  const event = await getEvent(params.id);
+  const { date, data: event } = await getEvent(params.id);
   const users = await getEventUsers(params.id);
 
   const userIds = users.map((user) => user.user.id);
@@ -232,19 +233,25 @@ export default async function Page({ params }: Props) {
 
       <p className="mt-2">Teilnehmer: {event.user_count}</p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">
-        {ships.map((ownership) => (
-          <ShipTile
-            key={ownership.variantId}
-            ownership={ownership}
-            nonInteractive={true}
-          />
-        ))}
-      </div>
+      {ships.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">
+          {ships.map((ownership) => (
+            <ShipTile
+              key={ownership.variantId}
+              ownership={ownership}
+              nonInteractive={true}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="bg-neutral-900 rounded p-4 lg:p-8 max-w-4xl mt-4">
+          <p>Keine Teilnehmer oder Teilnehmer ohne Schiffe.</p>
+        </div>
+      )}
 
-      {/* <p className="text-neutral-500 mt-4">
-        Letzte Aktualisierung: <TimeAgoContainer date={new Date()} />
-      </p> */}
+      <p className="text-neutral-500 mt-4">
+        Letzte Aktualisierung: <TimeAgoContainer date={date} />
+      </p>
     </main>
   );
 }

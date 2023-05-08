@@ -1,11 +1,12 @@
 import { type Metadata } from "next";
+import dynamic from "next/dynamic";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
 
-// const TimeAgoContainer = dynamic(() => import("./_components/TimeAgo"), {
-//   ssr: false,
-// });
+const TimeAgoContainer = dynamic(() => import("./_components/TimeAgo"), {
+  ssr: false,
+});
 
 export const metadata: Metadata = {
   title: "Events | Sinister Incorporated",
@@ -44,7 +45,7 @@ async function getEvents() {
 
     if ("message" in data) throw new Error(data.message);
 
-    return data;
+    return { date: new Date(), data };
   } else {
     const headers = new Headers();
     headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
@@ -78,12 +79,12 @@ async function getEvents() {
       }
     }
 
-    return data;
+    return { date: response.headers.get("Date"), data };
   }
 }
 
 export default async function Page() {
-  const events = await getEvents();
+  const { date, data: events } = await getEvents();
 
   return (
     <main>
@@ -99,9 +100,9 @@ export default async function Page() {
         </div>
       )}
 
-      {/* <p className="text-neutral-500 mt-4">
-        Letzte Aktualisierung: <TimeAgoContainer date={new Date()} />
-      </p> */}
+      <p className="text-neutral-500 mt-4">
+        Letzte Aktualisierung: <TimeAgoContainer date={date} />
+      </p>
     </main>
   );
 }
