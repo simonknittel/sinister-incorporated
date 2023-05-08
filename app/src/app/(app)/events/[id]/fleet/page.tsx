@@ -249,9 +249,11 @@ export default async function Page({ params }: Props) {
         </div>
       )}
 
-      <p className="text-neutral-500 mt-4">
-        Letzte Aktualisierung: <TimeAgoContainer date={date} />
-      </p>
+      {date && (
+        <p className="text-neutral-500 mt-4">
+          Letzte Aktualisierung: <TimeAgoContainer date={date} />
+        </p>
+      )}
     </main>
   );
 }
