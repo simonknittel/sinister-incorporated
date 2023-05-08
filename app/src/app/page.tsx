@@ -6,7 +6,8 @@ import LoginButtons from "./_components/LoginButtons";
 import Note from "./_components/Note";
 
 export const metadata: Metadata = {
-  title: "Login | Sinister Incorporated",
+  title: "Sinister Incorporated - Hoist the Black",
+  description: "",
 };
 
 interface Props {
