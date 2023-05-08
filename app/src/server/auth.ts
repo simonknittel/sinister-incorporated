@@ -81,6 +81,8 @@ declare module "next-auth" {
   }
 }
 
+const maxAge = 60 * 60 * 24 * 7; // 7 days
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -172,7 +174,9 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
   },
+
   adapter: PrismaAdapter(prisma),
+
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
@@ -181,9 +185,15 @@ export const authOptions: NextAuthOptions = {
         "https://discord.com/api/oauth2/authorize?scope=identify+email+guilds.members.read",
     }),
   ],
+
   pages: {
     error: "/",
     newUser: "/onboarding",
+  },
+
+  session: {
+    maxAge,
+    updateAge: maxAge * 2, // Make sure `updateAge` is bigger than `maxAge` so that the session actually expires at some point and then a refreshed authentication with the identity provider is forced
   },
 };
 
