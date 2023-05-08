@@ -128,7 +128,8 @@ const UsersTable = ({ users }: Props) => {
       columnHelper.accessor("role", {
         header: "Rolle",
         cell: (props) => {
-          if (props.row.original.role === "admin") return "Admin";
+          if (props.row.original.role === "admin")
+            return <span className="block pl-3">Admin</span>;
 
           return (
             <div>
