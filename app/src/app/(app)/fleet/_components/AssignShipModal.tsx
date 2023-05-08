@@ -3,7 +3,7 @@
 import { type Manufacturer, type Series, type Variant } from "@prisma/client";
 import { flatten } from "lodash";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
@@ -28,6 +28,7 @@ const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
+  const id = useId();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
@@ -87,12 +88,12 @@ const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
       <h2 className="text-xl font-bold">Schiff auswählen</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="mt-6 block" htmlFor="name">
+        <label className="mt-6 block" htmlFor={id}>
           Schiff
         </label>
 
         <select
-          id="name"
+          id={id}
           className="p-2 rounded bg-neutral-900 w-full mt-2"
           {...register("variantId", { required: true })}
           autoFocus
