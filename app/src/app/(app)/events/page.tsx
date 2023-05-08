@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import { Suspense, lazy } from "react";
+import { lazy } from "react";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
@@ -98,7 +98,7 @@ export default async function Page() {
         </div>
       )}
 
-      {date && (
+      {/* {date && (
         <p className="text-neutral-500 mt-4 flex items-center gap-2">
           Letzte Aktualisierung:
           <Suspense
@@ -109,7 +109,7 @@ export default async function Page() {
             <TimeAgoContainer date={date} />
           </Suspense>
         </p>
-      )}
+      )} */}
     </main>
   );
 }

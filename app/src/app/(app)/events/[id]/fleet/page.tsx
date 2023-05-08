@@ -1,7 +1,7 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
 import Link from "next/link";
-import { Suspense, lazy } from "react";
+import { lazy } from "react";
 import { FaChevronLeft } from "react-icons/fa";
 import { z } from "zod";
 import { env } from "~/env.mjs";
@@ -247,7 +247,7 @@ export default async function Page({ params }: Props) {
         </div>
       )}
 
-      {date && (
+      {/* {date && (
         <p className="text-neutral-500 mt-4 flex items-center gap-2">
           Letzte Aktualisierung:
           <Suspense
@@ -258,7 +258,7 @@ export default async function Page({ params }: Props) {
             <TimeAgoContainer date={date} />
           </Suspense>
         </p>
-      )}
+      )} */}
     </main>
   );
 }
