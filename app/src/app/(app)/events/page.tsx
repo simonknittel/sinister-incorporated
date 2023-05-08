@@ -1,12 +1,11 @@
 import { type Metadata } from "next";
-import dynamic from "next/dynamic";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
 
-const TimeAgoContainer = dynamic(() => import("./_components/TimeAgo"), {
-  ssr: false,
-});
+// const TimeAgoContainer = dynamic(() => import("./_components/TimeAgo"), {
+//   ssr: false,
+// });
 
 export const metadata: Metadata = {
   title: "Events | Sinister Incorporated",
@@ -41,9 +40,11 @@ async function getEvents() {
       },
     ];
 
-    const events = await scheduledEventsResponseSchema.parseAsync(body);
+    const data = await scheduledEventsResponseSchema.parseAsync(body);
 
-    return events;
+    if ("message" in data) throw new Error(data.message);
+
+    return data;
   } else {
     const headers = new Headers();
     headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);

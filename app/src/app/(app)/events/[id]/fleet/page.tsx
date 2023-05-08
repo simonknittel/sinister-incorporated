@@ -1,6 +1,5 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
 import { z } from "zod";
@@ -8,23 +7,35 @@ import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import ShipTile from "../../../_components/ShipTile";
 
-const TimeAgoContainer = dynamic(() => import("../../_components/TimeAgo"), {
-  ssr: false,
-});
+// const TimeAgoContainer = dynamic(() => import("../../_components/TimeAgo"), {
+//   ssr: false,
+// });
 
-const scheduledEventResponseSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  user_count: z.number(),
-});
-
-const scheduledEventUsersResponseSchema = z.array(
+const scheduledEventResponseSchema = z.union([
   z.object({
-    user: z.object({
-      id: z.string(),
-    }),
-  })
-);
+    id: z.string(),
+    name: z.string(),
+    user_count: z.number(),
+  }),
+
+  z.object({
+    message: z.string(),
+  }),
+]);
+
+const scheduledEventUsersResponseSchema = z.union([
+  z.array(
+    z.object({
+      user: z.object({
+        id: z.string(),
+      }),
+    })
+  ),
+
+  z.object({
+    message: z.string(),
+  }),
+]);
 
 async function getEvent(id: string) {
   if (env.NODE_ENV === "development") {
@@ -34,9 +45,11 @@ async function getEvent(id: string) {
       user_count: 1,
     };
 
-    const event = await scheduledEventResponseSchema.parseAsync(body);
+    const data = await scheduledEventResponseSchema.parseAsync(body);
 
-    return event;
+    if ("message" in data) throw new Error(data.message);
+
+    return data;
   } else {
     const headers = new Headers();
     headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
@@ -52,9 +65,25 @@ async function getEvent(id: string) {
     );
 
     const body: unknown = await response.json();
-    const event = await scheduledEventResponseSchema.parseAsync(body);
+    const data = await scheduledEventResponseSchema.parseAsync(body);
 
-    return event;
+    if ("message" in data) {
+      if (data.message === "You are being rate limited.") {
+        throw new Error("Rate Limiting der Discord API");
+      } else if (data.message === "Unknown Guild") {
+        throw new Error(
+          `Der Discord Server \"${env.DISCORD_GUILD_ID}\" existiert nicht.`
+        );
+      } else if (data.message === "Missing Access") {
+        throw new Error(
+          `Diese Anwendung hat keinen Zugriff auf den Discord Server \"${env.DISCORD_GUILD_ID}\".`
+        );
+      } else {
+        throw new Error(data.message);
+      }
+    }
+
+    return data;
   }
 }
 
@@ -68,9 +97,11 @@ async function getEventUsers(id: string) {
       },
     ];
 
-    const users = await scheduledEventUsersResponseSchema.parseAsync(body);
+    const data = await scheduledEventUsersResponseSchema.parseAsync(body);
 
-    return users;
+    if ("message" in data) throw new Error(data.message);
+
+    return data;
   } else {
     const headers = new Headers();
     headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
@@ -86,9 +117,25 @@ async function getEventUsers(id: string) {
     );
 
     const body: unknown = await response.json();
-    const users = await scheduledEventUsersResponseSchema.parseAsync(body);
+    const data = await scheduledEventUsersResponseSchema.parseAsync(body);
 
-    return users;
+    if ("message" in data) {
+      if (data.message === "You are being rate limited.") {
+        throw new Error("Rate Limiting der Discord API");
+      } else if (data.message === "Unknown Guild") {
+        throw new Error(
+          `Der Discord Server \"${env.DISCORD_GUILD_ID}\" existiert nicht.`
+        );
+      } else if (data.message === "Missing Access") {
+        throw new Error(
+          `Diese Anwendung hat keinen Zugriff auf den Discord Server \"${env.DISCORD_GUILD_ID}\".`
+        );
+      } else {
+        throw new Error(data.message);
+      }
+    }
+
+    return data;
   }
 }
 
@@ -101,11 +148,19 @@ export async function generateMetadata({
 }: {
   params: Params;
 }): Promise<Metadata> {
-  const event = await getEvent(params.id);
+  try {
+    const event = await getEvent(params.id);
 
-  return {
-    title: `Verfügbare Flotte - ${event.name} | Sinister Incorporated`,
-  };
+    return {
+      title: `Verfügbare Flotte - ${event.name} | Sinister Incorporated`,
+    };
+  } catch (error) {
+    console.error(error);
+
+    return {
+      title: `Error | Sinister Incorporated`,
+    };
+  }
 }
 
 interface Props {
