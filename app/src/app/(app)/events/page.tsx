@@ -1,13 +1,10 @@
 import { type Metadata } from "next";
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
 
-const TimeAgoContainer = dynamic(() => import("./_components/TimeAgo"), {
-  ssr: false,
-});
+const TimeAgoContainer = lazy(() => import("./_components/TimeAgo"));
 
 export const metadata: Metadata = {
   title: "Events | Sinister Incorporated",

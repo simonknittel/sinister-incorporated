@@ -1,17 +1,14 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
-import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { FaChevronLeft } from "react-icons/fa";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import ShipTile from "../../../_components/ShipTile";
 
-const TimeAgoContainer = dynamic(() => import("../../_components/TimeAgo"), {
-  ssr: false,
-});
+const TimeAgoContainer = lazy(() => import("../../_components/TimeAgo"));
 
 const scheduledEventResponseSchema = z.union([
   z.object({
