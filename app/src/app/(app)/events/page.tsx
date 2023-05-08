@@ -14,6 +14,7 @@ const scheduledEventsResponseSchema = z.union([
   z.array(
     z.object({
       id: z.string(),
+      guild_id: z.string(),
       name: z.string(),
       image: z.string().optional().nullable(),
       scheduled_start_time: z.coerce.date(),
@@ -31,6 +32,7 @@ async function getEvents() {
     const body = [
       {
         id: "1104301095754403840",
+        guild_id: "460775097314050048",
         name: "Test",
         image: "60ed0923dd2ea782f9f7f23be7f3f8a7",
         scheduled_start_time: "2023-05-21T08:00:00+00:00",
