@@ -5,6 +5,7 @@ import LogoutButton from "./LogoutButton";
 
 const Account = async () => {
   const session = await getServerSession(authOptions);
+  console.log(session);
 
   return (
     <div className="flex items-center justify-between border-b-2 border-neutral-800 px-8 py-4">
@@ -19,6 +20,14 @@ const Account = async () => {
 
         <div>
           <p>{session!.user.name}</p>
+
+          {session!.user.discordUsername &&
+            session!.user.discordDiscriminator && (
+              <p className="text-neutral-500 text-sm">
+                {session!.user.discordUsername}#
+                {session!.user.discordDiscriminator}
+              </p>
+            )}
         </div>
       </div>
 

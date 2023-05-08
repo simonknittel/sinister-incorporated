@@ -109,8 +109,18 @@ const UsersTable = ({ users }: Props) => {
                 name={props.getValue()}
                 image={props.row.original.image}
                 size={32}
+                className="grow-1 shrink-0"
               />
+
               {props.getValue()}
+
+              {props.row.original.discordUsername &&
+                props.row.original.discordDiscriminator && (
+                  <span className="text-sm text-neutral-500">
+                    {props.row.original.discordUsername}#
+                    {props.row.original.discordDiscriminator}
+                  </span>
+                )}
             </div>
           );
         },

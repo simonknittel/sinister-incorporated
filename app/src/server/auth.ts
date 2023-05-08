@@ -69,11 +69,15 @@ declare module "next-auth" {
     user: {
       id: string;
       role: UserRole;
+      discordUsername?: string;
+      discordDiscriminator?: string;
     } & DefaultSession["user"];
   }
 
   interface User {
     role: UserRole;
+    discordUsername?: string;
+    discordDiscriminator?: string;
   }
 }
 
@@ -90,6 +94,8 @@ export const authOptions: NextAuthOptions = {
         ...session.user,
         id: user.id,
         role: user.role,
+        discordUsername: user.discordUsername,
+        discordDiscriminator: user.discordDiscriminator,
       },
     }),
 
@@ -142,6 +148,8 @@ export const authOptions: NextAuthOptions = {
               email: profile.email!.toLocaleLowerCase(),
               name: guildMember.nick || profile.username,
               image: avatar,
+              discordUsername: profile.username,
+              discordDiscriminator: profile.discriminator,
             },
           }),
         ]);
@@ -157,6 +165,8 @@ export const authOptions: NextAuthOptions = {
         user.email = profile.email!.toLocaleLowerCase();
         user.name = guildMember.nick || profile.username;
         user.image = avatar;
+        discordUsername = profile.username;
+        discordDiscriminator = profile.discriminator;
       }
 
       return true;
