@@ -139,6 +139,7 @@ export const authOptions: NextAuthOptions = {
               access_token: account!.access_token,
               expires_at: account!.expires_at,
               scope: account!.scope,
+              updatedAt: new Date(),
             },
           }),
 
@@ -152,6 +153,7 @@ export const authOptions: NextAuthOptions = {
               image: avatar,
               discordUsername: profile.username,
               discordDiscriminator: profile.discriminator,
+              updatedAt: new Date(),
             },
           }),
         ]);
