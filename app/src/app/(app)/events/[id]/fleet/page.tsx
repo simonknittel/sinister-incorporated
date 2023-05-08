@@ -48,7 +48,7 @@ async function getEvent(id: string) {
 
     if ("message" in data) throw new Error(data.message);
 
-    return { date: new Date(), data };
+    return { data };
   } else {
     const headers = new Headers();
     headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
@@ -82,7 +82,7 @@ async function getEvent(id: string) {
       }
     }
 
-    return { date: response.headers.get("Date"), data };
+    return { data };
   }
 }
 
@@ -167,7 +167,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  const { date, data: event } = await getEvent(params.id);
+  const { data: event } = await getEvent(params.id);
   const users = await getEventUsers(params.id);
 
   const userIds = users.map((user) => user.user.id);

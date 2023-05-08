@@ -1,10 +1,9 @@
 import { type Metadata } from "next";
-import { lazy } from "react";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
 
-const TimeAgoContainer = lazy(() => import("./_components/TimeAgo"));
+// const TimeAgoContainer = lazy(() => import("./_components/TimeAgo"));
 
 export const metadata: Metadata = {
   title: "Events | Sinister Incorporated",
@@ -43,7 +42,7 @@ async function getEvents() {
 
     if ("message" in data) throw new Error(data.message);
 
-    return { date: new Date(), data };
+    return { data };
   } else {
     const headers = new Headers();
     headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
@@ -77,12 +76,12 @@ async function getEvents() {
       }
     }
 
-    return { date: response.headers.get("Date"), data };
+    return { data };
   }
 }
 
 export default async function Page() {
-  const { date, data: events } = await getEvents();
+  const { data: events } = await getEvents();
 
   return (
     <main>
