@@ -139,9 +139,9 @@ const UsersTable = ({ users }: Props) => {
                   void handleChange(props.row.original, e.target.value)
                 }
               >
-                <option value="new">Neu</option>
-                <option value="member">Mitglied</option>
-                <option value="leadership">Leitung</option>
+                <option value="new">Unbekannt</option>
+                <option value="member">Sinister</option>
+                <option value="leadership">Leadership</option>
               </select>
             </div>
           );
