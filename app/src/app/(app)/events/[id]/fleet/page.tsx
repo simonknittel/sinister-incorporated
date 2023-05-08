@@ -1,14 +1,13 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
 import Link from "next/link";
-import { lazy } from "react";
 import { FaChevronLeft } from "react-icons/fa";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import ShipTile from "../../../_components/ShipTile";
 
-const TimeAgoContainer = lazy(() => import("../../_components/TimeAgo"));
+// const TimeAgoContainer = lazy(() => import("../../_components/TimeAgo"));
 
 const scheduledEventResponseSchema = z.union([
   z.object({
