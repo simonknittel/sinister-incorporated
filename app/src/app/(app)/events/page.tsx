@@ -1,9 +1,10 @@
 import { type Metadata } from "next";
+import { Suspense, lazy } from "react";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
 
-// const TimeAgoContainer = lazy(() => import("./_components/TimeAgo"));
+const TimeAgoContainer = lazy(() => import("./_components/TimeAgo"));
 
 export const metadata: Metadata = {
   title: "Events | Sinister Incorporated",
@@ -42,7 +43,7 @@ async function getEvents() {
 
     if ("message" in data) throw new Error(data.message);
 
-    return { data };
+    return { date: new Date(), data };
   } else {
     const headers = new Headers();
     headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
@@ -76,12 +77,12 @@ async function getEvents() {
       }
     }
 
-    return { data };
+    return { date: response.headers.get("Date"), data };
   }
 }
 
 export default async function Page() {
-  const { data: events } = await getEvents();
+  const { date, data: events } = await getEvents();
 
   return (
     <main>
@@ -97,7 +98,7 @@ export default async function Page() {
         </div>
       )}
 
-      {/* {date && (
+      {date && (
         <p className="text-neutral-500 mt-4 flex items-center gap-2">
           Letzte Aktualisierung:
           <Suspense
@@ -108,7 +109,7 @@ export default async function Page() {
             <TimeAgoContainer date={date} />
           </Suspense>
         </p>
-      )} */}
+      )}
     </main>
   );
 }

@@ -1,13 +1,14 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
 import Link from "next/link";
+import { Suspense, lazy } from "react";
 import { FaChevronLeft } from "react-icons/fa";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import ShipTile from "../../../_components/ShipTile";
 
-// const TimeAgoContainer = lazy(() => import("../../_components/TimeAgo"));
+const TimeAgoContainer = lazy(() => import("../../_components/TimeAgo"));
 
 const scheduledEventResponseSchema = z.union([
   z.object({
@@ -47,7 +48,7 @@ async function getEvent(id: string) {
 
     if ("message" in data) throw new Error(data.message);
 
-    return { data };
+    return { date: new Date(), data };
   } else {
     const headers = new Headers();
     headers.set("Authorization", `Bot ${env.DISCORD_TOKEN}`);
@@ -81,7 +82,7 @@ async function getEvent(id: string) {
       }
     }
 
-    return { data };
+    return { date: response.headers.get("Date"), data };
   }
 }
 
@@ -166,7 +167,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  const { data: event } = await getEvent(params.id);
+  const { date, data: event } = await getEvent(params.id);
   const users = await getEventUsers(params.id);
 
   const userIds = users.map((user) => user.user.id);
@@ -246,7 +247,7 @@ export default async function Page({ params }: Props) {
         </div>
       )}
 
-      {/* {date && (
+      {date && (
         <p className="text-neutral-500 mt-4 flex items-center gap-2">
           Letzte Aktualisierung:
           <Suspense
@@ -257,7 +258,7 @@ export default async function Page({ params }: Props) {
             <TimeAgoContainer date={date} />
           </Suspense>
         </p>
-      )} */}
+      )}
     </main>
   );
 }

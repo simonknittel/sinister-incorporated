@@ -3,7 +3,7 @@
 import TimeAgo from "react-timeago";
 
 interface Props {
-  date: Date;
+  date: Date | string;
 }
 
 const TimeAgoContainer = ({ date }: Props) => {
