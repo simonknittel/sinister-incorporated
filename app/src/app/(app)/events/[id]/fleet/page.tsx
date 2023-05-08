@@ -2,6 +2,7 @@ import { groupBy } from "lodash";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { Suspense } from "react";
 import { FaChevronLeft } from "react-icons/fa";
 import { z } from "zod";
 import { env } from "~/env.mjs";
@@ -250,8 +251,15 @@ export default async function Page({ params }: Props) {
       )}
 
       {date && (
-        <p className="text-neutral-500 mt-4">
-          Letzte Aktualisierung: <TimeAgoContainer date={date} />
+        <p className="text-neutral-500 mt-4 flex items-center gap-2">
+          Letzte Aktualisierung:
+          <Suspense
+            fallback={
+              <span className="block h-[1em] w-[10em] animate-pulse rounded bg-neutral-500" />
+            }
+          >
+            <TimeAgoContainer date={date} />
+          </Suspense>
         </p>
       )}
     </main>
