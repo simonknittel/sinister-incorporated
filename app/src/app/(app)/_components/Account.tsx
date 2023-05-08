@@ -5,7 +5,6 @@ import LogoutButton from "./LogoutButton";
 
 const Account = async () => {
   const session = await getServerSession(authOptions);
-  console.log(session);
 
   return (
     <div className="flex items-center justify-between border-b-2 border-neutral-800 px-8 py-4">
