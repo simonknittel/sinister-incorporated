@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
-  if (["admin"].includes(session!.user.role) === false) redirect("/fleet");
+  if (["admin"].includes(session!.user.role) === false) redirect("/events");
 
   return (
     <main>
