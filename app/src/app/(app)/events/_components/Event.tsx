@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
+import { FaDiscord } from "react-icons/fa";
 import { RiSpaceShipFill } from "react-icons/ri";
 
 interface Props {
@@ -18,8 +19,15 @@ interface Props {
 const Event = ({ className, event }: Props) => {
   return (
     <article className={clsx(className, "block bg-neutral-900 rounded")}>
-      <span className="flex gap-4 items-center font-bold">
-        <p className="bg-neutral-950 py-2 px-4 rounded-br">
+      <div className="flex gap-4 items-center font-bold">
+        <p className="bg-neutral-950 py-2 px-4 rounded-br flex items-center gap-2">
+          <FaDiscord />
+          Discord
+        </p>
+
+        <p>{event.name}</p>
+
+        <p className="text-neutral-500">
           {event.scheduled_start_time.toLocaleDateString("de-DE", {
             weekday: "short",
             year: "numeric",
@@ -32,9 +40,7 @@ const Event = ({ className, event }: Props) => {
             minute: "2-digit",
           })}
         </p>
-
-        <p>{event.name}</p>
-      </span>
+      </div>
 
       {event.image && (
         <Image
@@ -45,7 +51,7 @@ const Event = ({ className, event }: Props) => {
         />
       )}
 
-      <span className="flex justify-between items-center p-4">
+      <span className="flex justify-between items-center p-4 lg:pl-8">
         <p>{event.user_count} Teilnehmer</p>
 
         <Link
