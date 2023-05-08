@@ -48,7 +48,7 @@ Tools of the Star Citizen organization _Sinister Incorporated_.
 
 ### Bot Invite Link with required scopes
 
-- <https://discord.com/api/oauth2/authorize?client_id=1103960804782514206&permissions=0&scope=bot>
+- <https://discord.com/api/oauth2/authorize?client_id=XXX&permissions=0&scope=bot>
 
 ## License
 
