@@ -34,11 +34,11 @@ const Event = ({ className, event }: Props) => {
         />
       )}
 
-      <div className="flex justify-between p-4 lg:p-8">
-        <div>
+      <div className="flex flex-col lg:flex-row lg:justify-between gap-4 p-4 lg:p-8">
+        <div className="flex flex-col gap-2">
           <p className="font-bold text-xl">{event.name}</p>
 
-          <p className="mt-2">
+          <p>
             <span className="text-neutral-500">Start:</span>{" "}
             {event.scheduled_start_time.toLocaleDateString("de-DE", {
               weekday: "short",
@@ -53,7 +53,7 @@ const Event = ({ className, event }: Props) => {
             })}
           </p>
 
-          <p className="mt-1">
+          <p>
             <span className="text-neutral-500">Teilnehmer:</span>{" "}
             {event.user_count}
           </p>
