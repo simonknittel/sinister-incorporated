@@ -8,9 +8,10 @@ import SidebarContainer from "./_components/SidebarContainer";
 
 interface Props {
   children: ReactNode;
+  fleetModal: ReactNode;
 }
 
-export default async function AppLayout({ children }: Props) {
+export default async function AppLayout({ children, fleetModal }: Props) {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/");
   if (session.user.role === "new") redirect("/onboarding");
@@ -24,6 +25,8 @@ export default async function AppLayout({ children }: Props) {
 
         <div className="lg:ml-96 min-h-screen p-4 lg:p-8 pt-20">{children}</div>
       </div>
+
+      {fleetModal}
     </SessionProviderContainer>
   );
 }
