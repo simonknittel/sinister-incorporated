@@ -212,7 +212,7 @@ export default async function Page({ params }: Props) {
   });
 
   return (
-    <Modal className="!absolute inset-32" isOpen={true}>
+    <Modal className="!absolute inset-4 lg:inset-32" isOpen={true}>
       <section>
         <h2 className="font-bold text-xl">Verfügbare Flotte</h2>
 
