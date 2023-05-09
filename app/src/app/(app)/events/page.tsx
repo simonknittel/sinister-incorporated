@@ -39,6 +39,15 @@ async function getEvents() {
         scheduled_end_time: "2023-05-21T09:00:00+00:00",
         user_count: 1,
       },
+      {
+        id: "1104301095754403840",
+        guild_id: "460775097314050048",
+        name: "Test",
+        image: "60ed0923dd2ea782f9f7f23be7f3f8a7",
+        scheduled_start_time: "2023-05-25T08:00:00+00:00",
+        scheduled_end_time: "2023-05-25T09:00:00+00:00",
+        user_count: 1,
+      },
     ];
 
     const data = await scheduledEventsResponseSchema.parseAsync(body);
@@ -90,9 +99,14 @@ export default async function Page() {
     <main>
       <h1 className="font-bold text-xl">Events</h1>
 
-      {events.map((event) => (
-        <Event key={event.id} event={event} className="mt-4 max-w-4xl" />
-      ))}
+      {events
+        .sort(
+          (a, b) =>
+            a.scheduled_start_time.getTime() - b.scheduled_start_time.getTime()
+        )
+        .map((event) => (
+          <Event key={event.id} event={event} className="mt-4 max-w-4xl" />
+        ))}
 
       {events.length === 0 && (
         <div className="bg-neutral-900 rounded p-4 lg:p-8 max-w-4xl mt-4">
