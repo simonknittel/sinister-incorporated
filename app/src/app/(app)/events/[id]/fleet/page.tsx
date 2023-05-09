@@ -205,7 +205,7 @@ export default async function Page({ params }: Props) {
     const ownership = ownerships[0];
 
     return {
-      ...ownership,
+      ...ownership!,
       count: ownerships.reduce((acc, curr) => acc + curr.count, 0),
     };
   });

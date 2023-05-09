@@ -10,7 +10,7 @@ interface Props {
     id: string;
     guild_id: string;
     name: string;
-    image?: string;
+    image?: string | null;
     scheduled_start_time: Date;
     scheduled_end_time: Date;
     user_count: number;
