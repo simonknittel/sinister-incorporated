@@ -34,6 +34,7 @@ model Variant {
     seriesId String
     series   Series           @relation(fields: [seriesId], references: [id], onDelete: Cascade)
     owners   FleetOwnership[]
+    ships    Ship[]
 
     @@unique([name, seriesId])
 }
@@ -46,6 +47,57 @@ model FleetOwnership {
     count     Int     @default(1)
 
     @@unique([userId, variantId])
+}
+
+model Ship {
+    id                     String                  @id @default(cuid())
+    ownerId                String
+    owner                  User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    variantId              String
+    variant                Variant                 @relation(fields: [variantId], references: [id], onDelete: Cascade)
+    name                   String
+    hullStatus             String
+    ammunitionStatus       String
+    operationUnitPositions OperationUnitPosition[]
+}
+
+model Operation {
+    id      String            @id @default(cuid())
+    title   String
+    units   OperationUnit[]
+    members OperationMember[]
+}
+
+model OperationMember {
+    operationId String
+    operation   Operation               @relation(fields: [operationId], references: [id], onDelete: Cascade)
+    userId      String
+    user        User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    positions   OperationUnitPosition[]
+    status      String                  @default("pending") // pending, confirmed
+
+    @@unique([operationId, userId])
+}
+
+model OperationUnit {
+    id          String                  @id @default(cuid())
+    operationId String
+    operation   Operation               @relation(fields: [operationId], references: [id], onDelete: Cascade)
+    title       String // E.g. Squadron 1, Squad 2, Freighters, ...
+    type        String // squadron, squad, special
+    positions   OperationUnitPosition[]
+}
+
+model OperationUnitPosition {
+    id                         String          @id @default(cuid())
+    operationUnitId            String
+    operationUnit              OperationUnit   @relation(fields: [operationUnitId], references: [id], onDelete: Cascade)
+    operationMemberOperationId String
+    operationMemberUserId      String
+    operationMember            OperationMember @relation(fields: [operationMemberOperationId, operationMemberUserId], references: [operationId, userId], onDelete: Cascade)
+    title                      String // E.g. Squadron Leader, Alpha-1 Flight Leader, Alpha-1 Wingman, ...
+    shipId                     String
+    ship                       Ship            @relation(fields: [shipId], references: [id], onDelete: Cascade)
 }
 
 // Necessary for Next auth
@@ -78,19 +130,21 @@ model Session {
 }
 
 model User {
-    id                   String           @id @default(cuid())
+    id                   String            @id @default(cuid())
     name                 String?
-    email                String?          @unique
+    email                String?           @unique
     emailVerified        DateTime?
     image                String?
     accounts             Account[]
     sessions             Session[]
-    role                 String           @default("new")
+    role                 String            @default("new")
     fleet                FleetOwnership[]
     discordUsername      String?
     discordDiscriminator String?
-    createdAt            DateTime?        @default(now())
+    createdAt            DateTime?         @default(now())
     updatedAt            DateTime?
+    operations           OperationMember[]
+    ships                Ship[]
 }
 
 model VerificationToken {
