@@ -19,7 +19,11 @@ interface Props {
 const MyShipTile = ({ ship }: Props) => {
   return (
     <article className="bg-neutral-900 rounded overflow-hidden">
-      <h3 className="font-bold p-4">{ship.name || ship.variant.name}</h3>
+      <div className="flex justify-between items-center">
+        <h3 className="font-bold p-4">{ship.name || ship.variant.name}</h3>
+
+        <DeleteShip ship={ship} />
+      </div>
 
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 p-4">
         <div className="flex flex-col gap-2">
@@ -33,9 +37,7 @@ const MyShipTile = ({ ship }: Props) => {
           </p>
         </div>
 
-        <div className="flex flex-col justify-end gap-2">
-          <DeleteShip ship={ship} />
-        </div>
+        <div className="flex flex-col justify-end gap-2"></div>
       </div>
     </article>
   );

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
-import Button from "~/app/_components/Button";
 
 interface Props {
   ship: Ship & {
@@ -51,13 +50,14 @@ const DeleteShip = ({ ship }: Props) => {
   };
 
   return (
-    <Button
-      variant="secondary"
+    <button
       onClick={() => void handleClick()}
       disabled={isLoading}
+      className="px-4 py-2 border-l-2 border-neutral-900 text-neutral-500 hover:text-neutral-50"
+      type="button"
     >
-      Löschen {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}
-    </Button>
+      {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+    </button>
   );
 };
 
