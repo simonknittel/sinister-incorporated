@@ -3,7 +3,7 @@
 import { type BuiltInProviderType } from "next-auth/providers";
 import { signIn, type LiteralUnion } from "next-auth/react";
 import { useState } from "react";
-import { FaSpinner } from "react-icons/fa";
+import { FaDiscord, FaSpinner } from "react-icons/fa";
 import Button from "./Button";
 
 interface Props {
@@ -24,11 +24,15 @@ const LoginButtons = ({ activeProviders }: Props) => {
         <Button
           onClick={() => void handleClick("discord")}
           disabled={Boolean(isLoggingIn)}
+          variant="secondary"
         >
           {isLoggingIn === "discord" ? (
             <FaSpinner className="animate-spin" />
           ) : (
-            "Mit Discord anmelden"
+            <>
+              Mit Discord anmelden
+              <FaDiscord />
+            </>
           )}
         </Button>
       )}

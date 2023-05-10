@@ -9,7 +9,10 @@ export default {
         "sinister-red-300": "#CC4444",
       },
       backgroundImage: {
-        "sinister-gradient": "linear-gradient(145deg, #181818, #202020)",
+        "sinister-radial-gradient":
+          "radial-gradient(circle farthest-side at bottom center, hsl(0 69% 10% / 1), #000)",
+        "sinister-text-gradient":
+          "radial-gradient(#BB2222, hsl(0 69% 30% / 1))",
       },
     },
   },
