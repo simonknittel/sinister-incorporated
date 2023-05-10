@@ -5,7 +5,7 @@ import { z } from "zod";
 import Modal from "~/app/_components/Modal";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
-import ShipTile from "../../../../_components/ShipTile";
+import OrgShipTile from "../../../../fleet/_components/OrgShipTile";
 
 const TimeAgoContainer = dynamic(
   () => import("../../../../_components/TimeAgoContainer"),
@@ -227,7 +227,7 @@ export default async function Page({ params }: Props) {
         {ships.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">
             {ships.map((ownership) => (
-              <ShipTile
+              <OrgShipTile
                 key={ownership.variantId}
                 ownership={ownership}
                 nonInteractive={true}

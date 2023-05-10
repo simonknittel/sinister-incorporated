@@ -7,6 +7,7 @@ import errorHandler from "../_utils/errorHandler";
 
 const postBodySchema = z.object({
   variantId: z.string().cuid2(),
+  name: z.string().min(1).max(255),
 });
 
 export async function POST(request: Request) {
@@ -26,35 +27,13 @@ export async function POST(request: Request) {
     /**
      * Do the thing
      */
-    const existingOwnership = await prisma.fleetOwnership.findFirst({
-      where: {
+    const item = await prisma.ship.create({
+      data: {
+        ownerId: session.user.id,
         variantId: data.variantId,
-        userId: session.user.id,
+        name: data.name,
       },
     });
-
-    let item;
-
-    if (existingOwnership) {
-      item = await prisma.fleetOwnership.update({
-        where: {
-          userId_variantId: {
-            variantId: data.variantId,
-            userId: session.user.id,
-          },
-        },
-        data: {
-          count: existingOwnership.count + 1,
-        },
-      });
-    } else {
-      item = await prisma.fleetOwnership.create({
-        data: {
-          variantId: data.variantId,
-          userId: session.user.id,
-        },
-      });
-    }
 
     return NextResponse.json(item);
   } catch (error) {

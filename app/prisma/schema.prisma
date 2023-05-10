@@ -55,9 +55,9 @@ model Ship {
     owner                  User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
     variantId              String
     variant                Variant                 @relation(fields: [variantId], references: [id], onDelete: Cascade)
-    name                   String
-    hullStatus             String
-    ammunitionStatus       String
+    name                   String?
+    hullStatus             String?
+    ammunitionStatus       String?
     operationUnitPositions OperationUnitPosition[]
 }
 

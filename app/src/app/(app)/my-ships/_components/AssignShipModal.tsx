@@ -22,22 +22,25 @@ interface Props {
 
 interface FormValues {
   variantId: Variant["id"];
+  name: string;
 }
 
 const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
-  const id = useId();
+  const selectId = useId();
+  const inputId = useId();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/fleet-ownership", {
+      const response = await fetch("/api/ship", {
         method: "POST",
         body: JSON.stringify({
           variantId: data.variantId,
+          name: data.name,
         }),
       });
 
@@ -85,15 +88,15 @@ const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
       onRequestClose={onRequestClose}
       className="w-[480px]"
     >
-      <h2 className="text-xl font-bold">Schiff auswählen</h2>
+      <h2 className="text-xl font-bold">Schiff hinzufügen</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="mt-6 block" htmlFor={id}>
+        <label className="mt-6 block" htmlFor={selectId}>
           Schiff
         </label>
 
         <select
-          id={id}
+          id={selectId}
           className="p-2 rounded bg-neutral-900 w-full mt-2"
           {...register("variantId", { required: true })}
           autoFocus
@@ -111,6 +114,18 @@ const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
             </optgroup>
           ))}
         </select>
+
+        <label className="mt-4 block" htmlFor={inputId}>
+          Name
+        </label>
+
+        <input
+          className="p-2 rounded bg-neutral-900 w-full mt-2"
+          id={inputId}
+          {...register("name")}
+        />
+
+        <p className="mt-2 text-neutral-500">optional</p>
 
         <div className="flex justify-end mt-8">
           <Button type="submit" disabled={isLoading}>

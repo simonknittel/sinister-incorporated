@@ -1,91 +1,50 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import ShipTile from "../_components/ShipTile";
-import AssignShip from "./_components/AssignShip";
+import OrgShipTile from "./_components/OrgShipTile";
 
 export const metadata: Metadata = {
   title: "Flotte | Sinister Incorporated",
 };
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
-
-  const [orgOwnerships, allShips] = await prisma.$transaction([
-    prisma.fleetOwnership.findMany({
-      include: {
-        variant: {
-          include: {
-            series: {
-              include: {
-                manufacturer: true,
-              },
+  const orgShips = await prisma.ship.findMany({
+    include: {
+      variant: {
+        include: {
+          series: {
+            include: {
+              manufacturer: true,
             },
           },
         },
       },
-    }),
+    },
+  });
 
-    prisma.manufacturer.findMany({
-      include: {
-        series: {
-          include: {
-            variants: true,
-          },
-        },
-      },
-    }),
-  ]);
-
-  const myOwnerships = orgOwnerships.filter(
-    (ownership) => ownership.userId === session!.user.id
-  );
-
-  const groupedOwnerships = groupBy(
-    orgOwnerships,
-    (ownership) => ownership.variant.id
-  );
-  const orgShips = Object.values(groupedOwnerships).map((ownerships) => {
-    const ownership = ownerships[0];
+  const groupedOrgShips = groupBy(orgShips, (ship) => ship.variant.id);
+  const countedOrgShips = Object.values(groupedOrgShips).map((ships) => {
+    const ship = ships[0];
 
     return {
-      ...ownership,
-      count: ownerships.reduce((acc, curr) => acc + curr.count, 0),
+      ...ship,
+      count: ships.length,
     };
   });
 
   return (
     <main>
-      <section>
-        <h2 className="font-bold text-xl">Meine Schiffe</h2>
+      <h2 className="font-bold text-xl">Alle Schiffe der Org</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">
-          {myOwnerships.map((ownership) => (
-            <ShipTile
-              key={`${ownership.userId}_${ownership.variantId}`}
-              ownership={ownership}
-            />
-          ))}
-
-          <AssignShip data={allShips} />
-        </div>
-      </section>
-
-      <section>
-        <h2 className="font-bold text-xl mt-8">Alle Schiffe der Org</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">
-          {orgShips.map((ownership) => (
-            <ShipTile
-              key={ownership.variantId}
-              ownership={ownership}
-              nonInteractive={true}
-            />
-          ))}
-        </div>
-      </section>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">
+        {countedOrgShips.map((ship) => (
+          <OrgShipTile
+            key={ship.variantId}
+            variant={ship.variant!}
+            count={ship.count}
+          />
+        ))}
+      </div>
     </main>
   );
 }

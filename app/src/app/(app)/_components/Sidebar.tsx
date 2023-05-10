@@ -29,6 +29,18 @@ const Sidebar = async () => {
           <ul>
             <li>
               <Link
+                href="/my-ships"
+                className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+              >
+                <RiSpaceShipFill />
+                Meine Schiffe
+              </Link>
+            </li>
+          </ul>
+
+          <ul>
+            <li>
+              <Link
                 href="/fleet"
                 className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
               >
