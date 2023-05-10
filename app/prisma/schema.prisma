@@ -28,25 +28,14 @@ model Series {
 }
 
 model Variant {
-    id       String           @id @default(cuid())
+    id       String  @id @default(cuid())
     name     String
     image    String?
     seriesId String
-    series   Series           @relation(fields: [seriesId], references: [id], onDelete: Cascade)
-    owners   FleetOwnership[]
+    series   Series  @relation(fields: [seriesId], references: [id], onDelete: Cascade)
     ships    Ship[]
 
     @@unique([name, seriesId])
-}
-
-model FleetOwnership {
-    userId    String
-    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    variantId String
-    variant   Variant @relation(fields: [variantId], references: [id], onDelete: Cascade)
-    count     Int     @default(1)
-
-    @@unique([userId, variantId])
 }
 
 model Ship {
@@ -138,7 +127,6 @@ model User {
     accounts             Account[]
     sessions             Session[]
     role                 String            @default("new")
-    fleet                FleetOwnership[]
     discordUsername      String?
     discordDiscriminator String?
     createdAt            DateTime?         @default(now())
