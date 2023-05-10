@@ -1,14 +1,22 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Suspense, lazy } from "react";
 import { FaChevronLeft } from "react-icons/fa";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import ShipTile from "../../../_components/ShipTile";
 
-const TimeAgoContainer = lazy(() => import("../../_components/TimeAgo"));
+const TimeAgoContainer = dynamic(
+  () => import("../../../_components/TimeAgoContainer"),
+  {
+    ssr: false,
+    loading: () => (
+      <span className="block h-[1em] w-[7em] animate-pulse rounded bg-neutral-500" />
+    ),
+  }
+);
 
 const scheduledEventResponseSchema = z.union([
   z.object({
@@ -40,7 +48,7 @@ async function getEvent(id: string) {
   if (env.NODE_ENV === "development") {
     const body = {
       id: "1104301095754403840",
-      name: "Test",
+      name: "Test 1",
       user_count: 1,
     };
 
@@ -250,13 +258,7 @@ export default async function Page({ params }: Props) {
       {date && (
         <p className="text-neutral-500 mt-4 flex items-center gap-2">
           Letzte Aktualisierung:
-          <Suspense
-            fallback={
-              <span className="block h-[1em] w-[10em] animate-pulse rounded bg-neutral-500" />
-            }
-          >
-            <TimeAgoContainer date={date} />
-          </Suspense>
+          <TimeAgoContainer date={date} />
         </p>
       )}
     </main>

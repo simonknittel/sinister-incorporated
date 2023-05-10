@@ -1,10 +1,18 @@
 import { type Metadata } from "next";
-import { Suspense, lazy } from "react";
+import dynamic from "next/dynamic";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
 
-const TimeAgoContainer = lazy(() => import("./_components/TimeAgo"));
+const TimeAgoContainer = dynamic(
+  () => import("../_components/TimeAgoContainer"),
+  {
+    ssr: false,
+    loading: () => (
+      <span className="block h-[1em] w-[7em] animate-pulse rounded bg-neutral-500" />
+    ),
+  }
+);
 
 export const metadata: Metadata = {
   title: "Events | Sinister Incorporated",
@@ -33,16 +41,16 @@ async function getEvents() {
       {
         id: "1104301095754403840",
         guild_id: "460775097314050048",
-        name: "Test",
+        name: "Test 1",
         image: "60ed0923dd2ea782f9f7f23be7f3f8a7",
         scheduled_start_time: "2023-05-21T08:00:00+00:00",
         scheduled_end_time: "2023-05-21T09:00:00+00:00",
         user_count: 1,
       },
       {
-        id: "1104301095754403840",
+        id: "1104301095754403841",
         guild_id: "460775097314050048",
-        name: "Test",
+        name: "Test 2",
         image: "60ed0923dd2ea782f9f7f23be7f3f8a7",
         scheduled_start_time: "2023-05-25T08:00:00+00:00",
         scheduled_end_time: "2023-05-25T09:00:00+00:00",
@@ -117,13 +125,7 @@ export default async function Page() {
       {date && (
         <p className="text-neutral-500 mt-4 flex items-center gap-2">
           Letzte Aktualisierung:
-          <Suspense
-            fallback={
-              <span className="block h-[1em] w-[10em] animate-pulse rounded bg-neutral-500" />
-            }
-          >
-            <TimeAgoContainer date={date} />
-          </Suspense>
+          <TimeAgoContainer date={date} />
         </p>
       )}
     </main>
