@@ -19,16 +19,14 @@ interface Props {
 const MyShipTile = ({ ship }: Props) => {
   return (
     <article className="bg-neutral-900 rounded overflow-hidden">
-      <h3 className="flex gap-4 items-center font-bold">
-        <span className="bg-neutral-950 py-2 px-4 rounded-br">
-          {ship.variant.name}
-        </span>
-
-        <span>{ship.name || ship.variant.name}</span>
-      </h3>
+      <h3 className="font-bold">{ship.name || ship.variant.name}</h3>
 
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 p-4">
         <div className="flex flex-col gap-2">
+          <p>
+            <span className="text-neutral-500">Model:</span> {ship.variant.name}
+          </p>
+
           <p>
             <span className="text-neutral-500">Hersteller:</span>{" "}
             {ship.variant.series.manufacturer.name}
