@@ -180,9 +180,9 @@ export default async function Page({ params }: Props) {
 
   const userIds = users.map((user) => user.user.id);
 
-  const ownerships = await prisma.fleetOwnership.findMany({
+  const orgShips = await prisma.ship.findMany({
     where: {
-      user: {
+      owner: {
         accounts: {
           some: {
             providerAccountId: {
@@ -205,16 +205,13 @@ export default async function Page({ params }: Props) {
     },
   });
 
-  const groupedOwnerships = groupBy(
-    ownerships,
-    (ownership) => ownership.variant.id
-  );
-  const ships = Object.values(groupedOwnerships).map((ownerships) => {
-    const ownership = ownerships[0];
+  const groupedOrgShips = groupBy(orgShips, (ship) => ship.variant.id);
+  const countedOrgShips = Object.values(groupedOrgShips).map((ships) => {
+    const ship = ships[0];
 
     return {
-      ...ownership!,
-      count: ownerships.reduce((acc, curr) => acc + curr.count, 0),
+      ...ship,
+      count: ships.length,
     };
   });
 
@@ -239,13 +236,13 @@ export default async function Page({ params }: Props) {
 
       <p className="mt-2">Teilnehmer: {event.user_count}</p>
 
-      {ships.length > 0 ? (
+      {countedOrgShips.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">
-          {ships.map((ownership) => (
+          {countedOrgShips.map((ship) => (
             <OrgShipTile
-              key={ownership.variantId}
-              ownership={ownership}
-              nonInteractive={true}
+              key={ship.id}
+              variant={ship.variant!}
+              count={ship.count}
             />
           ))}
         </div>
