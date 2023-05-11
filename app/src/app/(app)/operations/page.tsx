@@ -1,7 +1,4 @@
 import { type Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import CreateOperation from "./_components/CreateOperation";
 import OperationTile from "./_components/OperationTile";
@@ -11,9 +8,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
-  if (["admin"].includes(session!.user.role) === false) redirect("/events");
-
   const operations = await prisma.operation.findMany({
     include: {
       members: true,

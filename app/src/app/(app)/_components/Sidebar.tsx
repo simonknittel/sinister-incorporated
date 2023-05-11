@@ -49,6 +49,16 @@ const Sidebar = async () => {
                 Flotte
               </Link>
             </li>
+
+            <li>
+              <Link
+                href="/operations"
+                className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+              >
+                <RiSwordFill />
+                Operationen
+              </Link>
+            </li>
           </ul>
 
           {["leadership", "admin"].includes(session!.user.role) && (
@@ -84,16 +94,6 @@ const Sidebar = async () => {
               <p className="p-4 text-neutral-500 mt-4">Admin</p>
 
               <ul>
-                <li>
-                  <Link
-                    href="/operations"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                  >
-                    <RiSwordFill />
-                    Operationen
-                  </Link>
-                </li>
-
                 <li>
                   <Link
                     href="/settings"
