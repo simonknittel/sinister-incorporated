@@ -95,6 +95,7 @@ const EditUnitModal = ({ isOpen, onRequestClose, unit }: Props) => {
           className="p-2 rounded bg-neutral-900 w-full mt-2"
           id={inputId}
           {...register("title", { required: true })}
+          autoFocus
         />
 
         <div className="flex justify-end mt-8">
