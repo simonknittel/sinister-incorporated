@@ -7,7 +7,7 @@ import errorHandler from "../_utils/errorHandler";
 
 const postBodySchema = z.object({
   variantId: z.string().cuid2(),
-  name: z.string().trim().min(1).max(255),
+  name: z.string().trim().min(1).max(255).optional(),
 });
 
 export async function POST(request: Request) {
@@ -30,8 +30,7 @@ export async function POST(request: Request) {
     const item = await prisma.ship.create({
       data: {
         ownerId: session.user.id,
-        variantId: data.variantId,
-        name: data.name,
+        ...data,
       },
     });
 
