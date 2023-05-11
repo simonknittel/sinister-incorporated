@@ -147,7 +147,7 @@ export default async function Page({ params }: Props) {
                     Anwesend
                   </h3>
 
-                  <ul className="mt-4">
+                  <ul className="mt-4 flex flex-col gap-1">
                     {confirmedMembers
                       .sort((a, b) => a.user.name!.localeCompare(b.user.name!))
                       .map((member) => (
@@ -178,7 +178,7 @@ export default async function Page({ params }: Props) {
                     Unbestätigt
                   </h3>
 
-                  <ul className="mt-4">
+                  <ul className="mt-4 flex flex-col gap-1">
                     {unconfirmedMembers
                       .sort((a, b) => a.user.name!.localeCompare(b.user.name!))
                       .map((member) => (
