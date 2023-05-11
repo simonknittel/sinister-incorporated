@@ -3,12 +3,19 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import { authorize } from "../_utils/authorize";
 import errorHandler from "../_utils/errorHandler";
 
 const postBodySchema = z.object({
-  name: z.string().trim().min(1),
-  seriesId: z.string(),
+  operationId: z.string().cuid2(),
+  title: z.string().min(1).max(255),
+  type: z.union([
+    z.literal("squadron"),
+    z.literal("squadron-flight"),
+    z.literal("squad"),
+    z.literal("squad-fireteam"),
+    z.literal("other"),
+  ]),
+  parentUnitId: z.string().cuid2().optional(),
 });
 
 export async function POST(request: Request) {
@@ -20,32 +27,41 @@ export async function POST(request: Request) {
     if (!session) throw new Error("Unauthorized");
 
     /**
-     * Authorize the request.
-     */
-    authorize(session.user, "create", "Variant");
-
-    /**
      * Validate the request body
      */
     const body: unknown = await request.json();
     const data = await postBodySchema.parseAsync(body);
 
     /**
-     * Create
+     * Do the thing
      */
-    const createdItem = await prisma.variant.create({
+    const { operationId, parentUnitId, ...other } = data;
+    const item = await prisma.operationUnit.create({
       data: {
-        name: data.name,
-        series: {
+        operation: {
           connect: {
-            id: data.seriesId,
+            id: operationId,
           },
         },
+        ...other,
+        parentUnit: parentUnitId
+          ? {
+              connect: {
+                id: parentUnitId,
+              },
+            }
+          : undefined,
       },
     });
 
-    return NextResponse.json(createdItem);
+    /**
+     * Respond with the result
+     */
+    return NextResponse.json(item);
   } catch (error) {
+    /**
+     * Respond with an error
+     */
     return errorHandler(error);
   }
 }

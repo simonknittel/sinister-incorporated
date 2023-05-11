@@ -13,7 +13,7 @@ interface Params {
 const patchParamsSchema = z.string().cuid2();
 
 const patchBodySchema = z.object({
-  name: z.string().min(1),
+  name: z.string().trim().min(1),
 });
 
 export async function PATCH(request: Request, { params }: { params: Params }) {

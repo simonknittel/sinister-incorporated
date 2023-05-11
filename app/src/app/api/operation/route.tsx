@@ -3,12 +3,10 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import { authorize } from "../_utils/authorize";
 import errorHandler from "../_utils/errorHandler";
 
 const postBodySchema = z.object({
-  name: z.string().trim().min(1),
-  seriesId: z.string(),
+  title: z.string().trim().min(1).max(255),
 });
 
 export async function POST(request: Request) {
@@ -20,32 +18,28 @@ export async function POST(request: Request) {
     if (!session) throw new Error("Unauthorized");
 
     /**
-     * Authorize the request.
-     */
-    authorize(session.user, "create", "Variant");
-
-    /**
      * Validate the request body
      */
     const body: unknown = await request.json();
     const data = await postBodySchema.parseAsync(body);
 
     /**
-     * Create
+     * Do the thing
      */
-    const createdItem = await prisma.variant.create({
+    const item = await prisma.operation.create({
       data: {
-        name: data.name,
-        series: {
-          connect: {
-            id: data.seriesId,
-          },
-        },
+        title: data.title,
       },
     });
 
-    return NextResponse.json(createdItem);
+    /**
+     * Respond with the result
+     */
+    return NextResponse.json(item);
   } catch (error) {
+    /**
+     * Respond with an error
+     */
     return errorHandler(error);
   }
 }

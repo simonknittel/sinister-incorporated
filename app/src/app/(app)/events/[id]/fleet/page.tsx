@@ -217,22 +217,22 @@ export default async function Page({ params }: Props) {
 
   return (
     <main>
-      <ul className="flex items-center gap-2">
+      <ul className="flex items-center gap-2 text-neutral-500">
         <li>
           <Link
             href="/events"
             className="flex items-center gap-1 hover:underline"
           >
-            <FaChevronLeft className="text-xs" /> Events
+            <FaChevronLeft className="text-xs" /> Alle Events
           </Link>
         </li>
 
-        <li className="text-neutral-500">/</li>
+        <li>/</li>
 
         <li className="underline">{event.name}</li>
       </ul>
 
-      <h1 className="font-bold text-xl mt-8">Verfügbare Flotte</h1>
+      <h1 className="font-bold text-xl mt-2">Verfügbare Flotte</h1>
 
       <p className="mt-2">Teilnehmer: {event.user_count}</p>
 

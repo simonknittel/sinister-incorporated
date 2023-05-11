@@ -7,7 +7,7 @@ import { authorize } from "../_utils/authorize";
 import errorHandler from "../_utils/errorHandler";
 
 const postBodySchema = z.object({
-  name: z.string(),
+  name: z.string().trim().min(1),
 });
 
 export async function POST(request: Request) {

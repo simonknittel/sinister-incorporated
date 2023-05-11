@@ -26,10 +26,11 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
     <button
       className={clsx(
         {
-          "flex items-center justify-center gap-4 rounded uppercase": true,
+          "flex items-center justify-center rounded uppercase": true,
+          "gap-4": ["primary", "secondary"].includes(variant || ""),
           "h-11 text-base font-bold": variant === "primary",
           "h-11 border text-base": variant === "secondary",
-          "h-8 text-xs": variant === "tertiary",
+          "h-8 gap-2 text-xs": variant === "tertiary",
           "bg-sinister-red-500 text-base text-neutral-50 hover:bg-sinister-red-300 active:bg-sinister-red-300":
             variant === "primary" && colorScheme === "sinister-red",
           "border-sinister-red-500 text-sinister-red-500 hover:border-sinister-red-300 active:border-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300":
@@ -37,7 +38,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
           "text-sinister-red-500 hover:bg-sinisterborder-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300":
             variant === "tertiary" && colorScheme === "sinister-red",
           "w-11": iconOnly,
-          "px-6": !iconOnly,
+          "px-6": !iconOnly && ["primary", "secondary"].includes(variant || ""),
         },
         className
       )}

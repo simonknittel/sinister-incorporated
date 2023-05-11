@@ -4,7 +4,8 @@ Tools of the Star Citizen organization _Sinister Incorporated_.
 
 ## Features
 
-- Fleetmanager
+- Fleet and ship managamanet
+- Operation management
 - Discord Event integration
   - Shows the available fleet based on the participants' ships
 - Discord Login

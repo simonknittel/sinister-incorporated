@@ -12,7 +12,7 @@ interface Params {
 const patchParamsSchema = z.string().cuid2();
 
 const patchBodySchema = z.object({
-  name: z.string().trim().optional(),
+  title: z.string().trim(),
 });
 
 export async function PATCH(request: Request, { params }: { params: Params }) {
@@ -37,29 +37,33 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Make sure the item exists.
      */
-    const item = await prisma.ship.findMany({
+    const item = await prisma.operation.findUnique({
       where: {
         id: paramsData,
-        ownerId: session.user.id,
       },
     });
-    if (item.length <= 0) throw new Error("Not found");
+    if (!item) throw new Error("Not found");
 
     /**
      * Update
      */
-    const updatedItem = await prisma.ship.updateMany({
+    const updatedItem = await prisma.operation.updateMany({
       where: {
         id: params.id,
-        ownerId: session.user.id,
       },
       data: {
-        name: data.name,
+        title: data.title,
       },
     });
 
+    /**
+     * Respond with the result
+     */
     return NextResponse.json(updatedItem);
   } catch (error) {
+    /**
+     * Respond with an error
+     */
     return errorHandler(error);
   }
 }
@@ -82,15 +86,20 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Delete
      */
-    await prisma.ship.deleteMany({
+    await prisma.operation.delete({
       where: {
         id: paramsData,
-        ownerId: session.user.id,
       },
     });
 
+    /**
+     * Respond with the result
+     */
     return NextResponse.json({});
   } catch (error) {
+    /**
+     * Respond with an error
+     */
     return errorHandler(error);
   }
 }
