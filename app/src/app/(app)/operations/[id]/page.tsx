@@ -142,12 +142,12 @@ export default async function Page({ params }: Props) {
             <>
               {confirmedMembers.length > 0 && (
                 <>
-                  <h3 className="font-bold mt-2 flex items-center gap-2">
+                  <h3 className="font-bold mt-4 flex items-center gap-2">
                     <span className="w-2 h-2 block bg-green-500 rounded-full" />
                     Anwesend
                   </h3>
 
-                  <ul className="mt-4 flex flex-col gap-1">
+                  <ul className="mt-2 flex flex-col gap-1">
                     {confirmedMembers
                       .sort((a, b) => a.user.name!.localeCompare(b.user.name!))
                       .map((member) => (
@@ -173,12 +173,12 @@ export default async function Page({ params }: Props) {
 
               {unconfirmedMembers.length > 0 && (
                 <>
-                  <h3 className="font-bold mt-2 flex items-center gap-2">
+                  <h3 className="font-bold mt-4 flex items-center gap-2">
                     <span className="w-2 h-2 block bg-red-500 rounded-full" />
                     Unbestätigt
                   </h3>
 
-                  <ul className="mt-4 flex flex-col gap-1">
+                  <ul className="mt-2 flex flex-col gap-1">
                     {unconfirmedMembers
                       .sort((a, b) => a.user.name!.localeCompare(b.user.name!))
                       .map((member) => (
