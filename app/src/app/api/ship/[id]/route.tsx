@@ -9,6 +9,59 @@ interface Params {
   id: string;
 }
 
+const patchParamsSchema = z.string().cuid2();
+
+const patchBodySchema = z.object({
+  name: z.string().trim().optional(),
+});
+
+export async function PATCH(request: Request, { params }: { params: Params }) {
+  try {
+    /**
+     * Authenticate the request.
+     */
+    const session = await getServerSession(authOptions);
+    if (!session) throw new Error("Unauthorized");
+
+    /**
+     * Validate the request params
+     */
+    const paramsData = await patchParamsSchema.parseAsync(params.id);
+
+    /**
+     * Validate the request body
+     */
+    const body: unknown = await request.json();
+    const data = await patchBodySchema.parseAsync(body);
+
+    /**
+     * Make sure the item exists.
+     */
+    const item = await prisma.ship.findMany({
+      where: {
+        id: paramsData,
+        ownerId: session.user.id,
+      },
+    });
+    if (item.length <= 0) throw new Error("Not found");
+
+    /**
+     * Update
+     */
+    const updatedItem = await prisma.ship.updateMany({
+      where: {
+        id: params.id,
+        ownerId: session.user.id,
+      },
+      data,
+    });
+
+    return NextResponse.json(updatedItem);
+  } catch (error) {
+    return errorHandler(error);
+  }
+}
+
 const deleteParamsSchema = z.string().cuid2();
 
 export async function DELETE(request: Request, { params }: { params: Params }) {

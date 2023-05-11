@@ -53,7 +53,7 @@ const DeleteShip = ({ ship }: Props) => {
     <button
       onClick={() => void handleClick()}
       disabled={isLoading}
-      className="px-4 py-2 border-l-2 border-neutral-900 text-neutral-500 hover:text-neutral-50"
+      className="px-2 py-2 text-neutral-500 hover:text-neutral-50"
       type="button"
     >
       {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}

@@ -7,7 +7,7 @@ import errorHandler from "../_utils/errorHandler";
 
 const postBodySchema = z.object({
   variantId: z.string().cuid2(),
-  name: z.string().min(1).max(255),
+  name: z.string().trim().min(1).max(255),
 });
 
 export async function POST(request: Request) {

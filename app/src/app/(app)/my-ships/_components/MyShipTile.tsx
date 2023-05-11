@@ -5,6 +5,7 @@ import {
   type Variant,
 } from "@prisma/client";
 import DeleteShip from "./DeleteShip";
+import EditShip from "./EditShip";
 
 interface Props {
   ship: Ship & {
@@ -22,7 +23,10 @@ const MyShipTile = ({ ship }: Props) => {
       <div className="flex justify-between items-center">
         <h3 className="font-bold p-4">{ship.name || ship.variant.name}</h3>
 
-        <DeleteShip ship={ship} />
+        <div className="pr-2">
+          <EditShip ship={ship} />
+          <DeleteShip ship={ship} />
+        </div>
       </div>
 
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 p-4">
