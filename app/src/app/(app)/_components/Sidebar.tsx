@@ -57,6 +57,12 @@ const Sidebar = async () => {
               >
                 <RiSwordFill />
                 Operationen
+                <span
+                  className="rounded bg-neutral-700 py-1 px-2 text-sm"
+                  title="Proof of Concept"
+                >
+                  PoC
+                </span>
               </Link>
             </li>
           </ul>

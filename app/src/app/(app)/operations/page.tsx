@@ -1,4 +1,5 @@
 import { type Metadata } from "next";
+import Note from "~/app/_components/Note";
 import { prisma } from "~/server/db";
 import CreateOperation from "./_components/CreateOperation";
 import OperationTile from "./_components/OperationTile";
@@ -17,6 +18,11 @@ export default async function Page() {
   return (
     <main>
       <h1 className="text-xl font-bold">Operationen</h1>
+
+      <Note
+        message="Operationen sind aktuell noch in der Proof of Concept-Phase. Funktionen fehlen und es kann zu Fehlern kommen."
+        className="mt-4"
+      />
 
       {operations
         .sort((a, b) => a.title.localeCompare(b.title))
