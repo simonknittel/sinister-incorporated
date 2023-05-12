@@ -78,7 +78,7 @@ const Sidebar = async () => {
                   href="/ships"
                   className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                 >
-                  <RiSpaceShipFill />
+                  <FaCog />
                   Hersteller, Serien und Varianten
                 </Link>
               </li>
