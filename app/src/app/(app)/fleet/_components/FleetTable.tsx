@@ -29,7 +29,7 @@ type Row = OrgShip;
 
 const columnHelper = createColumnHelper<Row>();
 
-const Table = ({ ships }: Props) => {
+const FleetTable = ({ ships }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "variant_series.manufacturer.name", desc: false },
     { id: "variant_series.name", desc: false },
@@ -121,4 +121,4 @@ const Table = ({ ships }: Props) => {
   );
 };
 
-export default Table;
+export default FleetTable;

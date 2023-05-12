@@ -2,10 +2,10 @@ import { groupBy } from "lodash";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { z } from "zod";
+import FleetTable from "~/app/(app)/fleet/_components/FleetTable";
 import Modal from "~/app/_components/Modal";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
-import OrgShipTile from "../../../../fleet/_components/OrgShipTile";
 
 const TimeAgoContainer = dynamic(
   () => import("../../../../_components/TimeAgoContainer"),
@@ -222,14 +222,8 @@ export default async function Page({ params }: Props) {
         <p className="mt-2">Teilnehmer: {event.user_count}</p>
 
         {countedOrgShips.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">
-            {countedOrgShips.map((ship) => (
-              <OrgShipTile
-                key={ship.id}
-                variant={ship.variant!}
-                count={ship.count}
-              />
-            ))}
+          <div className="rounded bg-neutral-900 p-4 lg:p-8 mt-4 overflow-auto">
+            <FleetTable ships={countedOrgShips} />
           </div>
         ) : (
           <div className="bg-neutral-900 rounded p-4 lg:p-8 max-w-4xl mt-4">
