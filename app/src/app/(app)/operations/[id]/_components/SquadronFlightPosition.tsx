@@ -40,11 +40,17 @@ const SquadronFlightPosition = ({
 }: Props) => {
   return (
     <li className="text-center">
-      <p className="whitespace-nowrap text-ellipsis overflow-hidden">
+      <p
+        className="whitespace-nowrap text-ellipsis overflow-hidden"
+        title={`${unit.title}-${positions[type]}`}
+      >
         {unit.title}-{positions[type]}
       </p>
 
-      <p className="text-neutral-500 text-sm whitespace-nowrap text-ellipsis overflow-hidden">
+      <p
+        className="text-neutral-500 text-sm whitespace-nowrap text-ellipsis overflow-hidden"
+        title={member.user.name}
+      >
         {member.user.name}
       </p>
 
@@ -60,7 +66,10 @@ const SquadronFlightPosition = ({
         />
       </div>
 
-      <p className="text-neutral-500 text-sm whitespace-nowrap text-ellipsis overflow-hidden mt-2">
+      <p
+        className="text-neutral-500 text-sm whitespace-nowrap text-ellipsis overflow-hidden mt-2"
+        title={member.ship.variant.name}
+      >
         {member.ship.variant.name}
       </p>
     </li>

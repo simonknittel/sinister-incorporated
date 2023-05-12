@@ -98,23 +98,23 @@ export default async function Page({ params }: Props) {
 
   return (
     <main>
-      <ul className="flex items-center gap-2 text-neutral-500">
-        <li>
-          <Link
-            href="/operations"
-            className="flex items-center gap-1 hover:underline"
-          >
-            <FaChevronLeft className="text-xs" /> Alle Operationen
-          </Link>
-        </li>
-      </ul>
+      <div className="flex gap-2 font-bold text-xl">
+        <Link
+          href="/operations"
+          className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
+        >
+          <FaChevronLeft /> Übersicht
+        </Link>
 
-      <div className="flex gap-2 mt-2">
-        <h1 className="font-bold text-xl">{operation.title}</h1>
+        <span className="text-neutral-500">/</span>
 
-        <div className="flex">
-          <EditOperation operation={operation} />
-          <DeleteOperation operation={operation} />
+        <div className="flex gap-2">
+          <h1 className="font-bold text-xl">{operation.title}</h1>
+
+          <div className="flex">
+            <EditOperation operation={operation} />
+            <DeleteOperation operation={operation} />
+          </div>
         </div>
       </div>
 
