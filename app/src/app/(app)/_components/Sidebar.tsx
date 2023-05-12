@@ -92,21 +92,21 @@ const Sidebar = async () => {
               <ul>
                 <li>
                   <Link
-                    href="/my-ships"
+                    href="/spynet"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                   >
-                    <FaPlus />
-                    Einreichen
+                    <FaSearch />
+                    Übersicht
                   </Link>
                 </li>
 
                 <li>
                   <Link
-                    href="/fleet"
+                    href="/spynet/submit"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                   >
-                    <FaSearch />
-                    Suche
+                    <FaPlus />
+                    Einreichen
                   </Link>
                 </li>
               </ul>

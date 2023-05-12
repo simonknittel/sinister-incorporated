@@ -86,6 +86,42 @@ model OperationUnit {
     childUnits   OperationUnit[] @relation("ChildUnits")
 }
 
+model Entity {
+    id           String              @id @default(cuid())
+    createdAt    DateTime            @default(now())
+    updatedAt    DateTime            @updatedAt
+    type         String              @default("citizen") // citizen, organization
+    logs         EntityLog[]
+    logRelations EntityLogRelation[]
+}
+
+model EntityLog {
+    id        String   @id @default(cuid())
+    entityId  String
+    entity    Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    type      String // citizen: handle, note, joined-an-org, left-an-org, spectrum-id, citizen-record, ...; organization: note, ...
+    content   String?             @db.Text
+    relations EntityLogRelation[]
+
+    securityLevel String    @default("public") // public, ...
+    submitterId   String
+    submitter     User      @relation("submitter", fields: [submitterId], references: [id], onDelete: Cascade)
+    confirmed     DateTime?
+    confirmerId   String?
+    confirmer     User?     @relation("confirmer", fields: [confirmerId], references: [id], onDelete: Cascade)
+}
+
+model EntityLogRelation {
+    id          String    @id @default(cuid())
+    entityLogId String
+    entityLog   EntityLog @relation(fields: [entityLogId], references: [id], onDelete: Cascade)
+    entityId    String
+    entity      Entity    @relation(fields: [entityId], references: [id], onDelete: Cascade)
+}
+
 // Necessary for Next auth
 model Account {
     id                String    @id @default(cuid())
@@ -130,6 +166,8 @@ model User {
     updatedAt            DateTime?
     operations           OperationMember[]
     ships                Ship[]
+    submittedEntityLogs  EntityLog[]       @relation("submitter")
+    confirmedEntityLogs  EntityLog[]       @relation("confirmer")
 }
 
 model VerificationToken {
