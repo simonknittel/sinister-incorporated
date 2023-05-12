@@ -6,6 +6,8 @@ import {
   type Variant,
 } from "@prisma/client";
 import clsx from "clsx";
+import Image from "next/image";
+import f7hornetImage from "../../../../../assets/ships/f7-hornet.png";
 
 interface Props {
   type:
@@ -20,6 +22,7 @@ interface Props {
     };
   };
   unit: OperationUnit;
+  status: "green" | "yellow" | "red";
 }
 
 const positions = {
@@ -29,7 +32,12 @@ const positions = {
   "squadron-flight-2-wingman": "2 Wingman",
 };
 
-const SquadronFlightPosition = ({ type, member, unit }: Props) => {
+const SquadronFlightPosition = ({
+  type,
+  member,
+  unit,
+  status = "green",
+}: Props) => {
   return (
     <li className="aspect-square text-center">
       <p>
@@ -38,13 +46,18 @@ const SquadronFlightPosition = ({ type, member, unit }: Props) => {
 
       <p className="text-neutral-500 text-sm">{member.user.name}</p>
 
-      <div
-        className={clsx({
-          "bg-neutral-800 aspect-square rounded mt-2 flex items-center justify-center":
-            true,
-        })}
-      >
-        {member.ship.variant.name}
+      <div className="aspect-square rounded mt-2 flex flex-col items-center justify-center gap-4 p-4 lg:p-8 relative">
+        <Image src={f7hornetImage} alt="" className="rotate-90 sepia" />
+
+        <p className="text-neutral-500 text-sm">{member.ship.variant.name}</p>
+
+        <div
+          className={clsx("absolute inset-0 backdrop-saturate-[1]", {
+            "backdrop-hue-rotate-[60deg]": status === "green",
+            "backdrop-hue-rotate-[30deg]": status === "yellow",
+            "backdrop-hue-rotate-[0deg]": status === "red",
+          })}
+        />
       </div>
     </li>
   );

@@ -9,6 +9,7 @@ import {
   type Variant,
 } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -16,6 +17,7 @@ import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
+import f7hornetImage from "../../../../../assets/ships/f7-hornet.png";
 
 interface Props {
   type:
@@ -112,7 +114,7 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
     <li className="aspect-square text-center">
       <button
         type="button"
-        className="block w-full"
+        className="block w-full opacity-20 hover:opacity-100"
         onClick={() => setIsOpen(true)}
         title="Position besetzen"
       >
@@ -122,7 +124,11 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
 
         <p className="text-neutral-500 text-sm">Unbesetzt</p>
 
-        <div className="bg-neutral-800 aspect-square rounded mt-2" />
+        <div className="aspect-square rounded mt-2 flex flex-col items-center justify-center gap-4 p-4 lg:p-8 relative">
+          <Image src={f7hornetImage} alt="" className="rotate-90" />
+
+          <p className="text-neutral-500 text-sm"></p>
+        </div>
       </button>
 
       <Modal
