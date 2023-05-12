@@ -46,7 +46,7 @@ const SquadronFlightTile = ({ className, unit }: Props) => {
         </div>
       </div>
 
-      <ol className="grid grid-cols-2 grid-rows-2 gap-4 lg:gap-8 p-4 pb-0 lg:p-8 lg:pb-0">
+      <ol className="grid grid-cols-2 grid-rows-2 gap-4 lg:gap-8 p-4 lg:p-8">
         {oneLeader ? (
           <SquadronFlightPosition
             unit={unit}
