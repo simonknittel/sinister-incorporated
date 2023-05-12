@@ -132,7 +132,7 @@ export default async function Page({ params }: Props) {
           </div>
         </div>
 
-        <div className="border-l-2 border-neutral-500 px-4 lg:px-8">
+        <div className="border-l-2 border-neutral-700 px-4 lg:px-8">
           <div className="flex gap-4">
             <h2 className="text-lg font-bold">Teilnehmer</h2>
             <JoinOperation operation={operation} />
