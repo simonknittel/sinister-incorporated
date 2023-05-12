@@ -1,6 +1,12 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { FaCalendarDay, FaCog, FaUsers } from "react-icons/fa";
+import {
+  FaCalendarDay,
+  FaCog,
+  FaPlus,
+  FaSearch,
+  FaUsers,
+} from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpaceShipFill, RiSwordFill } from "react-icons/ri";
 import { authOptions } from "~/server/auth";
@@ -25,30 +31,6 @@ const Sidebar = async () => {
                 Events
               </Link>
             </li>
-          </ul>
-
-          <ul>
-            <li>
-              <Link
-                href="/my-ships"
-                className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-              >
-                <RiSpaceShipFill />
-                Meine Schiffe
-              </Link>
-            </li>
-          </ul>
-
-          <ul>
-            <li>
-              <Link
-                href="/fleet"
-                className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-              >
-                <MdWorkspaces />
-                Flotte
-              </Link>
-            </li>
 
             <li>
               <Link
@@ -67,9 +49,73 @@ const Sidebar = async () => {
             </li>
           </ul>
 
+          <div className="mt-4">
+            <p className="ml-4 text-neutral-500 mt-4">Flotte</p>
+
+            <ul>
+              <li>
+                <Link
+                  href="/fleet"
+                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                >
+                  <MdWorkspaces />
+                  Übersicht
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/my-ships"
+                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                >
+                  <RiSpaceShipFill />
+                  Meine Schiffe
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/ships"
+                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                >
+                  <RiSpaceShipFill />
+                  Hersteller, Serien und Varianten
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {["admin"].includes(session!.user.role) && (
+            <div className="mt-4">
+              <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
+
+              <ul>
+                <li>
+                  <Link
+                    href="/my-ships"
+                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                  >
+                    <FaPlus />
+                    Einreichen
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    href="/fleet"
+                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                  >
+                    <FaSearch />
+                    Suche
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
+
           {["leadership", "admin"].includes(session!.user.role) && (
-            <div className="border-t-2 border-neutral-800 mt-4">
-              <p className="p-4 text-neutral-500 mt-4">Leitung</p>
+            <div className="mt-4">
+              <p className="ml-4 text-neutral-500 mt-4">Leitung</p>
 
               <ul>
                 <li>
@@ -81,23 +127,13 @@ const Sidebar = async () => {
                     Mitglieder
                   </Link>
                 </li>
-
-                <li>
-                  <Link
-                    href="/ships"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                  >
-                    <RiSpaceShipFill />
-                    Schiffe
-                  </Link>
-                </li>
               </ul>
             </div>
           )}
 
           {["admin"].includes(session!.user.role) && (
-            <div className="border-t-2 border-neutral-800 mt-4">
-              <p className="p-4 text-neutral-500 mt-4">Admin</p>
+            <div className="mt-4">
+              <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
               <ul>
                 <li>
