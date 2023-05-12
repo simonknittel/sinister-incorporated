@@ -22,7 +22,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await patchParamsSchema.parseAsync(params.operationId);
+    const paramsData = await getParamsSchema.parseAsync(params.operationId);
 
     /**
      * Get

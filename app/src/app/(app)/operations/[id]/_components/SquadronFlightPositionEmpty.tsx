@@ -118,11 +118,13 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
         onClick={() => setIsOpen(true)}
         title="Position besetzen"
       >
-        <p>
+        <p className="whitespace-nowrap text-ellipsis overflow-hidden">
           {unit.title}-{positions[type]}
         </p>
 
-        <p className="text-neutral-500 text-sm">Unbesetzt</p>
+        <p className="text-neutral-500 text-sm whitespace-nowrap text-ellipsis overflow-hidden">
+          Unbesetzt
+        </p>
 
         <div className="aspect-square rounded mt-2 flex flex-col items-center justify-center gap-4 p-4 lg:p-8 relative">
           <Image src={f7hornetImage} alt="" className="rotate-90" />

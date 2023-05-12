@@ -29,7 +29,9 @@ const SquadronFlightTile = ({ className, unit }: Props) => {
     (member) => member.title === "1 Wingman"
   );
   const two = unit.members.find((member) => member.title === "2");
-  const twoWingman = unit.members.find((member) => member.title === "Wingman");
+  const twoWingman = unit.members.find(
+    (member) => member.title === "2 Wingman"
+  );
 
   return (
     <article className={clsx(className, "rounded bg-neutral-900")}>
