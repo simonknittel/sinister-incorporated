@@ -20,7 +20,7 @@ export default async function Page() {
       <h1 className="text-xl font-bold">Operationen</h1>
 
       <Note
-        message="Operationen sind aktuell noch in der Proof of Concept-Phase. Funktionen fehlen und es kann zu Fehlern kommen."
+        message="Operationen sind aktuell in der Proof of Concept-Phase. Funktionen fehlen und es kann zu Fehlern kommen."
         className="mt-4"
       />
 
