@@ -1,7 +1,7 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
 import { prisma } from "~/server/db";
-import OrgShipTile from "./_components/OrgShipTile";
+import Table from "./_components/Table";
 
 export const metadata: Metadata = {
   title: "Flotte | Sinister Incorporated",
@@ -36,14 +36,8 @@ export default async function Page() {
     <main>
       <h2 className="font-bold text-xl">Alle Schiffe der Org</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">
-        {countedOrgShips.map((ship) => (
-          <OrgShipTile
-            key={ship.variantId}
-            variant={ship.variant!}
-            count={ship.count}
-          />
-        ))}
+      <div className="rounded bg-neutral-900 p-4 lg:p-8 mt-4 overflow-auto">
+        <Table ships={countedOrgShips} />
       </div>
     </main>
   );
