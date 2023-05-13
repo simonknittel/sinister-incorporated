@@ -102,18 +102,9 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
     ?.filter((member) => member.status === "confirmed")
     .sort((a, b) => a.user.name!.localeCompare(b.user.name!));
 
-  const ships = allOperationMembers
-    ?.filter((member) => member.status === "confirmed")
-    .map((member) => {
-      return member.user.ships.map((ship) => ({
-        ...ship,
-        userName: member.user.name,
-      }));
-    })
-    .flat()
-    .sort((a, b) =>
-      (a.name || b.variant.name).localeCompare(b.name || b.variant.name)
-    );
+  const memberShips = allOperationMembers?.filter(
+    (member) => member.status === "confirmed"
+  );
 
   return (
     <li className="aspect-square text-center">
@@ -183,16 +174,25 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
             id={selectShipId}
             {...register("shipId", { required: true })}
           >
-            {ships?.map((ship) => (
-              <option key={ship.id} value={ship.id}>
-                {ship.name
-                  ? `${ship.name} (${ship.variant.name})`
-                  : ship.variant.name}{" "}
-                - {ship.userName}
-              </option>
+            {memberShips?.map((member) => (
+              <optgroup key={member.userId} label={member.user.name!}>
+                {member.user.ships
+                  .sort((a, b) =>
+                    (a.name || a.variant.name).localeCompare(
+                      b.name || b.variant.name
+                    )
+                  )
+                  .map((ship) => (
+                    <option key={ship.id} value={ship.id}>
+                      {ship.name
+                        ? `${ship.name} (${ship.variant.name})`
+                        : ship.variant.name}
+                    </option>
+                  ))}
+              </optgroup>
             ))}
 
-            {ships && ships.length <= 0 && (
+            {memberShips && memberShips.length <= 0 && (
               <option value="" disabled>
                 Keine Schiffe verfügbar
               </option>
