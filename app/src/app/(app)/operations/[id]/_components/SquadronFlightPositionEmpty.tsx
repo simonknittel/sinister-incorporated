@@ -104,7 +104,12 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
 
   const ships = allOperationMembers
     ?.filter((member) => member.status === "confirmed")
-    .map((member) => member.user.ships)
+    .map((member) => {
+      return member.user.ships.map((ship) => ({
+        ...ship,
+        userName: member.user.name,
+      }));
+    })
     .flat()
     .sort((a, b) =>
       (a.name || b.variant.name).localeCompare(b.name || b.variant.name)
@@ -182,7 +187,8 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
               <option key={ship.id} value={ship.id}>
                 {ship.name
                   ? `${ship.name} (${ship.variant.name})`
-                  : ship.variant.name}
+                  : ship.variant.name}{" "}
+                - {ship.userName}
               </option>
             ))}
 
