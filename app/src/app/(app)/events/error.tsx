@@ -9,7 +9,7 @@ interface Props {
 
 export default function Error({ error }: Props) {
   return (
-    <main>
+    <main className="p-4 lg:p-8 pt-20">
       <Note
         message="Beim Laden der Events ist ein Fehler aufgetreten."
         error={error}

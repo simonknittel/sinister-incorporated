@@ -14,7 +14,7 @@ export default async function Page() {
   if (["admin"].includes(session!.user.role) === false) redirect("/events");
 
   return (
-    <main>
+    <main className="p-4 lg:p-8 pt-20">
       <h1 className="text-xl font-bold">Settings</h1>
 
       <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded bg-neutral-900">

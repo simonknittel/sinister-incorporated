@@ -17,7 +17,7 @@ export default async function Page() {
   const members = await prisma.user.findMany();
 
   return (
-    <main>
+    <main className="p-4 lg:p-8 pt-20">
       <h1 className="text-xl font-bold">Mitglieder</h1>
 
       <section className="p-4 lg:p-8 bg-neutral-900 rounded max-w-4xl mt-4">

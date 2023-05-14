@@ -97,7 +97,7 @@ export default async function Page({ params }: Props) {
   );
 
   return (
-    <main>
+    <main className="p-4 lg:p-8 pt-20">
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/operations"
@@ -109,7 +109,7 @@ export default async function Page({ params }: Props) {
         <span className="text-neutral-500">/</span>
 
         <div className="flex gap-2">
-          <h1 className="font-bold text-xl">{operation.title}</h1>
+          <h1>{operation.title}</h1>
 
           <div className="flex">
             <EditOperation operation={operation} />

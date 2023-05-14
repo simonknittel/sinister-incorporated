@@ -20,14 +20,12 @@ export default async function AppLayout({ children, fleetModal }: Props) {
   return (
     <SessionProviderContainer session={session}>
       <QueryClientProviderContainer>
-        <div className="min-h-screen">
+        <div className="h-full">
           <SidebarContainer>
             <Sidebar />
           </SidebarContainer>
 
-          <div className="lg:ml-96 min-h-screen p-4 lg:p-8 pt-20">
-            {children}
-          </div>
+          <div className="lg:ml-96 h-full">{children}</div>
         </div>
 
         {fleetModal}

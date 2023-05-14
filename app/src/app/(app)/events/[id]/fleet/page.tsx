@@ -216,23 +216,21 @@ export default async function Page({ params }: Props) {
   });
 
   return (
-    <main>
-      <ul className="flex items-center gap-2 text-neutral-500">
-        <li>
-          <Link
-            href="/events"
-            className="flex items-center gap-1 hover:underline"
-          >
-            <FaChevronLeft className="text-xs" /> Alle Events
-          </Link>
-        </li>
+    <main className="p-4 lg:p-8 pt-20">
+      <div className="flex gap-2 font-bold text-xl">
+        <Link
+          href="/events"
+          className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
+        >
+          <FaChevronLeft /> Übersicht
+        </Link>
 
-        <li>/</li>
+        <span className="text-neutral-500">/ {event.name}</span>
 
-        <li className="underline">{event.name}</li>
-      </ul>
+        <span className="text-neutral-500">/</span>
 
-      <h1 className="font-bold text-xl mt-2">Verfügbare Flotte</h1>
+        <h1>Verfügbare Flotte</h1>
+      </div>
 
       <p className="mt-2">Teilnehmer: {event.user_count}</p>
 
