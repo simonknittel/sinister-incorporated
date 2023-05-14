@@ -56,7 +56,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
       data: {
         type: data.type,
         content: data.content,
-        submitter: {
+        submittedBy: {
           connect: {
             id: session.user.id,
           },

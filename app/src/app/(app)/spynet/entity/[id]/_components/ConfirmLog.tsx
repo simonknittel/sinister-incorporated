@@ -11,7 +11,7 @@ interface Props {
   log: EntityLog;
 }
 
-const ConfirmNote = ({ log }: Props) => {
+const ConfirmLog = ({ log }: Props) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -56,4 +56,4 @@ const ConfirmNote = ({ log }: Props) => {
   );
 };
 
-export default ConfirmNote;
+export default ConfirmLog;

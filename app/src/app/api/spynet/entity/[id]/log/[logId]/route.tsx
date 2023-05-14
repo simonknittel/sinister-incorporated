@@ -10,7 +10,10 @@ interface Params {
   logId: string;
 }
 
-const patchParamsSchema = z.string().cuid2();
+const patchParamsSchema = z.object({
+  id: z.string().cuid2(),
+  logId: z.string().cuid2(),
+});
 
 const patchBodySchema = z.object({
   confirmed: z.literal(true),
@@ -27,32 +30,35 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await patchParamsSchema.parseAsync(params.id);
+    const paramsData = await patchParamsSchema.parseAsync(params);
 
     /**
      * Validate the request body
      */
     const body: unknown = await request.json();
-    const data = await patchBodySchema.parseAsync(body);
+    await patchBodySchema.parseAsync(body);
 
     /**
      * Do the thing
      */
     const entity = await prisma.entity.findFirst({
       where: {
-        id: paramsData,
+        id: paramsData.id,
       },
     });
 
     if (!entity) throw new Error("Not found");
 
-    const item = await prisma.entityLog.update({
-      where: {
-        id: params.logId,
-      },
+    const item = await prisma.entityLogAttribute.create({
       data: {
-        confirmed: new Date(),
-        confirmer: {
+        entityLog: {
+          connect: {
+            id: paramsData.logId,
+          },
+        },
+        key: "confirmed",
+        value: "true",
+        createdBy: {
           connect: {
             id: session.user.id,
           },

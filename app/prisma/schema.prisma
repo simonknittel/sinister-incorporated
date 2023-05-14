@@ -93,8 +93,8 @@ model Entity {
     type         String              @default("citizen") // citizen, organization
     logs         EntityLog[]
     logRelations EntityLogRelation[]
-    createdBy    String
-    creator      User                @relation("creator", fields: [createdBy], references: [id], onDelete: Cascade)
+    createdById  String
+    createdBy    User                @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
 }
 
 model EntityLog {
@@ -104,16 +104,24 @@ model EntityLog {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    type      String // citizen: handle, note, joined-an-org, left-an-org, spectrum-id, citizen-record, citizen-alias, ...; organization: note, ...
+    type      String // citizen: handle, note, joined-an-org, left-an-org, spectrum-id, citizen-alias, discord-id ...; organization: note, ...
     content   String?             @db.Text
     relations EntityLogRelation[]
 
-    securityLevel String    @default("public") // public, ...
-    submitterId   String
-    submitter     User      @relation("submitter", fields: [submitterId], references: [id], onDelete: Cascade)
-    confirmed     DateTime?
-    confirmerId   String?
-    confirmer     User?     @relation("confirmer", fields: [confirmerId], references: [id], onDelete: Cascade)
+    submittedById String
+    submittedBy   User                 @relation("submittedBy", fields: [submittedById], references: [id], onDelete: Cascade)
+    attributes    EntityLogAttribute[]
+}
+
+model EntityLogAttribute {
+    id          String    @id @default(cuid())
+    eneityLogId String
+    entityLog   EntityLog @relation(fields: [eneityLogId], references: [id], onDelete: Cascade)
+    key         String // confirmed, security-level-change, ...
+    value       String
+    createdAt   DateTime  @default(now())
+    createdById String
+    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
 }
 
 model EntityLogRelation {
@@ -154,23 +162,23 @@ model Session {
 }
 
 model User {
-    id                   String            @id @default(cuid())
-    name                 String?
-    email                String?           @unique
-    emailVerified        DateTime?
-    image                String?
-    accounts             Account[]
-    sessions             Session[]
-    role                 String            @default("new")
-    discordUsername      String?
-    discordDiscriminator String?
-    createdAt            DateTime?         @default(now())
-    updatedAt            DateTime?
-    operations           OperationMember[]
-    ships                Ship[]
-    submittedEntityLogs  EntityLog[]       @relation("submitter")
-    confirmedEntityLogs  EntityLog[]       @relation("confirmer")
-    createdEntities      Entity[]          @relation("creator")
+    id                         String               @id @default(cuid())
+    name                       String?
+    email                      String?              @unique
+    emailVerified              DateTime?
+    image                      String?
+    accounts                   Account[]
+    sessions                   Session[]
+    role                       String               @default("new")
+    discordUsername            String?
+    discordDiscriminator       String?
+    createdAt                  DateTime?            @default(now())
+    updatedAt                  DateTime?
+    operations                 OperationMember[]
+    ships                      Ship[]
+    createdEntities            Entity[]             @relation("createdBy")
+    submittedEntityLogs        EntityLog[]          @relation("submittedBy")
+    createdEntityLogAttributes EntityLogAttribute[]
 }
 
 model VerificationToken {

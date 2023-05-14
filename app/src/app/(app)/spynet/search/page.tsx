@@ -3,7 +3,7 @@ import CreateEntity from "../_components/CreateEntity";
 import Search from "./_components/Search";
 
 export const metadata: Metadata = {
-  title: "Spynet | Sinister Incorporated",
+  title: "Suche - Spynet | Sinister Incorporated",
 };
 
 export default function Page() {

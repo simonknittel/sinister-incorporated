@@ -2,7 +2,6 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { FaChevronLeft } from "react-icons/fa";
 import Avatar from "~/app/_components/Avatar";
 import { prisma } from "~/server/db";
 import ConfirmParticipation from "./_components/ConfirmParticipation";
@@ -103,7 +102,7 @@ export default async function Page({ params }: Props) {
           href="/operations"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
         >
-          <FaChevronLeft className="w-[16px] h-[16px]" /> Übersicht
+          Operationen
         </Link>
 
         <span className="text-neutral-500">/</span>

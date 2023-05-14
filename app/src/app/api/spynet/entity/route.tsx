@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       data: {
         type: "spectrum-id",
         content: data.spectrumId,
-        submitter: {
+        submittedBy: {
           connect: {
             id: session.user.id,
           },
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
         entity: {
           create: {
             type: data.type,
-            creator: {
+            createdBy: {
               connect: {
                 id: session.user.id,
               },

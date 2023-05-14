@@ -1,15 +1,21 @@
 "use client";
 
-import { type Entity, type EntityLog } from "@prisma/client";
+import {
+  type Entity,
+  type EntityLog,
+  type EntityLogAttribute,
+} from "@prisma/client";
 import { useState } from "react";
 import { FaHistory } from "react-icons/fa";
-import { TbCircleDot } from "react-icons/tb";
 import Modal from "~/app/_components/Modal";
 import AddHandle from "./AddHandle";
+import Handle from "./Handle";
 
 interface Props {
   entity: Entity & {
-    logs: EntityLog[];
+    logs: (EntityLog & {
+      attributes: EntityLogAttribute[];
+    })[];
   };
 }
 
@@ -38,27 +44,12 @@ const Handles = ({ entity }: Props) => {
       >
         <h2 className="text-xl font-bold">Frühere Handles</h2>
 
-        <AddHandle entity={entity} />
+        <AddHandle entity={entity} onRequestClose={() => setIsOpen(false)} />
 
         {handles.length > 0 ? (
           <ul className="mt-4 flex flex-col gap-2">
-            {handles.map((handle, index) => (
-              <li key={handle.id} className="flex gap-2">
-                <div className="h-[24px] flex items-center">
-                  <TbCircleDot />
-                </div>
-
-                <div className="flex-1">
-                  <p>{handle.content}</p>
-
-                  <p className="text-neutral-500 text-sm">
-                    {index <= 0 && "Aktuell seit "}
-                    <time dateTime={handle.createdAt.toISOString()}>
-                      {handle.createdAt.toLocaleDateString("de-DE")}
-                    </time>
-                  </p>
-                </div>
-              </li>
+            {handles.map((handle) => (
+              <Handle key={handle.id} handle={handle} />
             ))}
           </ul>
         ) : (

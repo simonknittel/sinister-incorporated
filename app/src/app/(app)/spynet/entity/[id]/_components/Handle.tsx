@@ -3,27 +3,24 @@ import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import ConfirmLog from "./ConfirmLog";
-import styles from "./NoteSection.module.css";
+import styles from "./Handle.module.css";
 
 interface Props {
-  log: EntityLog & {
+  handle: EntityLog & {
     attributes: EntityLogAttribute[];
   };
 }
 
-const NoteSection = ({ log }: Props) => {
-  const confirmed = log.attributes.find(
+const Handle = ({ handle }: Props) => {
+  const confirmed = handle.attributes.find(
     (attribute) => attribute.key === "confirmed"
   );
 
   return (
-    <article
-      key={log.id}
-      className="mt-4 lg:mt-8 relative rounded overflow-hidden"
-    >
+    <li key={handle.id} className="relative rounded overflow-hidden">
       <div
         className={clsx({
-          "absolute w-full h-24 border-t-4 border-x-4 bg-gradient-to-t from-neutral-900 to-blue-500/10 blue-border":
+          "absolute w-full h-20 border-t-4 border-x-4 bg-gradient-to-t from-neutral-800 to-blue-500/10 blue-border":
             !confirmed,
           [styles.blueBorder!]: !confirmed,
         })}
@@ -33,15 +30,17 @@ const NoteSection = ({ log }: Props) => {
         <div className="px-4 pt-4 flex items-start gap-2 relative z-10">
           <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-1" />
           <div className="flex gap-4">
-            <p className="font-bold">Diese Notiz wurde noch nicht bestätigt.</p>
-            <ConfirmLog log={log} />
+            <p className="font-bold">
+              Dieser Handle wurde noch nicht bestätigt.
+            </p>
+            <ConfirmLog log={handle} />
           </div>
         </div>
       )}
 
       <div
         className={clsx("flex gap-2 relative z-10", {
-          "px-4 pt-4 opacity-20 hover:opacity-100 transition-opacity":
+          "px-4 pt-2 pb-2 opacity-20 hover:opacity-100 transition-opacity":
             !confirmed,
         })}
       >
@@ -50,20 +49,17 @@ const NoteSection = ({ log }: Props) => {
         </div>
 
         <div className="flex-1">
-          <div>
-            <pre className="font-sans whitespace-pre-wrap">{log.content}</pre>
-          </div>
+          <p>{handle.content}</p>
 
-          <time
-            className="text-neutral-500"
-            dateTime={log.createdAt.toISOString()}
-          >
-            {log.createdAt.toLocaleDateString("de-DE")}
-          </time>
+          <p className="text-neutral-500 text-sm">
+            <time dateTime={handle.createdAt.toISOString()}>
+              {handle.createdAt.toLocaleDateString("de-DE")}
+            </time>
+          </p>
         </div>
       </div>
-    </article>
+    </li>
   );
 };
 
-export default NoteSection;
+export default Handle;

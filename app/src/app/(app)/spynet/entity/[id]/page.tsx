@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { FaChevronLeft, FaSitemap } from "react-icons/fa";
+import { FaSitemap } from "react-icons/fa";
 import { prisma } from "~/server/db";
 import sinisterIcon from "../../../../../assets/Icons/Membership/logo_white.svg";
 import Handles from "./_components/Handles";
@@ -16,7 +16,11 @@ const getEntity = cache(async (id: string) => {
       id,
     },
     include: {
-      logs: true,
+      logs: {
+        include: {
+          attributes: true,
+        },
+      },
     },
   });
 });
@@ -78,10 +82,19 @@ export default async function Page({ params }: Props) {
     <main className="p-4 lg:p-8 pt-20">
       <div className="flex gap-2 font-bold text-xl">
         <Link
+          href="/spynet"
+          className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
+        >
+          Spynet
+        </Link>
+
+        <span className="text-neutral-500">/</span>
+
+        <Link
           href="/spynet/search"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
         >
-          <FaChevronLeft className="w-[16px] h-[16px]" /> Suche
+          Suche
         </Link>
 
         <span className="text-neutral-500">/</span>

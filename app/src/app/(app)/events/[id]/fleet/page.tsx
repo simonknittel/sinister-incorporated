@@ -2,7 +2,6 @@ import { groupBy } from "lodash";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { FaChevronLeft } from "react-icons/fa";
 import { z } from "zod";
 import FleetTable from "~/app/(app)/fleet/_components/FleetTable";
 import { env } from "~/env.mjs";
@@ -222,7 +221,7 @@ export default async function Page({ params }: Props) {
           href="/events"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
         >
-          <FaChevronLeft className="w-[16px] h-[16px]" /> Übersicht
+          Events
         </Link>
 
         <span className="text-neutral-500">/ {event.name}</span>

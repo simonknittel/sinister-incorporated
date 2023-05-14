@@ -1,11 +1,17 @@
-import { type Entity, type EntityLog } from "@prisma/client";
+import {
+  type Entity,
+  type EntityLog,
+  type EntityLogAttribute,
+} from "@prisma/client";
 import { FaListAlt } from "react-icons/fa";
 import AddNote from "./AddNote";
 import NoteSection from "./NoteSection";
 
 interface Props {
   entity: Entity & {
-    logs: EntityLog[];
+    logs: (EntityLog & {
+      attributes: EntityLogAttribute[];
+    })[];
   };
 }
 
