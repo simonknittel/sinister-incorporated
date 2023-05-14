@@ -132,7 +132,7 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
           <Image src={f7hornetImage} alt="" className="rotate-90" />
         </div>
 
-        <span className="text-neutral-500 text-sm mt-2">&nbsp;</span>
+        <span className="text-neutral-500 mt-2 h-[20px] block" />
       </button>
 
       <Modal

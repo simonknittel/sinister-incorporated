@@ -1,12 +1,6 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import {
-  FaCalendarDay,
-  FaCog,
-  FaPlus,
-  FaSearch,
-  FaUsers,
-} from "react-icons/fa";
+import { FaCalendarDay, FaCog, FaSearch, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpaceShipFill, RiSwordFill } from "react-icons/ri";
 import { authOptions } from "~/server/auth";
@@ -92,21 +86,11 @@ const Sidebar = async () => {
               <ul>
                 <li>
                   <Link
-                    href="/spynet"
+                    href="/spynet/search"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                   >
                     <FaSearch />
-                    Übersicht
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    href="/spynet/submit"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                  >
-                    <FaPlus />
-                    Einreichen
+                    Suche
                   </Link>
                 </li>
               </ul>

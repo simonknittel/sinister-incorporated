@@ -93,6 +93,8 @@ model Entity {
     type         String              @default("citizen") // citizen, organization
     logs         EntityLog[]
     logRelations EntityLogRelation[]
+    createdBy    String
+    creator      User                @relation("creator", fields: [createdBy], references: [id], onDelete: Cascade)
 }
 
 model EntityLog {
@@ -102,7 +104,7 @@ model EntityLog {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    type      String // citizen: handle, note, joined-an-org, left-an-org, spectrum-id, citizen-record, ...; organization: note, ...
+    type      String // citizen: handle, note, joined-an-org, left-an-org, spectrum-id, citizen-record, citizen-alias, ...; organization: note, ...
     content   String?             @db.Text
     relations EntityLogRelation[]
 
@@ -168,6 +170,7 @@ model User {
     ships                Ship[]
     submittedEntityLogs  EntityLog[]       @relation("submitter")
     confirmedEntityLogs  EntityLog[]       @relation("confirmer")
+    createdEntities      Entity[]          @relation("creator")
 }
 
 model VerificationToken {

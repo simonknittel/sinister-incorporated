@@ -15,7 +15,7 @@ const Note = ({ className, message, type = "info", error }: Props) => {
     <div
       className={clsx(
         className,
-        "rounded  border-t-4 p-4 lg:p-8 max-w-4xl flex gap-4 items-start",
+        "rounded border-t-4 p-4 max-w-4xl flex gap-4 items-start",
         {
           "bg-blue-500/10 border-blue-500": type === "info",
           "bg-green-500/10 border-green-500": type === "success",
@@ -34,9 +34,7 @@ const Note = ({ className, message, type = "info", error }: Props) => {
       )}
 
       <div>
-        <div className="flex gap-2 items-center">
-          <p>{message}</p>
-        </div>
+        <div className="flex gap-2 items-center">{message}</div>
 
         {error && (
           <div className="text-neutral-500 mt-4">

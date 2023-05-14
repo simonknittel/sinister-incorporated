@@ -103,7 +103,7 @@ export default async function Page({ params }: Props) {
           href="/operations"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
         >
-          <FaChevronLeft /> Übersicht
+          <FaChevronLeft className="w-[16px] h-[16px]" /> Übersicht
         </Link>
 
         <span className="text-neutral-500">/</span>
