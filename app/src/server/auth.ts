@@ -99,7 +99,7 @@ export const authOptions: NextAuthOptions = {
       const discordIdEntityLog = await prisma.entityLog.findFirst({
         where: {
           type: "discord-id",
-          content: discordAccount?.providerAccountId,
+          content: discordAccount!.providerAccountId,
           attributes: {
             some: {
               key: "confirmed",
@@ -109,21 +109,27 @@ export const authOptions: NextAuthOptions = {
         },
       });
 
-      const handle = await prisma.entityLog.findFirst({
-        where: {
-          entityId: discordIdEntityLog?.entityId,
-          type: "handle",
-          attributes: {
-            some: {
-              key: "confirmed",
-              value: "true",
+      let handle = "";
+
+      if (discordIdEntityLog) {
+        const item = await prisma.entityLog.findFirst({
+          where: {
+            entityId: discordIdEntityLog.entityId,
+            type: "handle",
+            attributes: {
+              some: {
+                key: "confirmed",
+                value: "true",
+              },
             },
           },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+        handle = item?.content || "";
+      }
 
       return {
         ...session,
@@ -132,8 +138,8 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           role: user.role,
         },
-        discordId: discordAccount?.providerAccountId,
-        handle: handle?.content,
+        discordId: discordAccount!.providerAccountId,
+        handle,
       };
     },
 
