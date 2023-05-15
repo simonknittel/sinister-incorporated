@@ -53,7 +53,7 @@ const Handle = ({ log }: Props) => {
         </div>
 
         <div className="flex-1">
-          <div className="text-sm flex gap-2 border-b-2 pb-1 items-baseline border-neutral-900">
+          <div className="text-sm flex gap-2 border-b-2 pb-1 items-baseline border-neutral-700">
             <p>
               <time dateTime={log.createdAt.toISOString()}>
                 {log.createdAt.toLocaleDateString("de-DE", {
@@ -73,7 +73,7 @@ const Handle = ({ log }: Props) => {
             )}
           </div>
 
-          <p className="mt-1">{log.content}</p>
+          <p>{log.content}</p>
         </div>
       </div>
     </li>
