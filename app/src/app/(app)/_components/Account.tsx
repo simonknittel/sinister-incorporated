@@ -11,22 +11,14 @@ const Account = async () => {
       <div className="flex items-center gap-4">
         <div className="overflow-hidden rounded">
           <Avatar
-            name={session!.user.name}
+            name={session!.handle || session!.discordId}
             image={session!.user.image}
             size={48}
           />
         </div>
 
         <div>
-          <p>{session!.user.name}</p>
-
-          {session!.user.discordUsername &&
-            session!.user.discordDiscriminator && (
-              <p className="text-neutral-500 text-sm">
-                {session!.user.discordUsername}#
-                {session!.user.discordDiscriminator}
-              </p>
-            )}
+          <p>{session!.handle || session!.discordId}</p>
         </div>
       </div>
 

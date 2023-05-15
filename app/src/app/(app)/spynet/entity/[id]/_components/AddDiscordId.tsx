@@ -17,7 +17,7 @@ interface FormValues {
   content: string;
 }
 
-const AddHandle = ({ onRequestClose, entity }: Props) => {
+const AddDiscordId = ({ onRequestClose, entity }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +30,7 @@ const AddHandle = ({ onRequestClose, entity }: Props) => {
       const response = await fetch(`/api/spynet/entity/${entity.id}/log`, {
         method: "POST",
         body: JSON.stringify({
-          type: "handle",
+          type: "discord-id",
           content: data.content,
         }),
       });
@@ -58,7 +58,7 @@ const AddHandle = ({ onRequestClose, entity }: Props) => {
         id={inputId}
         {...register("content", { required: true })}
         autoFocus
-        placeholder="Handle hinzufügen ..."
+        placeholder="Discord ID hinzufügen ..."
       />
 
       <Button
@@ -73,4 +73,4 @@ const AddHandle = ({ onRequestClose, entity }: Props) => {
   );
 };
 
-export default AddHandle;
+export default AddDiscordId;

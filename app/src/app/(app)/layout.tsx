@@ -15,7 +15,7 @@ interface Props {
 export default async function AppLayout({ children, fleetModal }: Props) {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/");
-  if (session.user.role === "new") redirect("/onboarding");
+  if (session.user.role === "confirmed") redirect("/onboarding");
 
   return (
     <SessionProviderContainer session={session}>

@@ -6,9 +6,9 @@ import {
   type EntityLogAttribute,
 } from "@prisma/client";
 import { useState } from "react";
-import { FaHistory, FaPen } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
 import Modal from "~/app/_components/Modal";
-import AddHandle from "./AddHandle";
+import AddDiscordId from "./AddDiscordId";
 import Handle from "./Handle";
 
 interface Props {
@@ -19,11 +19,11 @@ interface Props {
   };
 }
 
-const Handles = ({ entity }: Props) => {
+const DiscordIds = ({ entity }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handles = entity.logs
-    .filter((log) => log.type === "handle")
+  const discordIds = entity.logs
+    .filter((log) => log.type === "discord-id")
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return (
@@ -42,19 +42,19 @@ const Handles = ({ entity }: Props) => {
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
       >
-        <h2 className="text-xl font-bold">Frühere Handles</h2>
+        <h2 className="text-xl font-bold">Frühere Discord IDs</h2>
 
-        <AddHandle entity={entity} onRequestClose={() => setIsOpen(false)} />
+        <AddDiscordId entity={entity} onRequestClose={() => setIsOpen(false)} />
 
-        {handles.length > 0 ? (
+        {discordIds.length > 0 ? (
           <ul className="mt-4 flex flex-col gap-2">
-            {handles.map((handle) => (
+            {discordIds.map((handle) => (
               <Handle key={handle.id} handle={handle} />
             ))}
           </ul>
         ) : (
           <p className="text-neutral-500 italic mt-4">
-            Keine früheren Handles bekannt.
+            Keine früheren Discord IDs bekannt.
           </p>
         )}
       </Modal>
@@ -62,4 +62,4 @@ const Handles = ({ entity }: Props) => {
   );
 };
 
-export default Handles;
+export default DiscordIds;

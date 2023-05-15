@@ -3,9 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { FaSitemap } from "react-icons/fa";
+import { FaDiscord, FaSitemap } from "react-icons/fa";
 import { prisma } from "~/server/db";
 import sinisterIcon from "../../../../../assets/Icons/Membership/logo_white.svg";
+import DiscordIds from "./_components/DiscordIds";
 import Handles from "./_components/Handles";
 import Notes from "./_components/Notes";
 import WIP from "./_components/WIP";
@@ -18,7 +19,11 @@ const getEntity = cache(async (id: string) => {
     include: {
       logs: {
         include: {
-          attributes: true,
+          attributes: {
+            include: {
+              createdBy: true,
+            },
+          },
         },
       },
     },
@@ -78,6 +83,10 @@ export default async function Page({ params }: Props) {
     (log) => log.type === "spectrum-id"
   )?.content;
 
+  const discordId = entity.logs.find(
+    (log) => log.type === "discord-id"
+  )?.content;
+
   return (
     <main className="p-4 lg:p-8 pt-20">
       <div className="flex gap-2 font-bold text-xl">
@@ -119,6 +128,15 @@ export default async function Page({ params }: Props) {
                 <span className="italic">Unbekannt</span>
               )}
               <Handles entity={entity} />
+            </dd>
+
+            <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
+              <FaDiscord />
+              Discord ID
+            </dt>
+            <dd className="flex gap-1">
+              {discordId || <span className="italic">Unbekannt</span>}
+              <DiscordIds entity={entity} />
             </dd>
           </dl>
         </section>

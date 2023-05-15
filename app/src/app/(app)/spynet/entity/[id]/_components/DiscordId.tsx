@@ -6,18 +6,18 @@ import ConfirmLog from "./ConfirmLog";
 import styles from "./Handle.module.css";
 
 interface Props {
-  handle: EntityLog & {
+  discordId: EntityLog & {
     attributes: EntityLogAttribute[];
   };
 }
 
-const Handle = ({ handle }: Props) => {
-  const confirmed = handle.attributes.find(
+const DiscordId = ({ discordId }: Props) => {
+  const confirmed = discordId.attributes.find(
     (attribute) => attribute.key === "confirmed"
   );
 
   return (
-    <li key={handle.id} className="relative rounded overflow-hidden">
+    <li key={discordId.id} className="relative rounded overflow-hidden">
       <div
         className={clsx({
           "absolute w-full h-20 border-t-4 border-x-4 bg-gradient-to-t from-neutral-800 to-blue-500/10 blue-border":
@@ -33,7 +33,7 @@ const Handle = ({ handle }: Props) => {
             <p className="font-bold">
               Dieser Eintrag wurde noch nicht bestätigt.
             </p>
-            <ConfirmLog log={handle} />
+            <ConfirmLog log={discordId} />
           </div>
         </div>
       )}
@@ -49,11 +49,11 @@ const Handle = ({ handle }: Props) => {
         </div>
 
         <div className="flex-1">
-          <p>{handle.content}</p>
+          <p>{discordId.content}</p>
 
           <p className="text-neutral-500 text-sm">
-            <time dateTime={handle.createdAt.toISOString()}>
-              {handle.createdAt.toLocaleDateString("de-DE")}
+            <time dateTime={discordId.createdAt.toISOString()}>
+              {discordId.createdAt.toLocaleDateString("de-DE")}
             </time>
           </p>
         </div>
@@ -62,4 +62,4 @@ const Handle = ({ handle }: Props) => {
   );
 };
 
-export default Handle;
+export default DiscordId;

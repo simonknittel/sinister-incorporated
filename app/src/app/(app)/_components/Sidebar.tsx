@@ -79,57 +79,59 @@ const Sidebar = async () => {
             </ul>
           </div>
 
-          {["leadership", "admin"].includes(session!.user.role) && (
-            <div className="mt-4">
-              <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
+          <div className="mt-4">
+            <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
 
-              <ul>
+            <ul>
+              <li>
+                <Link
+                  href="/spynet"
+                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                >
+                  <RiDashboardFill />
+                  Dashboard
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/spynet/search"
+                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                >
+                  <FaSearch />
+                  Suche
+                </Link>
+              </li>
+
+              {session!.user.role === "admin" && (
                 <li>
                   <Link
-                    href="/spynet"
+                    href="/spynet/settings"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                   >
-                    <RiDashboardFill />
-                    Dashboard
+                    <FaCog />
+                    Einstellungen
                   </Link>
                 </li>
+              )}
+            </ul>
+          </div>
 
-                <li>
-                  <Link
-                    href="/spynet/search"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                  >
-                    <FaSearch />
-                    Suche
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          )}
-
-          {["leadership", "admin"].includes(session!.user.role) && (
-            <div className="mt-4">
-              <p className="ml-4 text-neutral-500 mt-4">Leitung</p>
-
-              <ul>
-                <li>
-                  <Link
-                    href="/users"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                  >
-                    <FaUsers />
-                    Mitglieder
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          )}
-
-          {["admin"].includes(session!.user.role) && (
+          {session!.user.role === "admin" && (
             <div className="mt-4">
               <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
               <ul>
+                <li>
+                  <Link
+                    href="/logins"
+                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                  >
+                    <FaUsers />
+                    Logins
+                  </Link>
+                </li>
+
                 <li>
                   <Link
                     href="/settings"

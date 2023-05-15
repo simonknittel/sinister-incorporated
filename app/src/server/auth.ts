@@ -14,7 +14,6 @@ import { type UserRole } from "~/types";
 const guildMemberResponseSchema = z.union([
   z.object({
     avatar: z.string().nullable(),
-    nick: z.string().nullable(),
   }),
 
   z.object({
@@ -69,15 +68,13 @@ declare module "next-auth" {
     user: {
       id: string;
       role: UserRole;
-      discordUsername?: string;
-      discordDiscriminator?: string;
     } & DefaultSession["user"];
+    handle?: string;
+    discordId: string;
   }
 
   interface User {
     role: UserRole;
-    discordUsername?: string;
-    discordDiscriminator?: string;
   }
 }
 
@@ -90,16 +87,55 @@ const maxAge = 60 * 60 * 24 * 7; // 7 days
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-        role: user.role,
-        discordUsername: user.discordUsername,
-        discordDiscriminator: user.discordDiscriminator,
-      },
-    }),
+    session: async ({ session, user }) => {
+      // TODO: Get handle and roles
+
+      const discordAccount = await prisma.account.findFirst({
+        where: {
+          userId: user.id,
+        },
+      });
+
+      const discordIdEntityLog = await prisma.entityLog.findFirst({
+        where: {
+          type: "discord-id",
+          content: discordAccount?.providerAccountId,
+          attributes: {
+            some: {
+              key: "confirmed",
+              value: "true",
+            },
+          },
+        },
+      });
+
+      const handle = await prisma.entityLog.findFirst({
+        where: {
+          entityId: discordIdEntityLog?.entityId,
+          type: "handle",
+          attributes: {
+            some: {
+              key: "confirmed",
+              value: "true",
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+          role: user.role,
+        },
+        discordId: discordAccount?.providerAccountId,
+        handle: handle?.content,
+      };
+    },
 
     async signIn({ user, account, profile }) {
       /**
@@ -149,10 +185,7 @@ export const authOptions: NextAuthOptions = {
             },
             data: {
               email: profile.email!.toLocaleLowerCase(),
-              name: guildMember.nick || profile.username,
               image: avatar,
-              discordUsername: profile.username,
-              discordDiscriminator: profile.discriminator,
               updatedAt: new Date(),
             },
           }),
@@ -167,10 +200,7 @@ export const authOptions: NextAuthOptions = {
         const avatar = getAvatar(profile, guildMember);
 
         user.email = profile.email!.toLocaleLowerCase();
-        user.name = guildMember.nick || profile.username;
         user.image = avatar;
-        user.discordUsername = profile.username;
-        user.discordDiscriminator = profile.discriminator;
       }
 
       return true;

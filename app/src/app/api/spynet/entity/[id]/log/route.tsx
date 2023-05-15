@@ -20,6 +20,10 @@ const postBodySchema = z.union([
     type: z.literal("note"),
     content: z.string().trim().min(1),
   }),
+  z.object({
+    type: z.literal("discord-id"),
+    content: z.string().trim().min(1).max(255),
+  }),
 ]);
 
 export async function POST(request: Request, { params }: { params: Params }) {

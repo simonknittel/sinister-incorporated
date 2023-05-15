@@ -1,1 +1,1 @@
-export type UserRole = "new" | "member" | "leadership" | "admin";
+export type UserRole = null | "confirmed" | "admin";

@@ -2,6 +2,7 @@ import {
   type Entity,
   type EntityLog,
   type EntityLogAttribute,
+  type User,
 } from "@prisma/client";
 import { FaListAlt } from "react-icons/fa";
 import AddNote from "./AddNote";
@@ -10,7 +11,7 @@ import NoteSection from "./NoteSection";
 interface Props {
   entity: Entity & {
     logs: (EntityLog & {
-      attributes: EntityLogAttribute[];
+      attributes: (EntityLogAttribute & { createdBy: User })[];
     })[];
   };
 }
