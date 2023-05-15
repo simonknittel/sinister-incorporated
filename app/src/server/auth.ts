@@ -88,48 +88,13 @@ const maxAge = 60 * 60 * 24 * 7; // 7 days
 export const authOptions: NextAuthOptions = {
   callbacks: {
     session: async ({ session, user }) => {
-      // TODO: Get handle and roles
+      // TODO: Get permission roles
 
       const discordAccount = await prisma.account.findFirst({
         where: {
           userId: user.id,
         },
       });
-
-      const discordIdEntityLog = await prisma.entityLog.findFirst({
-        where: {
-          type: "discord-id",
-          content: discordAccount!.providerAccountId,
-          attributes: {
-            some: {
-              key: "confirmed",
-              value: "true",
-            },
-          },
-        },
-      });
-
-      let handle = "";
-
-      if (discordIdEntityLog) {
-        const item = await prisma.entityLog.findFirst({
-          where: {
-            entityId: discordIdEntityLog.entityId,
-            type: "handle",
-            attributes: {
-              some: {
-                key: "confirmed",
-                value: "true",
-              },
-            },
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        });
-
-        handle = item?.content || "";
-      }
 
       return {
         ...session,
@@ -139,7 +104,6 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
         },
         discordId: discordAccount!.providerAccountId,
-        handle,
       };
     },
 

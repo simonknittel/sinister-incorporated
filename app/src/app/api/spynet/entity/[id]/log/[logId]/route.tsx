@@ -96,7 +96,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       );
 
       if (latestConfirmedHandleLog && latestConfirmedDiscordIdLog) {
-        const user = await prisma.account.findUnique({
+        const account = await prisma.account.findUnique({
           where: {
             provider_providerAccountId: {
               provider: "discord",
@@ -105,10 +105,10 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           },
         });
 
-        if (user) {
+        if (account) {
           await prisma.user.update({
             where: {
-              id: user.id,
+              id: account.userId,
             },
             data: {
               name: latestConfirmedHandleLog.content,

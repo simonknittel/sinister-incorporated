@@ -23,7 +23,6 @@ interface Props {
     user: User;
     discordId: string;
     entityId?: string;
-    handle?: string | null;
   }[];
 }
 
@@ -31,14 +30,13 @@ type Row = {
   user: User;
   discordId: string;
   entityId?: string;
-  handle?: string | null;
 };
 
 const columnHelper = createColumnHelper<Row>();
 
 const UsersTable = ({ users }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
-    { id: "handle", desc: false },
+    { id: "user_name", desc: false },
   ]);
 
   const columns = useMemo(
@@ -60,7 +58,7 @@ const UsersTable = ({ users }: Props) => {
           );
         },
       }),
-      columnHelper.accessor("handle", {
+      columnHelper.accessor("user.name", {
         header: "Handle",
         cell: (props) =>
           props.getValue() || (

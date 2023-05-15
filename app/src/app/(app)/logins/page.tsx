@@ -22,9 +22,7 @@ export default async function Page() {
   const entityLogs = (
     await prisma.entityLog.findMany({
       where: {
-        type: {
-          in: ["discord-id", "handle"],
-        },
+        type: "discord-id",
       },
       include: {
         attributes: true,
@@ -35,7 +33,6 @@ export default async function Page() {
   const enrichedUsers = users.map((user) => {
     const discordIdLog = entityLogs.find((log) => {
       return (
-        log.type === "discord-id" &&
         log.content === user.accounts[0]!.providerAccountId &&
         log.attributes.find((attribute) => attribute.key === "confirmed")
       );
@@ -49,18 +46,10 @@ export default async function Page() {
         discordId: user.accounts[0]!.providerAccountId,
       };
 
-    const handle = entityLogs.find(
-      (log) =>
-        log.type === "handle" &&
-        log.entityId === entityId &&
-        log.attributes.find((attribute) => attribute.key === "confirmed")
-    );
-
     return {
       user,
       discordId: user.accounts[0]!.providerAccountId,
       entityId,
-      handle: handle?.content,
     };
   });
 
