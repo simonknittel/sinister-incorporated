@@ -161,17 +161,60 @@ export const authOptions: NextAuthOptions = {
           }),
         ]);
       } else {
+        // New user
+
         const guildMember = await getGuildMember(account.access_token);
 
         if ("message" in guildMember) {
           throw new Error(guildMember.message);
         }
 
-        const avatar = getAvatar(profile, guildMember);
-
         user.email = profile.email!.toLocaleLowerCase();
+
+        const avatar = getAvatar(profile, guildMember);
         user.image = avatar;
+
         user.name = null;
+
+        const latestConfirmedDiscordIdEntityLog =
+          await prisma.entityLog.findFirst({
+            where: {
+              type: "discord-id",
+              content: profile!.id,
+              attributes: {
+                some: {
+                  key: "confirmed",
+                  value: "true",
+                },
+              },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          });
+
+        if (latestConfirmedDiscordIdEntityLog) {
+          const latestConfirmedHandleEntityLog =
+            await prisma.entityLog.findFirst({
+              where: {
+                entityId: latestConfirmedDiscordIdEntityLog.entityId,
+                type: "handle",
+                attributes: {
+                  some: {
+                    key: "confirmed",
+                    value: "true",
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: "desc",
+              },
+            });
+
+          user.name =
+            latestConfirmedHandleEntityLog?.content ||
+            latestConfirmedDiscordIdEntityLog.entityId;
+        }
       }
 
       return true;

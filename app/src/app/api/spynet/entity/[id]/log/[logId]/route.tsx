@@ -69,7 +69,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       },
     });
 
-    if (entityLog.type === "handle") {
+    if (["handle", "discord-id"].includes(entityLog.type)) {
       const entityLogs = await prisma.entityLog.findMany({
         where: {
           entityId: entityLog.entityId,
@@ -95,7 +95,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
         (log) => log.type === "discord-id"
       );
 
-      if (latestConfirmedHandleLog && latestConfirmedDiscordIdLog) {
+      if (latestConfirmedDiscordIdLog) {
         const account = await prisma.account.findUnique({
           where: {
             provider_providerAccountId: {
@@ -111,7 +111,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
               id: account.userId,
             },
             data: {
-              name: latestConfirmedHandleLog.content,
+              name: latestConfirmedHandleLog?.content || entityLog.entityId,
             },
           });
         }

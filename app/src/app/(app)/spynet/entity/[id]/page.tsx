@@ -49,14 +49,8 @@ export async function generateMetadata({
         (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
       )?.[0]?.content;
 
-    const spectrumId = entity.logs.find(
-      (log) => log.type === "spectrum-id"
-    )?.content;
-
     return {
-      title: `${
-        latestHandle || spectrumId || entity.id
-      } - Spynet | Sinister Incorporated`,
+      title: `${latestHandle || entity.id} - Spynet | Sinister Incorporated`,
     };
   } catch (error) {
     console.error(error);
@@ -108,7 +102,7 @@ export default async function Page({ params }: Props) {
 
         <span className="text-neutral-500">/</span>
 
-        <h1>{sortedHandles[0]?.content || spectrumId || entity.id}</h1>
+        <h1>{sortedHandles[0]?.content || entity.id}</h1>
       </div>
 
       <div className="mt-4 grid grid-cols-[1fr_1fr_1fr] gap-4">
