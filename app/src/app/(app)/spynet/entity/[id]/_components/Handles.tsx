@@ -6,7 +6,7 @@ import {
   type EntityLogAttribute,
 } from "@prisma/client";
 import { useState } from "react";
-import { FaHistory, FaPen } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
 import Modal from "~/app/_components/Modal";
 import AddHandle from "./AddHandle";
 import Handle from "./Handle";
@@ -49,7 +49,7 @@ const Handles = ({ entity }: Props) => {
         {handles.length > 0 ? (
           <ul className="mt-4 flex flex-col gap-2">
             {handles.map((handle) => (
-              <Handle key={handle.id} handle={handle} />
+              <Handle key={handle.id} log={handle} />
             ))}
           </ul>
         ) : (

@@ -9,7 +9,7 @@ import { useState } from "react";
 import { FaPen } from "react-icons/fa";
 import Modal from "~/app/_components/Modal";
 import AddDiscordId from "./AddDiscordId";
-import Handle from "./Handle";
+import DiscordId from "./DiscordId";
 
 interface Props {
   entity: Entity & {
@@ -48,8 +48,8 @@ const DiscordIds = ({ entity }: Props) => {
 
         {discordIds.length > 0 ? (
           <ul className="mt-4 flex flex-col gap-2">
-            {discordIds.map((handle) => (
-              <Handle key={handle.id} handle={handle} />
+            {discordIds.map((discordId) => (
+              <DiscordId key={discordId.id} log={discordId} />
             ))}
           </ul>
         ) : (
