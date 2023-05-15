@@ -117,21 +117,21 @@ const Sidebar = async () => {
             </ul>
           </div>
 
-          {session!.user.role === "admin" && (
-            <div className="mt-4">
-              <p className="ml-4 text-neutral-500 mt-4">Admin</p>
+          <div className="mt-4">
+            <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
-              <ul>
-                <li>
-                  <Link
-                    href="/logins"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                  >
-                    <FaUsers />
-                    Logins
-                  </Link>
-                </li>
+            <ul>
+              <li>
+                <Link
+                  href="/logins"
+                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                >
+                  <FaUsers />
+                  Logins
+                </Link>
+              </li>
 
+              {session!.user.role === "admin" && (
                 <li>
                   <Link
                     href="/settings"
@@ -141,9 +141,9 @@ const Sidebar = async () => {
                     Settings
                   </Link>
                 </li>
-              </ul>
-            </div>
-          )}
+              )}
+            </ul>
+          </div>
         </nav>
       </div>
 
