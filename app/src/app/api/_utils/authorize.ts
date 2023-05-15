@@ -14,7 +14,7 @@ export function authorize<T extends Actions>(
   if (!user) throw new Error("Unauthorized");
 
   if (["User", "Manufacturer", "Series", "Variant"].includes(resourceType)) {
-    if (user.role !== "admin") return true;
+    if (user.role === "admin") return true;
   }
 
   throw new Error("Unauthorized");
