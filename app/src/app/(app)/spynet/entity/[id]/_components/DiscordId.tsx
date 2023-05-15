@@ -35,7 +35,7 @@ const DiscordId = ({ log }: Props) => {
           <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-1" />
           <div className="flex gap-4">
             <p className="font-bold">
-              Dieser Eintrag wurde noch nicht bestätigt.
+              Dieser Eintrag ist noch nicht bestätigt.
             </p>
             <ConfirmLog log={log} />
           </div>
@@ -48,12 +48,12 @@ const DiscordId = ({ log }: Props) => {
             !confirmation,
         })}
       >
-        <div className="h-[24px] flex items-center">
+        <div className="h-[20px] flex items-center">
           <TbCircleDot />
         </div>
 
         <div className="flex-1">
-          <div className="text-sm flex gap-2 border-b-2 pb-2 items-baseline border-neutral-800">
+          <div className="text-sm flex gap-2 border-b-2 pb-1 items-baseline border-neutral-900">
             <p>
               <time dateTime={log.createdAt.toISOString()}>
                 {log.createdAt.toLocaleDateString("de-DE", {
@@ -73,7 +73,7 @@ const DiscordId = ({ log }: Props) => {
             )}
           </div>
 
-          <p className="mt-2">{log.content}</p>
+          <p className="mt-1">{log.content}</p>
         </div>
       </div>
     </li>
