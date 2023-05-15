@@ -207,6 +207,7 @@ export const authOptions: NextAuthOptions = {
 
         user.email = profile.email!.toLocaleLowerCase();
         user.image = avatar;
+        user.name = null;
       }
 
       return true;

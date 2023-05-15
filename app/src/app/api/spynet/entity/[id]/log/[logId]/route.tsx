@@ -41,13 +41,16 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Do the thing
      */
-    const entity = await prisma.entity.findFirst({
+    const entityLog = await prisma.entityLog.findFirst({
       where: {
-        id: paramsData.id,
+        id: paramsData.logId,
+      },
+      include: {
+        entity: true,
       },
     });
 
-    if (!entity) throw new Error("Not found");
+    if (!entityLog) throw new Error("Not found");
 
     const item = await prisma.entityLogAttribute.create({
       data: {
@@ -65,6 +68,55 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
         },
       },
     });
+
+    if (entityLog.type === "handle") {
+      const entityLogs = await prisma.entityLog.findMany({
+        where: {
+          entityId: entityLog.entityId,
+          type: {
+            in: ["discord-id", "handle"],
+          },
+          attributes: {
+            some: {
+              key: "confirmed",
+              value: "true",
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      const latestConfirmedHandleLog = entityLogs.find(
+        (log) => log.type === "handle"
+      );
+      const latestConfirmedDiscordIdLog = entityLogs.find(
+        (log) => log.type === "discord-id"
+      );
+
+      if (latestConfirmedHandleLog && latestConfirmedDiscordIdLog) {
+        const user = await prisma.account.findUnique({
+          where: {
+            provider_providerAccountId: {
+              provider: "discord",
+              providerAccountId: latestConfirmedDiscordIdLog.content!,
+            },
+          },
+        });
+
+        if (user) {
+          await prisma.user.update({
+            where: {
+              id: user.id,
+            },
+            data: {
+              name: latestConfirmedHandleLog.content,
+            },
+          });
+        }
+      }
+    }
 
     return NextResponse.json(item);
   } catch (error) {
