@@ -1,21 +1,12 @@
+import { type Permission } from "@prisma/client";
 import { type Session } from "next-auth";
 
-const actions = ["create", "read", "update", "delete"] as const;
-type Actions = (typeof actions)[number];
+export function authorize(session: Session, permissionKey: Permission["key"]) {
+  if (!session) throw new Error("Unauthorized");
 
-const resourceTypes = ["User", "Manufacturer", "Series", "Variant"] as const;
-type ResourceTypes = (typeof resourceTypes)[number];
+  if (session.user.role === "admin") return true;
 
-export function authorize<T extends Actions>(
-  user: Session["user"],
-  action: T,
-  resourceType: ResourceTypes
-) {
-  if (!user) throw new Error("Unauthorized");
-
-  if (["User", "Manufacturer", "Series", "Variant"].includes(resourceType)) {
-    if (user.role === "admin") return true;
-  }
+  if (session.permissions.includes(permissionKey)) return true;
 
   throw new Error("Unauthorized");
 }

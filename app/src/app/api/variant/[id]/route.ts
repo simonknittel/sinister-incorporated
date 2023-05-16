@@ -27,7 +27,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Authorize the request.
      */
-    authorize(session.user, "update", "Variant");
+    authorize(session, "update-variant");
 
     /**
      * Validate the request params
@@ -79,7 +79,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Authorize the request.
      */
-    authorize(session.user, "delete", "Variant");
+    authorize(session, "delete", "Variant");
 
     /**
      * Validate the request params

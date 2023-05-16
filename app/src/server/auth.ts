@@ -69,8 +69,8 @@ declare module "next-auth" {
       id: string;
       role: UserRole;
     } & DefaultSession["user"];
-    handle?: string;
     discordId: string;
+    permissions: string[];
   }
 
   interface User {
@@ -88,13 +88,74 @@ const maxAge = 60 * 60 * 24 * 7; // 7 days
 export const authOptions: NextAuthOptions = {
   callbacks: {
     session: async ({ session, user }) => {
-      // TODO: Get permission roles
-
       const discordAccount = await prisma.account.findFirst({
         where: {
           userId: user.id,
         },
       });
+
+      const discordIdLog = await prisma.entityLog.findFirst({
+        where: {
+          type: "discord-id",
+          content: discordAccount!.providerAccountId,
+          attributes: {
+            some: {
+              key: "confirmed",
+              value: "true",
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      let permissions = [] as string[];
+
+      if (discordIdLog) {
+        const roleLogs = await prisma.entityLog.findMany({
+          where: {
+            entityId: discordIdLog.entityId,
+            type: {
+              in: ["role-added", "role-removed"],
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+        const assignedRoles = new Set<string>();
+
+        for (const roleLog of roleLogs) {
+          if (!roleLog.content) continue;
+
+          if (roleLog.type === "role-added") {
+            assignedRoles.add(roleLog.content);
+          } else if (roleLog.type === "role-removed") {
+            assignedRoles.delete(roleLog.content);
+          }
+        }
+
+        const rolesWithPermissions = await prisma.role.findMany({
+          where: {
+            name: {
+              in: Array.from(assignedRoles.values()),
+            },
+          },
+          include: {
+            permissions: {
+              where: {
+                value: true,
+              },
+            },
+          },
+        });
+
+        permissions = rolesWithPermissions.flatMap((role) =>
+          role.permissions.map((permission) => permission.key)
+        );
+      }
 
       return {
         ...session,
@@ -104,6 +165,7 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
         },
         discordId: discordAccount!.providerAccountId,
+        permissions,
       };
     },
 

@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     /**
      * Authorize the request.
      */
-    authorize(session.user, "create", "Manufacturer");
+    authorize(session, "create-manufacturer");
 
     /**
      * Validate the request body

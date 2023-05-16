@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     /**
      * Authorize the request.
      */
-    authorize(session.user, "create", "Series");
+    authorize(session, "create-series");
 
     /**
      * Validate the request body

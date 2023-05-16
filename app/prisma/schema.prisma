@@ -87,14 +87,13 @@ model OperationUnit {
 }
 
 model Entity {
-    id           String              @id @default(cuid())
-    createdAt    DateTime            @default(now())
-    updatedAt    DateTime            @updatedAt
-    type         String              @default("citizen") // citizen, organization
-    logs         EntityLog[]
-    logRelations EntityLogRelation[]
-    createdById  String
-    createdBy    User                @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
+    id          String      @id @default(cuid())
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    type        String      @default("citizen") // citizen, organization
+    logs        EntityLog[]
+    createdById String
+    createdBy   User        @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
 }
 
 model EntityLog {
@@ -104,9 +103,8 @@ model EntityLog {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    type      String // citizen: handle, note, joined-an-org, left-an-org, spectrum-id, citizen-alias, discord-id ...; organization: note, ...
-    content   String?             @db.Text
-    relations EntityLogRelation[]
+    type    String // citizen: handle, note, joined-an-org, left-an-org, spectrum-id, citizen-alias, discord-id, role-added, role-removed ...; organization: note, ...
+    content String? @db.Text
 
     submittedById String
     submittedBy   User                 @relation("submittedBy", fields: [submittedById], references: [id], onDelete: Cascade)
@@ -124,12 +122,19 @@ model EntityLogAttribute {
     createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
 }
 
-model EntityLogRelation {
-    id          String    @id @default(cuid())
-    entityLogId String
-    entityLog   EntityLog @relation(fields: [entityLogId], references: [id], onDelete: Cascade)
-    entityId    String
-    entity      Entity    @relation(fields: [entityId], references: [id], onDelete: Cascade)
+model Role {
+    id          String       @id @default(cuid())
+    name        String       @unique
+    permissions Permission[]
+}
+
+model Permission {
+    roleId String
+    role   Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    key    String
+    value  Boolean
+
+    @@id([roleId, key])
 }
 
 // Necessary for Next auth
