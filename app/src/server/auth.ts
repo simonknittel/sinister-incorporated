@@ -121,7 +121,7 @@ export const authOptions: NextAuthOptions = {
             },
           },
           orderBy: {
-            createdAt: "desc",
+            createdAt: "asc",
           },
         });
 
