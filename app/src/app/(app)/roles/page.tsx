@@ -2,12 +2,14 @@ import { type Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { FaCalendarDay, FaLock, FaSignInAlt, FaUsers } from "react-icons/fa";
+import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
 import { authorize } from "~/app/_utils/authorize";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import CreateRole from "./_components/CreateRole";
 import DeleteRole from "./_components/DeleteRole";
+import ImpersonateRole from "./_components/ImpersonateRole";
 import PermissionCheckbox from "./_components/PermissionCheckbox";
 
 export const metadata: Metadata = {
@@ -18,160 +20,104 @@ export default async function Page() {
   const session = await getServerSession(authOptions);
   if (!authorize("edit-roles-and-permissions", session)) redirect("/dashboard");
 
-  const permissions = [
+  const permissionGroups = [
     {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <FaSignInAlt className="rotate-90" />
-          </span>
-          Login
-        </span>
-      ),
-      key: "login",
+      name: "",
+      icon: <FaSignInAlt />,
+      permissions: [
+        {
+          name: "Login",
+          key: "login",
+        },
+      ],
     },
     {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <FaLock className="rotate-90" />
-          </span>
-          Rollen und Berechtigungen bearbeiten
-        </span>
-      ),
-      key: "edit-roles-and-permissions",
+      name: "",
+      icon: <FaLock />,
+      permissions: [
+        {
+          name: "Rollen und Berechtigungen bearbeiten",
+          key: "edit-roles-and-permissions",
+        },
+      ],
     },
     {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <FaUsers className="rotate-90" />
-          </span>
-          Logins einsehen
-        </span>
-      ),
-      key: "view-logins",
+      name: "",
+      icon: <FaUsers />,
+      permissions: [
+        {
+          name: "Logins einsehen",
+          key: "view-logins",
+        },
+      ],
     },
     {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <RiSpyFill className="rotate-90" /> Spynet
-          </span>
-          Spynet einsehen
-        </span>
-      ),
-      key: "view-spynet",
+      name: "Spynet",
+      icon: <RiSpyFill />,
+      permissions: [
+        {
+          name: "Spynet einsehen",
+          key: "view-spynet",
+        },
+        {
+          name: "Neuen Citizen anlegen",
+          key: "add-citizen",
+        },
+        {
+          name: "Neue Organisation anlegen",
+          key: "add-organization",
+        },
+        {
+          name: "Neuen Handle hinzufügen",
+          key: "add-handle",
+        },
+        {
+          name: "Neue Discord ID hinzufügen",
+          key: "add-discord-id",
+        },
+        {
+          name: "Neue Notiz hinzufügen",
+          key: "add-note",
+        },
+      ],
     },
     {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <RiSpyFill className="rotate-90" /> Spynet
-          </span>
-          Neuen Citizen anlegen
-        </span>
-      ),
-      key: "add-citizen",
+      name: "Flotte",
+      icon: <MdWorkspaces />,
+      permissions: [
+        {
+          name: "Gesamte Flotte einsehen",
+          key: "view-org-fleet",
+        },
+        {
+          name: "Eigene Schiffe hinzufügen",
+          key: "add-ship",
+        },
+        {
+          name: "Schiffsmodelle bearbeiten",
+          key: "edit-manufacturers-series-and-variants",
+        },
+      ],
     },
     {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <RiSpyFill className="rotate-90" /> Spynet
-          </span>
-          Neue Organisation anlegen
-        </span>
-      ),
-      key: "add-organization",
+      name: "Events",
+      icon: <FaCalendarDay />,
+      permissions: [
+        {
+          name: "Alle Events einsehen",
+          key: "view-events",
+        },
+      ],
     },
     {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <RiSpyFill className="rotate-90" /> Spynet
-          </span>
-          Neuen Handle hinzufügen
-        </span>
-      ),
-      key: "add-handle",
-    },
-    {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <RiSpyFill className="rotate-90" /> Spynet
-          </span>
-          Neue Discord ID hinzufügen
-        </span>
-      ),
-      key: "add-discord-id",
-    },
-    {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <RiSpyFill className="rotate-90" /> Spynet
-          </span>
-          Neue Notiz hinzufügen
-        </span>
-      ),
-      key: "add-note",
-    },
-    {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <FaCalendarDay className="rotate-90" /> Flotte
-          </span>
-          Gesamte Flotte einsehen
-        </span>
-      ),
-      key: "view-org-fleet",
-    },
-    {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <FaCalendarDay className="rotate-90" /> Flotte
-          </span>
-          Eigene Schiffe hinzufügen
-        </span>
-      ),
-      key: "add-ship",
-    },
-    {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <FaCalendarDay className="rotate-90" /> Flotte
-          </span>
-          Schiffsmodelle bearbeiten
-        </span>
-      ),
-      key: "edit-manufacturers-series-and-variants",
-    },
-    {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <FaCalendarDay className="rotate-90" /> Events
-          </span>
-          Alle Events einsehen
-        </span>
-      ),
-      key: "view-events",
-    },
-    {
-      name: (
-        <span>
-          <span className="text-neutral-500 flex items-center gap-2">
-            <RiSwordFill className="rotate-90" /> Operationen
-          </span>
-          Alle Operationen einsehen
-        </span>
-      ),
-      key: "view-operations",
+      name: "Operationen",
+      icon: <RiSwordFill />,
+      permissions: [
+        {
+          name: "Alle Operationen einsehen",
+          key: "view-operations",
+        },
+      ],
     },
   ];
 
@@ -192,42 +138,59 @@ export default async function Page() {
               <tr>
                 <td />
 
-                {permissions.map((permission) => (
-                  <th
-                    style={{
-                      writingMode: "vertical-rl",
-                    }}
-                    key={permission.key}
-                    className="p-2 text-left"
-                  >
-                    {permission.name}
-                  </th>
-                ))}
+                {permissionGroups.flatMap((permissionGroup) =>
+                  permissionGroup.permissions.map((permission) => (
+                    <th
+                      key={permission.key}
+                      className="p-2 text-left"
+                      style={{
+                        writingMode: "vertical-rl",
+                      }}
+                    >
+                      <span className="text-neutral-500 flex items-center gap-2">
+                        <span className="rotate-90">
+                          {permissionGroup.icon}
+                        </span>
+
+                        {permissionGroup.name}
+                      </span>
+
+                      <span>{permission.name}</span>
+                    </th>
+                  ))
+                )}
               </tr>
             </thead>
 
             <tbody>
               {roles.map((role) => (
                 <tr key={role.id}>
-                  <td className="flex gap-2 p-2">
+                  <td className="flex justify-between gap-2 p-2">
                     {role.name}
 
-                    <DeleteRole role={role} />
+                    <div className="flex">
+                      <ImpersonateRole role={role} />
+                      <DeleteRole role={role} />
+                    </div>
                   </td>
 
-                  {permissions.map((permission) => (
-                    <td key={permission.key} className="p-2">
-                      <PermissionCheckbox
-                        key={permission.key}
-                        permission={permission}
-                        role={role}
-                        checked={role.permissions.some(
-                          (rolePermission) =>
-                            rolePermission.key === permission.key
-                        )}
-                      />
-                    </td>
-                  ))}
+                  {permissionGroups.flatMap((permissionGroup) => {
+                    return permissionGroup.permissions.map((permission) => (
+                      <td
+                        key={`${permissionGroup.name}_${permission.key}`}
+                        className="p-2"
+                      >
+                        <PermissionCheckbox
+                          permission={permission}
+                          role={role}
+                          checked={role.permissions.some(
+                            (rolePermission) =>
+                              rolePermission.key === permission.key
+                          )}
+                        />
+                      </td>
+                    ));
+                  })}
                 </tr>
               ))}
             </tbody>
