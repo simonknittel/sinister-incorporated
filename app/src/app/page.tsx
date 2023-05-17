@@ -16,7 +16,7 @@ interface Props {
 
 export default async function Page({ searchParams }: Props) {
   const session = await getServerSession(authOptions);
-  if (session) redirect("/events");
+  if (session) redirect("/dashboard");
 
   const activeProviders = authOptions.providers.map((provider) => provider.id);
 

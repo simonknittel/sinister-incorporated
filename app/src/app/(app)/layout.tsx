@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { type ReactNode } from "react";
 import { authOptions } from "~/server/auth";
+import { authorize } from "../_utils/authorize";
 import QueryClientProviderContainer from "./_components/QueryClientProviderContainer";
 import SessionProviderContainer from "./_components/SessionProviderContainer";
 import Sidebar from "./_components/Sidebar";
@@ -15,8 +16,7 @@ interface Props {
 export default async function AppLayout({ children, fleetModal }: Props) {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/");
-  if (["confirmed", "admin"].includes(session.user.role || "") === false)
-    redirect("/onboarding");
+  if (!authorize("login", session)) redirect("/onboarding");
 
   return (
     <SessionProviderContainer session={session}>

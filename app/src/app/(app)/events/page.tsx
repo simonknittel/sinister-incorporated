@@ -1,7 +1,11 @@
 import { type Metadata } from "next";
+import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
+import { redirect } from "next/navigation";
 import { z } from "zod";
+import { authorize } from "~/app/_utils/authorize";
 import { env } from "~/env.mjs";
+import { authOptions } from "~/server/auth";
 import Event from "./_components/Event";
 
 const TimeAgoContainer = dynamic(
@@ -101,6 +105,9 @@ async function getEvents() {
 }
 
 export default async function Page() {
+  const session = await getServerSession(authOptions);
+  if (!authorize("view-events", session)) redirect("/dashboard");
+
   const { date, data: events } = await getEvents();
 
   return (

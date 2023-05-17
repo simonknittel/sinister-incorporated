@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { authorizeApi } from "~/app/_utils/authorize";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import errorHandler from "../../_utils/errorHandler";
@@ -22,6 +23,11 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
      */
     const session = await getServerSession(authOptions);
     if (!session) throw new Error("Unauthorized");
+
+    /**
+     * Authorize the request.
+     */
+    authorizeApi("add-ship", session);
 
     /**
      * Validate the request params
@@ -73,6 +79,11 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
      */
     const session = await getServerSession(authOptions);
     if (!session) throw new Error("Unauthorized");
+
+    /**
+     * Authorize the request.
+     */
+    authorizeApi("add-ship", session);
 
     /**
      * Validate the request params

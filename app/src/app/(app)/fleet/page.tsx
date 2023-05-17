@@ -1,5 +1,9 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authorize } from "~/app/_utils/authorize";
+import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import FleetTable from "./_components/FleetTable";
 
@@ -8,6 +12,9 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  const session = await getServerSession(authOptions);
+  if (!authorize("view-fleet", session)) redirect("/dashboard");
+
   const orgShips = await prisma.ship.findMany({
     include: {
       variant: {

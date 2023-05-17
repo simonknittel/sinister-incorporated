@@ -1,9 +1,12 @@
 import { type Metadata } from "next";
+import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
-import { FaDiscord, FaSitemap } from "react-icons/fa";
+import { FaDiscord, FaLock, FaSitemap } from "react-icons/fa";
+import { authorize } from "~/app/_utils/authorize";
+import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import sinisterIcon from "../../../../../assets/Icons/Membership/logo_white.svg";
 import DiscordIds from "./_components/DiscordIds";
@@ -66,6 +69,9 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
+  const session = await getServerSession(authOptions);
+  if (!authorize("view-spynet", session)) redirect("/dashboard");
+
   const entity = await getEntity(params.id);
   if (!entity) notFound();
 
@@ -105,7 +111,7 @@ export default async function Page({ params }: Props) {
         <h1>{sortedHandles[0]?.content || entity.id}</h1>
       </div>
 
-      <div className="mt-4 grid grid-cols-[1fr_1fr_1fr] gap-4">
+      <div className="mt-4 grid grid-cols-[1fr_1fr_1fr_1fr] gap-4">
         <section className="rounded p-4 lg:p-8 bg-neutral-900">
           <h2 className="font-bold">Übersicht</h2>
 
@@ -133,6 +139,12 @@ export default async function Page({ params }: Props) {
               <DiscordIds entity={entity} />
             </dd>
           </dl>
+        </section>
+
+        <section className="rounded p-4 lg:p-8 bg-neutral-900 flex flex-col">
+          <h2 className="font-bold flex gap-2 items-center">
+            <FaLock /> Rollen
+          </h2>
         </section>
 
         <section className="rounded p-4 lg:p-8 bg-neutral-900 flex flex-col">

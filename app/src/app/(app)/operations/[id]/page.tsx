@@ -1,8 +1,11 @@
 import { type Metadata } from "next";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 import Avatar from "~/app/_components/Avatar";
+import { authorize } from "~/app/_utils/authorize";
+import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import ConfirmParticipation from "./_components/ConfirmParticipation";
 import CreateUnit from "./_components/CreateUnit";
@@ -85,6 +88,9 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
+  const session = await getServerSession(authOptions);
+  if (!authorize("view-operations", session)) redirect("/dashboard");
+
   const operation = await getOperation(params.id);
   if (!operation) notFound();
 

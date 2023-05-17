@@ -1,11 +1,18 @@
 import { type Metadata } from "next";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { authorize } from "~/app/_utils/authorize";
+import { authOptions } from "~/server/auth";
 
 export const metadata: Metadata = {
   title: "Einstellungen - Spynet | Sinister Incorporated",
 };
 
-export default function Page() {
+export default async function Page() {
+  const session = await getServerSession(authOptions);
+  if (!authorize("spynet-settings", session)) redirect("/dashboard");
+
   return (
     <main className="p-4 lg:p-8 pt-20">
       <div className="flex gap-2 font-bold text-xl">

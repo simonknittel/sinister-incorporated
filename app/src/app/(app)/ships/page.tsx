@@ -1,6 +1,7 @@
 import { type Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { authorize } from "~/app/_utils/authorize";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 import AddManufacturer from "./_components/AddManufacturer";
@@ -13,7 +14,8 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
-  if (session!.user.role !== "admin") redirect("/events");
+  if (!authorize("edit-manufacturers-series-and-variants", session))
+    redirect("/dashboard");
 
   const data = await prisma.manufacturer.findMany({
     include: {

@@ -7,8 +7,7 @@ import { authorizeApi } from "../../_utils/authorize";
 import errorHandler from "../_utils/errorHandler";
 
 const postBodySchema = z.object({
-  name: z.string().trim().min(1),
-  seriesId: z.string(),
+  name: z.string().trim().min(1).max(255),
 });
 
 export async function POST(request: Request) {
@@ -22,7 +21,7 @@ export async function POST(request: Request) {
     /**
      * Authorize the request.
      */
-    authorizeApi("edit-manufacturers-series-and-variants", session);
+    authorizeApi("edit-roles-and-permissions", session);
 
     /**
      * Validate the request body
@@ -31,21 +30,20 @@ export async function POST(request: Request) {
     const data = await postBodySchema.parseAsync(body);
 
     /**
-     * Create
+     * Do the thing
      */
-    const createdItem = await prisma.variant.create({
-      data: {
-        name: data.name,
-        series: {
-          connect: {
-            id: data.seriesId,
-          },
-        },
-      },
+    const item = await prisma.role.create({
+      data,
     });
 
-    return NextResponse.json(createdItem);
+    /**
+     * Respond with the result
+     */
+    return NextResponse.json(item);
   } catch (error) {
+    /**
+     * Respond with an error
+     */
     return errorHandler(error);
   }
 }

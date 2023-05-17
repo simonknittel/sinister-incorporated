@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import { authorize } from "../_utils/authorize";
+import { authorizeApi } from "../../_utils/authorize";
 import errorHandler from "../_utils/errorHandler";
 
 const postBodySchema = z.object({
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     /**
      * Authorize the request.
      */
-    authorize(session, "create-series");
+    authorizeApi("edit-manufacturers-series-and-variants", session);
 
     /**
      * Validate the request body

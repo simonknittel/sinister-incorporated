@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { authOptions } from "~/server/auth";
+import { authorize } from "../_utils/authorize";
 
 export const metadata: Metadata = {
   title: "Onboarding | Sinister Incorporated",
@@ -11,8 +12,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/");
-  if (["confirmed", "admin"].includes(session.user.role || ""))
-    redirect("/events");
+  if (authorize("login", session)) redirect("/dashboard");
 
   return (
     <div className="min-h-screen flex justify-center items-center">

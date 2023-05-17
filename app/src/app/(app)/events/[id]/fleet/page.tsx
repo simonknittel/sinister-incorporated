@@ -1,10 +1,14 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
+import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import FleetTable from "~/app/(app)/fleet/_components/FleetTable";
+import { authorize } from "~/app/_utils/authorize";
 import { env } from "~/env.mjs";
+import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 
 const TimeAgoContainer = dynamic(
@@ -174,6 +178,9 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
+  const session = await getServerSession(authOptions);
+  if (!authorize("view-org-fleet", session)) redirect("/dashboard");
+
   const { date, data: event } = await getEvent(params.id);
   const users = await getEventUsers(params.id);
 
