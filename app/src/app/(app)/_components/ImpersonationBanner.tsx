@@ -4,10 +4,10 @@ import { type Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  role: Role;
+  roles: Role[];
 }
 
-const ImpersonationBanner = ({ role }: Props) => {
+const ImpersonationBanner = ({ roles }: Props) => {
   const router = useRouter();
 
   const handleClick = () => {
@@ -18,7 +18,8 @@ const ImpersonationBanner = ({ role }: Props) => {
   return (
     <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-500/50 backdrop-blur z-50 flex w-[calc(100%-2rem)] max-w-xl p-4 rounded gap-4 justify-between">
       <p>
-        Du siehst die Seite aus der Sicht der Rolle &quot;{role.name}&quot;.
+        Du siehst die Seite aus der Sicht der Rolle{roles.length > 1 ? "n" : ""}{" "}
+        {roles.map((role) => role.name).join(", ")}.
       </p>
 
       <button onClick={handleClick} className="hover:underline" type="button">

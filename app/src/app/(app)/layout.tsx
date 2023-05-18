@@ -6,7 +6,7 @@ import {
   authenticateAndAuthorize,
   authenticateAndAuthorizePage,
 } from "../_utils/authenticateAndAuthorize";
-import ImpersonationBanner from "./_components/ImpersonationBanner";
+import ImpersonationBannerContainer from "./_components/ImpersonationBannerContainer";
 import QueryClientProviderContainer from "./_components/QueryClientProviderContainer";
 import SessionProviderContainer from "./_components/SessionProviderContainer";
 import Sidebar from "./_components/Sidebar";
@@ -34,8 +34,6 @@ export default async function AppLayout({ children, fleetModal }: Props) {
   if ((await authenticateAndAuthorize("login")) === false)
     redirect("/onboarding");
 
-  const impersonatedRole = await getImpersonatedRole();
-
   return (
     <SessionProviderContainer session={session}>
       <QueryClientProviderContainer>
@@ -51,7 +49,9 @@ export default async function AppLayout({ children, fleetModal }: Props) {
 
         {fleetModal}
 
-        {impersonatedRole && <ImpersonationBanner role={impersonatedRole} />}
+        <Suspense>
+          <ImpersonationBannerContainer />
+        </Suspense>
       </QueryClientProviderContainer>
     </SessionProviderContainer>
   );

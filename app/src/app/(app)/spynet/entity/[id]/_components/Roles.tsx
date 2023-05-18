@@ -8,6 +8,7 @@ import { FaLock } from "react-icons/fa";
 import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import AddRoles from "./AddRoles";
+import ImpersonateRoles from "./ImpersonateRoles";
 import Role from "./Role";
 
 interface Props {
@@ -61,12 +62,15 @@ const Roles = async ({ entity }: Props) => {
       )}
 
       {(await authenticateAndAuthorize("edit-roles-and-permissions")) && (
-        <AddRoles
-          entity={entity}
-          roles={allCurrentlyExistingRoles}
-          activeRolesIds={Array.from(activeRoleIds)}
-          className="mt-2"
-        />
+        <div className="flex gap-4 mt-2">
+          <AddRoles
+            entity={entity}
+            roles={allCurrentlyExistingRoles}
+            activeRolesIds={Array.from(activeRoleIds)}
+          />
+
+          <ImpersonateRoles roles={activeRoles} />
+        </div>
       )}
     </section>
   );

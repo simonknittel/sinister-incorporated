@@ -6,20 +6,22 @@ import { RiSpyFill } from "react-icons/ri";
 import Button from "~/app/_components/Button";
 
 interface Props {
-  role: Role;
+  roles: Role[];
 }
 
-const ImpersonateRole = ({ role }: Props) => {
+const ImpersonateRoles = ({ roles }: Props) => {
   const router = useRouter();
 
   const handleClick = () => {
-    document.cookie = `impersonate=${role.id}; path=/; max-age=3600;`;
+    document.cookie = `impersonate=${roles
+      .map((role) => role.id)
+      .join(",")}; path=/; max-age=3600;`;
     router.refresh();
   };
 
   return (
     <Button
-      title="Rolle simulieren"
+      title="Rollen simulieren"
       onClick={() => void handleClick()}
       variant="tertiary"
     >
@@ -28,4 +30,4 @@ const ImpersonateRole = ({ role }: Props) => {
   );
 };
 
-export default ImpersonateRole;
+export default ImpersonateRoles;

@@ -19,7 +19,6 @@ const Roles = async () => {
 
             <div className="flex gap-4 items-center">
               <RolePermissions role={role} />
-              {/* <ImpersonateRole role={role} /> */}
               <DeleteRole role={role} />
             </div>
           </div>
