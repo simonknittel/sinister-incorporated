@@ -36,12 +36,8 @@ export const permissionGroups = [
         key: "view-spynet",
       },
       {
-        name: "Neuen Citizen anlegen",
-        key: "add-citizen",
-      },
-      {
-        name: "Neue Organisation anlegen",
-        key: "add-organization",
+        name: "Neuen Citizen oder Organisation anlegen",
+        key: "add-entity",
       },
       {
         name: "Neuen Handle hinzufügen",

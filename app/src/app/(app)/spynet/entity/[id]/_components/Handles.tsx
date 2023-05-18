@@ -7,6 +7,7 @@ import {
 } from "@prisma/client";
 import { useState } from "react";
 import { FaPen } from "react-icons/fa";
+import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
 import AddHandle from "./AddHandle";
 import Handle from "./Handle";
@@ -28,14 +29,13 @@ const Handles = ({ entity }: Props) => {
 
   return (
     <>
-      <button
+      <Button
         onClick={() => setIsOpen(true)}
-        className="text-sinister-red-500 hover:text-sinister-red-300 px-2"
-        type="button"
+        variant="tertiary"
         title="Bearbeiten"
       >
-        <FaPen />
-      </button>
+        <FaPen /> Bearbeiten
+      </Button>
 
       <Modal
         isOpen={isOpen}
@@ -44,7 +44,7 @@ const Handles = ({ entity }: Props) => {
       >
         <h2 className="text-xl font-bold">Frühere Handles</h2>
 
-        <AddHandle entity={entity} onRequestClose={() => setIsOpen(false)} />
+        <AddHandle entity={entity} />
 
         {handles.length > 0 ? (
           <ul className="mt-4 flex flex-col gap-2">

@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
 import errorHandler from "~/app/api/_utils/errorHandler";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
@@ -24,12 +25,20 @@ const postBodySchema = z.union([
     type: z.literal("discord-id"),
     content: z.string().trim().min(1).max(255),
   }),
+  z.object({
+    type: z.literal("role-added"),
+    content: z.string().cuid2(),
+  }),
+  z.object({
+    type: z.literal("role-removed"),
+    content: z.string().cuid2(),
+  }),
 ]);
 
 export async function POST(request: Request, { params }: { params: Params }) {
   try {
     /**
-     * Authenticate the request.
+     * Authenticate the request
      */
     const session = await getServerSession(authOptions);
     if (!session) throw new Error("Unauthorized");
@@ -44,6 +53,27 @@ export async function POST(request: Request, { params }: { params: Params }) {
      */
     const body: unknown = await request.json();
     const data = await postBodySchema.parseAsync(body);
+
+    /**
+     * Authenticate the request
+     */
+    switch (data.type) {
+      case "handle":
+        await authenticateAndAuthorize("add-handle");
+        break;
+      case "note":
+        await authenticateAndAuthorize("add-note");
+        break;
+      case "discord-id":
+        await authenticateAndAuthorize("add-discord-id");
+        break;
+      case "role-added":
+        await authenticateAndAuthorize("edit-roles-and-permissions");
+        break;
+      case "role-removed":
+        await authenticateAndAuthorize("edit-roles-and-permissions");
+        break;
+    }
 
     /**
      * Do the thing

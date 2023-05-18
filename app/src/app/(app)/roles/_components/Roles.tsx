@@ -1,7 +1,6 @@
 import { prisma } from "~/server/db";
 import CreateRole from "./CreateRole";
 import DeleteRole from "./DeleteRole";
-import ImpersonateRole from "./ImpersonateRole";
 import RolePermissions from "./RolePermissions";
 
 const Roles = async () => {
@@ -20,7 +19,7 @@ const Roles = async () => {
 
             <div className="flex gap-4 items-center">
               <RolePermissions role={role} />
-              <ImpersonateRole role={role} />
+              {/* <ImpersonateRole role={role} /> */}
               <DeleteRole role={role} />
             </div>
           </div>

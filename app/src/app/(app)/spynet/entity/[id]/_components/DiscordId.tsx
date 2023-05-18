@@ -1,3 +1,5 @@
+"use client";
+
 import {
   type EntityLog,
   type EntityLogAttribute,
@@ -6,6 +8,7 @@ import {
 import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
+import useAuthorization from "~/app/(app)/_utils/useAuthorization";
 import ConfirmLog from "./ConfirmLog";
 import styles from "./Handle.module.css";
 
@@ -16,6 +19,8 @@ interface Props {
 }
 
 const DiscordId = ({ log }: Props) => {
+  const authorization = useAuthorization("confirm-discord-id");
+
   const confirmation = log.attributes.find(
     (attribute) => attribute.key === "confirmed"
   );
@@ -37,7 +42,8 @@ const DiscordId = ({ log }: Props) => {
             <p className="font-bold">
               Dieser Eintrag ist noch nicht bestätigt.
             </p>
-            <ConfirmLog log={log} />
+
+            {authorization && <ConfirmLog log={log} />}
           </div>
         </div>
       )}

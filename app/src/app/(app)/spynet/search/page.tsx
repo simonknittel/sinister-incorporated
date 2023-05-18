@@ -1,5 +1,8 @@
 import { type Metadata } from "next";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
+import {
+  authenticateAndAuthorize,
+  authenticateAndAuthorizePage,
+} from "~/app/_utils/authenticateAndAuthorize";
 import CreateEntity from "../_components/CreateEntity";
 import Search from "./_components/Search";
 
@@ -19,7 +22,7 @@ export default async function Page() {
 
         <Search />
 
-        <CreateEntity />
+        {(await authenticateAndAuthorize("create-entity")) && <CreateEntity />}
       </div>
     </main>
   );

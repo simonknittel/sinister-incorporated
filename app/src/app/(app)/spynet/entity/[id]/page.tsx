@@ -2,14 +2,17 @@ import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cache } from "react";
-import { FaDiscord, FaLock, FaSitemap } from "react-icons/fa";
+import { Suspense, cache } from "react";
+import { FaSitemap } from "react-icons/fa";
 import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import sinisterIcon from "../../../../../assets/Icons/Membership/logo_white.svg";
-import DiscordIds from "./_components/DiscordIds";
-import Handles from "./_components/Handles";
 import Notes from "./_components/Notes";
+import NotesSkeleton from "./_components/NotesSkeleton";
+import Overview from "./_components/Overview";
+import OverviewSkeleton from "./_components/OverviewSkeleton";
+import Roles from "./_components/Roles";
+import RolesSkeleton from "./_components/RolesSkeleton";
 import WIP from "./_components/WIP";
 
 const getEntity = cache(async (id: string) => {
@@ -76,14 +79,6 @@ export default async function Page({ params }: Props) {
     .filter((log) => log.type === "handle")
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-  const spectrumId = entity.logs.find(
-    (log) => log.type === "spectrum-id"
-  )?.content;
-
-  const discordId = entity.logs.find(
-    (log) => log.type === "discord-id"
-  )?.content;
-
   return (
     <main className="p-4 lg:p-8 pt-20">
       <div className="flex gap-2 font-bold text-xl">
@@ -109,40 +104,13 @@ export default async function Page({ params }: Props) {
       </div>
 
       <div className="mt-4 grid grid-cols-[1fr_1fr_1fr_1fr] gap-4">
-        <section className="rounded p-4 lg:p-8 bg-neutral-900">
-          <h2 className="font-bold">Übersicht</h2>
+        <Suspense fallback={<OverviewSkeleton />}>
+          <Overview entity={entity} />
+        </Suspense>
 
-          <dl className="mt-4">
-            <dt className="text-neutral-500">Sinister ID</dt>
-            <dd>{entity.id}</dd>
-
-            <dt className="text-neutral-500 mt-4">Spectrum ID</dt>
-            <dd>{spectrumId}</dd>
-
-            <dt className="text-neutral-500 mt-4">Handle</dt>
-            <dd className="flex gap-1">
-              {sortedHandles[0]?.content || (
-                <span className="italic">Unbekannt</span>
-              )}
-              <Handles entity={entity} />
-            </dd>
-
-            <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
-              <FaDiscord />
-              Discord ID
-            </dt>
-            <dd className="flex gap-1">
-              {discordId || <span className="italic">Unbekannt</span>}
-              <DiscordIds entity={entity} />
-            </dd>
-          </dl>
-        </section>
-
-        <section className="rounded p-4 lg:p-8 bg-neutral-900 flex flex-col">
-          <h2 className="font-bold flex gap-2 items-center">
-            <FaLock /> Rollen
-          </h2>
-        </section>
+        <Suspense fallback={<RolesSkeleton />}>
+          <Roles entity={entity} />
+        </Suspense>
 
         <section className="rounded p-4 lg:p-8 bg-neutral-900 flex flex-col">
           <h2 className="font-bold flex gap-2 items-center">
@@ -161,7 +129,9 @@ export default async function Page({ params }: Props) {
           <WIP />
         </section>
 
-        <Notes entity={entity} />
+        <Suspense fallback={<NotesSkeleton />}>
+          <Notes entity={entity} />
+        </Suspense>
       </div>
     </main>
   );

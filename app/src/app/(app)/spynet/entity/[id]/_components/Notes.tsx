@@ -5,6 +5,7 @@ import {
   type User,
 } from "@prisma/client";
 import { FaListAlt } from "react-icons/fa";
+import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
 import AddNote from "./AddNote";
 import NoteSection from "./NoteSection";
 
@@ -16,7 +17,7 @@ interface Props {
   };
 }
 
-const Notes = ({ entity }: Props) => {
+const Notes = async ({ entity }: Props) => {
   const notes = entity.logs
     .filter((log) => log.type === "note")
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -27,7 +28,9 @@ const Notes = ({ entity }: Props) => {
         <FaListAlt /> Notizen
       </h2>
 
-      <AddNote entity={entity} />
+      {(await authenticateAndAuthorize("add-note")) && (
+        <AddNote entity={entity} />
+      )}
 
       {notes.map((log) => (
         <NoteSection key={log.id} log={log} />

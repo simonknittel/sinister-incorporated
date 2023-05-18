@@ -9,7 +9,6 @@ import { FaSave, FaSpinner } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 
 interface Props {
-  onRequestClose?: () => void;
   entity: Entity;
 }
 
@@ -17,7 +16,7 @@ interface FormValues {
   content: string;
 }
 
-const AddDiscordId = ({ onRequestClose, entity }: Props) => {
+const AddDiscordId = ({ entity }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +38,6 @@ const AddDiscordId = ({ onRequestClose, entity }: Props) => {
         router.refresh();
         toast.success("Erfolgreich hinzugefügt");
         reset();
-        onRequestClose?.();
       } else {
         toast.error("Beim Hinzufügen ist ein Fehler aufgetreten.");
       }

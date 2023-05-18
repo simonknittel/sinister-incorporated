@@ -6,6 +6,7 @@ import {
 import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
+import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
 import ChangeSecurityLevel from "./ChangeSecurityLevel";
 import ConfirmLog from "./ConfirmLog";
 import styles from "./NoteSection.module.css";
@@ -16,7 +17,7 @@ interface Props {
   };
 }
 
-const NoteSection = ({ log }: Props) => {
+const NoteSection = async ({ log }: Props) => {
   const confirmation = log.attributes.find(
     (attribute) => attribute.key === "confirmed"
   );
@@ -39,7 +40,10 @@ const NoteSection = ({ log }: Props) => {
           <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-1" />
           <div className="flex gap-4">
             <p className="font-bold">Diese Notiz ist noch nicht bestätigt.</p>
-            <ConfirmLog log={log} />
+
+            {(await authenticateAndAuthorize("confirm-note")) && (
+              <ConfirmLog log={log} />
+            )}
           </div>
         </div>
       )}

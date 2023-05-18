@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
 import errorHandler from "~/app/api/_utils/errorHandler";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
@@ -22,7 +23,7 @@ const patchBodySchema = z.object({
 export async function PATCH(request: Request, { params }: { params: Params }) {
   try {
     /**
-     * Authenticate the request.
+     * Authenticate the request
      */
     const session = await getServerSession(authOptions);
     if (!session) throw new Error("Unauthorized");
@@ -51,6 +52,18 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     });
 
     if (!entityLog) throw new Error("Not found");
+
+    switch (entityLog.type) {
+      case "handle":
+        await authenticateAndAuthorize("confirm-handle");
+        break;
+      case "discord-id":
+        await authenticateAndAuthorize("confirm-discord-id");
+        break;
+      case "note":
+        await authenticateAndAuthorize("confirm-note");
+        break;
+    }
 
     const item = await prisma.entityLogAttribute.create({
       data: {
