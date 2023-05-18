@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   await authenticateAndAuthorizePage();
-  if (await authenticateAndAuthorize("login")) redirect("/");
+  if (await authenticateAndAuthorize("login")) redirect("/dashboard");
 
   return (
     <div className="min-h-screen flex justify-center items-center">

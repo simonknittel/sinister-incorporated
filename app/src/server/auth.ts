@@ -139,8 +139,8 @@ export const authOptions: NextAuthOptions = {
 
         const rolesWithPermissions = await prisma.role.findMany({
           where: {
-            name: {
-              in: Array.from(assignedRoles.values()),
+            id: {
+              in: Array.from(assignedRoles),
             },
           },
           include: {

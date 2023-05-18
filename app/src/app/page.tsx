@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { authOptions } from "~/server/auth";
 import LoginButtons from "./_components/LoginButtons";
 import Note from "./_components/Note";
-import { authenticateAndAuthorizePage } from "./_utils/authenticateAndAuthorize";
+import { authenticateAndAuthorize } from "./_utils/authenticateAndAuthorize";
 
 export const metadata: Metadata = {
   title: "Sinister Incorporated - Hoist the Black",
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default async function Page({ searchParams }: Props) {
-  const session = await authenticateAndAuthorizePage();
+  const session = await authenticateAndAuthorize();
   if (session) redirect("/dashboard");
 
   const activeProviders = authOptions.providers.map((provider) => provider.id);
