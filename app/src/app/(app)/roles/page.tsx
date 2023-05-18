@@ -1,11 +1,8 @@
 import { type Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
 import { FaCalendarDay, FaLock, FaSignInAlt, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
-import { authorize } from "~/app/_utils/authorize";
-import { authOptions } from "~/server/auth";
+import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import CreateRole from "./_components/CreateRole";
 import DeleteRole from "./_components/DeleteRole";
@@ -17,8 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
-  if (!authorize("edit-roles-and-permissions", session)) redirect("/dashboard");
+  await authenticateAndAuthorizePage("edit-roles-and-permissions");
 
   const permissionGroups = [
     {

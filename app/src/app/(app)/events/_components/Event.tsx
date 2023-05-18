@@ -1,11 +1,9 @@
 import clsx from "clsx";
-import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
-import { authorize } from "~/app/_utils/authorize";
-import { authOptions } from "~/server/auth";
+import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
 
 interface Props {
   className?: string;
@@ -21,8 +19,6 @@ interface Props {
 }
 
 const Event = async ({ className, event }: Props) => {
-  const session = await getServerSession(authOptions);
-
   return (
     <article
       className={clsx(
@@ -72,7 +68,7 @@ const Event = async ({ className, event }: Props) => {
             Discord <FaDiscord />
           </Link>
 
-          {authorize("view-org-fleet", session) && (
+          {(await authenticateAndAuthorize("view-org-fleet")) && (
             <Link
               href={`/events/${event.id}/fleet`}
               className="flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-sinister-red-500 text-sinister-red-500 hover:border-sinister-red-300 active:border-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300 px-6"

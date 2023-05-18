@@ -1,17 +1,13 @@
 import { type Metadata } from "next";
-import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { authorize } from "~/app/_utils/authorize";
-import { authOptions } from "~/server/auth";
+import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
 
 export const metadata: Metadata = {
   title: "Spynet | Sinister Incorporated",
 };
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
-  if (!authorize("view-spynet", session)) redirect("/dashboard");
+  await authenticateAndAuthorizePage("view-spynet");
 
   return (
     <main className="p-4 lg:p-8 pt-20">

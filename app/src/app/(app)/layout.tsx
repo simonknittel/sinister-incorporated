@@ -1,10 +1,11 @@
-import { getServerSession } from "next-auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { type ReactNode } from "react";
-import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import { authorize } from "../_utils/authorize";
+import {
+  authenticateAndAuthorize,
+  authenticateAndAuthorizePage,
+} from "../_utils/authenticateAndAuthorize";
 import ImpersonationBanner from "./_components/ImpersonationBanner";
 import QueryClientProviderContainer from "./_components/QueryClientProviderContainer";
 import SessionProviderContainer from "./_components/SessionProviderContainer";
@@ -28,9 +29,9 @@ interface Props {
 }
 
 export default async function AppLayout({ children, fleetModal }: Props) {
-  const session = await getServerSession(authOptions);
-  if (!session) redirect("/");
-  if (!authorize("login", session)) redirect("/onboarding");
+  const session = await authenticateAndAuthorizePage();
+  if ((await authenticateAndAuthorize("login")) === false)
+    redirect("/onboarding");
 
   const impersonatedRole = await getImpersonatedRole();
 

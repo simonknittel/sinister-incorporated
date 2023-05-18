@@ -1,9 +1,6 @@
 import { type Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authorize } from "~/app/_utils/authorize";
+import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
 import { env } from "~/env.mjs";
-import { authOptions } from "~/server/auth";
 import AnalyticsCheckbox from "./_components/AnalyticsCheckbox";
 
 export const metadata: Metadata = {
@@ -11,8 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
-  if (!authorize("settings", session)) redirect("/dashboard");
+  await authenticateAndAuthorizePage("settings");
 
   return (
     <main className="p-4 lg:p-8 pt-20">

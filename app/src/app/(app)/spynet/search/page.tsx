@@ -1,8 +1,5 @@
 import { type Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authorize } from "~/app/_utils/authorize";
-import { authOptions } from "~/server/auth";
+import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
 import CreateEntity from "../_components/CreateEntity";
 import Search from "./_components/Search";
 
@@ -11,8 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
-  if (!authorize("view-spynet", session)) redirect("/dashboard");
+  await authenticateAndAuthorizePage("view-spynet");
 
   return (
     <main className="h-full flex justify-center items-center bg-sinister-radial-gradient">

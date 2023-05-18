@@ -1,4 +1,3 @@
-import { getServerSession } from "next-auth";
 import Link from "next/link";
 import {
   FaCalendarDay,
@@ -10,13 +9,10 @@ import {
 } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiDashboardFill, RiSpaceShipFill, RiSwordFill } from "react-icons/ri";
-import { authorize } from "~/app/_utils/authorize";
-import { authOptions } from "~/server/auth";
+import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
 import Account from "./Account";
 
 const Sidebar = async () => {
-  const session = await getServerSession(authOptions);
-
   return (
     <div className="flex h-full flex-col justify-between">
       <div>
@@ -34,7 +30,7 @@ const Sidebar = async () => {
               </Link>
             </li>
 
-            {authorize("view-events", session) && (
+            {(await authenticateAndAuthorize("view-events")) && (
               <li>
                 <Link
                   href="/events"
@@ -46,7 +42,7 @@ const Sidebar = async () => {
               </li>
             )}
 
-            {authorize("view-operations", session) && (
+            {(await authenticateAndAuthorize("view-operations")) && (
               <li>
                 <Link
                   href="/operations"
@@ -65,19 +61,16 @@ const Sidebar = async () => {
             )}
           </ul>
 
-          {authorize(
-            [
-              "view-org-fleet",
-              "add-ship",
-              "edit-manufacturers-series-and-variants",
-            ],
-            session
-          ) && (
+          {(await authenticateAndAuthorize([
+            "view-org-fleet",
+            "add-ship",
+            "edit-manufacturers-series-and-variants",
+          ])) && (
             <div className="mt-4">
               <p className="ml-4 text-neutral-500 mt-4">Flotte</p>
 
               <ul>
-                {authorize(["view-org-fleet"], session) && (
+                {(await authenticateAndAuthorize(["view-org-fleet"])) && (
                   <li>
                     <Link
                       href="/fleet"
@@ -89,7 +82,7 @@ const Sidebar = async () => {
                   </li>
                 )}
 
-                {authorize("add-ship", session) && (
+                {(await authenticateAndAuthorize("add-ship")) && (
                   <li>
                     <Link
                       href="/my-ships"
@@ -101,10 +94,9 @@ const Sidebar = async () => {
                   </li>
                 )}
 
-                {authorize(
-                  "edit-manufacturers-series-and-variants",
-                  session
-                ) && (
+                {(await authenticateAndAuthorize(
+                  "edit-manufacturers-series-and-variants"
+                )) && (
                   <li>
                     <Link
                       href="/ships"
@@ -119,7 +111,7 @@ const Sidebar = async () => {
             </div>
           )}
 
-          {authorize("view-spynet", session) && (
+          {(await authenticateAndAuthorize("view-spynet")) && (
             <div className="mt-4">
               <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
 
@@ -144,7 +136,7 @@ const Sidebar = async () => {
                   </Link>
                 </li>
 
-                {authorize("spynet-settings", session) && (
+                {(await authenticateAndAuthorize("spynet-settings")) && (
                   <li>
                     <Link
                       href="/spynet/settings"
@@ -159,15 +151,16 @@ const Sidebar = async () => {
             </div>
           )}
 
-          {authorize(
-            ["view-logins", "edit-roles-and-permissions", "settings"],
-            session
-          ) && (
+          {(await authenticateAndAuthorize([
+            "view-logins",
+            "edit-roles-and-permissions",
+            "settings",
+          ])) && (
             <div className="mt-4">
               <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
               <ul>
-                {authorize("view-logins", session) && (
+                {(await authenticateAndAuthorize("view-logins")) && (
                   <li>
                     <Link
                       href="/logins"
@@ -179,7 +172,9 @@ const Sidebar = async () => {
                   </li>
                 )}
 
-                {authorize("edit-roles-and-permissions", session) && (
+                {(await authenticateAndAuthorize(
+                  "edit-roles-and-permissions"
+                )) && (
                   <li>
                     <Link
                       href="/roles"
@@ -191,7 +186,7 @@ const Sidebar = async () => {
                   </li>
                 )}
 
-                {authorize("settings", session) && (
+                {(await authenticateAndAuthorize("settings")) && (
                   <li>
                     <Link
                       href="/settings"

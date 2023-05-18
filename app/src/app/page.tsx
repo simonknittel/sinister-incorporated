@@ -1,9 +1,9 @@
 import { type Metadata } from "next";
-import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { authOptions } from "~/server/auth";
 import LoginButtons from "./_components/LoginButtons";
 import Note from "./_components/Note";
+import { authenticateAndAuthorizePage } from "./_utils/authenticateAndAuthorize";
 
 export const metadata: Metadata = {
   title: "Sinister Incorporated - Hoist the Black",
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default async function Page({ searchParams }: Props) {
-  const session = await getServerSession(authOptions);
+  const session = await authenticateAndAuthorizePage();
   if (session) redirect("/dashboard");
 
   const activeProviders = authOptions.providers.map((provider) => provider.id);

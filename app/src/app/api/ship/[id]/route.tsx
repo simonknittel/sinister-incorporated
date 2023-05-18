@@ -1,8 +1,6 @@
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authorizeApi } from "~/app/_utils/authorize";
-import { authOptions } from "~/server/auth";
+import { authenticateAndAuthorizeApi } from "~/app/_utils/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import errorHandler from "../../_utils/errorHandler";
 
@@ -19,15 +17,9 @@ const patchBodySchema = z.object({
 export async function PATCH(request: Request, { params }: { params: Params }) {
   try {
     /**
-     * Authenticate the request.
+     * Authenticate and authorize the request
      */
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("Unauthorized");
-
-    /**
-     * Authorize the request.
-     */
-    authorizeApi("add-ship", session);
+    const session = await authenticateAndAuthorizeApi("add-ship");
 
     /**
      * Validate the request params
@@ -75,15 +67,9 @@ const deleteParamsSchema = z.string().cuid2();
 export async function DELETE(request: Request, { params }: { params: Params }) {
   try {
     /**
-     * Authenticate the request. Make sure only authenticated users can create.
+     * Authenticate and authorize the request
      */
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("Unauthorized");
-
-    /**
-     * Authorize the request.
-     */
-    authorizeApi("add-ship", session);
+    const session = await authenticateAndAuthorizeApi("add-ship");
 
     /**
      * Validate the request params

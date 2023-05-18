@@ -1,18 +1,18 @@
 import { type Metadata } from "next";
-import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { FaRegCheckCircle } from "react-icons/fa";
-import { authOptions } from "~/server/auth";
-import { authorize } from "../_utils/authorize";
+import {
+  authenticateAndAuthorize,
+  authenticateAndAuthorizePage,
+} from "../_utils/authenticateAndAuthorize";
 
 export const metadata: Metadata = {
   title: "Onboarding | Sinister Incorporated",
 };
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
-  if (!session) redirect("/");
-  if (authorize("login", session)) redirect("/dashboard");
+  await authenticateAndAuthorizePage();
+  if (await authenticateAndAuthorize("login")) redirect("/");
 
   return (
     <div className="min-h-screen flex justify-center items-center">

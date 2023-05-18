@@ -1,9 +1,7 @@
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import { authorizeApi } from "../../_utils/authorize";
+import { authenticateAndAuthorizeApi } from "../../_utils/authenticateAndAuthorize";
 import errorHandler from "../_utils/errorHandler";
 
 const postBodySchema = z.object({
@@ -13,15 +11,9 @@ const postBodySchema = z.object({
 export async function POST(request: Request) {
   try {
     /**
-     * Authenticate the request.
+     * Authenticate and authorize the request
      */
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("Unauthorized");
-
-    /**
-     * Authorize the request.
-     */
-    authorizeApi("edit-roles-and-permissions", session);
+    await authenticateAndAuthorizeApi("edit-roles-and-permissions");
 
     /**
      * Validate the request body

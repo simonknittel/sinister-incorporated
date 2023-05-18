@@ -1,9 +1,7 @@
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import { authorizeApi } from "../../../_utils/authorize";
+import { authenticateAndAuthorizeApi } from "../../../_utils/authenticateAndAuthorize";
 import errorHandler from "../../_utils/errorHandler";
 
 interface Params {
@@ -19,15 +17,9 @@ const patchBodySchema = z.object({
 export async function PATCH(request: Request, { params }: { params: Params }) {
   try {
     /**
-     * Authenticate the request.
+     * Authenticate and authorize the request
      */
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("Unauthorized");
-
-    /**
-     * Authorize the request.
-     */
-    authorizeApi("edit-manufacturers-series-and-variants", session);
+    await authenticateAndAuthorizeApi("edit-manufacturers-series-and-variants");
 
     /**
      * Validate the request params
@@ -71,15 +63,9 @@ const deleteParamsSchema = z.string().cuid2();
 export async function DELETE(request: Request, { params }: { params: Params }) {
   try {
     /**
-     * Authenticate the request. Make sure only authenticated users can create.
+     * Authenticate and authorize the request
      */
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("Unauthorized");
-
-    /**
-     * Authorize the request.
-     */
-    authorizeApi("edit-manufacturers-series-and-variants", session);
+    await authenticateAndAuthorizeApi("edit-manufacturers-series-and-variants");
 
     /**
      * Validate the request params

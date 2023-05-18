@@ -1,12 +1,10 @@
 import { type Metadata } from "next";
-import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { cache } from "react";
 import { FaDiscord, FaLock, FaSitemap } from "react-icons/fa";
-import { authorize } from "~/app/_utils/authorize";
-import { authOptions } from "~/server/auth";
+import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import sinisterIcon from "../../../../../assets/Icons/Membership/logo_white.svg";
 import DiscordIds from "./_components/DiscordIds";
@@ -69,8 +67,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  const session = await getServerSession(authOptions);
-  if (!authorize("view-spynet", session)) redirect("/dashboard");
+  await authenticateAndAuthorizePage("view-spynet");
 
   const entity = await getEntity(params.id);
   if (!entity) notFound();

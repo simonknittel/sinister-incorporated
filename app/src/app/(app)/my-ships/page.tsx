@@ -1,8 +1,5 @@
 import { type Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authorize } from "~/app/_utils/authorize";
-import { authOptions } from "~/server/auth";
+import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import AssignShip from "./_components/AssignShip";
 import MyShipTile from "./_components/MyShipTile";
@@ -12,13 +9,12 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
-  if (!authorize("add-ship", session)) redirect("/dashboard");
+  const session = await authenticateAndAuthorizePage("add-ship");
 
   const [myShips, allVariants] = await prisma.$transaction([
     prisma.ship.findMany({
       where: {
-        ownerId: session!.user.id,
+        ownerId: session.user.id,
       },
       include: {
         variant: {
