@@ -100,8 +100,14 @@ export async function POST(request: Request, { params }: { params: Params }) {
       },
     });
 
+    /**
+     * Respond with the result
+     */
     return NextResponse.json(item);
   } catch (error) {
+    /**
+     * Respond with an error
+     */
     return errorHandler(error);
   }
 }

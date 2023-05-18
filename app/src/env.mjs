@@ -25,6 +25,7 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string(),
     DISCORD_GUILD_ID: z.string(),
     DISCORD_TOKEN: z.string(),
+    ALGOLIA_ADMIN_API_KEY: z.string(),
   },
 
   /**
@@ -33,7 +34,8 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+    NEXT_PUBLIC_ALGOLIA_APP_ID: z.string(),
+    NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY: z.string()
   },
 
   /**
@@ -49,5 +51,8 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     DISCORD_GUILD_ID: process.env.DISCORD_GUILD_ID,
     DISCORD_TOKEN: process.env.DISCORD_TOKEN,
+    NEXT_PUBLIC_ALGOLIA_APP_ID: process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
+    ALGOLIA_ADMIN_API_KEY: process.env.ALGOLIA_ADMIN_API_KEY,
+    NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY: process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
   },
 });
