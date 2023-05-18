@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { type ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { prisma } from "~/server/db";
 import {
   authenticateAndAuthorize,
@@ -11,6 +11,7 @@ import QueryClientProviderContainer from "./_components/QueryClientProviderConta
 import SessionProviderContainer from "./_components/SessionProviderContainer";
 import Sidebar from "./_components/Sidebar";
 import SidebarContainer from "./_components/SidebarContainer";
+import SidebarSkeleton from "./_components/SidebarSkeleton";
 
 async function getImpersonatedRole() {
   const cookieStore = cookies();
@@ -40,7 +41,9 @@ export default async function AppLayout({ children, fleetModal }: Props) {
       <QueryClientProviderContainer>
         <div className="h-full">
           <SidebarContainer>
-            <Sidebar />
+            <Suspense fallback={<SidebarSkeleton />}>
+              <Sidebar />
+            </Suspense>
           </SidebarContainer>
 
           <div className="lg:ml-96 h-full">{children}</div>
