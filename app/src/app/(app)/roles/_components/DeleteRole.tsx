@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
+import Button from "~/app/_components/Button";
 
 interface Props {
   role: Role;
@@ -46,15 +47,14 @@ const DeleteRole = ({ role }: Props) => {
   };
 
   return (
-    <button
-      className="text-neutral-500 hover:text-neutral-300 px-2"
-      type="button"
+    <Button
       title="Rolle löschen"
       onClick={() => void handleClick()}
       disabled={isLoading}
+      variant="tertiary"
     >
-      {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}
-    </button>
+      {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />} Löschen
+    </Button>
   );
 };
 

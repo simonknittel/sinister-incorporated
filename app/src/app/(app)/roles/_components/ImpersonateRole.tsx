@@ -3,6 +3,7 @@
 import { type Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { RiSpyFill } from "react-icons/ri";
+import Button from "~/app/_components/Button";
 
 interface Props {
   role: Role;
@@ -17,14 +18,13 @@ const ImpersonateRole = ({ role }: Props) => {
   };
 
   return (
-    <button
-      className="text-neutral-500 hover:text-neutral-300 px-2"
-      type="button"
+    <Button
       title="Rolle simulieren"
       onClick={() => void handleClick()}
+      variant="tertiary"
     >
-      <RiSpyFill />
-    </button>
+      <RiSpyFill /> Simulieren
+    </Button>
   );
 };
 
