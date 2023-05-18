@@ -22,7 +22,7 @@ export default async function Page() {
 
         <Search />
 
-        {(await authenticateAndAuthorize("create-entity")) && <CreateEntity />}
+        {(await authenticateAndAuthorize("add-entity")) && <CreateEntity />}
       </div>
     </main>
   );
