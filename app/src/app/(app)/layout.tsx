@@ -1,7 +1,5 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
-import { prisma } from "~/server/db";
 import {
   authenticateAndAuthorize,
   authenticateAndAuthorizePage,
@@ -12,17 +10,6 @@ import SessionProviderContainer from "./_components/SessionProviderContainer";
 import Sidebar from "./_components/Sidebar";
 import SidebarContainer from "./_components/SidebarContainer";
 import SidebarSkeleton from "./_components/SidebarSkeleton";
-
-async function getImpersonatedRole() {
-  const cookieStore = cookies();
-  const impersonate = cookieStore.get("impersonate");
-
-  if (!impersonate) return null;
-
-  return await prisma.role.findUnique({
-    where: { id: impersonate.value },
-  });
-}
 
 interface Props {
   children: ReactNode;
