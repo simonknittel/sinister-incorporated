@@ -32,6 +32,10 @@ const Notes = async ({ entity }: Props) => {
         <AddNote entity={entity} />
       )}
 
+      {/* {(await authenticateAndAuthorize("add-note")) && (
+        <AddNoteSA entity={entity} />
+      )} */}
+
       {notes.map((log) => (
         <NoteSection key={log.id} log={log} />
       ))}

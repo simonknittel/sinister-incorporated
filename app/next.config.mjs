@@ -31,6 +31,10 @@ const config = {
 
   images: {
     domains: ["cdn.discordapp.com"],
+  },
+
+  experimental: {
+    serverActions: true, // https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions
   }
 };
 export default config;
