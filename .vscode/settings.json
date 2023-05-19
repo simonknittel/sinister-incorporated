@@ -2,6 +2,7 @@
 	"cSpell.words": [
 		"algoliasearch",
 		"clsx",
+		"esnext",
 		"prisma"
 	],
 	"eslint.workingDirectories": [
