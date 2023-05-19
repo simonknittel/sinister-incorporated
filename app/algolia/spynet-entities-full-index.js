@@ -5,8 +5,8 @@ const algoliasearch = require("algoliasearch");
 const prisma = new PrismaClient({ log: ["query", "error", "warn"] });
 
 const client = algoliasearch(
-  "HSDBDCV3P8",
-  "31bf8eb4d3cce3afb6b5a728d1a76113"
+  "",
+  ""
 );
 
 const index = client.initIndex("spynet_entities");
