@@ -2,11 +2,9 @@
 
 import { getAlgoliaResults } from "@algolia/autocomplete-js";
 import algoliasearch from "algoliasearch";
-import clsx from "clsx";
 import { env } from "~/env.mjs";
 import Autocomplete from "./Autocomplete";
 import Citizen from "./Citizen";
-import styles from "./Search.module.css";
 
 export interface CitizenHit {
   objectID: string;
@@ -19,32 +17,66 @@ const searchClient = algoliasearch(
   env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
 );
 
+function debouncePromise(fn, time) {
+  let timerId = undefined;
+
+  return function debounced(...args) {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+
+    return new Promise((resolve) => {
+      timerId = setTimeout(() => resolve(fn(...args)), time);
+    });
+  };
+}
+
+const debounced = debouncePromise((items) => Promise.resolve(items), 300);
+
 const Search = () => {
   return (
-    <div className={clsx(styles.search, "w-full")}>
+    <div className="w-full ">
       <Autocomplete
         openOnFocus={true}
-        getSources={({ query }) => [
-          {
-            sourceId: "algolia",
-            getItems() {
-              return getAlgoliaResults({
-                searchClient,
-                queries: [
-                  {
-                    indexName: "spynet_entities",
-                    query,
-                  },
-                ],
-              });
-            },
-            templates: {
-              item({ item }: { item: CitizenHit }) {
-                return <Citizen hit={item} />;
+        getSources={({ query }) => {
+          return debounced([
+            {
+              sourceId: "algolia",
+              getItems() {
+                return getAlgoliaResults({
+                  searchClient,
+                  queries: [
+                    {
+                      indexName: "spynet_entities",
+                      query,
+                    },
+                  ],
+                });
+              },
+              getItemUrl({ item }: { item: CitizenHit }) {
+                return `/spynet/entity/${item.objectID}`;
+              },
+              templates: {
+                item: ({ item }: { item: CitizenHit }) => (
+                  <Citizen hit={item} />
+                ),
               },
             },
-          },
-        ]}
+          ]);
+        }}
+        classNames={{
+          form: "!bg-neutral-800 !border-transparent !shadow-none !outline-none focus-within:!border-white !rounded",
+          input: "!text-white placeholder:!text-neutral-500",
+          panel: "!bg-neutral-800 [&>.aa-GradientBottom]:!hidden",
+          panelLayout: "!p-0",
+          item: "!text-white !p-4 aria-selected:!bg-neutral-700",
+          submitButton: "[&>svg]:!text-sinister-red-500",
+          clearButton:
+            "hover:!text-sinister-red-500 focus:!text-sinister-red-500",
+          loadingIndicator: "[&>svg]:!text-sinister-red-500",
+        }}
+        placeholder="Handle, Spectrum ID oder Sinister ID ..."
+        // renderNoResults={() => "Kein Ergebnisse"} // TODO
       />
     </div>
   );

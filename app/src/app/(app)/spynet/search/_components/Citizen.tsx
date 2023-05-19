@@ -7,24 +7,21 @@ interface Props {
 
 const Citizen = ({ hit }: Props) => {
   return (
-    <Link href={`/spynet/entity/${hit.objectID}`} className="aa-ItemLink">
-      <div className="aa-ItemContent">
-        <div className="aa-ItemTitle">
-          <p className="aa-ItemTitleHighlight">{hit.handles[0]}</p>
+    <Link href={`/spynet/entity/${hit.objectID}`}>
+      <span className="flex gap-2 items-baseline">
+        <p>{hit.handles[0]}</p>
 
-          <span className="text-sm">
-            {hit.handles.length > 1 && (
-              <>
-                <p className="text-neutral-500">Ehemalige Handles:</p>
-                <p>{hit.handles.splice(0, 1).join(", ")}</p>
-              </>
-            )}
+        {hit.handles.length > 1 && (
+          <p className="text-neutral-500 text-sm">
+            {hit.handles.slice(1).join(", ")}
+          </p>
+        )}
+      </span>
 
-            <p className="text-neutral-500">Sinister ID: {hit.objectID}</p>
-            <p className="text-neutral-500">Spectrum ID: {hit.spectrumId}</p>
-          </span>
-        </div>
-      </div>
+      <span className="block text-sm text-neutral-500 mt-2">
+        <p>Sinister ID: {hit.objectID}</p>
+        <p>Spectrum ID: {hit.spectrumId}</p>
+      </span>
     </Link>
   );
 };
