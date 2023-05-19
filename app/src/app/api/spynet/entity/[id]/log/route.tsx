@@ -1,9 +1,7 @@
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticateAndAuthorizeApi } from "~/app/_utils/authenticateAndAuthorize";
 import errorHandler from "~/app/api/_utils/errorHandler";
-import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 
 interface Params {
@@ -40,8 +38,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
     /**
      * Authenticate the request
      */
-    const session = await getServerSession(authOptions);
-    if (!session) throw new Error("Unauthorized");
+    const session = await authenticateAndAuthorizeApi();
 
     /**
      * Validate the request params
@@ -59,19 +56,19 @@ export async function POST(request: Request, { params }: { params: Params }) {
      */
     switch (data.type) {
       case "handle":
-        await authenticateAndAuthorize("add-handle");
+        await authenticateAndAuthorizeApi("add-handle");
         break;
       case "note":
-        await authenticateAndAuthorize("add-note");
+        await authenticateAndAuthorizeApi("add-note");
         break;
       case "discord-id":
-        await authenticateAndAuthorize("add-discord-id");
+        await authenticateAndAuthorizeApi("add-discord-id");
         break;
       case "role-added":
-        await authenticateAndAuthorize("edit-roles-and-permissions");
+        await authenticateAndAuthorizeApi("edit-roles-and-permissions");
         break;
       case "role-removed":
-        await authenticateAndAuthorize("edit-roles-and-permissions");
+        await authenticateAndAuthorizeApi("edit-roles-and-permissions");
         break;
     }
 
