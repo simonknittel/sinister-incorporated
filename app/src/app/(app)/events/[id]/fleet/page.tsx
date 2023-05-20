@@ -209,7 +209,7 @@ export default async function Page({ params }: Props) {
 
   const groupedOrgShips = groupBy(orgShips, (ship) => ship.variant.id);
   const countedOrgShips = Object.values(groupedOrgShips).map((ships) => {
-    const ship = ships[0];
+    const ship = ships[0]!;
 
     return {
       ...ship,
