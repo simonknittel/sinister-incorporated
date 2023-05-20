@@ -58,7 +58,7 @@ const PermissionCheckbox = ({ permission, role, checked }: Props) => {
   }, [watch("checked"), role.id]);
 
   return (
-    <label className="group flex justify-center">
+    <label className="group flex justify-center gap-2 items-center">
       <input
         type="checkbox"
         className="hidden peer"
@@ -74,6 +74,9 @@ const PermissionCheckbox = ({ permission, role, checked }: Props) => {
       <span className="w-8 h-8 bg-neutral-700 rounded hidden cursor-pointer relative peer-checked:block">
         <span className="absolute inset-1 rounded bg-green-500" />
       </span>
+
+      <span className="w-16 block peer-checked:hidden">Inaktiv</span>
+      <span className="w-16 hidden peer-checked:block">Aktiv</span>
     </label>
   );
 };
