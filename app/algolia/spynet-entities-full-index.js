@@ -1,5 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
+// @ts-check
 
+const { PrismaClient } = require("@prisma/client");
 const algoliasearch = require("algoliasearch");
 
 const prisma = new PrismaClient({ log: ["query", "error", "warn"] });
