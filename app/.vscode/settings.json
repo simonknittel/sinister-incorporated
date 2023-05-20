@@ -3,7 +3,8 @@
 		"algoliasearch",
 		"clsx",
 		"esnext",
-		"prisma"
+		"prisma",
+		"pscale"
 	],
 	"dotenv.enableAutocloaking": false,
 	"typescript.tsdk": "node_modules/typescript/lib"

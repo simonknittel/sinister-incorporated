@@ -146,7 +146,7 @@ export const authOptions: NextAuthOptions = {
           include: {
             permissions: {
               where: {
-                value: true,
+                value: "true",
               },
             },
           },

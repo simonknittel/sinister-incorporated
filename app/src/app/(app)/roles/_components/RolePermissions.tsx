@@ -54,7 +54,9 @@ const RolePermissions = ({ role }: Props) => {
                     permission={permission}
                     role={role}
                     checked={role.permissions.some(
-                      (rolePermission) => rolePermission.key === permission.key
+                      (rolePermission) =>
+                        rolePermission.key === permission.key &&
+                        rolePermission.value === "true"
                     )}
                   />
                 </div>

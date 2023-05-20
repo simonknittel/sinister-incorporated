@@ -130,9 +130,9 @@ model Role {
 
 model Permission {
     roleId String
-    role   Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
     key    String
-    value  Boolean
+    value  String
 
     @@id([roleId, key])
 }
