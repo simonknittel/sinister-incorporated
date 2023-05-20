@@ -12,7 +12,7 @@ const postParamsSchema = z.string().cuid2();
 
 const postBodySchema = z.object({
   key: z.string().trim().min(1).max(255),
-  value: z.boolean(),
+  value: z.union([z.literal("true"), z.literal("false")]),
 });
 
 export async function POST(request: Request, { params }: { params: Params }) {
@@ -36,7 +36,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
     /**
      * Do the thing
      */
-    if (data.value) {
+    if (data.value === "true") {
       const item = await prisma.permission.create({
         data: {
           role: {

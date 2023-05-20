@@ -32,6 +32,8 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       },
     });
 
+    // TODO: Also delete name field for matching user entry
+
     /**
      * Delete entity from Algolia
      */

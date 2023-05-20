@@ -35,7 +35,7 @@ const PermissionCheckbox = ({ permission, role, checked }: Props) => {
         method: "POST",
         body: JSON.stringify({
           key: permission.key,
-          value: value.checked,
+          value: value.checked ? "true" : "false",
         }),
       })
         .then((response) => {
