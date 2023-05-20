@@ -1,0 +1,10 @@
+{
+	"cSpell.words": [
+		"algoliasearch",
+		"clsx",
+		"esnext",
+		"prisma"
+	],
+	"dotenv.enableAutocloaking": false,
+	"typescript.tsdk": "node_modules/typescript/lib"
+}

@@ -6,9 +6,8 @@
 			"type": "node-terminal",
 			"request": "launch",
 			"command": "npm run dev",
-			"cwd": "${workspaceFolder}${pathSeparator}app",
 			"skipFiles": [
-				"${workspaceFolder}${pathSeparator}app/node_modules/**/*.js",
+				"node_modules/**/*.js",
 				"<node_internals>/**/*.js"
 			]
 		}
