@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateAndAuthorizeApi } from "~/app/_utils/authenticateAndAuthorize";
-import errorHandler from "~/app/api/_utils/errorHandler";
+import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
 
 interface Params {

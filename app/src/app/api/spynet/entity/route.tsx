@@ -1,11 +1,10 @@
-import algoliasearch from "algoliasearch";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { env } from "~/env.mjs";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import errorHandler from "../../_utils/errorHandler";
+import { saveObject } from "../../_lib/algolia";
+import errorHandler from "../../_lib/errorHandler";
 
 const postBodySchema = z.object({
   type: z.union([z.literal("citizen"), z.literal("organization")]),
@@ -69,13 +68,7 @@ export async function POST(request: Request) {
     /**
      * Add new entity to Algolia
      */
-    const client = algoliasearch(
-      env.NEXT_PUBLIC_ALGOLIA_APP_ID,
-      env.ALGOLIA_ADMIN_API_KEY
-    );
-    const index = client.initIndex("spynet_entities");
-    void index.saveObject({
-      objectID: item.entityId,
+    void saveObject(item.entityId, {
       type: "citizen",
       spectrumId: data.spectrumId,
     });

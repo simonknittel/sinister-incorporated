@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "~/server/db";
 import { authenticateAndAuthorizeApi } from "../../_utils/authenticateAndAuthorize";
-import errorHandler from "../_utils/errorHandler";
+import errorHandler from "../_lib/errorHandler";
 
 const postBodySchema = z.object({
   name: z.string().trim().min(1),

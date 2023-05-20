@@ -7,6 +7,7 @@ import { FaSitemap } from "react-icons/fa";
 import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import sinisterIcon from "../../../../../assets/Icons/Membership/logo_white.svg";
+import DeleteEntity from "./_components/DeleteEntity";
 import Notes from "./_components/Notes";
 import NotesSkeleton from "./_components/NotesSkeleton";
 import Overview from "./_components/Overview";
@@ -101,6 +102,10 @@ export default async function Page({ params }: Props) {
         <span className="text-neutral-500">/</span>
 
         <h1>{sortedHandles[0]?.content || entity.id}</h1>
+
+        {(await authenticateAndAuthorizePage("delete-entity")) && (
+          <DeleteEntity entity={entity} />
+        )}
       </div>
 
       <div className="mt-4 grid grid-cols-[1fr_1fr_1fr_1fr] gap-4">

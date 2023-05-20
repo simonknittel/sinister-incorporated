@@ -1,10 +1,9 @@
-import algoliasearch from "algoliasearch";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
-import errorHandler from "~/app/api/_utils/errorHandler";
-import { env } from "~/env.mjs";
+import { updateObject } from "~/app/api/_lib/algolia";
+import errorHandler from "~/app/api/_lib/errorHandler";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
 
@@ -134,14 +133,9 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     }
 
     /**
-     * Remove "(unbestätigt)" from Algolia entry
+     * Update Algolia
      */
     if (entityLog.type === "handle") {
-      const client = algoliasearch(
-        env.NEXT_PUBLIC_ALGOLIA_APP_ID,
-        env.ALGOLIA_ADMIN_API_KEY
-      );
-      const index = client.initIndex("spynet_entities");
       const handleLogs = await prisma.entityLog.findMany({
         where: {
           type: "handle",
@@ -159,8 +153,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           createdAt: "desc",
         },
       });
-      void index.partialUpdateObject({
-        objectID: entityLog.entityId,
+      void updateObject(entityLog.entityId, {
         handles: handleLogs.map((log) => log.content),
       });
     }

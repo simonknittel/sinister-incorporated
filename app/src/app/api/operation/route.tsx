@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authOptions } from "~/server/auth";
 import { prisma } from "~/server/db";
-import errorHandler from "../_utils/errorHandler";
+import errorHandler from "../_lib/errorHandler";
 
 const postBodySchema = z.object({
   title: z.string().trim().min(1).max(255),

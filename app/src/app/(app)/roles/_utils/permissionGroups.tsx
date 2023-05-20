@@ -63,6 +63,10 @@ export const permissionGroups = [
         name: "Notiz bestätigen",
         key: "confirm-note",
       },
+      {
+        name: "Citizen oder Organisation löschen",
+        key: "delete-entity",
+      },
     ],
   },
   {

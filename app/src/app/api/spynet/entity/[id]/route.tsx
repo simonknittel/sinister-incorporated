@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { authenticateAndAuthorizeApi } from "~/app/_utils/authenticateAndAuthorize";
+import { deleteObject } from "~/app/api/_lib/algolia";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
-import { authenticateAndAuthorizeApi } from "../../../_utils/authenticateAndAuthorize";
 
 interface Params {
   id: string;
@@ -15,7 +16,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Authenticate and authorize the request
      */
-    await authenticateAndAuthorizeApi("edit-roles-and-permissions");
+    await authenticateAndAuthorizeApi("delete-entity");
 
     /**
      * Validate the request params
@@ -25,11 +26,16 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Delete
      */
-    await prisma.role.delete({
+    await prisma.entity.delete({
       where: {
         id: paramsData,
       },
     });
+
+    /**
+     * Delete entity from Algolia
+     */
+    void deleteObject(paramsData);
 
     /**
      * Respond with the result

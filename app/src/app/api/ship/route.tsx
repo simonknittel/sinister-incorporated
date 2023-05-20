@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateAndAuthorizeApi } from "~/app/_utils/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
-import errorHandler from "../_utils/errorHandler";
+import errorHandler from "../_lib/errorHandler";
 
 const postBodySchema = z.object({
   variantId: z.string().cuid2(),
