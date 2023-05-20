@@ -32,7 +32,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       },
     });
 
-    // TODO: Also delete name field for matching user entry
+    // TODO: Update name field of user corresponding use entry
 
     /**
      * Delete entity from Algolia

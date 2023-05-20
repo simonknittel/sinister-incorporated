@@ -10,6 +10,7 @@ import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import useAuthorization from "~/app/(app)/_utils/useAuthorization";
 import ConfirmLog from "./ConfirmLog";
+import DeleteLog from "./DeleteLog";
 import styles from "./Handle.module.css";
 
 interface Props {
@@ -19,7 +20,7 @@ interface Props {
 }
 
 const Handle = ({ log }: Props) => {
-  const authorization = useAuthorization("confirm-handle");
+  const authorization = useAuthorization(["confirm-handle", "delete-handle"]);
 
   const confirmation = log.attributes.find(
     (attribute) => attribute.key === "confirmed"
@@ -43,7 +44,7 @@ const Handle = ({ log }: Props) => {
               Dieser Eintrag ist noch nicht bestätigt.
             </p>
 
-            {authorization && <ConfirmLog log={log} />}
+            {authorization["confirm-handle"] && <ConfirmLog log={log} />}
           </div>
         </div>
       )}
@@ -77,6 +78,10 @@ const Handle = ({ log }: Props) => {
                 <p>Bestätigt durch {confirmation.createdBy.name}</p>
               </>
             )}
+
+            <span className="text-neutral-500">&bull;</span>
+
+            {authorization["delete-handle"] && <DeleteLog log={log} />}
           </div>
 
           <p>{log.content}</p>

@@ -9,6 +9,7 @@ import { TbCircleDot } from "react-icons/tb";
 import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
 import ChangeSecurityLevel from "./ChangeSecurityLevel";
 import ConfirmLog from "./ConfirmLog";
+import DeleteLog from "./DeleteLog";
 import styles from "./NoteSection.module.css";
 
 interface Props {
@@ -83,6 +84,12 @@ const NoteSection = async ({ log }: Props) => {
 
                 <p>Bestätigt durch {confirmation.createdBy.name}</p>
               </>
+            )}
+
+            <span className="text-neutral-500">&bull;</span>
+
+            {(await authenticateAndAuthorize("delete-note")) && (
+              <DeleteLog log={log} />
             )}
           </div>
 

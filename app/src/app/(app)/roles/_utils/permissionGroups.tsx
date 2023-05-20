@@ -67,6 +67,18 @@ export const permissionGroups = [
         name: "Citizen oder Organisation löschen",
         key: "delete-entity",
       },
+      {
+        name: "Handle löschen",
+        key: "delete-handle",
+      },
+      {
+        name: "Discord ID löschen",
+        key: "delete-discord-id",
+      },
+      {
+        name: "Notiz löschen",
+        key: "delete-note",
+      },
     ],
   },
   {
