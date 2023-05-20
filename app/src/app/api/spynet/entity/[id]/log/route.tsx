@@ -8,7 +8,7 @@ interface Params {
   id: string;
 }
 
-const postParamsSchema = z.string().cuid2();
+const paramsSchema = z.string().cuid2();
 
 const postBodySchema = z.union([
   z.object({
@@ -43,7 +43,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await postParamsSchema.parseAsync(params.id);
+    const paramsData = await paramsSchema.parseAsync(params.id);
 
     /**
      * Validate the request body

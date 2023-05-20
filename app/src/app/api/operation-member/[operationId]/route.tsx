@@ -9,7 +9,7 @@ interface Params {
   operationId: string;
 }
 
-const getParamsSchema = z.string().cuid2();
+const paramsSchema = z.string().cuid2();
 
 export async function GET(request: Request, { params }: { params: Params }) {
   try {
@@ -22,7 +22,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await getParamsSchema.parseAsync(params.operationId);
+    const paramsData = await paramsSchema.parseAsync(params.operationId);
 
     /**
      * Get
@@ -56,8 +56,6 @@ export async function GET(request: Request, { params }: { params: Params }) {
   }
 }
 
-const patchParamsSchema = z.string().cuid2();
-
 const patchBodySchema = z.object({
   status: z.literal("confirmed").optional(),
   operationUnitId: z.string().cuid2().optional(),
@@ -77,7 +75,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await patchParamsSchema.parseAsync(params.operationId);
+    const paramsData = await paramsSchema.parseAsync(params.operationId);
 
     /**
      * Validate the request body
@@ -123,8 +121,6 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
   }
 }
 
-const deleteParamsSchema = z.string().cuid2();
-
 export async function DELETE(request: Request, { params }: { params: Params }) {
   try {
     /**
@@ -136,7 +132,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await deleteParamsSchema.parseAsync(params.operationId);
+    const paramsData = await paramsSchema.parseAsync(params.operationId);
 
     /**
      * Delete

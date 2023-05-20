@@ -9,7 +9,7 @@ interface Params {
   id: string;
 }
 
-const patchParamsSchema = z.string().cuid2();
+const paramsSchema = z.string().cuid2();
 
 const patchBodySchema = z.object({
   title: z.string().min(1).max(255),
@@ -26,7 +26,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await patchParamsSchema.parseAsync(params.id);
+    const paramsData = await paramsSchema.parseAsync(params.id);
 
     /**
      * Validate the request body
@@ -66,8 +66,6 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
   }
 }
 
-const deleteParamsSchema = z.string().cuid2();
-
 export async function DELETE(request: Request, { params }: { params: Params }) {
   try {
     /**
@@ -79,7 +77,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await deleteParamsSchema.parseAsync(params.id);
+    const paramsData = await paramsSchema.parseAsync(params.id);
 
     /**
      * Delete
