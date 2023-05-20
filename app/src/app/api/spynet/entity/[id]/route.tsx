@@ -37,7 +37,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Delete entity from Algolia
      */
-    void deleteObject(paramsData);
+    await deleteObject(paramsData);
 
     /**
      * Respond with the result

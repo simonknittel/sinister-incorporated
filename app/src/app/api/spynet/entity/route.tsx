@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     /**
      * Add new entity to Algolia
      */
-    void saveObject(item.entityId, {
+    await saveObject(item.entityId, {
       type: "citizen",
       spectrumId: data.spectrumId,
     });

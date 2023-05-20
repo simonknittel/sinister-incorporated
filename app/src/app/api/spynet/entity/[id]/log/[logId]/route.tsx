@@ -153,7 +153,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           createdAt: "desc",
         },
       });
-      void updateObject(entityLog.entityId, {
+      await updateObject(entityLog.entityId, {
         handles: handleLogs.map((log) => log.content),
       });
     }
