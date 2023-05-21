@@ -21,7 +21,7 @@ interface FormValues {
 
 const EditUnitModal = ({ isOpen, onRequestClose, unit }: Props) => {
   const router = useRouter();
-  const { register, handleSubmit, reset } = useForm<FormValues>({
+  const { register, handleSubmit } = useForm<FormValues>({
     defaultValues: {
       title: unit.title,
     },
