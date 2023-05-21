@@ -28,7 +28,13 @@ const getEntity = cache(async (id: string) => {
             include: {
               createdBy: true,
             },
+            orderBy: {
+              createdAt: "desc",
+            },
           },
+        },
+        orderBy: {
+          createdAt: "desc",
         },
       },
     },
@@ -48,14 +54,19 @@ export async function generateMetadata({
     const entity = await getEntity(params.id);
     if (!entity) return {};
 
-    const latestHandle = entity.logs
-      .filter((log) => log.type === "handle")
-      .sort(
-        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-      )?.[0]?.content;
+    const latestConfirmedHandle = entity.logs.filter(
+      (log) =>
+        log.type === "handle" &&
+        log.attributes.find(
+          (attribute) =>
+            attribute.key === "confirmed" && attribute.value === "true"
+        )
+    )?.[0];
 
     return {
-      title: `${latestHandle || entity.id} - Spynet | Sinister Incorporated`,
+      title: `${
+        latestConfirmedHandle?.content || entity.id
+      } - Spynet | Sinister Incorporated`,
     };
   } catch (error) {
     console.error(error);
@@ -76,9 +87,14 @@ export default async function Page({ params }: Props) {
   const entity = await getEntity(params.id);
   if (!entity) notFound();
 
-  const sortedHandles = entity.logs
-    .filter((log) => log.type === "handle")
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  const latestConfirmedHandle = entity.logs.filter(
+    (log) =>
+      log.type === "handle" &&
+      log.attributes.find(
+        (attribute) =>
+          attribute.key === "confirmed" && attribute.value === "true"
+      )
+  )?.[0];
 
   return (
     <main className="p-4 lg:p-8 pt-20">
@@ -101,7 +117,7 @@ export default async function Page({ params }: Props) {
 
         <span className="text-neutral-500">/</span>
 
-        <h1>{sortedHandles[0]?.content || entity.id}</h1>
+        <h1>{latestConfirmedHandle?.content || entity.id}</h1>
 
         {(await authenticateAndAuthorizePage("delete-entity")) && (
           <DeleteEntity entity={entity} />
@@ -127,8 +143,8 @@ export default async function Page({ params }: Props) {
 
         <section className="rounded p-4 lg:p-8 bg-sinister-radial-gradient flex flex-col">
           <h2 className="font-bold flex gap-1 items-center">
-            <Image src={sinisterIcon} alt="" width={24} height={24} /> Sinister
-            Incorporated
+            <Image src={sinisterIcon as string} alt="" width={24} height={24} />{" "}
+            Sinister Incorporated
           </h2>
 
           <WIP />

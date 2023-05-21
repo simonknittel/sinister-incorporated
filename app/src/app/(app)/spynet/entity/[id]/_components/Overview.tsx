@@ -2,8 +2,8 @@ import {
   type Entity,
   type EntityLog,
   type EntityLogAttribute,
+  type User,
 } from "@prisma/client";
-import { type User } from "next-auth";
 import { FaDiscord } from "react-icons/fa";
 import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
 import DiscordIds from "./DiscordIds";
@@ -18,9 +18,14 @@ interface Props {
 }
 
 const Overview = async ({ entity }: Props) => {
-  const sortedHandles = entity.logs
-    .filter((log) => log.type === "handle")
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  const latestConfirmedHandle = entity.logs.filter(
+    (log) =>
+      log.type === "handle" &&
+      log.attributes.find(
+        (attribute) =>
+          attribute.key === "confirmed" && attribute.value === "true"
+      )
+  )?.[0];
 
   const spectrumId = entity.logs.find(
     (log) => log.type === "spectrum-id"
@@ -43,7 +48,7 @@ const Overview = async ({ entity }: Props) => {
 
         <dt className="text-neutral-500 mt-4">Handle</dt>
         <dd className="flex gap-4 items-center">
-          {sortedHandles[0]?.content || (
+          {latestConfirmedHandle?.content || (
             <span className="italic">Unbekannt</span>
           )}
 
