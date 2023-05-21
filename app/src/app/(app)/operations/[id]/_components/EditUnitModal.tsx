@@ -73,10 +73,9 @@ const EditUnitModal = ({ isOpen, onRequestClose, unit }: Props) => {
           className="p-2 rounded bg-neutral-900 w-full mt-2"
           id={selectId}
           disabled
+          defaultValue="squadron"
         >
-          <option value="squadron" selected>
-            Squadron
-          </option>
+          <option value="squadron">Squadron</option>
 
           <option value="squad" disabled>
             Squad
