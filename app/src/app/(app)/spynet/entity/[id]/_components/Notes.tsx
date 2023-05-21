@@ -7,7 +7,7 @@ import {
 import { FaListAlt } from "react-icons/fa";
 import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
 import AddNote from "./AddNote";
-import NoteSection from "./NoteSection";
+import SingleNote from "./SingleNote";
 
 interface Props {
   entity: Entity & {
@@ -37,7 +37,7 @@ const Notes = async ({ entity }: Props) => {
       )} */}
 
       {notes.map((log) => (
-        <NoteSection key={log.id} log={log} />
+        <SingleNote key={log.id} log={log} />
       ))}
 
       {notes.length <= 0 && (

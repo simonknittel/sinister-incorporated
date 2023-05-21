@@ -1,8 +1,0 @@
-.blueBorder {
-  border-image: linear-gradient(
-      to bottom,
-      rgba(59, 130, 246, 1),
-      rgba(59, 130, 246, 0)
-    )
-    1;
-}

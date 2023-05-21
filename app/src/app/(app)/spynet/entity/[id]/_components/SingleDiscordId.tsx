@@ -10,8 +10,8 @@ import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import useAuthorization from "~/app/(app)/_utils/useAuthorization";
 import ConfirmLog from "./ConfirmLog";
+import styles from "./ConfirmationGradient.module.css";
 import DeleteLog from "./DeleteLog";
-import styles from "./Handle.module.css";
 
 interface Props {
   log: EntityLog & {
@@ -19,7 +19,7 @@ interface Props {
   };
 }
 
-const DiscordId = ({ log }: Props) => {
+const SingleDiscordId = ({ log }: Props) => {
   const authorization = useAuthorization([
     "confirm-discord-id",
     "delete-discord-id",
@@ -94,4 +94,4 @@ const DiscordId = ({ log }: Props) => {
   );
 };
 
-export default DiscordId;
+export default SingleDiscordId;

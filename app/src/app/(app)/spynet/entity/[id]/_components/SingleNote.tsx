@@ -1,5 +1,3 @@
-"use client";
-
 import {
   type EntityLog,
   type EntityLogAttribute,
@@ -8,10 +6,11 @@ import {
 import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import useAuthorization from "~/app/(app)/_utils/useAuthorization";
+import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
+import ChangeSecurityLevel from "./ChangeSecurityLevel";
 import ConfirmLog from "./ConfirmLog";
+import styles from "./ConfirmationGradient.module.css";
 import DeleteLog from "./DeleteLog";
-import styles from "./Handle.module.css";
 
 interface Props {
   log: EntityLog & {
@@ -19,18 +18,19 @@ interface Props {
   };
 }
 
-const Handle = ({ log }: Props) => {
-  const authorization = useAuthorization(["confirm-handle", "delete-handle"]);
-
+const SingleNote = async ({ log }: Props) => {
   const confirmation = log.attributes.find(
     (attribute) => attribute.key === "confirmed"
   );
 
   return (
-    <li key={log.id} className="relative rounded overflow-hidden">
+    <article
+      key={log.id}
+      className="mt-4 lg:mt-8 relative rounded overflow-hidden"
+    >
       <div
         className={clsx({
-          "absolute w-full h-20 border-t-4 border-x-4 bg-gradient-to-t from-neutral-800 to-blue-500/10 blue-border":
+          "absolute w-full h-24 border-t-4 border-x-4 bg-gradient-to-t from-neutral-900 to-blue-500/10 blue-border":
             !confirmation,
           [styles.blueBorder!]: !confirmation,
         })}
@@ -40,18 +40,18 @@ const Handle = ({ log }: Props) => {
         <div className="px-4 pt-4 flex items-start gap-2 relative z-10">
           <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-1" />
           <div className="flex gap-4">
-            <p className="font-bold">
-              Dieser Eintrag ist noch nicht bestätigt.
-            </p>
+            <p className="font-bold">Diese Notiz ist noch nicht bestätigt.</p>
 
-            {authorization["confirm-handle"] && <ConfirmLog log={log} />}
+            {(await authenticateAndAuthorize("confirm-note")) && (
+              <ConfirmLog log={log} />
+            )}
           </div>
         </div>
       )}
 
       <div
         className={clsx("flex gap-2 relative z-10", {
-          "px-4 pt-2 pb-2 opacity-20 hover:opacity-100 transition-opacity":
+          "px-4 pt-4 opacity-20 hover:opacity-100 transition-opacity":
             !confirmation,
         })}
       >
@@ -60,8 +60,9 @@ const Handle = ({ log }: Props) => {
         </div>
 
         <div className="flex-1">
-          <div className="text-sm flex gap-2 border-b-2 pb-1 items-baseline border-neutral-700">
+          <div className="text-sm flex gap-2 border-b-2 pb-2 items-baseline border-neutral-800">
             <p>
+              Erstellt am{" "}
               <time dateTime={log.createdAt.toISOString()}>
                 {log.createdAt.toLocaleDateString("de-DE", {
                   day: "2-digit",
@@ -69,6 +70,12 @@ const Handle = ({ log }: Props) => {
                   year: "numeric",
                 })}
               </time>
+            </p>
+
+            <span className="text-neutral-500">&bull;</span>
+
+            <p className="flex gap-2 items-center">
+              Sicherheitsstufe Unbekannt <ChangeSecurityLevel log={log} />
             </p>
 
             {confirmation && (
@@ -81,14 +88,18 @@ const Handle = ({ log }: Props) => {
 
             <span className="text-neutral-500">&bull;</span>
 
-            {authorization["delete-handle"] && <DeleteLog log={log} />}
+            {(await authenticateAndAuthorize("delete-note")) && (
+              <DeleteLog log={log} />
+            )}
           </div>
 
-          <p>{log.content}</p>
+          <div className="mt-2">
+            <pre className="font-sans whitespace-pre-wrap">{log.content}</pre>
+          </div>
         </div>
       </div>
-    </li>
+    </article>
   );
 };
 
-export default Handle;
+export default SingleNote;

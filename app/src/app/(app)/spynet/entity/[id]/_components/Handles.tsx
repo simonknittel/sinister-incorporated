@@ -10,7 +10,7 @@ import { FaPen } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
 import AddHandle from "./AddHandle";
-import Handle from "./Handle";
+import SingleHandle from "./SingleHandle";
 
 interface Props {
   entity: Entity & {
@@ -49,7 +49,7 @@ const Handles = ({ entity }: Props) => {
         {handles.length > 0 ? (
           <ul className="mt-4 flex flex-col gap-2">
             {handles.map((handle) => (
-              <Handle key={handle.id} log={handle} />
+              <SingleHandle key={handle.id} log={handle} />
             ))}
           </ul>
         ) : (

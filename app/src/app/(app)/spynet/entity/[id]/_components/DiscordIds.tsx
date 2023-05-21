@@ -10,7 +10,7 @@ import { FaPen } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
 import AddDiscordId from "./AddDiscordId";
-import DiscordId from "./DiscordId";
+import SingleDiscordId from "./SingleDiscordId";
 
 interface Props {
   entity: Entity & {
@@ -49,7 +49,7 @@ const DiscordIds = ({ entity }: Props) => {
         {discordIds.length > 0 ? (
           <ul className="mt-4 flex flex-col gap-2">
             {discordIds.map((discordId) => (
-              <DiscordId key={discordId.id} log={discordId} />
+              <SingleDiscordId key={discordId.id} log={discordId} />
             ))}
           </ul>
         ) : (
