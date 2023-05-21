@@ -85,7 +85,7 @@ const Sidebar = async () => {
                 {(await authenticateAndAuthorize("add-ship")) && (
                   <li>
                     <Link
-                      href="/my-ships"
+                      href="/fleet/my-ships"
                       className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                     >
                       <RiSpaceShipFill />
@@ -99,7 +99,7 @@ const Sidebar = async () => {
                 )) && (
                   <li>
                     <Link
-                      href="/ships"
+                      href="/fleet/settings"
                       className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                     >
                       <FaCog />
@@ -154,7 +154,8 @@ const Sidebar = async () => {
           {(await authenticateAndAuthorize([
             "view-logins",
             "edit-roles-and-permissions",
-            "settings",
+            "edit-classification-levels",
+            "disable-analytics",
           ])) && (
             <div className="mt-4">
               <p className="ml-4 text-neutral-500 mt-4">Admin</p>
@@ -186,14 +187,17 @@ const Sidebar = async () => {
                   </li>
                 )}
 
-                {(await authenticateAndAuthorize("settings")) && (
+                {(await authenticateAndAuthorize([
+                  "edit-classification-levels",
+                  "disable-analytics",
+                ])) && (
                   <li>
                     <Link
                       href="/settings"
                       className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                     >
                       <FaCog />
-                      Settings
+                      Einstellungen
                     </Link>
                   </li>
                 )}

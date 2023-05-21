@@ -25,7 +25,15 @@ export default async function Page() {
       </div>
 
       <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded bg-neutral-900">
-        <h2 className="font-bold text-xl">Sicherheitsstufen</h2>
+        <h2 className="font-bold text-xl">Arten von Notizen</h2>
+
+        <p className="mt-4 mb-4">
+          Jeder Notiz kann eine Art zugewiesen werden. Anhand dieser können{" "}
+          <Link href="/roles" className="underline hover:text-neutral-300">
+            Berechtigungen
+          </Link>{" "}
+          vergeben werden.
+        </p>
       </section>
     </main>
   );

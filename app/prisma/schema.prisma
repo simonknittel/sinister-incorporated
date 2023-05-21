@@ -9,6 +9,10 @@ datasource db {
     relationMode = "prisma"
 }
 
+//
+// Fleet
+//
+
 model Manufacturer {
     id     String   @id @default(cuid())
     name   String   @unique
@@ -50,6 +54,10 @@ model Ship {
     operations       OperationMember[]
 }
 
+//
+// Operations
+//
+
 model Operation {
     id      String            @id @default(cuid())
     title   String
@@ -86,6 +94,10 @@ model OperationUnit {
     childUnits   OperationUnit[] @relation("ChildUnits")
 }
 
+//
+// Spynet - Entities
+//
+
 model Entity {
     id          String      @id @default(cuid())
     createdAt   DateTime    @default(now())
@@ -115,12 +127,34 @@ model EntityLogAttribute {
     id          String    @id @default(cuid())
     eneityLogId String
     entityLog   EntityLog @relation(fields: [eneityLogId], references: [id], onDelete: Cascade)
-    key         String // confirmed, security-level-change, ...
+    key         String // confirmed, classification-change, ...
     value       String
     createdAt   DateTime  @default(now())
     createdById String
     createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
 }
+
+//
+// Spynet - Note types
+//
+
+model NoteType {
+    id   String @id @default(cuid())
+    name String @unique
+}
+
+//
+// Classification levels (for notes, events and operations)
+//
+
+model ClassificationLevel {
+    id   String @id @default(cuid())
+    name String @unique
+}
+
+//
+// Roles and permissions
+//
 
 model Role {
     id          String       @id @default(cuid())
@@ -137,7 +171,10 @@ model Permission {
     @@id([roleId, key])
 }
 
-// Necessary for Next auth
+//
+// NextAuth.js
+//
+
 model Account {
     id                String    @id @default(cuid())
     userId            String

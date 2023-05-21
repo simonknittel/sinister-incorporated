@@ -1,10 +1,10 @@
-import { type Permission } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "~/server/auth";
+import { type PermissionKey } from "../(app)/roles/_utils/permissionGroups";
 
 export async function authenticateAndAuthorize(
-  permissionKeys?: Permission["key"] | Permission["key"][]
+  permissionKeys?: PermissionKey | PermissionKey[]
 ) {
   const session = await getServerSession(authOptions);
 
@@ -33,7 +33,7 @@ export async function authenticateAndAuthorize(
 }
 
 export async function authenticateAndAuthorizeApi(
-  permissionKeys?: Permission["key"] | Permission["key"][]
+  permissionKeys?: PermissionKey | PermissionKey[]
 ) {
   const session = await authenticateAndAuthorize(permissionKeys);
   if (session) return session;
@@ -42,7 +42,7 @@ export async function authenticateAndAuthorizeApi(
 }
 
 export async function authenticateAndAuthorizePage(
-  permissionKeys?: Permission["key"] | Permission["key"][]
+  permissionKeys?: PermissionKey | PermissionKey[]
 ) {
   const session = await authenticateAndAuthorize(permissionKeys);
   if (session) return session;

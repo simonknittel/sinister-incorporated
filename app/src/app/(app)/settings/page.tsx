@@ -1,32 +1,51 @@
 import { type Metadata } from "next";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
-import { env } from "~/env.mjs";
+import Link from "next/link";
+import {
+  authenticateAndAuthorize,
+  authenticateAndAuthorizePage,
+} from "~/app/_utils/authenticateAndAuthorize";
 import AnalyticsCheckbox from "./_components/AnalyticsCheckbox";
 
 export const metadata: Metadata = {
-  title: "Settings | Sinister Incorporated",
+  title: "Einstellungen | Sinister Incorporated",
 };
 
 export default async function Page() {
-  await authenticateAndAuthorizePage("settings");
+  await authenticateAndAuthorizePage([
+    "edit-classification-levels",
+    "disable-analytics",
+  ]);
 
   return (
     <main className="p-4 lg:p-8 pt-20">
-      <h1 className="text-xl font-bold">Settings</h1>
+      <h1 className="text-xl font-bold">Einstellungen</h1>
 
-      <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded bg-neutral-900">
-        <h2 className="font-bold text-xl">Disable analytics</h2>
+      {(await authenticateAndAuthorize("edit-classification-levels")) && (
+        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded bg-neutral-900">
+          <h2 className="font-bold text-xl">Sicherheitsstufen</h2>
 
-        <p className="mt-4 mb-4">Disables Vercel Analytics for this browser.</p>
+          <p className="mt-4 mb-4">
+            Jeder Notiz, jedem Event und jeder Operation kann eine
+            Sicherheitsstufe zugewiesen werden. Anhand dieser können{" "}
+            <Link href="/roles" className="underline hover:text-neutral-300">
+              Berechtigungen
+            </Link>{" "}
+            vergeben werden.
+          </p>
+        </section>
+      )}
 
-        <AnalyticsCheckbox />
-      </section>
+      {(await authenticateAndAuthorize("disable-analytics")) && (
+        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded bg-neutral-900">
+          <h2 className="font-bold text-xl">Disable analytics</h2>
 
-      <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded bg-neutral-900">
-        <h2 className="font-bold text-xl">Configured server</h2>
+          <p className="mt-4 mb-4">
+            Disables Vercel Analytics for this browser.
+          </p>
 
-        <pre className="mt-4">{env.DISCORD_GUILD_ID}</pre>
-      </section>
+          <AnalyticsCheckbox />
+        </section>
+      )}
     </main>
   );
 }

@@ -119,4 +119,10 @@ export const permissionGroups = [
       },
     ],
   },
-];
+] as const;
+
+export type PermissionKey =
+  | (typeof permissionGroups)[number]["permissions"][number]["key"]
+  | "edit-classification-levels"
+  | "disable-analytics"
+  | "spynet-settings";
