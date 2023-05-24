@@ -56,6 +56,8 @@ const RoleSection = ({ className, roles }: Props) => {
                   Auswählen ...
                 </option>
 
+                <option value="*">Alle</option>
+
                 {roles.map((role) => (
                   <option key={role.id} value={role.id}>
                     {role.name}
@@ -72,6 +74,8 @@ const RoleSection = ({ className, roles }: Props) => {
                 <option disabled value="">
                   Auswählen ...
                 </option>
+
+                <option value="manage">Alle</option>
 
                 <option value="read">Sehen</option>
 

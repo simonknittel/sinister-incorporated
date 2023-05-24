@@ -10,7 +10,11 @@ const postBodySchema = z.object({
   otherRole: z.array(
     z.object({
       roleId: z.string(),
-      operation: z.union([z.literal("read"), z.literal("assign")]),
+      operation: z.union([
+        z.literal("manage"),
+        z.literal("read"),
+        z.literal("assign"),
+      ]),
     })
   ),
   classificationLevel: z.object({
