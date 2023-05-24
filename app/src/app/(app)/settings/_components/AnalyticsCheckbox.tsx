@@ -1,8 +1,14 @@
 "use client";
 
-import { type ChangeEventHandler } from "react";
+import { useEffect, useState, type ChangeEventHandler } from "react";
 
 const AnalyticsCheckbox = () => {
+  const [value, setValue] = useState(false);
+
+  useEffect(() => {
+    setValue(localStorage?.getItem("va-disable") === "true");
+  }, []);
+
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     if (e.target.checked) {
       localStorage.setItem("va-disable", "true");
@@ -18,7 +24,7 @@ const AnalyticsCheckbox = () => {
         id="va-disable"
         name="va-disable"
         onChange={handleChange}
-        defaultChecked={localStorage?.getItem("va-disable") === "true"}
+        defaultChecked={value}
       />
 
       <label htmlFor="va-disable">Disable</label>
