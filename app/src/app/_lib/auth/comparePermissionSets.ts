@@ -61,7 +61,8 @@ function hasMatchingAttributes(
       const hasMatchingAttribute = givenAttributes.find(
         (givenAttribute) =>
           givenAttribute.key === requiredAttribute.key &&
-          givenAttribute.value === requiredAttribute.value
+          (givenAttribute.value === requiredAttribute.value ||
+            givenAttribute.value === "*")
       );
 
       if (hasMatchingAttribute) continue;
