@@ -4,7 +4,9 @@ Tools of the Star Citizen organization _Sinister Incorporated_.
 
 ## Features
 
-- Fleet and ship managamanet
+- CRM-like citizen and organization management
+- Dynamic RBAC + ABAC
+- Fleet and ship management
 - Operation management
 - Discord Event integration
   - Shows the available fleet based on the participants' ships

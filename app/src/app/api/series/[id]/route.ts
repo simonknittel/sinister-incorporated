@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "~/server/db";
-import { authenticateAndAuthorizeApi } from "../../../_utils/authenticateAndAuthorize";
+import { authenticateApi } from "../../../_lib/auth/authenticateAndAuthorize";
 import errorHandler from "../../_lib/errorHandler";
 
 interface Params {
@@ -19,7 +19,13 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Authenticate and authorize the request
      */
-    await authenticateAndAuthorizeApi("edit-manufacturers-series-and-variants");
+    const authentication = await authenticateApi();
+    authentication.authorizeApi([
+      {
+        resource: "manufacturersSeriesAndVariants",
+        operation: "manage",
+      },
+    ]);
 
     /**
      * Validate the request params
@@ -63,7 +69,13 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Authenticate and authorize the request
      */
-    await authenticateAndAuthorizeApi("edit-manufacturers-series-and-variants");
+    const authentication = await authenticateApi();
+    authentication.authorizeApi([
+      {
+        resource: "manufacturersSeriesAndVariants",
+        operation: "manage",
+      },
+    ]);
 
     /**
      * Validate the request params

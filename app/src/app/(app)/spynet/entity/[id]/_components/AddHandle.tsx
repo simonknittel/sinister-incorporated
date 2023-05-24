@@ -36,13 +36,13 @@ const AddHandle = ({ entity }: Props) => {
 
       if (response.ok) {
         router.refresh();
-        toast.success("Erfolgreich hinzugefügt");
+        toast.success("Erfolgreich gespeichert");
         reset();
       } else {
-        toast.error("Beim Hinzufügen ist ein Fehler aufgetreten.");
+        toast.error("Beim Speichern ist ein Fehler aufgetreten.");
       }
     } catch (error) {
-      toast.error("Beim Hinzufügen ist ein Fehler aufgetreten.");
+      toast.error("Beim Speichern ist ein Fehler aufgetreten.");
       console.error(error);
     }
 
@@ -56,14 +56,14 @@ const AddHandle = ({ entity }: Props) => {
         id={inputId}
         {...register("content", { required: true })}
         autoFocus
-        placeholder="Handle hinzufügen ..."
+        placeholder="Handle speichern ..."
       />
 
       <Button
         type="submit"
         disabled={isLoading}
         className="rounded-l-none"
-        title="Hinzufügen"
+        title="Speichern"
       >
         {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
       </Button>

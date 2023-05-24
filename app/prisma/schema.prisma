@@ -127,7 +127,7 @@ model EntityLogAttribute {
     id          String    @id @default(cuid())
     eneityLogId String
     entityLog   EntityLog @relation(fields: [eneityLogId], references: [id], onDelete: Cascade)
-    key         String // confirmed, classification-change, ...
+    key         String // confirmed, classification-level-change, ...
     value       String
     createdAt   DateTime  @default(now())
     createdById String
@@ -163,12 +163,21 @@ model Role {
 }
 
 model Permission {
-    roleId String
-    role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
-    key    String
-    value  String
+    id         String                @id @default(cuid())
+    roleId     String
+    role       Role                  @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    resource   String // note, operation, role, ...
+    operation  String // *, create, read, delete, confirm, ...
+    attributes PermissionAttribute[]
+}
 
-    @@id([roleId, key])
+model PermissionAttribute {
+    permissionId String
+    permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+    key          String // roleId, classificationLevelId, noteTypeId...
+    value        String
+
+    @@id([permissionId, key])
 }
 
 //

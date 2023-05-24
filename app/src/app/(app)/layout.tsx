@@ -1,9 +1,6 @@
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
-import {
-  authenticateAndAuthorize,
-  authenticateAndAuthorizePage,
-} from "../_utils/authenticateAndAuthorize";
+import { authenticatePage } from "../_lib/auth/authenticateAndAuthorize";
 import ImpersonationBannerContainer from "./_components/ImpersonationBannerContainer";
 import QueryClientProviderContainer from "./_components/QueryClientProviderContainer";
 import SessionProviderContainer from "./_components/SessionProviderContainer";
@@ -17,12 +14,19 @@ interface Props {
 }
 
 export default async function AppLayout({ children, fleetModal }: Props) {
-  const session = await authenticateAndAuthorizePage();
-  if ((await authenticateAndAuthorize("login")) === false)
+  const authentication = await authenticatePage();
+  if (
+    authentication.authorize([
+      {
+        resource: "login",
+        operation: "manage",
+      },
+    ]) === false
+  )
     redirect("/onboarding");
 
   return (
-    <SessionProviderContainer session={session}>
+    <SessionProviderContainer session={authentication.session}>
       <QueryClientProviderContainer>
         <div className="h-full">
           <SidebarContainer>

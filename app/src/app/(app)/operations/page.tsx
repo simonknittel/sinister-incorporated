@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import Note from "~/app/_components/Note";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import CreateOperation from "./_components/CreateOperation";
 import OperationTile from "./_components/OperationTile";
@@ -10,7 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await authenticateAndAuthorizePage("view-operations");
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "operation",
+      operation: "manage",
+    },
+  ]);
 
   const operations = await prisma.operation.findMany({
     include: {

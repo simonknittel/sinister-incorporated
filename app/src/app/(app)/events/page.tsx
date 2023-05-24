@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { z } from "zod";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
 
@@ -102,7 +102,13 @@ async function getEvents() {
 }
 
 export default async function Page() {
-  await authenticateAndAuthorizePage("view-events");
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "event",
+      operation: "read",
+    },
+  ]);
 
   const { date, data: events } = await getEvents();
 

@@ -5,7 +5,7 @@ import {
   type User,
 } from "@prisma/client";
 import { FaDiscord } from "react-icons/fa";
-import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import DiscordIds from "./DiscordIds";
 import Handles from "./Handles";
 
@@ -18,6 +18,8 @@ interface Props {
 }
 
 const Overview = async ({ entity }: Props) => {
+  const authentication = await authenticate();
+
   const latestConfirmedHandle = entity.logs.filter(
     (log) =>
       log.type === "handle" &&
@@ -32,7 +34,7 @@ const Overview = async ({ entity }: Props) => {
   )?.content;
 
   const discordId = entity.logs.find(
-    (log) => log.type === "discord-id"
+    (log) => log.type === "discordId"
   )?.content;
 
   return (
@@ -52,9 +54,7 @@ const Overview = async ({ entity }: Props) => {
             <span className="italic">Unbekannt</span>
           )}
 
-          {(await authenticateAndAuthorize("add-handle")) && (
-            <Handles entity={entity} />
-          )}
+          <Handles entity={entity} />
         </dd>
 
         <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
@@ -64,9 +64,7 @@ const Overview = async ({ entity }: Props) => {
         <dd className="flex gap-4 items-center">
           {discordId || <span className="italic">Unbekannt</span>}
 
-          {(await authenticateAndAuthorize("add-discord-id")) && (
-            <DiscordIds entity={entity} />
-          )}
+          <DiscordIds entity={entity} />
         </dd>
       </dl>
     </section>

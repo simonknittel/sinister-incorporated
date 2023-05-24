@@ -29,20 +29,20 @@ const AddDiscordId = ({ entity }: Props) => {
       const response = await fetch(`/api/spynet/entity/${entity.id}/log`, {
         method: "POST",
         body: JSON.stringify({
-          type: "discord-id",
+          type: "discordId",
           content: data.content,
         }),
       });
 
       if (response.ok) {
         router.refresh();
-        toast.success("Erfolgreich hinzugefügt");
+        toast.success("Erfolgreich gespeichert");
         reset();
       } else {
-        toast.error("Beim Hinzufügen ist ein Fehler aufgetreten.");
+        toast.error("Beim Speichern ist ein Fehler aufgetreten.");
       }
     } catch (error) {
-      toast.error("Beim Hinzufügen ist ein Fehler aufgetreten.");
+      toast.error("Beim Speichern ist ein Fehler aufgetreten.");
       console.error(error);
     }
 
@@ -56,14 +56,14 @@ const AddDiscordId = ({ entity }: Props) => {
         id={inputId}
         {...register("content", { required: true })}
         autoFocus
-        placeholder="Discord ID hinzufügen ..."
+        placeholder="Discord ID speichern ..."
       />
 
       <Button
         type="submit"
         disabled={isLoading}
         className="rounded-l-none"
-        title="Hinzufügen"
+        title="Speichern"
       >
         {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
       </Button>

@@ -20,7 +20,7 @@ const ConfirmLog = ({ log }: Props) => {
 
     try {
       const response = await fetch(
-        `/api/spynet/entity/${log.entityId}/log/${log.id}`,
+        `/api/spynet/entity/${log.entityId}/log/${log.id}/confirm`,
         {
           method: "PATCH",
           body: JSON.stringify({
@@ -31,12 +31,12 @@ const ConfirmLog = ({ log }: Props) => {
 
       if (response.ok) {
         router.refresh();
-        toast.success("Erfolgreich bestätigt");
+        toast.success("Erfolgreich gespeichert");
       } else {
-        toast.error("Beim Bestätigen ist ein Fehler aufgetreten.");
+        toast.error("Beim Speichern ist ein Fehler aufgetreten.");
       }
     } catch (error) {
-      toast.error("Beim Bestätigen ist ein Fehler aufgetreten.");
+      toast.error("Beim Speichern ist ein Fehler aufgetreten.");
       console.error(error);
     }
 

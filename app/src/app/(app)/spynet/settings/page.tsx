@@ -1,13 +1,20 @@
 import { type Metadata } from "next";
 import Link from "next/link";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
+import NoteTypesTile from "./_components/note-type/NoteTypesTile";
 
 export const metadata: Metadata = {
   title: "Einstellungen - Spynet | Sinister Incorporated",
 };
 
 export default async function Page() {
-  await authenticateAndAuthorizePage("spynet-settings");
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "noteType",
+      operation: "manage",
+    },
+  ]);
 
   return (
     <main className="p-4 lg:p-8 pt-20">
@@ -24,17 +31,7 @@ export default async function Page() {
         <h1>Einstellungen</h1>
       </div>
 
-      <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded bg-neutral-900">
-        <h2 className="font-bold text-xl">Arten von Notizen</h2>
-
-        <p className="mt-4 mb-4">
-          Jeder Notiz kann eine Art zugewiesen werden. Anhand dieser können{" "}
-          <Link href="/roles" className="underline hover:text-neutral-300">
-            Berechtigungen
-          </Link>{" "}
-          vergeben werden.
-        </p>
-      </section>
+      <NoteTypesTile className="mt-4" />
     </main>
   );
 }

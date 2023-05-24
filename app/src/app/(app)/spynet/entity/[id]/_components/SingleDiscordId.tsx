@@ -8,7 +8,7 @@ import {
 import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import useAuthorization from "~/app/(app)/_utils/useAuthorization";
+import useAuthentication from "~/app/_lib/auth/useAuthentication";
 import ConfirmLog from "./ConfirmLog";
 import styles from "./ConfirmationGradient.module.css";
 import DeleteLog from "./DeleteLog";
@@ -20,10 +20,7 @@ interface Props {
 }
 
 const SingleDiscordId = ({ log }: Props) => {
-  const authorization = useAuthorization([
-    "confirm-discord-id",
-    "delete-discord-id",
-  ]);
+  const authentication = useAuthentication();
 
   const confirmation = log.attributes.find(
     (attribute) => attribute.key === "confirmed"
@@ -47,7 +44,13 @@ const SingleDiscordId = ({ log }: Props) => {
               Dieser Eintrag ist noch nicht bestätigt.
             </p>
 
-            {authorization["confirm-discord-id"] && <ConfirmLog log={log} />}
+            {authentication &&
+              authentication.authorize([
+                {
+                  resource: "discordId",
+                  operation: "confirm",
+                },
+              ]) && <ConfirmLog log={log} />}
           </div>
         </div>
       )}
@@ -84,7 +87,13 @@ const SingleDiscordId = ({ log }: Props) => {
 
             <span className="text-neutral-500">&bull;</span>
 
-            {authorization["delete-discord-id"] && <DeleteLog log={log} />}
+            {authentication &&
+              authentication.authorize([
+                {
+                  resource: "discordId",
+                  operation: "delete",
+                },
+              ]) && <DeleteLog log={log} />}
           </div>
 
           <p>{log.content}</p>

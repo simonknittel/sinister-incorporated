@@ -1,6 +1,6 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import FleetTable from "./_components/FleetTable";
 
@@ -9,7 +9,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await authenticateAndAuthorizePage("view-fleet");
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "orgFleet",
+      operation: "read",
+    },
+  ]);
 
   const orgShips = await prisma.ship.findMany({
     include: {

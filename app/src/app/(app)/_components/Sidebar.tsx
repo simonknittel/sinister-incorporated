@@ -3,16 +3,17 @@ import {
   FaCalendarDay,
   FaCog,
   FaHome,
-  FaLock,
   FaSearch,
   FaUsers,
 } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiDashboardFill, RiSpaceShipFill, RiSwordFill } from "react-icons/ri";
-import { authenticateAndAuthorize } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import Account from "./Account";
 
 const Sidebar = async () => {
+  const authentication = await authenticate();
+
   return (
     <div className="flex h-full flex-col justify-between">
       <div>
@@ -30,180 +31,260 @@ const Sidebar = async () => {
               </Link>
             </li>
 
-            {(await authenticateAndAuthorize("view-events")) && (
-              <li>
-                <Link
-                  href="/events"
-                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                >
-                  <FaCalendarDay />
-                  Events
-                </Link>
-              </li>
-            )}
-
-            {(await authenticateAndAuthorize("view-operations")) && (
-              <li>
-                <Link
-                  href="/operations"
-                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                >
-                  <RiSwordFill />
-                  Operationen
-                  <span
-                    className="rounded bg-neutral-700 py-1 px-2 text-sm"
-                    title="Proof of Concept"
+            {authentication &&
+              authentication.authorize([
+                {
+                  resource: "event",
+                  operation: "read",
+                },
+              ]) && (
+                <li>
+                  <Link
+                    href="/events"
+                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                   >
-                    PoC
-                  </span>
-                </Link>
-              </li>
-            )}
+                    <FaCalendarDay />
+                    Events
+                  </Link>
+                </li>
+              )}
+
+            {authentication &&
+              authentication.authorize([
+                {
+                  resource: "operation",
+                  operation: "manage",
+                },
+              ]) && (
+                <li>
+                  <Link
+                    href="/operations"
+                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                  >
+                    <RiSwordFill />
+                    Operationen
+                    <span
+                      className="rounded bg-neutral-700 py-1 px-2 text-sm"
+                      title="Proof of Concept"
+                    >
+                      PoC
+                    </span>
+                  </Link>
+                </li>
+              )}
           </ul>
 
-          {(await authenticateAndAuthorize([
-            "view-org-fleet",
-            "add-ship",
-            "edit-manufacturers-series-and-variants",
-          ])) && (
-            <div className="mt-4">
-              <p className="ml-4 text-neutral-500 mt-4">Flotte</p>
+          {authentication &&
+            authentication.authorize([
+              {
+                resource: "orgFleet",
+                operation: "read",
+              },
+              {
+                resource: "ship",
+                operation: "manage",
+              },
+              {
+                resource: "manufacturersSeriesAndVariants",
+                operation: "manage",
+              },
+            ]) && (
+              <div className="mt-4">
+                <p className="ml-4 text-neutral-500 mt-4">Flotte</p>
 
-              <ul>
-                {(await authenticateAndAuthorize(["view-org-fleet"])) && (
-                  <li>
-                    <Link
-                      href="/fleet"
-                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                    >
-                      <MdWorkspaces />
-                      Übersicht
-                    </Link>
-                  </li>
-                )}
+                <ul>
+                  {authentication &&
+                    authentication.authorize([
+                      {
+                        resource: "orgFleet",
+                        operation: "read",
+                      },
+                    ]) && (
+                      <li>
+                        <Link
+                          href="/fleet"
+                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                        >
+                          <MdWorkspaces />
+                          Übersicht
+                        </Link>
+                      </li>
+                    )}
 
-                {(await authenticateAndAuthorize("add-ship")) && (
-                  <li>
-                    <Link
-                      href="/fleet/my-ships"
-                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                    >
-                      <RiSpaceShipFill />
-                      Meine Schiffe
-                    </Link>
-                  </li>
-                )}
+                  {authentication &&
+                    authentication.authorize([
+                      {
+                        resource: "ship",
+                        operation: "manage",
+                      },
+                    ]) && (
+                      <li>
+                        <Link
+                          href="/fleet/my-ships"
+                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                        >
+                          <RiSpaceShipFill />
+                          Meine Schiffe
+                        </Link>
+                      </li>
+                    )}
 
-                {(await authenticateAndAuthorize(
-                  "edit-manufacturers-series-and-variants"
-                )) && (
-                  <li>
-                    <Link
-                      href="/fleet/settings"
-                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                    >
-                      <FaCog />
-                      Einstellungen
-                    </Link>
-                  </li>
-                )}
-              </ul>
-            </div>
-          )}
+                  {authentication &&
+                    authentication.authorize([
+                      {
+                        resource: "manufacturersSeriesAndVariants",
+                        operation: "manage",
+                      },
+                    ]) && (
+                      <li>
+                        <Link
+                          href="/fleet/settings"
+                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                        >
+                          <FaCog />
+                          Einstellungen
+                        </Link>
+                      </li>
+                    )}
+                </ul>
+              </div>
+            )}
 
-          {(await authenticateAndAuthorize("view-spynet")) && (
-            <div className="mt-4">
-              <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
+          {authentication &&
+            authentication.authorize([
+              {
+                resource: "citizen",
+                operation: "read",
+              },
+              {
+                resource: "noteType",
+                operation: "manage",
+              },
+            ]) && (
+              <div className="mt-4">
+                <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
 
-              <ul>
-                <li>
-                  <Link
-                    href="/spynet"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                  >
-                    <RiDashboardFill />
-                    Dashboard
-                  </Link>
-                </li>
+                <ul>
+                  {authentication &&
+                    authentication.authorize([
+                      {
+                        resource: "citizen",
+                        operation: "read",
+                      },
+                    ]) && (
+                      <>
+                        <li>
+                          <Link
+                            href="/spynet"
+                            className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                          >
+                            <RiDashboardFill />
+                            Dashboard
+                          </Link>
+                        </li>
 
-                <li>
-                  <Link
-                    href="/spynet/search"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                  >
-                    <FaSearch />
-                    Suche
-                  </Link>
-                </li>
+                        <li>
+                          <Link
+                            href="/spynet/search"
+                            className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                          >
+                            <FaSearch />
+                            Suche
+                          </Link>
+                        </li>
+                      </>
+                    )}
 
-                {(await authenticateAndAuthorize("spynet-settings")) && (
-                  <li>
-                    <Link
-                      href="/spynet/settings"
-                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                    >
-                      <FaCog />
-                      Einstellungen
-                    </Link>
-                  </li>
-                )}
-              </ul>
-            </div>
-          )}
+                  {authentication &&
+                    authentication.authorize([
+                      {
+                        resource: "noteType",
+                        operation: "manage",
+                      },
+                    ]) && (
+                      <li>
+                        <Link
+                          href="/spynet/settings"
+                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                        >
+                          <FaCog />
+                          Einstellungen
+                        </Link>
+                      </li>
+                    )}
+                </ul>
+              </div>
+            )}
 
-          {(await authenticateAndAuthorize([
-            "view-logins",
-            "edit-roles-and-permissions",
-            "edit-classification-levels",
-            "disable-analytics",
-          ])) && (
-            <div className="mt-4">
-              <p className="ml-4 text-neutral-500 mt-4">Admin</p>
+          {authentication &&
+            authentication.authorize([
+              {
+                resource: "user",
+                operation: "read",
+              },
+              {
+                resource: "role",
+                operation: "manage",
+              },
+              {
+                resource: "classificationLevel",
+                operation: "manage",
+              },
+              {
+                resource: "analytics",
+                operation: "manage",
+              },
+            ]) && (
+              <div className="mt-4">
+                <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
-              <ul>
-                {(await authenticateAndAuthorize("view-logins")) && (
-                  <li>
-                    <Link
-                      href="/logins"
-                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                    >
-                      <FaUsers />
-                      Logins
-                    </Link>
-                  </li>
-                )}
+                <ul>
+                  {authentication &&
+                    authentication.authorize([
+                      {
+                        resource: "user",
+                        operation: "read",
+                      },
+                    ]) && (
+                      <li>
+                        <Link
+                          href="/users"
+                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                        >
+                          <FaUsers />
+                          Benutzer
+                        </Link>
+                      </li>
+                    )}
 
-                {(await authenticateAndAuthorize(
-                  "edit-roles-and-permissions"
-                )) && (
-                  <li>
-                    <Link
-                      href="/roles"
-                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                    >
-                      <FaLock />
-                      Rollen und Berechtigungen
-                    </Link>
-                  </li>
-                )}
-
-                {(await authenticateAndAuthorize([
-                  "edit-classification-levels",
-                  "disable-analytics",
-                ])) && (
-                  <li>
-                    <Link
-                      href="/settings"
-                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                    >
-                      <FaCog />
-                      Einstellungen
-                    </Link>
-                  </li>
-                )}
-              </ul>
-            </div>
-          )}
+                  {authentication &&
+                    authentication.authorize([
+                      {
+                        resource: "role",
+                        operation: "manage",
+                      },
+                      {
+                        resource: "classificationLevel",
+                        operation: "manage",
+                      },
+                      {
+                        resource: "analytics",
+                        operation: "manage",
+                      },
+                    ]) && (
+                      <li>
+                        <Link
+                          href="/settings"
+                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                        >
+                          <FaCog />
+                          Einstellungen
+                        </Link>
+                      </li>
+                    )}
+                </ul>
+              </div>
+            )}
         </nav>
       </div>
 

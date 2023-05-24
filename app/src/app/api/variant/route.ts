@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "~/server/db";
-import { authenticateAndAuthorizeApi } from "../../_utils/authenticateAndAuthorize";
+import { authenticateApi } from "../../_lib/auth/authenticateAndAuthorize";
 import errorHandler from "../_lib/errorHandler";
 
 const postBodySchema = z.object({
@@ -14,7 +14,13 @@ export async function POST(request: Request) {
     /**
      * Authenticate and authorize the request
      */
-    await authenticateAndAuthorizeApi("edit-manufacturers-series-and-variants");
+    const authentication = await authenticateApi();
+    authentication.authorizeApi([
+      {
+        resource: "manufacturersSeriesAndVariants",
+        operation: "manage",
+      },
+    ]);
 
     /**
      * Validate the request body

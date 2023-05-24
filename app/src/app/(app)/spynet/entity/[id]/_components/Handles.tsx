@@ -9,6 +9,7 @@ import { useState } from "react";
 import { FaPen } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
+import useAuthentication from "~/app/_lib/auth/useAuthentication";
 import AddHandle from "./AddHandle";
 import SingleHandle from "./SingleHandle";
 
@@ -22,6 +23,7 @@ interface Props {
 
 const Handles = ({ entity }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const authentication = useAuthentication();
 
   const handles = entity.logs
     .filter((log) => log.type === "handle")
@@ -44,7 +46,13 @@ const Handles = ({ entity }: Props) => {
       >
         <h2 className="text-xl font-bold">Frühere Handles</h2>
 
-        <AddHandle entity={entity} />
+        {authentication &&
+          authentication.authorize([
+            {
+              resource: "handle",
+              operation: "create",
+            },
+          ]) && <AddHandle entity={entity} />}
 
         {handles.length > 0 ? (
           <ul className="mt-4 flex flex-col gap-2">

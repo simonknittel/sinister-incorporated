@@ -7,6 +7,8 @@ import {
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import { z } from "zod";
+import getPermissionSetsByRoles from "~/app/_lib/auth/getPermissionSetsByRoles";
+import { type PermissionSet } from "~/app/_lib/auth/PermissionSet";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import { type UserRole } from "~/types";
@@ -70,7 +72,7 @@ declare module "next-auth" {
       role: UserRole;
     } & DefaultSession["user"];
     discordId: string;
-    permissions: string[];
+    givenPermissionSets: PermissionSet[];
   }
 
   interface User {
@@ -96,7 +98,7 @@ export const authOptions: NextAuthOptions = {
 
       const discordIdLog = await prisma.entityLog.findFirst({
         where: {
-          type: "discord-id",
+          type: "discordId",
           content: discordAccount!.providerAccountId,
           attributes: {
             some: {
@@ -110,7 +112,7 @@ export const authOptions: NextAuthOptions = {
         },
       });
 
-      let permissions = [] as string[];
+      let givenPermissionSets: PermissionSet[] = [];
 
       if (discordIdLog) {
         const roleLogs = await prisma.entityLog.findMany({
@@ -137,7 +139,7 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
-        const rolesWithPermissions = await prisma.role.findMany({
+        const roles = await prisma.role.findMany({
           where: {
             id: {
               in: Array.from(assignedRoles),
@@ -145,16 +147,14 @@ export const authOptions: NextAuthOptions = {
           },
           include: {
             permissions: {
-              where: {
-                value: "true",
+              include: {
+                attributes: true,
               },
             },
           },
         });
 
-        permissions = rolesWithPermissions.flatMap((role) =>
-          role.permissions.map((permission) => permission.key)
-        );
+        givenPermissionSets = getPermissionSetsByRoles(roles);
       }
 
       return {
@@ -165,7 +165,7 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
         },
         discordId: discordAccount!.providerAccountId,
-        permissions,
+        givenPermissionSets: givenPermissionSets,
       };
     },
 
@@ -241,7 +241,7 @@ export const authOptions: NextAuthOptions = {
         const latestConfirmedDiscordIdEntityLog =
           await prisma.entityLog.findFirst({
             where: {
-              type: "discord-id",
+              type: "discordId",
               content: profile!.id,
               attributes: {
                 some: {

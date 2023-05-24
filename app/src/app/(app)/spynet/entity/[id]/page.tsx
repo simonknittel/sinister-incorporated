@@ -4,17 +4,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { FaSitemap } from "react-icons/fa";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import sinisterIcon from "../../../../../assets/Icons/Membership/logo_white.svg";
 import DeleteEntity from "./_components/DeleteEntity";
-import Notes from "./_components/Notes";
-import NotesSkeleton from "./_components/NotesSkeleton";
 import Overview from "./_components/Overview";
 import OverviewSkeleton from "./_components/OverviewSkeleton";
-import Roles from "./_components/Roles";
-import RolesSkeleton from "./_components/RolesSkeleton";
 import WIP from "./_components/WIP";
+import Notes from "./_components/notes/Notes";
+import NotesSkeleton from "./_components/notes/NotesSkeleton";
+import Roles from "./_components/roles/Roles";
+import RolesSkeleton from "./_components/roles/RolesSkeleton";
 
 const getEntity = cache(async (id: string) => {
   return prisma.entity.findUnique({
@@ -82,7 +82,13 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  await authenticateAndAuthorizePage("view-spynet");
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "citizen",
+      operation: "read",
+    },
+  ]);
 
   const entity = await getEntity(params.id);
   if (!entity) notFound();
@@ -119,9 +125,12 @@ export default async function Page({ params }: Props) {
 
         <h1>{latestConfirmedHandle?.content || entity.id}</h1>
 
-        {(await authenticateAndAuthorizePage("delete-entity")) && (
-          <DeleteEntity entity={entity} />
-        )}
+        {authentication.authorize([
+          {
+            resource: "citizen",
+            operation: "delete",
+          },
+        ]) && <DeleteEntity entity={entity} />}
       </div>
 
       <div className="mt-4 grid grid-cols-[1fr_1fr_1fr_1fr] gap-4">

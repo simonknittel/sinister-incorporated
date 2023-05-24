@@ -1,13 +1,19 @@
 import { type Metadata } from "next";
 import Link from "next/link";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 
 export const metadata: Metadata = {
   title: "Spynet | Sinister Incorporated",
 };
 
 export default async function Page() {
-  await authenticateAndAuthorizePage("view-spynet");
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "citizen",
+      operation: "read",
+    },
+  ]);
 
   return (
     <main className="p-4 lg:p-8 pt-20">

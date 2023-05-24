@@ -54,6 +54,7 @@ const DeleteLog = ({ log }: Props) => {
       onClick={() => void handleClick()}
       disabled={isLoading}
       variant="tertiary"
+      type="button"
     >
       {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />} Löschen
     </Button>

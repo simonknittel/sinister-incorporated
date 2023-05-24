@@ -8,7 +8,7 @@ import {
 import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import useAuthorization from "~/app/(app)/_utils/useAuthorization";
+import useAuthentication from "~/app/_lib/auth/useAuthentication";
 import ConfirmLog from "./ConfirmLog";
 import styles from "./ConfirmationGradient.module.css";
 import DeleteLog from "./DeleteLog";
@@ -20,7 +20,7 @@ interface Props {
 }
 
 const SingleHandle = ({ log }: Props) => {
-  const authorization = useAuthorization(["confirm-handle", "delete-handle"]);
+  const authentication = useAuthentication();
 
   const confirmation = log.attributes.find(
     (attribute) => attribute.key === "confirmed"
@@ -44,7 +44,13 @@ const SingleHandle = ({ log }: Props) => {
               Dieser Eintrag ist noch nicht bestätigt.
             </p>
 
-            {authorization["confirm-handle"] && <ConfirmLog log={log} />}
+            {authentication &&
+              authentication.authorize([
+                {
+                  resource: "handle",
+                  operation: "confirm",
+                },
+              ]) && <ConfirmLog log={log} />}
           </div>
         </div>
       )}
@@ -81,7 +87,13 @@ const SingleHandle = ({ log }: Props) => {
 
             <span className="text-neutral-500">&bull;</span>
 
-            {authorization["delete-handle"] && <DeleteLog log={log} />}
+            {authentication &&
+              authentication.authorize([
+                {
+                  resource: "handle",
+                  operation: "delete",
+                },
+              ]) && <DeleteLog log={log} />}
           </div>
 
           <p>{log.content}</p>

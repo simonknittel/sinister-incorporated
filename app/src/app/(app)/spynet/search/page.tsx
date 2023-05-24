@@ -1,8 +1,5 @@
 import { type Metadata } from "next";
-import {
-  authenticateAndAuthorize,
-  authenticateAndAuthorizePage,
-} from "~/app/_utils/authenticateAndAuthorize";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import CreateEntity from "../_components/CreateEntity";
 import Search from "./_components/Search";
 
@@ -11,7 +8,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await authenticateAndAuthorizePage("view-spynet");
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "citizen",
+      operation: "read",
+    },
+  ]);
 
   return (
     <main className="h-full flex justify-center items-center bg-sinister-radial-gradient">
@@ -22,7 +25,12 @@ export default async function Page() {
 
         <Search />
 
-        {(await authenticateAndAuthorize("add-entity")) && <CreateEntity />}
+        {authentication.authorize([
+          {
+            resource: "citizen",
+            operation: "create",
+          },
+        ]) && <CreateEntity />}
       </div>
     </main>
   );

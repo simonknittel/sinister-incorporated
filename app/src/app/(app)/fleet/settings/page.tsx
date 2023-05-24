@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import AddManufacturer from "./_components/AddManufacturer";
 import AddSeries from "./_components/AddSeries";
@@ -10,7 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await authenticateAndAuthorizePage("edit-manufacturers-series-and-variants");
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "manufacturersSeriesAndVariants",
+      operation: "manage",
+    },
+  ]);
 
   const data = await prisma.manufacturer.findMany({
     include: {

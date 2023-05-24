@@ -9,6 +9,7 @@ import { useState } from "react";
 import { FaPen } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
+import useAuthentication from "~/app/_lib/auth/useAuthentication";
 import AddDiscordId from "./AddDiscordId";
 import SingleDiscordId from "./SingleDiscordId";
 
@@ -22,9 +23,10 @@ interface Props {
 
 const DiscordIds = ({ entity }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const authentication = useAuthentication();
 
   const discordIds = entity.logs
-    .filter((log) => log.type === "discord-id")
+    .filter((log) => log.type === "discordId")
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return (
@@ -44,7 +46,13 @@ const DiscordIds = ({ entity }: Props) => {
       >
         <h2 className="text-xl font-bold">Frühere Discord IDs</h2>
 
-        <AddDiscordId entity={entity} />
+        {authentication &&
+          authentication.authorize([
+            {
+              resource: "discordId",
+              operation: "create",
+            },
+          ]) && <AddDiscordId entity={entity} />}
 
         {discordIds.length > 0 ? (
           <ul className="mt-4 flex flex-col gap-2">

@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import AssignShip from "./_components/AssignShip";
 import MyShipTile from "./_components/MyShipTile";
@@ -9,12 +9,18 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const session = await authenticateAndAuthorizePage("add-ship");
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "ship",
+      operation: "manage",
+    },
+  ]);
 
   const [myShips, allVariants] = await prisma.$transaction([
     prisma.ship.findMany({
       where: {
-        ownerId: session.user.id,
+        ownerId: authentication.session.user.id,
       },
       include: {
         variant: {

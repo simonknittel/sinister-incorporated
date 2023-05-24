@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import Avatar from "~/app/_components/Avatar";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import ConfirmParticipation from "./_components/ConfirmParticipation";
 import CreateUnit from "./_components/CreateUnit";
@@ -86,7 +86,13 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  await authenticateAndAuthorizePage("view-operations");
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "operation",
+      operation: "manage",
+    },
+  ]);
 
   const operation = await getOperation(params.id);
   if (!operation) notFound();

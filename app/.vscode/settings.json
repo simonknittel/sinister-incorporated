@@ -3,6 +3,7 @@
 		"algoliasearch",
 		"clsx",
 		"esnext",
+		"Notizart",
 		"prisma",
 		"pscale"
 	],

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { z } from "zod";
 import FleetTable from "~/app/(app)/fleet/_components/FleetTable";
-import { authenticateAndAuthorizePage } from "~/app/_utils/authenticateAndAuthorize";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
@@ -175,7 +175,13 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  await authenticateAndAuthorizePage("view-org-fleet");
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "orgFleet",
+      operation: "read",
+    },
+  ]);
 
   const { date, data: event } = await getEvent(params.id);
   const users = await getEventUsers(params.id);

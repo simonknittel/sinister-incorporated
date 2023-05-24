@@ -1,41 +1,60 @@
 import { type Metadata } from "next";
-import Link from "next/link";
-import {
-  authenticateAndAuthorize,
-  authenticateAndAuthorizePage,
-} from "~/app/_utils/authenticateAndAuthorize";
+import { Suspense } from "react";
+import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import AnalyticsCheckbox from "./_components/AnalyticsCheckbox";
+import ClassificationLevelsTile from "./_components/classification-level/ClassificationLevelsTile";
+import RolesTile from "./_components/role/RolesTile";
+import RolesTileSkeleton from "./_components/role/RolesTileSkeleton";
 
 export const metadata: Metadata = {
   title: "Einstellungen | Sinister Incorporated",
 };
 
 export default async function Page() {
-  await authenticateAndAuthorizePage([
-    "edit-classification-levels",
-    "disable-analytics",
+  const authentication = await authenticatePage();
+  authentication.authorizePage([
+    {
+      resource: "role",
+      operation: "manage",
+    },
+    {
+      resource: "classificationLevel",
+      operation: "manage",
+    },
+    {
+      resource: "analytics",
+      operation: "manage",
+    },
   ]);
 
   return (
     <main className="p-4 lg:p-8 pt-20">
       <h1 className="text-xl font-bold">Einstellungen</h1>
 
-      {(await authenticateAndAuthorize("edit-classification-levels")) && (
-        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded bg-neutral-900">
-          <h2 className="font-bold text-xl">Sicherheitsstufen</h2>
-
-          <p className="mt-4 mb-4">
-            Jeder Notiz, jedem Event und jeder Operation kann eine
-            Sicherheitsstufe zugewiesen werden. Anhand dieser können{" "}
-            <Link href="/roles" className="underline hover:text-neutral-300">
-              Berechtigungen
-            </Link>{" "}
-            vergeben werden.
-          </p>
-        </section>
+      {authentication.authorize([
+        {
+          resource: "role",
+          operation: "manage",
+        },
+      ]) && (
+        <Suspense fallback={<RolesTileSkeleton className="mt-4" />}>
+          <RolesTile className="mt-4" />
+        </Suspense>
       )}
 
-      {(await authenticateAndAuthorize("disable-analytics")) && (
+      {authentication.authorize([
+        {
+          resource: "classificationLevel",
+          operation: "manage",
+        },
+      ]) && <ClassificationLevelsTile className="mt-4" />}
+
+      {authentication.authorize([
+        {
+          resource: "analytics",
+          operation: "manage",
+        },
+      ]) && (
         <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded bg-neutral-900">
           <h2 className="font-bold text-xl">Disable analytics</h2>
 

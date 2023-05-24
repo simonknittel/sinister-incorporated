@@ -1,0 +1,48 @@
+import clsx from "clsx";
+import { prisma } from "~/server/db";
+import Create from "./Create";
+import Delete from "./Delete";
+import Update from "./Update";
+
+interface Props {
+  className?: string;
+}
+
+const NoteTypesTile = async ({ className }: Props) => {
+  const noteTypes = await prisma.noteType.findMany();
+
+  const sortedNoteTypes = noteTypes.sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+
+  return (
+    <section
+      className={clsx(className, "max-w-4xl p-4 lg:p-8 rounded bg-neutral-900")}
+    >
+      <h2 className="font-bold text-xl">Notizarten</h2>
+
+      <p className="mt-4 mb-4 text-sm">
+        Jeder Notiz kann eine Art zugewiesen werden. Anhand dieser können
+        Berechtigungen vergeben werden.
+      </p>
+
+      {sortedNoteTypes.map((noteType) => (
+        <div
+          key={noteType.id}
+          className="flex justify-between gap-2 py-2 items-center"
+        >
+          <span className="font-bold">{noteType.name}</span>
+
+          <div className="flex gap-4 items-center">
+            <Update noteType={noteType} />
+            <Delete noteType={noteType} />
+          </div>
+        </div>
+      ))}
+
+      <Create className="mt-4" />
+    </section>
+  );
+};
+
+export default NoteTypesTile;
