@@ -39,7 +39,7 @@ const RoleSection = ({ className, roles }: Props) => {
     <div className={clsx(className)}>
       <h4 className="font-bold">Diese Rolle kann folgende Rollen ...</h4>
 
-      <div className="border-2 border-neutral-700 p-4 rounded mt-2">
+      <div className="border border-neutral-700 p-4 rounded mt-2">
         <div className="grid grid-cols-3 gap-2 font-bold">
           <span>Rolle</span>
           <span>Aktion</span>

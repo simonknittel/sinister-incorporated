@@ -58,7 +58,7 @@ const SingleNote = async ({ note }: Props) => {
     >
       <div
         className={clsx({
-          "absolute w-full h-24 border-t-4 border-x-4 bg-gradient-to-t from-neutral-900 to-blue-500/10 blue-border":
+          "absolute w-full h-24 border-t-2 border-x-2 bg-gradient-to-t from-neutral-900 to-blue-500/10 blue-border":
             !confirmed,
           [styles.blueBorder!]: !confirmed,
         })}
@@ -93,7 +93,7 @@ const SingleNote = async ({ note }: Props) => {
         </div>
 
         <div className="flex-1">
-          <div className="text-sm flex gap-2 border-b-2 pb-2 items-center border-neutral-800">
+          <div className="text-sm flex gap-2 border-b pb-2 items-center border-neutral-800">
             <p>
               <time dateTime={note.createdAt.toISOString()}>
                 {note.createdAt.toLocaleDateString("de-DE", {

@@ -43,7 +43,7 @@ const NoteSection = ({ className, noteTypes, classificationLevels }: Props) => {
     <div className={clsx(className)}>
       <h4 className="font-bold">Notizen</h4>
 
-      <div className="border-2 border-neutral-700 p-4 rounded mt-2">
+      <div className="border border-neutral-700 p-4 rounded mt-2">
         <div className="grid grid-cols-5 gap-2 font-bold">
           <span>Notizart</span>
           <span>Geheimhaltungsstufe</span>

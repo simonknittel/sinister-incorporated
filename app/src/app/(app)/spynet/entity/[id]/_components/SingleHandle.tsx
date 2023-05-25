@@ -30,7 +30,7 @@ const SingleHandle = ({ log }: Props) => {
     <li key={log.id} className="relative rounded overflow-hidden">
       <div
         className={clsx({
-          "absolute w-full h-20 border-t-4 border-x-4 bg-gradient-to-t from-neutral-800 to-blue-500/10 blue-border":
+          "absolute w-full h-20 border-t-2 border-x-2 bg-gradient-to-t from-neutral-800 to-blue-500/10 blue-border":
             !confirmation,
           [styles.blueBorder!]: !confirmation,
         })}
@@ -66,7 +66,7 @@ const SingleHandle = ({ log }: Props) => {
         </div>
 
         <div className="flex-1">
-          <div className="text-sm flex gap-2 border-b-2 pb-1 items-baseline border-neutral-700">
+          <div className="text-sm flex gap-2 border-b pb-1 items-baseline border-neutral-700">
             <p>
               <time dateTime={log.createdAt.toISOString()}>
                 {log.createdAt.toLocaleDateString("de-DE", {

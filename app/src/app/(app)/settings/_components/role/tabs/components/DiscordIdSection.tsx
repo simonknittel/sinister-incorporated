@@ -14,7 +14,7 @@ const DiscordIdSection = ({ className }: Props) => {
     <div className={clsx(className)}>
       <h4 className="font-bold">Discord IDs</h4>
 
-      <div className="border-2 border-neutral-700 p-4 rounded mt-2 grid grid-cols-3">
+      <div className="border border-neutral-700 p-4 rounded mt-2 grid grid-cols-3">
         <div>
           <h5 className="font-bold mb-2">Erstellen</h5>
           <YesNoCheckbox register={register("discordId.create")} />

@@ -19,7 +19,7 @@ const Sidebar = async () => {
       <div>
         <Account />
 
-        <nav className="p-4 border-t-2 border-neutral-800">
+        <nav className="p-4 border-neutral-800">
           <ul>
             <li>
               <Link

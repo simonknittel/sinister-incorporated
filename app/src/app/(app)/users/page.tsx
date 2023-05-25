@@ -4,7 +4,7 @@ import { prisma } from "~/server/db";
 import UsersTable from "./_components/UsersTable";
 
 export const metadata: Metadata = {
-  title: "Logins | Sinister Incorporated",
+  title: "Benutzer | Sinister Incorporated",
 };
 
 export default async function Page() {

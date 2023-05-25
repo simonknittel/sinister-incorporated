@@ -6,7 +6,7 @@ const Account = async () => {
   const authentication = await authenticate();
 
   return (
-    <div className="flex items-center justify-between border-b-2 border-neutral-800 px-8 py-4">
+    <div className="flex items-center justify-between border-b border-neutral-800 px-8 py-4">
       <div className="flex items-center gap-4">
         <div className="overflow-hidden rounded">
           <Avatar
