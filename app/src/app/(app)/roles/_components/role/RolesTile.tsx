@@ -36,7 +36,10 @@ const RolesTile = async ({ className }: Props) => {
           key={role.id}
           className="flex justify-between gap-2 py-2 items-center"
         >
-          <span className="font-bold">{role.name}</span>
+          <div className="flex flex-col">
+            <p className="font-bold">{role.name}</p>
+            <p className="text-neutral-500 text-sm">{role.id}</p>
+          </div>
 
           <div className="flex gap-4 items-center">
             <Permissions

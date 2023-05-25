@@ -31,7 +31,7 @@ const ClassificationLevelsTile = async ({ className }: Props) => {
           key={classificationLevel.id}
           className="flex justify-between gap-2 py-2 items-center"
         >
-          <div className="flex gap-2 items-baseline">
+          <div className="flex flex-col">
             <p className="font-bold">{classificationLevel.name}</p>
             <p className="text-neutral-500 text-sm">{classificationLevel.id}</p>
           </div>
