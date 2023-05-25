@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const authentication = await authenticateApi();
     authentication.authorizeApi([
       {
-        resource: "entity",
+        resource: "citizen",
         operation: "create",
       },
     ]);
