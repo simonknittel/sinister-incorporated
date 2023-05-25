@@ -3,6 +3,7 @@ import {
   FaCalendarDay,
   FaCog,
   FaHome,
+  FaLock,
   FaSearch,
   FaUsers,
 } from "react-icons/fa";
@@ -266,10 +267,10 @@ const Sidebar = async () => {
                     ]) && (
                       <li>
                         <Link
-                          href="/settings"
+                          href="/roles"
                           className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                         >
-                          <FaCog />
+                          <FaLock />
                           Rollen
                         </Link>
                       </li>
