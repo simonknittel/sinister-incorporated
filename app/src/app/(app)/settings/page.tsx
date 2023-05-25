@@ -1,10 +1,7 @@
 import { type Metadata } from "next";
-import { Suspense } from "react";
 import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import AnalyticsCheckbox from "./_components/AnalyticsCheckbox";
 import ClassificationLevelsTile from "./_components/classification-level/ClassificationLevelsTile";
-import RolesTile from "./_components/role/RolesTile";
-import RolesTileSkeleton from "./_components/role/RolesTileSkeleton";
 
 export const metadata: Metadata = {
   title: "Einstellungen | Sinister Incorporated",
@@ -13,10 +10,6 @@ export const metadata: Metadata = {
 export default async function Page() {
   const authentication = await authenticatePage();
   authentication.authorizePage([
-    {
-      resource: "role",
-      operation: "manage",
-    },
     {
       resource: "classificationLevel",
       operation: "manage",
@@ -30,17 +23,6 @@ export default async function Page() {
   return (
     <main className="p-4 lg:p-8 pt-20">
       <h1 className="text-xl font-bold">Einstellungen</h1>
-
-      {authentication.authorize([
-        {
-          resource: "role",
-          operation: "manage",
-        },
-      ]) && (
-        <Suspense fallback={<RolesTileSkeleton className="mt-4" />}>
-          <RolesTile className="mt-4" />
-        </Suspense>
-      )}
 
       {authentication.authorize([
         {

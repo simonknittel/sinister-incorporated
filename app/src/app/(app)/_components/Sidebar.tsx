@@ -263,6 +263,20 @@ const Sidebar = async () => {
                         resource: "role",
                         operation: "manage",
                       },
+                    ]) && (
+                      <li>
+                        <Link
+                          href="/settings"
+                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                        >
+                          <FaCog />
+                          Rollen
+                        </Link>
+                      </li>
+                    )}
+
+                  {authentication &&
+                    authentication.authorize([
                       {
                         resource: "classificationLevel",
                         operation: "manage",

@@ -31,8 +31,6 @@ const RolesTile = async ({ className }: Props) => {
     <section
       className={clsx(className, "max-w-4xl p-4 lg:p-8 rounded bg-neutral-900")}
     >
-      <h2 className="font-bold text-xl">Rollen</h2>
-
       {sortedRoles.map((role) => (
         <div
           key={role.id}
