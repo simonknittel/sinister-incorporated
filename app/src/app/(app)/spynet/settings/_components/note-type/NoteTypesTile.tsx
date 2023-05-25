@@ -31,7 +31,10 @@ const NoteTypesTile = async ({ className }: Props) => {
           key={noteType.id}
           className="flex justify-between gap-2 py-2 items-center"
         >
-          <span className="font-bold">{noteType.name}</span>
+          <div className="flex gap-2 items-baseline">
+            <p className="font-bold">{noteType.name}</p>
+            <p className="text-neutral-500 text-sm">{noteType.id}</p>
+          </div>
 
           <div className="flex gap-4 items-center">
             <Update noteType={noteType} />
