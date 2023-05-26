@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { useHotkeys } from "react-hotkeys-hook";
 import { FaRegTimesCircle } from "react-icons/fa";
 
 interface Props {
@@ -20,6 +21,9 @@ export default function Modal({
   onRequestClose,
 }: Props) {
   const router = useRouter();
+  useHotkeys("esc", onRequestClose || (() => router.back()), undefined, [
+    onRequestClose,
+  ]);
 
   if (!isOpen) return null;
 
