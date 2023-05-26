@@ -192,7 +192,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
           attributes: {
             some: {
               key: "confirmed",
-              value: "true",
+              value: "confirmed",
             },
           },
         },
@@ -242,7 +242,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
           attributes: {
             some: {
               key: "confirmed",
-              value: "true",
+              value: "confirmed",
             },
           },
         },

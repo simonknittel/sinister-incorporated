@@ -5,6 +5,7 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import { Suspense } from "react";
+import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
@@ -45,7 +46,7 @@ const SingleNote = async ({ note }: Props) => {
     });
   }
 
-  if (!confirmed || confirmed.value !== "true") {
+  if (!confirmed || confirmed.value !== "confirmed") {
     authorizationAttributes.push({
       key: "alsoUnconfirmed",
       value: true,
@@ -59,9 +60,11 @@ const SingleNote = async ({ note }: Props) => {
     >
       <div
         className={clsx({
-          "absolute w-full h-24 border-t-2 border-x-2 bg-gradient-to-t from-neutral-900 to-blue-500/10 blue-border":
-            !confirmed,
-          [styles.blueBorder!]: !confirmed,
+          "absolute w-full h-24 border-t-2 border-x-2 bg-gradient-to-t from-neutral-900":
+            !confirmed || confirmed?.value === "falseReport",
+          [`${styles.blueBorder!} to-blue-500/10`]: !confirmed,
+          [`${styles.redBorder!} to-red-500/10`]:
+            confirmed?.value === "falseReport",
         })}
       />
 
@@ -83,10 +86,17 @@ const SingleNote = async ({ note }: Props) => {
         </div>
       )}
 
+      {confirmed?.value === "falseReport" && (
+        <div className="px-4 pt-4 flex items-start gap-2 relative z-10">
+          <BsExclamationOctagonFill className="text-red-500 grow-1 shrink-0 mt-1" />
+          <p className="font-bold">Falschmeldung</p>
+        </div>
+      )}
+
       <div
         className={clsx("flex gap-2 relative z-10", {
           "px-4 pt-4 opacity-20 hover:opacity-100 transition-opacity":
-            !confirmed,
+            !confirmed || confirmed.value === "falseReport",
         })}
       >
         <div className="h-[20px] flex items-center">

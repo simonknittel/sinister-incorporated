@@ -6,3 +6,12 @@
     )
     1;
 }
+
+.redBorder {
+  border-image: linear-gradient(
+      to bottom,
+      rgb(246, 59, 59),
+      rgba(246, 59, 59, 0)
+    )
+    1;
+}

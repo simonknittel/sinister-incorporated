@@ -103,7 +103,7 @@ export const authOptions: NextAuthOptions = {
           attributes: {
             some: {
               key: "confirmed",
-              value: "true",
+              value: "confirmed",
             },
           },
         },
@@ -255,7 +255,7 @@ export const authOptions: NextAuthOptions = {
               attributes: {
                 some: {
                   key: "confirmed",
-                  value: "true",
+                  value: "confirmed",
                 },
               },
             },
@@ -273,7 +273,7 @@ export const authOptions: NextAuthOptions = {
                 attributes: {
                   some: {
                     key: "confirmed",
-                    value: "true",
+                    value: "confirmed",
                   },
                 },
               },

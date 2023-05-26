@@ -32,7 +32,7 @@ const Overview = async ({ entity }: Props) => {
       log.type === "handle" &&
       log.attributes.find(
         (attribute) =>
-          attribute.key === "confirmed" && attribute.value === "true"
+          attribute.key === "confirmed" && attribute.value === "confirmed"
       )
   )?.[0];
 
@@ -41,7 +41,7 @@ const Overview = async ({ entity }: Props) => {
       log.type === "discordId" &&
       log.attributes.find(
         (attribute) =>
-          attribute.key === "confirmed" && attribute.value === "true"
+          attribute.key === "confirmed" && attribute.value === "confirmed"
       )
   )?.[0]?.content;
 

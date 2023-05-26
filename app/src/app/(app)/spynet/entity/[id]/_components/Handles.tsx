@@ -27,8 +27,24 @@ const Handles = ({ entity }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const authentication = useAuthentication();
 
+  // TODO: Do this server-side
   const handles = entity.logs
     .filter((log) => log.type === "handle")
+    .filter((log) => {
+      const confirmed = log.attributes
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        .find((attribute) => attribute.key === "confirmed");
+
+      if (confirmed && confirmed.value === "confirmed") return true;
+      if (!authentication) return false;
+
+      return authentication.authorize([
+        {
+          resource: "handle",
+          operation: "confirm",
+        },
+      ]);
+    })
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return (

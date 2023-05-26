@@ -27,7 +27,7 @@ export default function isAllowedToRead(
     });
   }
 
-  if (!confirmed || confirmed.value !== "true") {
+  if (!confirmed || confirmed.value !== "confirmed") {
     attributes.push({
       key: "alsoUnconfirmed",
       value: true,

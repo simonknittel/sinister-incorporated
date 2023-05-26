@@ -37,7 +37,10 @@ export default async function Page() {
     const discordIdLog = entityLogs.find((log) => {
       return (
         log.content === user.accounts[0]!.providerAccountId &&
-        log.attributes.find((attribute) => attribute.key === "confirmed")
+        log.attributes.find(
+          (attribute) =>
+            attribute.key === "confirmed" && attribute.value === "confirmed"
+        )
       );
     });
 

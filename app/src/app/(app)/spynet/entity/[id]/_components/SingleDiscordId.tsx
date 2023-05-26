@@ -6,6 +6,7 @@ import {
   type User,
 } from "@prisma/client";
 import clsx from "clsx";
+import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import useAuthentication from "~/app/_lib/auth/useAuthentication";
@@ -23,7 +24,7 @@ interface Props {
 const SingleDiscordId = ({ log }: Props) => {
   const authentication = useAuthentication();
 
-  const confirmation = log.attributes.find(
+  const confirmed = log.attributes.find(
     (attribute) => attribute.key === "confirmed"
   );
 
@@ -31,13 +32,15 @@ const SingleDiscordId = ({ log }: Props) => {
     <li key={log.id} className="relative rounded overflow-hidden">
       <div
         className={clsx({
-          "absolute w-full h-20 border-t-2 border-x-2 bg-gradient-to-t from-neutral-800 to-blue-500/10 blue-border":
-            !confirmation,
-          [styles.blueBorder!]: !confirmation,
+          "absolute w-full h-20 border-t-2 border-x-2 bg-gradient-to-t from-neutral-800":
+            !confirmed || confirmed?.value === "falseReport",
+          [`${styles.blueBorder!} to-blue-500/10`]: !confirmed,
+          [`${styles.redBorder!} to-red-500/10`]:
+            confirmed?.value === "falseReport",
         })}
       />
 
-      {!confirmation && (
+      {!confirmed && (
         <div className="px-4 pt-4 flex items-start gap-2 relative z-10">
           <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-1" />
           <div className="flex gap-4">
@@ -56,10 +59,17 @@ const SingleDiscordId = ({ log }: Props) => {
         </div>
       )}
 
+      {confirmed?.value === "falseReport" && (
+        <div className="px-4 pt-4 flex items-start gap-2 relative z-10">
+          <BsExclamationOctagonFill className="text-red-500 grow-1 shrink-0 mt-1" />
+          <p className="font-bold">Falschmeldung</p>
+        </div>
+      )}
+
       <div
         className={clsx("flex gap-2 relative z-10", {
           "px-4 pt-2 pb-2 opacity-20 hover:opacity-100 transition-opacity":
-            !confirmation,
+            !confirmed || confirmed.value === "falseReport",
         })}
       >
         <div className="h-[20px] flex items-center">
@@ -81,11 +91,11 @@ const SingleDiscordId = ({ log }: Props) => {
             <span className="text-neutral-500">&bull;</span>
             <p>Eingereicht von {log.submittedBy.name}</p>
 
-            {confirmation && (
+            {confirmed && (
               <>
                 <span className="text-neutral-500">&bull;</span>
 
-                <p>Bestätigt von {confirmation.createdBy.name}</p>
+                <p>Bestätigt von {confirmed.createdBy.name}</p>
               </>
             )}
 

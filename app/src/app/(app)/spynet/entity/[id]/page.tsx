@@ -60,7 +60,7 @@ export async function generateMetadata({
         log.type === "handle" &&
         log.attributes.find(
           (attribute) =>
-            attribute.key === "confirmed" && attribute.value === "true"
+            attribute.key === "confirmed" && attribute.value === "confirmed"
         )
     )?.[0];
 
@@ -99,7 +99,7 @@ export default async function Page({ params }: Props) {
       log.type === "handle" &&
       log.attributes.find(
         (attribute) =>
-          attribute.key === "confirmed" && attribute.value === "true"
+          attribute.key === "confirmed" && attribute.value === "confirmed"
       )
   )?.[0];
 

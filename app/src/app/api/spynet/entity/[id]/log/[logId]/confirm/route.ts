@@ -16,7 +16,7 @@ const paramsSchema = z.object({
 });
 
 const patchBodySchema = z.object({
-  confirmed: z.literal(true),
+  confirmed: z.union([z.literal("confirmed"), z.literal("falseReport")]),
 });
 
 export async function PATCH(request: Request, { params }: { params: Params }) {
@@ -27,15 +27,11 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     const authentication = await authenticateApi();
 
     /**
-     * Validate the request params
+     * Validate the request params and body
      */
     const paramsData = await paramsSchema.parseAsync(params);
-
-    /**
-     * Validate the request body
-     */
     const body: unknown = await request.json();
-    await patchBodySchema.parseAsync(body);
+    const data = await patchBodySchema.parseAsync(body);
 
     /**
      * Do the thing
@@ -86,7 +82,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           },
         },
         key: "confirmed",
-        value: "true",
+        value: data.confirmed,
         createdBy: {
           connect: {
             id: authentication.session.user.id,
@@ -105,7 +101,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           attributes: {
             some: {
               key: "confirmed",
-              value: "true",
+              value: "confirmed",
             },
           },
         },
@@ -155,7 +151,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           attributes: {
             some: {
               key: "confirmed",
-              value: "true",
+              value: "confirmed",
             },
           },
         },
