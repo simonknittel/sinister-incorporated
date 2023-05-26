@@ -29,12 +29,13 @@ const NoteTypeTab = async ({ noteType, notes, entityId }: Props) => {
   );
 
   const filteredNotes = notes
-    .filter((note) =>
-      note.attributes.some(
-        (attribute) =>
-          attribute.key === "noteTypeId" && attribute.value === noteType.id
-      )
-    )
+    .filter((note) => {
+      const latestNoteType = note.attributes
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        .find((attribute) => attribute.key === "noteTypeId");
+
+      return latestNoteType && latestNoteType.value === noteType.id;
+    })
     .filter((note) => isAllowedToRead(note, authentication));
 
   return (
