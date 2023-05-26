@@ -21,8 +21,11 @@ interface Props {
 }
 
 const NoteTypeTab = async ({ noteType, notes, entityId }: Props) => {
-  const authentication = await authenticate();
-  const allClassificationLevels = await getAllClassificationLevels();
+  const [authentication, allClassificationLevels] = await Promise.all([
+    authenticate(),
+    getAllClassificationLevels(),
+  ]);
+
   const filteredClassificationLevels = allClassificationLevels.filter(
     (classificationLevel) =>
       isAllowedToCreate(classificationLevel.id, authentication, noteType.id)

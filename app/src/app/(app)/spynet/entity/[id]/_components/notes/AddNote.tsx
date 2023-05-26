@@ -70,17 +70,31 @@ const AddNote = ({ entityId, noteTypeId, classificationLevels }: Props) => {
       />
 
       <div className="grid grid-cols-3 gap-1 mt-1">
-        <Select
-          id={classificationLevelSelectId}
-          register={register("classificationLevelId", { required: true })}
-          className="!bg-neutral-800"
-        >
-          {classificationLevels.map((classificationLevel) => (
-            <option key={classificationLevel.id} value={classificationLevel.id}>
-              {classificationLevel.name}
-            </option>
-          ))}
-        </Select>
+        {classificationLevels.length > 1 && (
+          <Select
+            id={classificationLevelSelectId}
+            register={register("classificationLevelId", { required: true })}
+            className="!bg-neutral-800"
+          >
+            {classificationLevels.map((classificationLevel) => (
+              <option
+                key={classificationLevel.id}
+                value={classificationLevel.id}
+              >
+                {classificationLevel.name}
+              </option>
+            ))}
+          </Select>
+        )}
+
+        {classificationLevels.length === 1 && classificationLevels[0] && (
+          <input
+            type="hidden"
+            {...register("classificationLevelId", {
+              value: classificationLevels[0].id,
+            })}
+          />
+        )}
 
         <div className="flex justify-end col-start-3">
           <Button
