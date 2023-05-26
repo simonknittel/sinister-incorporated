@@ -11,7 +11,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FormProvider, useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
-import { FaCalendarDay, FaCog, FaPen, FaSave, FaSpinner } from "react-icons/fa";
+import {
+  FaCalendarDay,
+  FaCog,
+  FaLock,
+  FaSave,
+  FaSpinner,
+} from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
 import Button from "~/app/_components/Button";
@@ -80,7 +86,7 @@ const Permissions = ({
   return (
     <>
       <Button variant="secondary" onClick={() => setIsOpen(true)}>
-        <FaPen /> Berechtigungen
+        <FaLock /> Berechtigungen
       </Button>
 
       <Modal
