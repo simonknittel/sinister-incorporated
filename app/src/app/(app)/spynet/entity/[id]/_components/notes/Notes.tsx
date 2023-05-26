@@ -35,6 +35,7 @@ const Notes = async ({ entity }: Props) => {
             createdBy: true,
           },
         },
+        submittedBy: true,
       },
     }),
 

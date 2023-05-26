@@ -19,6 +19,7 @@ import UpdateNote from "./UpdateNote";
 interface Props {
   note: EntityLog & {
     attributes: (EntityLogAttribute & { createdBy: User })[];
+    submittedBy: User;
   };
 }
 
@@ -110,10 +111,13 @@ const SingleNote = async ({ note }: Props) => {
               <ClassificationLevel note={note} />
             </Suspense>
 
+            <span className="text-neutral-500">&bull;</span>
+            <p>Eingereicht von {note.submittedBy.name}</p>
+
             {confirmed && (
               <>
                 <span className="text-neutral-500">&bull;</span>
-                <p>Bestätigt durch {confirmed.createdBy.name}</p>
+                <p>Bestätigt von {confirmed.createdBy.name}</p>
               </>
             )}
 

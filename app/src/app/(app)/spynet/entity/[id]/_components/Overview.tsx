@@ -5,7 +5,6 @@ import {
   type User,
 } from "@prisma/client";
 import { FaDiscord } from "react-icons/fa";
-import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import DiscordIds from "./DiscordIds";
 import Handles from "./Handles";
 
@@ -13,13 +12,12 @@ interface Props {
   entity: Entity & {
     logs: (EntityLog & {
       attributes: (EntityLogAttribute & { createdBy: User })[];
+      submittedBy: User;
     })[];
   };
 }
 
-const Overview = async ({ entity }: Props) => {
-  const authentication = await authenticate();
-
+const Overview = ({ entity }: Props) => {
   const latestConfirmedHandle = entity.logs.filter(
     (log) =>
       log.type === "handle" &&

@@ -16,6 +16,7 @@ import DeleteLog from "./DeleteLog";
 interface Props {
   log: EntityLog & {
     attributes: (EntityLogAttribute & { createdBy: User })[];
+    submittedBy: User;
   };
 }
 
@@ -77,11 +78,14 @@ const SingleDiscordId = ({ log }: Props) => {
               </time>
             </p>
 
+            <span className="text-neutral-500">&bull;</span>
+            <p>Eingereicht von {log.submittedBy.name}</p>
+
             {confirmation && (
               <>
                 <span className="text-neutral-500">&bull;</span>
 
-                <p>Bestätigt durch {confirmation.createdBy.name}</p>
+                <p>Bestätigt von {confirmation.createdBy.name}</p>
               </>
             )}
 

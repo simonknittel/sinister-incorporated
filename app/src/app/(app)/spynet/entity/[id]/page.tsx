@@ -32,6 +32,7 @@ const getEntity = cache(async (id: string) => {
               createdAt: "desc",
             },
           },
+          submittedBy: true,
         },
         orderBy: {
           createdAt: "desc",

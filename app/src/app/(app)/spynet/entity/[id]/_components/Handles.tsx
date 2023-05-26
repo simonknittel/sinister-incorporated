@@ -4,6 +4,7 @@ import {
   type Entity,
   type EntityLog,
   type EntityLogAttribute,
+  type User,
 } from "@prisma/client";
 import { useState } from "react";
 import { FaPen } from "react-icons/fa";
@@ -16,7 +17,8 @@ import SingleHandle from "./SingleHandle";
 interface Props {
   entity: Entity & {
     logs: (EntityLog & {
-      attributes: EntityLogAttribute[];
+      attributes: (EntityLogAttribute & { createdBy: User })[];
+      submittedBy: User;
     })[];
   };
 }
