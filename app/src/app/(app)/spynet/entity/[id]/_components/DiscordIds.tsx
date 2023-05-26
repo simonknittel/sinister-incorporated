@@ -44,7 +44,7 @@ const DiscordIds = ({ entity }: Props) => {
       <Modal
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
-        className="w-[480px]"
+        className="w-[768px]"
       >
         <h2 className="text-xl font-bold">Frühere Discord IDs</h2>
 
@@ -57,13 +57,13 @@ const DiscordIds = ({ entity }: Props) => {
           ]) && <AddDiscordId entity={entity} />}
 
         {discordIds.length > 0 ? (
-          <ul className="mt-4 flex flex-col gap-2">
+          <ul className="mt-8 flex flex-col gap-4">
             {discordIds.map((discordId) => (
               <SingleDiscordId key={discordId.id} log={discordId} />
             ))}
           </ul>
         ) : (
-          <p className="text-neutral-500 italic mt-4">
+          <p className="text-neutral-500 italic mt-8">
             Keine früheren Discord IDs bekannt.
           </p>
         )}

@@ -44,7 +44,7 @@ const Handles = ({ entity }: Props) => {
       <Modal
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
-        className="w-[480px]"
+        className="w-[768px]"
       >
         <h2 className="text-xl font-bold">Frühere Handles</h2>
 
@@ -57,13 +57,13 @@ const Handles = ({ entity }: Props) => {
           ]) && <AddHandle entity={entity} />}
 
         {handles.length > 0 ? (
-          <ul className="mt-4 flex flex-col gap-2">
+          <ul className="mt-8 flex flex-col gap-4">
             {handles.map((handle) => (
               <SingleHandle key={handle.id} log={handle} />
             ))}
           </ul>
         ) : (
-          <p className="text-neutral-500 italic mt-4">
+          <p className="text-neutral-500 italic mt-8">
             Keine früheren Handles bekannt.
           </p>
         )}
