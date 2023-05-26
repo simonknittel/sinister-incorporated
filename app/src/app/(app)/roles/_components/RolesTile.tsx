@@ -3,6 +3,7 @@ import { prisma } from "~/server/db";
 import Create from "./Create";
 import Delete from "./Delete";
 import Permissions from "./Permissions";
+import Update from "./Update";
 
 interface Props {
   className?: string;
@@ -42,6 +43,7 @@ const RolesTile = async ({ className }: Props) => {
           </div>
 
           <div className="flex gap-4 items-center">
+            <Update role={role} />
             <Permissions
               role={role}
               noteTypes={noteTypes}
