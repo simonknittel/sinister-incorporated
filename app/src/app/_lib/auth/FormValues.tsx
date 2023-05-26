@@ -32,6 +32,9 @@ export interface FormValues {
   eventFleet: {
     read: boolean;
   };
+  lastSeen: {
+    read: boolean;
+  };
   manufacturersSeriesAndVariants: {
     manage: boolean;
   };

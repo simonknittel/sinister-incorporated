@@ -6,6 +6,7 @@ import {
 } from "@prisma/client";
 import { FaDiscord } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
+import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import DiscordIds from "./DiscordIds";
 import Handles from "./Handles";
@@ -20,6 +21,8 @@ interface Props {
 }
 
 const Overview = async ({ entity }: Props) => {
+  const authentication = await authenticate();
+
   const spectrumId = entity.logs.find(
     (log) => log.type === "spectrum-id"
   )?.content;
@@ -40,10 +43,19 @@ const Overview = async ({ entity }: Props) => {
         (attribute) =>
           attribute.key === "confirmed" && attribute.value === "true"
       )
-  )?.[0].content;
+  )?.[0]?.content;
 
   let account;
-  if (latestConfirmedDiscordId) {
+  if (
+    authentication &&
+    authentication.authorize([
+      {
+        resource: "lastSeen",
+        operation: "read",
+      },
+    ]) &&
+    latestConfirmedDiscordId
+  ) {
     account = await prisma.account.findFirst({
       where: {
         provider: "discord",

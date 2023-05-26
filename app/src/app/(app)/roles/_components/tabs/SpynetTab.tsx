@@ -8,6 +8,7 @@ import { type FormValues } from "~/app/_lib/auth/FormValues";
 import CitizenSection from "./components/CitizenSection";
 import DiscordIdSection from "./components/DiscordIdSection";
 import HandleSection from "./components/HandleSection";
+import LastSeenSection from "./components/LastSeenSection";
 import NoteSection from "./components/NoteSection";
 
 interface Props {
@@ -31,6 +32,8 @@ const SpynetTab = ({ noteTypes, classificationLevels }: Props) => {
       <HandleSection className="mt-4" />
 
       <DiscordIdSection className="mt-4" />
+
+      <LastSeenSection className="mt-4" />
 
       <NoteSection
         noteTypes={noteTypes}

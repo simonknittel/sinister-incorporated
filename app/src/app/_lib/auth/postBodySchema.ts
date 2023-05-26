@@ -39,6 +39,9 @@ const postBodySchema = z.object({
   eventFleet: z.object({
     read: z.boolean(),
   }),
+  lastSeen: z.object({
+    read: z.boolean(),
+  }),
   manufacturersSeriesAndVariants: z.object({
     manage: z.boolean(),
   }),
