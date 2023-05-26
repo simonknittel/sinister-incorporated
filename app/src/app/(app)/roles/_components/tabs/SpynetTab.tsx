@@ -2,9 +2,9 @@
 
 import { type ClassificationLevel, type NoteType } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
+import YesNoCheckbox from "~/app/_components/YesNoCheckbox";
 import TabPanel from "~/app/_components/tabs/TabPanel";
-import YesNoCheckbox from "../../../../../_components/YesNoCheckbox";
-import { type FormValues } from "../../../../../_lib/auth/FormValues";
+import { type FormValues } from "~/app/_lib/auth/FormValues";
 import CitizenSection from "./components/CitizenSection";
 import DiscordIdSection from "./components/DiscordIdSection";
 import HandleSection from "./components/HandleSection";

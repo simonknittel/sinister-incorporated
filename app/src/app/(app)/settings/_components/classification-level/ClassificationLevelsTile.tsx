@@ -44,7 +44,7 @@ const ClassificationLevelsTile = async ({ className }: Props) => {
       ))}
 
       {sortedClassificationLevels.length <= 0 && (
-        <p className="text-neutral-500 text-sm italic">
+        <p className="text-neutral-500 italic">
           Keine Geheimhaltungsstufen vorhanden
         </p>
       )}

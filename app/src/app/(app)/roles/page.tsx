@@ -1,8 +1,8 @@
 import { type Metadata } from "next";
 import { Suspense } from "react";
 import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
-import RolesTile from "./_components/role/RolesTile";
-import RolesTileSkeleton from "./_components/role/RolesTileSkeleton";
+import RolesTile from "./_components/RolesTile";
+import RolesTileSkeleton from "./_components/RolesTileSkeleton";
 
 export const metadata: Metadata = {
   title: "Rollen | Sinister Incorporated",

@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { useFormContext, useWatch } from "react-hook-form";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import Button from "~/app/_components/Button";
-import { type FormValues } from "../../../../../../_lib/auth/FormValues";
+import { type FormValues } from "~/app/_lib/auth/FormValues";
 
 interface Props {
   className?: string;

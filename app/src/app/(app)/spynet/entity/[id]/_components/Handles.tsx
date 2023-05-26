@@ -7,7 +7,7 @@ import {
   type User,
 } from "@prisma/client";
 import { useState } from "react";
-import { FaPen } from "react-icons/fa";
+import { FaHistory } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
 import useAuthentication from "~/app/_lib/auth/useAuthentication";
@@ -38,7 +38,7 @@ const Handles = ({ entity }: Props) => {
         variant="tertiary"
         title="Bearbeiten"
       >
-        <FaPen /> Bearbeiten
+        <FaHistory /> History
       </Button>
 
       <Modal
@@ -46,7 +46,7 @@ const Handles = ({ entity }: Props) => {
         onRequestClose={() => setIsOpen(false)}
         className="w-[768px]"
       >
-        <h2 className="text-xl font-bold">Frühere Handles</h2>
+        <h2 className="text-xl font-bold">History</h2>
 
         {authentication &&
           authentication.authorize([
@@ -64,7 +64,7 @@ const Handles = ({ entity }: Props) => {
           </ul>
         ) : (
           <p className="text-neutral-500 italic mt-8">
-            Keine früheren Handles bekannt.
+            Keine Einträge vorhanden
           </p>
         )}
       </Modal>

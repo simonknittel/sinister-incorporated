@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useFormContext } from "react-hook-form";
-import YesNoCheckbox from "../../../../../../_components/YesNoCheckbox";
-import { type FormValues } from "../../../../../../_lib/auth/FormValues";
+import YesNoCheckbox from "~/app/_components/YesNoCheckbox";
+import { type FormValues } from "~/app/_lib/auth/FormValues";
 
 interface Props {
   className?: string;
