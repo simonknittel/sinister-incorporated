@@ -20,7 +20,7 @@ export default async function Page() {
     <main className="p-4 lg:p-8 pt-20">
       <div className="flex gap-2 font-bold text-xl">
         <Link
-          href="/spynet"
+          href="/spynet/search"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
         >
           Spynet

@@ -43,6 +43,12 @@ const ClassificationLevelsTile = async ({ className }: Props) => {
         </div>
       ))}
 
+      {sortedClassificationLevels.length <= 0 && (
+        <p className="text-neutral-500 text-sm italic">
+          Keine Geheimhaltungsstufen vorhanden
+        </p>
+      )}
+
       <Create className="mt-4" />
     </section>
   );

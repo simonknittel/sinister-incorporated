@@ -53,6 +53,12 @@ const RolesTile = async ({ className }: Props) => {
         </div>
       ))}
 
+      {roles.length <= 0 && (
+        <p className="text-neutral-500 text-sm italic">
+          Keine Rollen vorhanden
+        </p>
+      )}
+
       <Create className="mt-4" />
     </section>
   );

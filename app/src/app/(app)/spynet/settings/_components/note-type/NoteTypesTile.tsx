@@ -43,6 +43,12 @@ const NoteTypesTile = async ({ className }: Props) => {
         </div>
       ))}
 
+      {sortedNoteTypes.length <= 0 && (
+        <p className="text-neutral-500 text-sm italic">
+          Keine Notizarten vorhanden
+        </p>
+      )}
+
       <Create className="mt-4" />
     </section>
   );

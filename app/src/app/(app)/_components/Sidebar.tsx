@@ -8,7 +8,7 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
-import { RiDashboardFill, RiSpaceShipFill, RiSwordFill } from "react-icons/ri";
+import { RiSpaceShipFill, RiSwordFill } from "react-icons/ri";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import Account from "./Account";
 
@@ -173,27 +173,15 @@ const Sidebar = async () => {
                         operation: "read",
                       },
                     ]) && (
-                      <>
-                        <li>
-                          <Link
-                            href="/spynet"
-                            className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                          >
-                            <RiDashboardFill />
-                            Dashboard
-                          </Link>
-                        </li>
-
-                        <li>
-                          <Link
-                            href="/spynet/search"
-                            className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                          >
-                            <FaSearch />
-                            Suche
-                          </Link>
-                        </li>
-                      </>
+                      <li>
+                        <Link
+                          href="/spynet/search"
+                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                        >
+                          <FaSearch />
+                          Suche
+                        </Link>
+                      </li>
                     )}
 
                   {authentication &&
