@@ -14,6 +14,7 @@ const postBodySchema = z.object({
         z.literal("manage"),
         z.literal("read"),
         z.literal("assign"),
+        z.literal("dismiss"),
       ]),
     })
   ),

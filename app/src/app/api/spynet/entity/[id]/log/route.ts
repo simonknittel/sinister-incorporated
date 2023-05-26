@@ -109,7 +109,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
         authentication.authorizeApi([
           {
             resource: "otherRole",
-            operation: "assign",
+            operation: "dismiss",
             attributes: [
               {
                 key: "roleId",

@@ -65,33 +65,53 @@ const Roles = async ({ entity }: Props) => {
     (role) => role.id
   );
 
-  const assignAbleRoles = allRoles.filter((role) => {
-    return (
-      authentication &&
-      authentication?.authorize([
-        {
-          resource: "otherRole",
-          operation: "assign",
-          attributes: [
+  const assignAbleRoles = allRoles
+    .filter((role) => {
+      return (
+        authentication &&
+        authentication.authorize([
+          {
+            resource: "otherRole",
+            operation: "read",
+            attributes: [
+              {
+                key: "roleId",
+                value: role.id,
+              },
+            ],
+          },
+        ])
+      );
+    })
+    .filter((role) => {
+      return (
+        authentication &&
+        (authentication.authorize([
+          {
+            resource: "otherRole",
+            operation: "assign",
+            attributes: [
+              {
+                key: "roleId",
+                value: role.id,
+              },
+            ],
+          },
+        ]) ||
+          authentication.authorize([
             {
-              key: "roleId",
-              value: role.id,
+              resource: "otherRole",
+              operation: "dismiss",
+              attributes: [
+                {
+                  key: "roleId",
+                  value: role.id,
+                },
+              ],
             },
-          ],
-        },
-        {
-          resource: "otherRole",
-          operation: "read",
-          attributes: [
-            {
-              key: "roleId",
-              value: role.id,
-            },
-          ],
-        },
-      ])
-    );
-  });
+          ]))
+      );
+    });
 
   return (
     <section className="rounded p-4 lg:p-8 bg-neutral-900">
@@ -110,12 +130,18 @@ const Roles = async ({ entity }: Props) => {
       )}
 
       {authentication &&
-        authentication.authorize([
+        (authentication.authorize([
           {
             resource: "otherRole",
             operation: "assign",
           },
-        ]) && (
+        ]) ||
+          authentication.authorize([
+            {
+              resource: "otherRole",
+              operation: "dismiss",
+            },
+          ])) && (
           <div className="flex gap-4 mt-2">
             <AddRoles
               entity={entity}

@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { type UseFormRegisterReturn } from "react-hook-form";
 
 interface Props {
@@ -8,7 +9,11 @@ interface Props {
 
 const YesNoCheckbox = ({ register }: Props) => {
   return (
-    <label className="group inline-flex justify-center gap-2 items-center">
+    <label
+      className={clsx("group inline-flex justify-center gap-2 items-center", {
+        "opacity-50 pointer-events-none": register.disabled,
+      })}
+    >
       <input type="checkbox" className="hidden peer" {...register} />
 
       <span className="w-8 h-8 bg-neutral-700 rounded block cursor-pointer relative peer-checked:hidden">

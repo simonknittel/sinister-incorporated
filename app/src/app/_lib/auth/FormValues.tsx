@@ -9,7 +9,7 @@ export interface FormValues {
   };
   otherRole: {
     roleId: string;
-    operation: "read" | "assign" | "";
+    operation: "read" | "assign" | "dismiss" | "";
   }[];
   classificationLevel: {
     manage: boolean;

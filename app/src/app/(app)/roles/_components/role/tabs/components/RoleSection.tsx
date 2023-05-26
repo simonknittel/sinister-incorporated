@@ -76,10 +76,9 @@ const RoleSection = ({ className, roles }: Props) => {
                 </option>
 
                 <option value="manage">Alle</option>
-
                 <option value="read">Sehen</option>
-
                 <option value="assign">Vergeben</option>
+                <option value="dismiss">Nehmen</option>
               </select>
 
               <div className="flex items-center justify-end">
