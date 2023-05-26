@@ -228,6 +228,7 @@ model User {
     createdEntities            Entity[]             @relation("createdBy")
     submittedEntityLogs        EntityLog[]          @relation("submittedBy")
     createdEntityLogAttributes EntityLogAttribute[]
+    lastSeenAt                 DateTime?
 }
 
 model VerificationToken {

@@ -5,6 +5,8 @@ import {
   type User,
 } from "@prisma/client";
 import { FaDiscord } from "react-icons/fa";
+import { RiTimeLine } from "react-icons/ri";
+import { prisma } from "~/server/db";
 import DiscordIds from "./DiscordIds";
 import Handles from "./Handles";
 
@@ -17,7 +19,11 @@ interface Props {
   };
 }
 
-const Overview = ({ entity }: Props) => {
+const Overview = async ({ entity }: Props) => {
+  const spectrumId = entity.logs.find(
+    (log) => log.type === "spectrum-id"
+  )?.content;
+
   const latestConfirmedHandle = entity.logs.filter(
     (log) =>
       log.type === "handle" &&
@@ -27,13 +33,27 @@ const Overview = ({ entity }: Props) => {
       )
   )?.[0];
 
-  const spectrumId = entity.logs.find(
-    (log) => log.type === "spectrum-id"
-  )?.content;
+  const latestConfirmedDiscordId = entity.logs.filter(
+    (log) =>
+      log.type === "discordId" &&
+      log.attributes.find(
+        (attribute) =>
+          attribute.key === "confirmed" && attribute.value === "true"
+      )
+  )?.[0].content;
 
-  const discordId = entity.logs.find(
-    (log) => log.type === "discordId"
-  )?.content;
+  let account;
+  if (latestConfirmedDiscordId) {
+    account = await prisma.account.findFirst({
+      where: {
+        provider: "discord",
+        providerAccountId: latestConfirmedDiscordId,
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
 
   return (
     <section className="rounded p-4 lg:p-8 bg-neutral-900">
@@ -60,10 +80,28 @@ const Overview = ({ entity }: Props) => {
           Discord ID
         </dt>
         <dd className="flex gap-4 items-center">
-          {discordId || <span className="italic">Unbekannt</span>}
+          {latestConfirmedDiscordId || (
+            <span className="italic">Unbekannt</span>
+          )}
 
           <DiscordIds entity={entity} />
         </dd>
+
+        {account?.user.lastSeenAt && (
+          <>
+            <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
+              <RiTimeLine />
+              Zuletzt gesehen
+            </dt>
+            <dd className="flex gap-4 items-center">
+              {account.user.lastSeenAt.toLocaleDateString("de-DE", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })}
+            </dd>
+          </>
+        )}
       </dl>
     </section>
   );

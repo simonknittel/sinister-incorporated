@@ -157,6 +157,15 @@ export const authOptions: NextAuthOptions = {
         givenPermissionSets = getPermissionSetsByRoles(roles);
       }
 
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          lastSeenAt: new Date(),
+        },
+      });
+
       return {
         ...session,
         user: {
