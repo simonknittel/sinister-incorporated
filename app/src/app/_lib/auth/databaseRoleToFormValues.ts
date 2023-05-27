@@ -4,6 +4,8 @@ import {
   type Role,
 } from "@prisma/client";
 import { groupBy } from "lodash";
+import { DefaultValues } from "react-hook-form";
+import { FormValues } from "./FormValues";
 
 export default function databaseRoleToFormValues(
   role: Role & {
@@ -15,7 +17,7 @@ export default function databaseRoleToFormValues(
     (permission) => permission.resource
   );
 
-  const defaultValues = {
+  const defaultValues: DefaultValues<FormValues> = {
     note: [],
     otherRole: [],
   };

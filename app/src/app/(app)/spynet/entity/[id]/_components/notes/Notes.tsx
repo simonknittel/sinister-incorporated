@@ -79,7 +79,12 @@ const Notes = async ({ entity }: Props) => {
   if (filteredNoteTypes.length <= 0) return null;
 
   return (
-    <section className="rounded p-4 lg:p-8 bg-neutral-900 col-span-2">
+    <section
+      className="rounded p-4 lg:p-8 bg-neutral-900 col-span-2 w-full place-self-start"
+      style={{
+        gridArea: "notes",
+      }}
+    >
       <h2 className="font-bold flex gap-2 items-center mb-2">
         <FaListAlt /> Notizen
       </h2>

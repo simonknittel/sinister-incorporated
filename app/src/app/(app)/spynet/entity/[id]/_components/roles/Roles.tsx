@@ -114,7 +114,12 @@ const Roles = async ({ entity }: Props) => {
     });
 
   return (
-    <section className="rounded p-4 lg:p-8 bg-neutral-900">
+    <section
+      className="rounded p-4 lg:p-8 bg-neutral-900"
+      style={{
+        gridArea: "roles",
+      }}
+    >
       <h2 className="font-bold flex gap-2 items-center">
         <FaLock /> Rollen
       </h2>

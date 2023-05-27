@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +16,7 @@ import Notes from "./_components/notes/Notes";
 import NotesSkeleton from "./_components/notes/NotesSkeleton";
 import Roles from "./_components/roles/Roles";
 import RolesSkeleton from "./_components/roles/RolesSkeleton";
+import styles from "./page.module.css";
 
 const getEntity = cache(async (id: string) => {
   return prisma.entity.findUnique({
@@ -125,7 +127,7 @@ export default async function Page({ params }: Props) {
         ]) && <DeleteEntity entity={entity} />}
       </div>
 
-      <div className="mt-4 grid grid-cols-[1fr_1fr_1fr_1fr] gap-4">
+      <div className={clsx("mt-4", styles.pageGrid)}>
         <Suspense fallback={<OverviewSkeleton />}>
           <Overview entity={entity} />
         </Suspense>
@@ -134,16 +136,26 @@ export default async function Page({ params }: Props) {
           <Roles entity={entity} />
         </Suspense>
 
-        <section className="rounded p-4 lg:p-8 bg-neutral-900 flex flex-col">
-          <h2 className="font-bold flex gap-2 items-center">
+        <section
+          className="rounded p-4 lg:p-8 bg-neutral-900 flex flex-col"
+          style={{
+            gridArea: "organizations",
+          }}
+        >
+          <h2 className="font-bold flex gap-2 items-center mb-8">
             <FaSitemap /> Organisationen
           </h2>
 
           <WIP />
         </section>
 
-        <section className="rounded p-4 lg:p-8 bg-sinister-radial-gradient flex flex-col">
-          <h2 className="font-bold flex gap-1 items-center">
+        <section
+          className="rounded p-4 lg:p-8 bg-sinister-radial-gradient flex flex-col"
+          style={{
+            gridArea: "sinister",
+          }}
+        >
+          <h2 className="font-bold flex gap-1 items-center mb-8">
             <Image src={sinisterIcon as string} alt="" width={24} height={24} />{" "}
             Sinister Incorporated
           </h2>

@@ -1,0 +1,10 @@
+.pageGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: min-content min-content min-content;
+  grid-template-areas:
+    "notes overview roles"
+    "notes organizations sinister"
+    "notes . .";
+  gap: 1rem;
+}
