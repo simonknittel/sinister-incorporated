@@ -1,3 +1,5 @@
+"use client";
+
 import { useSession } from "next-auth/react";
 import { type PermissionSet } from "./PermissionSet";
 import comparePermissionSets from "./comparePermissionSets";
@@ -15,7 +17,13 @@ export default function useAuthentication() {
    */
   function authorize(requiredPermissionSets?: PermissionSet[]) {
     if (!session) return false;
-    if (session.user.role === "admin") return session;
+
+    const disableAdmin =
+      typeof document !== "undefined"
+        ? document.cookie.includes("disableAdmin=disableAdmin")
+        : false;
+
+    if (session.user.role === "admin" && !disableAdmin) return session;
 
     if (!requiredPermissionSets) return session;
 

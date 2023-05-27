@@ -1,6 +1,8 @@
 import { type Metadata } from "next";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { FaRegCheckCircle } from "react-icons/fa";
+import AdminDisabler from "../(app)/_components/AdminDisabler";
 import { authenticatePage } from "../_lib/auth/authenticateAndAuthorize";
 
 export const metadata: Metadata = {
@@ -30,6 +32,12 @@ export default async function Page() {
           <p>Die Leitung muss deinen Account freischalten.</p>
         </div>
       </main>
+
+      {authentication.session.user.role === "admin" && (
+        <AdminDisabler
+          disabled={cookies().get("disableAdmin")?.value === "disableAdmin"}
+        />
+      )}
     </div>
   );
 }

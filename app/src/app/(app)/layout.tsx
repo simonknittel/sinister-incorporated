@@ -1,6 +1,8 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 import { authenticatePage } from "../_lib/auth/authenticateAndAuthorize";
+import AdminDisabler from "./_components/AdminDisabler";
 import ImpersonationBannerContainer from "./_components/ImpersonationBannerContainer";
 import QueryClientProviderContainer from "./_components/QueryClientProviderContainer";
 import SessionProviderContainer from "./_components/SessionProviderContainer";
@@ -43,6 +45,12 @@ export default async function AppLayout({ children, fleetModal }: Props) {
         <Suspense>
           <ImpersonationBannerContainer />
         </Suspense>
+
+        {authentication.session.user.role === "admin" && (
+          <AdminDisabler
+            disabled={cookies().get("disableAdmin")?.value === "disableAdmin"}
+          />
+        )}
       </QueryClientProviderContainer>
     </SessionProviderContainer>
   );

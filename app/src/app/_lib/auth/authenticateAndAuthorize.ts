@@ -1,4 +1,5 @@
 import { getServerSession, type Session } from "next-auth";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { authOptions } from "~/server/auth";
 import comparePermissionSets from "./comparePermissionSets";
@@ -58,7 +59,11 @@ export function authorize(
   /**
    * Authorize
    */
-  if (session.user.role === "admin") return true;
+  if (
+    session.user.role === "admin" &&
+    cookies().get("disableAdmin")?.value !== "disableAdmin"
+  )
+    return true;
 
   if (!requiredPermissionSets) return true;
 
