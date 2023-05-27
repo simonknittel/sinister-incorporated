@@ -11,7 +11,8 @@ interface Params {
 const paramsSchema = z.object({ id: z.string().cuid2() });
 
 const patchBodySchema = z.object({
-  name: z.string().trim().min(1).max(255),
+  name: z.string().trim().min(1).max(255).optional(),
+  imageId: z.string().trim().min(1).max(255).optional(),
 });
 
 export async function PATCH(request: Request, { params }: { params: Params }) {

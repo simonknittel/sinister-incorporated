@@ -1,4 +1,6 @@
 import clsx from "clsx";
+import Image from "next/image";
+import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import Create from "./Create";
 import Delete from "./Delete";
@@ -37,9 +39,23 @@ const RolesTile = async ({ className }: Props) => {
           key={role.id}
           className="flex justify-between gap-2 py-2 items-center"
         >
-          <div className="flex flex-col">
-            <p className="font-bold">{role.name}</p>
-            <p className="text-neutral-500 text-sm">{role.id}</p>
+          <div className="flex items-center gap-2">
+            {role.imageId && (
+              <div className="aspect-square w-8 h-8 flex items-center justify-center rounded overflow-hidden">
+                <Image
+                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.imageId}`}
+                  alt=""
+                  width={32}
+                  height={32}
+                  className="max-w-full max-h-full"
+                />
+              </div>
+            )}
+
+            <div className="flex flex-col">
+              <p className="font-bold">{role.name}</p>
+              <p className="text-neutral-500 text-sm">{role.id}</p>
+            </div>
           </div>
 
           <div className="flex gap-4 items-center">

@@ -19,11 +19,12 @@ const config = {
   cleanDistDir: true,
 
   images: {
-    domains: ["cdn.discordapp.com"],
+    domains: ["cdn.discordapp.com", process.env.NEXT_PUBLIC_R2_PUBLIC_URL],
+    dangerouslyAllowSVG: true,
   },
 
   experimental: {
     serverActions: true, // https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions
-  }
+  },
 };
 export default config;

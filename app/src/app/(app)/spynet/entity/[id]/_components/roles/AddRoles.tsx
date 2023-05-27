@@ -2,11 +2,13 @@
 
 import { type Entity, type Role } from "@prisma/client";
 import clsx from "clsx";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaPen } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
+import { env } from "~/env.mjs";
 import RoleCheckbox from "./RoleCheckbox";
 
 interface Props {
@@ -44,7 +46,20 @@ const AddRoles = ({ className, entity, allRoles, assignedRoleIds }: Props) => {
 
         {allRoles.map((role) => (
           <div key={role.id} className="py-2 flex justify-between items-center">
-            <span>{role.name}</span>
+            <span className="flex gap-2 items-center">
+              {role.imageId && (
+                <div className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
+                  <Image
+                    src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.imageId}`}
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="max-w-full max-h-full"
+                  />
+                </div>
+              )}
+              {role.name}
+            </span>
 
             <RoleCheckbox
               entity={entity}

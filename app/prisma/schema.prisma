@@ -160,6 +160,8 @@ model Role {
     id          String       @id @default(cuid())
     name        String       @unique
     permissions Permission[]
+    imageId     String?
+    image       Upload?      @relation(fields: [imageId], references: [id], onDelete: SetNull)
 }
 
 model Permission {
@@ -178,6 +180,20 @@ model PermissionAttribute {
     value        String
 
     @@id([permissionId, key])
+}
+
+//
+// Uploads
+//
+
+model Upload {
+    id          String   @id @default(cuid())
+    fileName    String
+    mimeType    String
+    createdAt   DateTime @default(now())
+    createdById String
+    createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    roles       Role[]
 }
 
 //
@@ -229,6 +245,7 @@ model User {
     submittedEntityLogs        EntityLog[]          @relation("submittedBy")
     createdEntityLogAttributes EntityLogAttribute[]
     lastSeenAt                 DateTime?
+    uploads                    Upload[]
 }
 
 model VerificationToken {

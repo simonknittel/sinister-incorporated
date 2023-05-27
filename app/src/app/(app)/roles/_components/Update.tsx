@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
+import ImageSection from "./ImageSection";
 
 interface FormValues {
   name: string;
@@ -76,7 +77,7 @@ const Update = ({ className, role }: Props) => {
         <h2 className="text-xl font-bold">Bearbeiten</h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label className="mt-6 block" htmlFor={inputId}>
+          <label className="mt-6 block font-bold" htmlFor={inputId}>
             Name
           </label>
 
@@ -86,6 +87,8 @@ const Update = ({ className, role }: Props) => {
             {...register("name", { required: true })}
             autoFocus
           />
+
+          <ImageSection role={role} className="mt-6" />
 
           <div className="flex justify-end mt-8">
             <Button type="submit" disabled={isLoading}>
