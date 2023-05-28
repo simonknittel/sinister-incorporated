@@ -76,6 +76,7 @@ const postBodySchema = z.object({
           z.literal("update"),
           z.literal("delete"),
           z.literal("confirm"),
+          z.literal("readRedacted"),
         ]),
       })
     )

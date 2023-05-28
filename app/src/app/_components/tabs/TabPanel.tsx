@@ -1,6 +1,5 @@
 "use client";
 
-import clsx from "clsx";
 import { type ReactNode } from "react";
 import { useTabsContext } from "./TabsContext";
 
@@ -12,7 +11,9 @@ interface Props {
 const TabPanel = ({ children, id }: Props) => {
   const { activeTab } = useTabsContext();
 
-  return <div className={clsx({ hidden: activeTab !== id })}>{children}</div>;
+  if (activeTab !== id) return null;
+
+  return children;
 };
 
 export default TabPanel;

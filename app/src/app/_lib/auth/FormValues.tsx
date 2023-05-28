@@ -60,6 +60,13 @@ export interface FormValues {
     noteTypeId: string;
     classificationLevelId: string;
     alsoUnconfirmed: boolean;
-    operation: "manage" | "create" | "read" | "update" | "delete" | "confirm";
+    operation:
+      | "manage"
+      | "create"
+      | "read"
+      | "update"
+      | "delete"
+      | "confirm"
+      | "readRedacted";
   }[];
 }

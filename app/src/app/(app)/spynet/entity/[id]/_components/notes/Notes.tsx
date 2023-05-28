@@ -2,22 +2,21 @@ import {
   type Entity,
   type EntityLog,
   type EntityLogAttribute,
-  type User,
+  type NoteType,
 } from "@prisma/client";
 import { FaListAlt } from "react-icons/fa";
 import Tab from "~/app/_components/tabs/Tab";
 import TabList from "~/app/_components/tabs/TabList";
 import { TabsProvider } from "~/app/_components/tabs/TabsContext";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
+import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
 import { prisma } from "~/server/db";
 import NoteTypeTab from "./Tab";
+import isAllowedToRead from "./lib/isAllowedToRead";
+import isAllowedToReadRedacted from "./lib/isAllowedToReadRedacted";
 
 interface Props {
-  entity: Entity & {
-    logs: (EntityLog & {
-      attributes: (EntityLogAttribute & { createdBy: User })[];
-    })[];
-  };
+  entity: Entity;
 }
 
 const Notes = async ({ entity }: Props) => {
@@ -46,6 +45,44 @@ const Notes = async ({ entity }: Props) => {
     (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
   );
 
+  const tabs: Record<
+    NoteType["id"],
+    | (
+        | (EntityLog & { attributes: EntityLogAttribute[] })
+        | {
+            id: EntityLog["id"];
+            redacted: true;
+          }
+      )[]
+  > = {};
+
+  for (const note of sortedNotes) {
+    if (!authentication) continue;
+
+    const latestNoteAttributes = getLatestNoteAttributes(note);
+
+    if (!latestNoteAttributes.noteTypeId) continue;
+
+    if (!isAllowedToRead(note, authentication)) {
+      if (!isAllowedToReadRedacted(note, authentication)) continue;
+
+      if (!tabs[latestNoteAttributes.noteTypeId.value])
+        tabs[latestNoteAttributes.noteTypeId.value] = [];
+
+      tabs[latestNoteAttributes.noteTypeId.value].push({
+        id: note.id,
+        redacted: true,
+      });
+
+      continue;
+    }
+
+    if (!tabs[latestNoteAttributes.noteTypeId.value])
+      tabs[latestNoteAttributes.noteTypeId.value] = [];
+
+    tabs[latestNoteAttributes.noteTypeId.value].push(note);
+  }
+
   const filteredNoteTypes = allNoteTypes.filter((noteType) => {
     return (
       authentication &&
@@ -61,6 +98,18 @@ const Notes = async ({ entity }: Props) => {
           ],
         },
       ]) ||
+        authentication.authorize([
+          {
+            resource: "note",
+            operation: "readRedacted",
+            attributes: [
+              {
+                key: "noteTypeId",
+                value: noteType.id,
+              },
+            ],
+          },
+        ]) ||
         authentication.authorize([
           {
             resource: "note",
@@ -102,7 +151,7 @@ const Notes = async ({ entity }: Props) => {
           <NoteTypeTab
             key={noteType.id}
             noteType={noteType}
-            notes={sortedNotes}
+            notes={tabs[noteType.id] || []}
             entityId={entity.id}
           />
         ))}

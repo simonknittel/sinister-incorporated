@@ -101,6 +101,7 @@ const NoteSection = ({ className, noteTypes, classificationLevels }: Props) => {
 
                 <option value="create">Erstellen</option>
                 <option value="read">Lesen</option>
+                <option value="readRedacted">Lesen (Redacted)</option>
                 <option value="update">Bearbeiten</option>
                 <option value="delete">Löschen</option>
                 <option value="confirm">Bestätigen</option>

@@ -13,9 +13,9 @@ export default function getLatestNoteAttributes(
     (attribute) => attribute.key === "noteTypeId"
   );
 
-  const classificationLevelId = attributes
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-    .find((attribute) => attribute.key === "classificationLevelId");
+  const classificationLevelId = attributes.find(
+    (attribute) => attribute.key === "classificationLevelId"
+  );
 
   const confirmed = attributes.find(
     (attribute) => attribute.key === "confirmed"

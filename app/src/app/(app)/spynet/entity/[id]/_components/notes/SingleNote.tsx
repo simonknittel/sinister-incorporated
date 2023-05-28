@@ -54,10 +54,7 @@ const SingleNote = async ({ note }: Props) => {
   }
 
   return (
-    <article
-      key={note.id}
-      className="mt-4 lg:mt-8 relative rounded overflow-hidden"
-    >
+    <article className="mt-4 lg:mt-8 relative rounded overflow-hidden">
       <div
         className={clsx({
           "absolute w-full h-24 border-t-2 border-x-2 bg-gradient-to-t from-neutral-900":

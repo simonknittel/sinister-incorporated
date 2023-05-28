@@ -9,14 +9,17 @@ import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getAllClassificationLevels from "~/app/_lib/cached/getAllClassificationLevels";
 import AddNote from "./AddNote";
 import SingleNote from "./SingleNote";
+import SingleNoteRedacted from "./SingleNoteRedacted";
 import isAllowedToCreate from "./lib/isAllowedToCreate";
-import isAllowedToRead from "./lib/isAllowedToRead";
 
 interface Props {
   noteType: NoteType;
-  notes: (EntityLog & {
-    attributes: EntityLogAttribute[];
-  })[];
+  notes: (
+    | (EntityLog & {
+        attributes: EntityLogAttribute[];
+      })
+    | { id: EntityLog["id"]; redacted: true }
+  )[];
   entityId: Entity["id"];
 }
 
@@ -31,18 +34,8 @@ const NoteTypeTab = async ({ noteType, notes, entityId }: Props) => {
       isAllowedToCreate(classificationLevel.id, authentication, noteType.id)
   );
 
-  const filteredNotes = notes
-    .filter((note) => {
-      const latestNoteType = note.attributes
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-        .find((attribute) => attribute.key === "noteTypeId");
-
-      return latestNoteType && latestNoteType.value === noteType.id;
-    })
-    .filter((note) => isAllowedToRead(note, authentication));
-
   return (
-    <TabPanel key={noteType.id} id={noteType.id}>
+    <TabPanel id={noteType.id}>
       {authentication &&
         authentication.authorize([
           {
@@ -63,11 +56,12 @@ const NoteTypeTab = async ({ noteType, notes, entityId }: Props) => {
           />
         )}
 
-      {filteredNotes.map((note) => (
-        <SingleNote key={note.id} note={note} />
-      ))}
+      {notes.map((note) => {
+        if ("redacted" in note) return <SingleNoteRedacted key={note.id} />;
+        return <SingleNote key={note.id} note={note} />;
+      })}
 
-      {filteredNotes.length <= 0 && (
+      {notes.length <= 0 && (
         <p className="text-neutral-500 italic mt-8">Keine Einträge vorhanden</p>
       )}
     </TabPanel>
