@@ -23,17 +23,16 @@ const Actions = ({ children }: Props) => {
         {isOpen ? <FaTimes /> : <FaEllipsisH />}
       </Button>
 
-      <div
-        className={clsx(
-          "absolute top-[calc(100%+.5rem)] right-0 flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10",
-          styles.actions,
-          {
-            hidden: !isOpen,
-          }
-        )}
-      >
-        {children}
-      </div>
+      {isOpen && (
+        <div
+          className={clsx(
+            "absolute top-[calc(100%+.5rem)] right-0 flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10",
+            styles.actions
+          )}
+        >
+          {children}
+        </div>
+      )}
     </div>
   );
 };
