@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -22,29 +23,18 @@ const AdminDisabler = ({ disabled = false }: Props) => {
   };
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-500/50 backdrop-blur z-50 flex w-[calc(100%-2rem)] max-w-xs p-4 rounded gap-4 justify-between">
-      <p>Admin</p>
-
-      <div className="flex gap-2">
-        {disabled ? (
-          <button
-            onClick={handleClick}
-            className="hover:underline"
-            type="button"
-          >
-            Aktivieren
-          </button>
-        ) : (
-          <button
-            onClick={handleClick}
-            className="hover:underline"
-            type="button"
-          >
-            Deaktivieren
-          </button>
-        )}
-      </div>
-    </div>
+    <button
+      className={clsx(
+        "fixed top-4 left-1/2 -translate-x-1/2 backdrop-blur z-50 max-w-xs p-4 rounded gap-4 justify-between opacity-50 hover:opacity-100 transition-opacity",
+        {
+          "bg-green-500/50": disabled,
+          "bg-red-500/50": !disabled,
+        }
+      )}
+      onClick={handleClick}
+    >
+      Admin {disabled ? "aktivieren" : "deaktivieren"}
+    </button>
   );
 };
 
