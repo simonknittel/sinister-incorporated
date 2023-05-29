@@ -21,6 +21,8 @@ const config = {
   images: {
     domains: ["cdn.discordapp.com", process.env.NEXT_PUBLIC_R2_PUBLIC_URL],
     dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
   experimental: {
