@@ -1,10 +1,34 @@
 .pageGrid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  grid-template-rows: min-content min-content min-content;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(5, min-content);
   grid-template-areas:
-    "notes overview roles"
-    "notes organizations sinister"
-    "notes . .";
+    "overview"
+    "roles"
+    "organizations"
+    "sinister"
+    "notes";
   gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .pageGrid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(3, min-content);
+    grid-template-areas:
+      "overview roles"
+      "organizations sinister"
+      "notes notes";
+  }
+}
+
+@media (min-width: 1536px) {
+  .pageGrid {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: repeat(3, min-content);
+    grid-template-areas:
+      "notes overview roles"
+      "notes organizations sinister"
+      "notes . .";
+  }
 }
