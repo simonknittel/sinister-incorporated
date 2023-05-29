@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { useState, type ReactNode } from "react";
 import { FaEllipsisH, FaTimes } from "react-icons/fa";
 import Button from "~/app/_components/Button";
+import styles from "./Actions.module.css";
 
 interface Props {
   children?: ReactNode;
@@ -23,11 +24,13 @@ const Actions = ({ children }: Props) => {
       </Button>
 
       <div
-        className={clsx({
-          "absolute top-[calc(100%+.5rem)] right-0 flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10":
-            isOpen,
-          hidden: !isOpen,
-        })}
+        className={clsx(
+          "absolute top-[calc(100%+.5rem)] right-0 flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10",
+          styles.actions,
+          {
+            hidden: !isOpen,
+          }
+        )}
       >
         {children}
       </div>

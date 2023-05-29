@@ -76,7 +76,8 @@ const UsersTable = ({ users }: Props) => {
               href={`/spynet/entity/${entityId}`}
               className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
             >
-              Spynet <FaExternalLinkAlt />
+              <span className="hidden sm:inline">Spynet</span>{" "}
+              <FaExternalLinkAlt />
             </Link>
           );
         },
@@ -102,7 +103,7 @@ const UsersTable = ({ users }: Props) => {
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             key={headerGroup.id}
-            className="grid grid-cols-[1fr_1fr_1fr] items-center gap-4"
+            className="grid grid-cols-[1fr_1fr_24px] sm:grid-cols-[1fr_1fr_128px] items-center gap-4"
           >
             {headerGroup.headers.map((header) => (
               <th key={header.id} className="text-left text-neutral-400">
@@ -135,7 +136,7 @@ const UsersTable = ({ users }: Props) => {
         {table.getRowModel().rows.map((row) => (
           <tr
             key={row.id}
-            className="grid grid-cols-[1fr_1fr_1fr] items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
+            className="grid grid-cols-[1fr_1fr_24px] sm:grid-cols-[1fr_1fr_128px] items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
           >
             {row.getVisibleCells().map((cell) => (
               <td key={cell.id} className="overflow-hidden text-ellipsis">
