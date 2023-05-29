@@ -46,12 +46,12 @@ const Delete = ({ role }: Props) => {
 
   return (
     <Button
-      title="Löschen"
       onClick={() => void handleClick()}
       disabled={isLoading}
       variant="tertiary"
     >
-      {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />} Löschen
+      {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+      Löschen
     </Button>
   );
 };

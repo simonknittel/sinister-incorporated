@@ -47,7 +47,7 @@ export default async function Page() {
   ]);
 
   return (
-    <main className="p-4 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8 pt-20">
       <h2 className="font-bold text-xl">Meine Schiffe</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-4">

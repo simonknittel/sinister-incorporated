@@ -113,7 +113,7 @@ export default async function Page() {
   const { date, data: events } = await getEvents();
 
   return (
-    <main className="p-4 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8 pt-20">
       <h1 className="font-bold text-xl">Events</h1>
 
       {events

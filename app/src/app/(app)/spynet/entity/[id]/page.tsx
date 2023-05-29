@@ -106,7 +106,7 @@ export default async function Page({ params }: Props) {
   )?.[0];
 
   return (
-    <main className="p-4 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8 pt-20">
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/spynet/search"

@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Actions from "~/app/_components/Actions";
 import { prisma } from "~/server/db";
 import Create from "./Create";
 import Delete from "./Delete";
@@ -37,8 +38,10 @@ const NoteTypesTile = async ({ className }: Props) => {
           </div>
 
           <div className="flex gap-4 items-center">
-            <Update noteType={noteType} />
-            <Delete noteType={noteType} />
+            <Actions>
+              <Update noteType={noteType} />
+              <Delete noteType={noteType} />
+            </Actions>
           </div>
         </div>
       ))}

@@ -85,7 +85,7 @@ const Permissions = ({
 
   return (
     <>
-      <Button variant="secondary" onClick={() => setIsOpen(true)}>
+      <Button variant="tertiary" onClick={() => setIsOpen(true)}>
         <FaLock /> Berechtigungen
       </Button>
 

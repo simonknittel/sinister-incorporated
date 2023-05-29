@@ -2,6 +2,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
+import Actions from "../../../_components/Actions";
 import Create from "./Create";
 import Delete from "./Delete";
 import Permissions from "./Permissions";
@@ -54,19 +55,23 @@ const RolesTile = async ({ className }: Props) => {
 
             <div className="flex flex-col">
               <p className="font-bold">{role.name}</p>
-              <p className="text-neutral-500 text-sm">{role.id}</p>
+              <p className="text-neutral-500 text-sm whitespace-break-spaces">
+                {role.id}
+              </p>
             </div>
           </div>
 
           <div className="flex gap-4 items-center">
-            <Update role={role} />
-            <Permissions
-              role={role}
-              noteTypes={noteTypes}
-              classificationLevels={classificationLevels}
-              allRoles={roles}
-            />
-            <Delete role={role} />
+            <Actions>
+              <Update role={role} />
+              <Permissions
+                role={role}
+                noteTypes={noteTypes}
+                classificationLevels={classificationLevels}
+                allRoles={roles}
+              />
+              <Delete role={role} />
+            </Actions>
           </div>
         </div>
       ))}

@@ -42,7 +42,7 @@ export default async function Page() {
   });
 
   return (
-    <main className="p-4 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8 pt-20">
       <h2 className="font-bold text-xl">Alle Schiffe der Org</h2>
 
       <div className="rounded bg-neutral-900 p-4 lg:p-8 mt-4 overflow-auto">

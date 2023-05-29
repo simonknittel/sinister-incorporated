@@ -63,7 +63,7 @@ const Update = ({ className, classificationLevel }: Props) => {
   return (
     <>
       <Button
-        variant="secondary"
+        variant="tertiary"
         onClick={() => setIsOpen(true)}
         className={clsx(className)}
       >

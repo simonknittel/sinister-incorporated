@@ -21,7 +21,7 @@ export default async function Page() {
   ]);
 
   return (
-    <main className="p-4 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8 pt-20">
       <h1 className="text-xl font-bold">Einstellungen</h1>
 
       {authentication.authorize([
