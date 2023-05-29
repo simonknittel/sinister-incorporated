@@ -56,7 +56,7 @@ const ImageSection = ({ className, role }: Props) => {
       <p className="font-bold">Bild</p>
 
       <div className="flex gap-4 items-center mt-4">
-        <div className="aspect-square w-16 h-16 flex items-center justify-center rounded border border-neutral-500 overflow-hidden">
+        <div className="aspect-square w-16 h-16 flex items-center justify-center rounded border border-neutral-500 overflow-hidden flex-shrink-0">
           {role.imageId && !isLoading && (
             <Image
               src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.imageId}`}
