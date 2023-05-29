@@ -56,7 +56,6 @@ const AddNoteSA = ({ entity }: Props) => {
       <textarea
         className="p-2 rounded-l bg-neutral-800 flex-1"
         name="content"
-        autoFocus
         placeholder="Notiz hinzufügen ..."
         required
       />

@@ -66,7 +66,6 @@ const AddNote = ({ entityId, noteTypeId, classificationLevels }: Props) => {
         className="p-2 rounded-l bg-neutral-800 w-full"
         id={contentInputId}
         {...register("content", { required: true })}
-        autoFocus
       />
 
       <div className="grid grid-cols-3 gap-1 mt-1">
