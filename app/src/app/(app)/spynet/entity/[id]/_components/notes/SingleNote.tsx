@@ -68,7 +68,7 @@ const SingleNote = async ({ note }: Props) => {
       {!confirmed && (
         <div className="px-4 pt-4 flex items-start gap-2 relative z-10">
           <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-1" />
-          <div className="flex gap-4">
+          <div className="flex gap-2 lg:gap-4 flex-wrap">
             <p className="font-bold">Diese Notiz ist noch nicht bestätigt.</p>
 
             {authentication &&
@@ -101,7 +101,7 @@ const SingleNote = async ({ note }: Props) => {
         </div>
 
         <div className="flex-1">
-          <div className="text-sm flex gap-2 border-b pb-2 items-center border-neutral-800">
+          <div className="text-sm flex gap-2 border-b pb-2 items-center border-neutral-800 flex-wrap">
             <p>
               <time dateTime={note.createdAt.toISOString()}>
                 {note.createdAt.toLocaleDateString("de-DE", {

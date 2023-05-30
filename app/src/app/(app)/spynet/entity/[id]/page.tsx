@@ -117,7 +117,9 @@ export default async function Page({ params }: Props) {
 
         <span className="text-neutral-500">/</span>
 
-        <h1>{latestConfirmedHandle?.content || entity.id}</h1>
+        <h1 className="overflow-hidden text-ellipsis whitespace-nowrap">
+          {latestConfirmedHandle?.content || entity.id}
+        </h1>
 
         {authentication.authorize([
           {

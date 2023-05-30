@@ -47,14 +47,28 @@ const DeleteEntity = ({ entity }: Props) => {
   };
 
   return (
-    <Button
-      title="Citizen löschen"
-      onClick={() => void handleClick()}
-      disabled={isLoading}
-      variant="tertiary"
-    >
-      {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />} Löschen
-    </Button>
+    <>
+      <Button
+        title="Löschen"
+        onClick={() => void handleClick()}
+        disabled={isLoading}
+        variant="tertiary"
+        className="sm:hidden"
+        iconOnly={true}
+      >
+        {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+      </Button>
+
+      <Button
+        onClick={() => void handleClick()}
+        disabled={isLoading}
+        variant="tertiary"
+        className="hidden sm:flex"
+      >
+        {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
+        Löschen
+      </Button>
+    </>
   );
 };
 
