@@ -21,7 +21,7 @@ const UpdateNote = async ({ note }: Props) => {
 
   return (
     <>
-      <span className="text-neutral-500">&bull;</span>
+      <span>&bull;</span>
       <UpdateNoteModal
         note={note}
         noteTypes={allNoteTypes}

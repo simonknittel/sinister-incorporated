@@ -66,10 +66,12 @@ const SingleNote = async ({ note }: Props) => {
       />
 
       {!confirmed && (
-        <div className="px-4 pt-4 flex items-start gap-2 relative z-10">
-          <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-1" />
+        <div className="px-4 pt-4 flex gap-2 relative z-10 items-start">
+          <FaInfoCircle className="text-blue-500 grow-1 shrink-0 text-sm mt-[2px]" />
           <div className="flex gap-2 lg:gap-4 flex-wrap">
-            <p className="font-bold">Diese Notiz ist noch nicht bestätigt.</p>
+            <p className="font-bold text-sm">
+              Diese Notiz ist noch nicht bestätigt.
+            </p>
 
             {authentication &&
               authentication.authorize([
@@ -101,7 +103,7 @@ const SingleNote = async ({ note }: Props) => {
         </div>
 
         <div className="flex-1">
-          <div className="text-sm flex gap-2 border-b pb-2 items-center border-neutral-800 flex-wrap">
+          <div className="text-sm flex gap-2 border-b pb-2 items-center border-neutral-800 flex-wrap text-neutral-500">
             <p>
               <time dateTime={note.createdAt.toISOString()}>
                 {note.createdAt.toLocaleDateString("de-DE", {
@@ -112,18 +114,18 @@ const SingleNote = async ({ note }: Props) => {
               </time>
             </p>
 
-            <span className="text-neutral-500">&bull;</span>
+            <span>&bull;</span>
 
             <Suspense fallback={<ClassificationLevelSkeleton />}>
               <ClassificationLevel note={note} />
             </Suspense>
 
-            <span className="text-neutral-500">&bull;</span>
+            <span>&bull;</span>
             <p>Eingereicht von {note.submittedBy.name}</p>
 
             {confirmed && (
               <>
-                <span className="text-neutral-500">&bull;</span>
+                <span>&bull;</span>
                 <p>Bestätigt von {confirmed.createdBy.name}</p>
               </>
             )}
@@ -150,7 +152,7 @@ const SingleNote = async ({ note }: Props) => {
                 },
               ]) && (
                 <>
-                  <span className="text-neutral-500">&bull;</span>
+                  <span>&bull;</span>
                   <DeleteLog log={note} />
                 </>
               )}
