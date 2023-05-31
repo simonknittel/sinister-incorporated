@@ -46,6 +46,11 @@ export interface FormValues {
     delete: boolean;
     confirm: boolean;
   };
+  teamspeakId: {
+    create: boolean;
+    delete: boolean;
+    confirm: boolean;
+  };
   discordId: {
     create: boolean;
     delete: boolean;

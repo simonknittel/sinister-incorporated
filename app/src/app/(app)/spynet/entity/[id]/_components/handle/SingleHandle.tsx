@@ -10,9 +10,9 @@ import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import useAuthentication from "~/app/_lib/auth/useAuthentication";
-import ConfirmLog from "./ConfirmLog";
-import styles from "./ConfirmationGradient.module.css";
-import DeleteLog from "./DeleteLog";
+import ConfirmLog from "../ConfirmLog";
+import styles from "../ConfirmationGradient.module.css";
+import DeleteLog from "../DeleteLog";
 
 interface Props {
   log: EntityLog & {

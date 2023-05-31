@@ -8,8 +8,9 @@ import { FaDiscord } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
-import DiscordIds from "./DiscordIds";
-import Handles from "./Handles";
+import DiscordIds from "./discord-id/DiscordIds";
+import Handles from "./handle/Handles";
+import TeamspeakIds from "./teamspeak-id/TeamspeakIds";
 
 interface Props {
   entity: Entity & {
@@ -39,6 +40,15 @@ const Overview = async ({ entity }: Props) => {
   const latestConfirmedDiscordId = entity.logs.filter(
     (log) =>
       log.type === "discordId" &&
+      log.attributes.find(
+        (attribute) =>
+          attribute.key === "confirmed" && attribute.value === "confirmed"
+      )
+  )?.[0]?.content;
+
+  const latestConfirmedTeamspeakId = entity.logs.filter(
+    (log) =>
+      log.type === "teamspeakId" &&
       log.attributes.find(
         (attribute) =>
           attribute.key === "confirmed" && attribute.value === "confirmed"
@@ -102,6 +112,15 @@ const Overview = async ({ entity }: Props) => {
           )}
 
           <DiscordIds entity={entity} />
+        </dd>
+
+        <dt className="text-neutral-500 mt-4">TeamSpeak ID</dt>
+        <dd className="flex gap-4 items-center">
+          {latestConfirmedTeamspeakId || (
+            <span className="italic">Unbekannt</span>
+          )}
+
+          <TeamspeakIds entity={entity} />
         </dd>
 
         {account?.user.lastSeenAt && (

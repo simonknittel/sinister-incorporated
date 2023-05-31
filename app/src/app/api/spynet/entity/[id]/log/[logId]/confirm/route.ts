@@ -56,6 +56,14 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           },
         ]);
         break;
+      case "teamspeakId":
+        authentication.authorizeApi([
+          {
+            resource: "teamspeakId",
+            operation: "confirm",
+          },
+        ]);
+        break;
       case "discordId":
         authentication.authorizeApi([
           {

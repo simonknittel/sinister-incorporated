@@ -10,11 +10,11 @@ import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
-import ClassificationLevelSkeleton from "../ClassificationLevelSkeleton";
 import ConfirmLog from "../ConfirmLog";
 import styles from "../ConfirmationGradient.module.css";
 import DeleteLog from "../DeleteLog";
 import ClassificationLevel from "./ClassificationLevel";
+import ClassificationLevelSkeleton from "./ClassificationLevelSkeleton";
 import UpdateNote from "./UpdateNote";
 
 interface Props {

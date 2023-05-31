@@ -16,7 +16,7 @@ interface FormValues {
   content: string;
 }
 
-const AddDiscordId = ({ entity }: Props) => {
+const Create = ({ entity }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -71,4 +71,4 @@ const AddDiscordId = ({ entity }: Props) => {
   );
 };
 
-export default AddDiscordId;
+export default Create;

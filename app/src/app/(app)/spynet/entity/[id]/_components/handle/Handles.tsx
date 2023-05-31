@@ -11,8 +11,8 @@ import { FaHistory } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
 import useAuthentication from "~/app/_lib/auth/useAuthentication";
-import AddDiscordId from "./AddDiscordId";
-import SingleDiscordId from "./SingleDiscordId";
+import Create from "./Create";
+import SingleHandle from "./SingleHandle";
 
 interface Props {
   entity: Entity & {
@@ -23,13 +23,13 @@ interface Props {
   };
 }
 
-const DiscordIds = ({ entity }: Props) => {
+const Handles = ({ entity }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const authentication = useAuthentication();
 
   // TODO: Do this server-side
-  const discordIds = entity.logs
-    .filter((log) => log.type === "discordId")
+  const handles = entity.logs
+    .filter((log) => log.type === "handle")
     .filter((log) => {
       const confirmed = log.attributes
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -67,15 +67,15 @@ const DiscordIds = ({ entity }: Props) => {
         {authentication &&
           authentication.authorize([
             {
-              resource: "discordId",
+              resource: "handle",
               operation: "create",
             },
-          ]) && <AddDiscordId entity={entity} />}
+          ]) && <Create entity={entity} />}
 
-        {discordIds.length > 0 ? (
+        {handles.length > 0 ? (
           <ul className="mt-8 flex flex-col gap-4">
-            {discordIds.map((discordId) => (
-              <SingleDiscordId key={discordId.id} log={discordId} />
+            {handles.map((handle) => (
+              <SingleHandle key={handle.id} log={handle} />
             ))}
           </ul>
         ) : (
@@ -88,4 +88,4 @@ const DiscordIds = ({ entity }: Props) => {
   );
 };
 
-export default DiscordIds;
+export default Handles;

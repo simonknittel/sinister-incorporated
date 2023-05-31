@@ -16,6 +16,10 @@ const postBodySchema = z.union([
     content: z.string().trim().min(1).max(255),
   }),
   z.object({
+    type: z.literal("teamspeakId"),
+    content: z.string().trim().min(1).max(255),
+  }),
+  z.object({
     type: z.literal("note"),
     content: z.string().trim().min(1),
     noteTypeId: z.string().trim().cuid2(),
@@ -61,6 +65,14 @@ export async function POST(request: Request, { params }: { params: Params }) {
         authentication.authorizeApi([
           {
             resource: "handle",
+            operation: "create",
+          },
+        ]);
+        break;
+      case "teamspeakId":
+        authentication.authorizeApi([
+          {
+            resource: "teamspeakId",
             operation: "create",
           },
         ]);

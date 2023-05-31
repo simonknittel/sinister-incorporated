@@ -11,8 +11,8 @@ import { FaHistory } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
 import useAuthentication from "~/app/_lib/auth/useAuthentication";
-import AddHandle from "./AddHandle";
-import SingleHandle from "./SingleHandle";
+import Create from "./Create";
+import SingleTeamspeakId from "./SingleTeamspeakId";
 
 interface Props {
   entity: Entity & {
@@ -23,13 +23,13 @@ interface Props {
   };
 }
 
-const Handles = ({ entity }: Props) => {
+const TeamspeakIds = ({ entity }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const authentication = useAuthentication();
 
   // TODO: Do this server-side
-  const handles = entity.logs
-    .filter((log) => log.type === "handle")
+  const teamspeakIds = entity.logs
+    .filter((log) => log.type === "teamspeakId")
     .filter((log) => {
       const confirmed = log.attributes
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -40,7 +40,7 @@ const Handles = ({ entity }: Props) => {
 
       return authentication.authorize([
         {
-          resource: "handle",
+          resource: "teamspeakId",
           operation: "confirm",
         },
       ]);
@@ -67,15 +67,15 @@ const Handles = ({ entity }: Props) => {
         {authentication &&
           authentication.authorize([
             {
-              resource: "handle",
+              resource: "teamspeakId",
               operation: "create",
             },
-          ]) && <AddHandle entity={entity} />}
+          ]) && <Create entity={entity} />}
 
-        {handles.length > 0 ? (
+        {teamspeakIds.length > 0 ? (
           <ul className="mt-8 flex flex-col gap-4">
-            {handles.map((handle) => (
-              <SingleHandle key={handle.id} log={handle} />
+            {teamspeakIds.map((teamspeakId) => (
+              <SingleTeamspeakId key={teamspeakId.id} log={teamspeakId} />
             ))}
           </ul>
         ) : (
@@ -88,4 +88,4 @@ const Handles = ({ entity }: Props) => {
   );
 };
 
-export default Handles;
+export default TeamspeakIds;

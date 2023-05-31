@@ -155,6 +155,14 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
           },
         ]);
         break;
+      case "teamspeakId":
+        authentication.authorizeApi([
+          {
+            resource: "teamspeakId",
+            operation: "delete",
+          },
+        ]);
+        break;
       case "discordId":
         authentication.authorizeApi([
           {

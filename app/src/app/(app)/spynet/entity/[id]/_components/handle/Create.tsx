@@ -16,7 +16,7 @@ interface FormValues {
   content: string;
 }
 
-const AddHandle = ({ entity }: Props) => {
+const Create = ({ entity }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -71,4 +71,4 @@ const AddHandle = ({ entity }: Props) => {
   );
 };
 
-export default AddHandle;
+export default Create;

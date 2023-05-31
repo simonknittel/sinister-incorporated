@@ -10,6 +10,7 @@ import DiscordIdSection from "./components/DiscordIdSection";
 import HandleSection from "./components/HandleSection";
 import LastSeenSection from "./components/LastSeenSection";
 import NoteSection from "./components/NoteSection";
+import TeamspeakIdSection from "./components/TeamspeakIdSection";
 
 interface Props {
   noteTypes: NoteType[];
@@ -32,6 +33,8 @@ const SpynetTab = ({ noteTypes, classificationLevels }: Props) => {
       <HandleSection className="mt-4" />
 
       <DiscordIdSection className="mt-4" />
+
+      <TeamspeakIdSection className="mt-4" />
 
       <LastSeenSection className="mt-4" />
 

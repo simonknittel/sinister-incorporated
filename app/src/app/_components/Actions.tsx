@@ -1,6 +1,5 @@
 "use client";
 
-import { useClickAway } from "@uidotdev/usehooks";
 import clsx from "clsx";
 import {
   useState,
@@ -42,7 +41,7 @@ interface InnerProps {
 }
 
 const Inner = ({ children, setIsOpen }: InnerProps) => {
-  const ref = useClickAway(() => setIsOpen(false));
+  // const ref = useClickAway(() => setIsOpen(false));
 
   return (
     <div
@@ -50,7 +49,7 @@ const Inner = ({ children, setIsOpen }: InnerProps) => {
         "absolute top-[calc(100%+.5rem)] right-0 flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10",
         styles.actions
       )}
-      ref={ref}
+      // ref={ref}
     >
       {children}
     </div>
