@@ -1,19 +1,19 @@
-import { Role } from "@prisma/client";
+import { Role as SingleRole } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 import { env } from "~/env.mjs";
 
 interface Props {
   className?: string;
-  role: Role;
+  role: SingleRole;
 }
 
-const Role = ({ className, role }: Props) => {
+const SingleRole = ({ className, role }: Props) => {
   return (
     <span
       className={clsx(
         className,
-        "px-2 py-1 rounded bg-neutral-700 flex gap-2 items-center"
+        "px-2 py-1 rounded bg-neutral-800 flex gap-2 items-center"
       )}
     >
       {role.imageId && (
@@ -33,4 +33,4 @@ const Role = ({ className, role }: Props) => {
   );
 };
 
-export default Role;
+export default SingleRole;

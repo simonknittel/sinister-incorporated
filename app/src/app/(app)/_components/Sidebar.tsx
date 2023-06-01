@@ -5,6 +5,7 @@ import {
   FaHome,
   FaLock,
   FaSearch,
+  FaTable,
   FaUsers,
 } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
@@ -173,15 +174,27 @@ const Sidebar = async () => {
                         operation: "read",
                       },
                     ]) && (
-                      <li>
-                        <Link
-                          href="/spynet/search"
-                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                        >
-                          <FaSearch />
-                          Suche
-                        </Link>
-                      </li>
+                      <>
+                        <li>
+                          <Link
+                            href="/spynet/search"
+                            className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                          >
+                            <FaSearch />
+                            Suche
+                          </Link>
+                        </li>
+
+                        <li>
+                          <Link
+                            href="/spynet/citizen"
+                            className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                          >
+                            <FaTable />
+                            Citizen
+                          </Link>
+                        </li>
+                      </>
                     )}
 
                   {authentication &&

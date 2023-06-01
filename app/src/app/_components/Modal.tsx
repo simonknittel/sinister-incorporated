@@ -12,6 +12,7 @@ interface Props {
   isOpen?: boolean | null;
   onRequestClose?: () => void;
   children?: ReactNode;
+  keepChildrenInDom?: boolean;
 }
 
 export default function Modal({

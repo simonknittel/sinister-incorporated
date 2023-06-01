@@ -46,7 +46,7 @@ const Inner = ({ children, setIsOpen }: InnerProps) => {
   return (
     <div
       className={clsx(
-        "absolute top-[calc(100%+.5rem)] right-0 flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10",
+        "absolute top-0 right-[calc(100%+.5rem)] flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10",
         styles.actions
       )}
       // ref={ref}

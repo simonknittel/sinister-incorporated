@@ -7,6 +7,7 @@ import {
 import { FaDiscord } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
+import getLatestConfirmedCitizenAttributes from "~/app/_lib/getLatestConfirmedCitizenAttributes";
 import { prisma } from "~/server/db";
 import DiscordIds from "./discord-id/DiscordIds";
 import Handles from "./handle/Handles";
@@ -24,36 +25,8 @@ interface Props {
 const Overview = async ({ entity }: Props) => {
   const authentication = await authenticate();
 
-  const spectrumId = entity.logs.find(
-    (log) => log.type === "spectrum-id"
-  )?.content;
-
-  const latestConfirmedHandle = entity.logs.filter(
-    (log) =>
-      log.type === "handle" &&
-      log.attributes.find(
-        (attribute) =>
-          attribute.key === "confirmed" && attribute.value === "confirmed"
-      )
-  )?.[0];
-
-  const latestConfirmedDiscordId = entity.logs.filter(
-    (log) =>
-      log.type === "discordId" &&
-      log.attributes.find(
-        (attribute) =>
-          attribute.key === "confirmed" && attribute.value === "confirmed"
-      )
-  )?.[0]?.content;
-
-  const latestConfirmedTeamspeakId = entity.logs.filter(
-    (log) =>
-      log.type === "teamspeakId" &&
-      log.attributes.find(
-        (attribute) =>
-          attribute.key === "confirmed" && attribute.value === "confirmed"
-      )
-  )?.[0]?.content;
+  const { handle, spectrumId, discordId, teamspeakId } =
+    getLatestConfirmedCitizenAttributes(entity);
 
   let account;
   if (
@@ -64,12 +37,12 @@ const Overview = async ({ entity }: Props) => {
         operation: "read",
       },
     ]) &&
-    latestConfirmedDiscordId
+    discordId
   ) {
     account = await prisma.account.findFirst({
       where: {
         provider: "discord",
-        providerAccountId: latestConfirmedDiscordId,
+        providerAccountId: discordId,
       },
       include: {
         user: true,
@@ -95,9 +68,7 @@ const Overview = async ({ entity }: Props) => {
 
         <dt className="text-neutral-500 mt-4">Handle</dt>
         <dd className="flex gap-4 items-center">
-          {latestConfirmedHandle?.content || (
-            <span className="italic">Unbekannt</span>
-          )}
+          {handle || <span className="italic">Unbekannt</span>}
 
           <Handles entity={entity} />
         </dd>
@@ -107,18 +78,14 @@ const Overview = async ({ entity }: Props) => {
           Discord ID
         </dt>
         <dd className="flex gap-4 items-center">
-          {latestConfirmedDiscordId || (
-            <span className="italic">Unbekannt</span>
-          )}
+          {discordId || <span className="italic">Unbekannt</span>}
 
           <DiscordIds entity={entity} />
         </dd>
 
         <dt className="text-neutral-500 mt-4">TeamSpeak ID</dt>
         <dd className="flex gap-4 items-center">
-          {latestConfirmedTeamspeakId || (
-            <span className="italic">Unbekannt</span>
-          )}
+          {teamspeakId || <span className="italic">Unbekannt</span>}
 
           <TeamspeakIds entity={entity} />
         </dd>
