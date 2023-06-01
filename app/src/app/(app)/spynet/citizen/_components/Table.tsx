@@ -132,7 +132,7 @@ const Table = ({ rows, assignableRoles }: Props) => {
           return (
             <div className="flex gap-4 items-center">
               {row.row.original.roles.length > 0 ? (
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2">
                   {row.row.original.roles.map((role) => (
                     <SingleRole key={role.id} role={role} />
                   ))}
