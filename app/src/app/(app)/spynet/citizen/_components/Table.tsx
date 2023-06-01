@@ -53,9 +53,14 @@ const columnHelper = createColumnHelper<Row>();
 interface Props {
   rows: Row[];
   assignableRoles: Role[];
+  showLastSeenAtColumn?: boolean;
 }
 
-const Table = ({ rows, assignableRoles }: Props) => {
+const Table = ({
+  rows,
+  assignableRoles,
+  showLastSeenAtColumn = false,
+}: Props) => {
   const authentication = useAuthentication();
 
   const showUpdateRolesButton = useMemo(() => {
@@ -81,7 +86,8 @@ const Table = ({ rows, assignableRoles }: Props) => {
   ]);
 
   const columns = useMemo(() => {
-    return [
+    const columns = [];
+    columns.push(
       columnHelper.accessor("handle", {
         header: "Handle",
         cell: (row) => {
@@ -94,11 +100,17 @@ const Table = ({ rows, assignableRoles }: Props) => {
             </div>
           );
         },
-      }),
+      })
+    );
+
+    columns.push(
       columnHelper.accessor("spectrumId", {
         header: "Spectrum ID",
         cell: (row) => row.getValue(),
-      }),
+      })
+    );
+
+    columns.push(
       columnHelper.accessor("discordId", {
         header: "Discord ID",
         cell: (row) => {
@@ -111,7 +123,10 @@ const Table = ({ rows, assignableRoles }: Props) => {
             </div>
           );
         },
-      }),
+      })
+    );
+
+    columns.push(
       columnHelper.accessor("teamspeakId", {
         header: "TeamSpeak ID",
         cell: (row) => {
@@ -124,7 +139,10 @@ const Table = ({ rows, assignableRoles }: Props) => {
             </div>
           );
         },
-      }),
+      })
+    );
+
+    columns.push(
       columnHelper.display({
         id: "roles",
         header: "Rollen",
@@ -153,7 +171,10 @@ const Table = ({ rows, assignableRoles }: Props) => {
             </div>
           );
         },
-      }),
+      })
+    );
+
+    columns.push(
       columnHelper.accessor("createdAt", {
         header: "Erstellt am",
         cell: (row) =>
@@ -162,16 +183,24 @@ const Table = ({ rows, assignableRoles }: Props) => {
             month: "2-digit",
             year: "numeric",
           }),
-      }),
-      columnHelper.accessor("lastSeenAt", {
-        header: "Zuletzt gesehen",
-        cell: (row) =>
-          row.getValue()?.toLocaleDateString("de-DE", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          }),
-      }),
+      })
+    );
+
+    if (showLastSeenAtColumn) {
+      columns.push(
+        columnHelper.accessor("lastSeenAt", {
+          header: "Zuletzt gesehen",
+          cell: (row) =>
+            row.getValue()?.toLocaleDateString("de-DE", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            }),
+        })
+      );
+    }
+
+    columns.push(
       columnHelper.display({
         id: "actions",
         cell: (props) => {
@@ -195,9 +224,16 @@ const Table = ({ rows, assignableRoles }: Props) => {
             </Actions>
           );
         },
-      }),
-    ];
-  }, [authentication, assignableRoles, showUpdateRolesButton]);
+      })
+    );
+
+    return columns;
+  }, [
+    authentication,
+    assignableRoles,
+    showUpdateRolesButton,
+    showLastSeenAtColumn,
+  ]);
 
   const table = useReactTable({
     data: rows,
@@ -216,7 +252,11 @@ const Table = ({ rows, assignableRoles }: Props) => {
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             key={headerGroup.id}
-            className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px] items-center gap-4"
+            className={clsx("grid items-center gap-4", {
+              "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px]":
+                showLastSeenAtColumn,
+              "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_44px]": !showLastSeenAtColumn,
+            })}
           >
             {headerGroup.headers.map((header) => (
               <th key={header.id} className="text-left text-neutral-500">
@@ -249,7 +289,15 @@ const Table = ({ rows, assignableRoles }: Props) => {
         {table.getRowModel().rows.map((row) => (
           <tr
             key={row.id}
-            className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px] items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
+            className={clsx(
+              "grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2",
+              {
+                "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px]":
+                  showLastSeenAtColumn,
+                "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_44px]":
+                  !showLastSeenAtColumn,
+              }
+            )}
           >
             {row.getVisibleCells().map((cell) => (
               <td

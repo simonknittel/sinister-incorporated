@@ -4,7 +4,7 @@ import {
   type EntityLogAttribute,
   type User,
 } from "@prisma/client";
-import { FaDiscord } from "react-icons/fa";
+import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
 import getLatestConfirmedCitizenAttributes from "~/app/_lib/getLatestConfirmedCitizenAttributes";
 import DiscordIds from "./discord-id/DiscordIds";
@@ -57,7 +57,9 @@ const Overview = async ({ entity }: Props) => {
           <DiscordIds entity={entity} />
         </dd>
 
-        <dt className="text-neutral-500 mt-4">TeamSpeak ID</dt>
+        <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
+          <FaTeamspeak /> TeamSpeak ID
+        </dt>
         <dd className="flex gap-4 items-center">
           {teamspeakId || <span className="italic">Unbekannt</span>}
 

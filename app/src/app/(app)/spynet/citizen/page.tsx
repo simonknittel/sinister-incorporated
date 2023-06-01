@@ -61,6 +61,13 @@ export default async function Page() {
 
   const assignableRoles = await getAssignableRoles();
 
+  const showLastSeenAtColumn = authentication.authorize([
+    {
+      resource: "lastSeen",
+      operation: "read",
+    },
+  ]);
+
   return (
     <main className="p-2 lg:p-8 pt-20">
       <div className="flex gap-2 font-bold text-xl">
@@ -77,7 +84,11 @@ export default async function Page() {
       </div>
 
       <section className="p-8 pb-10 bg-neutral-900 mt-4 rounded overflow-auto">
-        <Table rows={rows} assignableRoles={assignableRoles} />
+        <Table
+          rows={rows}
+          assignableRoles={assignableRoles}
+          showLastSeenAtColumn={showLastSeenAtColumn}
+        />
 
         {/* <div className="flex justify-center">
           <Pagination className="mt-4" />
