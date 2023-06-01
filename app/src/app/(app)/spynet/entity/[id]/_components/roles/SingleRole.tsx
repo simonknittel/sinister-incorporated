@@ -13,7 +13,7 @@ const SingleRole = ({ className, role }: Props) => {
     <span
       className={clsx(
         className,
-        "px-2 py-1 rounded bg-neutral-800 flex gap-2 items-center"
+        "px-2 py-1 rounded bg-neutral-800 flex gap-2 items-center whitespace-nowrap"
       )}
     >
       {role.imageId && (

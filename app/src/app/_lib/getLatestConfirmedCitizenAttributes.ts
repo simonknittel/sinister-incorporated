@@ -3,13 +3,17 @@ import {
   type EntityLog,
   type EntityLogAttribute,
 } from "@prisma/client";
+import { prisma } from "~/server/db";
+import { authenticate } from "./auth/authenticateAndAuthorize";
 
-export default function getLatestConfirmedCitizenAttributes(
+export default async function getLatestConfirmedCitizenAttributes(
   entity: Entity & {
     logs: (EntityLog & { attributes: EntityLogAttribute[] })[];
   }
 ) {
-  const latestConfirmedHandle = entity.logs.filter(
+  const authentication = await authenticate();
+
+  const handle = entity.logs.filter(
     (log) =>
       log.type === "handle" &&
       log.attributes.find(
@@ -21,7 +25,7 @@ export default function getLatestConfirmedCitizenAttributes(
   const spectrumId = entity.logs.find((log) => log.type === "spectrum-id")!
     .content!;
 
-  const latestConfirmedDiscordId = entity.logs.filter(
+  const discordId = entity.logs.filter(
     (log) =>
       log.type === "discordId" &&
       log.attributes.find(
@@ -30,7 +34,7 @@ export default function getLatestConfirmedCitizenAttributes(
       )
   )?.[0]?.content;
 
-  const latestConfirmedTeamspeakId = entity.logs.filter(
+  const teamspeakId = entity.logs.filter(
     (log) =>
       log.type === "teamspeakId" &&
       log.attributes.find(
@@ -39,13 +43,35 @@ export default function getLatestConfirmedCitizenAttributes(
       )
   )?.[0]?.content;
 
+  let account;
+  if (
+    authentication &&
+    authentication.authorize([
+      {
+        resource: "lastSeen",
+        operation: "read",
+      },
+    ]) &&
+    discordId
+  ) {
+    account = await prisma.account.findFirst({
+      where: {
+        provider: "discord",
+        providerAccountId: discordId,
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
+
   return {
     id: entity.id,
-    handle: latestConfirmedHandle,
+    handle,
     spectrumId,
-    discordId: latestConfirmedDiscordId,
-    teamspeakId: latestConfirmedTeamspeakId,
+    discordId,
+    teamspeakId,
     createdAt: entity.createdAt,
-    lastSeenAt: new Date(), // TODO
+    lastSeenAt: account?.user.lastSeenAt,
   };
 }

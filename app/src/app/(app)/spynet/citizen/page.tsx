@@ -52,7 +52,7 @@ export default async function Page() {
   const rows = await Promise.all(
     entities.map(async (entity) => {
       return {
-        ...getLatestConfirmedCitizenAttributes(entity),
+        ...(await getLatestConfirmedCitizenAttributes(entity)),
         roles: await getRoles(entity),
         entity,
       };

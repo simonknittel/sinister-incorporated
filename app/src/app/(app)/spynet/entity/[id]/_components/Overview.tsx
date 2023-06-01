@@ -6,9 +6,7 @@ import {
 } from "@prisma/client";
 import { FaDiscord } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
-import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getLatestConfirmedCitizenAttributes from "~/app/_lib/getLatestConfirmedCitizenAttributes";
-import { prisma } from "~/server/db";
 import DiscordIds from "./discord-id/DiscordIds";
 import Handles from "./handle/Handles";
 import TeamspeakIds from "./teamspeak-id/TeamspeakIds";
@@ -23,32 +21,8 @@ interface Props {
 }
 
 const Overview = async ({ entity }: Props) => {
-  const authentication = await authenticate();
-
-  const { handle, spectrumId, discordId, teamspeakId } =
-    getLatestConfirmedCitizenAttributes(entity);
-
-  let account;
-  if (
-    authentication &&
-    authentication.authorize([
-      {
-        resource: "lastSeen",
-        operation: "read",
-      },
-    ]) &&
-    discordId
-  ) {
-    account = await prisma.account.findFirst({
-      where: {
-        provider: "discord",
-        providerAccountId: discordId,
-      },
-      include: {
-        user: true,
-      },
-    });
-  }
+  const { handle, spectrumId, discordId, teamspeakId, lastSeenAt } =
+    await getLatestConfirmedCitizenAttributes(entity);
 
   return (
     <section
@@ -90,14 +64,14 @@ const Overview = async ({ entity }: Props) => {
           <TeamspeakIds entity={entity} />
         </dd>
 
-        {account?.user.lastSeenAt && (
+        {lastSeenAt && (
           <>
             <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
               <RiTimeLine />
               Zuletzt gesehen
             </dt>
             <dd className="flex gap-4 items-center">
-              {account.user.lastSeenAt.toLocaleDateString("de-DE", {
+              {lastSeenAt.toLocaleDateString("de-DE", {
                 day: "2-digit",
                 month: "2-digit",
                 year: "numeric",
