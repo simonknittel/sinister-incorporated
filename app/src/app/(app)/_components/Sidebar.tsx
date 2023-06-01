@@ -189,6 +189,7 @@ const Sidebar = async () => {
                           <Link
                             href="/spynet/citizen"
                             className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                            prefetch={false}
                           >
                             <FaTable />
                             Citizen
