@@ -196,6 +196,7 @@ const Table = ({
               month: "2-digit",
               year: "numeric",
             }),
+          sortUndefined: 1,
         })
       );
     }
@@ -303,7 +304,8 @@ const Table = ({
               <td
                 key={cell.id}
                 className={clsx({
-                  "overflow-hidden text-ellipsis": cell.column.id !== "actions",
+                  "overflow-hidden text-ellipsis whitespace-nowrap":
+                    cell.column.id !== "actions",
                 })}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
