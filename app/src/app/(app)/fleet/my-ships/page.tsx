@@ -5,7 +5,7 @@ import AssignShip from "./_components/AssignShip";
 import MyShipTile from "./_components/MyShipTile";
 
 export const metadata: Metadata = {
-  title: "Meine Schiffe | Sinister Incorporated",
+  title: "Meine Schiffe - Flotte | Sinister Incorporated",
 };
 
 export default async function Page() {

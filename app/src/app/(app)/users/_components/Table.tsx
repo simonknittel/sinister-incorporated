@@ -34,7 +34,7 @@ type Row = {
 
 const columnHelper = createColumnHelper<Row>();
 
-const UsersTable = ({ users }: Props) => {
+const Table = ({ users }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "user_name", desc: false },
   ]);
@@ -150,4 +150,4 @@ const UsersTable = ({ users }: Props) => {
   );
 };
 
-export default UsersTable;
+export default Table;

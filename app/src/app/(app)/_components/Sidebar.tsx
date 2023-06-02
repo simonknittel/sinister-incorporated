@@ -106,6 +106,7 @@ const Sidebar = async () => {
                         <Link
                           href="/fleet"
                           className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                          prefetch={false}
                         >
                           <MdWorkspaces />
                           Übersicht
@@ -253,6 +254,7 @@ const Sidebar = async () => {
                         <Link
                           href="/users"
                           className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                          prefetch={false}
                         >
                           <FaUsers />
                           Benutzer
@@ -271,6 +273,7 @@ const Sidebar = async () => {
                         <Link
                           href="/roles"
                           className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                          prefetch={false}
                         >
                           <FaLock />
                           Rollen
