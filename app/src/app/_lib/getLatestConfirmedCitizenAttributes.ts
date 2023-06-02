@@ -72,6 +72,6 @@ export default async function getLatestConfirmedCitizenAttributes(
     discordId,
     teamspeakId,
     createdAt: entity.createdAt,
-    lastSeenAt: account?.user.lastSeenAt,
+    lastSeenAt: account?.user.lastSeenAt || undefined,
   };
 }
