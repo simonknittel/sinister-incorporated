@@ -25,8 +25,8 @@ const config = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
-  experimental: {
-    serverActions: true, // https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions
-  },
+  // experimental: {
+  //   serverActions: true, // https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions
+  // },
 };
 export default config;

@@ -2,6 +2,7 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
+import nextjsSearchParamsToNativeSearchParams from "~/app/_lib/nextjsSearchParamsToNativeSearchParams";
 import Tile from "./_components/Tile";
 import TileSkeleton from "./_components/TileSkeleton";
 
@@ -9,7 +10,11 @@ export const metadata: Metadata = {
   title: "Citizen - Spynet | Sinister Incorporated",
 };
 
-export default async function Page() {
+interface Props {
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export default async function Page({ searchParams: _searchParams }: Props) {
   const authentication = await authenticatePage();
   authentication.authorizePage([
     {
@@ -17,6 +22,8 @@ export default async function Page() {
       operation: "read",
     },
   ]);
+
+  const searchParams = nextjsSearchParamsToNativeSearchParams(_searchParams);
 
   return (
     <main className="p-2 lg:p-8 pt-20">
@@ -34,7 +41,7 @@ export default async function Page() {
       </div>
 
       <Suspense fallback={<TileSkeleton />}>
-        <Tile />
+        <Tile searchParams={searchParams} />
       </Suspense>
     </main>
   );

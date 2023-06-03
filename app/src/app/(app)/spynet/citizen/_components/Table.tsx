@@ -1,5 +1,3 @@
-"use client";
-
 import {
   type Entity,
   type EntityLog,
@@ -7,24 +5,10 @@ import {
   type Role,
   type User,
 } from "@prisma/client";
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-  type SortingState,
-} from "@tanstack/react-table";
 import clsx from "clsx";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import {
-  FaExternalLinkAlt,
-  FaSortAlphaDown,
-  FaSortAlphaUpAlt,
-} from "react-icons/fa";
+import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
 import Actions from "~/app/_components/Actions";
-import useAuthentication from "~/app/_lib/auth/useAuthentication";
 import DiscordIds from "../../entity/[id]/_components/discord-id/DiscordIds";
 import Handles from "../../entity/[id]/_components/handle/Handles";
 import AddRoles from "../../entity/[id]/_components/roles/AddRoles";
@@ -48,271 +32,266 @@ type Row = {
   roles: Role[];
 };
 
-const columnHelper = createColumnHelper<Row>();
-
 interface Props {
   rows: Row[];
   assignableRoles: Role[];
   showLastSeenAtColumn?: boolean;
+  showUpdateRolesButton?: boolean;
+  showDeleteEntityButton?: boolean;
+  searchParams: URLSearchParams;
 }
 
 const Table = ({
   rows,
   assignableRoles,
   showLastSeenAtColumn = false,
+  showUpdateRolesButton = false,
+  showDeleteEntityButton = false,
+  searchParams,
 }: Props) => {
-  const authentication = useAuthentication();
+  const handleSearchParams = new URLSearchParams(searchParams);
+  if (searchParams.get("sort") === "handle-asc") {
+    handleSearchParams.set("sort", "handle-desc");
+  } else {
+    handleSearchParams.set("sort", "handle-asc");
+  }
 
-  const showUpdateRolesButton = useMemo(() => {
-    return (
-      authentication &&
-      (authentication.authorize([
-        {
-          resource: "otherRole",
-          operation: "assign",
-        },
-      ]) ||
-        authentication.authorize([
-          {
-            resource: "otherRole",
-            operation: "dismiss",
-          },
-        ]))
-    );
-  }, [authentication]);
+  const spectrumIdSearchParams = new URLSearchParams(searchParams);
+  if (searchParams.get("sort") === "spectrum-id-asc") {
+    spectrumIdSearchParams.set("sort", "spectrum-id-desc");
+  } else {
+    spectrumIdSearchParams.set("sort", "spectrum-id-asc");
+  }
 
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "createdAt", desc: true },
-  ]);
+  const discordIdSearchParams = new URLSearchParams(searchParams);
+  if (searchParams.get("sort") === "discord-id-asc") {
+    discordIdSearchParams.set("sort", "discord-id-desc");
+  } else {
+    discordIdSearchParams.set("sort", "discord-id-asc");
+  }
 
-  const columns = useMemo(() => {
-    const columns = [];
-    columns.push(
-      columnHelper.accessor("handle", {
-        header: "Handle",
-        cell: (row) => {
-          return (
-            <div className="flex gap-4 items-center">
-              {row.getValue() || (
-                <span className="text-neutral-500 italic">Unbekannt</span>
-              )}
-              <Handles entity={row.row.original.entity} />
-            </div>
-          );
-        },
-      })
-    );
+  const teamspeakIdSearchParams = new URLSearchParams(searchParams);
+  if (searchParams.get("sort") === "teamspeak-id-asc") {
+    teamspeakIdSearchParams.set("sort", "teamspeak-id-desc");
+  } else {
+    teamspeakIdSearchParams.set("sort", "teamspeak-id-asc");
+  }
 
-    columns.push(
-      columnHelper.accessor("spectrumId", {
-        header: "Spectrum ID",
-        cell: (row) => row.getValue(),
-      })
-    );
+  const createdAtSearchParams = new URLSearchParams(searchParams);
+  if (
+    !searchParams.has("sort") ||
+    searchParams.get("sort") === "created-at-desc"
+  ) {
+    createdAtSearchParams.set("sort", "created-at-asc");
+  } else {
+    createdAtSearchParams.set("sort", "created-at-desc");
+  }
 
-    columns.push(
-      columnHelper.accessor("discordId", {
-        header: "Discord ID",
-        cell: (row) => {
-          return (
-            <div className="flex gap-4 items-center">
-              {row.getValue() || (
-                <span className="text-neutral-500 italic">Unbekannt</span>
-              )}
-              <DiscordIds entity={row.row.original.entity} />
-            </div>
-          );
-        },
-      })
-    );
-
-    columns.push(
-      columnHelper.accessor("teamspeakId", {
-        header: "TeamSpeak ID",
-        cell: (row) => {
-          return (
-            <div className="flex gap-4 items-center">
-              {row.getValue() || (
-                <span className="text-neutral-500 italic">Unbekannt</span>
-              )}
-              <TeamspeakIds entity={row.row.original.entity} />
-            </div>
-          );
-        },
-      })
-    );
-
-    columns.push(
-      columnHelper.display({
-        id: "roles",
-        header: "Rollen",
-        cell: (row) => {
-          return (
-            <div className="flex gap-4 items-center">
-              {row.row.original.roles.length > 0 ? (
-                <div className="flex gap-2">
-                  {row.row.original.roles.map((role) => (
-                    <SingleRole key={role.id} role={role} />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-neutral-500 italic">Keine Rollen</p>
-              )}
-
-              {showUpdateRolesButton && (
-                <AddRoles
-                  entity={row.row.original.entity}
-                  allRoles={assignableRoles}
-                  assignedRoleIds={row.row.original.roles.map(
-                    (role) => role.id
-                  )}
-                />
-              )}
-            </div>
-          );
-        },
-      })
-    );
-
-    columns.push(
-      columnHelper.accessor("createdAt", {
-        header: "Erstellt am",
-        cell: (row) =>
-          row.getValue().toLocaleDateString("de-DE", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          }),
-      })
-    );
-
-    if (showLastSeenAtColumn) {
-      columns.push(
-        columnHelper.accessor("lastSeenAt", {
-          header: "Zuletzt gesehen",
-          cell: (row) =>
-            row.getValue()?.toLocaleDateString("de-DE", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            }),
-          sortUndefined: 1,
-        })
-      );
-    }
-
-    columns.push(
-      columnHelper.display({
-        id: "actions",
-        cell: (props) => {
-          return (
-            <Actions>
-              <Link
-                href={`/spynet/entity/${props.row.original.entity.id}`}
-                className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center text-sm whitespace-nowrap h-8"
-              >
-                <FaExternalLinkAlt />
-                Vollständiger Eintrag
-              </Link>
-
-              {authentication &&
-                authentication.authorize([
-                  {
-                    resource: "citizen",
-                    operation: "delete",
-                  },
-                ]) && <DeleteEntity entity={props.row.original.entity} />}
-            </Actions>
-          );
-        },
-      })
-    );
-
-    return columns;
-  }, [
-    authentication,
-    assignableRoles,
-    showUpdateRolesButton,
-    showLastSeenAtColumn,
-  ]);
-
-  const table = useReactTable({
-    data: rows,
-    columns,
-    state: {
-      sorting,
-    },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-  });
+  const lastSeenAtSearchParams = new URLSearchParams(searchParams);
+  if (searchParams.get("sort") === "last-seen-at-desc") {
+    lastSeenAtSearchParams.set("sort", "last-seen-at-asc");
+  } else {
+    lastSeenAtSearchParams.set("sort", "last-seen-at-desc");
+  }
 
   return (
     <table className="w-full min-w-[1600px]">
       <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr
-            key={headerGroup.id}
-            className={clsx("grid items-center gap-4", {
+        <tr
+          className={clsx(
+            "grid items-center gap-4 text-left text-neutral-500",
+            {
               "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px]":
                 showLastSeenAtColumn,
               "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_44px]": !showLastSeenAtColumn,
-            })}
-          >
-            {headerGroup.headers.map((header) => (
-              <th key={header.id} className="text-left text-neutral-500">
-                {header.isPlaceholder ? null : (
-                  <div
-                    {...{
-                      className: header.column.getCanSort()
-                        ? "cursor-pointer select-none flex items-center gap-2 hover:text-neutral-300"
-                        : "",
-                      onClick: header.column.getToggleSortingHandler(),
-                    }}
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {{
-                      asc: <FaSortAlphaDown />,
-                      desc: <FaSortAlphaUpAlt />,
-                    }[header.column.getIsSorted() as string] ?? null}
-                  </div>
+            }
+          )}
+        >
+          <th>
+            <Link
+              href={`/spynet/citizen?${handleSearchParams.toString()}`}
+              prefetch={false}
+              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
+            >
+              Handle
+              {searchParams.get("sort") === "handle-asc" && <FaSortUp />}
+              {searchParams.get("sort") === "handle-desc" && <FaSortDown />}
+            </Link>
+          </th>
+
+          <th>
+            <Link
+              href={`/spynet/citizen?${spectrumIdSearchParams.toString()}`}
+              prefetch={false}
+              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
+            >
+              Spectrum ID
+              {searchParams.get("sort") === "spectrum-id-asc" && <FaSortUp />}
+              {searchParams.get("sort") === "spectrum-id-desc" && (
+                <FaSortDown />
+              )}
+            </Link>
+          </th>
+
+          <th>
+            <Link
+              href={`/spynet/citizen?${discordIdSearchParams.toString()}`}
+              prefetch={false}
+              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
+            >
+              Discord ID
+              {searchParams.get("sort") === "discord-id-asc" && <FaSortUp />}
+              {searchParams.get("sort") === "discord-id-desc" && <FaSortDown />}
+            </Link>
+          </th>
+
+          <th>
+            <Link
+              href={`/spynet/citizen?${teamspeakIdSearchParams.toString()}`}
+              prefetch={false}
+              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
+            >
+              TeamSpeak ID
+              {searchParams.get("sort") === "teamspeak-id-asc" && <FaSortUp />}
+              {searchParams.get("sort") === "teamspeak-id-desc" && (
+                <FaSortDown />
+              )}
+            </Link>
+          </th>
+
+          <th>Rollen</th>
+
+          <th>
+            <Link
+              href={`/spynet/citizen?${createdAtSearchParams.toString()}`}
+              prefetch={false}
+              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
+            >
+              Erstellt am
+              {(!searchParams.has("sort") ||
+                searchParams.get("sort") === "created-at-desc") && (
+                <FaSortDown />
+              )}
+              {searchParams.get("sort") === "created-at-asc" && <FaSortUp />}
+            </Link>
+          </th>
+
+          {showLastSeenAtColumn && (
+            <th>
+              <Link
+                href={`/spynet/citizen?${lastSeenAtSearchParams.toString()}`}
+                prefetch={false}
+                className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
+              >
+                Zuletzt gesehen
+                {searchParams.get("sort") === "last-seen-at-asc" && (
+                  <FaSortUp />
                 )}
-              </th>
-            ))}
-          </tr>
-        ))}
+                {searchParams.get("sort") === "last-seen-at-desc" && (
+                  <FaSortDown />
+                )}
+              </Link>
+            </th>
+          )}
+        </tr>
       </thead>
 
       <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr
-            key={row.id}
-            className={clsx(
-              "grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2",
-              {
-                "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px]":
-                  showLastSeenAtColumn,
-                "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_44px]":
-                  !showLastSeenAtColumn,
-              }
-            )}
-          >
-            {row.getVisibleCells().map((cell) => (
-              <td
-                key={cell.id}
-                className={clsx({
-                  "overflow-hidden text-ellipsis whitespace-nowrap":
-                    cell.column.id !== "actions",
-                })}
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        {rows.map((row) => {
+          return (
+            <tr
+              key={row.entity.id}
+              className={clsx(
+                "grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2",
+                {
+                  "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px]":
+                    showLastSeenAtColumn,
+                  "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_44px]":
+                    !showLastSeenAtColumn,
+                }
+              )}
+            >
+              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+                {row.handle || (
+                  <span className="text-neutral-500 italic">Unbekannt</span>
+                )}
+                <Handles entity={row.entity} />
               </td>
-            ))}
-          </tr>
-        ))}
+
+              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+                {row.spectrumId}
+              </td>
+
+              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+                {row.discordId || (
+                  <span className="text-neutral-500 italic">Unbekannt</span>
+                )}
+                <DiscordIds entity={row.entity} />
+              </td>
+
+              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+                {row.teamspeakId || (
+                  <span className="text-neutral-500 italic">Unbekannt</span>
+                )}
+                <TeamspeakIds entity={row.entity} />
+              </td>
+
+              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+                {row.roles.length > 0 ? (
+                  <div className="flex gap-2">
+                    {row.roles.map((role) => (
+                      <SingleRole key={role.id} role={role} />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-neutral-500 italic">Keine Rollen</p>
+                )}
+
+                {showUpdateRolesButton && (
+                  <AddRoles
+                    entity={row.entity}
+                    allRoles={assignableRoles}
+                    assignedRoleIds={row.roles.map((role) => role.id)}
+                  />
+                )}
+              </td>
+
+              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+                {row.createdAt?.toLocaleDateString("de-DE", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}
+              </td>
+
+              {showLastSeenAtColumn && (
+                <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+                  {row.lastSeenAt?.toLocaleDateString("de-DE", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+                </td>
+              )}
+
+              <td>
+                <Actions>
+                  <Link
+                    href={`/spynet/entity/${row.entity.id}`}
+                    className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center text-sm whitespace-nowrap h-8"
+                  >
+                    <FaExternalLinkAlt />
+                    Vollständiger Eintrag
+                  </Link>
+
+                  {showDeleteEntityButton && (
+                    <DeleteEntity entity={row.entity} />
+                  )}
+                </Actions>
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
