@@ -183,9 +183,9 @@ function sortDesc(a?: string | number | null, b?: string | number | null) {
   if (!a && !b) {
     return 0;
   } else if (!a) {
-    return -1;
-  } else if (!b) {
     return 1;
+  } else if (!b) {
+    return -1;
   } else {
     if (typeof a === "number" && typeof b === "number") {
       return b - a;
