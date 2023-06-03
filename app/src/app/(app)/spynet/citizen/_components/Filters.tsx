@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Link from "next/link";
 
 interface Props {
@@ -33,21 +34,45 @@ const Filters = ({ searchParams }: Props) => {
       <div className="flex gap-2 mt-2">
         <Link
           href={`/spynet/citizen?${unknownHandleSearchParams.toString()}`}
-          className="border border-sinister-red-500 hover:border-sinister-red-300 h-11 px-6 text-sinister-red-500 hover:text-sinister-red-300 rounded flex items-center justify-center"
+          className={clsx(
+            "border border-sinister-red-500 h-11 px-6 text-sinister-red-500 rounded flex items-center justify-center",
+            {
+              "hover:border-sinister-red-300 hover:text-sinister-red-300":
+                searchParams.get("filter") !== "unknown-handle",
+              "bg-sinister-red-500 text-white":
+                searchParams.get("filter") === "unknown-handle",
+            }
+          )}
         >
           Handles
         </Link>
 
         <Link
           href={`/spynet/citizen?${unknownDiscordIdSearchParams.toString()}`}
-          className="border border-sinister-red-500 hover:border-sinister-red-300 h-11 px-6 text-sinister-red-500 hover:text-sinister-red-300 rounded flex items-center justify-center"
+          className={clsx(
+            "border border-sinister-red-500 h-11 px-6 text-sinister-red-500 rounded flex items-center justify-center",
+            {
+              "hover:border-sinister-red-300 hover:text-sinister-red-300":
+                searchParams.get("filter") !== "unknown-discord-id",
+              "bg-sinister-red-500 text-white":
+                searchParams.get("filter") === "unknown-discord-id",
+            }
+          )}
         >
           Discord IDs
         </Link>
 
         <Link
           href={`/spynet/citizen?${unknownTeamspeakIdSearchParams.toString()}`}
-          className="border border-sinister-red-500 hover:border-sinister-red-300 h-11 px-6 text-sinister-red-500 hover:text-sinister-red-300 rounded flex items-center justify-center"
+          className={clsx(
+            "border border-sinister-red-500 h-11 px-6 text-sinister-red-500 rounded flex items-center justify-center",
+            {
+              "hover:border-sinister-red-300 hover:text-sinister-red-300":
+                searchParams.get("filter") !== "unknown-teamspeak-id",
+              "bg-sinister-red-500 text-white":
+                searchParams.get("filter") === "unknown-teamspeak-id",
+            }
+          )}
         >
           TeamSpeak IDs
         </Link>
