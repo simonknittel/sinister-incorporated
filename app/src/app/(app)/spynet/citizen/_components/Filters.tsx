@@ -34,6 +34,7 @@ const Filters = ({ searchParams }: Props) => {
       <div className="flex gap-2 mt-2">
         <Link
           href={`/spynet/citizen?${unknownHandleSearchParams.toString()}`}
+          prefetch={false}
           className={clsx(
             "border border-sinister-red-500 h-11 px-6 text-sinister-red-500 rounded flex items-center justify-center",
             {
@@ -49,6 +50,7 @@ const Filters = ({ searchParams }: Props) => {
 
         <Link
           href={`/spynet/citizen?${unknownDiscordIdSearchParams.toString()}`}
+          prefetch={false}
           className={clsx(
             "border border-sinister-red-500 h-11 px-6 text-sinister-red-500 rounded flex items-center justify-center",
             {
@@ -64,6 +66,7 @@ const Filters = ({ searchParams }: Props) => {
 
         <Link
           href={`/spynet/citizen?${unknownTeamspeakIdSearchParams.toString()}`}
+          prefetch={false}
           className={clsx(
             "border border-sinister-red-500 h-11 px-6 text-sinister-red-500 rounded flex items-center justify-center",
             {
