@@ -6,6 +6,8 @@ import nextjsSearchParamsToNativeSearchParams from "~/app/_lib/nextjsSearchParam
 import Tile from "./_components/Tile";
 import TileSkeleton from "./_components/TileSkeleton";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Citizen - Spynet | Sinister Incorporated",
 };
