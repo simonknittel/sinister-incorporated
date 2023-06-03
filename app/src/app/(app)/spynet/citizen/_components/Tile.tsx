@@ -20,8 +20,23 @@ const Tile = async ({ searchParams }: Props) => {
   const entities = await prisma.entity.findMany({
     include: {
       logs: {
+        where: {
+          type: {
+            in: [
+              "spectrum-id",
+              "handle",
+              "discordId",
+              "teamspeakId",
+              "role-added",
+              "role-removed",
+            ],
+          },
+        },
         include: {
           attributes: {
+            where: {
+              key: "confirmed",
+            },
             include: {
               createdBy: true,
             },
