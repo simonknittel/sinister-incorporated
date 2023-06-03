@@ -56,13 +56,6 @@ const Table = ({
     handleSearchParams.set("sort", "handle-asc");
   }
 
-  const spectrumIdSearchParams = new URLSearchParams(searchParams);
-  if (searchParams.get("sort") === "spectrum-id-asc") {
-    spectrumIdSearchParams.set("sort", "spectrum-id-desc");
-  } else {
-    spectrumIdSearchParams.set("sort", "spectrum-id-asc");
-  }
-
   const discordIdSearchParams = new URLSearchParams(searchParams);
   if (searchParams.get("sort") === "discord-id-asc") {
     discordIdSearchParams.set("sort", "discord-id-desc");
@@ -119,45 +112,11 @@ const Table = ({
             </Link>
           </th>
 
-          <th>
-            <Link
-              href={`/spynet/citizen?${spectrumIdSearchParams.toString()}`}
-              prefetch={false}
-              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
-            >
-              Spectrum ID
-              {searchParams.get("sort") === "spectrum-id-asc" && <FaSortUp />}
-              {searchParams.get("sort") === "spectrum-id-desc" && (
-                <FaSortDown />
-              )}
-            </Link>
-          </th>
+          <th>Spectrum ID</th>
 
-          <th>
-            <Link
-              href={`/spynet/citizen?${discordIdSearchParams.toString()}`}
-              prefetch={false}
-              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
-            >
-              Discord ID
-              {searchParams.get("sort") === "discord-id-asc" && <FaSortUp />}
-              {searchParams.get("sort") === "discord-id-desc" && <FaSortDown />}
-            </Link>
-          </th>
+          <th>Discord ID</th>
 
-          <th>
-            <Link
-              href={`/spynet/citizen?${teamspeakIdSearchParams.toString()}`}
-              prefetch={false}
-              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
-            >
-              TeamSpeak ID
-              {searchParams.get("sort") === "teamspeak-id-asc" && <FaSortUp />}
-              {searchParams.get("sort") === "teamspeak-id-desc" && (
-                <FaSortDown />
-              )}
-            </Link>
-          </th>
+          <th>TeamSpeak ID</th>
 
           <th>Rollen</th>
 

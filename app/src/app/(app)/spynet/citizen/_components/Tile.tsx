@@ -3,6 +3,7 @@ import getAssignableRoles from "~/app/_lib/getAssignableRoles";
 import getLatestConfirmedCitizenAttributes from "~/app/_lib/getLatestConfirmedCitizenAttributes";
 import getRoles from "~/app/_lib/getRoles";
 import { prisma } from "~/server/db";
+import Filters from "./Filters";
 import Pagination from "./Pagination";
 import Table from "./Table";
 
@@ -47,27 +48,26 @@ const Tile = async ({ searchParams }: Props) => {
     })
   );
 
-  const sortedRows = rows.sort((a, b) => {
+  const filteredRows = rows.filter((row) => {
+    switch (searchParams.get("filter")) {
+      case "unknown-handle":
+        return !row.handle;
+      case "unknown-discord-id":
+        return !row.discordId;
+      case "unknown-teamspeak-id":
+        return !row.teamspeakId;
+
+      default:
+        return true;
+    }
+  });
+
+  const sortedRows = filteredRows.sort((a, b) => {
     switch (searchParams.get("sort")) {
       case "handle-asc":
         return sortAsc(a.handle, b.handle);
       case "handle-desc":
         return sortDesc(a.handle, b.handle);
-
-      case "spectrum-id-asc":
-        return sortAsc(a.spectrumId, b.spectrumId);
-      case "spectrum-id-desc":
-        return sortDesc(a.spectrumId, b.spectrumId);
-
-      case "discord-id-asc":
-        return sortAsc(a.discordId, b.discordId);
-      case "discord-id-desc":
-        return sortDesc(a.discordId, b.discordId);
-
-      case "teamspeak-id-asc":
-        return sortAsc(a.teamspeakId, b.teamspeakId);
-      case "teamspeak-id-desc":
-        return sortDesc(a.teamspeakId, b.teamspeakId);
 
       case "last-seen-at-asc":
         return sortAsc(a.lastSeenAt?.getTime(), b.lastSeenAt?.getTime());
@@ -130,6 +130,10 @@ const Tile = async ({ searchParams }: Props) => {
 
   return (
     <section className="p-8 pb-10 bg-neutral-900 mt-4 rounded overflow-auto">
+      <div className="mb-8">
+        <Filters searchParams={searchParams} />
+      </div>
+
       <Table
         rows={limitedRows}
         assignableRoles={assignableRoles}
