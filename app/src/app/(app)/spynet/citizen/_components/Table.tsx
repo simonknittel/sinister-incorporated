@@ -203,7 +203,7 @@ const Table = ({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-neutral-500 italic">Keine Rollen</p>
+                  <p className="text-neutral-500 italic">Keine</p>
                 )}
 
                 {showUpdateRolesButton && (
