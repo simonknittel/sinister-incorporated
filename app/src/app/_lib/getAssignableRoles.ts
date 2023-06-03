@@ -53,7 +53,8 @@ export default async function getAssignableRoles() {
             },
           ]))
       );
-    });
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return assignableRoles;
 }
