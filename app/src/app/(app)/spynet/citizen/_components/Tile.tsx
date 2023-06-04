@@ -63,18 +63,23 @@ const Tile = async ({ searchParams }: Props) => {
     })
   );
 
+  const filters = searchParams.get("filters")?.split(",");
   const filteredRows = rows.filter((row) => {
-    switch (searchParams.get("filter")) {
-      case "unknown-handle":
-        return !row.handle;
-      case "unknown-discord-id":
-        return !row.discordId;
-      case "unknown-teamspeak-id":
-        return !row.teamspeakId;
+    if (!filters) return true;
 
-      default:
-        return true;
+    if (filters.includes("unknown-handle") && !row.handle) return true;
+    if (filters.includes("unknown-discord-id") && !row.discordId) return true;
+    if (filters.includes("unknown-teamspeak-id") && !row.teamspeakId)
+      return true;
+
+    for (const filter of filters) {
+      if (!filter.startsWith("role-")) continue;
+      const roleId = filter.replace("role-", "");
+      const hasRole = row.roles.map((role) => role.id).includes(roleId);
+      if (hasRole) return true;
     }
+
+    return false;
   });
 
   const sortedRows = filteredRows.sort((a, b) => {
