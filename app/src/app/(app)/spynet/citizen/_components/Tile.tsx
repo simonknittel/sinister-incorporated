@@ -3,8 +3,8 @@ import getAssignableRoles from "~/app/_lib/getAssignableRoles";
 import getAssignedAndVisibleRoles from "~/app/_lib/getAssignedAndVisibleRoles";
 import getLatestConfirmedCitizenAttributes from "~/app/_lib/getLatestConfirmedCitizenAttributes";
 import { prisma } from "~/server/db";
+import Pagination from "../../_components/Pagination";
 import Filters from "./Filters";
-import Pagination from "./Pagination";
 import Table from "./Table";
 
 interface Props {
@@ -43,6 +43,7 @@ const Tile = async ({ searchParams }: Props) => {
             orderBy: {
               createdAt: "desc",
             },
+            take: 1,
           },
           submittedBy: true,
         },
@@ -54,13 +55,11 @@ const Tile = async ({ searchParams }: Props) => {
   });
 
   const rows = await Promise.all(
-    entities.map(async (entity) => {
-      return {
-        ...(await getLatestConfirmedCitizenAttributes(entity)),
-        roles: await getAssignedAndVisibleRoles(entity),
-        entity,
-      };
-    })
+    entities.map(async (entity) => ({
+      ...(await getLatestConfirmedCitizenAttributes(entity)),
+      roles: await getAssignedAndVisibleRoles(entity),
+      entity,
+    }))
   );
 
   const filters = searchParams.get("filters")?.split(",");
