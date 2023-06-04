@@ -1,14 +1,15 @@
+import getVisibleRoles from "~/app/_lib/getVisibleRoles";
+import RoleFilterButton from "./RoleFilterButton";
 import UnknownFilterButton from "./UnknownFilterButton";
 
-interface Props {
-  searchParams: URLSearchParams;
-}
+const Filters = async () => {
+  const visibleRoles = await getVisibleRoles();
 
-const Filters = ({ searchParams }: Props) => {
   return (
     <div className="flex gap-4 items-center">
       <p>Filter</p>
       <UnknownFilterButton />
+      <RoleFilterButton roles={visibleRoles} />
     </div>
   );
 };

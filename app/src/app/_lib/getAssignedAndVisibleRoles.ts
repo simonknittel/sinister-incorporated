@@ -6,7 +6,7 @@ import {
 import { authenticate } from "./auth/authenticateAndAuthorize";
 import getAllRoles from "./cached/getAllRoles";
 
-export default async function getRoles(
+export default async function getAssignedAndVisibleRoles(
   entity: Entity & {
     logs: (EntityLog & { attributes: EntityLogAttribute[] })[];
   }

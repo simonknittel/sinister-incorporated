@@ -7,7 +7,7 @@ import {
 import { FaLock } from "react-icons/fa";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getAssignableRoles from "~/app/_lib/getAssignableRoles";
-import getRoles from "~/app/_lib/getRoles";
+import getAssignedAndVisibleRoles from "~/app/_lib/getAssignedAndVisibleRoles";
 import AddRoles from "./AddRoles";
 import SingleRole from "./SingleRole";
 
@@ -22,7 +22,7 @@ interface Props {
 const Roles = async ({ entity }: Props) => {
   const authentication = await authenticate();
 
-  const assignedAndVisibleRoles = await getRoles(entity);
+  const assignedAndVisibleRoles = await getAssignedAndVisibleRoles(entity);
   const assignedAndVisibleRoleIds = assignedAndVisibleRoles.map(
     (role) => role.id
   );

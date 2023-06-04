@@ -1,37 +1,47 @@
 "use client";
 
+import { type Role } from "@prisma/client";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { FaChevronDown, FaSave } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import YesNoCheckbox from "~/app/_components/YesNoCheckbox";
+import { env } from "~/env.mjs";
 
 interface FormValues {
   values: string[];
 }
 
-const UnknownFilterButton = () => {
+interface Props {
+  roles: Role[];
+}
+
+const RoleFilterButton = ({ roles }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="relative">
       <Button onClick={() => setIsOpen((value) => !value)} variant="secondary">
-        <FaChevronDown /> Unbekannt
+        <FaChevronDown /> Rollen
       </Button>
 
-      {isOpen && <Inner onRequestClose={() => setIsOpen(false)} />}
+      {isOpen && (
+        <Inner roles={roles} onRequestClose={() => setIsOpen(false)} />
+      )}
     </div>
   );
 };
 
-export default UnknownFilterButton;
+export default RoleFilterButton;
 
 interface InnerProps {
+  roles: Role[];
   onRequestClose?: () => void;
 }
 
-const Inner = ({ onRequestClose }: InnerProps) => {
+const Inner = ({ roles, onRequestClose }: InnerProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -39,7 +49,7 @@ const Inner = ({ onRequestClose }: InnerProps) => {
     defaultValues: {
       values: (searchParams.get("filters")?.split(",") || []).filter(
         (filter) => {
-          if (filter.startsWith("unknown-")) return true;
+          if (filter.startsWith("role-")) return true;
           return false;
         }
       ),
@@ -52,9 +62,10 @@ const Inner = ({ onRequestClose }: InnerProps) => {
     let filters = newSearchParams.get("filters")?.split(",") || [];
     filters = filters.filter((filter) => {
       if (filter === "") return false;
-      if (filter.startsWith("unknown-")) return false;
+      if (filter.startsWith("role-")) return false;
       return true;
     });
+    console.log(filters);
 
     data.values.forEach((filter) => {
       filters.push(filter);
@@ -70,51 +81,38 @@ const Inner = ({ onRequestClose }: InnerProps) => {
   return (
     <form
       className={
-        "absolute top-[calc(100%+.5rem)] left-0 flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10"
+        "absolute top-[calc(100%+.5rem)] left-0 flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10 max-h-96 overflow-auto"
       }
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex justify-between items-center w-full gap-4">
-        <label
-          className="whitespace-nowrap cursor-pointer"
-          htmlFor="unknown-handle"
+      {roles.map((role) => (
+        <div
+          key={role.id}
+          className="flex justify-between items-center w-full gap-4"
         >
-          Handles
-        </label>
-        <YesNoCheckbox
-          register={register("values")}
-          id="unknown-handle"
-          value="unknown-handle"
-        />
-      </div>
+          <label className="flex gap-2 items-center whitespace-nowrap">
+            {role.imageId && (
+              <div className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
+                <Image
+                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.imageId}`}
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="max-w-full max-h-full"
+                />
+              </div>
+            )}
 
-      <div className="flex justify-between items-center w-full gap-4">
-        <label
-          className="whitespace-nowrap cursor-pointer"
-          htmlFor="unknown-discord-id"
-        >
-          Discord IDs
-        </label>
-        <YesNoCheckbox
-          register={register("values")}
-          id="unknown-discord-id"
-          value="unknown-discord-id"
-        />
-      </div>
+            {role.name}
+          </label>
 
-      <div className="flex justify-between items-center w-full gap-4">
-        <label
-          className="whitespace-nowrap cursor-pointer"
-          htmlFor="unknown-teamspeak-id"
-        >
-          TeamSpeak IDs
-        </label>
-        <YesNoCheckbox
-          register={register("values")}
-          id="unknown-teamspeak-id"
-          value="unknown-teamspeak-id"
-        />
-      </div>
+          <YesNoCheckbox
+            register={register("values")}
+            id={role.id}
+            value={`role-${role.id}`}
+          />
+        </div>
+      ))}
 
       <div className="flex justify-end w-full">
         <Button variant="primary">

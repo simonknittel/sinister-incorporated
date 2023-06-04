@@ -1,7 +1,7 @@
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getAssignableRoles from "~/app/_lib/getAssignableRoles";
+import getAssignedAndVisibleRoles from "~/app/_lib/getAssignedAndVisibleRoles";
 import getLatestConfirmedCitizenAttributes from "~/app/_lib/getLatestConfirmedCitizenAttributes";
-import getRoles from "~/app/_lib/getRoles";
 import { prisma } from "~/server/db";
 import Filters from "./Filters";
 import Pagination from "./Pagination";
@@ -57,7 +57,7 @@ const Tile = async ({ searchParams }: Props) => {
     entities.map(async (entity) => {
       return {
         ...(await getLatestConfirmedCitizenAttributes(entity)),
-        roles: await getRoles(entity),
+        roles: await getAssignedAndVisibleRoles(entity),
         entity,
       };
     })
@@ -151,7 +151,7 @@ const Tile = async ({ searchParams }: Props) => {
   return (
     <section className="p-8 pb-10 bg-neutral-900 mt-4 rounded overflow-auto">
       <div className="mb-8">
-        <Filters searchParams={searchParams} />
+        <Filters />
       </div>
 
       <Table
