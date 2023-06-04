@@ -1,11 +1,12 @@
 import { getServerSession, type Session } from "next-auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { authOptions } from "~/server/auth";
 import comparePermissionSets from "./comparePermissionSets";
 import { type PermissionSet } from "./PermissionSet";
 
-export async function authenticate() {
+export const authenticate = cache(async () => {
   const session = await getServerSession(authOptions);
 
   if (session) {
@@ -17,7 +18,7 @@ export async function authenticate() {
   } else {
     return false;
   }
-}
+});
 
 export async function authenticatePage() {
   const authentication = await authenticate();
