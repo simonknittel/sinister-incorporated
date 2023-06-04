@@ -8,8 +8,10 @@ const Filters = async () => {
   return (
     <div className="flex gap-4 items-center">
       <p>Filter</p>
+
       <UnknownFilterButton />
-      <RoleFilterButton roles={visibleRoles} />
+
+      {visibleRoles.length > 0 && <RoleFilterButton roles={visibleRoles} />}
     </div>
   );
 };

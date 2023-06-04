@@ -1,10 +1,10 @@
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getAssignableRoles from "~/app/_lib/getAssignableRoles";
 import getAssignedAndVisibleRoles from "~/app/_lib/getAssignedAndVisibleRoles";
-import getLatestConfirmedCitizenAttributes from "~/app/_lib/getLatestConfirmedCitizenAttributes";
+import { getLatestConfirmedCitizenAttributes } from "~/app/_lib/getLatestConfirmedCitizenAttributes";
 import { prisma } from "~/server/db";
+import Pagination from "../../_components/Pagination";
 import Filters from "./Filters";
-import Pagination from "./Pagination";
 import Table from "./Table";
 
 interface Props {
@@ -43,6 +43,7 @@ const Tile = async ({ searchParams }: Props) => {
             orderBy: {
               createdAt: "desc",
             },
+            take: 1,
           },
           submittedBy: true,
         },
@@ -54,32 +55,47 @@ const Tile = async ({ searchParams }: Props) => {
   });
 
   const rows = await Promise.all(
-    entities.map(async (entity) => {
-      return {
-        ...(await getLatestConfirmedCitizenAttributes(entity)),
-        roles: await getAssignedAndVisibleRoles(entity),
-        entity,
-      };
-    })
+    entities.map(async (entity) => ({
+      ...(await getLatestConfirmedCitizenAttributes(entity)),
+      roles: await getAssignedAndVisibleRoles(entity),
+      entity,
+    })),
   );
 
   const filters = searchParams.get("filters")?.split(",");
   const filteredRows = rows.filter((row) => {
     if (!filters) return true;
 
-    if (filters.includes("unknown-handle") && !row.handle) return true;
-    if (filters.includes("unknown-discord-id") && !row.discordId) return true;
-    if (filters.includes("unknown-teamspeak-id") && !row.teamspeakId)
-      return true;
-
-    for (const filter of filters) {
-      if (!filter.startsWith("role-")) continue;
-      const roleId = filter.replace("role-", "");
-      const hasRole = row.roles.map((role) => role.id).includes(roleId);
-      if (hasRole) return true;
+    let unknown;
+    if (filters.some((filter) => filter.startsWith("unknown-"))) {
+      if (
+        (filters.includes("unknown-handle") && !row.handle) ||
+        (filters.includes("unknown-discord-id") && !row.discordId) ||
+        (filters.includes("unknown-teamspeak-id") && !row.teamspeakId)
+      ) {
+        unknown = true;
+      } else {
+        unknown = false;
+      }
+    } else {
+      unknown = true;
     }
 
-    return false;
+    let role;
+    if (filters.some((filter) => filter.startsWith("role-"))) {
+      for (const filter of filters) {
+        if (!filter.startsWith("role-")) continue;
+        const roleId = filter.replace("role-", "");
+        const hasRole = row.roles.map((role) => role.id).includes(roleId);
+        if (hasRole) role = true;
+      }
+
+      if (!role) role = false;
+    } else {
+      role = true;
+    }
+
+    return unknown && role;
   });
 
   const sortedRows = filteredRows.sort((a, b) => {
@@ -97,20 +113,20 @@ const Tile = async ({ searchParams }: Props) => {
       case "created-at-asc":
         return sortAsc(
           a.entity.createdAt.getTime(),
-          b.entity.createdAt.getTime()
+          b.entity.createdAt.getTime(),
         );
 
       default:
         return sortDesc(
           a.entity.createdAt.getTime(),
-          b.entity.createdAt.getTime()
+          b.entity.createdAt.getTime(),
         );
     }
   });
 
   const limitedRows = sortedRows.slice(
     (currentPage - 1) * perPage,
-    currentPage * perPage
+    currentPage * perPage,
   );
 
   const assignableRoles = await getAssignableRoles();

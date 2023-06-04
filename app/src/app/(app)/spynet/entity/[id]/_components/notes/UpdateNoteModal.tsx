@@ -18,6 +18,7 @@ import useAuthentication from "~/app/_lib/auth/useAuthentication";
 import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
 
 interface Props {
+  className?: string;
   note: EntityLog & {
     attributes: EntityLogAttribute[];
   };
@@ -31,6 +32,7 @@ interface FormValues {
 }
 
 const UpdateNoteModal = ({
+  className,
   note,
   noteTypes = [],
   classificationLevels = [],
@@ -78,7 +80,7 @@ const UpdateNoteModal = ({
           },
         ])
       );
-    }
+    },
   );
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -93,7 +95,7 @@ const UpdateNoteModal = ({
             noteTypeId: data.noteTypeId,
             classificationLevelId: data.classificationLevelId,
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -116,7 +118,7 @@ const UpdateNoteModal = ({
       <Button
         onClick={() => setIsOpen(true)}
         type="button"
-        className="h-auto self-center"
+        className={className}
         variant="tertiary"
       >
         <FaPen /> Bearbeiten

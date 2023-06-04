@@ -9,9 +9,10 @@ import Button from "~/app/_components/Button";
 
 interface Props {
   log: EntityLog;
+  compact?: boolean;
 }
 
-const ConfirmLog = ({ log }: Props) => {
+const ConfirmLog = ({ log, compact }: Props) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<string | false>(false);
 
@@ -26,7 +27,7 @@ const ConfirmLog = ({ log }: Props) => {
           body: JSON.stringify({
             confirmed,
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -42,6 +43,40 @@ const ConfirmLog = ({ log }: Props) => {
 
     setIsLoading(false);
   };
+
+  if (compact) {
+    return (
+      <>
+        <Button
+          variant="tertiary"
+          className="h-auto"
+          onClick={() => void handleConfirm("confirmed")}
+          disabled={isLoading === "confirmed"}
+          title="Bestätigen"
+        >
+          {isLoading === "confirmed" ? (
+            <FaSpinner className="animate-spin" />
+          ) : (
+            <FaCheck />
+          )}
+        </Button>
+        /
+        <Button
+          variant="tertiary"
+          className="h-auto"
+          onClick={() => void handleConfirm("falseReport")}
+          disabled={isLoading === "falseReport"}
+          title="Falschmeldung"
+        >
+          {isLoading === "falseReport" ? (
+            <FaSpinner className="animate-spin" />
+          ) : (
+            <FaTimes />
+          )}
+        </Button>
+      </>
+    );
+  }
 
   return (
     <>

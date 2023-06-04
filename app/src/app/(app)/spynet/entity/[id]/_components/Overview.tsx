@@ -6,7 +6,7 @@ import {
 } from "@prisma/client";
 import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
-import getLatestConfirmedCitizenAttributes from "~/app/_lib/getLatestConfirmedCitizenAttributes";
+import { getLatestConfirmedCitizenAttributes } from "~/app/_lib/getLatestConfirmedCitizenAttributes";
 import DiscordIds from "./discord-id/DiscordIds";
 import Handles from "./handle/Handles";
 import TeamspeakIds from "./teamspeak-id/TeamspeakIds";

@@ -1,47 +1,48 @@
 "use client";
 
-import { type Role } from "@prisma/client";
-import Image from "next/image";
+import { type ClassificationLevel } from "@prisma/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { FaChevronDown, FaSave } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import YesNoCheckbox from "~/app/_components/YesNoCheckbox";
-import { env } from "~/env.mjs";
 
 interface FormValues {
   values: string[];
 }
 
 interface Props {
-  roles: Role[];
+  classificationLevels: ClassificationLevel[];
 }
 
-const RoleFilterButton = ({ roles }: Props) => {
+const ClassificationLevelFilterButton = ({ classificationLevels }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="relative">
       <Button onClick={() => setIsOpen((value) => !value)} variant="secondary">
-        <FaChevronDown /> Rollen
+        <FaChevronDown /> Geheimstufen
       </Button>
 
       {isOpen && (
-        <Inner roles={roles} onRequestClose={() => setIsOpen(false)} />
+        <Inner
+          classificationLevels={classificationLevels}
+          onRequestClose={() => setIsOpen(false)}
+        />
       )}
     </div>
   );
 };
 
-export default RoleFilterButton;
+export default ClassificationLevelFilterButton;
 
 interface InnerProps {
-  roles: Role[];
+  classificationLevels: ClassificationLevel[];
   onRequestClose?: () => void;
 }
 
-const Inner = ({ roles, onRequestClose }: InnerProps) => {
+const Inner = ({ classificationLevels, onRequestClose }: InnerProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -49,7 +50,7 @@ const Inner = ({ roles, onRequestClose }: InnerProps) => {
     defaultValues: {
       values: (searchParams.get("filters")?.split(",") || []).filter(
         (filter) => {
-          if (filter.startsWith("role-")) return true;
+          if (filter.startsWith("classification-level-")) return true;
           return false;
         },
       ),
@@ -62,7 +63,7 @@ const Inner = ({ roles, onRequestClose }: InnerProps) => {
     let filters = newSearchParams.get("filters")?.split(",") || [];
     filters = filters.filter((filter) => {
       if (filter === "") return false;
-      if (filter.startsWith("role-")) return false;
+      if (filter.startsWith("classification-level-")) return false;
       return true;
     });
 
@@ -72,7 +73,7 @@ const Inner = ({ roles, onRequestClose }: InnerProps) => {
 
     newSearchParams.set("filters", filters.join(","));
 
-    router.push(`/spynet/citizen?${newSearchParams.toString()}`);
+    router.push(`/spynet/notes?${newSearchParams.toString()}`);
 
     onRequestClose?.();
   };
@@ -84,31 +85,19 @@ const Inner = ({ roles, onRequestClose }: InnerProps) => {
       }
       onSubmit={handleSubmit(onSubmit)}
     >
-      {roles.map((role) => (
+      {classificationLevels.map((noteType) => (
         <div
-          key={role.id}
+          key={noteType.id}
           className="flex justify-between items-center w-full gap-4"
         >
           <label className="flex gap-2 items-center whitespace-nowrap">
-            {role.imageId && (
-              <div className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
-                <Image
-                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.imageId}`}
-                  alt=""
-                  width={24}
-                  height={24}
-                  className="max-w-full max-h-full"
-                />
-              </div>
-            )}
-
-            {role.name}
+            {noteType.name}
           </label>
 
           <YesNoCheckbox
             register={register("values")}
-            id={role.id}
-            value={`role-${role.id}`}
+            id={noteType.id}
+            value={`classification-level-${noteType.id}`}
           />
         </div>
       ))}

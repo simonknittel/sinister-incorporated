@@ -6,21 +6,14 @@ import {
 import { prisma } from "~/server/db";
 import { authenticate } from "./auth/authenticateAndAuthorize";
 
-export default async function getLatestConfirmedCitizenAttributes(
+export async function getLatestConfirmedCitizenAttributes(
   entity: Entity & {
     logs: (EntityLog & { attributes: EntityLogAttribute[] })[];
-  }
+  },
 ) {
   const authentication = await authenticate();
 
-  const handle = entity.logs.filter(
-    (log) =>
-      log.type === "handle" &&
-      log.attributes.find(
-        (attribute) =>
-          attribute.key === "confirmed" && attribute.value === "confirmed"
-      )
-  )?.[0]?.content;
+  const handle = getLatestConfirmedCitizenHandle(entity.logs);
 
   const spectrumId = entity.logs.find((log) => log.type === "spectrum-id")!
     .content!;
@@ -30,8 +23,8 @@ export default async function getLatestConfirmedCitizenAttributes(
       log.type === "discordId" &&
       log.attributes.find(
         (attribute) =>
-          attribute.key === "confirmed" && attribute.value === "confirmed"
-      )
+          attribute.key === "confirmed" && attribute.value === "confirmed",
+      ),
   )?.[0]?.content;
 
   const teamspeakId = entity.logs.filter(
@@ -39,8 +32,8 @@ export default async function getLatestConfirmedCitizenAttributes(
       log.type === "teamspeakId" &&
       log.attributes.find(
         (attribute) =>
-          attribute.key === "confirmed" && attribute.value === "confirmed"
-      )
+          attribute.key === "confirmed" && attribute.value === "confirmed",
+      ),
   )?.[0]?.content;
 
   let account;
@@ -74,4 +67,17 @@ export default async function getLatestConfirmedCitizenAttributes(
     createdAt: entity.createdAt,
     lastSeenAt: account?.user.lastSeenAt || undefined,
   };
+}
+
+export function getLatestConfirmedCitizenHandle(
+  entityLogs: (EntityLog & { attributes: EntityLogAttribute[] })[],
+) {
+  return entityLogs.filter(
+    (log) =>
+      log.type === "handle" &&
+      log.attributes.find(
+        (attribute) =>
+          attribute.key === "confirmed" && attribute.value === "confirmed",
+      ),
+  )?.[0]?.content;
 }

@@ -1,7 +1,7 @@
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
 import getAllClassificationLevels from "~/app/_lib/cached/getAllClassificationLevels";
 import getAllNoteTypes from "~/app/_lib/cached/getAllNoteTypes";
-import UpdateNoteModal from "./UpdateNoteModal";
+import UpdateNoteModal from "../../entity/[id]/_components/notes/UpdateNoteModal";
 
 interface Props {
   note: EntityLog & {
@@ -16,15 +16,11 @@ const UpdateNote = async ({ note }: Props) => {
   ]);
 
   return (
-    <>
-      <span>&bull;</span>
-      <UpdateNoteModal
-        className="h-auto self-center"
-        note={note}
-        noteTypes={allNoteTypes}
-        classificationLevels={allClassificationLevels}
-      />
-    </>
+    <UpdateNoteModal
+      note={note}
+      noteTypes={allNoteTypes}
+      classificationLevels={allClassificationLevels}
+    />
   );
 };
 

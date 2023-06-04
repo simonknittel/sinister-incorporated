@@ -67,7 +67,7 @@ const SingleNote = async ({ note }: Props) => {
 
       {!confirmed && (
         <div className="px-4 pt-4 flex gap-2 relative z-10 items-start">
-          <FaInfoCircle className="text-blue-500 grow-1 shrink-0 text-sm mt-[2px]" />
+          <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-[2px]" />
           <div className="flex gap-2 lg:gap-4 flex-wrap">
             <p className="font-bold text-sm">
               Diese Notiz ist noch nicht bestätigt.

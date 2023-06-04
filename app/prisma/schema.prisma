@@ -126,7 +126,7 @@ model EntityLogAttribute {
     id          String    @id @default(cuid())
     eneityLogId String
     entityLog   EntityLog @relation(fields: [eneityLogId], references: [id], onDelete: Cascade)
-    key         String // confirmed, classification-level-change, ...
+    key         String // confirmed, classificationLevelId, noteTypeId, ...
     value       String
     createdAt   DateTime  @default(now())
     createdById String

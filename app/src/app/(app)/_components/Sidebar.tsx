@@ -196,6 +196,17 @@ const Sidebar = async () => {
                             Citizen
                           </Link>
                         </li>
+
+                        <li>
+                          <Link
+                            href="/spynet/notes"
+                            className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                            prefetch={false}
+                          >
+                            <FaTable />
+                            Notizen
+                          </Link>
+                        </li>
                       </>
                     )}
 
