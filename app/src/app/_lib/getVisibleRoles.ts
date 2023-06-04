@@ -6,23 +6,25 @@ export default async function getVisibleRoles() {
 
   const allRoles = await getAllRoles();
 
-  const visibleRoles = allRoles.filter((role) => {
-    return (
-      authentication &&
-      authentication.authorize([
-        {
-          resource: "otherRole",
-          operation: "read",
-          attributes: [
-            {
-              key: "roleId",
-              value: role.id,
-            },
-          ],
-        },
-      ])
-    );
-  });
+  const visibleRoles = allRoles
+    .filter((role) => {
+      return (
+        authentication &&
+        authentication.authorize([
+          {
+            resource: "otherRole",
+            operation: "read",
+            attributes: [
+              {
+                key: "roleId",
+                value: role.id,
+              },
+            ],
+          },
+        ])
+      );
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return visibleRoles;
 }
