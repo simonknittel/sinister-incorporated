@@ -1,15 +1,14 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "Next.js: debug server-side",
-			"type": "node-terminal",
-			"request": "launch",
-			"command": "npm run dev",
-			"skipFiles": [
-				"node_modules/**/*.js",
-				"<node_internals>/**/*.js"
-			]
-		}
-	]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Next.js: debug server-side",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "runtimeVersion": "18.16.0"
+    }
+  ]
 }

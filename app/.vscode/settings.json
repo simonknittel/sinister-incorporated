@@ -5,7 +5,8 @@
 		"esnext",
 		"Notizart",
 		"prisma",
-		"pscale"
+		"pscale",
+		"uidotdev"
 	],
 	"dotenv.enableAutocloaking": false,
 	"typescript.tsdk": "node_modules/typescript/lib",
