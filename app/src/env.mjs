@@ -2,9 +2,9 @@ import { z } from "zod";
 import { createEnv } from "@t3-oss/env-nextjs";
 
 export const env = createEnv({
-  /**
-   * Specify your server-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars.
+  /*
+   * Serverside Environment variables, not available on the client.
+   * Will throw if you access these variables on the client.
    */
   server: {
     DATABASE_URL: z.string().url(),
@@ -32,10 +32,10 @@ export const env = createEnv({
     R2_BUCKET_NAME: z.string(),
   },
 
-  /**
-   * Specify your client-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars. To expose them to the client, prefix them with
-   * `NEXT_PUBLIC_`.
+  /*
+   * Environment variables available on the client (and server).
+   *
+   * 💡 You'll get type errors if these are not prefixed with NEXT_PUBLIC_.
    */
   client: {
     NEXT_PUBLIC_ALGOLIA_APP_ID: z.string(),
@@ -43,9 +43,11 @@ export const env = createEnv({
     NEXT_PUBLIC_R2_PUBLIC_URL: z.string(),
   },
 
-  /**
-   * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
-   * middlewares) or client-side so we need to destruct manually.
+  /*
+   * Due to how Next.js bundles environment variables on Edge and Client,
+   * we need to manually destructure them to make sure all are included in bundle.
+   *
+   * 💡 You'll get type errors if not all variables from `server` & `client` are included here.
    */
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,

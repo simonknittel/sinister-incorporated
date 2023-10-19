@@ -5,7 +5,7 @@ generator client {
 datasource db {
     provider     = "mysql"
     url          = env("DATABASE_URL")
-    relationMode = "prisma"
+    relationMode = "prisma" // PlanetScale doesn't support foreign keys
 }
 
 //
