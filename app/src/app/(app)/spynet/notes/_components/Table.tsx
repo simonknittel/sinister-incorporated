@@ -67,7 +67,7 @@ const Table = ({ rows, searchParams }: Props) => {
 
           <th>
             <Link
-              href={`/spynet/citizen?${createdAtSearchParams.toString()}`}
+              href={`/spynet/notes?${createdAtSearchParams.toString()}`}
               prefetch={false}
               className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
             >
@@ -84,7 +84,7 @@ const Table = ({ rows, searchParams }: Props) => {
 
           <th>
             <Link
-              href={`/spynet/citizen?${createdAtSearchParams.toString()}`}
+              href={`/spynet/notes?${createdAtSearchParams.toString()}`}
               prefetch={false}
               className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
             >
