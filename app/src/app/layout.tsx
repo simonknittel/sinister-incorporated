@@ -1,6 +1,5 @@
 import { type ReactNode } from "react";
 import "../styles/globals.css";
-import AnalyticsContainer from "./_components/AnalyticsContainer";
 import ToasterContainer from "./_components/ToasterContainer";
 
 interface Props {
@@ -13,7 +12,7 @@ export default function RootLayout({ children }: Props) {
       <body className="h-full bg-neutral-800 text-neutral-50">
         {children}
         <ToasterContainer />
-        <AnalyticsContainer />
+        {/* <AnalyticsContainer /> */}
       </body>
     </html>
   );
