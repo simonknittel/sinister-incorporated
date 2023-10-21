@@ -4,6 +4,7 @@ import { Suspense, type ReactNode } from "react";
 import { authenticatePage } from "../_lib/auth/authenticateAndAuthorize";
 import AdminDisabler from "./_components/AdminDisabler";
 import ImpersonationBannerContainer from "./_components/ImpersonationBannerContainer";
+import PreviewComments from "./_components/PreviewComments";
 import QueryClientProviderContainer from "./_components/QueryClientProviderContainer";
 import SessionProviderContainer from "./_components/SessionProviderContainer";
 import Sidebar from "./_components/Sidebar";
@@ -51,6 +52,10 @@ export default async function AppLayout({ children, fleetModal }: Props) {
             disabled={cookies().get("disableAdmin")?.value === "disableAdmin"}
           />
         )}
+
+        <Suspense>
+          <PreviewComments />
+        </Suspense>
       </QueryClientProviderContainer>
     </SessionProviderContainer>
   );
