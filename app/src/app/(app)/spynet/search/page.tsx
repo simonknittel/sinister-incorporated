@@ -1,5 +1,4 @@
 import { type Metadata } from "next";
-import { redirect } from "next/navigation";
 import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import CreateEntity from "../_components/CreateEntity";
@@ -10,8 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  if (await getUnleashFlag("DisableAlgolia")) redirect("/dashboard");
-
   const authentication = await authenticatePage();
   authentication.authorizePage([
     {
@@ -27,7 +24,7 @@ export default async function Page() {
           Spynet
         </h1>
 
-        <Search />
+        {!(await getUnleashFlag("DisableAlgolia")) && <Search />}
 
         {authentication.authorize([
           {
