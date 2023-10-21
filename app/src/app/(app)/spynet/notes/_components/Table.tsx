@@ -67,16 +67,16 @@ const Table = ({ rows, searchParams }: Props) => {
 
           <th>
             <Link
-              href={`/spynet/notes?${createdAtSearchParams.toString()}`}
+              href={`/spynet/notes?${confirmedAtSearchParams.toString()}`}
               prefetch={false}
               className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
             >
               Bestätigt am
               {(!searchParams.has("sort") ||
-                searchParams.get("sort") === "created-at-desc") && (
+                searchParams.get("sort") === "confirmed-at-desc") && (
                 <FaSortDown />
               )}
-              {searchParams.get("sort") === "created-at-asc" && <FaSortUp />}
+              {searchParams.get("sort") === "confirmed-at-asc" && <FaSortUp />}
             </Link>
           </th>
 
