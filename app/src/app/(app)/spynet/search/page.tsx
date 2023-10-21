@@ -1,5 +1,7 @@
 import { type Metadata } from "next";
+import { redirect } from "next/navigation";
 import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import CreateEntity from "../_components/CreateEntity";
 import Search from "./_components/Search";
 
@@ -8,6 +10,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  if (await getUnleashFlag("DisableAlgolia")) redirect("/dashboard");
+
   const authentication = await authenticatePage();
   authentication.authorizePage([
     {

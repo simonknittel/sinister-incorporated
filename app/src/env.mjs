@@ -30,6 +30,8 @@ export const env = createEnv({
     R2_ACCESS_KEY_ID: z.string(),
     R2_SECRET_ACCESS_KEY: z.string(),
     R2_BUCKET_NAME: z.string(),
+    UNLEASH_SERVER_API_URL: z.string().url(),
+    UNLEASH_SERVER_API_TOKEN: z.string(),
   },
 
   /*
@@ -66,5 +68,7 @@ export const env = createEnv({
     R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,
     R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
     NEXT_PUBLIC_R2_PUBLIC_URL: process.env.NEXT_PUBLIC_R2_PUBLIC_URL,
+    UNLEASH_SERVER_API_URL: process.env.UNLEASH_SERVER_API_URL,
+    UNLEASH_SERVER_API_TOKEN: process.env.UNLEASH_SERVER_API_TOKEN,
   },
 });

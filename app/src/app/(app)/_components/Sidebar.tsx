@@ -11,6 +11,7 @@ import {
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpaceShipFill, RiSwordFill } from "react-icons/ri";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import Account from "./Account";
 
 const Sidebar = async () => {
@@ -66,7 +67,7 @@ const Sidebar = async () => {
                     <RiSwordFill />
                     Operationen
                     <span
-                      className="rounded bg-neutral-700 py-1 px-2 text-sm"
+                      className="rounded bg-neutral-700 py-1 px-2 text-sm text-neutral-50"
                       title="Proof of Concept"
                     >
                       PoC
@@ -177,13 +178,29 @@ const Sidebar = async () => {
                     ]) && (
                       <>
                         <li>
-                          <Link
-                            href="/spynet/search"
-                            className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                          >
-                            <FaSearch />
-                            Suche
-                          </Link>
+                          {(await getUnleashFlag("DisableAlgolia")) ? (
+                            <span className="flex gap-2 items-center p-4 rounded">
+                              <span className="line-through text-neutral-500 flex gap-2 items-center">
+                                <FaSearch />
+                                Suche
+                              </span>
+
+                              <span
+                                className="rounded bg-neutral-700 py-1 px-2 text-sm text-neutral-50"
+                                title="Deaktiviert"
+                              >
+                                Deaktiviert
+                              </span>
+                            </span>
+                          ) : (
+                            <Link
+                              href="/spynet/search"
+                              className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                            >
+                              <FaSearch />
+                              Suche
+                            </Link>
+                          )}
                         </li>
 
                         <li>
