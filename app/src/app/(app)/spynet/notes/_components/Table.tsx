@@ -33,7 +33,7 @@ interface Props {
   searchParams: URLSearchParams;
 }
 
-const Table = ({ rows, searchParams }: Props) => {
+const Table = ({ rows, searchParams }: Readonly<Props>) => {
   const createdAtSearchParams = new URLSearchParams(searchParams);
   if (
     !searchParams.has("sort") ||

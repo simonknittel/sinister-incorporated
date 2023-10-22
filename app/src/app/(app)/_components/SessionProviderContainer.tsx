@@ -9,7 +9,7 @@ interface Props {
   session: Session;
 }
 
-const SessionProviderContainer = ({ children, session }: Props) => {
+const SessionProviderContainer = ({ children, session }: Readonly<Props>) => {
   return <SessionProvider session={session}>{children}</SessionProvider>;
 };
 

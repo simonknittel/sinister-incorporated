@@ -15,7 +15,7 @@ interface Props {
   confirmationStates: string[];
 }
 
-const ConfirmationStateFilter = ({ confirmationStates }: Props) => {
+const ConfirmationStateFilter = ({ confirmationStates }: Readonly<Props>) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

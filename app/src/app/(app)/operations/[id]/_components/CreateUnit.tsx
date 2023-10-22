@@ -10,7 +10,7 @@ interface Props {
   operation: Operation;
 }
 
-const CreateUnit = ({ operation }: Props) => {
+const CreateUnit = ({ operation }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

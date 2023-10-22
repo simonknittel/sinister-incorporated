@@ -9,7 +9,7 @@ interface Props {
   value?: string;
 }
 
-const YesNoCheckbox = ({ register, id, value }: Props) => {
+const YesNoCheckbox = ({ register, id, value }: Readonly<Props>) => {
   return (
     <label
       className={clsx("group inline-flex justify-center gap-2 items-center", {

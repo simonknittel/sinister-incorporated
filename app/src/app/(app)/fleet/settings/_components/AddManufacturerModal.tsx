@@ -18,7 +18,7 @@ interface FormValues {
   name: Manufacturer["name"];
 }
 
-const AddManufacturerModal = ({ isOpen, onRequestClose }: Props) => {
+const AddManufacturerModal = ({ isOpen, onRequestClose }: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);

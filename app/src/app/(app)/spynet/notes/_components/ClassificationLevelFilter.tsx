@@ -16,7 +16,9 @@ interface Props {
   classificationLevels: ClassificationLevel[];
 }
 
-const ClassificationLevelFilter = ({ classificationLevels }: Props) => {
+const ClassificationLevelFilter = ({
+  classificationLevels,
+}: Readonly<Props>) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

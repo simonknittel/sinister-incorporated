@@ -7,11 +7,10 @@ import Button from "~/app/_components/Button";
 import CreateSquadronFlightModal from "./CreateSquadronFlightModal";
 
 interface Props {
-  className?: string;
   parentUnit: OperationUnit;
 }
 
-const CreateSquadronFlight = ({ className, parentUnit }: Props) => {
+const CreateSquadronFlight = ({ parentUnit }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

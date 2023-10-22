@@ -18,7 +18,7 @@ interface FormValues {
   title: string;
 }
 
-const CreateOperationModal = ({ isOpen, onRequestClose }: Props) => {
+const CreateOperationModal = ({ isOpen, onRequestClose }: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);

@@ -24,7 +24,7 @@ interface Props {
   };
 }
 
-const SingleNote = async ({ note }: Props) => {
+const SingleNote = async ({ note }: Readonly<Props>) => {
   const authentication = await authenticate();
 
   const { noteTypeId, classificationLevelId, confirmed } =

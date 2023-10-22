@@ -47,7 +47,7 @@ const Permissions = ({
   noteTypes,
   classificationLevels,
   allRoles,
-}: Props) => {
+}: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const methods = useForm<FormValues>({

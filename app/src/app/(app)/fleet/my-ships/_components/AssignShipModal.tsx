@@ -25,7 +25,11 @@ interface FormValues {
   name: string;
 }
 
-const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
+const AssignShipModal = ({
+  isOpen,
+  onRequestClose,
+  data = [],
+}: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -76,8 +80,8 @@ const AssignShipModal = ({ isOpen, onRequestClose, data = [] }: Props) => {
             .map((series) =>
               series.variants
                 .sort((a, b) => a.name.localeCompare(b.name))
-                .map((variant) => variant)
-            )
+                .map((variant) => variant),
+            ),
         ),
       });
     });

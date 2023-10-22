@@ -10,7 +10,12 @@ interface Props {
   error?: Error;
 }
 
-const Note = ({ className, message, type = "info", error }: Props) => {
+const Note = ({
+  className,
+  message,
+  type = "info",
+  error,
+}: Readonly<Props>) => {
   return (
     <div
       className={clsx(
@@ -20,7 +25,7 @@ const Note = ({ className, message, type = "info", error }: Props) => {
           "bg-blue-500/10 border-blue-500": type === "info",
           "bg-green-500/10 border-green-500": type === "success",
           "bg-sinister-red-500/10 border-sinister-red-500": type === "error",
-        }
+        },
       )}
     >
       {type === "info" && (

@@ -9,7 +9,7 @@ interface Props {
   id: string;
 }
 
-const Tab = ({ children, id }: Props) => {
+const Tab = ({ children, id }: Readonly<Props>) => {
   const { activeTab, setActiveTab } = useTabsContext();
 
   return (
@@ -22,7 +22,7 @@ const Tab = ({ children, id }: Props) => {
           "bg-sinister-red-500 text-white": activeTab === id,
           "hover:text-sinister-red-300 hover:border-sinister-red-300":
             activeTab !== id,
-        }
+        },
       )}
     >
       {children}

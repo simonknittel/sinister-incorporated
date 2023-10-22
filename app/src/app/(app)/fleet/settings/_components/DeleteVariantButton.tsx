@@ -10,7 +10,7 @@ interface Props {
   variant: Variant;
 }
 
-const DeleteVariantButton = ({ variant }: Props) => {
+const DeleteVariantButton = ({ variant }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 

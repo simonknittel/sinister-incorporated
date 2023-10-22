@@ -12,7 +12,7 @@ interface Props {
   className?: string;
 }
 
-const RolesTile = async ({ className }: Props) => {
+const RolesTile = async ({ className }: Readonly<Props>) => {
   const [roles, noteTypes, classificationLevels] = await prisma.$transaction([
     prisma.role.findMany({
       include: {

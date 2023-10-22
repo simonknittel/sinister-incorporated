@@ -17,7 +17,7 @@ interface Props {
   classificationLevels: ClassificationLevel[];
 }
 
-const SpynetTab = ({ noteTypes, classificationLevels }: Props) => {
+const SpynetTab = ({ noteTypes, classificationLevels }: Readonly<Props>) => {
   const { register } = useFormContext<FormValues>();
 
   return (

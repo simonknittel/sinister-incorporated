@@ -7,7 +7,7 @@ interface Props {
   className?: string;
 }
 
-const CitizenSection = ({ className }: Props) => {
+const CitizenSection = ({ className }: Readonly<Props>) => {
   const { register } = useFormContext<FormValues>();
 
   return (

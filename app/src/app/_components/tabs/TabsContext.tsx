@@ -9,7 +9,7 @@ interface TabsContextInterface {
 }
 
 const AccountContext = createContext<TabsContextInterface | undefined>(
-  undefined
+  undefined,
 );
 
 interface Props {
@@ -17,9 +17,12 @@ interface Props {
   initialActiveTab?: string;
 }
 
-export const TabsProvider = ({ children, initialActiveTab }: Props) => {
+export const TabsProvider = ({
+  children,
+  initialActiveTab,
+}: Readonly<Props>) => {
   const [activeTab, setActiveTab] = useState<string | null>(
-    initialActiveTab || null
+    initialActiveTab || null,
   );
 
   const value = useMemo(
@@ -27,7 +30,7 @@ export const TabsProvider = ({ children, initialActiveTab }: Props) => {
       activeTab,
       setActiveTab,
     }),
-    [activeTab, setActiveTab]
+    [activeTab, setActiveTab],
   );
 
   return (

@@ -8,7 +8,7 @@ interface Props {
   children: ReactNode;
 }
 
-const QueryClientProviderContainer = ({ children }: Props) => {
+const QueryClientProviderContainer = ({ children }: Readonly<Props>) => {
   const [queryClient] = useState(() => new QueryClient());
 
   return (

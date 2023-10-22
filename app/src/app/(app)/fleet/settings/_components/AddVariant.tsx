@@ -12,7 +12,7 @@ interface Props {
   series: Series;
 }
 
-const AddVariant = ({ className, series }: Props) => {
+const AddVariant = ({ className, series }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

@@ -29,7 +29,7 @@ type Row = OrgShip;
 
 const columnHelper = createColumnHelper<Row>();
 
-const FleetTable = ({ ships }: Props) => {
+const FleetTable = ({ ships }: Readonly<Props>) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "variant_series.manufacturer.name", desc: false },
     { id: "variant_series.name", desc: false },
@@ -89,7 +89,7 @@ const FleetTable = ({ ships }: Props) => {
                   >
                     {flexRender(
                       header.column.columnDef.header,
-                      header.getContext()
+                      header.getContext(),
                     )}
                     {{
                       asc: <FaSortAlphaDown />,

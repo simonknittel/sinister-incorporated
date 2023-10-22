@@ -17,7 +17,7 @@ interface Props {
   };
 }
 
-const MyShipTile = ({ ship }: Props) => {
+const MyShipTile = ({ ship }: Readonly<Props>) => {
   return (
     <article className="bg-neutral-900 rounded overflow-hidden">
       <div className="flex justify-between items-center">

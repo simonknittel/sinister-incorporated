@@ -16,7 +16,9 @@ interface Props {
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default async function Page({ searchParams: _searchParams }: Props) {
+export default async function Page({
+  searchParams: _searchParams,
+}: Readonly<Props>) {
   const authentication = await authenticatePage();
   authentication.authorizePage([
     {

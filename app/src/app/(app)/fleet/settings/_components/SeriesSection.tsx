@@ -10,7 +10,7 @@ interface Props {
   };
 }
 
-const SeriesSection = ({ manufacturer, data }: Props) => {
+const SeriesSection = ({ manufacturer, data }: Readonly<Props>) => {
   return (
     <div className="mt-2 bg-neutral-900 rounded overflow-hidden max-w-4xl">
       <div className="flex justify-between items-center">

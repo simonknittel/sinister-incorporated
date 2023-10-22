@@ -19,7 +19,11 @@ interface FormValues {
   name: Variant["name"];
 }
 
-const AddVariantModal = ({ isOpen, onRequestClose, series }: Props) => {
+const AddVariantModal = ({
+  isOpen,
+  onRequestClose,
+  series,
+}: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>({
     defaultValues: {

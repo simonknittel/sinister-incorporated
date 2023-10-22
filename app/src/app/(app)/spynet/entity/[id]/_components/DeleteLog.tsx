@@ -11,7 +11,7 @@ interface Props {
   log: EntityLog;
 }
 
-const DeleteLog = ({ log }: Props) => {
+const DeleteLog = ({ log }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 

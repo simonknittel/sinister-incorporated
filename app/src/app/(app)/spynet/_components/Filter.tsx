@@ -16,7 +16,7 @@ interface Props {
   children?: ReactNode;
 }
 
-export const Filter = ({ name, children }: Props) => {
+export const Filter = ({ name, children }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const value = useMemo(

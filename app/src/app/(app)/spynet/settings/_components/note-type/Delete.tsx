@@ -11,7 +11,7 @@ interface Props {
   noteType: NoteType;
 }
 
-const Delete = ({ noteType }: Props) => {
+const Delete = ({ noteType }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 

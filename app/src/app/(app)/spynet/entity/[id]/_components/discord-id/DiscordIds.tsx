@@ -23,7 +23,7 @@ interface Props {
   };
 }
 
-const DiscordIds = ({ entity }: Props) => {
+const DiscordIds = ({ entity }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
   const authentication = useAuthentication();
 

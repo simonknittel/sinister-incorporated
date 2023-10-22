@@ -21,11 +21,11 @@ interface Props {
   };
 }
 
-const SingleHandle = ({ log }: Props) => {
+const SingleHandle = ({ log }: Readonly<Props>) => {
   const authentication = useAuthentication();
 
   const confirmed = log.attributes.find(
-    (attribute) => attribute.key === "confirmed"
+    (attribute) => attribute.key === "confirmed",
   );
 
   return (

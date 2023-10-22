@@ -22,7 +22,7 @@ interface Props {
   searchParams: URLSearchParams;
 }
 
-const Tile = async ({ searchParams }: Props) => {
+const Tile = async ({ searchParams }: Readonly<Props>) => {
   const authentication = await authenticate();
 
   const currentPage = getCurrentPageFromSearchParams(searchParams);

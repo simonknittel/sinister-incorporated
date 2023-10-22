@@ -9,7 +9,7 @@ interface Props {
   rows: Row[];
 }
 
-const Filters = ({ rows }: Props) => {
+const Filters = ({ rows }: Readonly<Props>) => {
   const noteTypes = new Map<string, NoteType>();
   const classificationLevels = new Map<string, NoteType>();
   const confirmationStates = new Set<string>();

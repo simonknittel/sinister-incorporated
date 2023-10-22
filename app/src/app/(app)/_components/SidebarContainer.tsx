@@ -10,7 +10,7 @@ interface Props {
   children?: ReactNode;
 }
 
-const SidebarContainer = ({ children }: Props) => {
+const SidebarContainer = ({ children }: Readonly<Props>) => {
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -36,7 +36,7 @@ const SidebarContainer = ({ children }: Props) => {
           {
             "-translate-x-full": isVisible === false,
             "translate-x-0": isVisible === true,
-          }
+          },
         )}
       >
         {children}

@@ -21,16 +21,16 @@ interface Props {
   };
 }
 
-const SquadronFlightTile = ({ className, unit }: Props) => {
+const SquadronFlightTile = ({ className, unit }: Readonly<Props>) => {
   const oneLeader = unit.members.find(
-    (member) => member.title === "1 Flight Lead"
+    (member) => member.title === "1 Flight Lead",
   );
   const oneWingman = unit.members.find(
-    (member) => member.title === "1 Wingman"
+    (member) => member.title === "1 Wingman",
   );
   const two = unit.members.find((member) => member.title === "2");
   const twoWingman = unit.members.find(
-    (member) => member.title === "2 Wingman"
+    (member) => member.title === "2 Wingman",
   );
 
   return (

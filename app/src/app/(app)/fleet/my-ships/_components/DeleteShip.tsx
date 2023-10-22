@@ -12,7 +12,7 @@ interface Props {
   };
 }
 
-const DeleteShip = ({ ship }: Props) => {
+const DeleteShip = ({ ship }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +23,7 @@ const DeleteShip = ({ ship }: Props) => {
       const confirmation = window.confirm(
         `You are about to remove "${
           ship.name || ship.variant.name
-        }". Do you want to continue?`
+        }". Do you want to continue?`,
       );
 
       if (!confirmation) {

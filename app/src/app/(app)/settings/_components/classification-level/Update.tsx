@@ -19,7 +19,7 @@ interface Props {
   classificationLevel: ClassificationLevel;
 }
 
-const Update = ({ className, classificationLevel }: Props) => {
+const Update = ({ className, classificationLevel }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();
@@ -42,7 +42,7 @@ const Update = ({ className, classificationLevel }: Props) => {
           body: JSON.stringify({
             name: data.name,
           }),
-        }
+        },
       );
 
       if (response.ok) {

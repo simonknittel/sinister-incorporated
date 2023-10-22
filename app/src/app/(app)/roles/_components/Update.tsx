@@ -20,7 +20,7 @@ interface Props {
   role: Role;
 }
 
-const Update = ({ className, role }: Props) => {
+const Update = ({ className, role }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();

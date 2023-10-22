@@ -19,12 +19,12 @@ interface Props {
   };
 }
 
-const Roles = async ({ entity }: Props) => {
+const Roles = async ({ entity }: Readonly<Props>) => {
   const authentication = await authenticate();
 
   const assignedAndVisibleRoles = await getAssignedAndVisibleRoles(entity);
   const assignedAndVisibleRoleIds = assignedAndVisibleRoles.map(
-    (role) => role.id
+    (role) => role.id,
   );
 
   const assignableRoles = await getAssignableRoles();

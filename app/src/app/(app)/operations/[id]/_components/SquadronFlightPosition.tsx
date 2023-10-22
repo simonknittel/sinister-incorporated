@@ -37,7 +37,7 @@ const SquadronFlightPosition = ({
   member,
   unit,
   status = "green",
-}: Props) => {
+}: Readonly<Props>) => {
   return (
     <li className="text-center">
       <p

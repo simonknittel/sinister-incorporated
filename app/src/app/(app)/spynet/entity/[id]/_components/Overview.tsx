@@ -20,7 +20,7 @@ interface Props {
   };
 }
 
-const Overview = async ({ entity }: Props) => {
+const Overview = async ({ entity }: Readonly<Props>) => {
   const { handle, spectrumId, discordId, teamspeakId, lastSeenAt } =
     await getLatestConfirmedCitizenAttributes(entity);
 

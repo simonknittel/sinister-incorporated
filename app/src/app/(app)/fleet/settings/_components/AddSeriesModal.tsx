@@ -20,7 +20,11 @@ interface FormValues {
   name: Series["name"];
 }
 
-const AddSeriesModal = ({ isOpen, onRequestClose, manufacturers }: Props) => {
+const AddSeriesModal = ({
+  isOpen,
+  onRequestClose,
+  manufacturers,
+}: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);

@@ -19,9 +19,13 @@ interface FormValues {
   title: string;
 }
 
-const EditOperationModal = ({ isOpen, onRequestClose, operation }: Props) => {
+const EditOperationModal = ({
+  isOpen,
+  onRequestClose,
+  operation,
+}: Readonly<Props>) => {
   const router = useRouter();
-  const { register, handleSubmit, reset } = useForm<FormValues>({
+  const { register, handleSubmit } = useForm<FormValues>({
     defaultValues: {
       title: operation.title,
     },

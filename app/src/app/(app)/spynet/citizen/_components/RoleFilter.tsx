@@ -18,7 +18,7 @@ interface Props {
   roles: Role[];
 }
 
-const RoleFilter = ({ roles }: Props) => {
+const RoleFilter = ({ roles }: Readonly<Props>) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

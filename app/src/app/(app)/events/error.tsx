@@ -7,7 +7,7 @@ interface Props {
   reset: () => void;
 }
 
-export default function Error({ error }: Props) {
+export default function Error({ error }: Readonly<Props>) {
   return (
     <main className="p-2 lg:p-8 pt-20">
       <Note

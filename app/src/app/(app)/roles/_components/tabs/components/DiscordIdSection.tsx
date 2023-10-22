@@ -7,7 +7,7 @@ interface Props {
   className?: string;
 }
 
-const DiscordIdSection = ({ className }: Props) => {
+const DiscordIdSection = ({ className }: Readonly<Props>) => {
   const { register } = useFormContext<FormValues>();
 
   return (

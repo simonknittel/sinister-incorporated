@@ -11,7 +11,7 @@ interface Props {
   operation: Operation;
 }
 
-const RemoveParticipation = ({ operation }: Props) => {
+const RemoveParticipation = ({ operation }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();

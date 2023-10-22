@@ -5,7 +5,7 @@ interface Props {
   data: Variant;
 }
 
-const VariantTag = ({ data }: Props) => {
+const VariantTag = ({ data }: Readonly<Props>) => {
   return (
     <li className="bg-neutral-800 rounded flex gap-2 items-center">
       <p className="py-2 pl-4 pr-2">{data.name}</p>

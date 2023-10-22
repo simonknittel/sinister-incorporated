@@ -11,7 +11,7 @@ interface Props {
   className?: string;
 }
 
-const Select = ({ register, id, children, className }: Props) => {
+const Select = ({ register, id, children, className }: Readonly<Props>) => {
   return (
     <select
       id={id}

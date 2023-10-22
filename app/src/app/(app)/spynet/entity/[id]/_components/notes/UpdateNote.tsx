@@ -9,7 +9,7 @@ interface Props {
   };
 }
 
-const UpdateNote = async ({ note }: Props) => {
+const UpdateNote = async ({ note }: Readonly<Props>) => {
   const [allNoteTypes, allClassificationLevels] = await Promise.all([
     getAllNoteTypes(),
     getAllClassificationLevels(),

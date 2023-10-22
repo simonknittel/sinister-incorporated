@@ -7,7 +7,7 @@ interface Props {
   disabled?: boolean;
 }
 
-const AdminDisabler = ({ disabled = false }: Props) => {
+const AdminDisabler = ({ disabled = false }: Readonly<Props>) => {
   const router = useRouter();
 
   const handleClick = () => {
@@ -29,7 +29,7 @@ const AdminDisabler = ({ disabled = false }: Props) => {
         {
           "bg-green-500/50": disabled,
           "bg-red-500/50": !disabled,
-        }
+        },
       )}
       onClick={handleClick}
     >

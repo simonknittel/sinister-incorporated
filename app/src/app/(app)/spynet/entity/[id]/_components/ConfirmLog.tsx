@@ -12,7 +12,7 @@ interface Props {
   compact?: boolean;
 }
 
-const ConfirmLog = ({ log, compact }: Props) => {
+const ConfirmLog = ({ log, compact }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<string | false>(false);
 

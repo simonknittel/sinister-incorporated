@@ -16,7 +16,10 @@ interface Props {
   fleetModal: ReactNode;
 }
 
-export default async function AppLayout({ children, fleetModal }: Props) {
+export default async function AppLayout({
+  children,
+  fleetModal,
+}: Readonly<Props>) {
   const authentication = await authenticatePage();
   if (
     authentication.authorize([

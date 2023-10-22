@@ -11,7 +11,7 @@ interface Props {
   classificationLevel: ClassificationLevel;
 }
 
-const Delete = ({ classificationLevel }: Props) => {
+const Delete = ({ classificationLevel }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,7 +30,7 @@ const Delete = ({ classificationLevel }: Props) => {
         `/api/classification-level/${classificationLevel.id}`,
         {
           method: "DELETE",
-        }
+        },
       );
 
       if (response.ok) {

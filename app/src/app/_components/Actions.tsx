@@ -15,7 +15,7 @@ interface Props {
   children?: ReactNode;
 }
 
-const Actions = ({ children }: Props) => {
+const Actions = ({ children }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -47,7 +47,7 @@ const Inner = ({ children, setIsOpen }: InnerProps) => {
     <div
       className={clsx(
         "absolute top-0 right-[calc(100%+.5rem)] flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10",
-        styles.actions
+        styles.actions,
       )}
       // ref={ref}
     >

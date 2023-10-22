@@ -27,7 +27,7 @@ interface Props {
   };
 }
 
-const SquadronTile = ({ className, unit }: Props) => {
+const SquadronTile = ({ className, unit }: Readonly<Props>) => {
   return (
     <section className={clsx(className, "pt-4")}>
       <div className="flex gap-2">

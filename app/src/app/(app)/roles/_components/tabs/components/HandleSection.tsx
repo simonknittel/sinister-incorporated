@@ -7,7 +7,7 @@ interface Props {
   className?: string;
 }
 
-const HandleSection = ({ className }: Props) => {
+const HandleSection = ({ className }: Readonly<Props>) => {
   const { register } = useFormContext<FormValues>();
 
   return (

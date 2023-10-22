@@ -18,7 +18,12 @@ interface Props {
   assignedRoleIds: Role["id"][];
 }
 
-const AddRoles = ({ className, entity, allRoles, assignedRoleIds }: Props) => {
+const AddRoles = ({
+  className,
+  entity,
+  allRoles,
+  assignedRoleIds,
+}: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 

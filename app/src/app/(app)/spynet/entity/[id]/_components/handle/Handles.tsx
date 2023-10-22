@@ -23,7 +23,7 @@ interface Props {
   };
 }
 
-const Handles = ({ entity }: Props) => {
+const Handles = ({ entity }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
   const authentication = useAuthentication();
 

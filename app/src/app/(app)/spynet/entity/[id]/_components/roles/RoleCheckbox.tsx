@@ -17,7 +17,7 @@ interface FormValues {
   checked: boolean;
 }
 
-const RoleCheckbox = ({ entity, role, checked = false }: Props) => {
+const RoleCheckbox = ({ entity, role, checked = false }: Readonly<Props>) => {
   const { register, watch } = useForm<FormValues>({
     defaultValues: {
       checked,

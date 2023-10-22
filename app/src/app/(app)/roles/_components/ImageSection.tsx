@@ -15,7 +15,7 @@ interface Props {
   role: Role;
 }
 
-const ImageSection = ({ className, role }: Props) => {
+const ImageSection = ({ className, role }: Readonly<Props>) => {
   const { setFile, upload, setUpload } = useUpload();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);

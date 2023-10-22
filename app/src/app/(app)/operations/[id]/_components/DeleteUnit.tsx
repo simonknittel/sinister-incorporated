@@ -10,7 +10,7 @@ interface Props {
   unit: OperationUnit;
 }
 
-const DeleteUnit = ({ unit }: Props) => {
+const DeleteUnit = ({ unit }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,7 +19,7 @@ const DeleteUnit = ({ unit }: Props) => {
 
     try {
       const confirmation = window.confirm(
-        `Willst du wirklich die Unit löschen?`
+        `Willst du wirklich die Unit löschen?`,
       );
 
       if (!confirmation) {

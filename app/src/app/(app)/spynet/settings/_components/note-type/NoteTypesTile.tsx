@@ -9,11 +9,11 @@ interface Props {
   className?: string;
 }
 
-const NoteTypesTile = async ({ className }: Props) => {
+const NoteTypesTile = async ({ className }: Readonly<Props>) => {
   const noteTypes = await prisma.noteType.findMany();
 
   const sortedNoteTypes = noteTypes.sort((a, b) =>
-    a.name.localeCompare(b.name)
+    a.name.localeCompare(b.name),
   );
 
   return (

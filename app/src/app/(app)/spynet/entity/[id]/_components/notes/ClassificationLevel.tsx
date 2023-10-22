@@ -14,7 +14,7 @@ interface Props {
   };
 }
 
-const ClassificationLevel = async ({ className, note }: Props) => {
+const ClassificationLevel = async ({ className, note }: Readonly<Props>) => {
   const allClassificationLevels = await getAllClassificationLevels();
   const { classificationLevelId } = getLatestNoteAttributes(note);
 
@@ -22,7 +22,7 @@ const ClassificationLevel = async ({ className, note }: Props) => {
     <p className={clsx(className, "flex gap-2 items-center")}>
       {allClassificationLevels.find(
         (classificationLevel) =>
-          classificationLevel.id === classificationLevelId?.value
+          classificationLevel.id === classificationLevelId?.value,
       )?.name || "Geheimhaltungsstufe Unbekannt"}
     </p>
   );

@@ -6,7 +6,7 @@ interface Props {
   date: Date | string;
 }
 
-const TimeAgoContainer = ({ date }: Props) => {
+const TimeAgoContainer = ({ date }: Readonly<Props>) => {
   return <TimeAgo date={date} />;
 };
 

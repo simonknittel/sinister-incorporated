@@ -20,7 +20,7 @@ export default function Modal({
   isOpen = false,
   children,
   onRequestClose,
-}: Props) {
+}: Readonly<Props>) {
   const router = useRouter();
   useHotkeys("esc", onRequestClose || (() => router.back()), undefined, [
     onRequestClose,
@@ -36,7 +36,7 @@ export default function Modal({
       <div
         className={clsx(
           "max-h-full max-w-full cursor-auto overflow-auto rounded bg-neutral-800 p-4 lg:p-8 text-neutral-50 relative",
-          className
+          className,
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -51,6 +51,6 @@ export default function Modal({
         </button>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }

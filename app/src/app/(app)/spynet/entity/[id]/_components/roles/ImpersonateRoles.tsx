@@ -9,7 +9,7 @@ interface Props {
   roles: Role[];
 }
 
-const ImpersonateRoles = ({ roles }: Props) => {
+const ImpersonateRoles = ({ roles }: Readonly<Props>) => {
   const router = useRouter();
 
   const handleClick = () => {

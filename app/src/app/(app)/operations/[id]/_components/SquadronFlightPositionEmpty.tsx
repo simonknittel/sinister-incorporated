@@ -40,7 +40,7 @@ interface FormValues {
   shipId: string;
 }
 
-const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
+const SquadronFlightPositionEmpty = ({ type, unit }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
@@ -79,7 +79,7 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
             shipId: data.shipId,
             operationUnitId: unit.id,
           }),
-        }
+        },
       );
 
       if (response.ok) {
@@ -103,7 +103,7 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
     .sort((a, b) => a.user.name!.localeCompare(b.user.name!));
 
   const memberShips = allOperationMembers?.filter(
-    (member) => member.status === "confirmed"
+    (member) => member.status === "confirmed",
   );
 
   return (
@@ -179,8 +179,8 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Props) => {
                 {member.user.ships
                   .sort((a, b) =>
                     (a.name || a.variant.name).localeCompare(
-                      b.name || b.variant.name
-                    )
+                      b.name || b.variant.name,
+                    ),
                   )
                   .map((ship) => (
                     <option key={ship.id} value={ship.id}>

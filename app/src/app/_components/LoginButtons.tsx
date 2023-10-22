@@ -10,7 +10,7 @@ interface Props {
   activeProviders: LiteralUnion<BuiltInProviderType>[];
 }
 
-const LoginButtons = ({ activeProviders }: Props) => {
+const LoginButtons = ({ activeProviders }: Readonly<Props>) => {
   const [isLoggingIn, setIsLoggingIn] = useState<string | null>(null);
 
   const handleClick = async (provider: LiteralUnion<BuiltInProviderType>) => {

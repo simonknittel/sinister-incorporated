@@ -23,7 +23,7 @@ interface Props {
   };
 }
 
-const TeamspeakIds = ({ entity }: Props) => {
+const TeamspeakIds = ({ entity }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
   const authentication = useAuthentication();
 

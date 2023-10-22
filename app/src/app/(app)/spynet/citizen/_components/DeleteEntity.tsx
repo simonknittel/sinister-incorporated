@@ -11,7 +11,7 @@ interface Props {
   entity: Entity;
 }
 
-const DeleteEntity = ({ entity }: Props) => {
+const DeleteEntity = ({ entity }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,7 +20,7 @@ const DeleteEntity = ({ entity }: Props) => {
 
     try {
       const confirmation = window.confirm(
-        `Willst du diesen Citizen komplett löschen?`
+        `Willst du diesen Citizen komplett löschen?`,
       );
 
       if (!confirmation) {

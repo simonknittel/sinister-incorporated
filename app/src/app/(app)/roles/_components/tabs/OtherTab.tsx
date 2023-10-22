@@ -11,7 +11,7 @@ interface Props {
   roles: Role[];
 }
 
-const OtherTab = ({ roles }: Props) => {
+const OtherTab = ({ roles }: Readonly<Props>) => {
   const { register } = useFormContext<FormValues>();
 
   return (

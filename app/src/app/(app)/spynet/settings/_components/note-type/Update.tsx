@@ -19,7 +19,7 @@ interface Props {
   noteType: NoteType;
 }
 
-const Update = ({ className, noteType }: Props) => {
+const Update = ({ className, noteType }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();

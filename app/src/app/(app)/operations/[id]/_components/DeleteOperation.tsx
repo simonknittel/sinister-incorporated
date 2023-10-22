@@ -10,7 +10,7 @@ interface Props {
   operation: Operation;
 }
 
-const DeleteOperation = ({ operation }: Props) => {
+const DeleteOperation = ({ operation }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,7 +19,7 @@ const DeleteOperation = ({ operation }: Props) => {
 
     try {
       const confirmation = window.confirm(
-        `Willst du wirklich die gesamte Operation löschen?`
+        `Willst du wirklich die gesamte Operation löschen?`,
       );
 
       if (!confirmation) {

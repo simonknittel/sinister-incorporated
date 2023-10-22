@@ -15,7 +15,7 @@ interface Props {
   entity: Entity;
 }
 
-const AddNoteSA = ({ entity }: Props) => {
+const AddNoteSA = ({ entity }: Readonly<Props>) => {
   async function addNote(formData: FormData) {
     "use server";
 

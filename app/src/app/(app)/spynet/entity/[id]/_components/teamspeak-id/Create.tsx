@@ -16,7 +16,7 @@ interface FormValues {
   content: string;
 }
 
-const Create = ({ entity }: Props) => {
+const Create = ({ entity }: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);

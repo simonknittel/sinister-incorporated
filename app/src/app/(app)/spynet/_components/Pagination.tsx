@@ -7,7 +7,11 @@ interface Props {
   searchParams: URLSearchParams;
 }
 
-const Pagination = ({ totalPages, currentPage, searchParams }: Props) => {
+const Pagination = ({
+  totalPages,
+  currentPage,
+  searchParams,
+}: Readonly<Props>) => {
   const prevSearchParams = new URLSearchParams(searchParams);
   prevSearchParams.set("page", (currentPage - 1).toString());
 

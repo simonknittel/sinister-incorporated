@@ -11,7 +11,7 @@ interface Props {
   entity: Entity;
 }
 
-const DeleteEntity = ({ entity }: Props) => {
+const DeleteEntity = ({ entity }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 

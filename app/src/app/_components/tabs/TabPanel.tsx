@@ -9,7 +9,7 @@ interface Props {
   id: string;
 }
 
-const TabPanel = ({ children, id }: Props) => {
+const TabPanel = ({ children, id }: Readonly<Props>) => {
   const { activeTab } = useTabsContext();
 
   // if (activeTab !== id) return null; // TODO: This will make forms with tabs (permissions) unusable since some of the inputs won't get initialized.

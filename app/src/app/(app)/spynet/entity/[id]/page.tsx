@@ -62,8 +62,8 @@ export async function generateMetadata({
         log.type === "handle" &&
         log.attributes.find(
           (attribute) =>
-            attribute.key === "confirmed" && attribute.value === "confirmed"
-        )
+            attribute.key === "confirmed" && attribute.value === "confirmed",
+        ),
     )?.[0];
 
     return {
@@ -84,7 +84,7 @@ interface Props {
   params: Params;
 }
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params }: Readonly<Props>) {
   const authentication = await authenticatePage();
   authentication.authorizePage([
     {
@@ -101,8 +101,8 @@ export default async function Page({ params }: Props) {
       log.type === "handle" &&
       log.attributes.find(
         (attribute) =>
-          attribute.key === "confirmed" && attribute.value === "confirmed"
-      )
+          attribute.key === "confirmed" && attribute.value === "confirmed",
+      ),
   )?.[0];
 
   return (

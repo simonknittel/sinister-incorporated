@@ -13,6 +13,7 @@ import { RiSpaceShipFill, RiSwordFill } from "react-icons/ri";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import Account from "./Account";
+import { Chip } from "./Chip";
 
 const Sidebar = async () => {
   const authentication = await authenticate();
@@ -66,12 +67,7 @@ const Sidebar = async () => {
                   >
                     <RiSwordFill />
                     Operationen
-                    <span
-                      className="rounded bg-neutral-700 py-1 px-2 text-sm text-neutral-50"
-                      title="Proof of Concept"
-                    >
-                      PoC
-                    </span>
+                    <Chip title="Proof of Concept">PoC</Chip>
                   </Link>
                 </li>
               )}
@@ -185,12 +181,7 @@ const Sidebar = async () => {
                                 Suche
                               </span>
 
-                              <span
-                                className="rounded bg-neutral-700 py-1 px-2 text-sm text-neutral-50"
-                                title="Deaktiviert"
-                              >
-                                Deaktiviert
-                              </span>
+                              <Chip>Deaktiviert</Chip>
                             </span>
                           ) : (
                             <Link

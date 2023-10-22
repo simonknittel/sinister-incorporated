@@ -34,7 +34,7 @@ type Row = {
 
 const columnHelper = createColumnHelper<Row>();
 
-const Table = ({ users }: Props) => {
+const Table = ({ users }: Readonly<Props>) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "user_name", desc: false },
   ]);

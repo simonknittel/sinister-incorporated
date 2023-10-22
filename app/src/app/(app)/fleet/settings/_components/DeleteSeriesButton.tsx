@@ -10,7 +10,7 @@ interface Props {
   series: Series;
 }
 
-const DeleteSeriesButton = ({ series }: Props) => {
+const DeleteSeriesButton = ({ series }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,7 +19,7 @@ const DeleteSeriesButton = ({ series }: Props) => {
 
     try {
       const confirmation = window.confirm(
-        `You are about to remove "${series.name}". Do you want to continue?`
+        `You are about to remove "${series.name}". Do you want to continue?`,
       );
 
       if (!confirmation) {

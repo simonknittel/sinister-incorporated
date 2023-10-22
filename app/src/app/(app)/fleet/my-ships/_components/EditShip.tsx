@@ -20,7 +20,7 @@ interface Props {
   };
 }
 
-const EditShip = ({ ship }: Props) => {
+const EditShip = ({ ship }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

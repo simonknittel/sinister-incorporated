@@ -11,7 +11,7 @@ interface Props {
   role: Role;
 }
 
-const Delete = ({ role }: Props) => {
+const Delete = ({ role }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 

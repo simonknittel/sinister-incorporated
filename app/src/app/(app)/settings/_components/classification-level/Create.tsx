@@ -17,7 +17,7 @@ interface Props {
   className?: string;
 }
 
-const Create = ({ className }: Props) => {
+const Create = ({ className }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();

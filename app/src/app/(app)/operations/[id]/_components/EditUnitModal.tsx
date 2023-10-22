@@ -19,7 +19,7 @@ interface FormValues {
   title: string;
 }
 
-const EditUnitModal = ({ isOpen, onRequestClose, unit }: Props) => {
+const EditUnitModal = ({ isOpen, onRequestClose, unit }: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit } = useForm<FormValues>({
     defaultValues: {

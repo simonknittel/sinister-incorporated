@@ -9,7 +9,7 @@ interface Props {
   operation: Operation;
 }
 
-const EditOperation = ({ operation }: Props) => {
+const EditOperation = ({ operation }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

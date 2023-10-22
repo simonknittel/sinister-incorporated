@@ -18,14 +18,14 @@ interface Props {
   };
 }
 
-const Event = async ({ className, event }: Props) => {
+const Event = async ({ className, event }: Readonly<Props>) => {
   const authentication = await authenticate();
 
   return (
     <article
       className={clsx(
         className,
-        "block bg-neutral-900 rounded overflow-hidden"
+        "block bg-neutral-900 rounded overflow-hidden",
       )}
     >
       {event.image && (

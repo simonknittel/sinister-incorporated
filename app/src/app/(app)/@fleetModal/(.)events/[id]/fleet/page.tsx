@@ -173,7 +173,7 @@ interface Props {
   params: Params;
 }
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params }: Readonly<Props>) {
   const { date, data: event } = await getEvent(params.id);
   const users = await getEventUsers(params.id);
 

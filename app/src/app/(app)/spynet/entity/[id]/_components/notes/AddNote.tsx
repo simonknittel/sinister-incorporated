@@ -24,7 +24,11 @@ interface FormValues {
   classificationLevelId: ClassificationLevel["id"];
 }
 
-const AddNote = ({ entityId, noteTypeId, classificationLevels }: Props) => {
+const AddNote = ({
+  entityId,
+  noteTypeId,
+  classificationLevels,
+}: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);

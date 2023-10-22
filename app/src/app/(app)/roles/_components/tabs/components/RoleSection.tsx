@@ -10,7 +10,7 @@ interface Props {
   roles: Role[];
 }
 
-const RoleSection = ({ className, roles }: Props) => {
+const RoleSection = ({ className, roles }: Readonly<Props>) => {
   const { register, setValue, getValues } = useFormContext<FormValues>();
   const rules = useWatch<FormValues, "otherRole">({ name: "otherRole" });
 
@@ -31,7 +31,7 @@ const RoleSection = ({ className, roles }: Props) => {
 
     setValue(
       "otherRole",
-      rules.filter((rule, index) => index !== indexToRemove)
+      rules.filter((rule, index) => index !== indexToRemove),
     );
   };
 

@@ -19,7 +19,11 @@ interface FormValues {
   title: string;
 }
 
-const CreateUnitModal = ({ isOpen, onRequestClose, parentUnit }: Props) => {
+const CreateUnitModal = ({
+  isOpen,
+  onRequestClose,
+  parentUnit,
+}: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);

@@ -12,7 +12,7 @@ interface Props {
   operation: Operation;
 }
 
-const ConfirmParticipation = ({ operation }: Props) => {
+const ConfirmParticipation = ({ operation }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();

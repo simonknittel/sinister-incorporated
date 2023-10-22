@@ -12,7 +12,7 @@ interface Props {
   classificationLevels: ClassificationLevel[];
 }
 
-const NoteSection = ({ className, noteTypes, classificationLevels }: Props) => {
+const NoteSection = ({ className, noteTypes, classificationLevels }: Readonly<Props>) => {
   const { register, setValue, getValues } = useFormContext<FormValues>();
   const rules = useWatch<FormValues, "note">({ name: "note" });
 

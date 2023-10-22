@@ -6,7 +6,7 @@ interface Props {
   children: ReactNode;
 }
 
-export default function RootLayout({ children }: Props) {
+export default function RootLayout({ children }: Readonly<Props>) {
   return (
     <html className="h-full" lang="de">
       <body className="h-full bg-neutral-800 text-neutral-50">

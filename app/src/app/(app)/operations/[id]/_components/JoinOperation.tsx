@@ -11,7 +11,7 @@ interface Props {
   operation: Operation;
 }
 
-const JoinOperation = ({ operation }: Props) => {
+const JoinOperation = ({ operation }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 

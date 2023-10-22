@@ -5,7 +5,7 @@ interface Props {
   hit: CitizenHit;
 }
 
-const Citizen = ({ hit }: Props) => {
+const Citizen = ({ hit }: Readonly<Props>) => {
   return (
     <Link href={`/spynet/entity/${hit.objectID}`}>
       {hit.handles.length > 0 ? (

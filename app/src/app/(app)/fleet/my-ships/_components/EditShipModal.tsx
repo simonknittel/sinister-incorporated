@@ -30,7 +30,7 @@ interface FormValues {
   name: string;
 }
 
-const EditShipModal = ({ isOpen, onRequestClose, ship }: Props) => {
+const EditShipModal = ({ isOpen, onRequestClose, ship }: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit } = useForm<FormValues>({
     defaultValues: {

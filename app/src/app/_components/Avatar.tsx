@@ -20,7 +20,7 @@ interface Props {
   size?: number;
 }
 
-const Avatar = ({ className, name, image, size }: Props) => {
+const Avatar = ({ className, name, image, size }: Readonly<Props>) => {
   return (
     <span
       className={clsx(
@@ -29,7 +29,7 @@ const Avatar = ({ className, name, image, size }: Props) => {
         {
           "text-sm": size === 32,
           "text-2xl": !size || size === 64,
-        }
+        },
       )}
       style={{
         backgroundColor: image

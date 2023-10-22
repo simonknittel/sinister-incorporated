@@ -36,7 +36,7 @@ const UpdateNoteModal = ({
   note,
   noteTypes = [],
   classificationLevels = [],
-}: Props) => {
+}: Readonly<Props>) => {
   const { noteTypeId, classificationLevelId } = getLatestNoteAttributes(note);
 
   const [isOpen, setIsOpen] = useState(false);

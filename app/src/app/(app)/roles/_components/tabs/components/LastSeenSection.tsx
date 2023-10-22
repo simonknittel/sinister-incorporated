@@ -7,7 +7,7 @@ interface Props {
   className?: string;
 }
 
-const LastSeenSection = ({ className }: Props) => {
+const LastSeenSection = ({ className }: Readonly<Props>) => {
   const { register } = useFormContext<FormValues>();
 
   return (

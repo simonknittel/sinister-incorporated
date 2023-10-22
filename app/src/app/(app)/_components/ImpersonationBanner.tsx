@@ -7,7 +7,7 @@ interface Props {
   roles: Role[];
 }
 
-const ImpersonationBanner = ({ roles }: Props) => {
+const ImpersonationBanner = ({ roles }: Readonly<Props>) => {
   const router = useRouter();
 
   const handleClick = () => {

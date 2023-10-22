@@ -16,7 +16,7 @@ interface Props {
   noteTypes: NoteType[];
 }
 
-const RoleFilter = ({ noteTypes }: Props) => {
+const RoleFilter = ({ noteTypes }: Readonly<Props>) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

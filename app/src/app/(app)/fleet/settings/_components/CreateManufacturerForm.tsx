@@ -17,7 +17,7 @@ interface FormValues {
   name: Manufacturer["name"];
 }
 
-const CreateManufacturerForm = ({ className }: Props) => {
+const CreateManufacturerForm = ({ className }: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);

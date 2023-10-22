@@ -10,7 +10,7 @@ interface Props {
   manufacturers: Manufacturer[];
 }
 
-const AddSeries = ({ manufacturers }: Props) => {
+const AddSeries = ({ manufacturers }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

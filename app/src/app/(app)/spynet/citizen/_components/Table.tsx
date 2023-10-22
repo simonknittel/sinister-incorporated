@@ -48,7 +48,7 @@ const Table = ({
   showUpdateRolesButton = false,
   showDeleteEntityButton = false,
   searchParams,
-}: Props) => {
+}: Readonly<Props>) => {
   const handleSearchParams = new URLSearchParams(searchParams);
   if (searchParams.get("sort") === "handle-asc") {
     handleSearchParams.set("sort", "handle-desc");

@@ -85,7 +85,7 @@ interface Props {
   params: Params;
 }
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params }: Readonly<Props>) {
   const authentication = await authenticatePage();
   authentication.authorizePage([
     {
@@ -98,10 +98,10 @@ export default async function Page({ params }: Props) {
   if (!operation) notFound();
 
   const confirmedMembers = operation.members.filter(
-    (member) => member.status === "confirmed"
+    (member) => member.status === "confirmed",
   );
   const unconfirmedMembers = operation.members.filter(
-    (member) => member.status === "pending"
+    (member) => member.status === "pending",
   );
 
   return (

@@ -7,7 +7,7 @@ interface Props {
   className?: string;
 }
 
-const TeamspeakIdSection = ({ className }: Props) => {
+const TeamspeakIdSection = ({ className }: Readonly<Props>) => {
   const { register } = useFormContext<FormValues>();
 
   return (

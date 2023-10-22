@@ -9,7 +9,10 @@ interface Props {
   entityLog: EntityLog;
 }
 
-const ConfirmationState = ({ confirmationState, entityLog }: Props) => {
+const ConfirmationState = ({
+  confirmationState,
+  entityLog,
+}: Readonly<Props>) => {
   switch (confirmationState) {
     case "confirmed":
       return (

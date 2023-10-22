@@ -19,7 +19,7 @@ interface Props {
   entity: Entity;
 }
 
-const Notes = async ({ entity }: Props) => {
+const Notes = async ({ entity }: Readonly<Props>) => {
   const authentication = await authenticate();
 
   const [notes, allNoteTypes] = await prisma.$transaction([
@@ -42,18 +42,18 @@ const Notes = async ({ entity }: Props) => {
   ]);
 
   const sortedNotes = notes.sort(
-    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
   );
 
   const tabs: Record<
     NoteType["id"],
-    | (
-        | (EntityLog & { attributes: EntityLogAttribute[] })
-        | {
-            id: EntityLog["id"];
-            redacted: true;
-          }
-      )[]
+    (
+      | (EntityLog & { attributes: EntityLogAttribute[] })
+      | {
+          id: EntityLog["id"];
+          redacted: true;
+        }
+    )[]
   > = {};
 
   for (const note of sortedNotes) {
