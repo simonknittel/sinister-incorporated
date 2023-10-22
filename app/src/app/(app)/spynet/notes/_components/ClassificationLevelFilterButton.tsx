@@ -1,7 +1,7 @@
 "use client";
 
 import { type ClassificationLevel } from "@prisma/client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { FaChevronDown, FaSave } from "react-icons/fa";
@@ -44,6 +44,7 @@ interface InnerProps {
 
 const Inner = ({ classificationLevels, onRequestClose }: InnerProps) => {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const { register, handleSubmit } = useForm<FormValues>({
@@ -73,7 +74,7 @@ const Inner = ({ classificationLevels, onRequestClose }: InnerProps) => {
 
     newSearchParams.set("filters", filters.join(","));
 
-    router.push(`/spynet/notes?${newSearchParams.toString()}`);
+    router.push(`${pathname}?${newSearchParams.toString()}`);
 
     onRequestClose?.();
   };

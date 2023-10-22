@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { FaChevronDown, FaSave } from "react-icons/fa";
@@ -33,6 +33,7 @@ interface InnerProps {
 
 const Inner = ({ onRequestClose }: InnerProps) => {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const { register, handleSubmit } = useForm<FormValues>({
@@ -41,7 +42,7 @@ const Inner = ({ onRequestClose }: InnerProps) => {
         (filter) => {
           if (filter.startsWith("unknown-")) return true;
           return false;
-        }
+        },
       ),
     },
   });
@@ -62,7 +63,7 @@ const Inner = ({ onRequestClose }: InnerProps) => {
 
     newSearchParams.set("filters", filters.join(","));
 
-    router.push(`/spynet/citizen?${newSearchParams.toString()}`);
+    router.push(`${pathname}?${newSearchParams.toString()}`);
 
     onRequestClose?.();
   };
