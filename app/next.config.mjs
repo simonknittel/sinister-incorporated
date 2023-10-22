@@ -25,9 +25,35 @@ const config = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
-  // experimental: {
-  //   serverActions: true, // https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions
-  // },
+  poweredByHeader: false,
+
+  headers: async () => [
+    {
+      source: "/:path*",
+      headers: [
+        {
+          key: "X-DNS-Prefetch-Control",
+          value: "on",
+        },
+        {
+          key: "X-Frame-Options",
+          value: "SAMEORIGIN",
+        },
+        {
+          key: "Permissions-Policy",
+          value: "camera=(), microphone=(), geolocation=()",
+        },
+        {
+          key: "X-Content-Type-Options",
+          value: "nosniff",
+        },
+        {
+          key: "Referrer-Policy",
+          value: "origin-when-cross-origin",
+        },
+      ],
+    },
+  ],
 };
 
 export default config;
