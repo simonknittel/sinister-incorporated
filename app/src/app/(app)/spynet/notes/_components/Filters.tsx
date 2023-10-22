@@ -1,7 +1,7 @@
 import { type NoteType } from "@prisma/client";
-import ClassificationLevelFilterButton from "./ClassificationLevelFilterButton";
-import ConfirmationStateFilterButton from "./ConfirmationStateFilterButton";
-import NoteTypeFilterButton from "./NoteTypeFilterButton";
+import ClassificationLevelFilter from "./ClassificationLevelFilter";
+import ConfirmationStateFilter from "./ConfirmationStateFilter";
+import NoteTypeFilterButton from "./NoteTypeFilter";
 import { type Row } from "./Table";
 
 interface Props {
@@ -41,13 +41,13 @@ const Filters = ({ rows }: Props) => {
       )}
 
       {classificationLevels.size > 0 && (
-        <ClassificationLevelFilterButton
+        <ClassificationLevelFilter
           classificationLevels={Array.from(classificationLevels.values())}
         />
       )}
 
       {confirmationStates.size > 0 && (
-        <ConfirmationStateFilterButton
+        <ConfirmationStateFilter
           confirmationStates={Array.from(confirmationStates)}
         />
       )}
