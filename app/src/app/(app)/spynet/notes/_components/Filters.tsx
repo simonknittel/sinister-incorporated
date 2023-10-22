@@ -1,7 +1,8 @@
 import { type NoteType } from "@prisma/client";
+import { Filter } from "../../_components/Filter";
 import ClassificationLevelFilter from "./ClassificationLevelFilter";
 import ConfirmationStateFilter from "./ConfirmationStateFilter";
-import NoteTypeFilterButton from "./NoteTypeFilter";
+import NoteTypeFilter from "./NoteTypeFilter";
 import { type Row } from "./Table";
 
 interface Props {
@@ -37,19 +38,25 @@ const Filters = ({ rows }: Props) => {
       <p>Filter</p>
 
       {noteTypes.size > 0 && (
-        <NoteTypeFilterButton noteTypes={Array.from(noteTypes.values())} />
+        <Filter name="Notizarten">
+          <NoteTypeFilter noteTypes={Array.from(noteTypes.values())} />
+        </Filter>
       )}
 
       {classificationLevels.size > 0 && (
-        <ClassificationLevelFilter
-          classificationLevels={Array.from(classificationLevels.values())}
-        />
+        <Filter name="Geheimhaltungsstufen">
+          <ClassificationLevelFilter
+            classificationLevels={Array.from(classificationLevels.values())}
+          />
+        </Filter>
       )}
 
       {confirmationStates.size > 0 && (
-        <ConfirmationStateFilter
-          confirmationStates={Array.from(confirmationStates)}
-        />
+        <Filter name="Bestätigungsstatus">
+          <ConfirmationStateFilter
+            confirmationStates={Array.from(confirmationStates)}
+          />
+        </Filter>
       )}
     </div>
   );

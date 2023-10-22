@@ -1,4 +1,5 @@
 import getVisibleRoles from "~/app/_lib/getVisibleRoles";
+import { Filter } from "../../_components/Filter";
 import RoleFilter from "./RoleFilter";
 import UnknownsFilter from "./UnknownsFilter";
 
@@ -9,9 +10,15 @@ const Filters = async () => {
     <div className="flex gap-4 items-center">
       <p>Filter</p>
 
-      <UnknownsFilter />
+      <Filter name="Unbekannt">
+        <UnknownsFilter />
+      </Filter>
 
-      {visibleRoles.length > 0 && <RoleFilter roles={visibleRoles} />}
+      {visibleRoles.length > 0 && (
+        <Filter name="Rollen">
+          <RoleFilter roles={visibleRoles} />
+        </Filter>
+      )}
     </div>
   );
 };
