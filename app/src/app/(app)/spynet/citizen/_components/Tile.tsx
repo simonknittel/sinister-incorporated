@@ -4,6 +4,15 @@ import getAssignedAndVisibleRoles from "~/app/_lib/getAssignedAndVisibleRoles";
 import { getLatestConfirmedCitizenAttributes } from "~/app/_lib/getLatestConfirmedCitizenAttributes";
 import { prisma } from "~/server/db";
 import Pagination from "../../_components/Pagination";
+import {
+  PER_PAGE,
+  getCurrentPageFromSearchParams,
+  limitRows,
+} from "../../_lib/pagination";
+import {
+  sortAscWithAndNullLast,
+  sortDescAndNullLast,
+} from "../../_lib/sorting";
 import Filters from "./Filters";
 import Table from "./Table";
 
@@ -15,7 +24,6 @@ const Tile = async ({ searchParams }: Props) => {
   const authentication = await authenticate();
 
   const currentPage = getCurrentPageFromSearchParams(searchParams);
-  const perPage = 50;
 
   const entities = await prisma.entity.findMany({
     include: {
@@ -101,33 +109,36 @@ const Tile = async ({ searchParams }: Props) => {
   const sortedRows = filteredRows.sort((a, b) => {
     switch (searchParams.get("sort")) {
       case "handle-asc":
-        return sortAsc(a.handle, b.handle);
+        return sortAscWithAndNullLast(a.handle, b.handle);
       case "handle-desc":
-        return sortDesc(a.handle, b.handle);
+        return sortDescAndNullLast(a.handle, b.handle);
 
       case "last-seen-at-asc":
-        return sortAsc(a.lastSeenAt?.getTime(), b.lastSeenAt?.getTime());
+        return sortAscWithAndNullLast(
+          a.lastSeenAt?.getTime(),
+          b.lastSeenAt?.getTime(),
+        );
       case "last-seen-at-desc":
-        return sortDesc(a.lastSeenAt?.getTime(), b.lastSeenAt?.getTime());
+        return sortDescAndNullLast(
+          a.lastSeenAt?.getTime(),
+          b.lastSeenAt?.getTime(),
+        );
 
       case "created-at-asc":
-        return sortAsc(
+        return sortAscWithAndNullLast(
           a.entity.createdAt.getTime(),
           b.entity.createdAt.getTime(),
         );
 
       default:
-        return sortDesc(
+        return sortDescAndNullLast(
           a.entity.createdAt.getTime(),
           b.entity.createdAt.getTime(),
         );
     }
   });
 
-  const limitedRows = sortedRows.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage,
-  );
+  const limitedRows = limitRows(sortedRows, currentPage);
 
   const assignableRoles = await getAssignableRoles();
 
@@ -181,7 +192,7 @@ const Tile = async ({ searchParams }: Props) => {
 
       <div className="flex justify-center mt-8">
         <Pagination
-          totalPages={Math.ceil(entities.length / perPage)}
+          totalPages={Math.ceil(entities.length / PER_PAGE)}
           currentPage={currentPage}
           searchParams={searchParams}
         />
@@ -191,44 +202,3 @@ const Tile = async ({ searchParams }: Props) => {
 };
 
 export default Tile;
-
-function getCurrentPageFromSearchParams(searchParams: URLSearchParams) {
-  const currentPage = parseInt(searchParams.get("page") || "1");
-  return isNaN(currentPage) ? 1 : currentPage;
-}
-
-function sortAsc(a?: string | number | null, b?: string | number | null) {
-  if (!a && !b) {
-    return 0;
-  } else if (!a) {
-    return 1;
-  } else if (!b) {
-    return -1;
-  } else {
-    if (typeof a === "number" && typeof b === "number") {
-      return a - b;
-    } else if (typeof a === "string" && typeof b === "string") {
-      return a.localeCompare(b);
-    }
-
-    return 0;
-  }
-}
-
-function sortDesc(a?: string | number | null, b?: string | number | null) {
-  if (!a && !b) {
-    return 0;
-  } else if (!a) {
-    return 1;
-  } else if (!b) {
-    return -1;
-  } else {
-    if (typeof a === "number" && typeof b === "number") {
-      return b - a;
-    } else if (typeof a === "string" && typeof b === "string") {
-      return b.localeCompare(a);
-    }
-
-    return 0;
-  }
-}

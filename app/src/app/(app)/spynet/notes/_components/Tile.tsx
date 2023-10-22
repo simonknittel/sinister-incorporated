@@ -5,6 +5,15 @@ import { getLatestConfirmedCitizenHandle } from "~/app/_lib/getLatestConfirmedCi
 import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
 import { prisma } from "~/server/db";
 import Pagination from "../../_components/Pagination";
+import {
+  PER_PAGE,
+  getCurrentPageFromSearchParams,
+  limitRows,
+} from "../../_lib/pagination";
+import {
+  sortAscWithAndNullLast,
+  sortDescAndNullLast,
+} from "../../_lib/sorting";
 import isAllowedToRead from "../../entity/[id]/_components/notes/lib/isAllowedToRead";
 import Filters from "./Filters";
 import Table, { type Row } from "./Table";
@@ -17,7 +26,6 @@ const Tile = async ({ searchParams }: Props) => {
   const authentication = await authenticate();
 
   const currentPage = getCurrentPageFromSearchParams(searchParams);
-  const perPage = 50;
 
   const [entityLogs, noteTypes, classificationLevels] = await Promise.all([
     prisma.entityLog.findMany({
@@ -174,28 +182,31 @@ const Tile = async ({ searchParams }: Props) => {
   const sortedRows = filteredRows.sort((a, b) => {
     switch (searchParams.get("sort")) {
       case "confirmed-at-asc":
-        return sortAsc(a.confirmedAt?.getTime(), b.confirmedAt?.getTime());
+        return sortAscWithAndNullLast(
+          a.confirmedAt?.getTime(),
+          b.confirmedAt?.getTime(),
+        );
       case "confirmed-at-desc":
-        return sortDesc(a.confirmedAt?.getTime(), b.confirmedAt?.getTime());
+        return sortDescAndNullLast(
+          a.confirmedAt?.getTime(),
+          b.confirmedAt?.getTime(),
+        );
 
       case "created-at-asc":
-        return sortAsc(
+        return sortAscWithAndNullLast(
           a.entityLog.createdAt.getTime(),
           b.entityLog.createdAt.getTime(),
         );
 
       default:
-        return sortDesc(
+        return sortDescAndNullLast(
           a.entityLog.createdAt.getTime(),
           b.entityLog.createdAt.getTime(),
         );
     }
   });
 
-  const limitedRows = sortedRows.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage,
-  );
+  const limitedRows = limitRows(sortedRows, currentPage);
 
   return (
     <section className="p-8 pb-10 bg-neutral-900 mt-4 rounded overflow-auto">
@@ -207,7 +218,7 @@ const Tile = async ({ searchParams }: Props) => {
 
       <div className="flex justify-center mt-8">
         <Pagination
-          totalPages={Math.ceil(entityLogs.length / perPage)}
+          totalPages={Math.ceil(entityLogs.length / PER_PAGE)}
           currentPage={currentPage}
           searchParams={searchParams}
         />
@@ -217,44 +228,3 @@ const Tile = async ({ searchParams }: Props) => {
 };
 
 export default Tile;
-
-function getCurrentPageFromSearchParams(searchParams: URLSearchParams) {
-  const currentPage = parseInt(searchParams.get("page") || "1");
-  return isNaN(currentPage) ? 1 : currentPage;
-}
-
-function sortAsc(a?: string | number | null, b?: string | number | null) {
-  if (!a && !b) {
-    return 0;
-  } else if (!a) {
-    return 1;
-  } else if (!b) {
-    return -1;
-  } else {
-    if (typeof a === "number" && typeof b === "number") {
-      return a - b;
-    } else if (typeof a === "string" && typeof b === "string") {
-      return a.localeCompare(b);
-    }
-
-    return 0;
-  }
-}
-
-function sortDesc(a?: string | number | null, b?: string | number | null) {
-  if (!a && !b) {
-    return 0;
-  } else if (!a) {
-    return 1;
-  } else if (!b) {
-    return -1;
-  } else {
-    if (typeof a === "number" && typeof b === "number") {
-      return b - a;
-    } else if (typeof a === "string" && typeof b === "string") {
-      return b.localeCompare(a);
-    }
-
-    return 0;
-  }
-}
