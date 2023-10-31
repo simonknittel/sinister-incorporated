@@ -114,7 +114,7 @@ model EntityLog {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    type    String // citizen: handle, note, joined-an-org, left-an-org, spectrum-id, citizen-alias, discord-id, role-added, role-removed ...; organization: note, ...
+    type    String // TODO: types.ts
     content String? @db.Text
 
     submittedById String
@@ -126,7 +126,7 @@ model EntityLogAttribute {
     id          String    @id @default(cuid())
     eneityLogId String
     entityLog   EntityLog @relation(fields: [eneityLogId], references: [id], onDelete: Cascade)
-    key         String // confirmed, classificationLevelId, noteTypeId, ...
+    key         String // TODO: types.ts
     value       String
     createdAt   DateTime  @default(now())
     createdById String
@@ -167,15 +167,15 @@ model Permission {
     id         String                @id @default(cuid())
     roleId     String
     role       Role                  @relation(fields: [roleId], references: [id], onDelete: Cascade)
-    resource   String // note, operation, role, ...
-    operation  String // *, create, read, delete, confirm, ...
+    resource   String // TODO: PermissionSet.ts
+    operation  String // TODO: PermissionSet.ts
     attributes PermissionAttribute[]
 }
 
 model PermissionAttribute {
     permissionId String
     permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-    key          String // roleId, classificationLevelId, noteTypeId...
+    key          String // TODO: PermissionSet.ts
     value        String
 
     @@id([permissionId, key])
