@@ -22,7 +22,7 @@ const Pagination = ({
     <div className="flex h-11">
       {currentPage > 1 ? (
         <Link
-          href={`/spynet/citizen?${prevSearchParams.toString()}`}
+          href={`?${prevSearchParams.toString()}`}
           className="rounded-l border border-sinister-red-500 hover:border-sinister-red-300 text-sinister-red-500 hover:text-sinister-red-300 flex items-center w-11 justify-center"
           prefetch={false}
         >
@@ -40,7 +40,7 @@ const Pagination = ({
 
       {currentPage + 1 <= totalPages ? (
         <Link
-          href={`/spynet/citizen?${nextSearchparams.toString()}`}
+          href={`?${nextSearchparams.toString()}`}
           className="rounded-r border border-sinister-red-500 hover:border-sinister-red-300 text-sinister-red-500 hover:text-sinister-red-300 flex items-center w-11 justify-center"
           prefetch={false}
         >

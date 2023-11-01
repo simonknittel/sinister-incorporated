@@ -1,14 +1,18 @@
-// @ts-check
+/**
+ * Usage:
+ * ```bashrc
+ * npm install --global ts-node
+ *
+ * ts-node --esm --skipProject ./algolia/spynet-entities-full-index.ts
+ *
+ * DATABASE_URL='mysql://************@/:************@aws.connect.psdb.cloud/db?sslaccept=strict' ts-node --esm --skipProject ./algolia/spynet-entities-full-index.ts
+ * ```
+ */
 
-const { PrismaClient } = require("@prisma/client");
-const algoliasearch = require("algoliasearch");
+import algoliasearch from "algoliasearch";
+import { prisma } from "../prisma";
 
-const prisma = new PrismaClient({ log: ["query", "error", "warn"] });
-
-const client = algoliasearch(
-  "",
-  ""
-);
+const client = algoliasearch("", "");
 
 const index = client.initIndex("spynet_entities");
 
@@ -23,7 +27,7 @@ async function main() {
               attributes: {
                 some: {
                   key: "confirmed",
-                  value: "true",
+                  value: "confirmed",
                 },
               },
             },
@@ -43,7 +47,7 @@ async function main() {
     return {
       objectID: entity.id,
       type: "citizen",
-      spectrumId: entity.logs.find((log) => log.type === "spectrum-id")
+      spectrumId: entity.logs.find((log) => log.type === "spectrum-id")!
         .content,
       handles: entity.logs
         .filter((log) => log.type === "handle")
@@ -51,7 +55,7 @@ async function main() {
     };
   });
 
-  index.saveObjects(objects);
+  await index.saveObjects(objects);
 }
 
 void main();
