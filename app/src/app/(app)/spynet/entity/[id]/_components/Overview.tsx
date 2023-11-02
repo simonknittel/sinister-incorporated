@@ -8,9 +8,8 @@ import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { getLatestConfirmedCitizenAttributes } from "~/app/_lib/getLatestConfirmedCitizenAttributes";
-import DiscordIds from "./discord-id/DiscordIds";
+import { OverviewSection } from "./generic-log-type/OverviewSection";
 import Handles from "./handle/Handles";
-import TeamspeakIds from "./teamspeak-id/TeamspeakIds";
 
 interface Props {
   entity: Entity & {
@@ -25,7 +24,7 @@ const Overview = async ({ entity }: Readonly<Props>) => {
   const authentication = await authenticate();
   if (!authentication) return null;
 
-  const { handle, spectrumId, discordId, teamspeakId, lastSeenAt } =
+  const { handle, spectrumId, lastSeenAt } =
     await getLatestConfirmedCitizenAttributes(entity);
 
   return (
@@ -44,6 +43,20 @@ const Overview = async ({ entity }: Readonly<Props>) => {
         <dt className="text-neutral-500 mt-4">Spectrum ID</dt>
         <dd>{spectrumId}</dd>
 
+        {authentication.authorize([
+          {
+            resource: "citizenId",
+            operation: "read",
+          },
+        ]) && (
+          <OverviewSection
+            type="citizen-id"
+            permissionResource="citizenId"
+            name="Citizen ID"
+            entity={entity}
+          />
+        )}
+
         <dt className="text-neutral-500 mt-4">Handle</dt>
         <dd className="flex gap-4 items-center">
           {handle || <span className="italic">Unbekannt</span>}
@@ -53,21 +66,31 @@ const Overview = async ({ entity }: Readonly<Props>) => {
 
         {authentication.authorize([
           {
+            resource: "communityMoniker",
+            operation: "read",
+          },
+        ]) && (
+          <OverviewSection
+            type="communityMoniker"
+            permissionResource="communityMoniker"
+            name="Community Moniker"
+            entity={entity}
+          />
+        )}
+
+        {authentication.authorize([
+          {
             resource: "discordId",
             operation: "read",
           },
         ]) && (
-          <>
-            <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
-              <FaDiscord />
-              Discord ID
-            </dt>
-            <dd className="flex gap-4 items-center">
-              {discordId || <span className="italic">Unbekannt</span>}
-
-              <DiscordIds entity={entity} />
-            </dd>
-          </>
+          <OverviewSection
+            type="discordId"
+            permissionResource="discordId"
+            icon={<FaDiscord />}
+            name="Discord ID"
+            entity={entity}
+          />
         )}
 
         {authentication.authorize([
@@ -76,16 +99,13 @@ const Overview = async ({ entity }: Readonly<Props>) => {
             operation: "read",
           },
         ]) && (
-          <>
-            <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
-              <FaTeamspeak /> TeamSpeak ID
-            </dt>
-            <dd className="flex gap-4 items-center">
-              {teamspeakId || <span className="italic">Unbekannt</span>}
-
-              <TeamspeakIds entity={entity} />
-            </dd>
-          </>
+          <OverviewSection
+            type="teamspeakId"
+            permissionResource="teamspeakId"
+            icon={<FaTeamspeak />}
+            name="TeamSpeak ID"
+            entity={entity}
+          />
         )}
 
         {lastSeenAt && (

@@ -1,9 +1,11 @@
+import { type EntityLog } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { updateObject } from "~/app/api/_lib/algolia";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
+import { type EntityLogType } from "~/types";
 
 interface Params {
   id: string;
@@ -72,6 +74,22 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           },
         ]);
         break;
+      case "citizen-id":
+        authentication.authorizeApi([
+          {
+            resource: "citizenId",
+            operation: "create",
+          },
+        ]);
+        break;
+      case "communityMoniker":
+        authentication.authorizeApi([
+          {
+            resource: "communityMoniker",
+            operation: "create",
+          },
+        ]);
+        break;
       case "note":
         authentication.authorizeApi([
           {
@@ -99,6 +117,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       },
     });
 
+    // Update username
     if (["handle", "discordId"].includes(entityLog.type)) {
       const entityLogs = await prisma.entityLog.findMany({
         where: {
@@ -119,10 +138,10 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       });
 
       const latestConfirmedHandleLog = entityLogs.find(
-        (log) => log.type === "handle"
+        (log) => log.type === "handle",
       );
       const latestConfirmedDiscordIdLog = entityLogs.find(
-        (log) => log.type === "discordId"
+        (log) => log.type === "discordId",
       );
 
       if (latestConfirmedDiscordIdLog) {
@@ -151,25 +170,31 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Update Algolia
      */
-    if (entityLog.type === "handle") {
-      const handleLogs = await prisma.entityLog.findMany({
-        where: {
-          type: "handle",
-          entityId: entityLog.entityId,
-          attributes: {
-            some: {
-              key: "confirmed",
-              value: "confirmed",
-            },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
-      await updateObject(entityLog.entityId, {
-        handles: handleLogs.map((log) => log.content),
-      });
+    switch (entityLog.type) {
+      case "handle":
+        await updateAlgoliaWithGenericLogType(
+          entityLog.type,
+          "handles",
+          entityLog,
+        );
+        break;
+      case "citizen-id":
+        await updateAlgoliaWithGenericLogType(
+          entityLog.type,
+          "citizenIds",
+          entityLog,
+        );
+        break;
+      case "communityMoniker":
+        await updateAlgoliaWithGenericLogType(
+          entityLog.type,
+          "communityMonikers",
+          entityLog,
+        );
+        break;
+
+      default:
+        break;
     }
 
     /**
@@ -182,4 +207,30 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
      */
     return errorHandler(error);
   }
+}
+
+async function updateAlgoliaWithGenericLogType(
+  type: EntityLogType,
+  algoliaKey: string,
+  log: EntityLog,
+) {
+  const logs = await prisma.entityLog.findMany({
+    where: {
+      type,
+      entityId: log.entityId,
+      attributes: {
+        some: {
+          key: "confirmed",
+          value: "confirmed",
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  await updateObject(log.entityId, {
+    [algoliaKey]: logs.map((log) => log.content),
+  });
 }

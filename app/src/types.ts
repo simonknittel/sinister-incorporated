@@ -14,7 +14,7 @@ export type EntityLogType =
   | "teamspeakId"
   | "role-added"
   | "role-removed"
-  | "citizenId"
+  | "citizen-id"
   | "communityMoniker";
 
 // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)

@@ -23,8 +23,17 @@ const Citizen = ({ hit }: Readonly<Props>) => {
       )}
 
       <span className="block text-sm text-neutral-500 mt-2">
-        <p>Sinister ID: {hit.objectID}</p>
+        {hit.communityMonikers.length > 0 && (
+          <p>Community Monikers: {hit.communityMonikers.join(", ")}</p>
+        )}
+
         <p>Spectrum ID: {hit.spectrumId}</p>
+
+        {hit.citizenIds.length > 0 && (
+          <p>Citizen IDs: {hit.citizenIds.join(", ")}</p>
+        )}
+
+        <p>Sinister ID: {hit.objectID}</p>
       </span>
     </Link>
   );

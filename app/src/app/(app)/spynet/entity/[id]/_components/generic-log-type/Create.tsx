@@ -7,8 +7,10 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import Button from "~/app/_components/Button";
+import { type EntityLogType } from "~/types";
 
 interface Props {
+  type: EntityLogType;
   entity: Entity;
 }
 
@@ -16,7 +18,7 @@ interface FormValues {
   content: string;
 }
 
-const Create = ({ entity }: Readonly<Props>) => {
+export const Create = ({ type, entity }: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +31,7 @@ const Create = ({ entity }: Readonly<Props>) => {
       const response = await fetch(`/api/spynet/entity/${entity.id}/log`, {
         method: "POST",
         body: JSON.stringify({
-          type: "discordId",
+          type: type,
           content: data.content,
         }),
       });
@@ -56,7 +58,7 @@ const Create = ({ entity }: Readonly<Props>) => {
         id={inputId}
         {...register("content", { required: true })}
         autoFocus
-        placeholder="Discord ID speichern ..."
+        placeholder="Neuer Eintrag ..."
       />
 
       <Button
@@ -70,5 +72,3 @@ const Create = ({ entity }: Readonly<Props>) => {
     </form>
   );
 };
-
-export default Create;

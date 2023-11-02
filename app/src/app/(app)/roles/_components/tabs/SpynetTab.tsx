@@ -5,7 +5,9 @@ import { useFormContext } from "react-hook-form";
 import YesNoCheckbox from "~/app/_components/YesNoCheckbox";
 import TabPanel from "~/app/_components/tabs/TabPanel";
 import { type FormValues } from "~/app/_lib/auth/FormValues";
+import { CitizenIdSection } from "./components/CitizenIdSection";
 import CitizenSection from "./components/CitizenSection";
+import { CommunityMonikerSection } from "./components/CommunityMonikerSection";
 import DiscordIdSection from "./components/DiscordIdSection";
 import HandleSection from "./components/HandleSection";
 import LastSeenSection from "./components/LastSeenSection";
@@ -31,6 +33,10 @@ const SpynetTab = ({ noteTypes, classificationLevels }: Readonly<Props>) => {
       <CitizenSection className="mt-4" />
 
       <HandleSection className="mt-4" />
+
+      <CommunityMonikerSection className="mt-4" />
+
+      <CitizenIdSection className="mt-4" />
 
       <DiscordIdSection className="mt-4" />
 

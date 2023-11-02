@@ -10,11 +10,13 @@ export interface CitizenHit {
   objectID: string;
   spectrumId: string;
   handles: string[];
+  citizenIds: string[];
+  communityMonikers: string[];
 }
 
 const searchClient = algoliasearch(
   env.NEXT_PUBLIC_ALGOLIA_APP_ID,
-  env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
+  env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY,
 );
 
 function debouncePromise(fn, time) {
@@ -75,7 +77,7 @@ const Search = () => {
             "hover:!text-sinister-red-500 focus:!text-sinister-red-500",
           loadingIndicator: "[&>svg]:!text-sinister-red-500",
         }}
-        placeholder="Handle, Spectrum ID oder Sinister ID ..."
+        placeholder="Handle, Spectrum ID, Citizen ID, Community Moniker oder Sinister ID ..."
         // renderNoResults={() => "Kein Ergebnisse"} // TODO
       />
     </div>

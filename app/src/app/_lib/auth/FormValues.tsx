@@ -58,6 +58,18 @@ export interface FormValues {
     delete: boolean;
     confirm: boolean;
   };
+  citizenId: {
+    create: boolean;
+    read: boolean;
+    delete: boolean;
+    confirm: boolean;
+  };
+  communityMoniker: {
+    create: boolean;
+    read: boolean;
+    delete: boolean;
+    confirm: boolean;
+  };
   citizen: {
     create: boolean;
     read: boolean;

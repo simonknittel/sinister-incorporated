@@ -16,7 +16,7 @@ const postBodySchema = z.object({
         z.literal("assign"),
         z.literal("dismiss"),
       ]),
-    })
+    }),
   ),
   classificationLevel: z.object({
     manage: z.boolean(),
@@ -65,6 +65,18 @@ const postBodySchema = z.object({
     delete: z.boolean(),
     confirm: z.boolean(),
   }),
+  citizenId: z.object({
+    create: z.boolean(),
+    read: z.boolean(),
+    delete: z.boolean(),
+    confirm: z.boolean(),
+  }),
+  communityMoniker: z.object({
+    create: z.boolean(),
+    read: z.boolean(),
+    delete: z.boolean(),
+    confirm: z.boolean(),
+  }),
   citizen: z.object({
     create: z.boolean(),
     read: z.boolean(),
@@ -85,7 +97,7 @@ const postBodySchema = z.object({
           z.literal("confirm"),
           z.literal("readRedacted"),
         ]),
-      })
+      }),
     )
     .optional(),
 });

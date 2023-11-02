@@ -18,7 +18,9 @@ export type PermissionSet = {
     | "handle"
     | "discordId"
     | "note"
-    | "teamspeakId";
+    | "teamspeakId"
+    | "citizenId"
+    | "communityMoniker";
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   operation:
     | "create"

@@ -9,19 +9,23 @@ import clsx from "clsx";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
+import { type PermissionSet } from "~/app/_lib/auth/PermissionSet";
 import useAuthentication from "~/app/_lib/auth/useAuthentication";
+import { type EntityLogType } from "~/types";
 import ConfirmLog from "../ConfirmLog";
 import styles from "../ConfirmationGradient.module.css";
 import DeleteLog from "../DeleteLog";
 
 interface Props {
+  type: EntityLogType;
+  permissionResource: PermissionSet["resource"];
   log: EntityLog & {
     attributes: (EntityLogAttribute & { createdBy: User })[];
     submittedBy: User;
   };
 }
 
-const SingleTeamspeakId = ({ log }: Readonly<Props>) => {
+export const HistoryEntry = ({ permissionResource, log }: Readonly<Props>) => {
   const authentication = useAuthentication();
 
   const confirmed = log.attributes.find(
@@ -51,7 +55,7 @@ const SingleTeamspeakId = ({ log }: Readonly<Props>) => {
             {authentication &&
               authentication.authorize([
                 {
-                  resource: "teamspeakId",
+                  resource: permissionResource,
                   operation: "confirm",
                 },
               ]) && <ConfirmLog log={log} />}
@@ -104,7 +108,7 @@ const SingleTeamspeakId = ({ log }: Readonly<Props>) => {
             {authentication &&
               authentication.authorize([
                 {
-                  resource: "teamspeakId",
+                  resource: permissionResource,
                   operation: "delete",
                 },
               ]) && <DeleteLog log={log} />}
@@ -116,5 +120,3 @@ const SingleTeamspeakId = ({ log }: Readonly<Props>) => {
     </li>
   );
 };
-
-export default SingleTeamspeakId;

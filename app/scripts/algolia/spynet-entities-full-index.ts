@@ -3,20 +3,23 @@
  * ```bashrc
  * npm install --global ts-node
  *
- * ts-node --esm --skipProject ./algolia/spynet-entities-full-index.ts
- *
- * DATABASE_URL='mysql://************@/:************@aws.connect.psdb.cloud/db?sslaccept=strict' ts-node --esm --skipProject ./algolia/spynet-entities-full-index.ts
+ * DATABASE_URL='mysql://************@/:************@aws.connect.psdb.cloud/db?sslaccept=strict' ALGOLIA_APP_ID='' ALGOLIA_ADMIN_API_KEY='' ts-node --esm --skipProject ./algolia/spynet-entities-full-index.ts
  * ```
  */
 
 import algoliasearch from "algoliasearch";
 import { prisma } from "../prisma";
 
-const client = algoliasearch("", "");
+const client = algoliasearch(
+  process.env.ALGOLIA_APP_ID!,
+  process.env.ALGOLIA_ADMIN_API_KEY!,
+);
 
 const index = client.initIndex("spynet_entities");
 
 async function main() {
+  await index.clearObjects();
+
   const entities = await prisma.entity.findMany({
     include: {
       logs: {
@@ -33,6 +36,24 @@ async function main() {
             },
             {
               type: "spectrum-id",
+            },
+            {
+              type: "citizen-id",
+              attributes: {
+                some: {
+                  key: "confirmed",
+                  value: "confirmed",
+                },
+              },
+            },
+            {
+              type: "communityMoniker",
+              attributes: {
+                some: {
+                  key: "confirmed",
+                  value: "confirmed",
+                },
+              },
             },
           ],
         },
@@ -51,6 +72,12 @@ async function main() {
         .content,
       handles: entity.logs
         .filter((log) => log.type === "handle")
+        .map((log) => log.content),
+      citizenIds: entity.logs
+        .filter((log) => log.type === "citizen-id")
+        .map((log) => log.content),
+      communityMonikers: entity.logs
+        .filter((log) => log.type === "communityMoniker")
         .map((log) => log.content),
     };
   });

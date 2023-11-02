@@ -30,6 +30,14 @@ const postBodySchema = z.union([
     content: z.string().trim().min(1).max(255),
   }),
   z.object({
+    type: z.literal("citizen-id"),
+    content: z.string().trim().min(1).max(255),
+  }),
+  z.object({
+    type: z.literal("communityMoniker"),
+    content: z.string().trim().min(1).max(255),
+  }),
+  z.object({
     type: z.literal("role-added"),
     content: z.string().trim().cuid2(),
   }),
@@ -99,6 +107,22 @@ export async function POST(request: Request, { params }: { params: Params }) {
         authentication.authorizeApi([
           {
             resource: "discordId",
+            operation: "create",
+          },
+        ]);
+        break;
+      case "citizen-id":
+        authentication.authorizeApi([
+          {
+            resource: "citizenId",
+            operation: "create",
+          },
+        ]);
+        break;
+      case "communityMoniker":
+        authentication.authorizeApi([
+          {
+            resource: "communityMoniker",
             operation: "create",
           },
         ]);

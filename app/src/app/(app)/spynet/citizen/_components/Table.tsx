@@ -8,11 +8,10 @@ import {
 import Link from "next/link";
 import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
 import Actions from "~/app/_components/Actions";
-import DiscordIds from "../../entity/[id]/_components/discord-id/DiscordIds";
+import { HistoryModal } from "../../entity/[id]/_components/generic-log-type/HistoryModal";
 import Handles from "../../entity/[id]/_components/handle/Handles";
 import AddRoles from "../../entity/[id]/_components/roles/AddRoles";
 import SingleRole from "../../entity/[id]/_components/roles/SingleRole";
-import TeamspeakIds from "../../entity/[id]/_components/teamspeak-id/TeamspeakIds";
 import DeleteEntity from "./DeleteEntity";
 
 type Row = {
@@ -185,7 +184,14 @@ const Table = ({
                   {row.discordId || (
                     <span className="text-neutral-500 italic">Unbekannt</span>
                   )}
-                  <DiscordIds entity={row.entity} />
+                  <HistoryModal
+                    type="discordId"
+                    permissionResource="discordId"
+                    entity={row.entity}
+                    logs={row.entity.logs.filter(
+                      (log) => log.type === "discordId",
+                    )}
+                  />
                 </td>
               )}
 
@@ -194,7 +200,14 @@ const Table = ({
                   {row.teamspeakId || (
                     <span className="text-neutral-500 italic">Unbekannt</span>
                   )}
-                  <TeamspeakIds entity={row.entity} />
+                  <HistoryModal
+                    type="teamspeakId"
+                    permissionResource="teamspeakId"
+                    entity={row.entity}
+                    logs={row.entity.logs.filter(
+                      (log) => log.type === "teamspeakId",
+                    )}
+                  />
                 </td>
               )}
 

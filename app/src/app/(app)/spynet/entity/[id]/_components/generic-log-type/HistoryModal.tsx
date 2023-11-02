@@ -10,42 +10,30 @@ import { useState } from "react";
 import { FaHistory } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
+import { type PermissionSet } from "~/app/_lib/auth/PermissionSet";
 import useAuthentication from "~/app/_lib/auth/useAuthentication";
-import Create from "./Create";
-import SingleTeamspeakId from "./SingleTeamspeakId";
+import { type EntityLogType } from "~/types";
+import { Create } from "./Create";
+import { HistoryEntry } from "./HistoryEntry";
 
 interface Props {
-  entity: Entity & {
-    logs: (EntityLog & {
-      attributes: (EntityLogAttribute & { createdBy: User })[];
-      submittedBy: User;
-    })[];
-  };
+  type: EntityLogType;
+  permissionResource: PermissionSet["resource"];
+  entity: Entity;
+  logs: (EntityLog & {
+    attributes: (EntityLogAttribute & { createdBy: User })[];
+    submittedBy: User;
+  })[];
 }
 
-const TeamspeakIds = ({ entity }: Readonly<Props>) => {
+export const HistoryModal = ({
+  type,
+  permissionResource,
+  entity,
+  logs,
+}: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
   const authentication = useAuthentication();
-
-  // TODO: Do this server-side
-  const teamspeakIds = entity.logs
-    .filter((log) => log.type === "teamspeakId")
-    .filter((log) => {
-      const confirmed = log.attributes
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-        .find((attribute) => attribute.key === "confirmed");
-
-      if (confirmed && confirmed.value === "confirmed") return true;
-      if (!authentication) return false;
-
-      return authentication.authorize([
-        {
-          resource: "teamspeakId",
-          operation: "confirm",
-        },
-      ]);
-    })
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return (
     <>
@@ -67,15 +55,20 @@ const TeamspeakIds = ({ entity }: Readonly<Props>) => {
         {authentication &&
           authentication.authorize([
             {
-              resource: "teamspeakId",
+              resource: permissionResource,
               operation: "create",
             },
-          ]) && <Create entity={entity} />}
+          ]) && <Create type={type} entity={entity} />}
 
-        {teamspeakIds.length > 0 ? (
+        {logs.length > 0 ? (
           <ul className="mt-8 flex flex-col gap-4">
-            {teamspeakIds.map((teamspeakId) => (
-              <SingleTeamspeakId key={teamspeakId.id} log={teamspeakId} />
+            {logs.map((discordId) => (
+              <HistoryEntry
+                key={discordId.id}
+                type={type}
+                permissionResource={permissionResource}
+                log={discordId}
+              />
             ))}
           </ul>
         ) : (
@@ -87,5 +80,3 @@ const TeamspeakIds = ({ entity }: Readonly<Props>) => {
     </>
   );
 };
-
-export default TeamspeakIds;
