@@ -5,7 +5,6 @@ import {
   type Role,
   type User,
 } from "@prisma/client";
-import clsx from "clsx";
 import Link from "next/link";
 import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
 import Actions from "~/app/_components/Actions";
@@ -35,6 +34,8 @@ type Row = {
 interface Props {
   rows: Row[];
   assignableRoles: Role[];
+  showDiscordIdColumn?: boolean;
+  showTeamspeakIdColumn?: boolean;
   showLastSeenAtColumn?: boolean;
   showUpdateRolesButton?: boolean;
   showDeleteEntityButton?: boolean;
@@ -44,6 +45,8 @@ interface Props {
 const Table = ({
   rows,
   assignableRoles,
+  showDiscordIdColumn = false,
+  showTeamspeakIdColumn = false,
   showLastSeenAtColumn = false,
   showUpdateRolesButton = false,
   showDeleteEntityButton = false,
@@ -87,22 +90,23 @@ const Table = ({
     lastSeenAtSearchParams.set("sort", "last-seen-at-desc");
   }
 
+  let columnCount = 4;
+  if (showDiscordIdColumn) columnCount++;
+  if (showTeamspeakIdColumn) columnCount++;
+  if (showLastSeenAtColumn) columnCount++;
+
   return (
     <table className="w-full min-w-[1600px]">
       <thead>
         <tr
-          className={clsx(
-            "grid items-center gap-4 text-left text-neutral-500",
-            {
-              "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px]":
-                showLastSeenAtColumn,
-              "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_44px]": !showLastSeenAtColumn,
-            }
-          )}
+          className="grid items-center gap-4 text-left text-neutral-500"
+          style={{
+            gridTemplateColumns: `repeat(${columnCount}, 1fr) 44px`, // Tailwind CSS can't detect dynamic CSS classes. Therefore we are using an inline style here.
+          }}
         >
           <th>
             <Link
-              href={`/spynet/citizen?${handleSearchParams.toString()}`}
+              href={`?${handleSearchParams.toString()}`}
               prefetch={false}
               className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
             >
@@ -114,15 +118,15 @@ const Table = ({
 
           <th>Spectrum ID</th>
 
-          <th>Discord ID</th>
+          {showDiscordIdColumn && <th>Discord ID</th>}
 
-          <th>TeamSpeak ID</th>
+          {showTeamspeakIdColumn && <th>TeamSpeak ID</th>}
 
           <th>Rollen</th>
 
           <th>
             <Link
-              href={`/spynet/citizen?${createdAtSearchParams.toString()}`}
+              href={`?${createdAtSearchParams.toString()}`}
               prefetch={false}
               className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
             >
@@ -138,7 +142,7 @@ const Table = ({
           {showLastSeenAtColumn && (
             <th>
               <Link
-                href={`/spynet/citizen?${lastSeenAtSearchParams.toString()}`}
+                href={`?${lastSeenAtSearchParams.toString()}`}
                 prefetch={false}
                 className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
               >
@@ -160,15 +164,10 @@ const Table = ({
           return (
             <tr
               key={row.entity.id}
-              className={clsx(
-                "grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2",
-                {
-                  "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px]":
-                    showLastSeenAtColumn,
-                  "grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_44px]":
-                    !showLastSeenAtColumn,
-                }
-              )}
+              className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
+              style={{
+                gridTemplateColumns: `repeat(${columnCount}, 1fr) 44px`, // Tailwind CSS can't detect dynamic CSS classes. Therefore we are using an inline style here.
+              }}
             >
               <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
                 {row.handle || (
@@ -181,19 +180,23 @@ const Table = ({
                 {row.spectrumId}
               </td>
 
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                {row.discordId || (
-                  <span className="text-neutral-500 italic">Unbekannt</span>
-                )}
-                <DiscordIds entity={row.entity} />
-              </td>
+              {showDiscordIdColumn && (
+                <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+                  {row.discordId || (
+                    <span className="text-neutral-500 italic">Unbekannt</span>
+                  )}
+                  <DiscordIds entity={row.entity} />
+                </td>
+              )}
 
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                {row.teamspeakId || (
-                  <span className="text-neutral-500 italic">Unbekannt</span>
-                )}
-                <TeamspeakIds entity={row.entity} />
-              </td>
+              {showTeamspeakIdColumn && (
+                <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+                  {row.teamspeakId || (
+                    <span className="text-neutral-500 italic">Unbekannt</span>
+                  )}
+                  <TeamspeakIds entity={row.entity} />
+                </td>
+              )}
 
               <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
                 {row.roles.length > 0 ? (

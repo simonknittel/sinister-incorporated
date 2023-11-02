@@ -1,9 +1,13 @@
+import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getVisibleRoles from "~/app/_lib/getVisibleRoles";
 import { Filter } from "../../_components/Filter";
 import RoleFilter from "./RoleFilter";
 import UnknownsFilter from "./UnknownsFilter";
 
 const Filters = async () => {
+  const authentication = await authenticate();
+  if (!authentication) return null;
+
   const visibleRoles = await getVisibleRoles();
 
   return (
@@ -11,7 +15,20 @@ const Filters = async () => {
       <p>Filter</p>
 
       <Filter name="Unbekannt">
-        <UnknownsFilter />
+        <UnknownsFilter
+          showDiscordId={authentication.authorize([
+            {
+              resource: "discordId",
+              operation: "read",
+            },
+          ])}
+          showTeamspeakId={authentication.authorize([
+            {
+              resource: "teamspeakId",
+              operation: "read",
+            },
+          ])}
+        />
       </Filter>
 
       {visibleRoles.length > 0 && (

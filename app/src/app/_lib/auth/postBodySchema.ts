@@ -55,11 +55,13 @@ const postBodySchema = z.object({
   }),
   teamspeakId: z.object({
     create: z.boolean(),
+    read: z.boolean(),
     delete: z.boolean(),
     confirm: z.boolean(),
   }),
   discordId: z.object({
     create: z.boolean(),
+    read: z.boolean(),
     delete: z.boolean(),
     confirm: z.boolean(),
   }),

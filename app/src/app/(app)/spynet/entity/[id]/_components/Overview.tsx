@@ -6,6 +6,7 @@ import {
 } from "@prisma/client";
 import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
+import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { getLatestConfirmedCitizenAttributes } from "~/app/_lib/getLatestConfirmedCitizenAttributes";
 import DiscordIds from "./discord-id/DiscordIds";
 import Handles from "./handle/Handles";
@@ -21,6 +22,9 @@ interface Props {
 }
 
 const Overview = async ({ entity }: Readonly<Props>) => {
+  const authentication = await authenticate();
+  if (!authentication) return null;
+
   const { handle, spectrumId, discordId, teamspeakId, lastSeenAt } =
     await getLatestConfirmedCitizenAttributes(entity);
 
@@ -47,24 +51,42 @@ const Overview = async ({ entity }: Readonly<Props>) => {
           <Handles entity={entity} />
         </dd>
 
-        <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
-          <FaDiscord />
-          Discord ID
-        </dt>
-        <dd className="flex gap-4 items-center">
-          {discordId || <span className="italic">Unbekannt</span>}
+        {authentication.authorize([
+          {
+            resource: "discordId",
+            operation: "read",
+          },
+        ]) && (
+          <>
+            <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
+              <FaDiscord />
+              Discord ID
+            </dt>
+            <dd className="flex gap-4 items-center">
+              {discordId || <span className="italic">Unbekannt</span>}
 
-          <DiscordIds entity={entity} />
-        </dd>
+              <DiscordIds entity={entity} />
+            </dd>
+          </>
+        )}
 
-        <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
-          <FaTeamspeak /> TeamSpeak ID
-        </dt>
-        <dd className="flex gap-4 items-center">
-          {teamspeakId || <span className="italic">Unbekannt</span>}
+        {authentication.authorize([
+          {
+            resource: "teamspeakId",
+            operation: "read",
+          },
+        ]) && (
+          <>
+            <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
+              <FaTeamspeak /> TeamSpeak ID
+            </dt>
+            <dd className="flex gap-4 items-center">
+              {teamspeakId || <span className="italic">Unbekannt</span>}
 
-          <TeamspeakIds entity={entity} />
-        </dd>
+              <TeamspeakIds entity={entity} />
+            </dd>
+          </>
+        )}
 
         {lastSeenAt && (
           <>

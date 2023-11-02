@@ -22,6 +22,7 @@ interface Props {
 
 const Tile = async ({ searchParams }: Readonly<Props>) => {
   const authentication = await authenticate();
+  if (!authentication) return null;
 
   const currentPage = getCurrentPageFromSearchParams(searchParams);
 
@@ -142,38 +143,47 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
 
   const assignableRoles = await getAssignableRoles();
 
-  const showLastSeenAtColumn =
-    authentication &&
-    authentication.authorize([
-      {
-        resource: "lastSeen",
-        operation: "read",
-      },
-    ]);
+  const showLastSeenAtColumn = authentication.authorize([
+    {
+      resource: "lastSeen",
+      operation: "read",
+    },
+  ]);
+
+  const showTeamspeakIdAtColumn = authentication.authorize([
+    {
+      resource: "teamspeakId",
+      operation: "read",
+    },
+  ]);
+
+  const showDiscordIdAtColumn = authentication.authorize([
+    {
+      resource: "discordId",
+      operation: "read",
+    },
+  ]);
 
   const showUpdateRolesButton =
-    authentication &&
-    (authentication.authorize([
+    authentication.authorize([
       {
         resource: "otherRole",
         operation: "assign",
       },
     ]) ||
-      authentication.authorize([
-        {
-          resource: "otherRole",
-          operation: "dismiss",
-        },
-      ]));
-
-  const showDeleteEntityButton =
-    authentication &&
     authentication.authorize([
       {
-        resource: "citizen",
-        operation: "delete",
+        resource: "otherRole",
+        operation: "dismiss",
       },
     ]);
+
+  const showDeleteEntityButton = authentication.authorize([
+    {
+      resource: "citizen",
+      operation: "delete",
+    },
+  ]);
 
   return (
     <section className="p-8 pb-10 bg-neutral-900 mt-4 rounded overflow-auto">
@@ -184,6 +194,8 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
       <Table
         rows={limitedRows}
         assignableRoles={assignableRoles}
+        showDiscordIdColumn={showDiscordIdAtColumn}
+        showTeamspeakIdColumn={showTeamspeakIdAtColumn}
         showLastSeenAtColumn={showLastSeenAtColumn}
         showUpdateRolesButton={showUpdateRolesButton}
         showDeleteEntityButton={showDeleteEntityButton}
