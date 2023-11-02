@@ -59,7 +59,7 @@ const Table = ({ users }: Readonly<Props>) => {
         },
       }),
       columnHelper.accessor("user.id", {
-        header: "ID",
+        header: "Login ID",
         cell: (props) => props.getValue(),
       }),
       columnHelper.accessor("user.name", {
