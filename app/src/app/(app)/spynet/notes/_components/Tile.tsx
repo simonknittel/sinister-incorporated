@@ -218,7 +218,7 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
 
       <div className="flex justify-center mt-8">
         <Pagination
-          totalPages={Math.ceil(entityLogs.length / PER_PAGE)}
+          totalPages={Math.ceil(sortedRows.length / PER_PAGE)}
           currentPage={currentPage}
           searchParams={searchParams}
         />
