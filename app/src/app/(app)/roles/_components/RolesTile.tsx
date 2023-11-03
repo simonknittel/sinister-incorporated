@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import Image from "next/image";
+import Link from "next/link";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import Actions from "../../../_components/Actions";
@@ -64,13 +65,22 @@ const RolesTile = async ({ className }: Readonly<Props>) => {
           <div className="flex gap-4 items-center">
             <Actions>
               <Update role={role} />
+
               <Permissions
                 role={role}
                 noteTypes={noteTypes}
                 classificationLevels={classificationLevels}
                 allRoles={roles}
               />
+
               <Delete role={role} />
+
+              <Link
+                href={`/spynet/citizen?filters=role-${role.id}`}
+                className="flex items-center justify-center rounded uppercase h-8 gap-2 text-xs text-sinister-red-500 hover:bg-sinisterborder-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300"
+              >
+                Citizen mit dieser Rolle
+              </Link>
             </Actions>
           </div>
         </div>
