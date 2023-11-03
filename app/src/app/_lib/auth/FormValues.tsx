@@ -60,13 +60,11 @@ export interface FormValues {
   };
   citizenId: {
     create: boolean;
-    read: boolean;
     delete: boolean;
     confirm: boolean;
   };
   communityMoniker: {
     create: boolean;
-    read: boolean;
     delete: boolean;
     confirm: boolean;
   };

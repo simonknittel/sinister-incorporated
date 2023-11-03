@@ -43,19 +43,12 @@ const Overview = async ({ entity }: Readonly<Props>) => {
         <dt className="text-neutral-500 mt-4">Spectrum ID</dt>
         <dd>{spectrumId}</dd>
 
-        {authentication.authorize([
-          {
-            resource: "citizenId",
-            operation: "read",
-          },
-        ]) && (
-          <OverviewSection
-            type="citizen-id"
-            permissionResource="citizenId"
-            name="Citizen ID"
-            entity={entity}
-          />
-        )}
+        <OverviewSection
+          type="citizen-id"
+          permissionResource="citizenId"
+          name="Citizen ID"
+          entity={entity}
+        />
 
         <dt className="text-neutral-500 mt-4">Handle</dt>
         <dd className="flex gap-4 items-center">
@@ -64,19 +57,12 @@ const Overview = async ({ entity }: Readonly<Props>) => {
           <Handles entity={entity} />
         </dd>
 
-        {authentication.authorize([
-          {
-            resource: "communityMoniker",
-            operation: "read",
-          },
-        ]) && (
-          <OverviewSection
-            type="communityMoniker"
-            permissionResource="communityMoniker"
-            name="Community Moniker"
-            entity={entity}
-          />
-        )}
+        <OverviewSection
+          type="communityMoniker"
+          permissionResource="communityMoniker"
+          name="Community Moniker"
+          entity={entity}
+        />
 
         {authentication.authorize([
           {

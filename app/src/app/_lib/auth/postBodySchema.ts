@@ -67,13 +67,11 @@ const postBodySchema = z.object({
   }),
   citizenId: z.object({
     create: z.boolean(),
-    read: z.boolean(),
     delete: z.boolean(),
     confirm: z.boolean(),
   }),
   communityMoniker: z.object({
     create: z.boolean(),
-    read: z.boolean(),
     delete: z.boolean(),
     confirm: z.boolean(),
   }),

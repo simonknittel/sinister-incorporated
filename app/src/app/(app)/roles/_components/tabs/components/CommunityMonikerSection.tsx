@@ -14,15 +14,10 @@ export const CommunityMonikerSection = ({ className }: Readonly<Props>) => {
     <div className={clsx(className)}>
       <h4 className="font-bold">Community Monikers</h4>
 
-      <div className="border border-neutral-700 p-4 rounded mt-2 grid grid-cols-4">
+      <div className="border border-neutral-700 p-4 rounded mt-2 grid grid-cols-3">
         <div>
           <h5 className="font-bold mb-2">Erstellen</h5>
           <YesNoCheckbox register={register("communityMoniker.create")} />
-        </div>
-
-        <div>
-          <h5 className="font-bold mb-2">Einsehen</h5>
-          <YesNoCheckbox register={register("communityMoniker.read")} />
         </div>
 
         <div>
