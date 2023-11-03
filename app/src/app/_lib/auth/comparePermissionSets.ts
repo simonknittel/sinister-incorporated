@@ -5,18 +5,36 @@ import {
 
 export default function comparePermissionSets(
   requiredPermissionSets: PermissionSet[],
-  givenPermissionSets: PermissionSet[]
+  givenPermissionSets: PermissionSet[],
 ) {
   for (const requiredPermissionSet of requiredPermissionSets) {
-    const hasMatchingPermissionSet = givenPermissionSets.find(
-      (givenPermissionSet) => {
-        if (givenPermissionSet.resource !== requiredPermissionSet.resource)
-          return false;
+    const givenPermissionSetsForResource = givenPermissionSets.filter(
+      (givenPermissionSet) =>
+        givenPermissionSet.resource === requiredPermissionSet.resource,
+    );
 
-        if (
-          givenPermissionSet.operation !== requiredPermissionSet.operation &&
-          givenPermissionSet.operation !== "manage"
-        )
+    // Has negate operation
+    if (
+      givenPermissionSetsForResource.some(
+        (givenPermissionSet) => givenPermissionSet.operation === "negate",
+      )
+    )
+      return false;
+
+    // Has manage operation
+    if (
+      givenPermissionSetsForResource.some(
+        (givenPermissionSet) => givenPermissionSet.operation === "manage",
+      )
+    ) {
+      if (requiredPermissionSet.operation === "negate") return false;
+      return true;
+    }
+
+    // Has matching operation
+    if (
+      givenPermissionSetsForResource.some((givenPermissionSet) => {
+        if (givenPermissionSet.operation !== requiredPermissionSet.operation)
           return false;
 
         if (!requiredPermissionSet.attributes) return true;
@@ -25,24 +43,23 @@ export default function comparePermissionSets(
 
         const result = hasMatchingAttributes(
           requiredPermissionSet.attributes,
-          givenPermissionSet.attributes
+          givenPermissionSet.attributes,
         );
 
         if (!result) return false;
 
         return true;
-      }
-    );
+      })
+    )
+      return true;
 
-    if (!hasMatchingPermissionSet) return false;
-
-    return true;
+    return false;
   }
 }
 
 function hasMatchingAttributes(
   requiredAttributes: PermissionSetAttribute[],
-  givenAttributes: PermissionSetAttribute[]
+  givenAttributes: PermissionSetAttribute[],
 ) {
   for (const requiredAttribute of requiredAttributes) {
     if (typeof requiredAttribute.value === "boolean") {
@@ -51,7 +68,7 @@ function hasMatchingAttributes(
       const hasMatchingAttribute = givenAttributes.find(
         (givenAttribute) =>
           givenAttribute.key === requiredAttribute.key &&
-          givenAttribute.value === "true"
+          givenAttribute.value === "true",
       );
 
       if (hasMatchingAttribute) continue;
@@ -62,7 +79,7 @@ function hasMatchingAttributes(
         (givenAttribute) =>
           givenAttribute.key === requiredAttribute.key &&
           (givenAttribute.value === requiredAttribute.value ||
-            givenAttribute.value === "*")
+            givenAttribute.value === "*"),
       );
 
       if (hasMatchingAttribute) continue;

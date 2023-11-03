@@ -27,7 +27,13 @@ export default async function AppLayout({
         resource: "login",
         operation: "manage",
       },
-    ]) === false
+    ]) === false ||
+    authentication.authorize([
+      {
+        resource: "login",
+        operation: "negate",
+      },
+    ]) === true
   )
     redirect("/onboarding");
 

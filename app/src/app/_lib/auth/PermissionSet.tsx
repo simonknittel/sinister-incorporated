@@ -31,7 +31,8 @@ export type PermissionSet = {
     | "manage"
     | "confirm"
     | "assign"
-    | "dismiss";
+    | "dismiss"
+    | "negate";
   attributes?: PermissionSetAttribute[];
 };
 

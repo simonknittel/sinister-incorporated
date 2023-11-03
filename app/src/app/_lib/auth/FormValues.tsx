@@ -3,6 +3,7 @@
 export interface FormValues {
   login: {
     manage: boolean;
+    negate: boolean;
   };
   role: {
     manage: boolean;

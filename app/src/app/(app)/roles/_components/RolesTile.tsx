@@ -80,7 +80,7 @@ const RolesTile = async ({ className }: Readonly<Props>) => {
                 href={`/spynet/citizen?filters=role-${role.id}`}
                 className="flex items-center justify-center rounded uppercase h-8 gap-2 text-xs text-sinister-red-500 hover:bg-sinisterborder-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300"
               >
-                <FaTable />
+                <FaTable className="flex-none" />
                 Citizen mit dieser Rolle
               </Link>
             </Actions>

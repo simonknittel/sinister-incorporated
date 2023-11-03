@@ -50,7 +50,7 @@ export async function authenticateApi() {
 
 export function authorize(
   session?: Session | null,
-  requiredPermissionSets?: PermissionSet[] | null
+  requiredPermissionSets?: PermissionSet[] | null,
 ) {
   /**
    * Authenticate
@@ -60,18 +60,27 @@ export function authorize(
   /**
    * Authorize
    */
+  if (!requiredPermissionSets) return true;
+
   if (
     session.user.role === "admin" &&
     cookies().get("disableAdmin")?.value !== "disableAdmin"
-  )
-    return true;
+  ) {
+    if (
+      requiredPermissionSets.find(
+        (permissionSet) => permissionSet.operation === "negate",
+      )
+    )
+      return false;
 
-  if (!requiredPermissionSets) return true;
+    return true;
+  }
 
   const result = comparePermissionSets(
     requiredPermissionSets,
-    session.givenPermissionSets
+    session.givenPermissionSets,
   );
+  console.log(result);
 
   if (!result) return false;
 

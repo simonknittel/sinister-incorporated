@@ -3,6 +3,7 @@ import { z } from "zod";
 const postBodySchema = z.object({
   login: z.object({
     manage: z.boolean(),
+    negate: z.boolean(),
   }),
   role: z.object({
     manage: z.boolean(),
