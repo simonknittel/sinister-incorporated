@@ -17,17 +17,17 @@ export const CitizenIdSection = ({ className }: Readonly<Props>) => {
       <div className="border border-neutral-700 p-4 rounded mt-2 grid grid-cols-3">
         <div>
           <h5 className="font-bold mb-2">Erstellen</h5>
-          <YesNoCheckbox register={register("citizenId.create")} />
+          <YesNoCheckbox register={register("citizen-id.create")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Löschen</h5>
-          <YesNoCheckbox register={register("citizenId.delete")} />
+          <YesNoCheckbox register={register("citizen-id.delete")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Bestätigen</h5>
-          <YesNoCheckbox register={register("citizenId.confirm")} />
+          <YesNoCheckbox register={register("citizen-id.confirm")} />
         </div>
       </div>
     </div>

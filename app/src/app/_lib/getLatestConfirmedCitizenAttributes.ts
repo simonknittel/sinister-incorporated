@@ -20,7 +20,7 @@ export async function getLatestConfirmedCitizenAttributes(
 
   const discordId = entity.logs.filter(
     (log) =>
-      log.type === "discordId" &&
+      log.type === "discord-id" &&
       log.attributes.find(
         (attribute) =>
           attribute.key === "confirmed" && attribute.value === "confirmed",
@@ -29,7 +29,7 @@ export async function getLatestConfirmedCitizenAttributes(
 
   const teamspeakId = entity.logs.filter(
     (log) =>
-      log.type === "teamspeakId" &&
+      log.type === "teamspeak-id" &&
       log.attributes.find(
         (attribute) =>
           attribute.key === "confirmed" && attribute.value === "confirmed",
@@ -62,8 +62,8 @@ export async function getLatestConfirmedCitizenAttributes(
     id: entity.id,
     handle,
     spectrumId,
-    discordId,
-    teamspeakId,
+    "discord-id": discordId,
+    "teamspeak-id": teamspeakId,
     createdAt: entity.createdAt,
     lastSeenAt: account?.user.lastSeenAt || undefined,
   };

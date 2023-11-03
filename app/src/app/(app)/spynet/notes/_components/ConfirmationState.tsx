@@ -22,7 +22,7 @@ const ConfirmationState = ({
         </div>
       );
 
-    case "falseReport":
+    case "false-report":
       return (
         <div className="flex items-center gap-2">
           <BsExclamationOctagonFill className="grow-1 shrink-0" />

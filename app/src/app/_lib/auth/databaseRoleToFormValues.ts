@@ -4,17 +4,17 @@ import {
   type Role,
 } from "@prisma/client";
 import { groupBy } from "lodash";
-import { DefaultValues } from "react-hook-form";
-import { FormValues } from "./FormValues";
+import { type DefaultValues } from "react-hook-form";
+import { type FormValues } from "./FormValues";
 
 export default function databaseRoleToFormValues(
   role: Role & {
     permissions: (Permission & { attributes: PermissionAttribute[] })[];
-  }
+  },
 ) {
   const groupedByResource = groupBy(
     role.permissions,
-    (permission) => permission.resource
+    (permission) => permission.resource,
   );
 
   const defaultValues: DefaultValues<FormValues> = {
@@ -52,7 +52,7 @@ export default function databaseRoleToFormValues(
 }
 
 function getAttributes(
-  permission: Permission & { attributes: PermissionAttribute[] }
+  permission: Permission & { attributes: PermissionAttribute[] },
 ) {
   const attributes = {};
 

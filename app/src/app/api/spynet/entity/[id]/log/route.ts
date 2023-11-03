@@ -16,7 +16,7 @@ const postBodySchema = z.union([
     content: z.string().trim().min(1).max(255),
   }),
   z.object({
-    type: z.literal("teamspeakId"),
+    type: z.literal("teamspeak-id"),
     content: z.string().trim().min(1).max(255),
   }),
   z.object({
@@ -26,7 +26,7 @@ const postBodySchema = z.union([
     classificationLevelId: z.string().trim().cuid2(),
   }),
   z.object({
-    type: z.literal("discordId"),
+    type: z.literal("discord-id"),
     content: z.string().trim().min(1).max(255),
   }),
   z.object({
@@ -34,7 +34,7 @@ const postBodySchema = z.union([
     content: z.string().trim().min(1).max(255),
   }),
   z.object({
-    type: z.literal("communityMoniker"),
+    type: z.literal("community-moniker"),
     content: z.string().trim().min(1).max(255),
   }),
   z.object({
@@ -77,10 +77,10 @@ export async function POST(request: Request, { params }: { params: Params }) {
           },
         ]);
         break;
-      case "teamspeakId":
+      case "teamspeak-id":
         authentication.authorizeApi([
           {
-            resource: "teamspeakId",
+            resource: "teamspeak-id",
             operation: "create",
           },
         ]);
@@ -103,10 +103,10 @@ export async function POST(request: Request, { params }: { params: Params }) {
           },
         ]);
         break;
-      case "discordId":
+      case "discord-id":
         authentication.authorizeApi([
           {
-            resource: "discordId",
+            resource: "discord-id",
             operation: "create",
           },
         ]);
@@ -114,15 +114,15 @@ export async function POST(request: Request, { params }: { params: Params }) {
       case "citizen-id":
         authentication.authorizeApi([
           {
-            resource: "citizenId",
+            resource: "citizen-id",
             operation: "create",
           },
         ]);
         break;
-      case "communityMoniker":
+      case "community-moniker":
         authentication.authorizeApi([
           {
-            resource: "communityMoniker",
+            resource: "community-moniker",
             operation: "create",
           },
         ]);

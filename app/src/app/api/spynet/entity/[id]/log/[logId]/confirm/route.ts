@@ -18,7 +18,7 @@ const paramsSchema = z.object({
 });
 
 const patchBodySchema = z.object({
-  confirmed: z.union([z.literal("confirmed"), z.literal("falseReport")]),
+  confirmed: z.union([z.literal("confirmed"), z.literal("false-report")]),
 });
 
 export async function PATCH(request: Request, { params }: { params: Params }) {
@@ -58,18 +58,18 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           },
         ]);
         break;
-      case "teamspeakId":
+      case "teamspeak-id":
         authentication.authorizeApi([
           {
-            resource: "teamspeakId",
+            resource: "teamspeak-id",
             operation: "confirm",
           },
         ]);
         break;
-      case "discordId":
+      case "discord-id":
         authentication.authorizeApi([
           {
-            resource: "discordId",
+            resource: "discord-id",
             operation: "create",
           },
         ]);
@@ -77,15 +77,15 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       case "citizen-id":
         authentication.authorizeApi([
           {
-            resource: "citizenId",
+            resource: "citizen-id",
             operation: "create",
           },
         ]);
         break;
-      case "communityMoniker":
+      case "community-moniker":
         authentication.authorizeApi([
           {
-            resource: "communityMoniker",
+            resource: "community-moniker",
             operation: "create",
           },
         ]);
@@ -118,12 +118,12 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     });
 
     // Update username
-    if (["handle", "discordId"].includes(entityLog.type)) {
+    if (["handle", "discord-id"].includes(entityLog.type)) {
       const entityLogs = await prisma.entityLog.findMany({
         where: {
           entityId: entityLog.entityId,
           type: {
-            in: ["discordId", "handle"],
+            in: ["discord-id", "handle"],
           },
           attributes: {
             some: {
@@ -141,7 +141,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
         (log) => log.type === "handle",
       );
       const latestConfirmedDiscordIdLog = entityLogs.find(
-        (log) => log.type === "discordId",
+        (log) => log.type === "discord-id",
       );
 
       if (latestConfirmedDiscordIdLog) {
@@ -185,7 +185,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           entityLog,
         );
         break;
-      case "communityMoniker":
+      case "community-moniker":
         await updateAlgoliaWithGenericLogType(
           entityLog.type,
           "communityMonikers",

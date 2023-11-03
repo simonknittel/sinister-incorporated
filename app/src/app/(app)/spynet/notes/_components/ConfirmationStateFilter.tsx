@@ -92,7 +92,7 @@ const ConfirmationStateFilter = ({ confirmationStates }: Readonly<Props>) => {
         </div>
       )}
 
-      {confirmationStates.includes("falseReport") && (
+      {confirmationStates.includes("false-report") && (
         <div className="flex justify-between items-center w-full gap-4">
           <label
             className="whitespace-nowrap cursor-pointer"

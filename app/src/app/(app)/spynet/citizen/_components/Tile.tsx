@@ -34,8 +34,8 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
             in: [
               "spectrum-id",
               "handle",
-              "discordId",
-              "teamspeakId",
+              "discord-id",
+              "teamspeak-id",
               "role-added",
               "role-removed",
             ],
@@ -79,8 +79,8 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
     if (filters.some((filter) => filter.startsWith("unknown-"))) {
       if (
         (filters.includes("unknown-handle") && !row.handle) ||
-        (filters.includes("unknown-discord-id") && !row.discordId) ||
-        (filters.includes("unknown-teamspeak-id") && !row.teamspeakId)
+        (filters.includes("unknown-discord-id") && !row["discord-id"]) ||
+        (filters.includes("unknown-teamspeak-id") && !row["teamspeak-id"])
       ) {
         unknown = true;
       } else {
@@ -152,14 +152,14 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
 
   const showTeamspeakIdAtColumn = authentication.authorize([
     {
-      resource: "teamspeakId",
+      resource: "teamspeak-id",
       operation: "read",
     },
   ]);
 
   const showDiscordIdAtColumn = authentication.authorize([
     {
-      resource: "discordId",
+      resource: "discord-id",
       operation: "read",
     },
   ]);

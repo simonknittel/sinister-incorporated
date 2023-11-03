@@ -1,39 +1,20 @@
 "use client";
 
-import {
-  type Entity,
-  type EntityLog,
-  type EntityLogAttribute,
-  type User,
-} from "@prisma/client";
+import { type Entity } from "@prisma/client";
 import { useState } from "react";
 import { FaHistory } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
-import { type PermissionSet } from "~/app/_lib/auth/PermissionSet";
-import useAuthentication from "~/app/_lib/auth/useAuthentication";
-import { type EntityLogType } from "~/types";
-import { Create } from "./Create";
-import { HistoryEntry } from "./HistoryEntry";
+import { type GenericEntityLogType } from "~/types";
+import { ModalContent } from "./ModalContent";
 
 interface Props {
-  type: EntityLogType;
-  permissionResource: PermissionSet["resource"];
+  type: GenericEntityLogType;
   entity: Entity;
-  logs: (EntityLog & {
-    attributes: (EntityLogAttribute & { createdBy: User })[];
-    submittedBy: User;
-  })[];
 }
 
-export const HistoryModal = ({
-  type,
-  permissionResource,
-  entity,
-  logs,
-}: Readonly<Props>) => {
+export const HistoryModal = ({ type, entity }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
-  const authentication = useAuthentication();
 
   return (
     <>
@@ -50,32 +31,7 @@ export const HistoryModal = ({
         onRequestClose={() => setIsOpen(false)}
         className="w-[768px]"
       >
-        <h2 className="text-xl font-bold">History</h2>
-
-        {authentication &&
-          authentication.authorize([
-            {
-              resource: permissionResource,
-              operation: "create",
-            },
-          ]) && <Create type={type} entity={entity} />}
-
-        {logs.length > 0 ? (
-          <ul className="mt-8 flex flex-col gap-4">
-            {logs.map((discordId) => (
-              <HistoryEntry
-                key={discordId.id}
-                type={type}
-                permissionResource={permissionResource}
-                log={discordId}
-              />
-            ))}
-          </ul>
-        ) : (
-          <p className="text-neutral-500 italic mt-8">
-            Keine Einträge vorhanden
-          </p>
-        )}
+        <ModalContent type={type} entity={entity} />
       </Modal>
     </>
   );

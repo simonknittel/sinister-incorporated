@@ -47,7 +47,7 @@ async function main() {
               },
             },
             {
-              type: "communityMoniker",
+              type: "community-moniker",
               attributes: {
                 some: {
                   key: "confirmed",
@@ -77,7 +77,7 @@ async function main() {
         .filter((log) => log.type === "citizen-id")
         .map((log) => log.content),
       communityMonikers: entity.logs
-        .filter((log) => log.type === "communityMoniker")
+        .filter((log) => log.type === "community-moniker")
         .map((log) => log.content),
     };
   });

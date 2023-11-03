@@ -1,6 +1,7 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
+import { TRPCReactProvider } from "~/trpc/react";
 import { authenticatePage } from "../_lib/auth/authenticateAndAuthorize";
 import AdminDisabler from "./_components/AdminDisabler";
 import ImpersonationBannerContainer from "./_components/ImpersonationBannerContainer";
@@ -40,31 +41,33 @@ export default async function AppLayout({
   return (
     <SessionProviderContainer session={authentication.session}>
       <QueryClientProviderContainer>
-        <div className="h-full">
-          <SidebarContainer>
-            <Suspense fallback={<SidebarSkeleton />}>
-              <Sidebar />
-            </Suspense>
-          </SidebarContainer>
+        <TRPCReactProvider headers={headers()}>
+          <div className="h-full">
+            <SidebarContainer>
+              <Suspense fallback={<SidebarSkeleton />}>
+                <Sidebar />
+              </Suspense>
+            </SidebarContainer>
 
-          <div className="lg:ml-96 h-full">{children}</div>
-        </div>
+            <div className="lg:ml-96 h-full">{children}</div>
+          </div>
 
-        {fleetModal}
+          {fleetModal}
 
-        <Suspense>
-          <ImpersonationBannerContainer />
-        </Suspense>
+          <Suspense>
+            <ImpersonationBannerContainer />
+          </Suspense>
 
-        {authentication.session.user.role === "admin" && (
-          <AdminDisabler
-            disabled={cookies().get("disableAdmin")?.value === "disableAdmin"}
-          />
-        )}
+          {authentication.session.user.role === "admin" && (
+            <AdminDisabler
+              disabled={cookies().get("disableAdmin")?.value === "disableAdmin"}
+            />
+          )}
 
-        <Suspense>
-          <PreviewComments />
-        </Suspense>
+          <Suspense>
+            <PreviewComments />
+          </Suspense>
+        </TRPCReactProvider>
       </QueryClientProviderContainer>
     </SessionProviderContainer>
   );

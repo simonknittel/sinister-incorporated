@@ -6,6 +6,7 @@
 		"Notizart",
 		"prisma",
 		"pscale",
+		"trpc",
 		"uidotdev"
 	],
 	"dotenv.enableAutocloaking": false,

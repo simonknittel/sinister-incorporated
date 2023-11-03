@@ -17,8 +17,8 @@ import DeleteEntity from "./DeleteEntity";
 type Row = {
   handle?: string | null;
   spectrumId: string;
-  discordId?: string | null;
-  teamspeakId?: string | null;
+  "discord-id"?: string | null;
+  "teamspeak-id"?: string | null;
   createdAt: Date;
   lastSeenAt?: Date | null;
   entity: Entity & {
@@ -181,33 +181,19 @@ const Table = ({
 
               {showDiscordIdColumn && (
                 <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                  {row.discordId || (
+                  {row["discord-id"] || (
                     <span className="text-neutral-500 italic">Unbekannt</span>
                   )}
-                  <HistoryModal
-                    type="discordId"
-                    permissionResource="discordId"
-                    entity={row.entity}
-                    logs={row.entity.logs.filter(
-                      (log) => log.type === "discordId",
-                    )}
-                  />
+                  <HistoryModal type="discord-id" entity={row.entity} />
                 </td>
               )}
 
               {showTeamspeakIdColumn && (
                 <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                  {row.teamspeakId || (
+                  {row["teamspeak-id"] || (
                     <span className="text-neutral-500 italic">Unbekannt</span>
                   )}
-                  <HistoryModal
-                    type="teamspeakId"
-                    permissionResource="teamspeakId"
-                    entity={row.entity}
-                    logs={row.entity.logs.filter(
-                      (log) => log.type === "teamspeakId",
-                    )}
-                  />
+                  <HistoryModal type="teamspeak-id" entity={row.entity} />
                 </td>
               )}
 

@@ -7,10 +7,11 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import Button from "~/app/_components/Button";
-import { type EntityLogType } from "~/types";
+import { api } from "~/trpc/react";
+import { type GenericEntityLogType } from "~/types";
 
 interface Props {
-  type: EntityLogType;
+  type: GenericEntityLogType;
   entity: Entity;
 }
 
@@ -23,6 +24,7 @@ export const Create = ({ type, entity }: Readonly<Props>) => {
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
   const inputId = useId();
+  const utils = api.useUtils();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
@@ -37,6 +39,10 @@ export const Create = ({ type, entity }: Readonly<Props>) => {
       });
 
       if (response.ok) {
+        await utils.entityLog.getHistory.invalidate({
+          type: type,
+          entityId: entity.id,
+        });
         router.refresh();
         toast.success("Erfolgreich gespeichert");
         reset();

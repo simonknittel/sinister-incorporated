@@ -17,22 +17,22 @@ const DiscordIdSection = ({ className }: Readonly<Props>) => {
       <div className="border border-neutral-700 p-4 rounded mt-2 grid grid-cols-4">
         <div>
           <h5 className="font-bold mb-2">Erstellen</h5>
-          <YesNoCheckbox register={register("discordId.create")} />
+          <YesNoCheckbox register={register("discord-id.create")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Einsehen</h5>
-          <YesNoCheckbox register={register("discordId.read")} />
+          <YesNoCheckbox register={register("discord-id.read")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Löschen</h5>
-          <YesNoCheckbox register={register("discordId.delete")} />
+          <YesNoCheckbox register={register("discord-id.delete")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Bestätigen</h5>
-          <YesNoCheckbox register={register("discordId.confirm")} />
+          <YesNoCheckbox register={register("discord-id.confirm")} />
         </div>
       </div>
     </div>

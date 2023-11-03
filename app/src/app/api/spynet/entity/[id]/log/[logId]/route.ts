@@ -155,18 +155,18 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
           },
         ]);
         break;
-      case "teamspeakId":
+      case "teamspeak-id":
         authentication.authorizeApi([
           {
-            resource: "teamspeakId",
+            resource: "teamspeak-id",
             operation: "delete",
           },
         ]);
         break;
-      case "discordId":
+      case "discord-id":
         authentication.authorizeApi([
           {
-            resource: "discordId",
+            resource: "discord-id",
             operation: "delete",
           },
         ]);
@@ -190,12 +190,12 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Update name field of user corresponding use entry
      */
-    if (["handle", "discordId"].includes(entityLog.type)) {
+    if (["handle", "discord-id"].includes(entityLog.type)) {
       const entityLogs = await prisma.entityLog.findMany({
         where: {
           entityId: entityLog.entityId,
           type: {
-            in: ["discordId", "handle"],
+            in: ["discord-id", "handle"],
           },
           attributes: {
             some: {
@@ -210,10 +210,10 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       });
 
       const latestConfirmedHandleLog = entityLogs.find(
-        (log) => log.type === "handle"
+        (log) => log.type === "handle",
       );
       const latestConfirmedDiscordIdLog = entityLogs.find(
-        (log) => log.type === "discordId"
+        (log) => log.type === "discord-id",
       );
 
       if (latestConfirmedDiscordIdLog) {

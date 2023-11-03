@@ -1,11 +1,12 @@
 import { type Role } from "@prisma/client";
 import { type z } from "zod";
 import { prisma } from "~/server/db";
+import { type PermissionSet } from "./PermissionSet";
 import type postBodySchema from "./postBodySchema";
 
 export default function formValuesToPrismaOperations(
   roleId: Role["id"],
-  data: z.infer<typeof postBodySchema>
+  data: z.infer<typeof postBodySchema>,
 ) {
   return Object.entries(data).flatMap(([resourceKey, resourceValue]) => {
     if (Array.isArray(resourceValue)) {
@@ -18,8 +19,8 @@ export default function formValuesToPrismaOperations(
 
 function createGenericPermissions(
   roleId: Role["id"],
-  resourceKey: string,
-  resourceValue
+  resourceKey: PermissionSet["resource"],
+  resourceValue,
 ) {
   return Object.entries(resourceValue)
     .filter(([_operationKey, operationValue]) => {
@@ -30,14 +31,14 @@ function createGenericPermissions(
       return true;
     })
     .map(([operationKey, operationValue]) =>
-      createPermission(roleId, resourceKey, operationKey, operationValue)
+      createPermission(roleId, resourceKey, operationKey, operationValue),
     );
 }
 
 function createPermissionsFromRules(
   roleId: Role["id"],
-  resourceKey: string,
-  rules: Record<"operation" | string, string>
+  resourceKey: PermissionSet["resource"],
+  rules: Record<"operation" | string, string>,
 ) {
   return rules.map((rule) => {
     const { operation, ...attributes } = rule;
@@ -47,9 +48,9 @@ function createPermissionsFromRules(
 
 function createPermission(
   roleId: Role["id"],
-  resourceKey: string,
-  operationKey: string,
-  valueOrAttributes: boolean | Record<string, string | boolean>
+  resourceKey: PermissionSet["resource"],
+  operationKey: PermissionSet["operation"],
+  valueOrAttributes: boolean | Record<string, string | boolean>,
 ) {
   return prisma.permission.create({
     data: {

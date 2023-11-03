@@ -58,10 +58,10 @@ const SingleNote = async ({ note }: Readonly<Props>) => {
       <div
         className={clsx({
           "absolute w-full h-24 border-t-2 border-x-2 bg-gradient-to-t from-neutral-900":
-            !confirmed || confirmed?.value === "falseReport",
+            !confirmed || confirmed?.value === "false-report",
           [`${styles.blueBorder!} to-blue-500/10`]: !confirmed,
           [`${styles.redBorder!} to-red-500/10`]:
-            confirmed?.value === "falseReport",
+            confirmed?.value === "false-report",
         })}
       />
 
@@ -85,7 +85,7 @@ const SingleNote = async ({ note }: Readonly<Props>) => {
         </div>
       )}
 
-      {confirmed?.value === "falseReport" && (
+      {confirmed?.value === "false-report" && (
         <div className="px-4 pt-4 flex items-start gap-2 relative z-10">
           <BsExclamationOctagonFill className="text-red-500 grow-1 shrink-0 mt-1" />
           <p className="font-bold">Falschmeldung</p>
@@ -95,7 +95,7 @@ const SingleNote = async ({ note }: Readonly<Props>) => {
       <div
         className={clsx("flex gap-2 relative z-10", {
           "px-4 pt-4 opacity-20 hover:opacity-100 transition-opacity":
-            !confirmed || confirmed.value === "falseReport",
+            !confirmed || confirmed.value === "false-report",
         })}
       >
         <div className="h-[20px] flex items-center">

@@ -47,24 +47,24 @@ export interface FormValues {
     delete: boolean;
     confirm: boolean;
   };
-  teamspeakId: {
+  "teamspeak-id": {
     create: boolean;
     read: boolean;
     delete: boolean;
     confirm: boolean;
   };
-  discordId: {
+  "discord-id": {
     create: boolean;
     read: boolean;
     delete: boolean;
     confirm: boolean;
   };
-  citizenId: {
+  "citizen-id": {
     create: boolean;
     delete: boolean;
     confirm: boolean;
   };
-  communityMoniker: {
+  "community-moniker": {
     create: boolean;
     delete: boolean;
     confirm: boolean;

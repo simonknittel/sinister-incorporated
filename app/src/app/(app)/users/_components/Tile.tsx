@@ -10,7 +10,7 @@ const Tile = async () => {
     }),
     prisma.entityLog.findMany({
       where: {
-        type: "discordId",
+        type: "discord-id",
       },
       include: {
         attributes: true,
@@ -27,7 +27,7 @@ const Tile = async () => {
         log.content === user.accounts[0]!.providerAccountId &&
         log.attributes.find(
           (attribute) =>
-            attribute.key === "confirmed" && attribute.value === "confirmed"
+            attribute.key === "confirmed" && attribute.value === "confirmed",
         )
       );
     });

@@ -43,12 +43,7 @@ const Overview = async ({ entity }: Readonly<Props>) => {
         <dt className="text-neutral-500 mt-4">Spectrum ID</dt>
         <dd>{spectrumId}</dd>
 
-        <OverviewSection
-          type="citizen-id"
-          permissionResource="citizenId"
-          name="Citizen ID"
-          entity={entity}
-        />
+        <OverviewSection type="citizen-id" name="Citizen ID" entity={entity} />
 
         <dt className="text-neutral-500 mt-4">Handle</dt>
         <dd className="flex gap-4 items-center">
@@ -58,21 +53,19 @@ const Overview = async ({ entity }: Readonly<Props>) => {
         </dd>
 
         <OverviewSection
-          type="communityMoniker"
-          permissionResource="communityMoniker"
+          type="community-moniker"
           name="Community Moniker"
           entity={entity}
         />
 
         {authentication.authorize([
           {
-            resource: "discordId",
+            resource: "discord-id",
             operation: "read",
           },
         ]) && (
           <OverviewSection
-            type="discordId"
-            permissionResource="discordId"
+            type="discord-id"
             icon={<FaDiscord />}
             name="Discord ID"
             entity={entity}
@@ -81,13 +74,12 @@ const Overview = async ({ entity }: Readonly<Props>) => {
 
         {authentication.authorize([
           {
-            resource: "teamspeakId",
+            resource: "teamspeak-id",
             operation: "read",
           },
         ]) && (
           <OverviewSection
-            type="teamspeakId"
-            permissionResource="teamspeakId"
+            type="teamspeak-id"
             icon={<FaTeamspeak />}
             name="TeamSpeak ID"
             entity={entity}

@@ -134,7 +134,7 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
         (filters.includes("confirmation-confirmed") &&
           row.confirmationState === "confirmed") ||
         (filters.includes("confirmation-false-report") &&
-          row.confirmationState === "falseReport")
+          row.confirmationState === "false-report")
       ) {
         confirmation = true;
       } else {

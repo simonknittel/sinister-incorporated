@@ -41,7 +41,7 @@ const Table = ({ users }: Readonly<Props>) => {
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor("discordId", {
+      columnHelper.accessor("discord-id", {
         header: "Discord ID",
         cell: (props) => {
           return (

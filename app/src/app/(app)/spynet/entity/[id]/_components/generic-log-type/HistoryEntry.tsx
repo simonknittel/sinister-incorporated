@@ -9,23 +9,21 @@ import clsx from "clsx";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import { type PermissionSet } from "~/app/_lib/auth/PermissionSet";
 import useAuthentication from "~/app/_lib/auth/useAuthentication";
-import { type EntityLogType } from "~/types";
+import { type GenericEntityLogType } from "~/types";
 import ConfirmLog from "../ConfirmLog";
 import styles from "../ConfirmationGradient.module.css";
 import DeleteLog from "../DeleteLog";
 
 interface Props {
-  type: EntityLogType;
-  permissionResource: PermissionSet["resource"];
+  type: GenericEntityLogType;
   log: EntityLog & {
     attributes: (EntityLogAttribute & { createdBy: User })[];
     submittedBy: User;
   };
 }
 
-export const HistoryEntry = ({ permissionResource, log }: Readonly<Props>) => {
+export const HistoryEntry = ({ type, log }: Readonly<Props>) => {
   const authentication = useAuthentication();
 
   const confirmed = log.attributes.find(
@@ -33,14 +31,14 @@ export const HistoryEntry = ({ permissionResource, log }: Readonly<Props>) => {
   );
 
   return (
-    <li key={log.id} className="relative rounded overflow-hidden">
+    <li className="relative rounded overflow-hidden">
       <div
         className={clsx({
           "absolute w-full h-20 border-t-2 border-x-2 bg-gradient-to-t from-neutral-800":
-            !confirmed || confirmed?.value === "falseReport",
+            !confirmed || confirmed?.value === "false-report",
           [`${styles.blueBorder!} to-blue-500/10`]: !confirmed,
           [`${styles.redBorder!} to-red-500/10`]:
-            confirmed?.value === "falseReport",
+            confirmed?.value === "false-report",
         })}
       />
 
@@ -55,7 +53,7 @@ export const HistoryEntry = ({ permissionResource, log }: Readonly<Props>) => {
             {authentication &&
               authentication.authorize([
                 {
-                  resource: permissionResource,
+                  resource: type,
                   operation: "confirm",
                 },
               ]) && <ConfirmLog log={log} />}
@@ -63,7 +61,7 @@ export const HistoryEntry = ({ permissionResource, log }: Readonly<Props>) => {
         </div>
       )}
 
-      {confirmed?.value === "falseReport" && (
+      {confirmed?.value === "false-report" && (
         <div className="px-4 pt-4 flex items-start gap-2 relative z-10">
           <BsExclamationOctagonFill className="text-red-500 grow-1 shrink-0 mt-1" />
           <p className="font-bold">Falschmeldung</p>
@@ -73,7 +71,7 @@ export const HistoryEntry = ({ permissionResource, log }: Readonly<Props>) => {
       <div
         className={clsx("flex gap-2 relative z-10", {
           "px-4 pt-2 pb-2 opacity-20 hover:opacity-100 transition-opacity":
-            !confirmed || confirmed.value === "falseReport",
+            !confirmed || confirmed.value === "false-report",
         })}
       >
         <div className="h-[20px] flex items-center">
@@ -108,7 +106,7 @@ export const HistoryEntry = ({ permissionResource, log }: Readonly<Props>) => {
             {authentication &&
               authentication.authorize([
                 {
-                  resource: permissionResource,
+                  resource: type,
                   operation: "delete",
                 },
               ]) && <DeleteLog log={log} />}

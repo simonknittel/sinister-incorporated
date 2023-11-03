@@ -13,7 +13,7 @@ const Account = async () => {
             name={
               authentication
                 ? authentication.session.user.name ||
-                  authentication.session.discordId
+                  authentication.session["discord-id"]
                 : undefined
             }
             image={
@@ -27,7 +27,7 @@ const Account = async () => {
           <p>
             {authentication
               ? authentication.session.user.name ||
-                authentication.session.discordId
+                authentication.session["discord-id"]
               : null}
           </p>
         </div>

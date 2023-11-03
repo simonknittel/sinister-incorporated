@@ -54,24 +54,24 @@ const postBodySchema = z.object({
     delete: z.boolean(),
     confirm: z.boolean(),
   }),
-  teamspeakId: z.object({
+  "teamspeak-id": z.object({
     create: z.boolean(),
     read: z.boolean(),
     delete: z.boolean(),
     confirm: z.boolean(),
   }),
-  discordId: z.object({
+  "discord-id": z.object({
     create: z.boolean(),
     read: z.boolean(),
     delete: z.boolean(),
     confirm: z.boolean(),
   }),
-  citizenId: z.object({
+  "citizen-id": z.object({
     create: z.boolean(),
     delete: z.boolean(),
     confirm: z.boolean(),
   }),
-  communityMoniker: z.object({
+  "community-moniker": z.object({
     create: z.boolean(),
     delete: z.boolean(),
     confirm: z.boolean(),

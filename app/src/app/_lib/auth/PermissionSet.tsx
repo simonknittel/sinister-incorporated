@@ -1,3 +1,5 @@
+import { type GenericEntityLogType } from "~/types";
+
 export type PermissionSet = {
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   resource:
@@ -16,11 +18,8 @@ export type PermissionSet = {
     | "lastSeen"
     | "otherRole"
     | "handle"
-    | "discordId"
     | "note"
-    | "teamspeakId"
-    | "citizenId"
-    | "communityMoniker";
+    | GenericEntityLogType;
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   operation:
     | "create"

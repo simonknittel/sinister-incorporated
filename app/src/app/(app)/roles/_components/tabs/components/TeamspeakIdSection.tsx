@@ -17,22 +17,22 @@ const TeamspeakIdSection = ({ className }: Readonly<Props>) => {
       <div className="border border-neutral-700 p-4 rounded mt-2 grid grid-cols-4">
         <div>
           <h5 className="font-bold mb-2">Erstellen</h5>
-          <YesNoCheckbox register={register("teamspeakId.create")} />
+          <YesNoCheckbox register={register("teamspeak-id.create")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Einsehen</h5>
-          <YesNoCheckbox register={register("teamspeakId.read")} />
+          <YesNoCheckbox register={register("teamspeak-id.read")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Löschen</h5>
-          <YesNoCheckbox register={register("teamspeakId.delete")} />
+          <YesNoCheckbox register={register("teamspeak-id.delete")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Bestätigen</h5>
-          <YesNoCheckbox register={register("teamspeakId.confirm")} />
+          <YesNoCheckbox register={register("teamspeak-id.confirm")} />
         </div>
       </div>
     </div>

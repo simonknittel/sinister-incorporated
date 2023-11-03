@@ -6,6 +6,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaCheck, FaSpinner, FaTimes } from "react-icons/fa";
 import Button from "~/app/_components/Button";
+import { api } from "~/trpc/react";
 
 interface Props {
   log: EntityLog;
@@ -15,6 +16,7 @@ interface Props {
 const ConfirmLog = ({ log, compact }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<string | false>(false);
+  const utils = api.useUtils();
 
   const handleConfirm = async (confirmed: string) => {
     setIsLoading(confirmed);
@@ -31,6 +33,10 @@ const ConfirmLog = ({ log, compact }: Readonly<Props>) => {
       );
 
       if (response.ok) {
+        await utils.entityLog.getHistory.invalidate({
+          entityId: log.entityId,
+          type: log.type,
+        });
         router.refresh();
         toast.success("Erfolgreich gespeichert");
       } else {
@@ -64,11 +70,11 @@ const ConfirmLog = ({ log, compact }: Readonly<Props>) => {
         <Button
           variant="tertiary"
           className="h-auto"
-          onClick={() => void handleConfirm("falseReport")}
-          disabled={isLoading === "falseReport"}
+          onClick={() => void handleConfirm("false-report")}
+          disabled={isLoading === "false-report"}
           title="Falschmeldung"
         >
-          {isLoading === "falseReport" ? (
+          {isLoading === "false-report" ? (
             <FaSpinner className="animate-spin" />
           ) : (
             <FaTimes />
@@ -97,10 +103,10 @@ const ConfirmLog = ({ log, compact }: Readonly<Props>) => {
       <Button
         variant="tertiary"
         className="h-auto"
-        onClick={() => void handleConfirm("falseReport")}
-        disabled={isLoading === "falseReport"}
+        onClick={() => void handleConfirm("false-report")}
+        disabled={isLoading === "false-report"}
       >
-        {isLoading === "falseReport" ? (
+        {isLoading === "false-report" ? (
           <FaSpinner className="animate-spin" />
         ) : (
           <FaTimes />

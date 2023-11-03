@@ -6,6 +6,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import Button from "~/app/_components/Button";
+import { api } from "~/trpc/react";
 
 interface Props {
   log: EntityLog;
@@ -14,6 +15,7 @@ interface Props {
 const DeleteLog = ({ log }: Readonly<Props>) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const utils = api.useUtils();
 
   const handleClick = async () => {
     setIsLoading(true);
@@ -30,10 +32,14 @@ const DeleteLog = ({ log }: Readonly<Props>) => {
         `/api/spynet/entity/${log.entityId}/log/${log.id}`,
         {
           method: "DELETE",
-        }
+        },
       );
 
       if (response.ok) {
+        await utils.entityLog.getHistory.invalidate({
+          entityId: log.entityId,
+          type: log.type,
+        });
         router.refresh();
         toast.success("Erfolgreich gelöscht");
       } else {

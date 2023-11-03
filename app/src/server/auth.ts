@@ -1,5 +1,9 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { type DefaultSession, type NextAuthOptions } from "next-auth";
+import {
+  getServerSession,
+  type DefaultSession,
+  type NextAuthOptions,
+} from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import { z } from "zod";
 import getPermissionSetsByRoles from "~/app/_lib/auth/getPermissionSetsByRoles";
@@ -29,7 +33,7 @@ async function getGuildMember(access_token: string) {
       next: {
         revalidate: 0,
       },
-    }
+    },
   );
 
   const body: unknown = await response.json();
@@ -40,7 +44,7 @@ async function getGuildMember(access_token: string) {
 
 function getAvatar(
   profile,
-  guildMember: z.infer<typeof guildMemberResponseSchema>
+  guildMember: z.infer<typeof guildMemberResponseSchema>,
 ) {
   if (guildMember.avatar) {
     const format = guildMember.avatar.startsWith("a_") ? "gif" : "png";
@@ -94,7 +98,7 @@ export const authOptions: NextAuthOptions = {
 
       const discordIdLog = await prisma.entityLog.findFirst({
         where: {
-          type: "discordId",
+          type: "discord-id",
           content: discordAccount!.providerAccountId,
           attributes: {
             some: {
@@ -249,7 +253,7 @@ export const authOptions: NextAuthOptions = {
         const latestConfirmedDiscordIdEntityLog =
           await prisma.entityLog.findFirst({
             where: {
-              type: "discordId",
+              type: "discord-id",
               content: profile!.id,
               attributes: {
                 some: {
@@ -312,3 +316,10 @@ export const authOptions: NextAuthOptions = {
     updateAge: maxAge * 2, // Make sure `updateAge` is bigger than `maxAge` so that the session actually expires at some point and then a refreshed authentication with the identity provider is forced
   },
 };
+
+/**
+ * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
+ *
+ * @see https://next-auth.js.org/configuration/nextjs
+ */
+export const getServerAuthSession = () => getServerSession(authOptions);
