@@ -132,14 +132,16 @@ model EntityLogAttribute {
     createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
 }
 
-// Caches the latest confirmed value for each log type of an entity
+// Caches the latest confirmed value for each generic entity log type
 model EntityCache {
-    entityId String
-    entity   Entity  @relation(fields: [entityId], references: [id], onDelete: Cascade)
-    type     String // TODO: types.ts
-    value    String? @db.Text
-
-    @@id([entityId, type])
+    entityId         String  @id
+    entity           Entity  @relation(fields: [entityId], references: [id], onDelete: Cascade)
+    spectrumId       String?
+    handle           String?
+    discordId        String?
+    teamspeakId      String?
+    citizenId        String?
+    communityMoniker String?
 }
 
 //

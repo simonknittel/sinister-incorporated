@@ -14,9 +14,9 @@ export type GenericEntityLogType =
 // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
 export type EntityLogType =
   | GenericEntityLogType
-  | "handle"
+  | "handle" // TODO: Move to GenericEntityLogType
+  | "spectrum-id" // TODO: Move to GenericEntityLogType
   | "note"
-  | "spectrum-id"
   | "role-added"
   | "role-removed";
 
