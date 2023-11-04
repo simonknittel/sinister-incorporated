@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   FaCalendarDay,
+  FaClock,
   FaCog,
   FaHome,
   FaLock,
@@ -71,6 +72,16 @@ const Sidebar = async () => {
                   </Link>
                 </li>
               )}
+
+            <li>
+              <Link
+                href="/preview-channel"
+                className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+              >
+                <FaClock />
+                Preview Channel
+              </Link>
+            </li>
           </ul>
 
           {authentication &&
