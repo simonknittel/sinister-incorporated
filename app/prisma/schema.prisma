@@ -98,25 +98,24 @@ model OperationUnit {
 //
 
 model Entity {
-    id          String      @id @default(cuid())
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @updatedAt
-    type        String      @default("citizen") // citizen, organization
+    id          String        @id @default(cuid())
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+    type        String        @default("citizen") // citizen, organization
     logs        EntityLog[]
     createdById String
-    createdBy   User        @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
+    createdBy   User          @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
+    caches      EntityCache[]
 }
 
 model EntityLog {
-    id        String   @id @default(cuid())
-    entityId  String
-    entity    Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    type    String // TODO: types.ts
-    content String? @db.Text
-
+    id            String               @id @default(cuid())
+    entityId      String
+    entity        Entity               @relation(fields: [entityId], references: [id], onDelete: Cascade)
+    createdAt     DateTime             @default(now())
+    updatedAt     DateTime             @updatedAt
+    type          String // TODO: types.ts
+    content       String?              @db.Text
     submittedById String
     submittedBy   User                 @relation("submittedBy", fields: [submittedById], references: [id], onDelete: Cascade)
     attributes    EntityLogAttribute[]
@@ -131,6 +130,16 @@ model EntityLogAttribute {
     createdAt   DateTime  @default(now())
     createdById String
     createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+}
+
+// Caches the latest confirmed value for each log type of an entity
+model EntityCache {
+    entityId String
+    entity   Entity  @relation(fields: [entityId], references: [id], onDelete: Cascade)
+    type     String // TODO: types.ts
+    value    String? @db.Text
+
+    @@id([entityId, type])
 }
 
 //

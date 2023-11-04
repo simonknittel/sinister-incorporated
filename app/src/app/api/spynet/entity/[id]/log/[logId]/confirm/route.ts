@@ -1,11 +1,9 @@
-import { type EntityLog } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "~/app/_lib/auth/authenticateAndAuthorize";
-import { updateObject } from "~/app/api/_lib/algolia";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
-import { type EntityLogType } from "~/types";
+import { updateAlgoliaWithGenericLogType } from "../_lib/updateAlgoliaWithGenericLogType";
 
 interface Params {
   id: string;
@@ -167,6 +165,9 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       }
     }
 
+    // Update EntityCache
+    // TODO: Implement
+
     /**
      * Update Algolia
      */
@@ -207,30 +208,4 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
      */
     return errorHandler(error);
   }
-}
-
-async function updateAlgoliaWithGenericLogType(
-  type: EntityLogType,
-  algoliaKey: string,
-  log: EntityLog,
-) {
-  const logs = await prisma.entityLog.findMany({
-    where: {
-      type,
-      entityId: log.entityId,
-      attributes: {
-        some: {
-          key: "confirmed",
-          value: "confirmed",
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  await updateObject(log.entityId, {
-    [algoliaKey]: logs.map((log) => log.content),
-  });
 }

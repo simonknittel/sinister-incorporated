@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
-import { updateObject } from "~/app/api/_lib/algolia";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
+import { updateAlgoliaWithGenericLogType } from "./_lib/updateAlgoliaWithGenericLogType";
 
 interface Params {
   id: string;
@@ -49,6 +49,8 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     });
 
     if (!entityLog) throw new Error("Not found");
+
+    // TODO: Validate for log type being note
 
     const { noteTypeId, classificationLevelId } =
       getLatestNoteAttributes(entityLog);
@@ -179,6 +181,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
           },
         ]);
         break;
+      // TODO: Add authorization for other log types
     }
 
     await prisma.entityLog.delete({
@@ -239,28 +242,37 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       }
     }
 
+    // Update EntityCache
+    // TODO: Implement
+
     /**
      * Update Algolia
      */
-    if (entityLog.type === "handle") {
-      const handleLogs = await prisma.entityLog.findMany({
-        where: {
-          type: "handle",
-          entityId: params.id,
-          attributes: {
-            some: {
-              key: "confirmed",
-              value: "confirmed",
-            },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
-      await updateObject(params.id, {
-        handles: handleLogs.map((log) => log.content),
-      });
+    switch (entityLog.type) {
+      case "handle":
+        await updateAlgoliaWithGenericLogType(
+          entityLog.type,
+          "handles",
+          entityLog,
+        );
+        break;
+      case "citizen-id":
+        await updateAlgoliaWithGenericLogType(
+          entityLog.type,
+          "citizenIds",
+          entityLog,
+        );
+        break;
+      case "community-moniker":
+        await updateAlgoliaWithGenericLogType(
+          entityLog.type,
+          "communityMonikers",
+          entityLog,
+        );
+        break;
+
+      default:
+        break;
     }
 
     /**
