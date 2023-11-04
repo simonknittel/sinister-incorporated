@@ -35,7 +35,7 @@ const CurrentStatus = ({ schedule }: Readonly<Props>) => {
               </p>
 
               {nextLive ? (
-                <p>
+                <p className="text-neutral-500 mt-4">
                   Re-opens in{" "}
                   <strong>
                     <Countdown date={nextLive.start} />
@@ -43,7 +43,9 @@ const CurrentStatus = ({ schedule }: Readonly<Props>) => {
                   (region: <strong>{nextLive.region})</strong>
                 </p>
               ) : (
-                <p>No further schedule known.</p>
+                <p className="text-neutral-500 mt-4">
+                  No further schedule known.
+                </p>
               )}
             </div>
           </>

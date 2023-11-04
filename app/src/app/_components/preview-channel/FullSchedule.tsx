@@ -23,7 +23,7 @@ const FullSchedule = ({ schedule }: Readonly<Props>) => {
             key={time.start.toISOString()}
             className={clsx({
               "text-neutral-500": time.end < getNow(),
-              "text-green-500": time === currentlyLive,
+              "text-green-500 font-bold": time === currentlyLive,
             })}
           >
             {time.start.toLocaleDateString(undefined, {
