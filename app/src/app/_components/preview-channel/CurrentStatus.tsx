@@ -24,17 +24,23 @@ const CurrentStatus = ({ schedule }: Readonly<Props>) => {
             <div>
               <p>
                 The preview channel is currently active (region:{" "}
-                {currentlyLive.region}).
+                <strong>{currentlyLive.region}</strong>).
               </p>
 
               <p>
-                Closes in <Countdown date={currentlyLive.end} />
+                Closes in{" "}
+                <strong>
+                  <Countdown date={currentlyLive.end} />
+                </strong>
               </p>
 
               {nextLive ? (
                 <p>
-                  Re-opens in <Countdown date={nextLive.start} /> (region:{" "}
-                  {nextLive.region})
+                  Re-opens in{" "}
+                  <strong>
+                    <Countdown date={nextLive.start} />
+                  </strong>{" "}
+                  (region: <strong>{nextLive.region})</strong>
                 </p>
               ) : (
                 <p>No further schedule known.</p>
@@ -51,10 +57,10 @@ const CurrentStatus = ({ schedule }: Readonly<Props>) => {
               {nextLive ? (
                 <p>
                   Opens in{" "}
-                  <span className="font-bold">
+                  <strong>
                     <Countdown date={nextLive.start} />
-                  </span>{" "}
-                  (region: <span className="font-bold">{nextLive.region}</span>)
+                  </strong>{" "}
+                  (region: <strong>{nextLive.region}</strong>)
                 </p>
               ) : (
                 <p>No further schedule known.</p>
