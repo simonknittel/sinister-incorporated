@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="p-2 lg:p-8 pt-20 flex items-center flex-col">
+    <main className="p-2 pt-4 lg:p-8 flex items-center flex-col">
       <h1 className="text-xl font-bold">Preview Channel</h1>
 
       <CurrentStatus schedule={schedule} />

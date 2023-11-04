@@ -16,7 +16,7 @@ const FullSchedule = ({ schedule }: Readonly<Props>) => {
     <section className="mt-4 w-full max-w-xl p-4 lg:p-8 rounded bg-neutral-900">
       <h2 className="font-bold text-xl mb-4">Full schedule</h2>
 
-      <ul>
+      <ul className="flex flex-col gap-2 list-disc pl-5">
         {schedule.map((time) => (
           <li
             key={time.start.toISOString()}
@@ -25,8 +25,23 @@ const FullSchedule = ({ schedule }: Readonly<Props>) => {
               "text-green-500": time === currentlyLive,
             })}
           >
-            {time.start.toLocaleDateString()} {time.start.toLocaleTimeString()}{" "}
-            - {time.end.toLocaleDateString()} {time.end.toLocaleTimeString()}{" "}
+            {time.start.toLocaleDateString(undefined, {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}{" "}
+            {time.start.toLocaleTimeString(undefined, {
+              timeStyle: "short",
+            })}{" "}
+            -{" "}
+            {time.end.toLocaleDateString(undefined, {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}{" "}
+            {time.end.toLocaleTimeString(undefined, {
+              timeStyle: "short",
+            })}{" "}
             (region: {time.region})
           </li>
         ))}
