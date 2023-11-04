@@ -43,7 +43,7 @@ const CurrentStatus = ({ schedule }: Readonly<Props>) => {
           </>
         ) : (
           <>
-            <FaRegTimesCircle className="text-red-500 relative top-[2px]" />
+            <FaRegTimesCircle className="text-sinister-red-500 relative top-[2px]" />
 
             <div>
               <p>The preview channel is currently not active.</p>

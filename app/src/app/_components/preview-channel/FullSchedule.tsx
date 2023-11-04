@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import Link from "next/link";
 import { getNow } from "./_lib/getNow";
 import { type Schedule } from "./_lib/schedule";
 import { useSchedule } from "./_lib/useSchedule";
@@ -46,6 +47,16 @@ const FullSchedule = ({ schedule }: Readonly<Props>) => {
           </li>
         ))}
       </ul>
+
+      <p className="mt-4">
+        Source:{" "}
+        <Link
+          href="https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/pyro-preview-channel-update"
+          className="inline-flex items-center justify-center rounded gap-2 text-sinister-red-500 hover:bg-sinisterborder-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300 underline"
+        >
+          Spectrum
+        </Link>
+      </p>
     </section>
   );
 };
