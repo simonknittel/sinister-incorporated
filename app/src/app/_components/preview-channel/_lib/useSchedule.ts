@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { type Schedule } from "../page";
 import { getNow } from "./getNow";
+import { type Schedule } from "./schedule";
 
 export const useSchedule = (schedule: Schedule) => {
   const [currentlyLive, setCurrentlyLive] = useState<

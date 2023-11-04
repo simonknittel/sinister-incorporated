@@ -1,9 +1,9 @@
 "use client";
 
 import clsx from "clsx";
-import { getNow } from "../_lib/getNow";
-import { useSchedule } from "../_lib/useSchedule";
-import { type Schedule } from "../page";
+import { getNow } from "./_lib/getNow";
+import { type Schedule } from "./_lib/schedule";
+import { useSchedule } from "./_lib/useSchedule";
 
 interface Props {
   schedule: Schedule;
@@ -13,7 +13,7 @@ const FullSchedule = ({ schedule }: Readonly<Props>) => {
   const { currentlyLive } = useSchedule(schedule);
 
   return (
-    <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded bg-neutral-900">
+    <section className="mt-4 w-full max-w-xl p-4 lg:p-8 rounded bg-neutral-900">
       <h2 className="font-bold text-xl mb-4">Full schedule</h2>
 
       <ul>

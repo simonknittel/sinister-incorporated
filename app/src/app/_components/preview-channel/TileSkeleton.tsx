@@ -9,7 +9,7 @@ export const TileSkeleton = ({ className }: Readonly<Props>) => {
     <div
       className={clsx(
         className,
-        "rounded bg-neutral-900 animate-pulse min-h-[10rem] max-w-4xl",
+        "rounded bg-neutral-900 animate-pulse min-h-[10rem] w-full max-w-xl",
       )}
     />
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTimeLeft } from "../_lib/useTimeLeft";
+import { useTimeLeft } from "./_lib/useTimeLeft";
 
 interface Props {
   date: Date;
