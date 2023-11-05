@@ -23,24 +23,6 @@ const getEntity = cache(async (id: string) => {
     where: {
       id,
     },
-    include: {
-      logs: {
-        include: {
-          attributes: {
-            include: {
-              createdBy: true,
-            },
-            orderBy: {
-              createdAt: "desc",
-            },
-          },
-          submittedBy: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      },
-    },
   });
 });
 
@@ -57,19 +39,8 @@ export async function generateMetadata({
     const entity = await getEntity(params.id);
     if (!entity) return {};
 
-    const latestConfirmedHandle = entity.logs.filter(
-      (log) =>
-        log.type === "handle" &&
-        log.attributes.find(
-          (attribute) =>
-            attribute.key === "confirmed" && attribute.value === "confirmed",
-        ),
-    )?.[0];
-
     return {
-      title: `${
-        latestConfirmedHandle?.content || entity.id
-      } - Spynet | Sinister Incorporated`,
+      title: `${entity.handle || entity.id} - Spynet | Sinister Incorporated`,
     };
   } catch (error) {
     console.error(error);
@@ -96,15 +67,6 @@ export default async function Page({ params }: Readonly<Props>) {
   const entity = await getEntity(params.id);
   if (!entity) notFound();
 
-  const latestConfirmedHandle = entity.logs.filter(
-    (log) =>
-      log.type === "handle" &&
-      log.attributes.find(
-        (attribute) =>
-          attribute.key === "confirmed" && attribute.value === "confirmed",
-      ),
-  )?.[0];
-
   return (
     <main className="p-2 lg:p-8 pt-20">
       <div className="flex gap-2 font-bold text-xl">
@@ -118,7 +80,7 @@ export default async function Page({ params }: Readonly<Props>) {
         <span className="text-neutral-500">/</span>
 
         <h1 className="overflow-hidden text-ellipsis whitespace-nowrap">
-          {latestConfirmedHandle?.content || entity.id}
+          {entity.handle || entity.id}
         </h1>
 
         {authentication.authorize([

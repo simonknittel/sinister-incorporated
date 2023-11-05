@@ -3,7 +3,7 @@
  * ```bashrc
  * npm install --global ts-node
  *
- * ts-node --esm --skipProject ./migrations/003-citizen-import/index.ts
+ * ts-node --esm --skipProject ./migrations/004-transform-types-and-keys.ts
  *
  * DATABASE_URL='mysql://************@/:************@aws.connect.psdb.cloud/db?sslaccept=strict' ts-node --esm --skipProject ./migrations/004-transform-types-and-keys.ts
  * ```

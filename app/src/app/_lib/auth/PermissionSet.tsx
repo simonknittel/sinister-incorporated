@@ -4,7 +4,6 @@ export type PermissionSet = {
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   resource:
     | GenericEntityLogType
-    | "handle" // TODO: Move to GenericEntityLogType
     | "login"
     | "event"
     | "operation"

@@ -94,18 +94,24 @@ model OperationUnit {
 }
 
 //
-// Spynet - Entities
+// Spynet - Citizen
 //
 
 model Entity {
-    id          String        @id @default(cuid())
-    createdAt   DateTime      @default(now())
-    updatedAt   DateTime      @updatedAt
-    type        String        @default("citizen") // citizen, organization
+    id          String      @id @default(cuid())
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
     logs        EntityLog[]
     createdById String
-    createdBy   User          @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
-    caches      EntityCache[]
+    createdBy   User        @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
+
+    // Holds the latest confirmed values
+    spectrumId       String?
+    handle           String?
+    discordId        String?
+    teamspeakId      String?
+    citizenId        String?
+    communityMoniker String?
 }
 
 model EntityLog {
@@ -130,18 +136,6 @@ model EntityLogAttribute {
     createdAt   DateTime  @default(now())
     createdById String
     createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
-}
-
-// Caches the latest confirmed value for each generic entity log type
-model EntityCache {
-    entityId         String  @id
-    entity           Entity  @relation(fields: [entityId], references: [id], onDelete: Cascade)
-    spectrumId       String?
-    handle           String?
-    discordId        String?
-    teamspeakId      String?
-    citizenId        String?
-    communityMoniker String?
 }
 
 //

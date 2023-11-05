@@ -1,9 +1,4 @@
-import {
-  type Entity,
-  type EntityLog,
-  type EntityLogAttribute,
-  type User,
-} from "@prisma/client";
+import { type Entity } from "@prisma/client";
 import { FaLock } from "react-icons/fa";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getAssignableRoles from "~/app/_lib/getAssignableRoles";
@@ -12,15 +7,12 @@ import AddRoles from "./AddRoles";
 import SingleRole from "./SingleRole";
 
 interface Props {
-  entity: Entity & {
-    logs: (EntityLog & {
-      attributes: (EntityLogAttribute & { createdBy: User })[];
-    })[];
-  };
+  entity: Entity;
 }
 
 const Roles = async ({ entity }: Readonly<Props>) => {
   const authentication = await authenticate();
+  if (!authentication) return null;
 
   const assignedAndVisibleRoles = await getAssignedAndVisibleRoles(entity);
   const assignedAndVisibleRoleIds = assignedAndVisibleRoles.map(
@@ -50,29 +42,28 @@ const Roles = async ({ entity }: Readonly<Props>) => {
         <p className="text-neutral-500 italic mt-4">Keine Rollen</p>
       )}
 
-      {authentication &&
-        (authentication.authorize([
+      {(authentication.authorize([
+        {
+          resource: "otherRole",
+          operation: "assign",
+        },
+      ]) ||
+        authentication.authorize([
           {
             resource: "otherRole",
-            operation: "assign",
+            operation: "dismiss",
           },
-        ]) ||
-          authentication.authorize([
-            {
-              resource: "otherRole",
-              operation: "dismiss",
-            },
-          ])) && (
-          <div className="flex gap-4 mt-2">
-            <AddRoles
-              entity={entity}
-              allRoles={assignableRoles}
-              assignedRoleIds={assignedAndVisibleRoleIds}
-            />
+        ])) && (
+        <div className="flex gap-4 mt-2">
+          <AddRoles
+            entity={entity}
+            allRoles={assignableRoles}
+            assignedRoleIds={assignedAndVisibleRoleIds}
+          />
 
-            {/* <ImpersonateRoles roles={visibleRoles} /> */}
-          </div>
-        )}
+          {/* <ImpersonateRoles roles={visibleRoles} /> */}
+        </div>
+      )}
     </section>
   );
 };

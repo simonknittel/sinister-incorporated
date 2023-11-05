@@ -1,24 +1,25 @@
-import {
-  type Entity,
-  type EntityLog,
-  type EntityLogAttribute,
-} from "@prisma/client";
+import { type Entity } from "@prisma/client";
+import { prisma } from "~/server/db";
 import { authenticate } from "./auth/authenticateAndAuthorize";
 import getAllRoles from "./cached/getAllRoles";
 
-export default async function getAssignedAndVisibleRoles(
-  entity: Entity & {
-    logs: (EntityLog & { attributes: EntityLogAttribute[] })[];
-  }
-) {
+export default async function getAssignedAndVisibleRoles(entity: Entity) {
   const authentication = await authenticate();
 
   const allRoles = await getAllRoles();
   const allRoleIds = allRoles.map((role) => role.id);
 
-  const logs = entity.logs
-    .filter((log) => ["role-added", "role-removed"].includes(log.type))
-    .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  const logs = await prisma.entityLog.findMany({
+    where: {
+      entityId: entity.id,
+      type: {
+        in: ["role-added", "role-removed"],
+      },
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
 
   const assignedRoleIds = new Set<string>();
   for (const log of logs) {

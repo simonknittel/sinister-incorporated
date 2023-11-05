@@ -4,6 +4,7 @@ import { authenticateApi } from "~/app/_lib/auth/authenticateAndAuthorize";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
 import { updateAlgoliaWithGenericLogType } from "../_lib/updateAlgoliaWithGenericLogType";
+import { updateEntityCaches } from "../_lib/updateEntityCaches";
 
 interface Params {
   id: string;
@@ -165,8 +166,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       }
     }
 
-    // Update EntityCache
-    // TODO: Implement
+    await updateEntityCaches(entityLog);
 
     /**
      * Update Algolia

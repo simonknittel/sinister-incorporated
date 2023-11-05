@@ -6,7 +6,7 @@ import { saveObject } from "../../_lib/algolia";
 import errorHandler from "../../_lib/errorHandler";
 
 const postBodySchema = z.object({
-  type: z.union([z.literal("citizen"), z.literal("organization")]),
+  type: z.literal("citizen"),
   spectrumId: z.string().trim(),
 });
 
@@ -55,12 +55,12 @@ export async function POST(request: Request) {
         },
         entity: {
           create: {
-            type: data.type,
             createdBy: {
               connect: {
                 id: authentication.session.user.id,
               },
             },
+            spectrumId: data.spectrumId,
           },
         },
       },

@@ -80,8 +80,6 @@ export function authorize(
     requiredPermissionSets,
     session.givenPermissionSets,
   );
-  console.log(result);
-
   if (!result) return false;
 
   return true;

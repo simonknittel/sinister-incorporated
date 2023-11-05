@@ -1,7 +1,7 @@
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getAssignableRoles from "~/app/_lib/getAssignableRoles";
 import getAssignedAndVisibleRoles from "~/app/_lib/getAssignedAndVisibleRoles";
-import { getLatestConfirmedCitizenAttributes } from "~/app/_lib/getLatestConfirmedCitizenAttributes";
+import { getLastSeenAt } from "~/app/_lib/getLastSeenAt";
 import { prisma } from "~/server/db";
 import Pagination from "../../_components/Pagination";
 import {
@@ -31,30 +31,8 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
       logs: {
         where: {
           type: {
-            in: [
-              "spectrum-id",
-              "handle",
-              "discord-id",
-              "teamspeak-id",
-              "role-added",
-              "role-removed",
-            ],
+            in: ["role-added", "role-removed"],
           },
-        },
-        include: {
-          attributes: {
-            where: {
-              key: "confirmed",
-            },
-            include: {
-              createdBy: true,
-            },
-            orderBy: {
-              createdAt: "desc",
-            },
-            take: 1,
-          },
-          submittedBy: true,
         },
         orderBy: {
           createdAt: "desc",
@@ -65,7 +43,7 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
 
   const rows = await Promise.all(
     entities.map(async (entity) => ({
-      ...(await getLatestConfirmedCitizenAttributes(entity)),
+      lastSeenAt: await getLastSeenAt(entity),
       roles: await getAssignedAndVisibleRoles(entity),
       entity,
     })),
@@ -78,9 +56,9 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
     let unknown;
     if (filters.some((filter) => filter.startsWith("unknown-"))) {
       if (
-        (filters.includes("unknown-handle") && !row.handle) ||
-        (filters.includes("unknown-discord-id") && !row["discord-id"]) ||
-        (filters.includes("unknown-teamspeak-id") && !row["teamspeak-id"])
+        (filters.includes("unknown-handle") && !row.entity.handle) ||
+        (filters.includes("unknown-discord-id") && !row.entity.discordId) ||
+        (filters.includes("unknown-teamspeak-id") && !row.entity.teamspeakId)
       ) {
         unknown = true;
       } else {
@@ -110,9 +88,9 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
   const sortedRows = filteredRows.sort((a, b) => {
     switch (searchParams.get("sort")) {
       case "handle-asc":
-        return sortAscWithAndNullLast(a.handle, b.handle);
+        return sortAscWithAndNullLast(a.entity.handle, b.entity.handle);
       case "handle-desc":
-        return sortDescAndNullLast(a.handle, b.handle);
+        return sortDescAndNullLast(a.entity.handle, b.entity.handle);
 
       case "last-seen-at-asc":
         return sortAscWithAndNullLast(

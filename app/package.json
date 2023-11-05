@@ -30,6 +30,7 @@
     "@vercel/analytics": "1.1.1",
     "@vercel/toolbar": "0.1.5",
     "algoliasearch": "4.20.0",
+    "change-case": "5.1.2",
     "clsx": "2.0.0",
     "lodash": "4.17.21",
     "lorem-ipsum": "2.0.8",

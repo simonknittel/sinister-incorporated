@@ -35,9 +35,6 @@ async function main() {
               },
             },
             {
-              type: "spectrum-id",
-            },
-            {
               type: "citizen-id",
               attributes: {
                 some: {
@@ -68,8 +65,7 @@ async function main() {
     return {
       objectID: entity.id,
       type: "citizen",
-      spectrumId: entity.logs.find((log) => log.type === "spectrum-id")!
-        .content,
+      spectrumId: entity.spectrumId,
       handles: entity.logs
         .filter((log) => log.type === "handle")
         .map((log) => log.content),

@@ -16,7 +16,6 @@ import UpdateNote from "./UpdateNote";
 
 export type Row = {
   entity: Entity;
-  handle?: string;
   noteType: NoteType;
   classificationLevel: ClassificationLevel;
   confirmationState?: EntityLogConfirmationState;
@@ -113,7 +112,7 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
                   href={`/spynet/entity/${row.entity.id}`}
                   className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
                 >
-                  {row.handle || (
+                  {row.entity.handle || (
                     <span className="text-neutral-500 italic">Unbekannt</span>
                   )}
                   <FaExternalLinkAlt />

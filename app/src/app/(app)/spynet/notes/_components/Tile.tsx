@@ -1,7 +1,6 @@
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getAllClassificationLevels from "~/app/_lib/cached/getAllClassificationLevels";
 import getAllNoteTypes from "~/app/_lib/cached/getAllNoteTypes";
-import { getLatestConfirmedCitizenHandle } from "~/app/_lib/getLatestConfirmedCitizenAttributes";
 import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
 import { prisma } from "~/server/db";
 import Pagination from "../../_components/Pagination";
@@ -33,35 +32,7 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
         type: "note",
       },
       include: {
-        entity: {
-          include: {
-            logs: {
-              where: {
-                type: {
-                  in: ["handle"],
-                },
-              },
-              include: {
-                attributes: {
-                  where: {
-                    key: "confirmed",
-                  },
-                  include: {
-                    createdBy: true,
-                  },
-                  orderBy: {
-                    createdAt: "desc",
-                  },
-                  take: 1,
-                },
-                submittedBy: true,
-              },
-              orderBy: {
-                createdAt: "desc",
-              },
-            },
-          },
-        },
+        entity: true,
         attributes: {
           where: {
             key: {
@@ -99,11 +70,8 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
       const { noteTypeId, classificationLevelId, confirmed } =
         getLatestNoteAttributes(entityLog);
 
-      const handle = getLatestConfirmedCitizenHandle(entityLog.entity.logs);
-
       return {
         entity: entityLog.entity,
-        handle,
         noteType: noteTypes.find(
           (noteType) => noteType.id === noteTypeId!.value,
         )!,

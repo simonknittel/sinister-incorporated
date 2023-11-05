@@ -1,32 +1,15 @@
-import {
-  type Entity,
-  type EntityLog,
-  type EntityLogAttribute,
-  type Role,
-  type User,
-} from "@prisma/client";
+import { type Entity, type Role } from "@prisma/client";
 import Link from "next/link";
 import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
 import Actions from "~/app/_components/Actions";
 import { HistoryModal } from "../../entity/[id]/_components/generic-log-type/HistoryModal";
-import Handles from "../../entity/[id]/_components/handle/Handles";
 import AddRoles from "../../entity/[id]/_components/roles/AddRoles";
 import SingleRole from "../../entity/[id]/_components/roles/SingleRole";
 import DeleteEntity from "./DeleteEntity";
 
 type Row = {
-  handle?: string | null;
-  spectrumId: string;
-  "discord-id"?: string | null;
-  "teamspeak-id"?: string | null;
-  createdAt: Date;
+  entity: Entity;
   lastSeenAt?: Date | null;
-  entity: Entity & {
-    logs: (EntityLog & {
-      attributes: (EntityLogAttribute & { createdBy: User })[];
-      submittedBy: User;
-    })[];
-  };
   roles: Role[];
 };
 
@@ -169,19 +152,19 @@ const Table = ({
               }}
             >
               <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                {row.handle || (
+                {row.entity.handle || (
                   <span className="text-neutral-500 italic">Unbekannt</span>
                 )}
-                <Handles entity={row.entity} />
+                <HistoryModal type="handle" entity={row.entity} />
               </td>
 
               <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                {row.spectrumId}
+                {row.entity.spectrumId}
               </td>
 
               {showDiscordIdColumn && (
                 <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                  {row["discord-id"] || (
+                  {row.entity.discordId || (
                     <span className="text-neutral-500 italic">Unbekannt</span>
                   )}
                   <HistoryModal type="discord-id" entity={row.entity} />
@@ -190,7 +173,7 @@ const Table = ({
 
               {showTeamspeakIdColumn && (
                 <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                  {row["teamspeak-id"] || (
+                  {row.entity.teamspeakId || (
                     <span className="text-neutral-500 italic">Unbekannt</span>
                   )}
                   <HistoryModal type="teamspeak-id" entity={row.entity} />
@@ -218,7 +201,7 @@ const Table = ({
               </td>
 
               <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                {row.createdAt?.toLocaleDateString("de-DE", {
+                {row.entity.createdAt?.toLocaleDateString("de-DE", {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",

@@ -5,6 +5,7 @@ import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
 import { updateAlgoliaWithGenericLogType } from "./_lib/updateAlgoliaWithGenericLogType";
+import { updateEntityCaches } from "./_lib/updateEntityCaches";
 
 interface Params {
   id: string;
@@ -150,7 +151,14 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
 
     // Only allow deleting certain log types
     if (
-      !["handle", "teamspeak-id", "discord-id", "note"].includes(entityLog.type)
+      [
+        "handle",
+        "teamspeak-id",
+        "discord-id",
+        "citizen-id",
+        "community-moniker",
+        "note",
+      ].includes(entityLog.type) === false
     )
       throw new Error("Bad request");
 
@@ -219,8 +227,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       }
     }
 
-    // Update EntityCache
-    // TODO: Implement
+    await updateEntityCaches(entityLog);
 
     /**
      * Update Algolia

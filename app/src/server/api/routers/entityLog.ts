@@ -8,6 +8,7 @@ export const entityLogRouter = createTRPCRouter({
     .input(
       z.object({
         type: z.union([
+          z.literal("handle"),
           z.literal("discord-id"),
           z.literal("teamspeak-id"),
           z.literal("community-moniker"),

@@ -1,31 +1,19 @@
-import {
-  type Entity,
-  type EntityLog,
-  type EntityLogAttribute,
-  type User,
-} from "@prisma/client";
+import { type Entity } from "@prisma/client";
 import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
-import { getLatestConfirmedCitizenAttributes } from "~/app/_lib/getLatestConfirmedCitizenAttributes";
+import { getLastSeenAt } from "~/app/_lib/getLastSeenAt";
 import { OverviewSection } from "./generic-log-type/OverviewSection";
-import Handles from "./handle/Handles";
 
 interface Props {
-  entity: Entity & {
-    logs: (EntityLog & {
-      attributes: (EntityLogAttribute & { createdBy: User })[];
-      submittedBy: User;
-    })[];
-  };
+  entity: Entity;
 }
 
 const Overview = async ({ entity }: Readonly<Props>) => {
   const authentication = await authenticate();
   if (!authentication) return null;
 
-  const { handle, spectrumId, lastSeenAt } =
-    await getLatestConfirmedCitizenAttributes(entity);
+  const lastSeenAt = await getLastSeenAt(entity);
 
   return (
     <section
@@ -41,16 +29,13 @@ const Overview = async ({ entity }: Readonly<Props>) => {
         <dd>{entity.id}</dd>
 
         <dt className="text-neutral-500 mt-4">Spectrum ID</dt>
-        <dd>{spectrumId}</dd>
+        <dd>
+          {entity.spectrumId || <span className="italic">Unbekannt</span>}
+        </dd>
 
         <OverviewSection type="citizen-id" name="Citizen ID" entity={entity} />
 
-        <dt className="text-neutral-500 mt-4">Handle</dt>
-        <dd className="flex gap-4 items-center">
-          {handle || <span className="italic">Unbekannt</span>}
-
-          <Handles entity={entity} />
-        </dd>
+        <OverviewSection type="handle" name="Handle" entity={entity} />
 
         <OverviewSection
           type="community-moniker"

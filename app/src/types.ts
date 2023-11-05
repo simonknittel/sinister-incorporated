@@ -6,6 +6,7 @@ export type EntityLogConfirmationState =
   | undefined;
 
 export type GenericEntityLogType =
+  | "handle"
   | "discord-id"
   | "teamspeak-id"
   | "citizen-id"
@@ -14,7 +15,6 @@ export type GenericEntityLogType =
 // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
 export type EntityLogType =
   | GenericEntityLogType
-  | "handle" // TODO: Move to GenericEntityLogType
   | "spectrum-id" // TODO: Move to GenericEntityLogType
   | "note"
   | "role-added"
