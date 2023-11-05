@@ -82,7 +82,7 @@ async function main() {
   const rows: Row[] = [];
 
   await new Promise<void>((resolve, reject) => {
-    createReadStream(path.resolve(__dirname, "./citizen-data.csv")) // TODO: Use actual CSV
+    createReadStream(path.resolve(__dirname, "./citizen-data.csv"))
       .pipe(parse({ delimiter: ";", fromLine: 2 }))
       .on("data", (row: Row) => {
         rows.push(row);

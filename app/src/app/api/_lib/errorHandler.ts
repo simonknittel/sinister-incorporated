@@ -8,21 +8,28 @@ export default function errorHandler(error: unknown) {
         message: "Invalid request params or body",
         errors: error.errors,
       },
-      { status: 400 }
+      { status: 400 },
     );
   } else if (error instanceof Error && error.message === "Unauthorized") {
     return NextResponse.json(
       {
         message: "Unauthorized",
       },
-      { status: 401 }
+      { status: 401 },
     );
   } else if (error instanceof Error && error.message === "Not Found") {
     return NextResponse.json(
       {
         message: "Not Found",
       },
-      { status: 404 }
+      { status: 404 },
+    );
+  } else if (error instanceof Error && error.message === "Bad request") {
+    return NextResponse.json(
+      {
+        message: "Bad request",
+      },
+      { status: 400 },
     );
   }
 
@@ -31,6 +38,6 @@ export default function errorHandler(error: unknown) {
     {
       message: "Internal server error",
     },
-    { status: 500 }
+    { status: 500 },
   );
 }

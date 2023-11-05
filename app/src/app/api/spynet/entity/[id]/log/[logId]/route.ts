@@ -50,7 +50,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 
     if (!entityLog) throw new Error("Not found");
 
-    // TODO: Validate for log type being note
+    if (entityLog.type !== "note") throw new Error("Bad request");
 
     const { noteTypeId, classificationLevelId } =
       getLatestNoteAttributes(entityLog);
@@ -148,41 +148,18 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
 
     if (!entityLog) throw new Error("Not found");
 
-    switch (entityLog.type) {
-      case "handle":
-        authentication.authorizeApi([
-          {
-            resource: "handle",
-            operation: "delete",
-          },
-        ]);
-        break;
-      case "teamspeak-id":
-        authentication.authorizeApi([
-          {
-            resource: "teamspeak-id",
-            operation: "delete",
-          },
-        ]);
-        break;
-      case "discord-id":
-        authentication.authorizeApi([
-          {
-            resource: "discord-id",
-            operation: "delete",
-          },
-        ]);
-        break;
-      case "note":
-        authentication.authorizeApi([
-          {
-            resource: "note",
-            operation: "delete",
-          },
-        ]);
-        break;
-      // TODO: Add authorization for other log types
-    }
+    // Only allow deleting certain log types
+    if (
+      !["handle", "teamspeak-id", "discord-id", "note"].includes(entityLog.type)
+    )
+      throw new Error("Bad request");
+
+    authentication.authorizeApi([
+      {
+        resource: entityLog.type,
+        operation: "delete",
+      },
+    ]);
 
     await prisma.entityLog.delete({
       where: {
