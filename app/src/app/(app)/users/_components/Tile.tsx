@@ -2,39 +2,21 @@ import { prisma } from "~/server/db";
 import Table from "./Table";
 
 const Tile = async () => {
-  const [users, entityLogs] = await Promise.all([
+  const [users, entities] = await Promise.all([
     prisma.user.findMany({
       include: {
         accounts: true,
       },
     }),
-    prisma.entityLog.findMany({
-      where: {
-        type: "discord-id",
-      },
-      include: {
-        attributes: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    }),
+    prisma.entity.findMany(),
   ]);
 
   const enrichedUsers = users.map((user) => {
-    const discordIdLog = entityLogs.find((log) => {
-      return (
-        log.content === user.accounts[0]!.providerAccountId &&
-        log.attributes.find(
-          (attribute) =>
-            attribute.key === "confirmed" && attribute.value === "confirmed",
-        )
-      );
-    });
+    const entity = entities.find(
+      (entity) => entity.discordId === user.accounts[0]!.providerAccountId,
+    );
 
-    const entityId = discordIdLog?.entityId;
-
-    if (!entityId)
+    if (!entity)
       return {
         user,
         discordId: user.accounts[0]!.providerAccountId,
@@ -43,7 +25,7 @@ const Tile = async () => {
     return {
       user,
       discordId: user.accounts[0]!.providerAccountId,
-      entityId,
+      entity,
     };
   });
 

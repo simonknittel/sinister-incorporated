@@ -43,7 +43,11 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
 
   const rows = await Promise.all(
     entities.map(async (entity) => ({
-      lastSeenAt: await getLastSeenAt(entity),
+      lastSeenAt: ["last-seen-at-asc", "last-seen-at-desc"].includes(
+        searchParams.get("sort") || "",
+      )
+        ? await getLastSeenAt(entity)
+        : undefined,
       roles: await getAssignedAndVisibleRoles(entity),
       entity,
     })),

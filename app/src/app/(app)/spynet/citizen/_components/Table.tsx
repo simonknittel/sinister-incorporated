@@ -1,15 +1,16 @@
 import { type Entity, type Role } from "@prisma/client";
 import Link from "next/link";
+import { Suspense } from "react";
 import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
 import Actions from "~/app/_components/Actions";
 import { HistoryModal } from "../../entity/[id]/_components/generic-log-type/HistoryModal";
 import AddRoles from "../../entity/[id]/_components/roles/AddRoles";
 import SingleRole from "../../entity/[id]/_components/roles/SingleRole";
 import DeleteEntity from "./DeleteEntity";
+import { LastSeenAt } from "./LastSeenAt";
 
 type Row = {
   entity: Entity;
-  lastSeenAt?: Date | null;
   roles: Role[];
 };
 
@@ -210,11 +211,13 @@ const Table = ({
 
               {showLastSeenAtColumn && (
                 <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                  {row.lastSeenAt?.toLocaleDateString("de-DE", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}
+                  <Suspense
+                    fallback={
+                      <div className="bg-neutral-800 animate-pulse rounded h-6 w-20" />
+                    }
+                  >
+                    <LastSeenAt entity={row.entity} />
+                  </Suspense>
                 </td>
               )}
 

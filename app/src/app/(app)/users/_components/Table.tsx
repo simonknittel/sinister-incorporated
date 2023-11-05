@@ -1,6 +1,6 @@
 "use client";
 
-import { type User } from "@prisma/client";
+import { type Entity, type User } from "@prisma/client";
 import {
   createColumnHelper,
   flexRender,
@@ -22,14 +22,14 @@ interface Props {
   users: {
     user: User;
     discordId: string;
-    entityId?: string;
+    entity?: Entity;
   }[];
 }
 
 type Row = {
   user: User;
   discordId: string;
-  entityId?: string;
+  entity?: Entity;
 };
 
 const columnHelper = createColumnHelper<Row>();
@@ -41,7 +41,7 @@ const Table = ({ users }: Readonly<Props>) => {
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor("discord-id", {
+      columnHelper.accessor("discordId", {
         header: "Discord ID",
         cell: (props) => {
           return (
@@ -69,7 +69,7 @@ const Table = ({ users }: Readonly<Props>) => {
             <span className="italic text-neutral-500">Unbekannt</span>
           ),
       }),
-      columnHelper.accessor("entityId", {
+      columnHelper.accessor("entity.id", {
         header: "",
         cell: (props) => {
           const entityId = props.getValue();

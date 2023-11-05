@@ -1,8 +1,9 @@
 import { type Entity } from "@prisma/client";
+import { Suspense } from "react";
 import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
-import { getLastSeenAt } from "~/app/_lib/getLastSeenAt";
+import { LastSeenAt } from "../../../citizen/_components/LastSeenAt";
 import { OverviewSection } from "./generic-log-type/OverviewSection";
 
 interface Props {
@@ -12,8 +13,6 @@ interface Props {
 const Overview = async ({ entity }: Readonly<Props>) => {
   const authentication = await authenticate();
   if (!authentication) return null;
-
-  const lastSeenAt = await getLastSeenAt(entity);
 
   return (
     <section
@@ -71,18 +70,25 @@ const Overview = async ({ entity }: Readonly<Props>) => {
           />
         )}
 
-        {lastSeenAt && (
+        {authentication.authorize([
+          {
+            resource: "lastSeen",
+            operation: "read",
+          },
+        ]) && (
           <>
             <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
               <RiTimeLine />
               Zuletzt gesehen
             </dt>
             <dd className="flex gap-4 items-center">
-              {lastSeenAt.toLocaleDateString("de-DE", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-              })}
+              <Suspense
+                fallback={
+                  <div className="bg-neutral-800 animate-pulse rounded h-6 w-20" />
+                }
+              >
+                <LastSeenAt entity={entity} />
+              </Suspense>
             </dd>
           </>
         )}
