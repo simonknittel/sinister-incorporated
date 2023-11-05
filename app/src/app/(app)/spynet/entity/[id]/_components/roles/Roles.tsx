@@ -1,8 +1,8 @@
 import { type Entity } from "@prisma/client";
 import { FaLock } from "react-icons/fa";
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
-import getAssignableRoles from "~/app/_lib/getAssignableRoles";
-import getAssignedAndVisibleRoles from "~/app/_lib/getAssignedAndVisibleRoles";
+import { getAssignableRoles } from "~/app/_lib/getAssignableRoles";
+import { getAssignedAndVisibleRoles } from "~/app/_lib/getAssignedAndVisibleRoles";
 import AddRoles from "./AddRoles";
 import SingleRole from "./SingleRole";
 

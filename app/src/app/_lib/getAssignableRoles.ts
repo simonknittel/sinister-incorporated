@@ -1,7 +1,8 @@
+import { cache } from "react";
 import { authenticate } from "./auth/authenticateAndAuthorize";
 import getAllRoles from "./cached/getAllRoles";
 
-export default async function getAssignableRoles() {
+export const getAssignableRoles = cache(async () => {
   const [authentication, allRoles] = await Promise.all([
     authenticate(),
     getAllRoles(),
@@ -57,4 +58,4 @@ export default async function getAssignableRoles() {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return assignableRoles;
-}
+});

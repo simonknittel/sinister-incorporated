@@ -1,9 +1,10 @@
 import { type Entity } from "@prisma/client";
+import { cache } from "react";
 import { prisma } from "~/server/db";
 import { authenticate } from "./auth/authenticateAndAuthorize";
 import getAllRoles from "./cached/getAllRoles";
 
-export default async function getAssignedAndVisibleRoles(entity: Entity) {
+export const getAssignedAndVisibleRoles = cache(async (entity: Entity) => {
   const authentication = await authenticate();
 
   const allRoles = await getAllRoles();
@@ -55,4 +56,4 @@ export default async function getAssignedAndVisibleRoles(entity: Entity) {
   });
 
   return assignedAndVisibleRoles;
-}
+});

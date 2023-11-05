@@ -1,6 +1,6 @@
 import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
-import getAssignableRoles from "~/app/_lib/getAssignableRoles";
-import getAssignedAndVisibleRoles from "~/app/_lib/getAssignedAndVisibleRoles";
+import { getAssignableRoles } from "~/app/_lib/getAssignableRoles";
+import { getAssignedAndVisibleRoles } from "~/app/_lib/getAssignedAndVisibleRoles";
 import { getLastSeenAt } from "~/app/_lib/getLastSeenAt";
 import { prisma } from "~/server/db";
 import Pagination from "../../_components/Pagination";
