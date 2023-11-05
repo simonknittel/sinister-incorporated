@@ -4,14 +4,12 @@ import { Suspense } from "react";
 import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
 import Actions from "~/app/_components/Actions";
 import { HistoryModal } from "../../entity/[id]/_components/generic-log-type/HistoryModal";
-import AddRoles from "../../entity/[id]/_components/roles/AddRoles";
-import SingleRole from "../../entity/[id]/_components/roles/SingleRole";
 import DeleteEntity from "./DeleteEntity";
 import { LastSeenAt } from "./LastSeenAt";
+import { RolesCell } from "./RolesCell";
 
 type Row = {
   entity: Entity;
-  roles: Role[];
 };
 
 interface Props {
@@ -20,7 +18,6 @@ interface Props {
   showDiscordIdColumn?: boolean;
   showTeamspeakIdColumn?: boolean;
   showLastSeenAtColumn?: boolean;
-  showUpdateRolesButton?: boolean;
   showDeleteEntityButton?: boolean;
   searchParams: URLSearchParams;
 }
@@ -31,7 +28,6 @@ const Table = ({
   showDiscordIdColumn = false,
   showTeamspeakIdColumn = false,
   showLastSeenAtColumn = false,
-  showUpdateRolesButton = false,
   showDeleteEntityButton = false,
   searchParams,
 }: Readonly<Props>) => {
@@ -182,23 +178,16 @@ const Table = ({
               )}
 
               <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                {row.roles.length > 0 ? (
-                  <div className="flex gap-2">
-                    {row.roles.map((role) => (
-                      <SingleRole key={role.id} role={role} />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-neutral-500 italic">Keine</p>
-                )}
-
-                {showUpdateRolesButton && (
-                  <AddRoles
+                <Suspense
+                  fallback={
+                    <div className="bg-neutral-800 animate-pulse rounded h-8 w-20" />
+                  }
+                >
+                  <RolesCell
                     entity={row.entity}
-                    allRoles={assignableRoles}
-                    assignedRoleIds={row.roles.map((role) => role.id)}
+                    assignableRoles={assignableRoles}
                   />
-                )}
+                </Suspense>
               </td>
 
               <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">

@@ -41,6 +41,8 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
     },
   });
 
+  const filters = searchParams.get("filters")?.split(",");
+
   const rows = await Promise.all(
     entities.map(async (entity) => ({
       lastSeenAt: ["last-seen-at-asc", "last-seen-at-desc"].includes(
@@ -48,12 +50,13 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
       )
         ? await getLastSeenAt(entity)
         : undefined,
-      roles: await getAssignedAndVisibleRoles(entity),
+      roles: filters?.some((filter) => filter.startsWith("role-"))
+        ? await getAssignedAndVisibleRoles(entity)
+        : undefined,
       entity,
     })),
   );
 
-  const filters = searchParams.get("filters")?.split(",");
   const filteredRows = rows.filter((row) => {
     if (!filters) return true;
 
@@ -73,7 +76,7 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
     }
 
     let role;
-    if (filters.some((filter) => filter.startsWith("role-"))) {
+    if (filters.some((filter) => filter.startsWith("role-")) && row.roles) {
       for (const filter of filters) {
         if (!filter.startsWith("role-")) continue;
         const roleId = filter.replace("role-", "");
@@ -146,20 +149,6 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
     },
   ]);
 
-  const showUpdateRolesButton =
-    authentication.authorize([
-      {
-        resource: "otherRole",
-        operation: "assign",
-      },
-    ]) ||
-    authentication.authorize([
-      {
-        resource: "otherRole",
-        operation: "dismiss",
-      },
-    ]);
-
   const showDeleteEntityButton = authentication.authorize([
     {
       resource: "citizen",
@@ -179,7 +168,6 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
         showDiscordIdColumn={showDiscordIdAtColumn}
         showTeamspeakIdColumn={showTeamspeakIdAtColumn}
         showLastSeenAtColumn={showLastSeenAtColumn}
-        showUpdateRolesButton={showUpdateRolesButton}
         showDeleteEntityButton={showDeleteEntityButton}
         searchParams={searchParams}
       />
