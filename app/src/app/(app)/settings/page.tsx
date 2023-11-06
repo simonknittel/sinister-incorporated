@@ -1,7 +1,12 @@
 import { type Metadata } from "next";
+import dynamic from "next/dynamic";
 import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
-import AnalyticsCheckbox from "./_components/AnalyticsCheckbox";
 import ClassificationLevelsTile from "./_components/classification-level/ClassificationLevelsTile";
+
+const AnalyticsCheckbox = dynamic(
+  () => import("./_components/AnalyticsCheckbox"),
+  { ssr: false },
+);
 
 export const metadata: Metadata = {
   title: "Einstellungen | Sinister Incorporated",

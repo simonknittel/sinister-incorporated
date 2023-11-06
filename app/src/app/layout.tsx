@@ -1,6 +1,12 @@
+import dynamic from "next/dynamic";
 import { type ReactNode } from "react";
 import "../styles/globals.css";
 import ToasterContainer from "./_components/ToasterContainer";
+
+const AnalyticsContainer = dynamic(
+  () => import("./_components/AnalyticsContainer"),
+  { ssr: false },
+);
 
 interface Props {
   children: ReactNode;
@@ -12,7 +18,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
       <body className="h-full bg-neutral-800 text-neutral-50">
         {children}
         <ToasterContainer />
-        {/* <AnalyticsContainer /> */}
+        <AnalyticsContainer />
       </body>
     </html>
   );
