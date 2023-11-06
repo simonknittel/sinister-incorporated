@@ -3,6 +3,7 @@ import { z } from "zod";
 import { authenticateApi } from "~/app/_lib/auth/authenticateAndAuthorize";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
+import { updateEntityRolesCache } from "./_lib/updateEntityRolesCache";
 
 interface Params {
   id: string;
@@ -66,7 +67,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
     const data = await postBodySchema.parseAsync(body);
 
     /**
-     * Authenticate the request
+     * Authorize the request
      */
     switch (data.type) {
       case "handle":
@@ -203,6 +204,9 @@ export async function POST(request: Request, { params }: { params: Params }) {
             : undefined,
       },
     });
+
+    if (["role-added", "role-removed"].includes(data.type))
+      await updateEntityRolesCache(entity.id);
 
     /**
      * Respond with the result

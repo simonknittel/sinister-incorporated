@@ -26,20 +26,7 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
 
   const currentPage = getCurrentPageFromSearchParams(searchParams);
 
-  const entities = await prisma.entity.findMany({
-    include: {
-      logs: {
-        where: {
-          type: {
-            in: ["role-added", "role-removed"],
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      },
-    },
-  });
+  const entities = await prisma.entity.findMany();
 
   const filters = searchParams.get("filters")?.split(",");
 

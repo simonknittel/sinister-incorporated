@@ -96,53 +96,21 @@ export const authOptions: NextAuthOptions = {
         },
       });
 
-      const discordIdLog = await prisma.entityLog.findFirst({
+      const entity = await prisma.entity.findFirst({
         where: {
-          type: "discord-id",
-          content: discordAccount!.providerAccountId,
-          attributes: {
-            some: {
-              key: "confirmed",
-              value: "confirmed",
-            },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
+          discordId: discordAccount!.providerAccountId,
         },
       });
 
       let givenPermissionSets: PermissionSet[] = [];
 
-      if (discordIdLog) {
-        const roleLogs = await prisma.entityLog.findMany({
-          where: {
-            entityId: discordIdLog.entityId,
-            type: {
-              in: ["role-added", "role-removed"],
-            },
-          },
-          orderBy: {
-            createdAt: "asc",
-          },
-        });
-
-        const assignedRoles = new Set<string>();
-
-        for (const roleLog of roleLogs) {
-          if (!roleLog.content) continue;
-
-          if (roleLog.type === "role-added") {
-            assignedRoles.add(roleLog.content);
-          } else if (roleLog.type === "role-removed") {
-            assignedRoles.delete(roleLog.content);
-          }
-        }
+      if (entity) {
+        const assignedRoles = entity.roles?.split(",") ?? [];
 
         const roles = await prisma.role.findMany({
           where: {
             id: {
-              in: Array.from(assignedRoles),
+              in: assignedRoles,
             },
           },
           include: {

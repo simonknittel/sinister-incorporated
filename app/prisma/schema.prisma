@@ -112,6 +112,7 @@ model Entity {
     teamspeakId      String?
     citizenId        String?
     communityMoniker String?
+    roles            String? @db.Text
 }
 
 model EntityLog {
