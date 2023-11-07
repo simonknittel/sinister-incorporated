@@ -1,4 +1,5 @@
 import { type Metadata } from "next";
+import { Hero } from "~/app/_components/Hero";
 import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import CreateEntity from "../_components/CreateEntity";
@@ -20,9 +21,7 @@ export default async function Page() {
   return (
     <main className="h-full flex justify-center items-center bg-sinister-radial-gradient">
       <div className="w-full max-w-md py-8 flex flex-col items-center gap-4">
-        <h1 className="text-center text-5xl lg:text-6xl text-sinister-red font-extrabold uppercase bg-clip-text text-transparent bg-sinister-text-gradient">
-          Spynet
-        </h1>
+        <Hero text="Spynet" />
 
         {!(await getUnleashFlag("DisableAlgolia")) && <Search />}
 
