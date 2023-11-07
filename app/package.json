@@ -36,6 +36,8 @@
     "lorem-ipsum": "2.0.8",
     "next": "13.5.6",
     "next-auth": "4.24.3",
+    "phaser": "3.60.0",
+    "phaser3spectorjs": "0.0.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "7.47.0",
