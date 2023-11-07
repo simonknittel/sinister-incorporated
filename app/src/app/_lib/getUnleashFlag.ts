@@ -2,7 +2,7 @@ import { flag } from "@unleash/nextjs";
 import { authenticate } from "./auth/authenticateAndAuthorize";
 
 export const getUnleashFlag = async (
-  name: "DisableAlgolia" | "EnablePreviewComments" | "DisableCareBearHuhn",
+  name: "DisableAlgolia" | "EnablePreviewComments" | "EnableCareBearShooter",
 ) => {
   const authentication = await authenticate();
 

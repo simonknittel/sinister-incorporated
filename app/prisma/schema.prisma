@@ -98,12 +98,13 @@ model OperationUnit {
 //
 
 model Entity {
-    id          String      @id @default(cuid())
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @updatedAt
-    logs        EntityLog[]
-    createdById String
-    createdBy   User        @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
+    id                    String                 @id @default(cuid())
+    createdAt             DateTime               @default(now())
+    updatedAt             DateTime               @updatedAt
+    logs                  EntityLog[]
+    createdById           String
+    createdBy             User                   @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
+    careBearShooterScores CareBearShooterScore[]
 
     // Holds the latest confirmed values
     spectrumId       String?
@@ -259,4 +260,16 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+//
+// Care Bear Huhn
+//
+
+model CareBearShooterScore {
+    id        String   @id @default(cuid())
+    entityId  String
+    entity    Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+    score     Int
+    createdAt DateTime @default(now())
 }
