@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
@@ -17,22 +18,20 @@ export default async function Page() {
   if (!(await getUnleashFlag("EnableCareBearShooter"))) redirect("/dashboard");
 
   return (
-    <div className="h-full bg-sinister-radial-gradient">
-      <div className="py-8 text-center">
+    <div className={clsx("h-full bg-sinister-radial-gradient", styles.grid)}>
+      <div className={clsx("py-8 text-center", styles.hero)}>
         <Hero text="Meet the Care Bear" />
       </div>
 
-      <div className="flex">
-        <main className="flex-1">
-          <Suspense fallback={<>Loading ...</>}>
-            <Game />
-          </Suspense>
-        </main>
+      <main className={clsx(styles.game)}>
+        <Suspense fallback={<>Loading ...</>}>
+          <Game />
+        </Suspense>
+      </main>
 
-        <aside className="w-[320px]">
-          <h2>Highscore</h2>
-        </aside>
-      </div>
+      <aside className={clsx(styles.highscore)}>
+        <h2>Highscore</h2>
+      </aside>
     </div>
   );
 }
