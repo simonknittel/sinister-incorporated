@@ -65,6 +65,10 @@ const config = {
           value: "br",
         },
         {
+          key: "Cache-Control",
+          value: "private, no-cache, no-store, max-age=0, must-revalidate"
+        },
+        {
           key: "Content-Type",
           value: "application/javascript",
         },
@@ -78,6 +82,10 @@ const config = {
           value: "br",
         },
         {
+          key: "Cache-Control",
+          value: "private, no-cache, no-store, max-age=0, must-revalidate"
+        },
+        {
           key: "Content-Type",
           value: "application/octet-stream",
         },
@@ -89,6 +97,10 @@ const config = {
         {
           key: "Content-Encoding",
           value: "br",
+        },
+        {
+          key: "Cache-Control",
+          value: "private, no-cache, no-store, max-age=0, must-revalidate"
         },
         {
           key: "Content-Type",
