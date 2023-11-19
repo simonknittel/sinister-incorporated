@@ -9,14 +9,14 @@ const Game = dynamic(() => import("./_components/Game/Game"), {
 });
 
 export const metadata: Metadata = {
-  title: "Meet the Care Bear | Sinister Incorporated",
+  title: "Meet the Care Bears | Sinister Incorporated",
 };
 
 export default async function Page() {
   if (!(await getUnleashFlag("EnableCareBearShooter"))) redirect("/");
 
   return (
-    <main className="h-full bg-sinister-radial-gradient">
+    <main className="h-full bg-sinister-radial-gradient flex items-center justify-center">
       <Suspense fallback={<>Loading ...</>}>
         <Game />
       </Suspense>
