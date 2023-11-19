@@ -16,7 +16,7 @@ export default async function Page() {
   if (!(await getUnleashFlag("EnableCareBearShooter"))) redirect("/");
 
   return (
-    <main className="h-full bg-sinister-radial-gradient flex items-center justify-center">
+    <main className="h-full bg-sinister-radial-gradient flex items-center justify-center relative">
       <Suspense fallback={<>Loading ...</>}>
         <Game />
       </Suspense>

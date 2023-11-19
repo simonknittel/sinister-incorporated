@@ -57,6 +57,45 @@ const config = {
         },
       ],
     },
+    {
+      source: "/meet-the-care-bears-assets/Build/Build.framework.js.br",
+      headers: [
+        {
+          key: "Content-Encoding",
+          value: "br",
+        },
+        {
+          key: "Content-Type",
+          value: "application/javascript",
+        },
+      ],
+    },
+    {
+      source: "/meet-the-care-bears-assets/Build/Build.data.br",
+      headers: [
+        {
+          key: "Content-Encoding",
+          value: "br",
+        },
+        {
+          key: "Content-Type",
+          value: "application/octet-stream",
+        },
+      ],
+    },
+    {
+      source: "/meet-the-care-bears-assets/Build/Build.wasm.br",
+      headers: [
+        {
+          key: "Content-Encoding",
+          value: "br",
+        },
+        {
+          key: "Content-Type",
+          value: "application/wasm",
+        },
+      ],
+    }
   ],
 };
 
