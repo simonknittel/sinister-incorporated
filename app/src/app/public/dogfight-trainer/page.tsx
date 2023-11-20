@@ -9,7 +9,7 @@ const Game = dynamic(() => import("./_components/Game/Game"), {
 });
 
 export const metadata: Metadata = {
-  title: "Meet the Care Bears | Sinister Incorporated",
+  title: "Dogfight Trainer | Sinister Incorporated",
 };
 
 export default async function Page() {

@@ -58,7 +58,7 @@ const config = {
       ],
     },
     {
-      source: "/meet-the-care-bears-assets/Build/Build.framework.js.br",
+      source: "/dogfight-trainer-assets/Build/Build.framework.js.br",
       headers: [
         {
           key: "Content-Encoding",
@@ -75,7 +75,7 @@ const config = {
       ],
     },
     {
-      source: "/meet-the-care-bears-assets/Build/Build.data.br",
+      source: "/dogfight-trainer-assets/Build/Build.data.br",
       headers: [
         {
           key: "Content-Encoding",
@@ -92,7 +92,7 @@ const config = {
       ],
     },
     {
-      source: "/meet-the-care-bears-assets/Build/Build.wasm.br",
+      source: "/dogfight-trainer-assets/Build/Build.wasm.br",
       headers: [
         {
           key: "Content-Encoding",

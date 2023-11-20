@@ -5,7 +5,7 @@ import { useRef } from "react";
 
 // @refresh reset
 
-const buildUrl = "/meet-the-care-bears-assets/Build";
+const buildUrl = "/dogfight-trainer-assets/Build";
 
 const config = {
   dataUrl: buildUrl + "/Build.data.br",
@@ -13,8 +13,8 @@ const config = {
   codeUrl: buildUrl + "/Build.wasm.br",
   streamingAssetsUrl: "StreamingAssets",
   companyName: "Simon Knittel",
-  productName: "Meet the Care Bears",
-  productVersion: "0.1.0",
+  productName: "Dogfight Trainer",
+  productVersion: "1",
   showBanner: () => {},
 };
 
