@@ -14,7 +14,7 @@ const config = {
   streamingAssetsUrl: "StreamingAssets",
   companyName: "Simon Knittel",
   productName: "Dogfight Trainer",
-  productVersion: "2",
+  productVersion: "3",
   showBanner: () => {},
 };
 
