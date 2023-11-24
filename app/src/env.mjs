@@ -32,6 +32,7 @@ export const env = createEnv({
     R2_BUCKET_NAME: z.string(),
     UNLEASH_SERVER_API_URL: z.string().url(),
     UNLEASH_SERVER_API_TOKEN: z.string(),
+    AXIOM_API_TOKEN: z.string().optional(),
   },
 
   /*
@@ -70,5 +71,6 @@ export const env = createEnv({
     NEXT_PUBLIC_R2_PUBLIC_URL: process.env.NEXT_PUBLIC_R2_PUBLIC_URL,
     UNLEASH_SERVER_API_URL: process.env.UNLEASH_SERVER_API_URL,
     UNLEASH_SERVER_API_TOKEN: process.env.UNLEASH_SERVER_API_TOKEN,
+    AXIOM_API_TOKEN: process.env.AXIOM_API_TOKEN,
   },
 });
