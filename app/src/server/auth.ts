@@ -6,6 +6,7 @@ import {
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import { z } from "zod";
+import { log } from "~/_lib/logging";
 import getPermissionSetsByRoles from "~/app/_lib/auth/getPermissionSetsByRoles";
 import { type PermissionSet } from "~/app/_lib/auth/PermissionSet";
 import { env } from "~/env.mjs";
@@ -158,6 +159,12 @@ export const authOptions: NextAuthOptions = {
        * created in the database. Therefore, we have to figure out ourselves
        * if we can update an existing user or not.
        */
+
+      log.info("Login attempt", {
+        accountProvider: account?.provider,
+        accountProviderAccountId: account?.providerAccountId,
+        profileEmail: profile?.email,
+      });
 
       const existingUser = await prisma.user.findUnique({
         where: {
