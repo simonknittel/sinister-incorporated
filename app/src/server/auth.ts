@@ -176,6 +176,9 @@ export const authOptions: NextAuthOptions = {
         const guildMember = await getGuildMember(account.access_token);
 
         if ("message" in guildMember) {
+          log.info("User not member of the Discord guild", {
+            userId: user.id,
+          });
           throw new Error(guildMember.message);
         }
 
@@ -215,6 +218,9 @@ export const authOptions: NextAuthOptions = {
         const guildMember = await getGuildMember(account.access_token);
 
         if ("message" in guildMember) {
+          log.info("User not member of the Discord guild", {
+            userId: user.id,
+          });
           throw new Error(guildMember.message);
         }
 
