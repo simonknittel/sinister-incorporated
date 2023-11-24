@@ -2,6 +2,7 @@ import { getServerSession, type Session } from "next-auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
+import { log } from "~/_lib/logging";
 import { authOptions } from "~/server/auth";
 import comparePermissionSets from "./comparePermissionSets";
 import { type PermissionSet } from "./PermissionSet";
@@ -22,13 +23,23 @@ export const authenticate = cache(async () => {
 
 export async function authenticatePage() {
   const authentication = await authenticate();
-  if (!authentication) redirect("/");
+  if (!authentication) {
+    log.info("Unauthenticated request to page", {
+      // TODO: Add request path
+    });
+    redirect("/");
+  }
 
   return {
     ...authentication,
     authorizePage: (requiredPermissionSets?: PermissionSet[]) => {
       const result = authentication.authorize(requiredPermissionSets);
-      if (!result) redirect("/");
+      if (!result) {
+        log.info("Unauthorized request to page", {
+          userId: authentication.session.user.id,
+        });
+        redirect("/");
+      }
       return result;
     },
   };
@@ -36,13 +47,21 @@ export async function authenticatePage() {
 
 export async function authenticateApi() {
   const authentication = await authenticate();
-  if (!authentication) throw new Error("Unauthorized");
+  if (!authentication) {
+    log.info("Unauthenticated request to API", {});
+    throw new Error("Unauthorized");
+  }
 
   return {
     ...authentication,
     authorizeApi: (requiredPermissionSets?: PermissionSet[]) => {
       const result = authentication.authorize(requiredPermissionSets);
-      if (!result) throw new Error("Unauthorized");
+      if (!result) {
+        log.info("Unauthorized request to API", {
+          userId: authentication.session.user.id,
+        });
+        throw new Error("Unauthorized");
+      }
       return result;
     },
   };
