@@ -10,7 +10,9 @@ const LogoutButton = () => {
 
   const handleClick = async () => {
     setIsLoggingOut(true);
-    await signOut();
+    await signOut({
+      callbackUrl: "/",
+    });
   };
 
   return (
