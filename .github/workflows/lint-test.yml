@@ -1,0 +1,79 @@
+name: Lint and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - uses: actions/setup-node@v4.0.0
+        with:
+          node-version-file: ".nvmrc"
+
+      - uses: actions/cache@v3.3.2
+        id: node-modules-cache
+        with:
+          path: app/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
+
+      - name: Install app dependencies
+        run: npm ci
+        working-directory: app
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+
+      - name: Lint
+        run: npm run lint
+        working-directory: app
+        continue-on-error: true
+        env:
+          DATABASE_URL: "mysql://foo"
+          NEXTAUTH_SECRET: "foo"
+          NEXTAUTH_URL: "https://foo"
+          DISCORD_CLIENT_ID: "foo"
+          DISCORD_CLIENT_SECRET: "foo"
+          DISCORD_GUILD_ID: "foo"
+          DISCORD_TOKEN: "foo"
+          NEXT_PUBLIC_ALGOLIA_APP_ID: "foo"
+          ALGOLIA_ADMIN_API_KEY: "foo"
+          NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY: "foo"
+          R2_ACCOUNT_ID: "foo"
+          R2_ACCESS_KEY_ID: "foo"
+          R2_SECRET_ACCESS_KEY: "foo"
+          R2_BUCKET_NAME: "foo"
+          NEXT_PUBLIC_R2_PUBLIC_URL: "foo"
+          UNLEASH_SERVER_API_URL: "https://foo"
+          UNLEASH_SERVER_API_TOKEN: "foo"
+
+  test:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - uses: actions/setup-node@v4.0.0
+        with:
+          node-version-file: ".nvmrc"
+
+      - uses: actions/cache@v3.3.2
+        id: node-modules-cache
+        with:
+          path: app/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
+
+      - name: Install app dependencies
+        run: npm ci
+        working-directory: app
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+
+      - name: Test
+        run: npm run test
+        working-directory: app

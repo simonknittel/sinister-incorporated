@@ -5,6 +5,7 @@
 		"clsx",
 		"esnext",
 		"gltf",
+		"lcov",
 		"Notizart",
 		"prisma",
 		"pscale",
@@ -13,5 +14,7 @@
 		"uidotdev"
 	],
 	"dotenv.enableAutocloaking": false,
-	"typescript.tsdk": "node_modules/typescript/lib"
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"vitest.enable": true,
+	"vitest.commandLine": "npx vitest --coverage"
 }

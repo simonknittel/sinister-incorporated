@@ -55,6 +55,8 @@ export default function comparePermissionSets(
 
     return false;
   }
+
+  return true;
 }
 
 function hasMatchingAttributes(

@@ -8,6 +8,8 @@
 		"dbaeumer.vscode-eslint",
 		"dotenv.dotenv-vscode",
 		"github.vscode-github-actions",
-		"streetsidesoftware.code-spell-checker-german"
+		"streetsidesoftware.code-spell-checker-german",
+		"zixuanchen.vitest-explorer",
+		"ryanluker.vscode-coverage-gutters"
 	]
 }
