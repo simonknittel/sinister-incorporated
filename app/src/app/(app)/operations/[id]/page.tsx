@@ -2,6 +2,7 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { log } from "~/_lib/logging";
 import Avatar from "~/app/_components/Avatar";
 import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
@@ -73,7 +74,12 @@ export async function generateMetadata({
       title: `${operation.title} - Operation | Sinister Incorporated`,
     };
   } catch (error) {
-    console.error(error);
+    log.error(
+      "Error while generating metadata for /(app)/operations/[id]/page.tsx",
+      {
+        error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+      },
+    );
 
     return {
       title: `Error | Sinister Incorporated`,

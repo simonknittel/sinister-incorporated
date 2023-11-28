@@ -2,6 +2,7 @@ import { groupBy } from "lodash";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { z } from "zod";
+import { log } from "~/_lib/logging";
 import FleetTable from "~/app/(app)/fleet/_components/FleetTable";
 import Modal from "~/app/_components/Modal";
 import { env } from "~/env.mjs";
@@ -14,7 +15,7 @@ const TimeAgoContainer = dynamic(
     loading: () => (
       <span className="block h-[1em] w-[7em] animate-pulse rounded bg-neutral-500" />
     ),
-  }
+  },
 );
 
 const scheduledEventResponseSchema = z.union([
@@ -35,7 +36,7 @@ const scheduledEventUsersResponseSchema = z.union([
       user: z.object({
         id: z.string(),
       }),
-    })
+    }),
   ),
 
   z.object({
@@ -67,7 +68,7 @@ async function getEvent(id: string) {
         next: {
           revalidate: 30,
         },
-      }
+      },
     );
 
     const body: unknown = await response.json();
@@ -78,11 +79,11 @@ async function getEvent(id: string) {
         throw new Error("Rate Limiting der Discord API");
       } else if (data.message === "Unknown Guild") {
         throw new Error(
-          `Der Discord Server \"${env.DISCORD_GUILD_ID}\" existiert nicht.`
+          `Der Discord Server \"${env.DISCORD_GUILD_ID}\" existiert nicht.`,
         );
       } else if (data.message === "Missing Access") {
         throw new Error(
-          `Diese Anwendung hat keinen Zugriff auf den Discord Server \"${env.DISCORD_GUILD_ID}\".`
+          `Diese Anwendung hat keinen Zugriff auf den Discord Server \"${env.DISCORD_GUILD_ID}\".`,
         );
       } else {
         throw new Error(data.message);
@@ -119,7 +120,7 @@ async function getEventUsers(id: string) {
         next: {
           revalidate: 30,
         },
-      }
+      },
     );
 
     const body: unknown = await response.json();
@@ -130,11 +131,11 @@ async function getEventUsers(id: string) {
         throw new Error("Rate Limiting der Discord API");
       } else if (data.message === "Unknown Guild") {
         throw new Error(
-          `Der Discord Server \"${env.DISCORD_GUILD_ID}\" existiert nicht.`
+          `Der Discord Server \"${env.DISCORD_GUILD_ID}\" existiert nicht.`,
         );
       } else if (data.message === "Missing Access") {
         throw new Error(
-          `Diese Anwendung hat keinen Zugriff auf den Discord Server \"${env.DISCORD_GUILD_ID}\".`
+          `Diese Anwendung hat keinen Zugriff auf den Discord Server \"${env.DISCORD_GUILD_ID}\".`,
         );
       } else {
         throw new Error(data.message);
@@ -161,7 +162,12 @@ export async function generateMetadata({
       title: `Verfügbare Flotte - ${event.name} | Sinister Incorporated`,
     };
   } catch (error) {
-    console.error(error);
+    log.error(
+      "Error while generating metadata for /(app)/@fleetModal/(.)events/[id]/fleet/page.tsx",
+      {
+        error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+      },
+    );
 
     return {
       title: `Error | Sinister Incorporated`,

@@ -1,7 +1,7 @@
 import { env } from "~/env.mjs";
 import { logToAxiom } from "./axiom";
 import { logToConsole } from "./console";
-import { logToLoki } from "./logToLoki";
+import { logToLoki } from "./loki";
 import { type LogEntry } from "./types";
 
 const info = (message: string, args: Record<string, unknown>) => {

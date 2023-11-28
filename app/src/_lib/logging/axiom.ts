@@ -42,9 +42,8 @@ export const logToAxiom: LogOutput = (logEntry) => {
         timestamp: new Date(),
         level: "error",
         message: "Error posting to Axiom",
-        error: "See next log entry for details",
+        error: JSON.stringify(err, Object.getOwnPropertyNames(err)),
         host: env.NEXTAUTH_URL!,
       });
-      console.error(err);
     });
 };

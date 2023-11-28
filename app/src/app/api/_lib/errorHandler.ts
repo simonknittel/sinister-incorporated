@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
+import { log } from "~/_lib/logging";
 
 export default function errorHandler(error: unknown) {
   if (error instanceof ZodError) {
@@ -33,7 +34,10 @@ export default function errorHandler(error: unknown) {
     );
   }
 
-  console.error(error);
+  log.error("errorHandler", {
+    error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+  });
+
   return NextResponse.json(
     {
       message: "Internal server error",

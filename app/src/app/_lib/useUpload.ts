@@ -1,3 +1,5 @@
+"use client";
+
 import { type Upload } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";

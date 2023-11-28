@@ -57,9 +57,8 @@ export const logToLoki: LogOutput = (logEntry) => {
         timestamp: new Date(),
         level: "error",
         message: "Error posting to Loki",
-        error: "See next log entry for details",
+        error: JSON.stringify(err, Object.getOwnPropertyNames(err)),
         host: env.NEXTAUTH_URL,
       });
-      console.error(err);
     });
 };

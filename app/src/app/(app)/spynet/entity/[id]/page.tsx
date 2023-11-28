@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { FaSitemap } from "react-icons/fa";
+import { log } from "~/_lib/logging";
 import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import sinisterIcon from "../../../../../assets/Icons/Membership/logo_white.svg";
@@ -43,7 +44,12 @@ export async function generateMetadata({
       title: `${entity.handle || entity.id} - Spynet | Sinister Incorporated`,
     };
   } catch (error) {
-    console.error(error);
+    log.error(
+      "Error while generating metadata for /(app)/spynet/entity/[id]/page.tsx",
+      {
+        error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+      },
+    );
 
     return {
       title: `Error | Sinister Incorporated`,
