@@ -1,7 +1,8 @@
 export interface LogEntry {
-  timestamp: string;
+  timestamp: Date;
   level: "info" | "warn" | "error";
   message: string;
+  host: string;
   [key: string]: unknown;
 }
 

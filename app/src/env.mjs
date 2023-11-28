@@ -33,6 +33,9 @@ export const env = createEnv({
     UNLEASH_SERVER_API_URL: z.string().url(),
     UNLEASH_SERVER_API_TOKEN: z.string(),
     AXIOM_API_TOKEN: z.string().optional(),
+    LOKI_HOST: z.string().url().optional(),
+    LOKI_AUTH_USER: z.string().optional(),
+    LOKI_AUTH_PASSWORD: z.string().optional(),
   },
 
   /*
@@ -72,5 +75,8 @@ export const env = createEnv({
     UNLEASH_SERVER_API_URL: process.env.UNLEASH_SERVER_API_URL,
     UNLEASH_SERVER_API_TOKEN: process.env.UNLEASH_SERVER_API_TOKEN,
     AXIOM_API_TOKEN: process.env.AXIOM_API_TOKEN,
+    LOKI_HOST: process.env.LOKI_HOST,
+    LOKI_AUTH_USER: process.env.LOKI_AUTH_USER,
+    LOKI_AUTH_PASSWORD: process.env.LOKI_AUTH_PASSWORD,
   },
 });

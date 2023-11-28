@@ -3,39 +3,48 @@ import { logToConsole } from "./console";
 import { type LogOutput } from "./types";
 
 export const logToAxiom: LogOutput = (logEntry) => {
-  // TODO: Debounce this to avoid spamming Axiom
+  if (!env.AXIOM_API_TOKEN) return;
 
-  if (env.AXIOM_API_TOKEN) {
-    fetch("https://api.axiom.co/v1/datasets/sinister-incorporated/ingest", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${env.AXIOM_API_TOKEN}`,
-      },
-      body: JSON.stringify([
-        {
-          _time: logEntry.timestamp,
-          ...logEntry,
+  // TODO: Debounce this to avoid spamming
+
+  const { timestamp, ...rest } = logEntry;
+
+  fetch("https://api.axiom.co/v1/datasets/sinister-incorporated/ingest", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${env.AXIOM_API_TOKEN}`,
+    },
+    body: JSON.stringify([
+      {
+        _time: logEntry.timestamp.toISOString(),
+        ...{
+          timestamp: timestamp.toISOString(),
+          ...rest,
         },
-      ]),
-    })
-      .then((res) => {
-        if (res.ok) return;
+      },
+    ]),
+  })
+    .then(async (res) => {
+      if (res.ok) return;
 
-        logToConsole({
-          timestamp: new Date().toISOString(),
-          level: "error",
-          message: "Error posting to Axiom",
-          responseBody: res.body,
-        });
-      })
-      .catch((err) => {
-        logToConsole({
-          timestamp: new Date().toISOString(),
-          level: "error",
-          message: "Error posting to Axiom",
-          error: err,
-        });
+      logToConsole({
+        timestamp: new Date(),
+        level: "error",
+        message: "Error posting to Axiom",
+        responseBody: await res.text(),
+        responseStatus: res.status,
+        host: env.NEXTAUTH_URL!,
       });
-  }
+    })
+    .catch((err) => {
+      logToConsole({
+        timestamp: new Date(),
+        level: "error",
+        message: "Error posting to Axiom",
+        error: "See next log entry for details",
+        host: env.NEXTAUTH_URL!,
+      });
+      console.error(err);
+    });
 };
