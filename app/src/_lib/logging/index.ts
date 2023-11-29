@@ -9,7 +9,7 @@ const info = (message: string, args: Record<string, unknown>) => {
     timestamp: new Date(),
     level: "info",
     message,
-    host: env.NEXTAUTH_URL,
+    host: env.HOST,
     ...args,
   };
 
@@ -23,7 +23,7 @@ const warn = (message: string, args: Record<string, unknown>) => {
     timestamp: new Date(),
     level: "warn",
     message,
-    host: env.NEXTAUTH_URL,
+    host: env.HOST,
     ...args,
   };
 
@@ -37,7 +37,7 @@ const error = (message: string, args: Record<string, unknown>) => {
     timestamp: new Date(),
     level: "error",
     message,
-    host: env.NEXTAUTH_URL,
+    host: env.HOST,
     ...args,
   };
 

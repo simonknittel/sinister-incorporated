@@ -14,13 +14,10 @@ export const env = createEnv({
         ? z.string().min(1)
         : z.string().min(1).optional(),
     NEXTAUTH_URL: z.preprocess(
-      // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
-      // Since NextAuth.js automatically uses the VERCEL_URL if present.
-      (str) => process.env.VERCEL_URL ?? str,
-      // VERCEL_URL doesn't include `https` so it cant be validated as a URL
-      process.env.VERCEL ? z.string().min(1) : z.string().url(),
+      // Uses VERCEL_URL if HOST is not set, e.g. on Vercel's preview deployments
+      (str) => str || `https://${process.env.VERCEL_URL}`,
+      z.string().url(),
     ),
-    // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
     DISCORD_CLIENT_ID: z.string(),
     DISCORD_CLIENT_SECRET: z.string(),
     DISCORD_GUILD_ID: z.string(),
@@ -36,6 +33,11 @@ export const env = createEnv({
     LOKI_HOST: z.string().url().optional(),
     LOKI_AUTH_USER: z.string().optional(),
     LOKI_AUTH_PASSWORD: z.string().optional(),
+    HOST: z.preprocess(
+      // Uses VERCEL_URL if HOST is not set, e.g. on Vercel's preview deployments
+      (str) => str || `https://${process.env.VERCEL_URL}`,
+      z.string().url(),
+    ),
   },
 
   /*
@@ -78,5 +80,6 @@ export const env = createEnv({
     LOKI_HOST: process.env.LOKI_HOST,
     LOKI_AUTH_USER: process.env.LOKI_AUTH_USER,
     LOKI_AUTH_PASSWORD: process.env.LOKI_AUTH_PASSWORD,
+    HOST: process.env.HOST,
   },
 });
