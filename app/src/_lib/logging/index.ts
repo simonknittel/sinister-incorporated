@@ -13,6 +13,8 @@ const info = (message: string, args: Record<string, unknown>) => {
     ...args,
   };
 
+  if (env.COMMIT_SHA) logEntry.commitSha = env.COMMIT_SHA;
+
   logToConsole(logEntry);
   logToAxiom(logEntry);
   logToLoki(logEntry);
@@ -27,6 +29,8 @@ const warn = (message: string, args: Record<string, unknown>) => {
     ...args,
   };
 
+  if (env.COMMIT_SHA) logEntry.commitSha = env.COMMIT_SHA;
+
   logToConsole(logEntry);
   logToAxiom(logEntry);
   logToLoki(logEntry);
@@ -40,6 +44,8 @@ const error = (message: string, args: Record<string, unknown>) => {
     host: env.HOST,
     ...args,
   };
+
+  if (env.COMMIT_SHA) logEntry.commitSha = env.COMMIT_SHA;
 
   logToConsole(logEntry);
   logToAxiom(logEntry);

@@ -35,6 +35,7 @@ export const logToAxiom: LogOutput = (logEntry) => {
         responseBody: await res.text(),
         responseStatus: res.status,
         host: env.NEXTAUTH_URL!,
+        ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
       });
     })
     .catch((err) => {
@@ -44,6 +45,7 @@ export const logToAxiom: LogOutput = (logEntry) => {
         message: "Error posting to Axiom",
         error: JSON.stringify(err, Object.getOwnPropertyNames(err)),
         host: env.NEXTAUTH_URL!,
+        ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
       });
     });
 };

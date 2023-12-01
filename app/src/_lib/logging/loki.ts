@@ -50,6 +50,7 @@ export const logToLoki: LogOutput = (logEntry) => {
         responseBody: await res.text(),
         responseStatus: res.status,
         host: env.NEXTAUTH_URL,
+        ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
       });
     })
     .catch((err) => {
@@ -59,6 +60,7 @@ export const logToLoki: LogOutput = (logEntry) => {
         message: "Error posting to Loki",
         error: JSON.stringify(err, Object.getOwnPropertyNames(err)),
         host: env.NEXTAUTH_URL,
+        ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
       });
     });
 };

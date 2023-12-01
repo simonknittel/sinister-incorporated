@@ -35,9 +35,14 @@ export const env = createEnv({
     LOKI_AUTH_PASSWORD: z.string().optional(),
     HOST: z.preprocess(
       // Uses VERCEL_URL if HOST is not set, e.g. on Vercel's preview deployments
-      (str) => str || `https://${process.env.VERCEL_URL}`,
-      z.string().url(),
+      (str) => str || process.env.VERCEL_URL,
+      z.string(),
     ),
+    COMMIT_SHA: z.preprocess(
+      // Uses VERCEL_GIT_COMMIT_SHA if COMMIT_SHA is not set
+      (str) => str || process.env.VERCEL_GIT_COMMIT_SHA,
+      z.string().optional(),
+    )
   },
 
   /*
@@ -81,5 +86,6 @@ export const env = createEnv({
     LOKI_AUTH_USER: process.env.LOKI_AUTH_USER,
     LOKI_AUTH_PASSWORD: process.env.LOKI_AUTH_PASSWORD,
     HOST: process.env.HOST,
+    COMMIT_SHA: process.env.COMMIT_SHA,
   },
 });

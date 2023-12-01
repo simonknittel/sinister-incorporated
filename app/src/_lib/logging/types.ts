@@ -3,6 +3,7 @@ export interface LogEntry {
   level: "info" | "warn" | "error";
   message: string;
   host: string;
+  commitSha?: string;
   [key: string]: unknown;
 }
 
