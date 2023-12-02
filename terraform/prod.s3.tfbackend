@@ -1,4 +1,4 @@
 region = "eu-central-1"
-bucket = "terraform-backend"
-key = "state"
 profile = "sinister-incorporated-prod"
+bucket = "terraform-backend-awvb4oa8tv7nao48"
+key = "state"

@@ -13,11 +13,12 @@ terraform {
 
 provider "aws" {
   region = "eu-central-1"
+	profile = "sinister-incorporated-test"
 
   default_tags {
     tags = {
       ManagedBy  = "Terraform"
-      Repository = "simonknittel/infrastructure"
+      Repository = "simonknittel/sinister-incorporated"
     }
   }
 }

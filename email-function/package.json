@@ -1,0 +1,13 @@
+{
+  "name": "email-function",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "esbuild src/index.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outdir=dist"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.130",
+    "esbuild": "0.19.8"
+  }
+}
