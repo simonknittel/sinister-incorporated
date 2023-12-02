@@ -25,6 +25,9 @@ Tools of the Star Citizen organization _Sinister Incorporated_.
 - [react-hot-toast](https://github.com/timolins/react-hot-toast)
 - [React Icons](https://github.com/react-icons/react-icons)
 - [Zod](https://github.com/colinhacks/zod)
+- [Terraform](https://www.terraform.io/)
+- [React Email](https://react.email/)
+- [Mailgun](https://www.mailgun.com/)
 
 ## Usage
 
