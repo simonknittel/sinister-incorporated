@@ -31,8 +31,8 @@ Tools of the Star Citizen organization _Sinister Incorporated_.
 
 # Setup
 
-- [Setup Local Machine](./docs/setup-local-machine.md)
-- [Setup Test and Production](./docs/setup-test-and-production.md)
+- [Local Machine](./docs/setup-local-machine.md)
+- [Test and Production](./docs/setup-test-and-production.md)
 
 ## License
 
