@@ -13,7 +13,7 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-interface Props {
+export interface EmailConfirmationProps {
   baseUrl: string;
   contactEmailAddress: string;
   token: string;
@@ -23,7 +23,7 @@ export default function Email({
   baseUrl = "http://localhost:3000",
   contactEmailAddress = "info@sinister-incorporated.de",
   token = "1234567890",
-}: Props) {
+}: EmailConfirmationProps) {
   const host = baseUrl.replace(/^https?:\/\//, "");
 
   return (

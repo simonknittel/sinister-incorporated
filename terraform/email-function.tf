@@ -22,18 +22,30 @@ data "archive_file" "email_function" {
   output_path = "../email-function/dist.zip"
 }
 
+data "external" "git_sha" {
+  program = [
+    "git",
+    "log",
+    "--pretty=format:{ \"sha\": \"%H\" }",
+    "-1",
+    "HEAD"
+  ]
+}
+
 resource "aws_lambda_function" "email_function" {
   filename      = "../email-function/dist.zip"
   function_name = "email-function"
   role          = aws_iam_role.email_function.arn
-  handler       = "index.handler"
+  handler       = "lambda.handler"
 
   source_code_hash = data.archive_file.email_function.output_base64sha256
 
   runtime = "nodejs18.x"
 
   environment {
-    variables = {}
+    variables = {
+      COMMIT_SHA = data.external.git_sha.result.sha
+    }
   }
 
   tracing_config {

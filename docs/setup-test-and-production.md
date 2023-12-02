@@ -37,7 +37,7 @@ sso_start_url = https://simonknittel.awsapps.com/start
       1. Make sure to use a globally unique bucket name
 
 4. Create and populate `test.s3.tfbackend`, `prod.s3.tfbackend`, `test.tfvars` and `prod.tfvars`
-5. Build `email_function`
+5. `cd email-function && npm run build:lambda`
 6. Create Terraform resources
 
    1. `terraform init -backend-config=test.s3.tfbackend`
