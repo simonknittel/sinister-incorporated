@@ -4,19 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:lambda": "rm -rf dist && esbuild src/lambda.ts --bundle --platform=node --target=node18 --outdir=dist",
+    "build:lambda": "rm -rf dist && esbuild src/lambda.ts --bundle --platform=node --target=node18 --outdir=dist --minify",
     "build:node": "rm -rf dist && esbuild src/node.ts --bundle --platform=node --target=node18 --outdir=dist --format=esm",
     "start:node": "npm run build:node && node dist/node.js",
     "lint": "tsc --project tsconfig.node.json"
   },
   "devDependencies": {
-    "@types/node": "20.10.2",
     "esbuild": "0.19.8",
     "typescript": "5.3.2"
   },
   "dependencies": {
     "@react-email/render": "0.0.10",
     "@types/aws-lambda": "8.10.130",
+    "@types/node": "20.10.2",
     "dotenv": "16.3.1",
     "mailgun.js": "9.3.0",
     "zod": "3.22.4"

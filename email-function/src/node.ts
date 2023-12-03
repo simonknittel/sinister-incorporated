@@ -1,18 +1,28 @@
-import { type EmailConfirmationProps } from "../../emails/emails/EmailConfirmation";
 import { log } from "./_lib/logging";
 import { renderEmail } from "./_lib/renderEmail";
 import { sendEmail } from "./_lib/sendEmail";
 import "dotenv/config";
 
-const testProps: EmailConfirmationProps = {
+const config = {
   baseUrl: "http://localhost:3000",
   contactEmailAddress: "info@sinister-incorporated.de",
   token: "1234567890",
+  mailgunApiKey: process.env.MAILGUN_API_KEY,
 } as const;
 
 const main = async () => {
-  const html = renderEmail(testProps);
-  await sendEmail(html);
+  if (!config.mailgunApiKey) throw new Error("Missing Mailgun API key");
+
+  const html = renderEmail({
+    baseUrl: config.baseUrl,
+    contactEmailAddress: config.contactEmailAddress,
+    token: config.token,
+  });
+
+  await sendEmail({
+    html,
+    mailgunApiKey: config.mailgunApiKey,
+  });
 };
 
 main()

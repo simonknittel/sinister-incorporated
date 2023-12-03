@@ -1,5 +1,6 @@
 import { ZodError } from "zod";
 import { log } from "./logging";
+import { CustomError } from "./logging/CustomError";
 
 export default function errorHandler(error: unknown) {
   if (error instanceof ZodError) {
@@ -16,6 +17,15 @@ export default function errorHandler(error: unknown) {
       body: JSON.stringify({
         message: "Bad request",
       }),
+    };
+  } else if (error instanceof CustomError) {
+    log.error(error.message, error.context);
+
+    return {
+      statusCode: 500,
+      body: {
+        message: "Internal server error",
+      },
     };
   }
 

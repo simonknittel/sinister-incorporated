@@ -3,10 +3,11 @@ resource "aws_lambda_function" "main" {
   function_name = var.function_name
   role          = aws_iam_role.main.arn
   handler       = "lambda.handler"
-
   source_code_hash = data.archive_file.main.output_base64sha256
-
   runtime = "nodejs18.x"
+	timeout = 10
+	memory_size = 256
+  reserved_concurrent_executions = 0
 
   environment {
     variables = {

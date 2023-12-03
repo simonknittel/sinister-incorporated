@@ -1,22 +1,21 @@
 import Mailgun from "mailgun.js";
 
-export const sendEmail = async (html: string) => {
-  if (!process.env.MAILGUN_API_KEY || !process.env.MAILGUN_DOMAIN) {
-    throw new Error("Missing MAILGUN_API_KEY or MAILGUN_DOMAIN");
-  }
+interface Props {
+  html: string;
+  mailgunApiKey: string;
+}
 
-  console.log("sendEmail()");
-
+export const sendEmail = async ({ html, mailgunApiKey }: Props) => {
   // const mailgun = new Mailgun(formData);
 
   // const mg = mailgun.client({
   //   username: "api",
-  //   key: env.MAILGUN_API_KEY,
+  //   key: mailgunApiKey,
   //   url: "https://api.eu.mailgun.net",
   // });
 
-  // await mg.messages.create(env.MAILGUN_DOMAIN, {
-  //   from: `Link Portal <noreply@${env.MAILGUN_DOMAIN}>`,
+  // await mg.messages.create(mailgunDomain, {
+  //   from: `Sinister Incorporated <noreply@${mailgunDomain}>`,
   //   to,
   //   subject: "You have been invited to a project | Link Portal",
   //   template: "invite_link-portal",
