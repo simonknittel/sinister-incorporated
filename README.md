@@ -28,6 +28,7 @@ Tools of the Star Citizen organization _Sinister Incorporated_.
 - [Terraform](https://www.terraform.io/)
 - [React Email](https://react.email/)
 - [Mailgun](https://www.mailgun.com/)
+- [AWS](https://aws.amazon.com/)
 
 # Setup
 

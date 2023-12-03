@@ -2,6 +2,13 @@
 
 ## 1. Set up PlanetScale
 
+## 2. Set up Mailgun
+
+1. Create API keys for sending
+
+   1. `sinister-incorporated-aws-test`
+   2. `sinister-incorporated-aws-prod`
+
 ## 2. Set up AWS and Terraform
 
 1. Create two AWS accounts

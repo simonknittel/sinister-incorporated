@@ -27,6 +27,7 @@ export const handler: Handler = async (event, context) => {
     await sendEmail({
       html,
       mailgunApiKey: parameters.mailgunApiKey,
+      to: body.to,
     });
 
     return {
@@ -50,4 +51,5 @@ const postBodySchema = z.object({
   baseUrl: z.string().url(),
   contactEmailAddress: z.string().email(),
   token: z.string(),
+  to: z.string().email(),
 });

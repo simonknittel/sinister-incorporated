@@ -30,8 +30,8 @@ export default function Email({
     <Html>
       <Head />
       <Preview>
-        Deine E-Mail-Adresse muss bestätigt werden bevor du
-        {host} nutzen kannst.
+        Deine E-Mail-Adresse muss bestätigt werden bevor du {host} nutzen
+        kannst.
       </Preview>
       <Tailwind
         config={{
@@ -44,7 +44,7 @@ export default function Email({
           },
         }}
       >
-        <Body className="bg-neutral-800 text-neutral-50 font-sans p-6">
+        <Body className="bg-neutral-800 text-neutral-50 font-sans px-6 pt-2 pb-6">
           <Container className="mx-auto w-[480px]">
             <Text className="text-center text-5xl text-sinister-red-500 font-extrabold uppercase">
               Sinister Inc
@@ -59,7 +59,7 @@ export default function Email({
             </Text>
             <Container className="text-center">
               <Button
-                href={`${baseUrl}/confirm-email`}
+                href={`${baseUrl}/confirm-email?token=${token}`}
                 className="rounded uppercase gap-4 text-base font-bold bg-sinister-red-500 text-neutral-50 px-6 py-4"
               >
                 E-Mail-Adresse bestätigen
@@ -72,7 +72,7 @@ export default function Email({
                 href={`${baseUrl}/confirm-email?token=${token}`}
                 className="text-sinister-red-500"
               >
-                {baseUrl}/confirm-email
+                {baseUrl}/confirm-email?token={token}
               </Link>
             </Text>
             <Text>

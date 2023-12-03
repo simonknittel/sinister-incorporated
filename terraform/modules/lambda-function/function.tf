@@ -7,7 +7,7 @@ resource "aws_lambda_function" "main" {
   runtime = "nodejs18.x"
 	timeout = 10
 	memory_size = 256
-  reserved_concurrent_executions = 0
+  reserved_concurrent_executions = -1
 
   environment {
     variables = {
