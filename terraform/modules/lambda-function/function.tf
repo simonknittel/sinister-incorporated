@@ -17,6 +17,10 @@ resource "aws_lambda_function" "main" {
   tracing_config {
     mode = "Active"
   }
+
+	layers = [
+		"arn:aws:lambda:eu-central-1:187925254637:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11" # https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html#ps-integration-lambda-extensions-add
+	]
 }
 
 resource "aws_lambda_function_url" "main" {
