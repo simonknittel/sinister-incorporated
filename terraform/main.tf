@@ -27,3 +27,10 @@ provider "aws" {
     }
   }
 }
+
+module "email_function" {
+  source = "./modules/lambda-function"
+
+  function_name = "email-function"
+  source_dir = "../email-function/dist"
+}
