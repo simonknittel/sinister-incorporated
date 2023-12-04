@@ -6,12 +6,12 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="min-h-screen flex justify-center items-center">
-      <main className="w-full max-w-md py-8">
-        <h1>Datenschutzerklärung</h1>
+    <main className="p-2 pt-4 lg:p-8 flex items-center flex-col">
+      <h1 className="text-xl font-bold">Datenschutzerklärung</h1>
 
+      <div className="mt-4 w-full max-w-xl p-4 lg:p-8 rounded bg-neutral-900">
         <p className="italic">work in progress</p>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

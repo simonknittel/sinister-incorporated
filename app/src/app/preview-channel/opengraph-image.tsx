@@ -10,13 +10,13 @@ export const runtime = "edge";
 
 export default async function og() {
   const fontData = await fetch(
-    new URL("../../../assets/Inter/static/Inter-Bold.ttf", import.meta.url),
+    new URL("../../assets/Inter/static/Inter-Bold.ttf", import.meta.url),
   ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
     (
       <div tw="w-full h-full flex flex-col justify-between items-center uppercase font-bold p-24 bg-neutral-900">
-        <p tw="text-9xl text-white m-0 w-full">Dogfight Trainer</p>
+        <p tw="text-9xl text-white m-0 w-full">Preview Channel</p>
 
         <div tw="flex flex-col w-full">
           <p tw="text-6xl text-[#BB2222] m-0 w-full">Sinister Inc</p>
