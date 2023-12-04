@@ -2,12 +2,18 @@ import formData from "form-data";
 import Mailgun from "mailgun.js";
 
 interface Props {
-  html: string;
   mailgunApiKey: string;
   to: string;
+  subject: string;
+  html: string;
 }
 
-export const sendEmail = async ({ html, mailgunApiKey, to }: Props) => {
+export const sendEmail = async ({
+  mailgunApiKey,
+  to,
+  subject,
+  html,
+}: Props) => {
   const mailgun = new Mailgun(formData);
 
   const mg = mailgun.client({
@@ -19,7 +25,7 @@ export const sendEmail = async ({ html, mailgunApiKey, to }: Props) => {
   await mg.messages.create("mailgun.simonknittel.de", {
     from: `Sinister Incorporated <noreply@mailgun.simonknittel.de>`,
     to,
-    subject: "E-Mail-Adresse bestätigen | Sinister Incorporated",
+    subject,
     html,
   });
 };

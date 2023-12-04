@@ -1,10 +1,9 @@
 import { type Handler } from "aws-lambda";
-import { renderEmail } from "./_lib/renderEmail";
-import { sendEmail } from "./_lib/sendEmail";
 import z from "zod";
 import errorHandler from "./_lib/errorHandler";
 import { fetchParameters } from "./_lib/fetchParameters";
 import { CustomError } from "./_lib/logging/CustomError";
+import { foo } from "./_lib/foo";
 
 export const handler: Handler = async (event, context) => {
   try {
@@ -22,12 +21,9 @@ export const handler: Handler = async (event, context) => {
       mailgunApiKey: "/email-function/mailgun-api-key",
     });
 
-    const html = renderEmail(body);
-
-    await sendEmail({
-      html,
-      mailgunApiKey: parameters.mailgunApiKey,
-      to: body.to,
+    await foo({
+      ...parameters,
+      ...body,
     });
 
     return {
@@ -48,8 +44,10 @@ const eventSchema = z.object({
 });
 
 const postBodySchema = z.object({
-  baseUrl: z.string().url(),
-  contactEmailAddress: z.string().email(),
-  token: z.string(),
   to: z.string().email(),
+  template: z.literal("emailConfirmation"),
+  templateProps: z.object({
+    baseUrl: z.string().url(),
+    token: z.string(),
+  }),
 });

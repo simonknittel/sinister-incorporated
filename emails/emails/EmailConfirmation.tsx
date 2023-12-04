@@ -15,13 +15,11 @@ import * as React from "react";
 
 export interface EmailConfirmationProps {
   baseUrl: string;
-  contactEmailAddress: string;
   token: string;
 }
 
 export default function Email({
   baseUrl = "http://localhost:3000",
-  contactEmailAddress = "info@sinister-incorporated.de",
   token = "1234567890",
 }: EmailConfirmationProps) {
   const host = baseUrl.replace(/^https?:\/\//, "");
@@ -78,10 +76,10 @@ export default function Email({
             <Text>
               Falls du diese E-Mail nicht erwartet hast, melde dich bei{" "}
               <Link
-                href={`mailto:${contactEmailAddress}`}
+                href={`mailto:info@sinister-incorporated.de`}
                 className="text-sinister-red-500"
               >
-                {contactEmailAddress}
+                info@sinister-incorporated.de
               </Link>
             </Text>
             <Hr />
