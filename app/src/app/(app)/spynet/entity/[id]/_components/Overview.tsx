@@ -2,7 +2,7 @@ import { type Entity } from "@prisma/client";
 import { Suspense } from "react";
 import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
-import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
 import { LastSeenAt } from "../../../citizen/_components/LastSeenAt";
 import { OverviewSection } from "./generic-log-type/OverviewSection";
 

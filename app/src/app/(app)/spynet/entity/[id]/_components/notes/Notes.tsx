@@ -5,10 +5,10 @@ import {
   type NoteType,
 } from "@prisma/client";
 import { FaListAlt } from "react-icons/fa";
+import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
 import Tab from "~/app/_components/tabs/Tab";
 import TabList from "~/app/_components/tabs/TabList";
 import { TabsProvider } from "~/app/_components/tabs/TabsContext";
-import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
 import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
 import { prisma } from "~/server/db";
 import NoteTypeTab from "./Tab";

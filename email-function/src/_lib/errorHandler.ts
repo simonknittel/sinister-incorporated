@@ -18,6 +18,13 @@ export default function errorHandler(error: unknown) {
         message: "Bad request",
       }),
     };
+  } else if (error instanceof Error && error.message === "Unauthorized") {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({
+        message: "Unauthorized",
+      }),
+    };
   } else if (error instanceof CustomError) {
     log.error(error.message, error.context);
 

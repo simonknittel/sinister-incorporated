@@ -2,7 +2,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 import { TRPCReactProvider } from "~/trpc/react";
-import { authenticatePage } from "../_lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../_lib/auth/authenticateAndAuthorize";
 import AdminDisabler from "./_components/AdminDisabler";
 import ImpersonationBannerContainer from "./_components/ImpersonationBannerContainer";
 import PreviewComments from "./_components/PreviewComments";

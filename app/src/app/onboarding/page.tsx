@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { FaRegCheckCircle } from "react-icons/fa";
 import AdminDisabler from "../(app)/_components/AdminDisabler";
-import { authenticatePage } from "../_lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../_lib/auth/authenticateAndAuthorize";
 
 export const metadata: Metadata = {
   title: "Onboarding | Sinister Incorporated",

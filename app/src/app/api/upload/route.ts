@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
-import { authenticateApi } from "../../_lib/auth/authenticateAndAuthorize";
+import { authenticateApi } from "../../../_lib/auth/authenticateAndAuthorize";
 import errorHandler from "../_lib/errorHandler";
 
 const postBodySchema = z.object({
@@ -75,6 +75,6 @@ async function getPresignedUploadUrl(key: string) {
     new PutObjectCommand({ Bucket: env.R2_BUCKET_NAME, Key: key }),
     {
       expiresIn: 60 * 60, // 1 hour
-    }
+    },
   );
 }

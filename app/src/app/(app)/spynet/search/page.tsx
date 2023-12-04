@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
+import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import { Hero } from "~/app/_components/Hero";
-import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import CreateEntity from "../_components/CreateEntity";
 import Search from "./_components/Search";

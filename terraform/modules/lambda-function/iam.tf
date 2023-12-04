@@ -27,6 +27,10 @@ data "aws_ssm_parameter" "mailgun_api_key" {
   name = "/${var.function_name}/mailgun-api-key"
 }
 
+data "aws_ssm_parameter" "api_key" {
+  name = "/${var.function_name}/api-key"
+}
+
 data "aws_kms_alias" "ssm" {
   name = "alias/aws/ssm"
 }
@@ -46,6 +50,7 @@ resource "aws_iam_policy" "parameter_store" {
         Effect   = "Allow"
         Resource = [
           data.aws_ssm_parameter.mailgun_api_key.arn,
+          data.aws_ssm_parameter.api_key.arn,
           data.aws_kms_alias.ssm.target_key_arn,
         ]
       },

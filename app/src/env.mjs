@@ -42,7 +42,9 @@ export const env = createEnv({
       // Uses VERCEL_GIT_COMMIT_SHA if COMMIT_SHA is not set
       (str) => str || process.env.VERCEL_GIT_COMMIT_SHA,
       z.string().optional(),
-    )
+    ),
+    EMAIL_FUNCTION_ENDPOINT: z.string().url().optional(),
+    EMAIL_FUNCTION_API_KEY: z.string().optional(),
   },
 
   /*
@@ -87,5 +89,9 @@ export const env = createEnv({
     LOKI_AUTH_PASSWORD: process.env.LOKI_AUTH_PASSWORD,
     HOST: process.env.HOST,
     COMMIT_SHA: process.env.COMMIT_SHA,
+    EMAIL_FUNCTION_ENDPOINT: process.env.EMAIL_FUNCTION_ENDPOINT,
+    EMAIL_FUNCTION_API_KEY: process.env.EMAIL_FUNCTION_API_KEY,
   },
+
+  emptyStringAsUndefined: true,
 });

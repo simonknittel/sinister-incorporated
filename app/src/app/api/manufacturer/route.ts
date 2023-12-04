@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "~/server/db";
-import { authenticateApi } from "../../_lib/auth/authenticateAndAuthorize";
+import { authenticateApi } from "../../../_lib/auth/authenticateAndAuthorize";
 import errorHandler from "../_lib/errorHandler";
 
 const postBodySchema = z.object({

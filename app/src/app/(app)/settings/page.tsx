@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
-import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import ClassificationLevelsTile from "./_components/classification-level/ClassificationLevelsTile";
 
 const AnalyticsCheckbox = dynamic(

@@ -1,5 +1,5 @@
 import { flag } from "@unleash/nextjs";
-import { authenticate } from "./auth/authenticateAndAuthorize";
+import { authenticate } from "../../_lib/auth/authenticateAndAuthorize";
 
 export const getUnleashFlag = async (
   name: "DisableAlgolia" | "EnablePreviewComments" | "EnableCareBearShooter",

@@ -1,5 +1,5 @@
 import { type Entity, type Role } from "@prisma/client";
-import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
 import { getAssignedAndVisibleRoles } from "~/app/_lib/getAssignedAndVisibleRoles";
 import AddRoles from "../../entity/[id]/_components/roles/AddRoles";
 import SingleRole from "../../entity/[id]/_components/roles/SingleRole";

@@ -2,9 +2,9 @@
 
 import { type Role } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
+import { type FormValues } from "~/_lib/auth/FormValues";
 import YesNoCheckbox from "~/app/_components/YesNoCheckbox";
 import TabPanel from "~/app/_components/tabs/TabPanel";
-import { type FormValues } from "~/app/_lib/auth/FormValues";
 import RoleSection from "./components/RoleSection";
 
 interface Props {

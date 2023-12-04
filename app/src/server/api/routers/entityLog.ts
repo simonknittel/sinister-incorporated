@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { authorize } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authorize } from "~/_lib/auth/authenticateAndAuthorize";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 

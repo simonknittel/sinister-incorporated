@@ -9,7 +9,7 @@ import clsx from "clsx";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import useAuthentication from "~/app/_lib/auth/useAuthentication";
+import useAuthentication from "~/_lib/auth/useAuthentication";
 import { type GenericEntityLogType } from "~/types";
 import ConfirmLog from "../ConfirmLog";
 import styles from "../ConfirmationGradient.module.css";

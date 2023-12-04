@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authenticateApi } from "~/app/_lib/auth/authenticateAndAuthorize";
-import formValuesToPrismaOperations from "~/app/_lib/auth/formValuesToPrismaOperations";
-import postBodySchema from "~/app/_lib/auth/postBodySchema";
+import { authenticateApi } from "~/_lib/auth/authenticateAndAuthorize";
+import formValuesToPrismaOperations from "~/_lib/auth/formValuesToPrismaOperations";
+import postBodySchema from "~/_lib/auth/postBodySchema";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
 

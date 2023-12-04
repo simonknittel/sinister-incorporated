@@ -1,4 +1,4 @@
-import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
 import getAllClassificationLevels from "~/app/_lib/cached/getAllClassificationLevels";
 import getAllNoteTypes from "~/app/_lib/cached/getAllNoteTypes";
 import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";

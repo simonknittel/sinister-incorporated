@@ -1,4 +1,4 @@
-import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
 import getVisibleRoles from "~/app/_lib/getVisibleRoles";
 import { Filter } from "../../_components/Filter";
 import RoleFilter from "./RoleFilter";

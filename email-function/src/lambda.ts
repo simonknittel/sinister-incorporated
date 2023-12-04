@@ -4,16 +4,19 @@ import errorHandler from "./_lib/errorHandler";
 import { fetchParameters } from "./_lib/fetchParameters";
 import { CustomError } from "./_lib/logging/CustomError";
 import { foo } from "./_lib/foo";
+import { authenticate } from "./_lib/authorization";
 
-export const handler: Handler = async (event, context) => {
+export const handler: Handler = async (event) => {
   try {
-    const result = eventSchema.safeParse(event);
-    if (!result.success) throw new CustomError("Invalid event", event);
+    await authenticate(event);
 
-    if (event.requestContext.http.method !== "POST")
+    const result = eventSchema.safeParse(event);
+    if (!result.success) throw new CustomError("Invalid event", { event });
+
+    if (result.data.requestContext.http.method !== "POST")
       throw new Error("Bad request");
 
-    const requestBody = JSON.parse(event.body);
+    const requestBody = JSON.parse(result.data.body);
     const body = postBodySchema.parse(requestBody);
 
     const parameters = await fetchParameters({

@@ -1,4 +1,4 @@
-import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
 import { getAssignableRoles } from "~/app/_lib/getAssignableRoles";
 import { getAssignedAndVisibleRoles } from "~/app/_lib/getAssignedAndVisibleRoles";
 import { getLastSeenAt } from "~/app/_lib/getLastSeenAt";

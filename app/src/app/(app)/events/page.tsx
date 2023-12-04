@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { z } from "zod";
-import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
 
@@ -12,7 +12,7 @@ const TimeAgoContainer = dynamic(
     loading: () => (
       <span className="block h-[1em] w-[7em] animate-pulse rounded bg-neutral-500" />
     ),
-  }
+  },
 );
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ const scheduledEventsResponseSchema = z.union([
       scheduled_start_time: z.coerce.date(),
       scheduled_end_time: z.coerce.date(),
       user_count: z.number(),
-    })
+    }),
   ),
   z.object({
     message: z.string(),
@@ -75,7 +75,7 @@ async function getEvents() {
         next: {
           revalidate: 30,
         },
-      }
+      },
     );
 
     const body: unknown = await response.json();
@@ -86,11 +86,11 @@ async function getEvents() {
         throw new Error("Rate Limiting der Discord API");
       } else if (data.message === "Unknown Guild") {
         throw new Error(
-          `Der Discord Server \"${env.DISCORD_GUILD_ID}\" existiert nicht.`
+          `Der Discord Server \"${env.DISCORD_GUILD_ID}\" existiert nicht.`,
         );
       } else if (data.message === "Missing Access") {
         throw new Error(
-          `Diese Anwendung hat keinen Zugriff auf den Discord Server \"${env.DISCORD_GUILD_ID}\".`
+          `Diese Anwendung hat keinen Zugriff auf den Discord Server \"${env.DISCORD_GUILD_ID}\".`,
         );
       } else {
         throw new Error(data.message);
@@ -119,7 +119,7 @@ export default async function Page() {
       {events
         .sort(
           (a, b) =>
-            a.scheduled_start_time.getTime() - b.scheduled_start_time.getTime()
+            a.scheduled_start_time.getTime() - b.scheduled_start_time.getTime(),
         )
         .map((event) => (
           <Event key={event.id} event={event} className="mt-4 max-w-4xl" />

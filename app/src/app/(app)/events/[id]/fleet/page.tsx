@@ -3,9 +3,9 @@ import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { z } from "zod";
+import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import { log } from "~/_lib/logging";
 import FleetTable from "~/app/(app)/fleet/_components/FleetTable";
-import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 

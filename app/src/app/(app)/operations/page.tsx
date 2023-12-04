@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
+import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import Note from "~/app/_components/Note";
-import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import CreateOperation from "./_components/CreateOperation";
 import OperationTile from "./_components/OperationTile";

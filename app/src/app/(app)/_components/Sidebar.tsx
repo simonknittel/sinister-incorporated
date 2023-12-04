@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpaceShipFill, RiSwordFill } from "react-icons/ri";
-import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
 import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import Account from "./Account";
 import { Chip } from "./Chip";

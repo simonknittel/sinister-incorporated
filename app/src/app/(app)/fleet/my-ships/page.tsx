@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import AssignShip from "./_components/AssignShip";
 import MyShipTile from "./_components/MyShipTile";

@@ -2,9 +2,9 @@ import { type ClassificationLevel, type NoteType } from "@prisma/client";
 import clsx from "clsx";
 import { useFormContext, useWatch } from "react-hook-form";
 import { FaPlus, FaTrash } from "react-icons/fa";
+import { type FormValues } from "~/_lib/auth/FormValues";
 import Button from "~/app/_components/Button";
 import YesNoCheckbox from "~/app/_components/YesNoCheckbox";
-import { type FormValues } from "~/app/_lib/auth/FormValues";
 
 interface Props {
   className?: string;
@@ -12,7 +12,11 @@ interface Props {
   classificationLevels: ClassificationLevel[];
 }
 
-const NoteSection = ({ className, noteTypes, classificationLevels }: Readonly<Props>) => {
+const NoteSection = ({
+  className,
+  noteTypes,
+  classificationLevels,
+}: Readonly<Props>) => {
   const { register, setValue, getValues } = useFormContext<FormValues>();
   const rules = useWatch<FormValues, "note">({ name: "note" });
 
@@ -35,7 +39,7 @@ const NoteSection = ({ className, noteTypes, classificationLevels }: Readonly<Pr
 
     setValue(
       "note",
-      rules.filter((rule, index) => index !== indexToRemove)
+      rules.filter((rule, index) => index !== indexToRemove),
     );
   };
 

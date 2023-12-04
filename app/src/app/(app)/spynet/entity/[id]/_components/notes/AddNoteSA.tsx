@@ -2,7 +2,7 @@ import { type Entity } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { authenticateApi } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticateApi } from "~/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import AddNoteSubmitSA from "./AddNoteSubmitSA";
 

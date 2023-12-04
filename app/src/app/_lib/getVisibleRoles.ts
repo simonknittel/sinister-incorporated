@@ -1,4 +1,4 @@
-import { authenticate } from "./auth/authenticateAndAuthorize";
+import { authenticate } from "../../_lib/auth/authenticateAndAuthorize";
 import getAllRoles from "./cached/getAllRoles";
 
 export default async function getVisibleRoles() {

@@ -6,9 +6,9 @@ import {
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import { z } from "zod";
+import { type PermissionSet } from "~/_lib/auth/PermissionSet";
+import getPermissionSetsByRoles from "~/_lib/auth/getPermissionSetsByRoles";
 import { log } from "~/_lib/logging";
-import getPermissionSetsByRoles from "~/app/_lib/auth/getPermissionSetsByRoles";
-import { type PermissionSet } from "~/app/_lib/auth/PermissionSet";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import { type UserRole } from "~/types";

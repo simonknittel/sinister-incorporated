@@ -4,8 +4,8 @@ import { type Entity, type Role } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import useAuthentication from "~/_lib/auth/useAuthentication";
 import YesNoCheckbox from "~/app/_components/YesNoCheckbox";
-import useAuthentication from "~/app/_lib/auth/useAuthentication";
 
 interface Props {
   entity: Entity;

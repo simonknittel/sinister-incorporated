@@ -1,10 +1,10 @@
 import { type ClassificationLevel, type NoteType } from "@prisma/client";
-import { type authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { type authenticate } from "~/_lib/auth/authenticateAndAuthorize";
 
 export default function isAllowedToCreate(
   classificationLevelId: ClassificationLevel["id"],
   authentication: Awaited<ReturnType<typeof authenticate>>,
-  noteTypeId?: NoteType["id"]
+  noteTypeId?: NoteType["id"],
 ) {
   const attributes = [
     {

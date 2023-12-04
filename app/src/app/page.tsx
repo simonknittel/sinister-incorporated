@@ -1,10 +1,10 @@
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 import { authOptions } from "~/server/auth";
+import { authenticate } from "../_lib/auth/authenticateAndAuthorize";
 import { Hero } from "./_components/Hero";
 import LoginButtons from "./_components/LoginButtons";
 import Note from "./_components/Note";
-import { authenticate } from "./_lib/auth/authenticateAndAuthorize";
 
 export const metadata: Metadata = {
   title: "Sinister Incorporated - Hoist the Black",

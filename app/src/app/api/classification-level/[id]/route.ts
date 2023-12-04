@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
-import { authenticateApi } from "../../../_lib/auth/authenticateAndAuthorize";
+import { authenticateApi } from "../../../../_lib/auth/authenticateAndAuthorize";
 
 interface Params {
   id: string;

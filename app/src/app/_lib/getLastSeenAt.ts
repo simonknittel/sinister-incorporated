@@ -1,7 +1,7 @@
 import { type Account, type Entity, type User } from "@prisma/client";
 import { cache } from "react";
 import { prisma } from "~/server/db";
-import { authenticate } from "./auth/authenticateAndAuthorize";
+import { authenticate } from "../../_lib/auth/authenticateAndAuthorize";
 
 export const getLastSeenAt = cache(async (entity: Entity) => {
   const authentication = await authenticate();

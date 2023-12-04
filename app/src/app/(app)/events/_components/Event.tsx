@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
-import { authenticate } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
 
 interface Props {
   className?: string;

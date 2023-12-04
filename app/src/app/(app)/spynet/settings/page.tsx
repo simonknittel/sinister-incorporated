@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import Link from "next/link";
-import { authenticatePage } from "~/app/_lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import NoteTypesTile from "./_components/note-type/NoteTypesTile";
 
 export const metadata: Metadata = {
