@@ -1,0 +1,35 @@
+name: terraform plan
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  plan:
+    runs-on: ubuntu-22.04
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - uses: hashicorp/setup-terraform@v3.0.0
+        with:
+          terraform_version: 1.6.4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.1
+        with:
+          role-to-assume: arn:aws:iam::220746603587:role/github-actions
+          aws-region: eu-central-1
+
+      - name: Terraform init
+        run: terraform init -backend-config=test.s3.tfbackend
+        working-directory: terraform
+
+      - name: Terraform plan
+        run: terraform plan
+        working-directory: terraform
