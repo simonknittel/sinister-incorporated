@@ -5,13 +5,13 @@ on:
     branches:
       - main
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   plan:
     runs-on: ubuntu-22.04
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - uses: actions/checkout@v4.1.1
