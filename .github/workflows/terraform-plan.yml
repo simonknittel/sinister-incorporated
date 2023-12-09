@@ -6,12 +6,17 @@ on:
       - main
 
 jobs:
+  build_email_function:
+    uses: ./.github/workflows/build-email-function.yml
+
   plan:
     runs-on: ubuntu-22.04
 
     permissions:
       id-token: write
       contents: read
+
+    needs: [build_email_function]
 
     steps:
       - uses: actions/checkout@v4.1.1
@@ -26,28 +31,15 @@ jobs:
           role-to-assume: arn:aws:iam::220746603587:role/github-actions
           aws-region: eu-central-1
 
+      - name: Retrieve email-function artifact
+        uses: actions/download-artifact@v3.0.2
+        with:
+          name: email-function-dist
+          path: email-function/dist
+
       - name: terraform init
         run: terraform init -backend-config=test.s3.tfbackend
         working-directory: terraform
-
-      - uses: actions/setup-node@v4.0.0
-        with:
-          node-version-file: ".nvmrc"
-
-      - uses: actions/cache@v3.3.2
-        id: node-modules-cache
-        with:
-          path: email-function/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('.nvmrc', 'email-function/package-lock.json') }}
-
-      - name: Install email-function dependencies
-        run: npm ci
-        working-directory: email-function
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
-
-      - name: Test
-        run: npm run build:lambda
-        working-directory: email-function
 
       - name: terraform plan
         run: terraform plan

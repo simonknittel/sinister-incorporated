@@ -1,0 +1,47 @@
+name: Build email-functon
+
+on:
+  workflow_call:
+
+jobs:
+  plan:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - uses: actions/setup-node@v4.0.0
+        with:
+          node-version-file: ".nvmrc"
+
+      - uses: actions/cache@v3.3.2
+        id: emails-node-modules-cache
+        with:
+          path: emails/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('.nvmrc', 'emails/package-lock.json') }}
+
+      - name: Install emails dependencies
+        run: npm ci
+        working-directory: emails
+        if: steps.emails-node-modules-cache.outputs.cache-hit != 'true'
+
+      - uses: actions/cache@v3.3.2
+        id: email-function-node-modules-cache
+        with:
+          path: email-function/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('.nvmrc', 'email-function/package-lock.json') }}
+
+      - name: Install email-function dependencies
+        run: npm ci
+        working-directory: email-function
+        if: steps.email-function-node-modules-cache.outputs.cache-hit != 'true'
+
+      - name: Build email-function
+        run: npm run build:lambda
+        working-directory: email-function
+
+      - name: Store email-function artifact
+        uses: actions/upload-artifact@v3.1.3
+        with:
+          name: email-function-dist
+          path: email-function/dist/
