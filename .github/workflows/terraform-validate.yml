@@ -20,6 +20,7 @@ jobs:
 
       - name: Terraform init
         run: terraform init -backend=false
+        working-directory: terraform
 
       - name: Terraform validate
         run: terraform validate
