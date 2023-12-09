@@ -1,4 +1,3 @@
 region = "eu-central-1"
-profile = "sinister-incorporated-test"
 bucket = "terraform-backend-aowb47tawo48wvt4"
 key = "state"

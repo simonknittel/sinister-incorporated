@@ -45,6 +45,7 @@ Resources:
             Version: 2012-10-17
             Statement:
               - Effect: Allow
+                # Related: https://github.com/iann0036/iamlive
                 Action:
                   - sts:GetCallerIdentity
                   - s3:ListBucket

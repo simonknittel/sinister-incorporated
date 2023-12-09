@@ -49,19 +49,21 @@ sso_start_url = https://simonknittel.awsapps.com/start
 
 3. Create and deploy setup stack with AWS CloudFormation
 
-   1. `aws sso login --profile sinister-incorporated-test && aws --profile sinister-incorporated-test --region eu-central-1 cloudformation deploy --template-file ./cloudformation/setup.yaml --stack-name setup --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM --tags ManagedBy=CloudFormation Repository=simonknittel/sinister-incorporated CloudFormationStack=setup`
+   1. `aws sso login --profile sinister-incorporated-test`
+   2. `aws --profile sinister-incorporated-test --region eu-central-1 cloudformation deploy --template-file ./cloudformation/setup.yaml --stack-name setup --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM --tags ManagedBy=CloudFormation Repository=simonknittel/sinister-incorporated CloudFormationStack=setup`
 
 4. Create parameters in AWS System Manager (make sure to replace `foobar` with the actual values)
 
-   1. `aws sso login --profile sinister-incorporated-test && aws --profile sinister-incorporated-test --region eu-central-1 ssm put-parameter --name /email-function/mailgun-api-key --value foobar --type SecureString --overwrite`
-   2. `aws sso login --profile sinister-incorporated-test && aws --profile sinister-incorporated-test --region eu-central-1 ssm put-parameter --name /email-function/api-key --value foobar --type SecureString --overwrite`
+   1. `aws sso login --profile sinister-incorporated-test`
+   2. `aws --profile sinister-incorporated-test --region eu-central-1 ssm put-parameter --name /email-function/mailgun-api-key --value foobar --type SecureString --overwrite`
+   3. `aws --profile sinister-incorporated-test --region eu-central-1 ssm put-parameter --name /email-function/api-key --value foobar --type SecureString --overwrite`
 
 ### Related
 
 - https://stackoverflow.com/questions/51273227/whats-the-most-efficient-way-to-determine-the-minimum-aws-permissions-necessary
 - https://github.com/iann0036/iamlive
   - `iamlive --mode proxy --force-wildcard-resource --output-file policy.json`
-  - `HTTP_PROXY=http://127.0.0.1:10080 HTTPS_PROXY=http://127.0.0.1:10080 AWS_CA_BUNDLE=~/.iamlive/ca.pem AWS_CSM_ENABLED=true terraform plan`
+  - `HTTP_PROXY=http://127.0.0.1:10080 HTTPS_PROXY=http://127.0.0.1:10080 AWS_CA_BUNDLE=~/.iamlive/ca.pem AWS_CSM_ENABLED=true AWS_PROFILE=sinister-incorporated-test terraform plan -var-file="test.tfvars"`
 
 ## 5. Set up Terraform
 
@@ -69,7 +71,8 @@ sso_start_url = https://simonknittel.awsapps.com/start
 2. `cd email-function && npm run build:lambda`
 3. Create Terraform resources
 
-   1. `terraform init -backend-config=test.s3.tfbackend`
-   2. `aws sso login --profile sinister-incorporated-test && terraform apply -var-file="test.tfvars"`
+   1. `aws sso login --profile sinister-incorporated-test`
+   2. `AWS_PROFILE=sinister-incorporated-test terraform init -backend-config=test.s3.tfbackend`
+   3. `AWS_PROFILE=sinister-incorporated-test terraform apply -var-file="test.tfvars"`
 
 ## 6. Set up Vercel
