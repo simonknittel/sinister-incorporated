@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Initial setup for Terraform and GitHub Actions
+
+Resources:
+  TerraformBackendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: terraform-backend-aowb47tawo48wvt4
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+
+  OIDCProviderGitHub:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - ffffffffffffffffffffffffffffffffffffffff
+
+  GitHubActionsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: github-actions
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !Ref OIDCProviderGitHub
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: repo:simonknittel/sinister-incorporated:*
+                token.actions.githubusercontent.com:workflow:
+                  - terraform-plan
+                  - terraform-apply
+
+Outputs:
+  TerraformBackendBucketName:
+    Value: !Ref TerraformBackendBucket
+  GitHubActionsRoleArn:
+    Value: !GetAtt GitHubActionsRole.Arn
