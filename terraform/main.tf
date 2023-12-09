@@ -1,7 +1,7 @@
 terraform {
   required_version = "1.6.4"
 
-	backend "s3" {}
+  backend "s3" {}
 
   required_providers {
     aws = {
@@ -10,15 +10,15 @@ terraform {
     }
 
     external = {
-      source = "hashicorp/external"
+      source  = "hashicorp/external"
       version = "2.3.2"
     }
   }
 }
 
-provider "aws"
-  region = "eu-central-1"
-	profile = "sinister-incorporated-test"
+provider "aws" {
+  region  = "eu-central-1"
+  profile = "sinister-incorporated-test"
 
   default_tags {
     tags = {
@@ -32,5 +32,5 @@ module "email_function" {
   source = "./modules/lambda-function"
 
   function_name = "email-function"
-  source_dir = "../email-function/dist"
+  source_dir    = "../email-function/dist"
 }
