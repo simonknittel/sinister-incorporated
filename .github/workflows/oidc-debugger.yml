@@ -1,0 +1,27 @@
+name: OIDC Debugger
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  debugger:
+    runs-on: ubuntu-22.04
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout actions-oidc-debugger
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: github/actions-oidc-debugger
+          ref: main
+          path: ./.github/actions/actions-oidc-debugger
+
+      - name: Debug OIDC Claims
+        uses: ./.github/actions/actions-oidc-debugger
+        with:
+          audience: "sts.amazonaws.com"
