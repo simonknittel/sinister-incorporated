@@ -37,8 +37,8 @@ Resources:
               StringLike:
                 token.actions.githubusercontent.com:sub: repo:simonknittel/sinister-incorporated:*
                 token.actions.githubusercontent.com:workflow:
-                  - terraform-plan
-                  - terraform-apply
+                  - terraform plan
+                  - terraform apply
 
 Outputs:
   TerraformBackendBucketName:
