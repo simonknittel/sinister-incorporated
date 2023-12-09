@@ -26,10 +26,10 @@ jobs:
           role-to-assume: arn:aws:iam::220746603587:role/github-actions
           aws-region: eu-central-1
 
-      - name: Terraform init
+      - name: terraform init
         run: terraform init -backend-config=test.s3.tfbackend
         working-directory: terraform
 
-      - name: Terraform plan
+      - name: terraform plan
         run: terraform plan
         working-directory: terraform

@@ -9,7 +9,18 @@
    1. `sinister-incorporated-aws-test`
    2. `sinister-incorporated-aws-prod`
 
-## 2. Set up AWS
+## 3. Set up GitHub
+
+1. `gh auth login`
+2. `gh api --method PUT -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/simonknittel/sinister-incorporated/actions/oidc/customization/sub -F use_default=false -f "include_claim_keys[]=repo" -f "include_claim_keys[]=job_workflow_ref"`
+   1. `gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/simonknittel/sinister-incorporated/actions/oidc/customization/sub`
+
+### Related
+
+- https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#customizing-the-token-claims
+- https://docs.github.com/en/rest/actions/oidc?apiVersion=2022-11-28#set-the-customization-template-for-an-oidc-subject-claim-for-a-repository
+
+## 4. Set up AWS
 
 1. Create two AWS accounts
 
@@ -45,7 +56,7 @@ sso_start_url = https://simonknittel.awsapps.com/start
    1. `aws sso login --profile sinister-incorporated-test && aws --profile sinister-incorporated-test --region eu-central-1 ssm put-parameter --name /email-function/mailgun-api-key --value foobar --type SecureString --overwrite`
    2. `aws sso login --profile sinister-incorporated-test && aws --profile sinister-incorporated-test --region eu-central-1 ssm put-parameter --name /email-function/api-key --value foobar --type SecureString --overwrite`
 
-## 3. Set up Terraform
+## 5. Set up Terraform
 
 1. Create and populate `test.s3.tfbackend`, `prod.s3.tfbackend`, `test.tfvars` and `prod.tfvars`
 2. `cd email-function && npm run build:lambda`
@@ -54,4 +65,4 @@ sso_start_url = https://simonknittel.awsapps.com/start
    1. `terraform init -backend-config=test.s3.tfbackend`
    2. `aws sso login --profile sinister-incorporated-test && terraform apply -var-file="test.tfvars"`
 
-## 4. Set up Vercel
+## 6. Set up Vercel
