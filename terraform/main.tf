@@ -17,8 +17,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = "eu-central-1"
-  profile = "sinister-incorporated-test"
+  region = "eu-central-1"
 
   default_tags {
     tags = {

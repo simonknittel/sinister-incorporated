@@ -6,12 +6,17 @@ on:
       - main
 
 jobs:
+  build_email_function:
+    uses: ./.github/workflows/build-email-function.yml
+
   plan:
     runs-on: ubuntu-22.04
 
     permissions:
       id-token: write
       contents: read
+
+    needs: [build_email_function]
 
     steps:
       - uses: actions/checkout@v4.1.1
@@ -26,10 +31,16 @@ jobs:
           role-to-assume: arn:aws:iam::220746603587:role/github-actions
           aws-region: eu-central-1
 
-      - name: Terraform init
+      - name: Retrieve email-function artifact
+        uses: actions/download-artifact@v3.0.2
+        with:
+          name: email-function-dist
+          path: email-function/dist
+
+      - name: terraform init
         run: terraform init -backend-config=test.s3.tfbackend
         working-directory: terraform
 
-      - name: Terraform plan
+      - name: terraform plan
         run: terraform plan
         working-directory: terraform

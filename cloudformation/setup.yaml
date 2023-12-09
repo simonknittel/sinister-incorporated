@@ -35,10 +35,35 @@ Resources:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               StringLike:
-                token.actions.githubusercontent.com:sub: repo:simonknittel/sinister-incorporated:*
-                token.actions.githubusercontent.com:workflow:
-                  - terraform plan
-                  - terraform apply
+                # Related: https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#customizing-the-token-claims
+                token.actions.githubusercontent.com:sub:
+                  - repo:simonknittel/sinister-incorporated:job_workflow_ref:simonknittel/sinister-incorporated/.github/workflows/terraform-plan.yml@refs/pull/*
+                  - repo:simonknittel/sinister-incorporated:job_workflow_ref:simonknittel/sinister-incorporated/.github/workflows/terraform-apply.yml@refs/heads/main
+      Policies:
+        - PolicyName: terraform
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                # Related: https://github.com/iann0036/iamlive
+                Action:
+                  - sts:GetCallerIdentity
+                  - s3:ListBucket
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - kms:ListAliases
+                  - ssm:GetParameter
+                  - kms:DescribeKey
+                  - iam:GetPolicy
+                  - iam:GetPolicyVersion
+                  - iam:GetRole
+                  - iam:ListRolePolicies
+                  - iam:ListAttachedRolePolicies
+                  - lambda:GetFunction
+                  - lambda:ListVersionsByFunction
+                  - lambda:GetFunctionCodeSigningConfig
+                  - lambda:GetFunctionUrlConfig
+                Resource: "*"
 
 Outputs:
   TerraformBackendBucketName:

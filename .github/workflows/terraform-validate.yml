@@ -1,4 +1,4 @@
-name: Terraform validate
+name: terraform validate
 
 on:
   pull_request:
@@ -18,10 +18,10 @@ jobs:
         with:
           terraform_version: 1.6.4
 
-      - name: Terraform init
+      - name: terraform init
         run: terraform init -backend=false
         working-directory: terraform
 
-      - name: Terraform validate
+      - name: terraform validate
         run: terraform validate
         working-directory: terraform
