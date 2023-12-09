@@ -56,6 +56,13 @@ sso_start_url = https://simonknittel.awsapps.com/start
    1. `aws sso login --profile sinister-incorporated-test && aws --profile sinister-incorporated-test --region eu-central-1 ssm put-parameter --name /email-function/mailgun-api-key --value foobar --type SecureString --overwrite`
    2. `aws sso login --profile sinister-incorporated-test && aws --profile sinister-incorporated-test --region eu-central-1 ssm put-parameter --name /email-function/api-key --value foobar --type SecureString --overwrite`
 
+### Related
+
+- https://stackoverflow.com/questions/51273227/whats-the-most-efficient-way-to-determine-the-minimum-aws-permissions-necessary
+- https://github.com/iann0036/iamlive
+  - `iamlive --mode proxy --force-wildcard-resource --output-file policy.json`
+  - `HTTP_PROXY=http://127.0.0.1:10080 HTTPS_PROXY=http://127.0.0.1:10080 AWS_CA_BUNDLE=~/.iamlive/ca.pem AWS_CSM_ENABLED=true terraform plan`
+
 ## 5. Set up Terraform
 
 1. Create and populate `test.s3.tfbackend`, `prod.s3.tfbackend`, `test.tfvars` and `prod.tfvars`
