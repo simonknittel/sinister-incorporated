@@ -5,6 +5,13 @@ on:
     branches:
       - main
       - develop
+    paths:
+      - .github/workflows/terraform-plan.yml
+      - .github/workflows/build-email-function.yml
+      - terraform/**
+      - email-function/**
+      - emails/**
+      - cloudformation/**
 
 jobs:
   build_email_function:

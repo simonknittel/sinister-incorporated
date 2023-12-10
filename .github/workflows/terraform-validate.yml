@@ -6,6 +6,7 @@ on:
       - main
       - develop
     paths:
+      - .github/workflows/terraform-validate.yml
       - terraform/**
 
 jobs:

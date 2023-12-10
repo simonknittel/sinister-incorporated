@@ -1,4 +1,4 @@
-name: Lint and Test
+name: Validate app
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
       - main
       - develop
     paths:
+      - .github/workflows/lint-test.yml
       - app/**
 
 jobs:
