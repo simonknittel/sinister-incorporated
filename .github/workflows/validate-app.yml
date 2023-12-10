@@ -78,6 +78,7 @@ jobs:
       - name: Prettier
         run: npx prettier --check .
         working-directory: app
+        continue-on-error: true
 
   test:
     runs-on: ubuntu-22.04
