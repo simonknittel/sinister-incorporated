@@ -1,12 +1,13 @@
-import { type Handler } from "aws-lambda";
+import { APIGatewayProxyHandler } from "aws-lambda";
 import z from "zod";
 import errorHandler from "./_lib/errorHandler";
 import { fetchParameters } from "./_lib/fetchParameters";
 import { foo } from "./_lib/foo";
 
-export const handler: Handler = async (event) => {
+export const handler: APIGatewayProxyHandler = async (event) => {
   try {
-    const requestBody = requestBodySchema.parse(event);
+    const body = JSON.parse(event.body || "");
+    const requestBody = requestBodySchema.parse(body);
 
     const parameters = await fetchParameters({
       // deepcode ignore HardcodedNonCryptoSecret: This is not the actual secret but a reference to the secret in the parameters store
@@ -20,6 +21,7 @@ export const handler: Handler = async (event) => {
 
     return {
       statusCode: 204,
+      body: "",
     };
   } catch (error) {
     return errorHandler(error);
