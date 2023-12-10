@@ -64,6 +64,17 @@ jobs:
         with:
           node-version-file: ".nvmrc"
 
+      - uses: actions/cache@v3.3.2
+        id: node-modules-cache
+        with:
+          path: app/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
+
+      - name: Install app dependencies
+        run: npm ci
+        working-directory: app
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+
       - name: Prettier
         run: npx prettier --check .
         working-directory: app
