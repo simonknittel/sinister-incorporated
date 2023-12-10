@@ -1,4 +1,4 @@
-name: Lint and Test
+name: Validate app
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
       - main
       - develop
     paths:
+      - .github/workflows/lint-test.yml
       - app/**
 
 jobs:
@@ -52,6 +53,32 @@ jobs:
           NEXT_PUBLIC_R2_PUBLIC_URL: "foo"
           UNLEASH_SERVER_API_URL: "https://foo"
           UNLEASH_SERVER_API_TOKEN: "foo"
+
+  prettier:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - uses: actions/setup-node@v4.0.0
+        with:
+          node-version-file: ".nvmrc"
+
+      - uses: actions/cache@v3.3.2
+        id: node-modules-cache
+        with:
+          path: app/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
+
+      - name: Install app dependencies
+        run: npm ci
+        working-directory: app
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+
+      - name: Prettier
+        run: npx prettier --check .
+        working-directory: app
+        continue-on-error: true
 
   test:
     runs-on: ubuntu-22.04
