@@ -19,7 +19,16 @@ const config = {
   cleanDistDir: true,
 
   images: {
-    domains: ["cdn.discordapp.com", process.env.NEXT_PUBLIC_R2_PUBLIC_URL],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.discordapp.com',
+      },
+      {
+        protocol: 'https',
+        hostname: process.env.NEXT_PUBLIC_R2_PUBLIC_URL,
+      },
+    ],
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
