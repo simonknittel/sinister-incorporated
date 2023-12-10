@@ -1,3 +1,7 @@
-output "function_url" {
-	value = aws_lambda_function_url.main.function_url
+output "function_name" {
+  value = aws_lambda_function.main.function_name
+}
+
+output "invoke_arn" {
+  value = aws_lambda_function.main.invoke_arn
 }

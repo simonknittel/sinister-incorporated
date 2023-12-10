@@ -25,12 +25,7 @@ resource "aws_lambda_function" "main" {
 
   lifecycle {
     ignore_changes = [
-      environment.0.variables["COMMIT_SHA"]
+      environment.0.variables["COMMIT_SHA"] # TODO: This doesn't work properly. It should not trigger updates but also update when something else changes. Currently it doesn't trigger updates but also doesn't update when something else changes.
     ]
   }
-}
-
-resource "aws_lambda_function_url" "main" {
-  function_name      = aws_lambda_function.main.function_name
-  authorization_type = "NONE"
 }

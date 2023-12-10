@@ -30,9 +30,9 @@ export default function errorHandler(error: unknown) {
 
     return {
       statusCode: 500,
-      body: {
+      body: JSON.stringify({
         message: "Internal server error",
-      },
+      }),
     };
   }
 
@@ -42,8 +42,8 @@ export default function errorHandler(error: unknown) {
 
   return {
     statusCode: 500,
-    body: {
+    body: JSON.stringify({
       message: "Internal server error",
-    },
+    }),
   };
 }
