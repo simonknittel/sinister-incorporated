@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import dynamic from "next/dynamic";
 import { type ReactNode } from "react";
 import "../styles/globals.css";
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         {children}
         <ToasterContainer />
         <AnalyticsContainer />
+        <SpeedInsights />
       </body>
     </html>
   );
