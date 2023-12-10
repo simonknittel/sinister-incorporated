@@ -53,6 +53,20 @@ jobs:
           UNLEASH_SERVER_API_URL: "https://foo"
           UNLEASH_SERVER_API_TOKEN: "foo"
 
+  prettier:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - uses: actions/setup-node@v4.0.0
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Prettier
+        run: npx prettier --check .
+        working-directory: app
+
   test:
     runs-on: ubuntu-22.04
 
