@@ -5,7 +5,7 @@ resource "aws_api_gateway_resource" "email_function" {
 }
 
 module "email_function" {
-  source = "./modules/lambda-function"
+  source = "./modules/api-gateway-lambda"
 
   function_name = "email-function"
   source_dir    = "../email-function/dist"
