@@ -26,12 +26,3 @@ provider "aws" {
     }
   }
 }
-
-module "email_function" {
-  source = "./modules/lambda-function"
-
-  function_name     = "email-function"
-  source_dir        = "../email-function/dist"
-  rest_api          = aws_api_gateway_rest_api.main
-  request_validator = aws_api_gateway_request_validator.validate_request_body
-}
