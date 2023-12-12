@@ -82,26 +82,22 @@ resource "aws_api_gateway_account" "main" {
 }
 
 resource "aws_iam_role" "api_gateway_cloudwatch" {
-  name               = "api-gateway"
-  assume_role_policy = data.aws_iam_policy_document.api_gateway_assume_role.json
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "apigateway.amazonaws.com"
+        }
+      },
+    ]
+  })
+
   managed_policy_arns = [
-    data.aws_iam_policy.amazon_api_gateway_push_to_cloudwatch_logs.arn,
+    "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
   ]
-}
 
-data "aws_iam_policy_document" "api_gateway_assume_role" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "Service"
-      identifiers = ["apigateway.amazonaws.com"]
-    }
-
-    actions = ["sts:AssumeRole"]
-  }
-}
-
-data "aws_iam_policy" "amazon_api_gateway_push_to_cloudwatch_logs" {
-  arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+  inline_policy {}
 }
