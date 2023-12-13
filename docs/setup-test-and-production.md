@@ -49,12 +49,12 @@ sso_start_url = https://simonknittel.awsapps.com/start
 
 3. Create and deploy setup stack with AWS CloudFormation
 
-   1. `aws sso login --profile sinister-incorporated-test`
+   1. `AWS_PROFILE=sinister-incorporated-test aws sso login`
    2. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 cloudformation deploy --template-file ./cloudformation/setup.yaml --stack-name setup --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM --tags ManagedBy=CloudFormation Repository=simonknittel/sinister-incorporated CloudFormationStack=setup`
 
 4. Create parameters in AWS System Manager (make sure to replace `foobar` with the actual values)
 
-   1. `aws sso login --profile sinister-incorporated-test`
+   1. `AWS_PROFILE=sinister-incorporated-test aws sso login`
    2. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 ssm put-parameter --name /email-function/mailgun-api-key --value foobar --type SecureString --overwrite`
    3. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 ssm put-parameter --name /email-function/api-key --value foobar --type SecureString --overwrite`
 
@@ -71,7 +71,7 @@ sso_start_url = https://simonknittel.awsapps.com/start
 2. `cd email-function && npm run build:lambda`
 3. Create Terraform resources
 
-   1. `aws sso login --profile sinister-incorporated-test`
+   1. `AWS_PROFILE=sinister-incorporated-test aws sso login`
    2. `AWS_PROFILE=sinister-incorporated-test terraform init -backend-config=test.s3.tfbackend`
    3. `AWS_PROFILE=sinister-incorporated-test terraform apply -var-file="test.tfvars"`
 

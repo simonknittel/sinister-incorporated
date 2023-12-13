@@ -26,29 +26,27 @@ resource "aws_iam_role" "main" {
       Statement = [
         {
           Action = [
-            "ssm:GetParameter",
             "kms:Decrypt",
+            "ssm:GetParameter",
           ]
           Effect = "Allow"
-          Resource = [
-            data.aws_ssm_parameter.mailgun_api_key.arn,
-            data.aws_ssm_parameter.api_key.arn,
-            data.aws_kms_alias.ssm.target_key_arn,
-          ]
+          Resource = concat(
+            [
+              data.aws_kms_alias.ssm.target_key_arn,
+            ],
+            tolist(data.aws_ssm_parameter.custom[*].arn),
+          )
         },
       ]
     })
   }
 }
 
-data "aws_ssm_parameter" "mailgun_api_key" {
-  name = "/${var.function_name}/mailgun-api-key"
-}
-
-data "aws_ssm_parameter" "api_key" {
-  name = "/${var.function_name}/api-key"
-}
-
 data "aws_kms_alias" "ssm" {
   name = "alias/aws/ssm"
+}
+
+data "aws_ssm_parameter" "custom" {
+  count = length(var.parameter_store)
+  name = "/${var.function_name}${var.parameter_store[count.index]}"
 }

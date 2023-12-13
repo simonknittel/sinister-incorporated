@@ -14,6 +14,10 @@ module "email_function" {
   resource = aws_api_gateway_resource.email_function
   method   = "POST"
 
+  parameter_store = [
+    "/mailgun-api-key"
+  ]
+
   request_validator       = aws_api_gateway_request_validator.validate_request_body
   request_body_model_name = "EmailFunctionPost"
   request_body_schema = jsonencode({

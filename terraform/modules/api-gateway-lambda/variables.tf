@@ -10,6 +10,11 @@ variable "method" {
   type = string
 }
 
+variable "parameter_store" {
+  type = list(string)
+  default = []
+}
+
 variable "rest_api" {
   type = object({
     id            = string
