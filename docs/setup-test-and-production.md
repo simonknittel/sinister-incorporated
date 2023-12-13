@@ -50,13 +50,13 @@ sso_start_url = https://simonknittel.awsapps.com/start
 3. Create and deploy setup stack with AWS CloudFormation
 
    1. `aws sso login --profile sinister-incorporated-test`
-   2. `aws --profile sinister-incorporated-test --region eu-central-1 cloudformation deploy --template-file ./cloudformation/setup.yaml --stack-name setup --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM --tags ManagedBy=CloudFormation Repository=simonknittel/sinister-incorporated CloudFormationStack=setup`
+   2. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 cloudformation deploy --template-file ./cloudformation/setup.yaml --stack-name setup --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM --tags ManagedBy=CloudFormation Repository=simonknittel/sinister-incorporated CloudFormationStack=setup`
 
 4. Create parameters in AWS System Manager (make sure to replace `foobar` with the actual values)
 
    1. `aws sso login --profile sinister-incorporated-test`
-   2. `aws --profile sinister-incorporated-test --region eu-central-1 ssm put-parameter --name /email-function/mailgun-api-key --value foobar --type SecureString --overwrite`
-   3. `aws --profile sinister-incorporated-test --region eu-central-1 ssm put-parameter --name /email-function/api-key --value foobar --type SecureString --overwrite`
+   2. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 ssm put-parameter --name /email-function/mailgun-api-key --value foobar --type SecureString --overwrite`
+   3. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 ssm put-parameter --name /email-function/api-key --value foobar --type SecureString --overwrite`
 
 ### Related
 

@@ -11,6 +11,25 @@ Resources:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
 
+  # Related: https://docs.aws.amazon.com/securityhub/latest/userguide/s3-controls.html#s3-5
+  TerraformBackendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref TerraformBackendBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Sid: AllowSSLRequestsOnly
+          Action: s3:*
+          Effect: Deny
+          Resource:
+            - !Sub "arn:aws:s3:::${TerraformBackendBucket}"
+            - !Sub "arn:aws:s3:::${TerraformBackendBucket}/*"
+          Principal: "*"
+          Condition:
+            Bool:
+              aws:SecureTransport: false
+
   OIDCProviderGitHub:
     Type: AWS::IAM::OIDCProvider
     Properties:
