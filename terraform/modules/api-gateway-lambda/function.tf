@@ -5,13 +5,13 @@ resource "aws_lambda_function" "main" {
   handler                        = "lambda.handler"
   source_code_hash               = data.archive_file.main.output_base64sha256
   runtime                        = "nodejs18.x"
-  timeout                        = 10
+  timeout                        = 15
   memory_size                    = 256
   reserved_concurrent_executions = -1
 
   environment {
     variables = {
-      COMMIT_SHA = data.external.main.result.sha
+      COMMIT_SHA = terraform_data.commit_sha.output
     }
   }
 
@@ -22,10 +22,4 @@ resource "aws_lambda_function" "main" {
   layers = [
     "arn:aws:lambda:eu-central-1:187925254637:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11" # https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html#ps-integration-lambda-extensions-add
   ]
-
-  lifecycle {
-    ignore_changes = [
-      environment.0.variables["COMMIT_SHA"] # TODO: This doesn't work properly. It should not trigger updates but also update when something else changes. Currently it doesn't trigger updates but also doesn't update when something else changes.
-    ]
-  }
 }

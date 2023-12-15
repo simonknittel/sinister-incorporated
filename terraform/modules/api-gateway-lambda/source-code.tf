@@ -13,3 +13,9 @@ data "external" "main" {
     "HEAD"
   ]
 }
+
+# Only update the environment variable of the AWS Lambda function if the source code has changed.
+resource "terraform_data" "commit_sha" {
+  input = data.external.main.result.sha
+  triggers_replace = data.archive_file.main.output_base64sha256
+}

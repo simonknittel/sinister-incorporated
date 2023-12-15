@@ -15,6 +15,7 @@ resource "aws_api_gateway_deployment" "main" {
         aws_api_gateway_request_validator.validate_request_body,
       ],
       [
+        aws_api_gateway_resource.email_function,
         module.email_function.redeployment_triggers,
       ]
     )))
@@ -25,21 +26,21 @@ resource "aws_api_gateway_deployment" "main" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "api_gateway_stage_test" {
-  name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.main.id}/test"
+resource "aws_cloudwatch_log_group" "api_gateway_stage_main" {
+  name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.main.id}/main"
   retention_in_days = 7
 }
 
-resource "aws_api_gateway_stage" "test" {
-  depends_on = [aws_cloudwatch_log_group.api_gateway_stage_test]
+resource "aws_api_gateway_stage" "main" {
+  depends_on = [aws_cloudwatch_log_group.api_gateway_stage_main]
 
   deployment_id        = aws_api_gateway_deployment.main.id
   rest_api_id          = aws_api_gateway_rest_api.main.id
-  stage_name           = "test"
+  stage_name           = "main"
   xray_tracing_enabled = true
 
   access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_gateway_stage_test.arn
+    destination_arn = aws_cloudwatch_log_group.api_gateway_stage_main.arn
     format = jsonencode({
       requestId               = "$context.requestId"
       extendedRequestId       = "$context.extendedRequestId"
@@ -61,7 +62,7 @@ resource "aws_api_gateway_stage" "test" {
 
 resource "aws_api_gateway_method_settings" "all" {
   rest_api_id = aws_api_gateway_rest_api.main.id
-  stage_name  = aws_api_gateway_stage.test.stage_name
+  stage_name  = aws_api_gateway_stage.main.stage_name
   method_path = "*/*"
 
   settings {
@@ -81,26 +82,22 @@ resource "aws_api_gateway_account" "main" {
 }
 
 resource "aws_iam_role" "api_gateway_cloudwatch" {
-  name               = "api-gateway"
-  assume_role_policy = data.aws_iam_policy_document.api_gateway_assume_role.json
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "apigateway.amazonaws.com"
+        }
+      },
+    ]
+  })
+
   managed_policy_arns = [
-    data.aws_iam_policy.amazon_api_gateway_push_to_cloudwatch_logs.arn,
+    "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
   ]
-}
 
-data "aws_iam_policy_document" "api_gateway_assume_role" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "Service"
-      identifiers = ["apigateway.amazonaws.com"]
-    }
-
-    actions = ["sts:AssumeRole"]
-  }
-}
-
-data "aws_iam_policy" "amazon_api_gateway_push_to_cloudwatch_logs" {
-  arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+  inline_policy {}
 }
