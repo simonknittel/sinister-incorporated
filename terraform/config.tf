@@ -79,7 +79,7 @@ resource "aws_config_delivery_channel" "default" {
 }
 
 resource "aws_s3_bucket" "aws_config" {
-  bucket        = "config-bucket-220746603587"
+  bucket        = "config-bucket-220746603587" // TODO: Don't hardcode account ID
   force_destroy = true
 }
 

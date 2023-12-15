@@ -46,8 +46,8 @@ Resources:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Effect: Allow
-            Action: sts:AssumeRoleWithWebIdentity
+          - Action: sts:AssumeRoleWithWebIdentity
+            Effect: Allow
             Principal:
               Federated: !Ref OIDCProviderGitHub
             Condition:
