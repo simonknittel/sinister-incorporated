@@ -1,5 +1,5 @@
 terraform {
-  required_version = "1.6.4"
+  required_version = "1.6.6"
 
   backend "s3" {}
 
@@ -25,11 +25,4 @@ provider "aws" {
       Repository = "simonknittel/sinister-incorporated"
     }
   }
-}
-
-module "email_function" {
-  source = "./modules/lambda-function"
-
-  function_name = "email-function"
-  source_dir    = "../email-function/dist"
 }

@@ -1,3 +1,7 @@
-output "email_function_url" {
-	value = module.email_function.function_url
+output "api_gateway_url" {
+  value = aws_api_gateway_stage.main.invoke_url
+}
+
+output "care_bear_shooter_build_url" {
+  value = aws_cloudfront_distribution.care_bear_shooter_build.domain_name
 }

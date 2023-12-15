@@ -2,10 +2,11 @@
 
 import Script from "next/script";
 import { useRef } from "react";
+import { env } from "~/env.mjs";
 
 // @refresh reset
 
-const buildUrl = "/dogfight-trainer-assets/Build";
+const buildUrl = `${env.NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL}/Build`;
 
 const config = {
   dataUrl: buildUrl + "/Build.data.br",
