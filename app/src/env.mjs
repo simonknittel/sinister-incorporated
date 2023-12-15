@@ -56,6 +56,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ALGOLIA_APP_ID: z.string(),
     NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY: z.string(),
     NEXT_PUBLIC_R2_PUBLIC_URL: z.string(),
+    NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL: z.string().url(),
   },
 
   /*
@@ -91,6 +92,7 @@ export const env = createEnv({
     COMMIT_SHA: process.env.COMMIT_SHA,
     EMAIL_FUNCTION_ENDPOINT: process.env.EMAIL_FUNCTION_ENDPOINT,
     EMAIL_FUNCTION_API_KEY: process.env.EMAIL_FUNCTION_API_KEY,
+    NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL: process.env.NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL,
   },
 
   emptyStringAsUndefined: true,
