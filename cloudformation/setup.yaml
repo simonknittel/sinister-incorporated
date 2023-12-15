@@ -70,18 +70,36 @@ Resources:
                   - s3:ListBucket
                   - s3:GetObject
                   - s3:GetObjectVersion
-                  - kms:ListAliases
                   - ssm:GetParameter
-                  - kms:DescribeKey
-                  - iam:GetPolicy
-                  - iam:GetPolicyVersion
+                  - kms:ListAliases
                   - iam:GetRole
+                  - s3:GetBucketPolicy
+                  - kms:DescribeKey
+                  - logs:DescribeLogGroups
+                  - apigateway:GET
+                  - s3:GetBucketAcl
                   - iam:ListRolePolicies
+                  - s3:GetBucketCORS
+                  - logs:ListTagsLogGroup
+                  - s3:GetBucketWebsite
                   - iam:ListAttachedRolePolicies
+                  - iam:GetRolePolicy
+                  - s3:GetBucketVersioning
+                  - s3:GetAccelerateConfiguration
+                  - s3:GetBucketRequestPayment
                   - lambda:GetFunction
+                  - s3:GetBucketLogging
+                  - s3:GetLifecycleConfiguration
                   - lambda:ListVersionsByFunction
                   - lambda:GetFunctionCodeSigningConfig
-                  - lambda:GetFunctionUrlConfig
+                  - s3:GetReplicationConfiguration
+                  - s3:GetEncryptionConfiguration
+                  - lambda:GetPolicy
+                  - s3:GetBucketObjectLockConfiguration
+                  - s3:GetBucketTagging
+                  - config:DescribeConfigurationRecorders
+                  - config:DescribeDeliveryChannels
+                  - config:DescribeConfigurationRecorderStatus
                 Resource: "*"
 
 Outputs:
