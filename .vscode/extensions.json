@@ -1,6 +1,7 @@
 {
 	"recommendations": [
 		"github.vscode-github-actions",
-		"dotenv.dotenv-vscode"
+		"dotenv.dotenv-vscode",
+		"hashicorp.terraform"
 	]
 }
