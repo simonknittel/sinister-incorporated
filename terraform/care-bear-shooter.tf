@@ -144,7 +144,7 @@ resource "aws_cloudfront_origin_access_control" "care_bear_shooter_build_bucket"
 }
 
 data "aws_cloudfront_cache_policy" "managed_caching_optimized" {
-  name = "Managed-CachingOptimized"
+  name = "Managed-CachingOptimizedForUncompressedObjects"
 }
 
 data "aws_cloudfront_origin_request_policy" "managed_cors_s3_origin" {
