@@ -9,7 +9,6 @@ resource "aws_config_configuration_recorder" "default" {
       "AWS::ApiGateway::RestApi",
       "AWS::ApiGateway::Stage",
       "AWS::CloudFormation::Stack",
-      "AWS::Config::ResourceCompliance",
       "AWS::KMS::Key",
       "AWS::KMS::Alias",
       "AWS::Lambda::Function",
