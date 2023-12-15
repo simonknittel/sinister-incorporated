@@ -66,57 +66,6 @@ const config = {
         },
       ],
     },
-    {
-      source: "/dogfight-trainer-assets/Build/Build.framework.js.br",
-      headers: [
-        {
-          key: "Content-Encoding",
-          value: "br",
-        },
-        {
-          key: "Cache-Control",
-          value: "private, no-cache, no-store, max-age=0, must-revalidate"
-        },
-        {
-          key: "Content-Type",
-          value: "application/javascript",
-        },
-      ],
-    },
-    {
-      source: "/dogfight-trainer-assets/Build/Build.data.br",
-      headers: [
-        {
-          key: "Content-Encoding",
-          value: "br",
-        },
-        {
-          key: "Cache-Control",
-          value: "private, no-cache, no-store, max-age=0, must-revalidate"
-        },
-        {
-          key: "Content-Type",
-          value: "application/octet-stream",
-        },
-      ],
-    },
-    {
-      source: "/dogfight-trainer-assets/Build/Build.wasm.br",
-      headers: [
-        {
-          key: "Content-Encoding",
-          value: "br",
-        },
-        {
-          key: "Cache-Control",
-          value: "private, no-cache, no-store, max-age=0, must-revalidate"
-        },
-        {
-          key: "Content-Type",
-          value: "application/wasm",
-        },
-      ],
-    }
   ],
 };
 
