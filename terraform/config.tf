@@ -14,6 +14,7 @@ resource "aws_config_configuration_recorder" "default" {
       "AWS::Lambda::Function",
       "AWS::S3::Bucket",
       "AWS::IAM::Role",
+      "AWS::CloudWatch::Alarm",
     ]
 
     recording_strategy {
