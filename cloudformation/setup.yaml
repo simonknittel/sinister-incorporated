@@ -70,41 +70,43 @@ Resources:
                   - s3:ListBucket
                   - s3:GetObject
                   - s3:GetObjectVersion
-                  - iam:ListOpenIDConnectProviders
-                  - iam:GetRole
-                  - ssm:GetParameter
-                  - cloudfront:ListCachePolicies
                   - cloudfront:ListOriginRequestPolicies
-                  - cloudfront:GetOriginAccessControl
                   - kms:ListAliases
-                  - s3:GetBucketPolicy
-                  - s3:GetBucketAcl
-                  - iam:ListRolePolicies
-                  - iam:GetOpenIDConnectProvider
+                  - ssm:GetParameter
+                  - cloudwatch:DescribeAlarms
+                  - cloudfront:ListCachePolicies
+                  - cloudfront:GetOriginAccessControl
                   - kms:DescribeKey
-                  - s3:GetBucketCORS
-                  - logs:DescribeLogGroups
-                  - apigateway:GET
+                  - iam:ListOpenIDConnectProviders
+                  - cloudwatch:ListTagsForResource
+                  - s3:GetBucketPolicy
+                  - iam:GetRole
                   - cloudfront:GetCachePolicy
                   - cloudfront:GetOriginRequestPolicy
+                  - logs:DescribeLogGroups
+                  - s3:GetBucketAcl
+                  - apigateway:GET
+                  - s3:GetBucketCORS
+                  - iam:GetOpenIDConnectProvider
+                  - iam:ListRolePolicies
+                  - logs:ListTagsLogGroup
                   - s3:GetBucketWebsite
                   - s3:GetBucketVersioning
-                  - logs:ListTagsLogGroup
                   - iam:ListAttachedRolePolicies
+                  - iam:GetRolePolicy
                   - s3:GetAccelerateConfiguration
                   - s3:GetBucketRequestPayment
-                  - iam:GetRolePolicy
                   - s3:GetBucketLogging
                   - s3:GetLifecycleConfiguration
-                  - s3:GetReplicationConfiguration
                   - lambda:GetFunction
+                  - s3:GetReplicationConfiguration
+                  - lambda:ListVersionsByFunction
                   - s3:GetEncryptionConfiguration
                   - s3:GetBucketObjectLockConfiguration
-                  - lambda:ListVersionsByFunction
-                  - s3:GetBucketTagging
                   - lambda:GetFunctionCodeSigningConfig
-                  - cloudfront:GetDistribution
                   - lambda:GetPolicy
+                  - s3:GetBucketTagging
+                  - cloudfront:GetDistribution
                   - cloudfront:ListTagsForResource
                   - config:DescribeConfigurationRecorders
                   - config:DescribeDeliveryChannels
