@@ -72,7 +72,7 @@
       ```json
       {
         "detail": {
-          "previousState": { "value": ["OK"] },
+          "previousState": { "value": ["OK", "INSUFFICIENT_DATA"] },
           "state": { "value": ["ALARM"] }
         }
       }
