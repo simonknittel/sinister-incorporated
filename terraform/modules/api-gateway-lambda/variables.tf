@@ -6,6 +6,16 @@ variable "source_dir" {
   type = string
 }
 
+variable "reserved_concurrent_executions" {
+  type = number
+  default = -1
+}
+
+variable "provisioned_concurrent_executions" {
+  type = number
+  default = 0
+}
+
 variable "method" {
   type = string
 }
