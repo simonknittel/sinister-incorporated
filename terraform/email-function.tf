@@ -9,7 +9,7 @@ module "email_function" {
 
   function_name = "email-function"
   source_dir    = "../email-function/dist"
-
+  reserved_concurrent_executions = 10
   rest_api = aws_api_gateway_rest_api.main
   resource = aws_api_gateway_resource.email_function
   method   = "POST"
