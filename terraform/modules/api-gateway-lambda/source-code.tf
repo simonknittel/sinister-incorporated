@@ -18,4 +18,8 @@ data "external" "main" {
 resource "terraform_data" "commit_sha" {
   input = data.external.main.result.sha
   triggers_replace = data.archive_file.main.output_base64sha256
+
+  lifecycle {
+    ignore_changes = [ input ]
+  }
 }

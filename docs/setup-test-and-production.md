@@ -29,23 +29,23 @@
 
 2. Prepare AWS CLI
 
-```ini
-# ~/.aws/config
+   ```ini
+   # ~/.aws/config
 
-[profile sinister-incorporated-test]
-sso_session = sinister-incorporated-sso
-sso_account_id = 220746603587
-sso_role_name = AdministratorAccess
+   [profile sinister-incorporated-test]
+   sso_session = sinister-incorporated-sso
+   sso_account_id = 220746603587
+   sso_role_name = AdministratorAccess
 
-[profile sinister-incorporated-prod]
-sso_session = sinister-incorporated-sso
-sso_account_id =
-sso_role_name = AdministratorAccess
+   [profile sinister-incorporated-prod]
+   sso_session = sinister-incorporated-sso
+   sso_account_id =
+   sso_role_name = AdministratorAccess
 
-[sso-session sinister-incorporated-sso]
-sso_region = eu-central-1
-sso_start_url = https://simonknittel.awsapps.com/start
-```
+   [sso-session sinister-incorporated-sso]
+   sso_region = eu-central-1
+   sso_start_url = https://simonknittel.awsapps.com/start
+   ```
 
 3. Create and deploy setup stack with AWS CloudFormation
 
@@ -58,11 +58,36 @@ sso_start_url = https://simonknittel.awsapps.com/start
    2. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 ssm put-parameter --name /email-function/mailgun-api-key --value foobar --type SecureString --overwrite`
    3. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 ssm put-parameter --name /email-function/api-key --value foobar --type SecureString --overwrite`
 
+5. Manually set up AWS User Notifications through the console
+
+   1. Notification hubs: eu-central-1
+   2. Create notification configuration for CloudWatch
+
+      1. Name: `cloudwatch-alarms`
+      2. AWS service name: `CloudWatch`
+      3. Event type: `CloudWatch Alarm State Change`
+      4. Regions: eu-central-1
+      5. Advanced filter
+
+      ```json
+      {
+        "detail": {
+          "previousState": { "value": ["OK", "INSUFFICIENT_DATA"] },
+          "state": { "value": ["ALARM"] }
+        }
+      }
+      ```
+
+      6. Aggregation settings: Receive within 5 minutes
+      7. Delivery channels: Email
+
+   3. Create notification configuration for Health
+
 ### Related
 
 - https://stackoverflow.com/questions/51273227/whats-the-most-efficient-way-to-determine-the-minimum-aws-permissions-necessary
 - https://github.com/iann0036/iamlive
-  - `iamlive --mode proxy --force-wildcard-resource --output-file policy.json`
+  - `iamlive --mode proxy --force-wildcard-resource --output-file policy.json --sort-alphabetical`
   - `HTTP_PROXY=http://127.0.0.1:10080 HTTPS_PROXY=http://127.0.0.1:10080 AWS_CA_BUNDLE=~/.iamlive/ca.pem AWS_CSM_ENABLED=true AWS_PROFILE=sinister-incorporated-test terraform plan -var-file="test.tfvars"`
 
 ## 5. Set up Terraform
