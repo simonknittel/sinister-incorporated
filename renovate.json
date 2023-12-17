@@ -16,7 +16,7 @@
       "automerge": true,
       "automergeType": "branch",
       "schedule": [
-        "before 6am on Monday"
+        "before 8am"
       ],
       "timezone": "Europe/Berlin",
       "prCreation": "not-pending",
