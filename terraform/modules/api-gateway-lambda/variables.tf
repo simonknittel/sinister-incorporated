@@ -7,12 +7,12 @@ variable "source_dir" {
 }
 
 variable "reserved_concurrent_executions" {
-  type = number
+  type    = number
   default = -1
 }
 
 variable "provisioned_concurrent_executions" {
-  type = number
+  type    = number
   default = 0
 }
 
@@ -21,7 +21,7 @@ variable "method" {
 }
 
 variable "parameter_store" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
@@ -49,5 +49,9 @@ variable "request_body_model_name" {
 }
 
 variable "request_body_schema" {
+  type = string
+}
+
+variable "account_id" {
   type = string
 }

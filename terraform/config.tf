@@ -41,6 +41,11 @@ resource "aws_iam_role" "aws_config" {
         Principal = {
           Service = "config.amazonaws.com"
         }
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
       }
     ]
   })
@@ -80,7 +85,7 @@ resource "aws_config_delivery_channel" "default" {
 }
 
 resource "aws_s3_bucket" "aws_config" {
-  bucket        = "config-bucket-220746603587" // TODO: Don't hardcode account ID
+  bucket        = "config-bucket-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
 }
 

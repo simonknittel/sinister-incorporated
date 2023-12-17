@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "care_bear_shooter_build" {
-  bucket        = "care-bear-shooter-build-220746603587" // TODO: Don't hardcode account ID
+  bucket        = "care-bear-shooter-build-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
 }
 
