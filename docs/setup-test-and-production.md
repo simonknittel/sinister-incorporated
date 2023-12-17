@@ -87,7 +87,7 @@
 
 - https://stackoverflow.com/questions/51273227/whats-the-most-efficient-way-to-determine-the-minimum-aws-permissions-necessary
 - https://github.com/iann0036/iamlive
-  - `iamlive --mode proxy --force-wildcard-resource --output-file policy.json`
+  - `iamlive --mode proxy --force-wildcard-resource --output-file policy.json --sort-alphabetical`
   - `HTTP_PROXY=http://127.0.0.1:10080 HTTPS_PROXY=http://127.0.0.1:10080 AWS_CA_BUNDLE=~/.iamlive/ca.pem AWS_CSM_ENABLED=true AWS_PROFILE=sinister-incorporated-test terraform plan -var-file="test.tfvars"`
 
 ## 5. Set up Terraform
