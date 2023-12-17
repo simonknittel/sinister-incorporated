@@ -18,7 +18,7 @@ export const OverviewSection = async ({
   name,
   entity,
 }: Readonly<Props>) => {
-  const authentication = await requireAuthentication();
+  await requireAuthentication();
 
   return (
     <>

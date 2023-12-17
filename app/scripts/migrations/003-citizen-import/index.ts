@@ -89,7 +89,7 @@ async function main() {
       })
       .on("error", (err) => {
         console.error(err);
-        reject();
+        reject("Reading CSV failed.");
       })
       .on("end", () => {
         resolve();

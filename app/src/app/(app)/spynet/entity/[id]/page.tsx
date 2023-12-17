@@ -12,7 +12,7 @@ import sinisterIcon from "../../../../../assets/Icons/Membership/logo_white.svg"
 import DeleteEntity from "./_components/DeleteEntity";
 import Overview from "./_components/Overview";
 import OverviewSkeleton from "./_components/OverviewSkeleton";
-import WIP from "./_components/WIP";
+import Wip from "./_components/Wip";
 import Notes from "./_components/notes/Notes";
 import NotesSkeleton from "./_components/notes/NotesSkeleton";
 import Roles from "./_components/roles/Roles";
@@ -116,7 +116,7 @@ export default async function Page({ params }: Readonly<Props>) {
             <FaSitemap /> Organisationen
           </h2>
 
-          <WIP />
+          <Wip />
         </section>
 
         <section
@@ -130,7 +130,7 @@ export default async function Page({ params }: Readonly<Props>) {
             Sinister Incorporated
           </h2>
 
-          <WIP />
+          <Wip />
         </section>
 
         <Suspense fallback={<NotesSkeleton />}>
