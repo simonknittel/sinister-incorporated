@@ -1,6 +1,6 @@
 import { type Entity } from "@prisma/client";
 import { FaLock } from "react-icons/fa";
-import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import { getAssignableRoles } from "~/app/_lib/getAssignableRoles";
 import { getAssignedAndVisibleRoles } from "~/app/_lib/getAssignedAndVisibleRoles";
 import AddRoles from "./AddRoles";
@@ -11,8 +11,7 @@ interface Props {
 }
 
 const Roles = async ({ entity }: Readonly<Props>) => {
-  const authentication = await authenticate();
-  if (!authentication) return null;
+  const authentication = await requireAuthentication();
 
   const assignedAndVisibleRoles = await getAssignedAndVisibleRoles(entity);
   const assignedAndVisibleRoleIds = assignedAndVisibleRoles.map(

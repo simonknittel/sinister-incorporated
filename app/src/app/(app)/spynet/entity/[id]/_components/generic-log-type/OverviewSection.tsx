@@ -1,7 +1,7 @@
 import { type Entity } from "@prisma/client";
 import { camelCase } from "change-case";
 import { type ReactNode } from "react";
-import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import { type GenericEntityLogType } from "~/types";
 import { HistoryModal } from "./HistoryModal";
 
@@ -18,8 +18,7 @@ export const OverviewSection = async ({
   name,
   entity,
 }: Readonly<Props>) => {
-  const authentication = await authenticate();
-  if (!authentication) return null;
+  const authentication = await requireAuthentication();
 
   return (
     <>

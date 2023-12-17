@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
-import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 
 interface Props {
   className?: string;
@@ -19,7 +19,7 @@ interface Props {
 }
 
 const Event = async ({ className, event }: Readonly<Props>) => {
-  const authentication = await authenticate();
+  const authentication = await requireAuthentication();
 
   return (
     <article
@@ -70,20 +70,19 @@ const Event = async ({ className, event }: Readonly<Props>) => {
             Discord <FaDiscord />
           </Link>
 
-          {authentication &&
-            authentication.authorize([
-              {
-                resource: "eventFleet",
-                operation: "read",
-              },
-            ]) && (
-              <Link
-                href={`/events/${event.id}/fleet`}
-                className="flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-sinister-red-500 text-sinister-red-500 hover:border-sinister-red-300 active:border-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300 px-6"
-              >
-                Verfügbare Flotte <MdWorkspaces />
-              </Link>
-            )}
+          {authentication.authorize([
+            {
+              resource: "eventFleet",
+              operation: "read",
+            },
+          ]) && (
+            <Link
+              href={`/events/${event.id}/fleet`}
+              className="flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-sinister-red-500 text-sinister-red-500 hover:border-sinister-red-300 active:border-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300 px-6"
+            >
+              Verfügbare Flotte <MdWorkspaces />
+            </Link>
+          )}
         </div>
       </div>
     </article>

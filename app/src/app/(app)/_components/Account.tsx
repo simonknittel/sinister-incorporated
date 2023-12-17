@@ -1,9 +1,9 @@
-import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import Avatar from "../../_components/Avatar";
 import LogoutButton from "./LogoutButton";
 
 const Account = async () => {
-  const authentication = await authenticate();
+  const authentication = await requireAuthentication();
 
   return (
     <div className="flex items-center justify-between border-b border-neutral-800 px-8 py-4">
@@ -11,10 +11,8 @@ const Account = async () => {
         <div className="overflow-hidden rounded">
           <Avatar
             name={
-              authentication
-                ? authentication.session.user.name ||
-                  authentication.session["discord-id"]
-                : undefined
+              authentication.session.user.name ||
+              authentication.session.discordId
             }
             image={
               authentication ? authentication.session.user.image : undefined
@@ -25,10 +23,8 @@ const Account = async () => {
 
         <div>
           <p>
-            {authentication
-              ? authentication.session.user.name ||
-                authentication.session["discord-id"]
-              : null}
+            {authentication.session.user.name ||
+              authentication.session.discordId}
           </p>
         </div>
       </div>

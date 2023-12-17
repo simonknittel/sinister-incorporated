@@ -69,10 +69,10 @@ const Table = ({ users }: Readonly<Props>) => {
             <span className="italic text-neutral-500">Unbekannt</span>
           ),
       }),
-      columnHelper.accessor("entity.id", {
+      columnHelper.accessor("entity", {
         header: "",
         cell: (props) => {
-          const entityId = props.getValue();
+          const entityId = props.getValue()?.id;
           if (!entityId) return null;
 
           return (

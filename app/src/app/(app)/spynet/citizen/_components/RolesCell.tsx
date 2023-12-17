@@ -1,5 +1,5 @@
 import { type Entity, type Role } from "@prisma/client";
-import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import { getAssignedAndVisibleRoles } from "~/app/_lib/getAssignedAndVisibleRoles";
 import AddRoles from "../../entity/[id]/_components/roles/AddRoles";
 import SingleRole from "../../entity/[id]/_components/roles/SingleRole";
@@ -13,8 +13,7 @@ export const RolesCell = async ({
   entity,
   assignableRoles,
 }: Readonly<Props>) => {
-  const authentication = await authenticate();
-  if (!authentication) return null;
+  const authentication = await requireAuthentication();
 
   const showUpdateRolesButton =
     authentication.authorize([

@@ -21,6 +21,23 @@ export const ModalContent = ({ type, entity }: Readonly<Props>) => {
     entityId: entity.id,
   });
 
+  let entries;
+  if (!history.data && history.isLoading) {
+    entries = <HistoryEntrySkelton />;
+  } else if (history.data && history.data.length > 0) {
+    entries = (
+      <ul className="mt-8 flex flex-col gap-4">
+        {history.data.map((log) => (
+          <HistoryEntry key={log.id} type={type} log={log} />
+        ))}
+      </ul>
+    );
+  } else {
+    entries = (
+      <p className="text-neutral-500 italic mt-8">Keine Einträge vorhanden</p>
+    );
+  }
+
   return (
     <>
       <h2 className="text-xl font-bold">History</h2>
@@ -33,17 +50,7 @@ export const ModalContent = ({ type, entity }: Readonly<Props>) => {
           },
         ]) && <Create type={type} entity={entity} />}
 
-      {!history.data && history.isLoading ? (
-        <HistoryEntrySkelton />
-      ) : history.data && history.data.length > 0 ? (
-        <ul className="mt-8 flex flex-col gap-4">
-          {history.data.map((log) => (
-            <HistoryEntry key={log.id} type={type} log={log} />
-          ))}
-        </ul>
-      ) : (
-        <p className="text-neutral-500 italic mt-8">Keine Einträge vorhanden</p>
-      )}
+      {entries}
     </>
   );
 };

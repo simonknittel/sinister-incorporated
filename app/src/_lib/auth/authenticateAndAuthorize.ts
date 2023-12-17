@@ -67,6 +67,16 @@ export async function authenticateApi() {
   };
 }
 
+export const requireAuthentication = cache(async () => {
+  const authentication = await authenticate();
+
+  if (!authentication) {
+    throw new Error("Unauthorized");
+  }
+
+  return authentication;
+});
+
 export function authorize(
   session?: Session | null,
   requiredPermissionSets?: PermissionSet[] | null,

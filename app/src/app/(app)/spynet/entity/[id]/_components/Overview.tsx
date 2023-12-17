@@ -2,7 +2,7 @@ import { type Entity } from "@prisma/client";
 import { Suspense } from "react";
 import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
-import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import { LastSeenAt } from "../../../citizen/_components/LastSeenAt";
 import { OverviewSection } from "./generic-log-type/OverviewSection";
 
@@ -11,8 +11,7 @@ interface Props {
 }
 
 const Overview = async ({ entity }: Readonly<Props>) => {
-  const authentication = await authenticate();
-  if (!authentication) return null;
+  const authentication = await requireAuthentication();
 
   return (
     <section

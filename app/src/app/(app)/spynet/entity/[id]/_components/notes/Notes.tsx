@@ -5,7 +5,7 @@ import {
   type NoteType,
 } from "@prisma/client";
 import { FaListAlt } from "react-icons/fa";
-import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import Tab from "~/app/_components/tabs/Tab";
 import TabList from "~/app/_components/tabs/TabList";
 import { TabsProvider } from "~/app/_components/tabs/TabsContext";
@@ -20,7 +20,7 @@ interface Props {
 }
 
 const Notes = async ({ entity }: Readonly<Props>) => {
-  const authentication = await authenticate();
+  const authentication = await requireAuthentication();
 
   const [notes, allNoteTypes] = await prisma.$transaction([
     prisma.entityLog.findMany({
@@ -85,8 +85,7 @@ const Notes = async ({ entity }: Readonly<Props>) => {
 
   const filteredNoteTypes = allNoteTypes.filter((noteType) => {
     return (
-      authentication &&
-      (authentication.authorize([
+      authentication.authorize([
         {
           resource: "note",
           operation: "read",
@@ -98,30 +97,30 @@ const Notes = async ({ entity }: Readonly<Props>) => {
           ],
         },
       ]) ||
-        authentication.authorize([
-          {
-            resource: "note",
-            operation: "readRedacted",
-            attributes: [
-              {
-                key: "noteTypeId",
-                value: noteType.id,
-              },
-            ],
-          },
-        ]) ||
-        authentication.authorize([
-          {
-            resource: "note",
-            operation: "create",
-            attributes: [
-              {
-                key: "noteTypeId",
-                value: noteType.id,
-              },
-            ],
-          },
-        ]))
+      authentication.authorize([
+        {
+          resource: "note",
+          operation: "readRedacted",
+          attributes: [
+            {
+              key: "noteTypeId",
+              value: noteType.id,
+            },
+          ],
+        },
+      ]) ||
+      authentication.authorize([
+        {
+          resource: "note",
+          operation: "create",
+          attributes: [
+            {
+              key: "noteTypeId",
+              value: noteType.id,
+            },
+          ],
+        },
+      ])
     );
   });
 
