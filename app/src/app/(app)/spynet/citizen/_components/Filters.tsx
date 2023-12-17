@@ -1,12 +1,11 @@
-import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import getVisibleRoles from "~/app/_lib/getVisibleRoles";
 import { Filter } from "../../_components/Filter";
 import RoleFilter from "./RoleFilter";
 import UnknownsFilter from "./UnknownsFilter";
 
 const Filters = async () => {
-  const authentication = await authenticate();
-  if (!authentication) return null;
+  const authentication = await requireAuthentication();
 
   const visibleRoles = await getVisibleRoles();
 

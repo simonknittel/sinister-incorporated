@@ -8,7 +8,7 @@ import { Suspense } from "react";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
 import ConfirmLog from "../ConfirmLog";
 import styles from "../ConfirmationGradient.module.css";
@@ -25,7 +25,7 @@ interface Props {
 }
 
 const SingleNote = async ({ note }: Readonly<Props>) => {
-  const authentication = await authenticate();
+  const authentication = await requireAuthentication();
 
   const { noteTypeId, classificationLevelId, confirmed } =
     getLatestNoteAttributes(note);
@@ -73,14 +73,13 @@ const SingleNote = async ({ note }: Readonly<Props>) => {
               Diese Notiz ist noch nicht bestätigt.
             </p>
 
-            {authentication &&
-              authentication.authorize([
-                {
-                  resource: "note",
-                  operation: "confirm",
-                  attributes: authorizationAttributes,
-                },
-              ]) && <ConfirmLog log={note} />}
+            {authentication.authorize([
+              {
+                resource: "note",
+                operation: "confirm",
+                attributes: authorizationAttributes,
+              },
+            ]) && <ConfirmLog log={note} />}
           </div>
         </div>
       )}
@@ -130,32 +129,30 @@ const SingleNote = async ({ note }: Readonly<Props>) => {
               </>
             )}
 
-            {authentication &&
-              authentication.authorize([
-                {
-                  resource: "note",
-                  operation: "update",
-                  attributes: authorizationAttributes,
-                },
-              ]) && (
-                <Suspense>
-                  <UpdateNote note={note} />
-                </Suspense>
-              )}
+            {authentication.authorize([
+              {
+                resource: "note",
+                operation: "update",
+                attributes: authorizationAttributes,
+              },
+            ]) && (
+              <Suspense>
+                <UpdateNote note={note} />
+              </Suspense>
+            )}
 
-            {authentication &&
-              authentication.authorize([
-                {
-                  resource: "note",
-                  operation: "delete",
-                  attributes: authorizationAttributes,
-                },
-              ]) && (
-                <>
-                  <span>&bull;</span>
-                  <DeleteLog log={note} />
-                </>
-              )}
+            {authentication.authorize([
+              {
+                resource: "note",
+                operation: "delete",
+                attributes: authorizationAttributes,
+              },
+            ]) && (
+              <>
+                <span>&bull;</span>
+                <DeleteLog log={note} />
+              </>
+            )}
           </div>
 
           <div className="mt-2">

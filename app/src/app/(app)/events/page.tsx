@@ -86,11 +86,11 @@ async function getEvents() {
         throw new Error("Rate Limiting der Discord API");
       } else if (data.message === "Unknown Guild") {
         throw new Error(
-          `Der Discord Server \"${env.DISCORD_GUILD_ID}\" existiert nicht.`,
+          `Der Discord Server "${env.DISCORD_GUILD_ID}" existiert nicht.`,
         );
       } else if (data.message === "Missing Access") {
         throw new Error(
-          `Diese Anwendung hat keinen Zugriff auf den Discord Server \"${env.DISCORD_GUILD_ID}\".`,
+          `Diese Anwendung hat keinen Zugriff auf den Discord Server "${env.DISCORD_GUILD_ID}".`,
         );
       } else {
         throw new Error(data.message);

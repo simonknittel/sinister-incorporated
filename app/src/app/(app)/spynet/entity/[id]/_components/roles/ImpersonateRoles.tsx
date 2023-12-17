@@ -22,7 +22,7 @@ const ImpersonateRoles = ({ roles }: Readonly<Props>) => {
   return (
     <Button
       title="Rollen simulieren"
-      onClick={() => void handleClick()}
+      onClick={() => handleClick()}
       variant="tertiary"
     >
       <RiSpyFill /> Simulieren

@@ -1,4 +1,4 @@
-import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import getAllClassificationLevels from "~/app/_lib/cached/getAllClassificationLevels";
 import getAllNoteTypes from "~/app/_lib/cached/getAllNoteTypes";
 import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
@@ -22,7 +22,7 @@ interface Props {
 }
 
 const Tile = async ({ searchParams }: Readonly<Props>) => {
-  const authentication = await authenticate();
+  const authentication = await requireAuthentication();
 
   const currentPage = getCurrentPageFromSearchParams(searchParams);
 

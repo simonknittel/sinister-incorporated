@@ -1,11 +1,11 @@
-import { Role as SingleRole } from "@prisma/client";
+import { type Role } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 import { env } from "~/env.mjs";
 
 interface Props {
   className?: string;
-  role: SingleRole;
+  role: Role;
 }
 
 const SingleRole = ({ className, role }: Readonly<Props>) => {

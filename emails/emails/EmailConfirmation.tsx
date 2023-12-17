@@ -21,7 +21,7 @@ export interface EmailConfirmationProps {
 export default function Email({
   baseUrl = "http://localhost:3000",
   token = "1234567890",
-}: EmailConfirmationProps) {
+}: Readonly<EmailConfirmationProps>) {
   const host = baseUrl.replace(/^https?:\/\//, "");
 
   return (

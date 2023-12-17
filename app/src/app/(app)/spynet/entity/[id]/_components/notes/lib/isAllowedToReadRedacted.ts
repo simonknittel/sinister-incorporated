@@ -1,12 +1,12 @@
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
-import { type authenticate } from "~/_lib/auth/authenticateAndAuthorize";
+import { type requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
 
 export default function isAllowedToReadRedacted(
   note: EntityLog & {
     attributes: EntityLogAttribute[];
   },
-  authentication: Awaited<ReturnType<typeof authenticate>>,
+  authentication: Awaited<ReturnType<typeof requireAuthentication>>,
 ) {
   const attributes = [];
 
@@ -34,14 +34,11 @@ export default function isAllowedToReadRedacted(
     });
   }
 
-  return (
-    authentication &&
-    authentication.authorize([
-      {
-        resource: "note",
-        operation: "readRedacted",
-        attributes,
-      },
-    ])
-  );
+  return authentication.authorize([
+    {
+      resource: "note",
+      operation: "readRedacted",
+      attributes,
+    },
+  ]);
 }
