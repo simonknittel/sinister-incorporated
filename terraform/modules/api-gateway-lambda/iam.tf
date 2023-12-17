@@ -8,6 +8,11 @@ resource "aws_iam_role" "main" {
         Principal = {
           Service = "lambda.amazonaws.com"
         }
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = var.account_id
+          }
+        }
       },
     ]
   })
@@ -48,5 +53,5 @@ data "aws_kms_alias" "ssm" {
 
 data "aws_ssm_parameter" "custom" {
   count = length(var.parameter_store)
-  name = "/${var.function_name}${var.parameter_store[count.index]}"
+  name  = "/${var.function_name}${var.parameter_store[count.index]}"
 }

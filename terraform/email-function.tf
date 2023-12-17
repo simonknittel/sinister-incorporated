@@ -7,12 +7,13 @@ resource "aws_api_gateway_resource" "email_function" {
 module "email_function" {
   source = "./modules/api-gateway-lambda"
 
-  function_name = "email-function"
-  source_dir    = "../email-function/dist"
-
-  rest_api = aws_api_gateway_rest_api.main
-  resource = aws_api_gateway_resource.email_function
-  method   = "POST"
+  function_name                  = "email-function"
+  source_dir                     = "../email-function/dist"
+  reserved_concurrent_executions = 10
+  rest_api                       = aws_api_gateway_rest_api.main
+  resource                       = aws_api_gateway_resource.email_function
+  method                         = "POST"
+  account_id                     = data.aws_caller_identity.current.account_id
 
   parameter_store = [
     "/mailgun-api-key"

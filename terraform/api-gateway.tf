@@ -26,21 +26,21 @@ resource "aws_api_gateway_deployment" "main" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "api_gateway_stage_main" {
-  name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.main.id}/main"
+resource "aws_cloudwatch_log_group" "api_gateway_stage_default" {
+  name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.main.id}/default"
   retention_in_days = 7
 }
 
-resource "aws_api_gateway_stage" "main" {
-  depends_on = [aws_cloudwatch_log_group.api_gateway_stage_main]
+resource "aws_api_gateway_stage" "default" {
+  depends_on = [aws_cloudwatch_log_group.api_gateway_stage_default]
 
   deployment_id        = aws_api_gateway_deployment.main.id
   rest_api_id          = aws_api_gateway_rest_api.main.id
-  stage_name           = "main"
+  stage_name           = "default"
   xray_tracing_enabled = true
 
   access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_gateway_stage_main.arn
+    destination_arn = aws_cloudwatch_log_group.api_gateway_stage_default.arn
     format = jsonencode({
       requestId               = "$context.requestId"
       extendedRequestId       = "$context.extendedRequestId"
@@ -62,7 +62,7 @@ resource "aws_api_gateway_stage" "main" {
 
 resource "aws_api_gateway_method_settings" "all" {
   rest_api_id = aws_api_gateway_rest_api.main.id
-  stage_name  = aws_api_gateway_stage.main.stage_name
+  stage_name  = aws_api_gateway_stage.default.stage_name
   method_path = "*/*"
 
   settings {
@@ -90,6 +90,11 @@ resource "aws_iam_role" "api_gateway_cloudwatch" {
         Effect = "Allow"
         Principal = {
           Service = "apigateway.amazonaws.com"
+        }
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
         }
       },
     ]
