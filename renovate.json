@@ -15,9 +15,6 @@
       ],
       "automerge": true,
       "automergeType": "branch",
-      "schedule": [
-        "before 8am"
-      ],
       "timezone": "Europe/Berlin",
       "prCreation": "not-pending",
       "minimumReleaseAge": "7 days",
