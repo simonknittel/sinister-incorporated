@@ -12,13 +12,13 @@ jobs:
 
       - uses: actions/setup-node@v4.0.0
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: "emails/.nvmrc"
 
       - uses: actions/cache@v3.3.2
         id: emails-node-modules-cache
         with:
           path: emails/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('.nvmrc', 'emails/package-lock.json') }}
+          key: ${{ runner.os }}-${{ hashFiles('emails/.nvmrc', 'emails/package-lock.json') }}
 
       - name: Install emails dependencies
         run: npm ci
@@ -29,7 +29,7 @@ jobs:
         id: email-function-node-modules-cache
         with:
           path: email-function/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('.nvmrc', 'email-function/package-lock.json') }}
+          key: ${{ runner.os }}-${{ hashFiles('email-function/.nvmrc', 'email-function/package-lock.json') }}
 
       - name: Install email-function dependencies
         run: npm ci
