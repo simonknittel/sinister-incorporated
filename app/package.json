@@ -65,7 +65,7 @@
     "@typescript-eslint/parser": "6.8.0",
     "@vitest/coverage-istanbul": "1.0.4",
     "autoprefixer": "10.4.16",
-    "csv": "6.3.5",
+    "csv": "6.3.6",
     "eslint": "8.51.0",
     "eslint-config-next": "14.0.4",
     "postcss": "8.4.31",
