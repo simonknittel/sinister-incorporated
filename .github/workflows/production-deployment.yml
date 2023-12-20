@@ -1,0 +1,50 @@
+name: Production deployment
+
+on:
+  # schedule:
+  #   - cron: '0 7 * * *'
+  workflow_dispatch:
+
+jobs:
+  create_pull_request:
+    runs-on: ubuntu-22.04
+
+    # Related: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    permissions:
+      pull-requests: write # Required for actions/github-script
+
+    steps:
+      - uses: actions/github-script@v7.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Related:
+          # - https://octokit.github.io/rest.js
+          # - https://docs.github.com/en/rest/pulls/pulls
+          script: |
+            const existingPullRequests = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: "develop",
+              base: "main",
+              state: "open",
+            })
+
+            if (existingPullRequests.data.length > 0) {
+              console.info("Pull Request already exists")
+              return
+            }
+
+            const createdPullRequest = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: "develop",
+              base: "main",
+              title: `Production deployment (${new Date().toISOString()})`,
+            })
+
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: createdPullRequest.data.number,
+              event: "APPROVE",
+            })
