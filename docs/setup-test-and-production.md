@@ -14,6 +14,7 @@
 1. `gh auth login`
 2. `gh api --method PUT -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/simonknittel/sinister-incorporated/actions/oidc/customization/sub -F use_default=false -f "include_claim_keys[]=repo" -f "include_claim_keys[]=job_workflow_ref"`
    1. `gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/simonknittel/sinister-incorporated/actions/oidc/customization/sub`
+3. Enable "Allow GitHub Actions to create and approve pull requests" in Settings/Actions/General/Workflow permissions
 
 ### Related
 
@@ -101,3 +102,5 @@
    3. `AWS_PROFILE=sinister-incorporated-test terraform apply -var-file="test.tfvars"`
 
 ## 6. Set up Vercel
+
+1. Set `Ignored Build Step` to `Run my Bash script: bash ../.vercel/ignore-step.sh`
