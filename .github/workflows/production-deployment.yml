@@ -9,9 +9,14 @@ jobs:
   create_pull_request:
     runs-on: ubuntu-22.04
 
-    # Related: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # Related
+    # - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # - https://docs.github.com/en/rest/authentication/permissions-required-for-github-apps
     permissions:
-      pull-requests: write # Required for actions/github-script
+      # Required for actions/github-script
+      #
+      # Also enable "Allow GitHub Actions to create and approve pull requests" in Settings/Actions/General/Workflow permissions
+      pull-requests: write
 
     steps:
       - uses: actions/github-script@v7.0.1
@@ -34,17 +39,14 @@ jobs:
               return
             }
 
-            const createdPullRequest = await github.rest.pulls.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              head: "develop",
-              base: "main",
-              title: `Production deployment (${new Date().toISOString()})`,
-            })
-
-            await github.rest.pulls.createReview({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: createdPullRequest.data.number,
-              event: "APPROVE",
-            })
+            try {
+              await github.rest.pulls.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                head: "develop",
+                base: "main",
+                title: `Production deployment (${new Date().toISOString()})`,
+              })
+            } catch (error) {
+              console.error(error)
+            }
