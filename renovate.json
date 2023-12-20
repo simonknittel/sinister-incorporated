@@ -17,7 +17,8 @@
       "timezone": "Europe/Berlin",
       "prCreation": "not-pending",
       "minimumReleaseAge": "7 days",
-      "internalChecksFilter": "strict"
+      "internalChecksFilter": "strict",
+      "platformAutomerge": false
     },
     {
       "matchPackageNames": [
