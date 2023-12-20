@@ -1,8 +1,8 @@
 name: Production deployment
 
 on:
-  # schedule:
-  #   - cron: '0 7 * * *'
+  schedule:
+    - cron: '0 7 * * *'
   workflow_dispatch:
 
 jobs:
@@ -13,10 +13,7 @@ jobs:
     # - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # - https://docs.github.com/en/rest/authentication/permissions-required-for-github-apps
     permissions:
-      # Required for actions/github-script
-      #
-      # Also enable "Allow GitHub Actions to create and approve pull requests" in Settings/Actions/General/Workflow permissions
-      pull-requests: write
+      pull-requests: write # Required for actions/github-script
 
     steps:
       - uses: actions/github-script@v7.0.1
