@@ -48,5 +48,6 @@ jobs:
                 title: `Production deployment (${new Date().toISOString()})`,
               })
             } catch (error) {
-              console.error(error)
+              console.log(error.response.data)
+              throw error
             }
