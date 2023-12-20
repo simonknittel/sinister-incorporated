@@ -48,7 +48,10 @@ jobs:
                 title: `Production deployment (${new Date().toISOString()})`,
               })
             } catch (error) {
-              console.log(error.response.data.errors[0].message)
-              console.log(error.response.data.errors[0].message === "No commits between develop and main")
-              // throw error
+              if (error.response.data.errors[0].message === "No commits between main and develop") {
+                console.info("No commits between main and develop")
+                return
+              }
+
+              throw error
             }
