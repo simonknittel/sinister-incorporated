@@ -20,7 +20,7 @@
     "@radix-ui/react-popover": "1.0.7",
     "@react-three/drei": "9.88.11",
     "@react-three/fiber": "8.15.12",
-    "@react-three/postprocessing": "2.15.10",
+    "@react-three/postprocessing": "2.15.11",
     "@t3-oss/env-nextjs": "0.7.1",
     "@tanstack/react-query": "4.36.1",
     "@tanstack/react-query-devtools": "4.36.1",

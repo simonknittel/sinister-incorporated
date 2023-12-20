@@ -20,7 +20,9 @@ jobs:
   plan:
     runs-on: ubuntu-22.04
 
-    # Related: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # Related
+    # - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # - https://docs.github.com/en/rest/authentication/permissions-required-for-github-apps
     permissions:
       id-token: write # Required for aws-actions/configure-aws-credentials
       contents: read # Required for aws-actions/configure-aws-credentials
