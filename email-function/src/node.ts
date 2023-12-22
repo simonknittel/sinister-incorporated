@@ -1,4 +1,4 @@
-import { foo } from "./_lib/foo";
+import { main } from "./_lib/main";
 import { log } from "./_lib/logging";
 import "dotenv/config";
 
@@ -12,15 +12,15 @@ const config = {
   },
 } as const;
 
-const main = async () => {
+const init = async () => {
   if (!config.mailgunApiKey) throw new Error("Missing Mailgun API key");
 
-  await foo(config);
+  await main(config);
 
   log.info("Done");
 };
 
-main()
+init()
   .then(() => {})
   .catch((error) => {
     log.error("Error", {

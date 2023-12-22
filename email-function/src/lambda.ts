@@ -2,7 +2,7 @@ import { APIGatewayProxyHandler } from "aws-lambda";
 import z from "zod";
 import errorHandler from "./_lib/errorHandler";
 import { fetchParameters } from "./_lib/fetchParameters";
-import { foo } from "./_lib/foo";
+import { main } from "./_lib/main";
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   try {
@@ -14,7 +14,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
       mailgunApiKey: "/email-function/mailgun-api-key",
     });
 
-    await foo({
+    await main({
       ...parameters,
       ...requestBody,
     });
@@ -35,4 +35,5 @@ const requestBodySchema = z.object({
     baseUrl: z.string().url(),
     token: z.string(),
   }),
+  recipientsPublicKey: z.string().optional(),
 });
