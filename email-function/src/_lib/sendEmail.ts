@@ -1,19 +1,13 @@
 import formData from "form-data";
 import Mailgun from "mailgun.js";
 
-interface Props {
-  mailgunApiKey: string;
-  to: string;
-  subject: string;
-  html: string;
-}
-
-export const sendEmail = async ({
-  mailgunApiKey,
-  to,
-  subject,
-  html,
-}: Props) => {
+export const sendEmail = async (
+  mailgunApiKey: string,
+  to: string,
+  subject: string,
+  body: string,
+  options?: { format?: "text" }
+) => {
   const mailgun = new Mailgun(formData);
 
   const mg = mailgun.client({
@@ -22,10 +16,19 @@ export const sendEmail = async ({
     url: "https://api.eu.mailgun.net",
   });
 
-  await mg.messages.create("mailgun.simonknittel.de", {
-    from: `Sinister Incorporated <noreply@mailgun.simonknittel.de>`,
-    to,
-    subject,
-    html,
-  });
+  if (options?.format === "text") {
+    await mg.messages.create("mailgun.simonknittel.de", {
+      from: `Sinister Incorporated <noreply@mailgun.simonknittel.de>`,
+      to,
+      subject,
+      text: body,
+    });
+  } else {
+    await mg.messages.create("mailgun.simonknittel.de", {
+      from: `Sinister Incorporated <noreply@mailgun.simonknittel.de>`,
+      to,
+      subject,
+      html: body,
+    });
+  }
 };
