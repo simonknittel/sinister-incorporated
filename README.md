@@ -30,7 +30,7 @@ Tools of the Star Citizen organization _Sinister Incorporated_.
 - [Mailgun](https://www.mailgun.com/)
 - [AWS](https://aws.amazon.com/)
 
-# Setup
+## Setup
 
 - [Local Machine](./docs/setup-local-machine.md)
 - [Test and Production](./docs/setup-test-and-production.md)
