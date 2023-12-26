@@ -59,7 +59,7 @@
     "@types/react-dom": "18.2.18",
     "@typescript-eslint/eslint-plugin": "6.15.0",
     "@typescript-eslint/parser": "6.15.0",
-    "@vitest/coverage-istanbul": "1.0.4",
+    "@vitest/coverage-istanbul": "1.1.0",
     "autoprefixer": "10.4.16",
     "csv": "6.3.6",
     "eslint": "8.56.0",
@@ -71,6 +71,6 @@
     "prisma": "5.7.1",
     "tailwindcss": "3.3.7",
     "typescript": "5.3.3",
-    "vitest": "1.0.4"
+    "vitest": "1.1.0"
   }
 }
