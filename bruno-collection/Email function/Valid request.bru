@@ -1,0 +1,22 @@
+meta {
+  name: Valid request
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://xguhlotnsl.execute-api.eu-central-1.amazonaws.com/default/email-function
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "to": "hallo@simonknittel.de",
+      "template": "emailConfirmation",
+      "templateProps": {
+          "baseUrl": "http://localhost:3000",
+          "token": "1234567890"
+      }
+  }
+}

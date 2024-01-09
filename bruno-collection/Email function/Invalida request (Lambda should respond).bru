@@ -1,0 +1,22 @@
+meta {
+  name: Invalida request (Lambda should respond)
+  type: http
+  seq: 4
+}
+
+post {
+  url: https://xguhlotnsl.execute-api.eu-central-1.amazonaws.com/default/email-function
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "to": "foobar",
+      "template": "emailConfirmation",
+      "templateProps": {
+          "baseUrl": "http://localhost:3000",
+          "token": "1234567890"
+      }
+  }
+}
