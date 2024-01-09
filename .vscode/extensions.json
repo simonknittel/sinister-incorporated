@@ -2,6 +2,7 @@
 	"recommendations": [
 		"github.vscode-github-actions",
 		"dotenv.dotenv-vscode",
-		"hashicorp.terraform"
+		"hashicorp.terraform",
+		"bruno-api-client.bruno"
 	]
 }
