@@ -33,6 +33,7 @@
    ```ini
    # ~/.aws/config
 
+   # Sinister Incorporated
    [profile sinister-incorporated-test]
    sso_session = sinister-incorporated-sso
    sso_account_id = 220746603587
