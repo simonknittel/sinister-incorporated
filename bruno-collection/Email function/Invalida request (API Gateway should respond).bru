@@ -1,0 +1,21 @@
+meta {
+  name: Invalida request (API Gateway should respond)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{emailFunctionEndpoint}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "template": "emailConfirmation",
+      "templateProps": {
+          "baseUrl": "http://localhost:3000",
+          "token": "1234567890"
+      }
+  }
+}
