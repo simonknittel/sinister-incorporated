@@ -1,6 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import { type Session } from "next-auth";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
@@ -45,4 +46,9 @@ export const requiresEmailConfirmation = async (session: Session) => {
     return false;
 
   return true;
+};
+
+export const validateConfirmedEmailForPage = async (session: Session) => {
+  if (!(await requiresEmailConfirmation(session))) return;
+  if (!session.user.emailVerified) redirect("/email-confirmation");
 };
