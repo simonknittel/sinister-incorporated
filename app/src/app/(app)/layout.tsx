@@ -24,8 +24,10 @@ export default async function AppLayout({
 }: Readonly<Props>) {
   const authentication = await authenticatePage();
 
-  if (!(await requiresEmailConfirmation(authentication.session))) return;
-  if (!authentication.session.user.emailVerified)
+  if (
+    (await requiresEmailConfirmation(authentication.session)) &&
+    !authentication.session.user.emailVerified
+  )
     redirect("/email-confirmation");
 
   if (
