@@ -1,6 +1,7 @@
 import { groupBy } from "lodash";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
+import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { log } from "~/_lib/logging";
 import FleetTable from "~/app/(app)/fleet/_components/FleetTable";
@@ -165,7 +166,7 @@ export async function generateMetadata({
     log.error(
       "Error while generating metadata for /(app)/@fleetModal/(.)events/[id]/fleet/page.tsx",
       {
-        error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+        error: serializeError(error),
       },
     );
 

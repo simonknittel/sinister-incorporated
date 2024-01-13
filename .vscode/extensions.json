@@ -3,6 +3,7 @@
 		"github.vscode-github-actions",
 		"dotenv.dotenv-vscode",
 		"hashicorp.terraform",
-		"bruno-api-client.bruno"
+		"bruno-api-client.bruno",
+		"ms-azuretools.vscode-docker"
 	]
 }

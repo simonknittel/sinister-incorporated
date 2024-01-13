@@ -9,8 +9,6 @@ export const sendEmail = async (
 ) => {
   if (!env.EMAIL_FUNCTION_ENDPOINT)
     throw new Error("EMAIL_FUNCTION_ENDPOINT is not set");
-  // if (!env.EMAIL_FUNCTION_API_KEY)
-  //   throw new Error("EMAIL_FUNCTION_API_KEY is not set");
 
   const response = await fetch(env.EMAIL_FUNCTION_ENDPOINT, {
     method: "POST",
@@ -20,7 +18,6 @@ export const sendEmail = async (
       templateProps,
     }),
     headers: {
-      // Authorization: `Bearer ${env.EMAIL_FUNCTION_API_KEY}`,
       "Content-Type": "application/json",
     },
   });
