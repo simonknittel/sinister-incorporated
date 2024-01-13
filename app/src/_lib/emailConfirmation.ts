@@ -31,7 +31,7 @@ export const requestEmailConfirmation = async (
   });
 
   await sendEmail(userEmail, "emailConfirmation", {
-    baseUrl: env.HOST,
+    baseUrl: `https://${env.HOST}`,
     token: emailConfirmationToken,
   });
 };
