@@ -1,7 +1,6 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
-import { validateConfirmedEmailForPage } from "~/_lib/emailConfirmation";
 import { TRPCReactProvider } from "~/trpc/react";
 import { authenticatePage } from "../../_lib/auth/authenticateAndAuthorize";
 import AdminDisabler from "./_components/AdminDisabler";
@@ -24,7 +23,7 @@ export default async function AppLayout({
 }: Readonly<Props>) {
   const authentication = await authenticatePage();
 
-  await validateConfirmedEmailForPage(authentication.session);
+  // await validateConfirmedEmailForPage(authentication.session);
 
   if (
     authentication.authorize([
