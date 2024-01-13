@@ -44,7 +44,6 @@ export const env = createEnv({
       z.string().optional(),
     ),
     EMAIL_FUNCTION_ENDPOINT: z.string().url().optional(),
-    EMAIL_FUNCTION_API_KEY: z.string().optional(),
   },
 
   /*
@@ -91,7 +90,6 @@ export const env = createEnv({
     HOST: process.env.HOST,
     COMMIT_SHA: process.env.COMMIT_SHA,
     EMAIL_FUNCTION_ENDPOINT: process.env.EMAIL_FUNCTION_ENDPOINT,
-    EMAIL_FUNCTION_API_KEY: process.env.EMAIL_FUNCTION_API_KEY,
     NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL: process.env.NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL,
   },
 

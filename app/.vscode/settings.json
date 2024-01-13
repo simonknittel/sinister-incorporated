@@ -1,20 +1,25 @@
 {
-	"cSpell.words": [
-		"algoliasearch",
-		"APAC",
-		"clsx",
-		"esnext",
-		"gltf",
-		"lcov",
-		"Notizart",
-		"prisma",
-		"pscale",
-		"psdb",
-		"trpc",
-		"uidotdev"
-	],
-	"dotenv.enableAutocloaking": false,
-	"typescript.tsdk": "node_modules/typescript/lib",
-	"vitest.enable": true,
-	"vitest.commandLine": "npx vitest --coverage"
+  "cSpell.words": [
+    "algoliasearch",
+    "APAC",
+    "clsx",
+    "esnext",
+    "gltf",
+    "lcov",
+    "Notizart",
+    "prisma",
+    "pscale",
+    "psdb",
+    "trpc",
+    "uidotdev"
+  ],
+  "dotenv.enableAutocloaking": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "vitest.enable": true,
+  "vitest.commandLine": "npx vitest --coverage",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }

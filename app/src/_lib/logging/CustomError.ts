@@ -4,6 +4,7 @@ export class CustomError extends Error {
   constructor(message: string, context: Record<string, unknown> = {}) {
     super(message);
 
+    this.name = "CustomError";
     this.context = context;
   }
 }

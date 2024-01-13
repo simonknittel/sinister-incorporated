@@ -2,6 +2,7 @@ import { groupBy } from "lodash";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import { log } from "~/_lib/logging";
@@ -166,7 +167,7 @@ export async function generateMetadata({
     log.error(
       "Error while generating metadata for /(app)/events/[id]/fleet/page.tsx",
       {
-        error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+        error: serializeError(error),
       },
     );
 
