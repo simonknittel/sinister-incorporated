@@ -15,6 +15,7 @@ import {
   authenticatePage,
 } from "../../_lib/auth/authenticateAndAuthorize";
 import { Footer } from "../_components/Footer";
+import { RequestConfirmationEmailButton } from "./_components/RequestConfirmationEmailButton";
 
 export const metadata: Metadata = {
   title: "E-Mail-Adresse bestätigen | Sinister Incorporated",
@@ -70,7 +71,7 @@ export default async function Page({ searchParams }: Readonly<Props>) {
             bestätigen.
           </p>
 
-          {/* {newUser ? (
+          {newUser ? (
             <p>
               Zur Bestätigung haben wir eine E-Mail an{" "}
               <i>{authentication.session.user.email}</i> geschickt.
@@ -102,7 +103,7 @@ export default async function Page({ searchParams }: Readonly<Props>) {
               </Link>
               .
             </p>
-          </form> */}
+          </form>
         </div>
       </main>
 
