@@ -12,6 +12,7 @@ import {
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpaceShipFill, RiSwordFill } from "react-icons/ri";
 import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
+import { Footer } from "~/app/_components/Footer";
 import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import Account from "./Account";
 import { Chip } from "./Chip";
@@ -325,9 +326,7 @@ const Sidebar = async () => {
         </nav>
       </div>
 
-      <footer className="px-8 py-4 text-center text-neutral-500">
-        Sinister Incorporated
-      </footer>
+      <Footer className="px-8 py-4" />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { FaSitemap } from "react-icons/fa";
+import { serializeError } from "serialize-error";
 import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import { log } from "~/_lib/logging";
 import { prisma } from "~/server/db";
@@ -47,7 +48,7 @@ export async function generateMetadata({
     log.error(
       "Error while generating metadata for /(app)/spynet/entity/[id]/page.tsx",
       {
-        error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+        error: serializeError(error),
       },
     );
 

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { serializeError } from "serialize-error";
 import { ZodError } from "zod";
 import { log } from "~/_lib/logging";
 
@@ -35,7 +36,7 @@ export default function errorHandler(error: unknown) {
   }
 
   log.error("errorHandler", {
-    error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+    error: serializeError(error),
   });
 
   return NextResponse.json(

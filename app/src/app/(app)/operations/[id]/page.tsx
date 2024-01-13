@@ -2,6 +2,7 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { serializeError } from "serialize-error";
 import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import { log } from "~/_lib/logging";
 import Avatar from "~/app/_components/Avatar";
@@ -77,7 +78,7 @@ export async function generateMetadata({
     log.error(
       "Error while generating metadata for /(app)/operations/[id]/page.tsx",
       {
-        error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+        error: serializeError(error),
       },
     );
 

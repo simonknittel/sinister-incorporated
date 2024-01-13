@@ -8,6 +8,7 @@ import DiscordProvider from "next-auth/providers/discord";
 import { z } from "zod";
 import { type PermissionSet } from "~/_lib/auth/PermissionSet";
 import getPermissionSetsByRoles from "~/_lib/auth/getPermissionSetsByRoles";
+import { requestEmailConfirmation } from "~/_lib/emailConfirmation";
 import { log } from "~/_lib/logging";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
@@ -70,6 +71,7 @@ declare module "next-auth" {
     user: {
       id: string;
       role: UserRole;
+      emailVerified: Date | null;
     } & DefaultSession["user"];
     discordId: string;
     givenPermissionSets: PermissionSet[];
@@ -144,6 +146,7 @@ export const authOptions: NextAuthOptions = {
           ...session.user,
           id: user.id,
           role: user.role,
+          emailVerified: user.emailVerified,
         },
         discordId: discordAccount!.providerAccountId,
         givenPermissionSets: givenPermissionSets,
@@ -270,6 +273,8 @@ export const authOptions: NextAuthOptions = {
             latestConfirmedHandleEntityLog?.content ||
             latestConfirmedDiscordIdEntityLog.entityId;
         }
+
+        await requestEmailConfirmation(user.id, user.email);
       }
 
       return true;
@@ -289,7 +294,7 @@ export const authOptions: NextAuthOptions = {
 
   pages: {
     error: "/",
-    newUser: "/onboarding",
+    newUser: "/email-confirmation?new-user=true",
   },
 
   session: {
