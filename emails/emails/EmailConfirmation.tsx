@@ -28,7 +28,7 @@ export default function Email({
     <Html>
       <Head />
       <Preview>
-        Deine E-Mail-Adresse muss bestätigt werden bevor du {host} nutzen
+        Deine E-Mail-Adresse und die Datenschutzerklärung müssen bestätigt werden bevor du {host} nutzen
         kannst.
       </Preview>
       <Tailwind
@@ -47,9 +47,8 @@ export default function Email({
             <Text className="text-center text-5xl text-sinister-red-500 font-extrabold uppercase">
               Sinister Inc
             </Text>
-            <Heading className="text-center">E-Mail-Adresse bestätigen</Heading>
-            <Text>
-              Deine E-Mail-Adresse muss bestätigt werden bevor du{" "}
+            <Text className="font-bold">
+              Deine E-Mail-Adresse und die <Link href={`${baseUrl}/confirm-email?token=${token}`} className="text-sinister-red-500">Datenschutzerklärung</Link> müssen bestätigt werden bevor du{" "}
               <Link href={baseUrl} className="text-sinister-red-500">
                 {host}
               </Link>{" "}
@@ -60,7 +59,7 @@ export default function Email({
                 href={`${baseUrl}/confirm-email?token=${token}`}
                 className="rounded uppercase gap-4 text-base font-bold bg-sinister-red-500 text-neutral-50 px-6 py-4"
               >
-                E-Mail-Adresse bestätigen
+                Bestätigen
               </Button>
             </Container>
             <Text>
@@ -83,20 +82,23 @@ export default function Email({
               </Link>
             </Text>
             <Hr />
-            <Container className="text-center">
-              <Link
-                href={`${baseUrl}/imprint`}
-                className="text-sinister-red-500"
-              >
-                Impressum
-              </Link>{" "}
-              •{" "}
-              <Link
-                href={`${baseUrl}/privacy`}
-                className="text-sinister-red-500"
-              >
-                Datenschutzerklärung
-              </Link>
+            <Container className="text-center text-sm">
+              <Container>
+                <Link
+                  href={`${baseUrl}/imprint`}
+                  className="text-sinister-red-500"
+                >
+                  Impressum
+                </Link>{" "}
+                •{" "}
+                <Link
+                  href={`${baseUrl}/privacy`}
+                  className="text-sinister-red-500"
+                >
+                  Datenschutzerklärung
+                </Link>
+              </Container>
+              Sinister Incorporated
             </Container>
           </Container>
         </Body>

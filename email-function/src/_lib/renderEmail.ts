@@ -18,11 +18,11 @@ export const renderEmail = (template: TemplateType, templateProps: EmailConfirma
 const emailConfirmationText = ({ baseUrl, token }: EmailConfirmationProps) => {
   const host = baseUrl.replace(/^https?:\/\//, "");
 
-  return `E-Mail-Adresse bestätigen - Sinister Inc
+  return `E-Mail-Adresse und Datenschutzerklärung bestätigen - Sinister Inc
 
-Deine E-Mail-Adresse muss bestätigt werden bevor du ${host} nutzen kannst.
+Deine E-Mail-Adresse und die Datenschutzerklärung müssen bestätigt werden bevor du ${host} nutzen kannst.
 
-Öffne folgenden Link in deinem Browser um deine E-Mail-Adresse zu bestätigen:
+Öffne folgenden Link in deinem Browser um diese zu bestätigen:
 ${baseUrl}/confirm-email?token=${token}
 
 Falls du diese E-Mail nicht erwartet hast, melde dich bei info@sinister-incorporated.de.
