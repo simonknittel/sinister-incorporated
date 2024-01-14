@@ -3,6 +3,8 @@
 import clsx from "clsx";
 import { type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
+import { FaEnvelope, FaSpinner } from "react-icons/fa";
+import Button from "~/app/_components/Button";
 
 interface Props {
   className?: string;
@@ -10,6 +12,20 @@ interface Props {
 }
 
 export const RequestConfirmationEmailButton = ({
+  className,
+  children,
+}: Readonly<Props>) => {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button className={clsx(className)} disabled={pending}>
+      {pending ? <FaSpinner className="animate-spin" /> : <FaEnvelope />}
+      {children}
+    </Button>
+  );
+};
+
+export const RequestConfirmationEmailLink = ({
   className,
   children,
 }: Readonly<Props>) => {
