@@ -15,7 +15,10 @@ import {
   authenticatePage,
 } from "../../_lib/auth/authenticateAndAuthorize";
 import { Footer } from "../_components/Footer";
-import { RequestConfirmationEmailButton } from "./_components/RequestConfirmationEmailButton";
+import {
+  RequestConfirmationEmailButton,
+  RequestConfirmationEmailLink,
+} from "./_components/RequestConfirmationEmail";
 
 export const metadata: Metadata = {
   title: "E-Mail-Adresse bestätigen | Sinister Incorporated",
@@ -64,7 +67,8 @@ export default async function Page({ searchParams }: Readonly<Props>) {
 
         <div className="flex flex-col gap-2 rounded bg-neutral-900 p-8 mx-8">
           <p>
-            Um fortfahren zu können musst du deine E-Mail-Adresse und die{" "}
+            Um fortfahren zu können musst du deine E-Mail-Adresse (
+            <i>{authentication.session.user.email}</i>) und die{" "}
             <Link href="/privacy" className="underline">
               Datenschutzerklärung
             </Link>{" "}
@@ -72,28 +76,24 @@ export default async function Page({ searchParams }: Readonly<Props>) {
           </p>
 
           {newUser ? (
-            <p>
-              Zur Bestätigung haben wir eine E-Mail an{" "}
-              <i>{authentication.session.user.email}</i> geschickt.
-            </p>
+            <p>Zur Bestätigung haben wir dir eine E-Mail geschickt.</p>
           ) : (
-            <form action={handleClick} className="inline">
-              <p>
-                <RequestConfirmationEmailButton>
-                  Klick hier
-                </RequestConfirmationEmailButton>{" "}
-                um die Bestätigungs-E-Mail an{" "}
-                <i>{authentication.session.user.email}</i> zu verschicken.
-              </p>
+            <form
+              action={handleClick}
+              className="flex justify-center mt-4 mb-3"
+            >
+              <RequestConfirmationEmailButton>
+                Bestätigungs-E-Mail verschicken
+              </RequestConfirmationEmailButton>
             </form>
           )}
 
           <form action={handleClick} className="inline">
             <p className="text-neutral-500">
               Falls die E-Mail nicht angekommen ist,{" "}
-              <RequestConfirmationEmailButton>
+              <RequestConfirmationEmailLink>
                 klick hier
-              </RequestConfirmationEmailButton>{" "}
+              </RequestConfirmationEmailLink>{" "}
               um es erneut zu versuchen, oder melde dich bei{" "}
               <Link
                 href="mailto:info@sinister-incorporated.de"

@@ -90,7 +90,7 @@ export default function Email({
               >
                 Impressum
               </Link>{" "}
-              -{" "}
+              •{" "}
               <Link
                 href={`${baseUrl}/privacy`}
                 className="text-sinister-red-500"
