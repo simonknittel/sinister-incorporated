@@ -2,6 +2,7 @@ import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { z } from "zod";
 import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
+import Note from "~/app/_components/Note";
 import { env } from "~/env.mjs";
 import Event from "./_components/Event";
 
@@ -115,6 +116,16 @@ export default async function Page() {
   return (
     <main className="p-2 lg:p-8 pt-20">
       <h1 className="font-bold text-xl">Events</h1>
+
+      <Note
+        message={
+          <p>
+            Events sind aktuell in der Proof of Concept-Phase. Funktionen fehlen
+            und es kann zu Fehlern kommen.
+          </p>
+        }
+        className="mt-4"
+      />
 
       {events
         .sort(

@@ -50,6 +50,7 @@ const Sidebar = async () => {
                 >
                   <FaCalendarDay />
                   Events
+                  <Chip title="Proof of Concept">PoC</Chip>
                 </Link>
               </li>
             )}
@@ -217,6 +218,17 @@ const Sidebar = async () => {
                       >
                         <FaTable />
                         Notizen
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link
+                        href="/spynet/other"
+                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                        prefetch={false}
+                      >
+                        <FaTable />
+                        Sonstige
                       </Link>
                     </li>
                   </>
