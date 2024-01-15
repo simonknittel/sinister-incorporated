@@ -127,6 +127,8 @@ model EntityLog {
     submittedById String
     submittedBy   User                 @relation("submittedBy", fields: [submittedById], references: [id], onDelete: Cascade)
     attributes    EntityLogAttribute[]
+
+    @@index([type]) // `type: Hash` isn't supported on MySQL
 }
 
 model EntityLogAttribute {
@@ -138,6 +140,8 @@ model EntityLogAttribute {
     createdAt   DateTime  @default(now())
     createdById String
     createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+    @@index([key]) // `type: Hash` isn't supported on MySQL
 }
 
 //
