@@ -13,7 +13,7 @@ const config = {
   },
 
   eslint: {
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: true,
   },
 
   cleanDistDir: true,
@@ -21,16 +21,16 @@ const config = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'cdn.discordapp.com',
+        protocol: "https",
+        hostname: "cdn.discordapp.com",
       },
       {
-        protocol: 'https',
+        protocol: "https",
         hostname: process.env.NEXT_PUBLIC_R2_PUBLIC_URL,
       },
     ],
     dangerouslyAllowSVG: true,
-    contentDispositionType: 'attachment',
+    contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
@@ -67,6 +67,12 @@ const config = {
       ],
     },
   ],
+
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
 };
 
 export default config;
