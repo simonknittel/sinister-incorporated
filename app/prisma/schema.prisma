@@ -109,7 +109,7 @@ model Entity {
     // Holds the latest confirmed values
     spectrumId       String?
     handle           String?
-    discordId        String?
+    discordId        String? @unique
     teamspeakId      String?
     citizenId        String?
     communityMoniker String?
