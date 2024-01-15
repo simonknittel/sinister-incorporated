@@ -99,7 +99,7 @@ export const authOptions: NextAuthOptions = {
         },
       });
 
-      const entity = await prisma.entity.findFirst({
+      const entity = await prisma.entity.findUnique({
         where: {
           discordId: discordAccount!.providerAccountId,
         },
