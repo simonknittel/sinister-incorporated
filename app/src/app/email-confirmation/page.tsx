@@ -21,7 +21,8 @@ import {
 } from "./_components/RequestConfirmationEmail";
 
 export const metadata: Metadata = {
-  title: "E-Mail-Adresse bestätigen | Sinister Incorporated",
+  title:
+    "E-Mail-Adresse und Datenschutzerklärung bestätigen | Sinister Incorporated",
 };
 
 const handleClick = async () => {
