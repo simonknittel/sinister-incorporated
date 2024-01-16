@@ -4,17 +4,17 @@ import clsx from "clsx";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  disabled?: boolean;
+  enabled?: boolean;
 }
 
-const AdminDisabler = ({ disabled = false }: Readonly<Props>) => {
+export const AdminEnabler = ({ enabled = false }: Readonly<Props>) => {
   const router = useRouter();
 
   const handleClick = () => {
-    if (disabled) {
-      document.cookie = `disableAdmin=; path=/; max-age=0;`;
+    if (enabled) {
+      document.cookie = `enableAdmin=; path=/; max-age=0;`;
     } else {
-      document.cookie = `disableAdmin=disableAdmin; path=/; max-age=${
+      document.cookie = `enableAdmin=enableAdmin; path=/; max-age=${
         60 * 60 * 24 * 7
       };`;
     }
@@ -27,15 +27,13 @@ const AdminDisabler = ({ disabled = false }: Readonly<Props>) => {
       className={clsx(
         "fixed top-4 left-1/2 -translate-x-1/2 backdrop-blur z-50 max-w-xs p-4 rounded gap-4 justify-between opacity-50 hover:opacity-100 transition-opacity",
         {
-          "bg-green-500/50": disabled,
-          "bg-red-500/50": !disabled,
+          "bg-green-500/50": !enabled,
+          "bg-red-500/50": enabled,
         },
       )}
       onClick={handleClick}
     >
-      Admin {disabled ? "aktivieren" : "deaktivieren"}
+      Admin {enabled ? "deaktivieren" : "aktivieren"}
     </button>
   );
 };
-
-export default AdminDisabler;

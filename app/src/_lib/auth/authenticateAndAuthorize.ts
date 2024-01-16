@@ -93,7 +93,7 @@ export function authorize(
 
   if (
     session.user.role === "admin" &&
-    cookies().get("disableAdmin")?.value !== "disableAdmin"
+    cookies().get("enableAdmin")?.value === "enableAdmin"
   ) {
     if (
       requiredPermissionSets.find(
