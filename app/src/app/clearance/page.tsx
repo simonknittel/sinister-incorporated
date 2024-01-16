@@ -2,8 +2,8 @@ import { type Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { FaRegCheckCircle } from "react-icons/fa";
-import { validateConfirmedEmailForPage } from "~/_lib/emailConfirmation";
-import AdminDisabler from "../(app)/_components/AdminDisabler";
+import { requireConfirmedEmailForPage } from "~/_lib/emailConfirmation";
+import { AdminEnabler } from "../(app)/_components/AdminEnabler";
 import { authenticatePage } from "../../_lib/auth/authenticateAndAuthorize";
 import { Footer } from "../_components/Footer";
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   const authentication = await authenticatePage();
 
-  await validateConfirmedEmailForPage(authentication.session);
+  await requireConfirmedEmailForPage(authentication.session);
 
   if (
     authentication.authorize([
@@ -48,8 +48,8 @@ export default async function Page() {
       <Footer className="mt-4" />
 
       {authentication.session.user.role === "admin" && (
-        <AdminDisabler
-          disabled={cookies().get("disableAdmin")?.value === "disableAdmin"}
+        <AdminEnabler
+          enabled={cookies().get("enableAdmin")?.value === "enableAdmin"}
         />
       )}
     </div>

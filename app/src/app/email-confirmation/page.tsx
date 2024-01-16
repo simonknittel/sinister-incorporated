@@ -9,7 +9,7 @@ import {
   requiresEmailConfirmation,
 } from "~/_lib/emailConfirmation";
 import { log } from "~/_lib/logging";
-import AdminDisabler from "../(app)/_components/AdminDisabler";
+import { AdminEnabler } from "../(app)/_components/AdminEnabler";
 import {
   authenticateApi,
   authenticatePage,
@@ -111,8 +111,8 @@ export default async function Page({ searchParams }: Readonly<Props>) {
       <Footer className="mt-4" />
 
       {authentication.session.user.role === "admin" && (
-        <AdminDisabler
-          disabled={cookies().get("disableAdmin")?.value === "disableAdmin"}
+        <AdminEnabler
+          enabled={cookies().get("enableAdmin")?.value === "enableAdmin"}
         />
       )}
     </div>

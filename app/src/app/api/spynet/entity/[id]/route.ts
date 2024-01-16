@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireConfirmedEmailForApi } from "~/_lib/emailConfirmation";
 import { deleteObject } from "~/app/api/_lib/algolia";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
@@ -17,6 +18,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi();
+    await requireConfirmedEmailForApi(authentication.session);
     authentication.authorizeApi([
       {
         resource: "citizen",

@@ -1,10 +1,10 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
-import { validateConfirmedEmailForPage } from "~/_lib/emailConfirmation";
+import { requireConfirmedEmailForPage } from "~/_lib/emailConfirmation";
 import { TRPCReactProvider } from "~/trpc/react";
 import { authenticatePage } from "../../_lib/auth/authenticateAndAuthorize";
-import AdminDisabler from "./_components/AdminDisabler";
+import { AdminEnabler } from "./_components/AdminEnabler";
 import ImpersonationBannerContainer from "./_components/ImpersonationBannerContainer";
 import PreviewComments from "./_components/PreviewComments";
 import QueryClientProviderContainer from "./_components/QueryClientProviderContainer";
@@ -24,7 +24,7 @@ export default async function AppLayout({
 }: Readonly<Props>) {
   const authentication = await authenticatePage();
 
-  await validateConfirmedEmailForPage(authentication.session);
+  await requireConfirmedEmailForPage(authentication.session);
 
   if (
     authentication.authorize([
@@ -63,8 +63,8 @@ export default async function AppLayout({
           </Suspense>
 
           {authentication.session.user.role === "admin" && (
-            <AdminDisabler
-              disabled={cookies().get("disableAdmin")?.value === "disableAdmin"}
+            <AdminEnabler
+              enabled={cookies().get("enableAdmin")?.value === "enableAdmin"}
             />
           )}
 

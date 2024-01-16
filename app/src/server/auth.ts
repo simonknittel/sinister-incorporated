@@ -78,8 +78,8 @@ declare module "next-auth" {
   }
 
   interface User {
-    role: UserRole;
-    lastSeenAt: Date;
+    role?: UserRole;
+    lastSeenAt?: Date;
   }
 }
 
@@ -129,7 +129,10 @@ export const authOptions: NextAuthOptions = {
       }
 
       // Only update lastSeenAt once a day
-      if (user.lastSeenAt.toDateString() !== new Date().toDateString()) {
+      if (
+        !user.lastSeenAt ||
+        user.lastSeenAt.toDateString() !== new Date().toDateString()
+      ) {
         await prisma.user.update({
           where: {
             id: user.id,

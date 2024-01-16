@@ -3,6 +3,7 @@ import { z } from "zod";
 import { authenticateApi } from "~/_lib/auth/authenticateAndAuthorize";
 import formValuesToPrismaOperations from "~/_lib/auth/formValuesToPrismaOperations";
 import postBodySchema from "~/_lib/auth/postBodySchema";
+import { requireConfirmedEmailForApi } from "~/_lib/emailConfirmation";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
 
@@ -18,6 +19,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi();
+    await requireConfirmedEmailForApi(authentication.session);
     authentication.authorizeApi([
       {
         resource: "role",

@@ -18,18 +18,18 @@ export default function useAuthentication() {
   function authorize(requiredPermissionSets?: PermissionSet[]) {
     if (!session) return false;
 
-    const disableAdmin =
+    if (!requiredPermissionSets) return session;
+
+    const enableAdmin =
       typeof document !== "undefined"
-        ? document.cookie.includes("disableAdmin=disableAdmin")
+        ? document.cookie.includes("enableAdmin=enableAdmin")
         : false;
 
-    if (session.user.role === "admin" && !disableAdmin) return session;
-
-    if (!requiredPermissionSets) return session;
+    if (session.user.role === "admin" && enableAdmin) return session;
 
     const result = comparePermissionSets(
       requiredPermissionSets,
-      session.givenPermissionSets
+      session.givenPermissionSets,
     );
 
     if (!result) return false;

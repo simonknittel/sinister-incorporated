@@ -1,4 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
+import { TRPCError } from "@trpc/server";
 import { type Session } from "next-auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -6,6 +7,7 @@ import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import { sendEmail } from "./email";
+import { log } from "./logging";
 
 export const requestEmailConfirmation = async (
   userId: string,
@@ -41,14 +43,45 @@ export const requiresEmailConfirmation = async (session: Session) => {
 
   if (
     session.user.role === "admin" &&
-    !(cookies().get("disableAdmin")?.value === "disableAdmin")
+    cookies().get("enableAdmin")?.value === "enableAdmin"
   )
     return false;
 
   return true;
 };
 
-export const validateConfirmedEmailForPage = async (session: Session) => {
+export const requireConfirmedEmailForPage = async (session: Session) => {
   if (!(await requiresEmailConfirmation(session))) return;
-  if (!session.user.emailVerified) redirect("/email-confirmation");
+  if (!session.user.emailVerified) {
+    log.info("Unauthenticated request to page", {
+      // TODO: Add request path
+      userId: session.user.id,
+      reason: "Unconfirmed email",
+    });
+    redirect("/email-confirmation");
+  }
+};
+
+export const requireConfirmedEmailForApi = async (session: Session) => {
+  if (!(await requiresEmailConfirmation(session))) return;
+
+  if (!session.user.emailVerified) {
+    log.info("Unauthenticated request to API", {
+      userId: session.user.id,
+      reason: "Unconfirmed email",
+    });
+    throw new Error("Unauthorized");
+  }
+};
+
+export const requireConfirmedEmailForTrpc = async (session: Session) => {
+  if (!(await requiresEmailConfirmation(session))) return;
+
+  if (!session.user.emailVerified) {
+    log.info("Unauthenticated request to tRPC", {
+      userId: session.user.id,
+      reason: "Unconfirmed email",
+    });
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
 };

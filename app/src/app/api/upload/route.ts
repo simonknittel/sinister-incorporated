@@ -2,6 +2,7 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { requireConfirmedEmailForApi } from "~/_lib/emailConfirmation";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import { authenticateApi } from "../../../_lib/auth/authenticateAndAuthorize";
@@ -18,6 +19,7 @@ export async function POST(request: Request) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi();
+    await requireConfirmedEmailForApi(authentication.session);
     authentication.authorizeApi([
       {
         resource: "role",
