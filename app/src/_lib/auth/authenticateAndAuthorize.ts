@@ -26,6 +26,7 @@ export async function authenticatePage() {
   if (!authentication) {
     log.info("Unauthenticated request to page", {
       // TODO: Add request path
+      reason: "No session",
     });
     redirect("/");
   }
@@ -37,6 +38,7 @@ export async function authenticatePage() {
       if (!result) {
         log.info("Unauthorized request to page", {
           userId: authentication.session.user.id,
+          reason: "Insufficient permissions",
         });
         redirect("/");
       }
@@ -48,7 +50,9 @@ export async function authenticatePage() {
 export async function authenticateApi() {
   const authentication = await authenticate();
   if (!authentication) {
-    log.info("Unauthenticated request to API", {});
+    log.info("Unauthenticated request to API", {
+      reason: "No session",
+    });
     throw new Error("Unauthorized");
   }
 
@@ -59,6 +63,7 @@ export async function authenticateApi() {
       if (!result) {
         log.info("Unauthorized request to API", {
           userId: authentication.session.user.id,
+          reason: "Insufficient permissions",
         });
         throw new Error("Unauthorized");
       }

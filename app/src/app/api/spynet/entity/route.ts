@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireConfirmedEmailForApi } from "~/_lib/emailConfirmation";
 import { prisma } from "~/server/db";
 import { saveObject } from "../../_lib/algolia";
 import errorHandler from "../../_lib/errorHandler";
@@ -16,6 +17,7 @@ export async function POST(request: Request) {
      * Authenticate the request
      */
     const authentication = await authenticateApi();
+    await requireConfirmedEmailForApi(authentication.session);
     authentication.authorizeApi([
       {
         resource: "citizen",

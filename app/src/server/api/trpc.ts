@@ -11,6 +11,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { requireConfirmedEmailForTrpc } from "~/_lib/emailConfirmation";
 
 import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
@@ -107,10 +108,13 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
-const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
+  await requireConfirmedEmailForTrpc(ctx.session);
+
   return next({
     ctx: {
       // infers the `session` as non-nullable

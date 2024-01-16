@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { requireConfirmedEmailForApi } from "~/_lib/emailConfirmation";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
 import { authenticateApi } from "../../../../_lib/auth/authenticateAndAuthorize";
@@ -21,6 +22,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi();
+    await requireConfirmedEmailForApi(authentication.session);
     authentication.authorizeApi([
       {
         resource: "role",
@@ -63,6 +65,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi();
+    await requireConfirmedEmailForApi(authentication.session);
     authentication.authorizeApi([
       {
         resource: "role",

@@ -2,7 +2,7 @@ import { type Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { FaRegCheckCircle } from "react-icons/fa";
-import { validateConfirmedEmailForPage } from "~/_lib/emailConfirmation";
+import { requireConfirmedEmailForPage } from "~/_lib/emailConfirmation";
 import { AdminEnabler } from "../(app)/_components/AdminEnabler";
 import { authenticatePage } from "../../_lib/auth/authenticateAndAuthorize";
 import { Footer } from "../_components/Footer";
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   const authentication = await authenticatePage();
 
-  await validateConfirmedEmailForPage(authentication.session);
+  await requireConfirmedEmailForPage(authentication.session);
 
   if (
     authentication.authorize([
