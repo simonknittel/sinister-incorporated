@@ -26,7 +26,10 @@ export default function errorHandler(error: unknown) {
       },
       { status: 404 },
     );
-  } else if (error instanceof Error && error.message === "Bad request") {
+  } else if (
+    error instanceof Error &&
+    ["Bad request", "Unexpected end of JSON input"].includes(error.message)
+  ) {
     return NextResponse.json(
       {
         message: "Bad request",
