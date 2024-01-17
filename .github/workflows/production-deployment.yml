@@ -2,7 +2,7 @@ name: Production deployment
 
 on:
   schedule:
-    - cron: '0 7 * * *'
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -23,6 +23,8 @@ jobs:
           # - https://octokit.github.io/rest.js
           # - https://docs.github.com/en/rest/pulls/pulls
           script: |
+            console.info("Fetching existing Pull Requests")
+
             const existingPullRequests = await github.rest.pulls.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -32,18 +34,22 @@ jobs:
             })
 
             if (existingPullRequests.data.length > 0) {
-              console.info("Pull Request already exists")
+              console.info(`Pull Request already exists (${existingPullRequests.data[0].html_url})`)
               return
             }
 
+            console.info("Creating Pull Request")
+
             try {
-              await github.rest.pulls.create({
+              const createdPullRequest = await github.rest.pulls.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 head: "develop",
                 base: "main",
-                title: `Production deployment (${new Date().toISOString()})`,
+                title: "Production deployment",
               })
+
+              console.info(`Pull Request created (${createdPullRequest.html_url})`)
             } catch (error) {
               if (error.response.data.errors[0].message === "No commits between main and develop") {
                 console.info("No commits between main and develop")
