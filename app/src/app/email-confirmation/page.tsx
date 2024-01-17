@@ -3,46 +3,20 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { RiInformationLine } from "react-icons/ri";
-import { serializeError } from "serialize-error";
-import {
-  requestEmailConfirmation,
-  requiresEmailConfirmation,
-} from "~/_lib/emailConfirmation";
-import { log } from "~/_lib/logging";
+import { requiresEmailConfirmation } from "~/_lib/emailConfirmation";
 import { AdminEnabler } from "../(app)/_components/AdminEnabler";
-import {
-  authenticateApi,
-  authenticatePage,
-} from "../../_lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../_lib/auth/authenticateAndAuthorize";
 import { Footer } from "../_components/Footer";
+import { PageRefresher } from "./_components/PageRefresher";
 import {
   RequestConfirmationEmailButton,
   RequestConfirmationEmailLink,
 } from "./_components/RequestConfirmationEmail";
+import { requestEmailConfirmationAction } from "./_lib/actions";
 
 export const metadata: Metadata = {
   title:
     "E-Mail-Adresse und Datenschutzerklärung bestätigen | Sinister Incorporated",
-};
-
-const handleClick = async () => {
-  "use server";
-
-  const authentication = await authenticateApi();
-
-  if (authentication.session.user.emailVerified) redirect("/clearance");
-
-  try {
-    await requestEmailConfirmation(
-      authentication.session.user.id,
-      authentication.session.user.email!,
-    );
-  } catch (error) {
-    log.error("Error while requesting email confirmation", {
-      path: "/email-confirmation",
-      error: serializeError(error),
-    });
-  }
 };
 
 interface Props {
@@ -78,20 +52,17 @@ export default async function Page({ searchParams }: Readonly<Props>) {
             bestätigen.
           </p>
 
-          {newUser ? (
-            <p>Zur Bestätigung haben wir dir eine E-Mail geschickt.</p>
-          ) : (
-            <form
-              action={handleClick}
-              className="flex justify-center mt-4 mb-3"
-            >
-              <RequestConfirmationEmailButton>
-                Bestätigungs-E-Mail verschicken
-              </RequestConfirmationEmailButton>
-            </form>
-          )}
+          <form action={requestEmailConfirmationAction}>
+            {newUser ? (
+              <p>Zur Bestätigung haben wir dir eine E-Mail geschickt.</p>
+            ) : (
+              <div className="flex justify-center mt-4 mb-3">
+                <RequestConfirmationEmailButton>
+                  Bestätigungs-E-Mail verschicken
+                </RequestConfirmationEmailButton>
+              </div>
+            )}
 
-          <form action={handleClick} className="inline">
             <p className="text-neutral-500">
               Falls die E-Mail nicht angekommen ist,{" "}
               <RequestConfirmationEmailLink>
@@ -111,6 +82,8 @@ export default async function Page({ searchParams }: Readonly<Props>) {
       </main>
 
       <Footer className="mt-4" />
+
+      <PageRefresher />
 
       {authentication.session.user.role === "admin" && (
         <AdminEnabler
