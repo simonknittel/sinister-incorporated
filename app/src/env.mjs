@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
 
 export const env = createEnv({
   /*
@@ -14,7 +14,7 @@ export const env = createEnv({
         ? z.string().min(1)
         : z.string().min(1).optional(),
     NEXTAUTH_URL: z.preprocess(
-      // Uses VERCEL_URL if HOST is not set, e.g. on Vercel's preview deployments
+      // Uses VERCEL_URL if NEXTAUTH_URL is not set, e.g. on Vercel's preview deployments
       (str) => str || `https://${process.env.VERCEL_URL}`,
       z.string().url(),
     ),
@@ -33,9 +33,22 @@ export const env = createEnv({
     LOKI_HOST: z.string().url().optional(),
     LOKI_AUTH_USER: z.string().optional(),
     LOKI_AUTH_PASSWORD: z.string().optional(),
+    BASE_URL: z.preprocess(
+      // Uses VERCEL_URL if BASE_URL is not set, e.g. on Vercel's preview deployments
+      (str) => str || `https://${process.env.VERCEL_URL}`,
+      z.string().url(),
+    ),
     HOST: z.preprocess(
-      // Uses VERCEL_URL if HOST is not set, e.g. on Vercel's preview deployments
-      (str) => str || process.env.VERCEL_URL,
+      // Uses VERCEL_URL if HOST and BASE_URL are not set, e.g. on Vercel's preview deployments
+      (str) => {
+        if (str) {
+          return str;
+        } else if (process.env.BASE_URL) {
+          return process.env.BASE_URL.replace(/https?:\/\//, "");
+        } else {
+          return process.env.VERCEL_URL;
+        }
+      },
       z.string(),
     ),
     COMMIT_SHA: z.preprocess(
@@ -75,7 +88,8 @@ export const env = createEnv({
     DISCORD_TOKEN: process.env.DISCORD_TOKEN,
     NEXT_PUBLIC_ALGOLIA_APP_ID: process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
     ALGOLIA_ADMIN_API_KEY: process.env.ALGOLIA_ADMIN_API_KEY,
-    NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY: process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY,
+    NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY:
+      process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY,
     R2_ACCOUNT_ID: process.env.R2_ACCOUNT_ID,
     R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
     R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,
@@ -90,7 +104,9 @@ export const env = createEnv({
     HOST: process.env.HOST,
     COMMIT_SHA: process.env.COMMIT_SHA,
     EMAIL_FUNCTION_ENDPOINT: process.env.EMAIL_FUNCTION_ENDPOINT,
-    NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL: process.env.NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL,
+    NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL:
+      process.env.NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL,
+    BASE_URL: process.env.BASE_URL,
   },
 
   emptyStringAsUndefined: true,
