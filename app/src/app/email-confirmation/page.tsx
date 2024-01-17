@@ -30,6 +30,8 @@ const handleClick = async () => {
 
   const authentication = await authenticateApi();
 
+  if (authentication.session.user.emailVerified) redirect("/clearance");
+
   try {
     await requestEmailConfirmation(
       authentication.session.user.id,
