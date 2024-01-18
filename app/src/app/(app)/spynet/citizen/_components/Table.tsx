@@ -156,7 +156,11 @@ const Table = ({
                     <span className="text-neutral-500 italic">Unbekannt</span>
                   )}
                 </span>
-                <HistoryModal type="handle" entity={row.entity} />
+                <HistoryModal
+                  type="handle"
+                  entity={row.entity}
+                  iconOnly={true}
+                />
               </td>
 
               <td
@@ -177,7 +181,11 @@ const Table = ({
                       <span className="text-neutral-500 italic">Unbekannt</span>
                     )}
                   </span>
-                  <HistoryModal type="discord-id" entity={row.entity} />
+                  <HistoryModal
+                    type="discord-id"
+                    entity={row.entity}
+                    iconOnly={true}
+                  />
                 </td>
               )}
 
@@ -192,7 +200,11 @@ const Table = ({
                       <span className="text-neutral-500 italic">Unbekannt</span>
                     )}
                   </span>
-                  <HistoryModal type="teamspeak-id" entity={row.entity} />
+                  <HistoryModal
+                    type="teamspeak-id"
+                    entity={row.entity}
+                    iconOnly={true}
+                  />
                 </td>
               )}
 
