@@ -75,7 +75,7 @@ const Table = ({
   if (showLastSeenAtColumn) columnCount++;
 
   return (
-    <table className="w-full min-w-[1600px]">
+    <table className="w-full min-w-[1100px]">
       <thead>
         <tr
           className="grid items-center gap-4 text-left text-neutral-500"
@@ -97,9 +97,13 @@ const Table = ({
 
           <th className="whitespace-nowrap">Spectrum ID</th>
 
-          {showDiscordIdColumn && <th>Discord ID</th>}
+          {showDiscordIdColumn && (
+            <th className="whitespace-nowrap">Discord ID</th>
+          )}
 
-          {showTeamspeakIdColumn && <th>TeamSpeak ID</th>}
+          {showTeamspeakIdColumn && (
+            <th className="whitespace-nowrap">TeamSpeak ID</th>
+          )}
 
           <th>Rollen</th>
 
