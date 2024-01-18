@@ -48,6 +48,7 @@ export const RolesCell = async ({
           entity={entity}
           allRoles={assignableRoles}
           assignedRoleIds={roles.map((role) => role.id)}
+          iconOnly={true}
         />
       )}
     </>

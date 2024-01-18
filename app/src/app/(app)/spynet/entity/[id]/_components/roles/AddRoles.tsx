@@ -16,6 +16,7 @@ interface Props {
   entity: Entity;
   allRoles: Role[];
   assignedRoleIds: Role["id"][];
+  iconOnly?: boolean;
 }
 
 const AddRoles = ({
@@ -23,6 +24,7 @@ const AddRoles = ({
   entity,
   allRoles,
   assignedRoleIds,
+  iconOnly = false,
 }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -38,8 +40,9 @@ const AddRoles = ({
         variant="tertiary"
         onClick={() => setIsOpen(true)}
         className={clsx(className)}
+        title="Bearbeiten"
       >
-        <FaPen /> Bearbeiten
+        <FaPen /> {!iconOnly && <>Bearbeiten</>}
       </Button>
 
       <Modal

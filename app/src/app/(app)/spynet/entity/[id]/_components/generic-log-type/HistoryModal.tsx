@@ -11,9 +11,14 @@ import { ModalContent } from "./ModalContent";
 interface Props {
   type: GenericEntityLogType;
   entity: Entity;
+  iconOnly?: boolean;
 }
 
-export const HistoryModal = ({ type, entity }: Readonly<Props>) => {
+export const HistoryModal = ({
+  type,
+  entity,
+  iconOnly = false,
+}: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -21,9 +26,9 @@ export const HistoryModal = ({ type, entity }: Readonly<Props>) => {
       <Button
         onClick={() => setIsOpen(true)}
         variant="tertiary"
-        title="Bearbeiten"
+        title="History"
       >
-        <FaHistory /> History
+        <FaHistory /> {!iconOnly && <>History</>}
       </Button>
 
       <Modal
