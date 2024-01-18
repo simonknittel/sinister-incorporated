@@ -62,7 +62,7 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
             <Link
               href={`?${confirmedAtSearchParams.toString()}`}
               prefetch={false}
-              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
+              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300 whitespace-nowrap"
             >
               Bestätigt am
               {(!searchParams.has("sort") ||
@@ -73,13 +73,13 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
             </Link>
           </th>
 
-          <th>Bestätigt von</th>
+          <th className="whitespace-nowrap">Bestätigt von</th>
 
           <th>
             <Link
               href={`?${createdAtSearchParams.toString()}`}
               prefetch={false}
-              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
+              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300 whitespace-nowrap"
             >
               Eingereicht am
               {(!searchParams.has("sort") ||
@@ -90,7 +90,7 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
             </Link>
           </th>
 
-          <th>Eingereicht von</th>
+          <th className="whitespace-nowrap">Eingereicht von</th>
         </tr>
       </thead>
 
@@ -101,40 +101,49 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
               key={row.entityLog.id}
               className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2 grid-cols-[1fr_1fr_2fr_1fr_1fr_1fr_1fr_1fr_44px]"
             >
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+              <td className="overflow-hidden">
                 <Link
                   href={`/spynet/entity/${row.entity.id}`}
-                  className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
+                  className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center justify-between"
                 >
-                  {row.entity.handle || (
-                    <span className="text-neutral-500 italic">Unbekannt</span>
-                  )}
+                  <span className="overflow-hidden text-ellipsis">
+                    {row.entity.handle ? (
+                      <span title={row.entity.handle}>{row.entity.handle}</span>
+                    ) : (
+                      <span
+                        title="Unbekannt"
+                        className="text-neutral-500 italic"
+                      >
+                        Unbekannt
+                      </span>
+                    )}
+                  </span>
                   <FaExternalLinkAlt />
                 </Link>
               </td>
 
               <td
-                className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center"
+                className="overflow-hidden text-ellipsis whitespace-nowrap"
                 title={entityLogTypeTranslations[row.entityLog.type]}
               >
                 {entityLogTypeTranslations[row.entityLog.type]}
               </td>
 
               <td
-                className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center"
-                title={row.entityLog.content}
+                className="overflow-hidden text-ellipsis whitespace-nowrap"
+                title={row.entityLog.content || undefined}
               >
                 {row.entityLog.content}
               </td>
 
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+              <td>
                 <ConfirmationState
                   confirmationState={row.confirmationState}
                   entityLog={row.entityLog}
                 />
               </td>
 
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+              <td className="overflow-hidden text-ellipsis">
                 {row.confirmedAt?.toLocaleDateString("de-DE", {
                   day: "2-digit",
                   month: "2-digit",
@@ -142,11 +151,14 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
                 })}
               </td>
 
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+              <td
+                className="overflow-hidden text-ellipsis"
+                title={row.confirmedBy?.name || undefined}
+              >
                 {row.confirmedBy?.name}
               </td>
 
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+              <td className="overflow-hidden text-ellipsis">
                 {row.entityLog.createdAt?.toLocaleDateString("de-DE", {
                   day: "2-digit",
                   month: "2-digit",
@@ -154,7 +166,10 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
                 })}
               </td>
 
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+              <td
+                className="overflow-hidden text-ellipsis"
+                title={row.entityLog.submittedBy.name || undefined}
+              >
                 {row.entityLog.submittedBy.name}
               </td>
 

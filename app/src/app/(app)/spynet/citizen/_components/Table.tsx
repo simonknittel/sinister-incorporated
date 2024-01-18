@@ -95,7 +95,7 @@ const Table = ({
             </Link>
           </th>
 
-          <th>Spectrum ID</th>
+          <th className="whitespace-nowrap">Spectrum ID</th>
 
           {showDiscordIdColumn && <th>Discord ID</th>}
 
@@ -107,7 +107,7 @@ const Table = ({
             <Link
               href={`?${createdAtSearchParams.toString()}`}
               prefetch={false}
-              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
+              className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300 whitespace-nowrap"
             >
               Erstellt am
               {(!searchParams.has("sort") ||
@@ -123,7 +123,7 @@ const Table = ({
               <Link
                 href={`?${lastSeenAtSearchParams.toString()}`}
                 prefetch={false}
-                className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
+                className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300 whitespace-nowrap"
               >
                 Zuletzt gesehen
                 {searchParams.get("sort") === "last-seen-at-asc" && (
@@ -148,36 +148,55 @@ const Table = ({
                 gridTemplateColumns: `repeat(${columnCount}, 1fr) 44px`, // Tailwind CSS can't detect dynamic CSS classes. Therefore we are using an inline style here.
               }}
             >
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                {row.entity.handle || (
-                  <span className="text-neutral-500 italic">Unbekannt</span>
-                )}
+              <td className="overflow-hidden flex gap-4 items-center justify-between">
+                <span className="overflow-hidden text-ellipsis">
+                  {row.entity.handle ? (
+                    <span title={row.entity.handle}>{row.entity.handle}</span>
+                  ) : (
+                    <span className="text-neutral-500 italic">Unbekannt</span>
+                  )}
+                </span>
                 <HistoryModal type="handle" entity={row.entity} />
               </td>
 
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+              <td
+                className="overflow-hidden text-ellipsis"
+                title={row.entity.spectrumId || undefined}
+              >
                 {row.entity.spectrumId}
               </td>
 
               {showDiscordIdColumn && (
-                <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                  {row.entity.discordId || (
-                    <span className="text-neutral-500 italic">Unbekannt</span>
-                  )}
+                <td className="flex gap-4 items-center overflow-hidden justify-between">
+                  <span className="overflow-hidden text-ellipsis">
+                    {row.entity.discordId ? (
+                      <span title={row.entity.discordId}>
+                        {row.entity.discordId}
+                      </span>
+                    ) : (
+                      <span className="text-neutral-500 italic">Unbekannt</span>
+                    )}
+                  </span>
                   <HistoryModal type="discord-id" entity={row.entity} />
                 </td>
               )}
 
               {showTeamspeakIdColumn && (
-                <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
-                  {row.entity.teamspeakId || (
-                    <span className="text-neutral-500 italic">Unbekannt</span>
-                  )}
+                <td className="overflow-hidden flex gap-4 items-center justify-between">
+                  <span className="overflow-hidden text-ellipsis">
+                    {row.entity.teamspeakId ? (
+                      <span title={row.entity.teamspeakId}>
+                        {row.entity.teamspeakId}
+                      </span>
+                    ) : (
+                      <span className="text-neutral-500 italic">Unbekannt</span>
+                    )}
+                  </span>
                   <HistoryModal type="teamspeak-id" entity={row.entity} />
                 </td>
               )}
 
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+              <td className="overflow-hidden flex gap-4 items-center justify-between">
                 <Suspense
                   fallback={
                     <div className="bg-neutral-800 animate-pulse rounded h-8 w-20" />
@@ -190,7 +209,7 @@ const Table = ({
                 </Suspense>
               </td>
 
-              <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+              <td className="overflow-hidden text-ellipsis">
                 {row.entity.createdAt?.toLocaleDateString("de-DE", {
                   day: "2-digit",
                   month: "2-digit",
@@ -199,7 +218,7 @@ const Table = ({
               </td>
 
               {showLastSeenAtColumn && (
-                <td className="overflow-hidden text-ellipsis whitespace-nowrap flex gap-4 items-center">
+                <td className="overflow-hidden text-ellipsis">
                   <Suspense
                     fallback={
                       <div className="bg-neutral-800 animate-pulse rounded h-6 w-20" />
