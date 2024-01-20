@@ -8,7 +8,8 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
-      "runtimeVersion": "18.19.0"
+      "runtimeVersion": "18.19.0",
+      "outputCapture": "std"
     }
   ]
 }
