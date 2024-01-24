@@ -62,7 +62,7 @@
     "@typescript-eslint/eslint-plugin": "6.19.0",
     "@typescript-eslint/parser": "6.19.0",
     "@vitest/coverage-istanbul": "1.2.1",
-    "autoprefixer": "10.4.16",
+    "autoprefixer": "10.4.17",
     "csv": "6.3.6",
     "eslint": "8.56.0",
     "eslint-config-next": "14.0.4",
