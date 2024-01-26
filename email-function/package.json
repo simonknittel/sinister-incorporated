@@ -18,7 +18,7 @@
     "@react-email/render": "0.0.12",
     "@types/aws-lambda": "8.10.131",
     "@types/node": "20.10.2",
-    "dotenv": "16.3.1",
+    "dotenv": "16.3.2",
     "form-data": "4.0.0",
     "mailgun.js": "10.0.0",
     "openpgp": "5.11.0",
