@@ -6,7 +6,7 @@ on:
       - main
       - develop
     paths:
-      - .github/workflows/lint-test.yml
+      - .github/workflows/validate-app.yml
       - app/**
 
 jobs:
