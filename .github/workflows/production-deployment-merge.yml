@@ -40,13 +40,26 @@ jobs:
               return
             }
 
-            console.info(`Merging pull request: ${existingPullRequests.data[0].html_url}`)
+            const pullRequest = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: existingPullRequests.data[0].number,
+            })
+            console.log(pullRequest)
+
+            // https://github.com/orgs/community/discussions/24504
+            // https://github.com/octokit/octokit.net/issues/1763
+            if (pullRequest.data.mergeable_state !== "clean") {
+              throw new Error(`Pull request is not mergeable: ${pullRequest.data.mergeable_state}`)
+            }
+
+            console.info(`Merging pull request: ${pullRequest.data.html_url}`)
 
             try {
               const mergedPullRequest = await github.rest.pulls.merge({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                pull_number: existingPullRequests.data[0].number,
+                pull_number: pullRequest.data.number,
                 merge_method: "merge",
               })
 
