@@ -1,19 +1,21 @@
-name: Production deployment
+# Make sure `Settings > Actions > General > Workflow permissions > Read and write permissions` and `Allow GitHub Actions to create and approve pull requests` are enabled
+
+name: Merge production deployment
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "30 0 * * *"
   workflow_dispatch:
 
 jobs:
-  create_pull_request:
+  merge_pull_request:
     runs-on: ubuntu-22.04
 
     # Related
     # - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
     # - https://docs.github.com/en/rest/authentication/permissions-required-for-github-apps
     permissions:
-      pull-requests: write # Required for actions/github-script
+      contents: write # Required to merge a pull request
 
     steps:
       - uses: actions/github-script@v7.0.1
@@ -23,7 +25,7 @@ jobs:
           # - https://octokit.github.io/rest.js
           # - https://docs.github.com/en/rest/pulls/pulls
           script: |
-            console.info("Fetching existing Pull Requests")
+            console.info("Fetching existing pull requests")
 
             const existingPullRequests = await github.rest.pulls.list({
               owner: context.repo.owner,
@@ -33,28 +35,22 @@ jobs:
               state: "open",
             })
 
-            if (existingPullRequests.data.length > 0) {
-              console.info(`Pull Request already exists (${existingPullRequests.data[0].html_url})`)
+            if (existingPullRequests.data.length <= 0) {
+              console.info(`No pull request found`)
               return
             }
 
-            console.info("Creating Pull Request")
+            console.info(`Merging pull request: ${existingPullRequests.data[0].html_url}`)
 
             try {
-              const createdPullRequest = await github.rest.pulls.create({
+              const mergedPullRequest = await github.rest.pulls.merge({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                head: "develop",
-                base: "main",
-                title: "Production deployment",
+                pull_number: existingPullRequests.data[0].number,
+                merge_method: "merge",
               })
 
-              console.info(`Pull Request created (${createdPullRequest.html_url})`)
+              console.info(`Pull request merged`)
             } catch (error) {
-              if (error.response.data.errors[0].message === "No commits between main and develop") {
-                console.info("No commits between main and develop")
-                return
-              }
-
               throw error
             }

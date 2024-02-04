@@ -10,7 +10,7 @@
     "lint": "tsc --project tsconfig.node.json"
   },
   "devDependencies": {
-    "esbuild": "0.19.12",
+    "esbuild": "0.20.0",
     "typescript": "5.3.3"
   },
   "dependencies": {
