@@ -45,7 +45,6 @@ jobs:
               repo: context.repo.repo,
               pull_number: existingPullRequests.data[0].number,
             })
-            console.log(pullRequest)
 
             // https://github.com/orgs/community/discussions/24504
             // https://github.com/octokit/octokit.net/issues/1763
