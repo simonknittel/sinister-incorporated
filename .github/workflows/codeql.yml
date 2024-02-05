@@ -2,7 +2,11 @@ name: "CodeQL"
 
 on:
   pull_request:
-    branches: [ "develop" ]
+    branches:
+      - develop
+    paths:
+      - .github/workflows/codeql.yml
+      - '**.ts'
   schedule:
     - cron: '45 0 * * 1'
 
