@@ -1,8 +1,9 @@
 import { ZodError } from "zod";
 import { log } from "./logging";
 import { CustomError } from "./logging/CustomError";
+import { serializeError } from "serialize-error";
 
-export default function errorHandler(error: unknown) {
+export const errorHandler = (error: unknown) => {
   if (error instanceof ZodError) {
     return {
       statusCode: 400,
@@ -26,7 +27,7 @@ export default function errorHandler(error: unknown) {
       }),
     };
   } else if (error instanceof CustomError) {
-    log.error(error.message, error.context);
+    log.error(error.message, serializeError(error.context));
 
     return {
       statusCode: 500,
@@ -37,7 +38,7 @@ export default function errorHandler(error: unknown) {
   }
 
   log.error("errorHandler", {
-    error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+    error: serializeError(error),
   });
 
   return {

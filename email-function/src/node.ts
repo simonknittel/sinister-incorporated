@@ -1,6 +1,7 @@
 import { main } from "./_lib/main";
 import { log } from "./_lib/logging";
 import "dotenv/config";
+import { serializeError } from "serialize-error";
 
 const config = {
   mailgunApiKey: process.env.MAILGUN_API_KEY!,
@@ -21,11 +22,9 @@ const init = async () => {
 };
 
 init()
-  .then(() => {})
+  .then(() => { })
   .catch((error) => {
-    log.error("Error", {
-      error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
-    });
+    log.error(error.message, serializeError(error));
 
     process.exit(1);
   });
