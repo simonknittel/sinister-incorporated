@@ -1,6 +1,6 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 import z from "zod";
-import errorHandler from "./_lib/errorHandler";
+import { errorHandler } from "./_lib/errorHandler";
 import { fetchParameters } from "./_lib/fetchParameters";
 import { main } from "./_lib/main";
 
