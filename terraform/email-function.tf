@@ -5,7 +5,7 @@ resource "aws_api_gateway_resource" "email_function" {
 }
 
 module "email_function" {
-  source = "./modules/api-gateway-lambda"
+  source = "./modules/api-gateway-eventbridge-lambda"
 
   function_name                  = "email-function"
   source_dir                     = "../email-function/dist"
@@ -18,6 +18,10 @@ module "email_function" {
   parameter_store = [
     "/mailgun-api-key"
   ]
+
+  event_bus             = aws_cloudwatch_event_bus.api_gateway
+  api_gateway_role      = aws_iam_role.api_gateway_eventbridge
+  event_bus_detail_type = "EmailConfirmationRequested"
 
   request_validator       = aws_api_gateway_request_validator.validate_request_body
   request_body_model_name = "EmailFunctionPost"

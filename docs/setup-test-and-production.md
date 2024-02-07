@@ -95,7 +95,7 @@
 ## 5. Set up Terraform
 
 1. Create and populate `test.s3.tfbackend`, `prod.s3.tfbackend`, `test.tfvars` and `prod.tfvars`
-2. `cd email-function && npm run build:lambda`
+2. `cd email-function && npm run build:lambda-eventbridge`
 3. Create Terraform resources
 
    1. `AWS_PROFILE=sinister-incorporated-test aws sso login`
