@@ -34,6 +34,8 @@ export const handler: EventBridgeHandler<DetailType, Detail, Result> = async (ev
     log.error("errorHandler", {
       error: serializeError(error),
     });
+
+    throw error;
   }
 };
 
