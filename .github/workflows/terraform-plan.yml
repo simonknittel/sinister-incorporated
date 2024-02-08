@@ -36,6 +36,7 @@ jobs:
       - name: Read .terraform-version
         id: terraform_version
         run: echo "value=$(cat .terraform-version)" >> $GITHUB_OUTPUT
+        working-directory: terraform
 
       - uses: hashicorp/setup-terraform@v3.0.0
         with:
