@@ -28,5 +28,16 @@
       "automerge": false
     }
   ],
+  "customManagers": [
+    {
+      "customType": "regex",
+			"fileMatch": "(^|/)terraform-[a-z]+.ya?ml$",
+			"matchStrings": [
+				"terraform_version: (?<currentValue>.*?)\\s"
+			],
+      "depNameTemplate": "hashicorp/terraform",
+      "depTypeTemplate": "terraform"
+		}
+  ],
   "configMigration": true
 }
