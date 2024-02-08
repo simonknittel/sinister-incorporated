@@ -80,7 +80,9 @@ Resources:
                   - config:DescribeConfigurationRecorders
                   - config:DescribeDeliveryChannels
                   - events:DescribeEventBus
+                  - events:DescribeRule
                   - events:ListTagsForResource
+                  - events:ListTargetsByRule
                   - iam:GetOpenIDConnectProvider
                   - iam:GetRole
                   - iam:GetRolePolicy
@@ -91,6 +93,7 @@ Resources:
                   - kms:ListAliases
                   - lambda:GetFunction
                   - lambda:GetFunctionCodeSigningConfig
+                  - lambda:GetPolicy
                   - lambda:ListVersionsByFunction
                   - logs:DescribeLogGroups
                   - logs:ListTagsLogGroup
