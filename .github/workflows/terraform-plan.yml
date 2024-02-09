@@ -33,9 +33,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
 
+      - name: Read .terraform-version
+        id: terraform_version
+        run: echo "value=$(cat .terraform-version)" >> $GITHUB_OUTPUT
+        working-directory: terraform
+
       - uses: hashicorp/setup-terraform@v3.0.0
         with:
-          terraform_version: 1.6.6
+          terraform_version: "${{ steps.terraform_version.outputs.value }}"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.0.1
