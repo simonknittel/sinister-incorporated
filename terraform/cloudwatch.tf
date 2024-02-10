@@ -5,9 +5,10 @@ resource "aws_cloudwatch_metric_alarm" "api_gateway_5xx_error" {
 
   namespace   = "AWS/ApiGateway"
   metric_name = "5XXError"
+
   # Related: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-metrics-and-dimensions.html
   dimensions = {
-    ApiName = aws_api_gateway_rest_api.main.name
+    QueueName = aws_api_gateway_rest_api.main.name
   }
 
   statistic           = "Sum"

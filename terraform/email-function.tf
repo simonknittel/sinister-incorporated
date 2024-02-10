@@ -9,11 +9,12 @@ module "email_function" {
 
   function_name                  = "email-function"
   source_dir                     = "../email-function/dist"
-  reserved_concurrent_executions = 10
+  reserved_concurrent_executions = 1
   rest_api                       = aws_api_gateway_rest_api.main
   resource                       = aws_api_gateway_resource.email_function
   method                         = "POST"
   account_id                     = data.aws_caller_identity.current.account_id
+  timeout                        = 15
 
   parameter_store = [
     "/mailgun-api-key"

@@ -1,14 +1,15 @@
 resource "aws_lambda_function" "main" {
-  filename                       = "${path.module}/dist.zip"
-  function_name                  = var.function_name
-  role                           = aws_iam_role.main.arn
-  handler                        = "lambda.handler"
-  source_code_hash               = data.archive_file.main.output_base64sha256
-  runtime                        = "nodejs18.x"
-  timeout                        = 15
-  memory_size                    = 256
+  filename         = "${path.module}/dist.zip"
+  function_name    = var.function_name
+  role             = aws_iam_role.main.arn
+  handler          = "lambda.handler"
+  source_code_hash = data.archive_file.main.output_base64sha256
+  runtime          = "nodejs18.x"
+  timeout          = var.timeout
+  memory_size      = 256
 
-  # Related: https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
+  # https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html
+  # https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
   reserved_concurrent_executions = var.reserved_concurrent_executions
 
   environment {

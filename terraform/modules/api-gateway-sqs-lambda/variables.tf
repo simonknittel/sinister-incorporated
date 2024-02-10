@@ -61,3 +61,8 @@ variable "api_gateway_role" {
     arn = string
   })
 }
+
+variable "timeout" {
+  type    = number
+  default = 15
+}

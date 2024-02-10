@@ -1,4 +1,4 @@
-import { SQSHandler } from "aws-lambda";
+import { SQSBatchItemFailure, SQSHandler } from "aws-lambda";
 import z from "zod";
 import { fetchParameters } from "./_lib/fetchParameters";
 import { main } from "./_lib/main";
@@ -6,6 +6,9 @@ import { log } from "./_lib/logging";
 import { serializeError } from "serialize-error";
 
 export const handler: SQSHandler = async (event) => {
+  // https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#services-sqs-batchfailurereporting
+  const batchItemFailures: SQSBatchItemFailure[] = [];
+
   for (const record of event.Records) {
     try {
       const body = JSON.parse(record.body || "");
@@ -26,9 +29,11 @@ export const handler: SQSHandler = async (event) => {
         messageId: record.messageId,
       });
 
-      throw error;
+      batchItemFailures.push({ itemIdentifier: record.messageId });
     }
   }
+
+  return { batchItemFailures };
 };
 
 const requestBodySchema = z.object({

@@ -1,7 +1,9 @@
 resource "aws_sqs_queue" "main" {
+  visibility_timeout_seconds = var.timeout * 6 # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig
+
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.main_deadletter.arn
-    maxReceiveCount     = 2
+    maxReceiveCount     = 5 # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#events-sqs-queueconfig
   })
 }
 
@@ -41,6 +43,7 @@ resource "aws_lambda_permission" "api_gateway" {
 }
 
 resource "aws_lambda_event_source_mapping" "main" {
-  event_source_arn = aws_sqs_queue.main.arn
-  function_name    = aws_lambda_function.main.arn
+  event_source_arn        = aws_sqs_queue.main.arn
+  function_name           = aws_lambda_function.main.arn
+  function_response_types = ["ReportBatchItemFailures"] # https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#services-sqs-batchfailurereporting
 }
