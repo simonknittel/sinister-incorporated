@@ -27,15 +27,15 @@ resource "aws_api_gateway_integration" "main" {
   uri                     = "arn:aws:apigateway:eu-central-1:sqs:path/${aws_sqs_queue.main.name}" # `action/SendMessage` won't work
   credentials             = var.api_gateway_role.arn
 
+  request_parameters = {
+    "integration.request.header.Content-Type" = "'application/x-www-form-urlencoded'"
+  }
+
   # https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html
   # Related: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
   request_templates = {
     # Passing a JSON object to the `SendMessage` action seems not to be working
-    "application/json" = <<EOF
-#set($context.requestOverride.header.Content-Type = "application/x-www-form-urlencoded;")
-#set($inputRoot = $input.json('$'))
-Action=SendMessage&MessageBody=$util.urlEncode($inputRoot)
-EOF
+    "application/json" = "Action=SendMessage&MessageBody=$util.urlEncode($input.body)"
   }
 
   passthrough_behavior = "NEVER"
