@@ -17,6 +17,7 @@ resource "aws_config_configuration_recorder" "default" {
       "AWS::CloudWatch::Alarm",
       "AWS::Events::EventBus",
       "AWS::Events::Rule",
+      "AWS::SQS::Queue"
     ]
 
     recording_strategy {

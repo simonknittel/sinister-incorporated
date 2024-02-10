@@ -91,6 +91,7 @@ Resources:
                   - iam:ListRolePolicies
                   - kms:DescribeKey
                   - kms:ListAliases
+                  - lambda:GetEventSourceMapping
                   - lambda:GetFunction
                   - lambda:GetFunctionCodeSigningConfig
                   - lambda:GetPolicy
