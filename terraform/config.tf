@@ -15,6 +15,8 @@ resource "aws_config_configuration_recorder" "default" {
       "AWS::S3::Bucket",
       "AWS::IAM::Role",
       "AWS::CloudWatch::Alarm",
+      "AWS::Events::EventBus",
+      "AWS::Events::Rule",
     ]
 
     recording_strategy {
