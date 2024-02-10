@@ -32,7 +32,6 @@ resource "aws_api_gateway_integration" "main" {
   request_templates = {
     # Passing a JSON object to the `SendMessage` action seems not to be working
     "application/json" = <<EOF
-#set($context.requestOverride.header.X-Amz-Target = "AmazonSQS.SendMessage")
 #set($context.requestOverride.header.Content-Type = "application/x-www-form-urlencoded;")
 #set($inputRoot = $input.json('$'))
 Action=SendMessage&MessageBody=$util.urlEncode($inputRoot)
