@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:lambda-api-gateway": "rm -rf dist && esbuild src/lambda-api-gateway.ts --bundle --outfile=dist/lambda.js --platform=node --target=node18 --minify",
-    "build:lambda-eventbridge": "rm -rf dist && esbuild src/lambda-eventbridge.ts --bundle --outfile=dist/lambda.js --platform=node --target=node18 --minify",
+    "build:lambda:api-gateway": "rm -rf dist && esbuild src/lambda-api-gateway.ts --bundle --outfile=dist/lambda.js --platform=node --target=node18 --minify",
+    "build:lambda:eventbridge": "rm -rf dist && esbuild src/lambda-eventbridge.ts --bundle --outfile=dist/lambda.js --platform=node --target=node18 --minify",
     "build:node": "rm -rf dist && esbuild src/node.ts --bundle --outfile=dist/node.js --platform=node --target=node18 --format=esm",
     "start:node": "npm run build:node && node dist/node.js",
     "lint": "tsc --project tsconfig.node.json"
