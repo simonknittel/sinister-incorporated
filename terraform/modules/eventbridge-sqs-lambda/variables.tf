@@ -39,3 +39,9 @@ variable "event_bus" {
 variable "event_bus_detail_type" {
   type = string
 }
+
+variable "dynamodb" {
+  type = object({
+    arn = string
+  })
+}

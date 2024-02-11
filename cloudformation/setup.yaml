@@ -79,6 +79,10 @@ Resources:
                   - config:DescribeConfigurationRecorderStatus
                   - config:DescribeConfigurationRecorders
                   - config:DescribeDeliveryChannels
+                  - dynamodb:DescribeContinuousBackups
+                  - dynamodb:DescribeTable
+                  - dynamodb:DescribeTimeToLive
+                  - dynamodb:ListTagsOfResource
                   - events:DescribeEventBus
                   - events:DescribeRule
                   - events:ListTagsForResource

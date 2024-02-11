@@ -54,6 +54,16 @@ resource "aws_iam_role" "main" {
             aws_sqs_queue.main.arn
           ]
         },
+        {
+          Action = [
+            "dynamodb:GetItem",
+            "dynamodb:PutItem",
+          ]
+          Effect = "Allow"
+          Resource = [
+            var.dynamodb.arn
+          ]
+        },
       ]
     })
   }

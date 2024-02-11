@@ -1,9 +1,12 @@
 import { SQSBatchItemFailure, SQSHandler } from "aws-lambda";
-import z from "zod";
+import z, { set } from "zod";
 import { fetchParameters } from "./_lib/fetchParameters";
 import { main } from "./_lib/main";
 import { log } from "./_lib/logging";
 import { serializeError } from "serialize-error";
+import { GetItemCommand, DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
+
+const client = new DynamoDBClient({});
 
 export const handler: SQSHandler = async (event) => {
   // https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#services-sqs-batchfailurereporting
@@ -14,6 +17,14 @@ export const handler: SQSHandler = async (event) => {
       const body = JSON.parse(record.body || "");
       const requestBody = requestBodySchema.parse(body);
 
+      if (await isRequestProcessed(requestBody.requestId)) {
+        log.info("Request already processed", {
+          requestId: requestBody.requestId,
+        })
+
+        continue;
+      }
+
       const parameters = await fetchParameters({
         // deepcode ignore HardcodedNonCryptoSecret: This is not the actual secret but a reference to the secret in the parameters store
         mailgunApiKey: "/email-function/mailgun-api-key",
@@ -23,6 +34,8 @@ export const handler: SQSHandler = async (event) => {
         ...parameters,
         ...requestBody,
       });
+
+      setRequestProcessed(requestBody.requestId);
     } catch (error) {
       log.error("errorHandler", {
         error: serializeError(error),
@@ -37,6 +50,7 @@ export const handler: SQSHandler = async (event) => {
 };
 
 const requestBodySchema = z.object({
+  requestId: z.string().cuid2(),
   to: z.string().email(),
   template: z.literal("emailConfirmation"),
   templateProps: z.object({
@@ -45,3 +59,28 @@ const requestBodySchema = z.object({
   }),
   recipientsPublicKey: z.string().optional(),
 });
+
+const isRequestProcessed = async (requestId: string) => {
+  const getCommand = new GetItemCommand({
+    TableName: "ApiGatewayProcessedRequests",
+    Key: {
+      RequestId: { S: requestId },
+    },
+  });
+
+  const response = await client.send(getCommand);
+
+  return Boolean(response.Item);
+}
+
+const setRequestProcessed = async (requestId: string) => {
+  const putCommand = new PutItemCommand({
+    TableName: "ApiGatewayProcessedRequests",
+    Item: {
+      RequestId: { S: requestId },
+      ExpiresAt: { N: (Date.now() / 1000 + 60 * 60 * 24 * 31).toString() },
+    },
+  });
+
+  await client.send(putCommand);
+}

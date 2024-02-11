@@ -1,6 +1,7 @@
 import { env } from "~/env.mjs";
 import { type EmailConfirmationProps } from "../../../emails/emails/EmailConfirmation";
 import { CustomError } from "./logging/CustomError";
+import { createId } from "@paralleldrive/cuid2";
 
 export const sendEmail = async (
   to: string,
@@ -13,6 +14,7 @@ export const sendEmail = async (
   const response = await fetch(env.EMAIL_FUNCTION_ENDPOINT, {
     method: "POST",
     body: JSON.stringify({
+      requestId: createId(),
       to,
       template,
       templateProps,

@@ -7,21 +7,24 @@ resource "aws_api_gateway_resource" "email_function" {
 module "email_function_api_gateway" {
   source = "./modules/api-gateway-eventbridge"
 
-  function_name         = "email-function"
-  rest_api              = aws_api_gateway_rest_api.main
-  resource              = aws_api_gateway_resource.email_function
-  method                = "POST"
-  api_gateway_role      = aws_iam_role.api_gateway_eventbridge
-  event_bus             = aws_cloudwatch_event_bus.api_gateway
-  event_bus_detail_type = "EmailConfirmationRequested"
-
+  function_name           = "email-function"
+  rest_api                = aws_api_gateway_rest_api.main
+  resource                = aws_api_gateway_resource.email_function
+  method                  = "POST"
+  api_gateway_role        = aws_iam_role.api_gateway_eventbridge
+  event_bus               = aws_cloudwatch_event_bus.api_gateway
+  event_bus_detail_type   = "EmailConfirmationRequested"
   request_validator       = aws_api_gateway_request_validator.validate_request_body
   request_body_model_name = "EmailFunctionPost"
+
   request_body_schema = jsonencode({
     "$schema" = "http://json-schema.org/draft-04/schema#",
     type      = "object",
 
     properties = {
+      requestId = {
+        type = "string"
+      },
       to = {
         type = "string"
       },
@@ -43,7 +46,7 @@ module "email_function_api_gateway" {
       }
     },
 
-    required = ["to", "template", "templateProps"]
+    required = ["requestId", "to", "template", "templateProps"]
   })
 }
 
@@ -57,6 +60,7 @@ module "email_function" {
   timeout                        = 15
   event_bus                      = aws_cloudwatch_event_bus.api_gateway
   event_bus_detail_type          = "EmailConfirmationRequested"
+  dynamodb                       = aws_dynamodb_table.api_gateway_processed_requests
 
   parameter_store = [
     "/mailgun-api-key"
