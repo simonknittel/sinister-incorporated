@@ -7,6 +7,7 @@ resource "aws_lambda_function" "main" {
   runtime          = "nodejs18.x"
   timeout          = var.timeout
   memory_size      = 256
+  architectures    = ["arm64"]
 
   # https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html
   # https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
@@ -23,7 +24,7 @@ resource "aws_lambda_function" "main" {
   }
 
   layers = [
-    "arn:aws:lambda:eu-central-1:187925254637:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11" # https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html#ps-integration-lambda-extensions-add
+    "arn:aws:lambda:eu-central-1:187925254637:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:11" # https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html#ps-integration-lambda-extensions-add
   ]
 }
 
