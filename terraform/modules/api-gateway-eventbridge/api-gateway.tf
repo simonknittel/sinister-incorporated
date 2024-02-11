@@ -24,21 +24,29 @@ resource "aws_api_gateway_integration" "main" {
   http_method             = aws_api_gateway_method.main.http_method
   integration_http_method = "POST"
   type                    = "AWS"
-  uri                     = "arn:aws:apigateway:eu-central-1:sqs:path/${aws_sqs_queue.main.name}" # `action/SendMessage` won't work
+  uri                     = "arn:aws:apigateway:eu-central-1:events:action/PutEvents"
   credentials             = var.api_gateway_role.arn
+  passthrough_behavior    = "NEVER"
 
-  request_parameters = {
-    "integration.request.header.Content-Type" = "'application/x-www-form-urlencoded'"
-  }
-
-  # https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html
-  # Related: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+  # https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutEvents.html
+  # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
   request_templates = {
-    # Passing a JSON object to the `SendMessage` action seems not to be working
-    "application/json" = "Action=SendMessage&MessageBody=$util.urlEncode($input.body)"
+    "application/json" = <<EOF
+#set($context.requestOverride.header.X-Amz-Target = "AWSEvents.PutEvents")
+#set($context.requestOverride.header.Content-Type = "application/x-amz-json-1.1")
+#set($inputRoot = $input.json('$'))
+{
+  "Entries": [
+    {
+      "Detail": "$util.escapeJavaScript($inputRoot).replaceAll("\\'","'")",
+      "DetailType": "${var.event_bus_detail_type}",
+      "EventBusName": "${var.event_bus.arn}",
+      "Source": "ApiGateway"
+    }
+  ]
+}
+EOF
   }
-
-  passthrough_behavior = "NEVER"
 }
 
 resource "aws_api_gateway_integration_response" "response_200" {
@@ -48,13 +56,15 @@ resource "aws_api_gateway_integration_response" "response_200" {
   status_code       = aws_api_gateway_method_response.response_200.status_code
   selection_pattern = "2\\d{2}"
 
-  #Related: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration_response
+  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration_response
   response_templates = {
     "application/json" = "$input.json('$')"
   }
 }
 
 resource "aws_api_gateway_method_response" "response_200" {
+  depends_on = [aws_api_gateway_method.main]
+
   rest_api_id = var.rest_api.id
   resource_id = var.resource.id
   http_method = var.method
@@ -68,13 +78,15 @@ resource "aws_api_gateway_integration_response" "response_400" {
   status_code       = aws_api_gateway_method_response.response_400.status_code
   selection_pattern = "400"
 
-  #Related: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration_response
+  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration_response
   response_templates = {
     "application/json" = "$input.json('$')"
   }
 }
 
 resource "aws_api_gateway_method_response" "response_400" {
+  depends_on = [aws_api_gateway_method.main]
+
   rest_api_id = var.rest_api.id
   resource_id = var.resource.id
   http_method = var.method
@@ -88,13 +100,15 @@ resource "aws_api_gateway_integration_response" "response_404" {
   status_code       = aws_api_gateway_method_response.response_404.status_code
   selection_pattern = "404"
 
-  #Related: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration_response
+  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration_response
   response_templates = {
     "application/json" = "$input.json('$')"
   }
 }
 
 resource "aws_api_gateway_method_response" "response_404" {
+  depends_on = [aws_api_gateway_method.main]
+
   rest_api_id = var.rest_api.id
   resource_id = var.resource.id
   http_method = var.method
@@ -107,13 +121,15 @@ resource "aws_api_gateway_integration_response" "response_500" {
   http_method = var.method
   status_code = aws_api_gateway_method_response.response_500.status_code
 
-  #Related: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration_response
+  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration_response
   response_templates = {
     "application/json" = "$input.json('$')"
   }
 }
 
 resource "aws_api_gateway_method_response" "response_500" {
+  depends_on = [aws_api_gateway_method.main]
+
   rest_api_id = var.rest_api.id
   resource_id = var.resource.id
   http_method = var.method
@@ -127,13 +143,15 @@ resource "aws_api_gateway_integration_response" "response_503" {
   status_code       = aws_api_gateway_method_response.response_503.status_code
   selection_pattern = "503"
 
-  #Related: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration_response
+  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration_response
   response_templates = {
     "application/json" = "$input.json('$')"
   }
 }
 
 resource "aws_api_gateway_method_response" "response_503" {
+  depends_on = [aws_api_gateway_method.main]
+
   rest_api_id = var.rest_api.id
   resource_id = var.resource.id
   http_method = var.method

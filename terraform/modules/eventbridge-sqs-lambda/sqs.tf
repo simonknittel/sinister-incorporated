@@ -26,7 +26,7 @@ resource "aws_sqs_queue_policy" "main" {
       {
         Effect = "Allow",
         Principal = {
-          AWS = [var.account_id]
+          Service = ["events.amazonaws.com"]
         },
         Action   = ["sqs:SendMessage"],
         Resource = aws_sqs_queue.main.arn

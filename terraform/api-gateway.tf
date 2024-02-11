@@ -16,7 +16,7 @@ resource "aws_api_gateway_deployment" "main" {
       ],
       [
         aws_api_gateway_resource.email_function,
-        module.email_function.redeployment_triggers,
+        module.email_function_api_gateway.redeployment_triggers,
       ]
     )))
   }

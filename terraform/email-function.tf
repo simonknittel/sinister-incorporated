@@ -4,23 +4,16 @@ resource "aws_api_gateway_resource" "email_function" {
   path_part   = "email-function"
 }
 
-module "email_function" {
-  source = "./modules/api-gateway-sqs-lambda"
+module "email_function_api_gateway" {
+  source = "./modules/api-gateway-eventbridge"
 
-  function_name                  = "email-function"
-  source_dir                     = "../email-function/dist"
-  reserved_concurrent_executions = 1
-  rest_api                       = aws_api_gateway_rest_api.main
-  resource                       = aws_api_gateway_resource.email_function
-  method                         = "POST"
-  account_id                     = data.aws_caller_identity.current.account_id
-  timeout                        = 15
-
-  parameter_store = [
-    "/mailgun-api-key"
-  ]
-
-  api_gateway_role = aws_iam_role.api_gateway_sqs
+  function_name         = "email-function"
+  rest_api              = aws_api_gateway_rest_api.main
+  resource              = aws_api_gateway_resource.email_function
+  method                = "POST"
+  api_gateway_role      = aws_iam_role.api_gateway_eventbridge
+  event_bus             = aws_cloudwatch_event_bus.api_gateway
+  event_bus_detail_type = "EmailConfirmationRequested"
 
   request_validator       = aws_api_gateway_request_validator.validate_request_body
   request_body_model_name = "EmailFunctionPost"
@@ -52,4 +45,20 @@ module "email_function" {
 
     required = ["to", "template", "templateProps"]
   })
+}
+
+module "email_function" {
+  source = "./modules/eventbridge-sqs-lambda"
+
+  function_name                  = "email-function"
+  source_dir                     = "../email-function/dist"
+  reserved_concurrent_executions = 1
+  account_id                     = data.aws_caller_identity.current.account_id
+  timeout                        = 15
+  event_bus                      = aws_cloudwatch_event_bus.api_gateway
+  event_bus_detail_type          = "EmailConfirmationRequested"
+
+  parameter_store = [
+    "/mailgun-api-key"
+  ]
 }
