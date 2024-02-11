@@ -42,6 +42,28 @@ resource "aws_iam_role" "main" {
             tolist(data.aws_ssm_parameter.custom[*].arn),
           )
         },
+        {
+          # https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-lambda-function-trigger.html#configure-lambda-function-trigger-prerequisites
+          Action = [
+            "sqs:DeleteMessage",
+            "sqs:GetQueueAttributes",
+            "sqs:ReceiveMessage"
+          ]
+          Effect = "Allow"
+          Resource = [
+            aws_sqs_queue.main.arn
+          ]
+        },
+        {
+          Action = [
+            "dynamodb:GetItem",
+            "dynamodb:PutItem",
+          ]
+          Effect = "Allow"
+          Resource = [
+            var.dynamodb.arn
+          ]
+        },
       ]
     })
   }

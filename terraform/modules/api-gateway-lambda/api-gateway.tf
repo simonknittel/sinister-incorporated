@@ -10,6 +10,14 @@ resource "aws_api_gateway_method" "main" {
   }
 }
 
+resource "aws_api_gateway_model" "request_body" {
+  rest_api_id  = var.rest_api.id
+  name         = var.request_body_model_name
+  description  = "Schema for the request body of ${var.function_name}/${var.method}"
+  content_type = "application/json"
+  schema       = var.request_body_schema
+}
+
 resource "aws_api_gateway_integration" "main" {
   rest_api_id             = var.rest_api.id
   resource_id             = var.resource.id
@@ -17,14 +25,6 @@ resource "aws_api_gateway_integration" "main" {
   integration_http_method = var.method
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.main.invoke_arn
-}
-
-resource "aws_api_gateway_model" "request_body" {
-  rest_api_id  = var.rest_api.id
-  name         = var.request_body_model_name
-  description  = "Schema for the request body of ${var.function_name}/${var.method}"
-  content_type = "application/json"
-  schema       = var.request_body_schema
 }
 
 resource "aws_lambda_permission" "api_gateway" {

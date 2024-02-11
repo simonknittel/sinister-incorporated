@@ -2,27 +2,8 @@ variable "function_name" {
   type = string
 }
 
-variable "source_dir" {
-  type = string
-}
-
-variable "reserved_concurrent_executions" {
-  type    = number
-  default = -1
-}
-
-variable "provisioned_concurrent_executions" {
-  type    = number
-  default = 0
-}
-
 variable "method" {
   type = string
-}
-
-variable "parameter_store" {
-  type    = list(string)
-  default = []
 }
 
 variable "rest_api" {
@@ -52,8 +33,10 @@ variable "request_body_schema" {
   type = string
 }
 
-variable "account_id" {
-  type = string
+variable "event_bus" {
+  type = object({
+    arn = string
+  })
 }
 
 variable "api_gateway_role" {
@@ -62,7 +45,6 @@ variable "api_gateway_role" {
   })
 }
 
-variable "timeout" {
-  type    = number
-  default = 15
+variable "event_bus_detail_type" {
+  type = string
 }

@@ -37,7 +37,7 @@ jobs:
         if: steps.email-function-node-modules-cache.outputs.cache-hit != 'true'
 
       - name: Build email-function
-        run: npm run build:lambda:sqs
+        run: npm run build:lambda
         working-directory: email-function
 
       - name: Store email-function artifact
