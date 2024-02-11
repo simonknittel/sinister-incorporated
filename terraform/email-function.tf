@@ -5,23 +5,22 @@ resource "aws_api_gateway_resource" "email_function" {
 }
 
 module "email_function" {
-  source = "./modules/api-gateway-eventbridge-lambda"
+  source = "./modules/api-gateway-sqs-lambda"
 
   function_name                  = "email-function"
   source_dir                     = "../email-function/dist"
-  reserved_concurrent_executions = 10
+  reserved_concurrent_executions = 1
   rest_api                       = aws_api_gateway_rest_api.main
   resource                       = aws_api_gateway_resource.email_function
   method                         = "POST"
   account_id                     = data.aws_caller_identity.current.account_id
+  timeout                        = 15
 
   parameter_store = [
     "/mailgun-api-key"
   ]
 
-  event_bus             = aws_cloudwatch_event_bus.api_gateway
-  api_gateway_role      = aws_iam_role.api_gateway_eventbridge
-  event_bus_detail_type = "EmailConfirmationRequested"
+  api_gateway_role = aws_iam_role.api_gateway_sqs
 
   request_validator       = aws_api_gateway_request_validator.validate_request_body
   request_body_model_name = "EmailFunctionPost"
