@@ -54,7 +54,7 @@ Resources:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               StringLike:
-                # Related: https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#customizing-the-token-claims
+                # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#customizing-the-token-claims
                 token.actions.githubusercontent.com:sub:
                   - repo:simonknittel/sinister-incorporated:job_workflow_ref:simonknittel/sinister-incorporated/.github/workflows/terraform-plan.yml@refs/pull/*
                   - repo:simonknittel/sinister-incorporated:job_workflow_ref:simonknittel/sinister-incorporated/.github/workflows/terraform-apply.yml@refs/heads/main
@@ -64,9 +64,17 @@ Resources:
             Version: 2012-10-17
             Statement:
               - Effect: Allow
-                # Related: https://github.com/iann0036/iamlive
+                # https://github.com/iann0036/iamlive
                 Action:
+                  - acm:DescribeCertificate
+                  - acm:ListCertificates
+                  - acm:GetCertificate
+                  - acm:ListTagsForCertificate
                   - apigateway:GET
+                  - apigateway:GetBasePathMapping
+                  - apigateway:GetBasePathMappings
+                  - apigateway:GetDomainName
+                  - apigateway:GetDomainNames
                   - cloudfront:GetCachePolicy
                   - cloudfront:GetDistribution
                   - cloudfront:GetOriginAccessControl

@@ -4,7 +4,7 @@ resource "aws_config_configuration_recorder" "default" {
   recording_group {
     all_supported = false
 
-    # Related: https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html
+    # https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html
     resource_types = [
       "AWS::ApiGateway::RestApi",
       "AWS::ApiGateway::Stage",
@@ -17,7 +17,9 @@ resource "aws_config_configuration_recorder" "default" {
       "AWS::CloudWatch::Alarm",
       "AWS::Events::EventBus",
       "AWS::Events::Rule",
-      "AWS::SQS::Queue"
+      "AWS::SQS::Queue",
+      "AWS::ACM::Certificate",
+      "AWS::DynamoDB::Table"
     ]
 
     recording_strategy {
