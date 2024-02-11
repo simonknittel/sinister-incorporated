@@ -2,6 +2,10 @@ resource "aws_cloudwatch_event_bus" "api_gateway" {
   name = "api-gateway"
 }
 
+resource "aws_schemas_discoverer" "test" {
+  source_arn = aws_cloudwatch_event_bus.api_gateway.arn
+}
+
 resource "aws_iam_role" "api_gateway_eventbridge" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
