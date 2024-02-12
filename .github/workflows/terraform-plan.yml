@@ -63,6 +63,9 @@ jobs:
         working-directory: terraform
         id: plan
         continue-on-error: true
+        env:
+          TF_VAR_cloudflare_api_token: ${{ secrets.TF_VAR_CLOUDFLARE_API_TOKEN }}
+          TF_VAR_api_subdomain: sinister-api-test
 
       - uses: actions/github-script@v7.0.1
         if: github.event_name == 'pull_request'
