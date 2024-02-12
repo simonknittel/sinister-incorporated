@@ -1,5 +1,6 @@
 resource "aws_api_gateway_rest_api" "main" {
-  name = "main"
+  name                         = "main"
+  disable_execute_api_endpoint = true
 
   endpoint_configuration {
     types = ["REGIONAL"]
