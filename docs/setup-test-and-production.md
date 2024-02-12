@@ -92,7 +92,27 @@
   - `iamlive --mode proxy --force-wildcard-resource --output-file policy.json --sort-alphabetical`
   - `HTTP_PROXY=http://127.0.0.1:10080 HTTPS_PROXY=http://127.0.0.1:10080 AWS_CA_BUNDLE=~/.iamlive/ca.pem AWS_CSM_ENABLED=true AWS_PROFILE=sinister-incorporated-test terraform plan -var-file="test.tfvars"`
 
-## 5. Set up Terraform
+## 5. Prepare certificates for Mutual TLS (mTLS)
+
+1. `mkdir certificates && cd certificates/`
+2. Create private certificate authority (CA): `openssl genrsa -out RootCA.key 4096`
+3. Create private and public keys: `openssl req -new -x509 -days 3650 -key RootCA.key -out RootCA.pem`
+   - Country Name: `DE`
+   - State or Province Name: `Lower Saxony`
+   - Locality Name: `Delmenhorst`
+   - Organization Name: `Sinister Incorporated`
+   - Organizational Unit Name: `-`
+   - Common Name: `sinister-api.simonknittel.de`
+   - Email Address: `-`
+4. Create client certificate private key and certificate signing request (CSR). Leave _A challenge password_ empty.
+   1. `openssl req -newkey rsa:2048 -nodes -keyout localhost.key -out localhost.csr`
+   2. `openssl req -newkey rsa:2048 -nodes -keyout vercel.key -out vercel.csr`
+5. Sign client certificates with root CA
+   1. `openssl x509 -req -in localhost.csr -CA RootCA.pem -CAkey RootCA.key -set_serial 01 -out localhost.pem -days 3650 -sha256`
+   2. `openssl x509 -req -in vercel.csr -CA RootCA.pem -CAkey RootCA.key -set_serial 01 -out vercel.pem -days 3650 -sha256`
+6. Create trust store: `cp RootCA.pem truststore.pem`
+
+## 6. Set up Terraform
 
 1. Create and populate `test.s3.tfbackend`, `prod.s3.tfbackend`, `test.tfvars` and `prod.tfvars`
 2. `cd email-function && npm run build:lambda`
