@@ -6,8 +6,8 @@ import { redirect } from "next/navigation";
 import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
-import { sendEmail } from "./email";
 import { log } from "./logging";
+import { sendEmail } from "./sendEmail";
 
 export const requestEmailConfirmation = async (
   userId: string,
@@ -52,6 +52,7 @@ export const requiresEmailConfirmation = async (session: Session) => {
 
 export const requireConfirmedEmailForPage = async (session: Session) => {
   if (!(await requiresEmailConfirmation(session))) return;
+
   if (!session.user.emailVerified) {
     log.info("Unauthenticated request to page", {
       // TODO: Add request path

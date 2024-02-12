@@ -1,9 +1,5 @@
 output "api_gateway_url" {
-  value = aws_api_gateway_stage.default.invoke_url
-}
-
-output "api_gateway_custom_domain" {
-  value = cloudflare_record.main_cname.hostname
+  value = "https://${cloudflare_record.main_cname.hostname}"
 }
 
 output "care_bear_shooter_build_url" {

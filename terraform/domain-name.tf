@@ -41,6 +41,10 @@ resource "aws_api_gateway_domain_name" "main" {
   endpoint_configuration {
     types = ["REGIONAL"]
   }
+
+  mutual_tls_authentication {
+    truststore_uri = "s3://${aws_s3_bucket.mtls_truststore.bucket}/truststore.pem"
+  }
 }
 
 resource "aws_api_gateway_base_path_mapping" "main" {

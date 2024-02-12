@@ -1,1 +1,3 @@
 .dccache
+.DS_Store
+certificates/
