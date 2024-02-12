@@ -57,6 +57,8 @@ export const env = createEnv({
       z.string().optional(),
     ),
     EMAIL_FUNCTION_ENDPOINT: z.string().url().optional(),
+    API_CLIENT_CERT: z.string(),
+    API_CLIENT_KEY: z.string(),
   },
 
   /*
@@ -107,6 +109,8 @@ export const env = createEnv({
     NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL:
       process.env.NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL,
     BASE_URL: process.env.BASE_URL,
+    API_CLIENT_CERT: process.env.API_CLIENT_CERT,
+    API_CLIENT_KEY: process.env.API_CLIENT_KEY,
   },
 
   emptyStringAsUndefined: true,
