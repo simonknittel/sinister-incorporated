@@ -37,7 +37,7 @@ export default async function Page({ searchParams }: Readonly<Props>) {
   return (
     <div className="min-h-screen flex justify-center items-center flex-col py-8">
       <main className="w-full max-w-3xl">
-        <h1 className="mb-4 text-center text-xl text-sinister-red font-bold">
+        <h1 className="mb-4 text-center text-xl text-sinister-red font-bold mx-8">
           <RiInformationLine className="text-sky-500 text-2xl inline align-text-bottom" />{" "}
           E-Mail-Adresse und Datenschutzerklärung bestätigen
         </h1>
