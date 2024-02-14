@@ -1,8 +1,19 @@
 data "archive_file" "main" {
-  source_dir = var.source_dir
+  # source_dir = var.source_dir
   output_path = "${path.module}/dist.zip"
   type        = "zip"
-  output_file_mode = "0644"
+  # output_file_mode = "0644"
+
+  dynamic "source" {
+    for_each = toset([
+      "${var.source_dir}/lambda.js",
+    ])
+
+    content {
+      content  = file(source.value)
+      filename = basename(source.value)
+    }
+  }
 }
 
 data "external" "main" {
