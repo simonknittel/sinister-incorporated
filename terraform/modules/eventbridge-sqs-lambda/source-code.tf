@@ -1,7 +1,8 @@
 data "archive_file" "main" {
-  type        = "zip"
   source_dir = var.source_dir
   output_path = "${path.module}/dist.zip"
+  type        = "zip"
+  output_file_mode = "0644"
 }
 
 data "external" "main" {
