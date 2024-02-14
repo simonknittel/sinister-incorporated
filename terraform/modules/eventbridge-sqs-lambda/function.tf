@@ -1,4 +1,6 @@
 resource "aws_lambda_function" "main" {
+  depends_on = [ data.archive_file.main ]
+
   filename         = "${path.module}/dist.zip"
   function_name    = var.function_name
   role             = aws_iam_role.main.arn
