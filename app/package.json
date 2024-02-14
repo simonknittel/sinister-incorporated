@@ -11,8 +11,8 @@
     "test": "vitest run --coverage"
   },
   "dependencies": {
-    "@algolia/autocomplete-js": "1.15.1",
-    "@algolia/autocomplete-theme-classic": "1.15.1",
+    "@algolia/autocomplete-js": "1.16.0",
+    "@algolia/autocomplete-theme-classic": "1.16.0",
     "@aws-sdk/client-s3": "3.504.0",
     "@aws-sdk/s3-request-presigner": "3.504.0",
     "@next-auth/prisma-adapter": "1.0.7",
