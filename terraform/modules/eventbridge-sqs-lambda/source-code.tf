@@ -1,3 +1,4 @@
+#
 data "archive_file" "main" {
   output_path = "${path.module}/dist.zip"
   type        = "zip"
