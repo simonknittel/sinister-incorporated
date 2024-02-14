@@ -58,6 +58,13 @@ jobs:
         run: terraform init -backend-config=test.s3.tfbackend
         working-directory: terraform
 
+      - name: Debug
+        run: |
+          echo "GITHUB_HEAD_SHA: $GITHUB_HEAD_SHA"
+          echo "GITHUB_SHA: $GITHUB_SHA"
+        env:
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
       - name: terraform plan
         run: terraform plan -no-color
         working-directory: terraform
