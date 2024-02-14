@@ -3,7 +3,7 @@ resource "aws_lambda_function" "main" {
   function_name    = var.function_name
   role             = aws_iam_role.main.arn
   handler          = "lambda.handler"
-  source_code_hash = data.archive_file.main.output_base64sha256
+  source_code_hash = filebase64sha256("${path.module}/dist.zip") # https://github.com/hashicorp/terraform-provider-archive/issues/34#issuecomment-907169918
   runtime          = "nodejs18.x"
   timeout          = 15
   memory_size      = 256
