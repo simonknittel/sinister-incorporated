@@ -7,11 +7,8 @@ data "archive_file" "main" {
 
 data "external" "main" {
   program = [
-    "git",
-    "log",
-    "--pretty=format:{ \"sha\": \"%H\" }",
-    "-1",
-    "HEAD"
+    "bash",
+    "${path.module}/commit_sha.sh",
   ]
 }
 
