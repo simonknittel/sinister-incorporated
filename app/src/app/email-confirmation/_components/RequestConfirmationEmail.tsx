@@ -19,7 +19,11 @@ export const RequestConfirmationEmailButton = ({
 
   return (
     <Button className={clsx(className)} disabled={pending}>
-      {pending ? <FaSpinner className="animate-spin" /> : <FaEnvelope />}
+      {pending ? (
+        <FaSpinner className="animate-spin flex-none" />
+      ) : (
+        <FaEnvelope className="flex-none" />
+      )}
       {children}
     </Button>
   );
