@@ -43,7 +43,7 @@ jobs:
           terraform_version: "${{ steps.terraform_version.outputs.value }}"
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4.0.1
+        uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           role-to-assume: arn:aws:iam::220746603587:role/github-actions
           aws-region: eu-central-1
