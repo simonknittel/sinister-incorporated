@@ -10,18 +10,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
 
-      - uses: actions/setup-node@v4.0.2
+      - uses: oven-sh/setup-bun@v1.1.1
         with:
-          node-version-file: "emails/.nvmrc"
+          bun-version: 1.0.26
 
       - uses: actions/cache@v4.0.0
         id: emails-node-modules-cache
         with:
           path: emails/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('emails/.nvmrc', 'emails/package-lock.json') }}
+          key: ${{ runner.os }}-${{ hashFiles('emails/bun.lockb') }}
 
       - name: Install dependencies of emails
-        run: npm ci
+        run: bun install --frozen-lockfile
         working-directory: emails
         if: steps.emails-node-modules-cache.outputs.cache-hit != 'true'
 
@@ -30,10 +30,6 @@ jobs:
         with:
           path: email-function/node_modules
           key: ${{ runner.os }}-${{ hashFiles('email-function/bun.lockb') }}
-
-      - uses: oven-sh/setup-bun@v1.1.1
-        with:
-          bun-version: 1.0.26
 
       - name: Install dependencies of email-function
         run: bun install --frozen-lockfile
