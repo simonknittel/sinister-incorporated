@@ -54,6 +54,9 @@ jobs:
           name: email-function-dist
           path: email-function/dist
 
+      - name: Debug
+        run: ls -la email-function && ls -la email-function/dist
+
       - name: terraform init
         run: terraform init -backend-config=test.s3.tfbackend
         working-directory: terraform
