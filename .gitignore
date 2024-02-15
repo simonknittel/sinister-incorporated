@@ -1,3 +1,4 @@
 .dccache
 .DS_Store
-certificates/
+certificates/*
+!certificates/truststore.pem

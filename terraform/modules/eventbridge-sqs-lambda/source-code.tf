@@ -1,16 +1,14 @@
 data "archive_file" "main" {
-  type        = "zip"
   source_dir = var.source_dir
   output_path = "${path.module}/dist.zip"
+  type        = "zip"
+  output_file_mode = "0644" # https://github.com/hashicorp/terraform-provider-archive/issues/34#issuecomment-832497296
 }
 
 data "external" "main" {
   program = [
-    "git",
-    "log",
-    "--pretty=format:{ \"sha\": \"%H\" }",
-    "-1",
-    "HEAD"
+    "bash",
+    "${path.module}/commit_sha.sh",
   ]
 }
 
