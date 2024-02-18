@@ -122,6 +122,15 @@
    2. `AWS_PROFILE=sinister-incorporated-test terraform init -backend-config=test.s3.tfbackend`
    3. `AWS_PROFILE=sinister-incorporated-test terraform apply -var-file="test.tfvars"`
 
-## 6. Set up Vercel
+## 7. Set up Vercel
 
 1. Set `Ignored Build Step` to `Run my Bash script: bash ../.vercel/ignore-step.sh`
+
+
+## 8. Left over
+
+1. Manually enable we monthly budget report on AWS
+   - Budget report name: `Total monthly costs`
+   - Select budgets: `Total monthly budget`
+   - Report frequency: `Monthly`
+   - Day of month: `1`
