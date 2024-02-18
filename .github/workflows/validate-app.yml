@@ -26,7 +26,7 @@ jobs:
           path: app/node_modules
           key: ${{ runner.os }}-${{ hashFiles('app/.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
 
-      - name: Install app dependencies
+      - name: Install dependencies
         run: npm ci
         working-directory: app
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
@@ -70,7 +70,7 @@ jobs:
           path: app/node_modules
           key: ${{ runner.os }}-${{ hashFiles('app/.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
 
-      - name: Install app dependencies
+      - name: Install dependencies
         run: npm ci
         working-directory: app
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
@@ -96,7 +96,7 @@ jobs:
           path: app/node_modules
           key: ${{ runner.os }}-${{ hashFiles('app/.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
 
-      - name: Install app dependencies
+      - name: Install dependencies
         run: npm ci
         working-directory: app
         if: steps.node-modules-cache.outputs.cache-hit != 'true'

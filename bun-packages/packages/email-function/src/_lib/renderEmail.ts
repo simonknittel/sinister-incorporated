@@ -1,24 +1,30 @@
 import { render } from "@react-email/render";
 import Email, {
-  type EmailConfirmationProps,
+	type EmailConfirmationProps,
 } from "../../../emails/emails/EmailConfirmation";
 import { CustomError } from "./logging/CustomError";
 import { TemplateType } from "./types";
 
-export const renderEmail = (template: TemplateType, templateProps: EmailConfirmationProps, options?: { format?: "text" }) => {
-  switch (template) {
-    case "emailConfirmation":
-      return options?.format === "text" ? emailConfirmationText(templateProps) : render(Email(templateProps));
+export const renderEmail = (
+	template: TemplateType,
+	templateProps: EmailConfirmationProps,
+	options?: { format?: "text" },
+) => {
+	switch (template) {
+		case "emailConfirmation":
+			return options?.format === "text"
+				? emailConfirmationText(templateProps)
+				: render(Email(templateProps));
 
-    default:
-      throw new CustomError("Invalid template", { template });
-  }
+		default:
+			throw new CustomError("Invalid template", { template });
+	}
 };
 
 const emailConfirmationText = ({ baseUrl, token }: EmailConfirmationProps) => {
-  const host = baseUrl.replace(/^https?:\/\//, "");
+	const host = baseUrl.replace(/^https?:\/\//, "");
 
-  return `E-Mail-Adresse und Datenschutzerklärung bestätigen - Sinister Inc
+	return `E-Mail-Adresse und Datenschutzerklärung bestätigen - Sinister Inc
 
 Deine E-Mail-Adresse und die Datenschutzerklärung müssen bestätigt werden bevor du ${host} nutzen kannst.
 
@@ -31,5 +37,5 @@ Falls du diese E-Mail nicht erwartet hast, melde dich bei info@sinister-incorpor
 
 Impressum: ${baseUrl}/imprint
 Datenschutzerklärung: ${baseUrl}/privacy-policy
-`
+`;
 };
