@@ -22,8 +22,9 @@
       "automergeStrategy": "squash"
     },
     {
+      "_comment": "The Biome version is referenced in several files (validate-email-function.yml and biome.json) which are currently not getting updated by Renovate.",
       "matchPackageNames": [
-        "hashicorp/terraform"
+        "@biomejs/biome"
       ],
       "automerge": false
     }

@@ -1,7 +1,10 @@
 {
-	"name": "bun-packages",
-	"version": "0.1.0",
-	"workspaces": [
-		"packages/*"
-	]
+  "name": "bun-packages",
+  "version": "0.1.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@biomejs/biome": "1.5.3"
+  }
 }
