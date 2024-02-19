@@ -6,49 +6,31 @@ import { sendEmail } from "./sendEmail";
 import { TemplateType } from "./types";
 
 interface Props {
-  mailgunApiKey: string;
-  to: string;
-  template: TemplateType;
-  templateProps: EmailConfirmationProps;
-  recipientsPublicKey?: string;
+	mailgunApiKey: string;
+	to: string;
+	template: TemplateType;
+	templateProps: EmailConfirmationProps;
+	recipientsPublicKey?: string;
 }
 
 export const main = async ({
-  mailgunApiKey,
-  to,
-  template,
-  templateProps,
-  recipientsPublicKey,
+	mailgunApiKey,
+	to,
+	template,
+	templateProps,
+	recipientsPublicKey,
 }: Props) => {
-  const subject = getSubject(template);
+	const subject = getSubject(template);
 
-  if (recipientsPublicKey) {
-    let body = renderEmail(
-      template,
-      templateProps,
-      { format: "text" }
-    )
+	if (recipientsPublicKey) {
+		let body = renderEmail(template, templateProps, { format: "text" });
 
-    body = await encryptText(body, recipientsPublicKey);
+		body = await encryptText(body, recipientsPublicKey);
 
-    await sendEmail(
-      mailgunApiKey,
-      to,
-      subject,
-      body,
-      { format: "text" }
-    );
-  } else {
-    const body = renderEmail(
-      template,
-      templateProps,
-    );
+		await sendEmail(mailgunApiKey, to, subject, body, { format: "text" });
+	} else {
+		const body = renderEmail(template, templateProps);
 
-    await sendEmail(
-      mailgunApiKey,
-      to,
-      subject,
-      body,
-    );
-  }
+		await sendEmail(mailgunApiKey, to, subject, body);
+	}
 };

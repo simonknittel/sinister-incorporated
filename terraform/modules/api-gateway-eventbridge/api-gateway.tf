@@ -2,7 +2,7 @@ resource "aws_api_gateway_method" "main" {
   rest_api_id          = var.rest_api.id
   resource_id          = var.resource.id
   http_method          = var.method
-  authorization        = "NONE"
+  authorization        = "NONE" // Misleading since mTLS is required using a custom domain name. Also, the default execution API endpoint is disabled.
   request_validator_id = var.request_validator.id
 
   request_models = {

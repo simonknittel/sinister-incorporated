@@ -23,7 +23,7 @@
     },
     {
       "matchPackageNames": [
-        "hashicorp/terraform"
+        "@biomejs/biome"
       ],
       "automerge": false
     }
