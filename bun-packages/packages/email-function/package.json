@@ -4,8 +4,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build:lambda": "rm -rf dist && esbuild src/lambda.ts --bundle --outfile=dist/lambda.js --platform=node --target=node18 --minify --metafile=meta.json",
-		"build:node": "rm -rf dist && esbuild src/node.ts --bundle --outfile=dist/node.js --platform=node --target=node18 --format=esm --metafile=meta.json",
+		"build:lambda": "rm -rf dist && esbuild src/lambda.ts --bundle --outfile=dist/lambda.js --platform=node --target=node20 --minify --metafile=meta.json",
+		"build:node": "rm -rf dist && esbuild src/node.ts --bundle --outfile=dist/node.js --platform=node --target=node20 --format=esm --metafile=meta.json",
 		"start:node": "npm run build:node && node dist/node.js",
 		"lint": "tsc --project tsconfig.node.json"
 	},

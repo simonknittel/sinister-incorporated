@@ -5,7 +5,7 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { SQSBatchItemFailure, SQSHandler } from "aws-lambda";
 import { serializeError } from "serialize-error";
-import z, { set } from "zod";
+import z from "zod";
 import { fetchParameters } from "./_lib/fetchParameters";
 import { log } from "./_lib/logging";
 import { main } from "./_lib/main";
