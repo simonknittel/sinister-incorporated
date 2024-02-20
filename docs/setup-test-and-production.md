@@ -126,7 +126,6 @@
 
 1. Set `Ignored Build Step` to `Run my Bash script: bash ../.vercel/ignore-step.sh`
 
-
 ## 8. Left over
 
 1. Manually enable we monthly budget report on AWS
