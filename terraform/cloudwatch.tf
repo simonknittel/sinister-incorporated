@@ -51,12 +51,12 @@ resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "api_gateway_count" {
-  alarm_name = "api-gateway-count"
+  alarm_name          = "api-gateway-count"
   comparison_operator = "GreaterThanUpperThreshold"
   evaluation_periods  = 1
   datapoints_to_alarm = 1
   alarm_description   = "This alarm helps to detect a high rate of requests to the API Gateway."
-  threshold_metric_id       = "e1"
+  threshold_metric_id = "e1"
 
   metric_query {
     id          = "e1"
