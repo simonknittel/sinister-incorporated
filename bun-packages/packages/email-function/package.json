@@ -14,7 +14,7 @@
 		"typescript": "5.3.3"
 	},
 	"dependencies": {
-		"@aws-sdk/client-dynamodb": "3.513.0",
+		"@aws-sdk/client-dynamodb": "3.515.0",
 		"@openpgp/web-stream-tools": "0.1.1",
 		"@react-email/render": "0.0.12",
 		"@types/aws-lambda": "8.10.133",
