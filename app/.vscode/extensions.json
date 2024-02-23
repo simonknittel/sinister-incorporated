@@ -1,15 +1,13 @@
 {
-	"recommendations": [
-		"codezombiech.gitignore",
-		"prisma.prisma",
-		"deque-systems.vscode-axe-linter",
-		"esbenp.prettier-vscode",
-		"bradlc.vscode-tailwindcss",
-		"dbaeumer.vscode-eslint",
-		"dotenv.dotenv-vscode",
-		"github.vscode-github-actions",
-		"streetsidesoftware.code-spell-checker-german",
-		"zixuanchen.vitest-explorer",
-		"ryanluker.vscode-coverage-gutters"
-	]
+  "recommendations": [
+    "prisma.prisma",
+    "deque-systems.vscode-axe-linter",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "dotenv.dotenv-vscode",
+    "streetsidesoftware.code-spell-checker-german",
+    "vitest.explorer",
+    "ryanluker.vscode-coverage-gutters"
+  ]
 }
