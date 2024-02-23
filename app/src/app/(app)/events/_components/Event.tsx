@@ -66,6 +66,7 @@ const Event = async ({ className, event }: Readonly<Props>) => {
           <Link
             href={`https://discord.com/events/${event.guild_id}/${event.id}`}
             className="flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-neutral-500 text-neutral-500 hover:border-neutral-300 active:border-neutral-300 hover:text-neutral-300 active:text-neutral-300 px-6"
+            prefetch={false}
           >
             Discord <FaDiscord />
           </Link>
@@ -79,6 +80,7 @@ const Event = async ({ className, event }: Readonly<Props>) => {
             <Link
               href={`/events/${event.id}/fleet`}
               className="flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-sinister-red-500 text-sinister-red-500 hover:border-sinister-red-300 active:border-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300 px-6"
+              prefetch={false}
             >
               Verfügbare Flotte <MdWorkspaces />
             </Link>

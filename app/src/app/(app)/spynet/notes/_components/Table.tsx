@@ -111,6 +111,7 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
                 <Link
                   href={`/spynet/entity/${row.entity.id}`}
                   className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center justify-between overflow-hidden"
+                  prefetch={false}
                 >
                   <span className="overflow-hidden text-ellipsis">
                     {row.entity.handle ? (

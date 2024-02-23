@@ -250,6 +250,7 @@ const Table = ({
                   <Link
                     href={`/spynet/entity/${row.entity.id}`}
                     className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center text-sm whitespace-nowrap h-8"
+                    prefetch={false}
                   >
                     <FaExternalLinkAlt />
                     Vollständiger Eintrag

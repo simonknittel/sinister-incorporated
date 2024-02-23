@@ -35,6 +35,7 @@ export default async function Page({
         <Link
           href="/spynet/search"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
+          prefetch={false}
         >
           Spynet
         </Link>

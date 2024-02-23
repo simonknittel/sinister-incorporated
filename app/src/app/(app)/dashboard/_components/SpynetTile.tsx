@@ -21,7 +21,7 @@ export const SpynetTile = ({ className, entity }: Readonly<Props>) => {
     <section className={clsx(className, "rounded p-4 lg:p-8 bg-neutral-900")}>
       <h2 className="font-bold mb-4">Mein Spynet</h2>
 
-      <Link href={`/spynet/entity/${entity.id}`}>
+      <Link href={`/spynet/entity/${entity.id}`} prefetch={false}>
         <Button>Zum Eintrag</Button>
       </Link>
     </section>
