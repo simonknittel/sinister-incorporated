@@ -6,8 +6,11 @@ import { useId, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPlus, FaSave, FaSpinner } from "react-icons/fa";
+import { FiRefreshCcw } from "react-icons/fi";
+import { RiBardFill } from "react-icons/ri";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
+import { api } from "~/trpc/react";
 
 interface FormValues {
   name: string;
@@ -19,6 +22,7 @@ interface Props {
 
 const Create = ({ className }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
+  const suggestions = api.ai.getRoleNameSuggestions.useQuery();
 
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
@@ -81,6 +85,51 @@ const Create = ({ className }: Readonly<Props>) => {
             {...register("name", { required: true })}
             autoFocus
           />
+
+          <p className="flex items-center font-bold gap-2 mt-4">
+            <RiBardFill /> Vorschläge
+          </p>
+
+          <div className="flex gap-2 flex-wrap mt-2">
+            {suggestions.data ? (
+              <>
+                {suggestions.data.map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    className={clsx(
+                      "px-2 py-1 rounded bg-neutral-700 flex gap-2 items-center whitespace-nowrap hover:bg-neutral-600 transition-colors",
+                      {
+                        "animate-pulse": suggestions.isFetching,
+                      },
+                    )}
+                    disabled={suggestions.isFetching}
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+
+                <button
+                  className="enabled:hover:bg-neutral-700 text-neutral-500 enabled:hover:text-white px-2 py-1 rounded transition-colors whitespace-nowrap flex gap-2 items-center"
+                  disabled={suggestions.isFetching}
+                  type="button"
+                  onClick={() => suggestions.refetch()}
+                >
+                  <FiRefreshCcw
+                    className={clsx({
+                      "animate-spin": suggestions.isFetching,
+                    })}
+                  />
+                  Neu laden
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="w-[8rem] h-8 rounded bg-neutral-700 animate-pulse" />
+                <div className="w-[12rem] h-8 rounded bg-neutral-700 animate-pulse" />
+                <div className="w-[6rem] h-8 rounded bg-neutral-700 animate-pulse" />
+              </>
+            )}
+          </div>
 
           <div className="flex justify-end mt-8">
             <Button type="submit" disabled={isLoading}>
