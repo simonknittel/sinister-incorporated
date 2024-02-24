@@ -2,20 +2,21 @@ import { createId } from "@paralleldrive/cuid2";
 import https from "node:https";
 import { serializeError } from "serialize-error";
 import { env } from "~/env.mjs";
-import { type EmailConfirmationProps } from "../../../emails/emails/EmailConfirmation";
 import { CustomError } from "./logging/CustomError";
 
 export const sendEmail = async (
-  to: string,
   template: "emailConfirmation",
-  templateProps: EmailConfirmationProps,
+  messages: {
+    to: string;
+    templateProps: Record<string, string>;
+  }[],
 ) => {
   if (!env.EMAIL_FUNCTION_ENDPOINT)
     throw new Error("EMAIL_FUNCTION_ENDPOINT is not set");
 
   return new Promise<void>((resolve, reject) => {
     const req = https.request(
-      env.EMAIL_FUNCTION_ENDPOINT!,
+      env.EMAIL_FUNCTION_ENDPOINT,
       {
         method: "POST",
         headers: {
@@ -62,9 +63,8 @@ export const sendEmail = async (
     req.write(
       JSON.stringify({
         requestId: createId(),
-        to,
         template,
-        templateProps,
+        messages,
       }),
     );
 

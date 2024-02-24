@@ -32,11 +32,16 @@ export const requestEmailConfirmation = async (
     },
   });
 
-  await sendEmail(userEmail, "emailConfirmation", {
-    baseUrl: env.BASE_URL,
-    host: env.HOST,
-    token: emailConfirmationToken,
-  });
+  await sendEmail("emailConfirmation", [
+    {
+      to: userEmail,
+      templateProps: {
+        baseUrl: env.BASE_URL,
+        host: env.HOST,
+        token: emailConfirmationToken,
+      },
+    },
+  ]);
 };
 
 export const requiresEmailConfirmation = async (session: Session) => {
