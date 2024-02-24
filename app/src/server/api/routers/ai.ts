@@ -36,7 +36,7 @@ export const aiRouter = createTRPCRouter({
         { role: "user", content: existingRoleNames.join(", ") },
       ],
       model: "gpt-4-turbo-preview",
-      max_tokens: 2048,
+      max_tokens: 1024,
       response_format: {
         type: "json_object",
       },
