@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import Button from "~/app/_components/Button";
 import Modal from "~/app/_components/Modal";
+import { Suggestions } from "./Suggestions";
 
 interface FormValues {
   name: string;
@@ -15,11 +16,11 @@ interface FormValues {
 
 interface Props {
   className?: string;
+  enableSuggestions?: boolean;
 }
 
-const Create = ({ className }: Readonly<Props>) => {
+export const Create = ({ className, enableSuggestions }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
-
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -82,6 +83,8 @@ const Create = ({ className }: Readonly<Props>) => {
             autoFocus
           />
 
+          {enableSuggestions && <Suggestions className="mt-4" />}
+
           <div className="flex justify-end mt-8">
             <Button type="submit" disabled={isLoading}>
               {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
@@ -93,5 +96,3 @@ const Create = ({ className }: Readonly<Props>) => {
     </>
   );
 };
-
-export default Create;

@@ -2,10 +2,11 @@ import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { FaTable } from "react-icons/fa";
+import { isOpenAIEnabled } from "~/_lib/isOpenAIEnabled";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 import Actions from "../../../_components/Actions";
-import Create from "./Create";
+import { Create } from "./Create";
 import Delete from "./Delete";
 import Permissions from "./Permissions";
 import Update from "./Update";
@@ -93,7 +94,10 @@ const RolesTile = async ({ className }: Readonly<Props>) => {
         <p className="text-neutral-500 italic">Keine Rollen vorhanden</p>
       )}
 
-      <Create className="mt-4" />
+      <Create
+        className="mt-4"
+        enableSuggestions={await isOpenAIEnabled("RoleNameSuggestions")}
+      />
     </section>
   );
 };
