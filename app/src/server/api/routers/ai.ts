@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import OpenAI from "openai";
+import { type ChatCompletionMessageParam } from "openai/resources";
 import { env } from "process";
 import { z } from "zod";
 import { isOpenAIEnabled } from "~/_lib/isOpenAIEnabled";
@@ -26,15 +27,17 @@ export const aiRouter = createTRPCRouter({
       apiKey: env.OPENAI_API_KEY,
     });
 
+    const messages: ChatCompletionMessageParam[] = [
+      {
+        role: "system",
+        content:
+          'We are a military organization in a sci-fi setting. We want to set up the organization structure. Generate three possible role names based on the given ones. Only respond with the role names. Don\'t include a description or similar. Respond using the JSON format. The JSON key should be named "roleNames".',
+      },
+      { role: "user", content: existingRoleNames.join(", ") },
+    ];
+
     const chatCompletion = await openai.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content:
-            'We are a military organization in a sci-fi setting. We want to set up the organization structure. Generate three possible role names based on the given ones. Only respond with the role names. Don\'t include a description or similar. Respond using the JSON format. The JSON key should be named "roleNames".',
-        },
-        { role: "user", content: existingRoleNames.join(", ") },
-      ],
+      messages,
       model: "gpt-4-turbo-preview",
       max_tokens: 1024,
       response_format: {
@@ -43,6 +46,7 @@ export const aiRouter = createTRPCRouter({
     });
 
     log.info("Role name suggestions", {
+      messages,
       usage: chatCompletion.usage,
     });
 
