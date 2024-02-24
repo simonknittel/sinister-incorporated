@@ -1,5 +1,6 @@
 {
 	"recommendations": [
-		"biomejs.biome"
+		"biomejs.biome",
+		"streetsidesoftware.code-spell-checker-german"
 	]
 }

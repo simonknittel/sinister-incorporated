@@ -5,5 +5,5 @@ Setup: <https://www.totaltypescript.com/build-a-node-app-with-typescript-and-esb
 ## Usage
 
 ```sh
-bun run build:lambda
+bun run build
 ```

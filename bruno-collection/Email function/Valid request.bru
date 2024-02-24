@@ -12,12 +12,25 @@ post {
 
 body:json {
   {
-    "requestId": "clshpwtnz000008l6dnuygw8r",
-    "to": "hallo@simonknittel.de",
+    "requestId": "clt0b3xku000208l4fvw9botj",
     "template": "emailConfirmation",
-    "templateProps": {
-      "baseUrl": "http://localhost:3000",
-      "token": "1234567890"
-    }
+    "messages": [
+      {
+        "to": "hallo@simonknittel.de",
+        "templateProps": {
+          "baseUrl": "http://localhost:3000",
+          "host": "localhost:3000",
+          "token": "1234567890"
+        }  
+      },
+      {
+        "to": "weenmask@gmail.com",
+        "templateProps": {
+          "baseUrl": "http://localhost:3000",
+          "host": "localhost:3000",
+          "token": "0987654321"
+        }  
+      }
+    ]
   }
 }

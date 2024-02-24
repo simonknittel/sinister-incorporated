@@ -4,10 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build:lambda": "rm -rf dist && esbuild src/lambda.ts --bundle --outfile=dist/lambda.js --platform=node --target=node20 --minify --metafile=meta.json",
-		"build:node": "rm -rf dist && esbuild src/node.ts --bundle --outfile=dist/node.js --platform=node --target=node20 --format=esm --metafile=meta.json",
-		"start:node": "npm run build:node && node dist/node.js",
-		"lint": "tsc --project tsconfig.node.json"
+		"build": "rm -rf dist && esbuild src/lambda.ts --bundle --outfile=dist/lambda.js --platform=node --target=node20 --minify --metafile=meta.json"
 	},
 	"devDependencies": {
 		"esbuild": "0.20.0",
@@ -21,7 +18,7 @@
 		"@types/node": "20.10.2",
 		"dotenv": "16.4.4",
 		"form-data": "4.0.0",
-		"mailgun.js": "10.2.0",
+		"mailgun.js": "10.2.1",
 		"openpgp": "5.11.0",
 		"serialize-error": "11.0.3",
 		"zod": "3.22.4"

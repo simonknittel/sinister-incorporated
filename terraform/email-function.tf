@@ -13,7 +13,7 @@ module "email_function_api_gateway" {
   method                  = "POST"
   api_gateway_role        = aws_iam_role.api_gateway_eventbridge
   event_bus               = aws_cloudwatch_event_bus.api_gateway
-  event_bus_detail_type   = "EmailConfirmationRequested"
+  event_bus_detail_type   = "EmailRequested"
   request_validator       = aws_api_gateway_request_validator.validate_request_body
   request_body_model_name = "EmailFunctionPost"
 
@@ -25,28 +25,38 @@ module "email_function_api_gateway" {
       requestId = {
         type = "string"
       },
-      to = {
-        type = "string"
-      },
+
       template = {
         type = "string",
-        enum = ["emailConfirmation"]
       },
-      templateProps = {
-        type = "object",
-        properties = {
-          baseUrl = {
-            type = "string"
-          },
-          token = {
-            type = "string"
+
+      messages = {
+        type = "array",
+        items = {
+          type = "object",
+
+          properties = {
+            to = {
+              type = "string"
+            },
+
+            templateProps = {
+              type       = "object",
+              properties = {},
+              additionalProperties : { type : "string" }
+            },
+
+            recipientsPublicKey = {
+              type = "string"
+            }
           }
+
+          required = ["to", "templateProps"]
         }
-        required = ["baseUrl", "token"]
       }
     },
 
-    required = ["requestId", "to", "template", "templateProps"]
+    required = ["requestId", "template", "messages"]
   })
 }
 
@@ -59,7 +69,7 @@ module "email_function" {
   account_id                     = data.aws_caller_identity.current.account_id
   timeout                        = 15
   event_bus                      = aws_cloudwatch_event_bus.api_gateway
-  event_bus_detail_type          = "EmailConfirmationRequested"
+  event_bus_detail_type          = "EmailRequested"
   dynamodb                       = aws_dynamodb_table.api_gateway_processed_requests
 
   parameter_store = [
