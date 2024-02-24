@@ -31,7 +31,7 @@ export const aiRouter = createTRPCRouter({
       {
         role: "system",
         content:
-          'We are a military organization in a sci-fi setting. We want to set up the organization structure. Generate three possible role names based on the given ones. Only respond with the role names. Don\'t include a description or similar. Respond using the JSON format. The JSON key should be named "roleNames".',
+          'We are a military organization in a sci-fi setting. We want to set up the organization structure. Generate five possible role names based on the given ones. Only respond with the role names. Don\'t include a description or similar. Respond using the JSON format. The JSON key should be named "roleNames".',
       },
       { role: "user", content: existingRoleNames.join(", ") },
     ];
