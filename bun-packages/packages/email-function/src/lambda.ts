@@ -55,13 +55,14 @@ export const handler: SQSHandler = async (event) => {
 
 const requestBodySchema = z.object({
 	requestId: z.string().cuid2(),
-	to: z.string().email(),
-	template: z.literal("emailConfirmation"),
-	templateProps: z.object({
-		baseUrl: z.string().url(),
-		token: z.string(),
-	}),
-	recipientsPublicKey: z.string().optional(),
+	template: z.string(),
+	messages: z.array(
+		z.object({
+			to: z.string().email(),
+			templateProps: z.record(z.string(), z.string()),
+			recipientsPublicKey: z.string().optional(),
+		}),
+	),
 });
 
 const isRequestProcessed = async (requestId: string) => {

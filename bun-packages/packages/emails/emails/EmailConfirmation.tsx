@@ -3,7 +3,6 @@ import {
   Button,
   Container,
   Head,
-  Heading,
   Hr,
   Html,
   Link,
@@ -15,15 +14,15 @@ import * as React from "react";
 
 export interface EmailConfirmationProps {
   baseUrl: string;
+  host: string;
   token: string;
 }
 
 export default function Email({
   baseUrl = "http://localhost:3000",
+  host = "localhost:3000",
   token = "1234567890",
 }: Readonly<EmailConfirmationProps>) {
-  const host = baseUrl.replace(/^https?:\/\//, "");
-
   return (
     <Html>
       <Head />
@@ -75,7 +74,7 @@ export default function Email({
             <Text>
               Falls du diese E-Mail nicht erwartet hast, melde dich bei{" "}
               <Link
-                href={`mailto:info@sinister-incorporated.de`}
+                href="mailto:info@sinister-incorporated.de"
                 className="text-sinister-red-500"
               >
                 info@sinister-incorporated.de

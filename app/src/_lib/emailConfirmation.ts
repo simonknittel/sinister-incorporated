@@ -34,6 +34,7 @@ export const requestEmailConfirmation = async (
 
   await sendEmail(userEmail, "emailConfirmation", {
     baseUrl: env.BASE_URL,
+    host: env.HOST,
     token: emailConfirmationToken,
   });
 };
