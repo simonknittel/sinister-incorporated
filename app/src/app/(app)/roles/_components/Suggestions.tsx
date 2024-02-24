@@ -8,9 +8,10 @@ import { api } from "~/trpc/react";
 
 type Props = Readonly<{
   className?: string;
+  onClick?: (roleName: string) => void;
 }>;
 
-export const Suggestions = ({ className }: Props) => {
+export const Suggestions = ({ className, onClick }: Props) => {
   const suggestions = api.ai.getRoleNameSuggestions.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -29,12 +30,14 @@ export const Suggestions = ({ className }: Props) => {
               <button
                 key={suggestion}
                 className={clsx(
-                  "px-2 py-1 rounded bg-neutral-700 flex gap-2 items-center whitespace-nowrap hover:bg-neutral-600 transition-colors",
+                  "px-2 py-1 rounded bg-neutral-700 flex gap-2 items-center whitespace-nowrap enabled:hover:bg-neutral-600 transition-colors",
                   {
                     "animate-pulse": suggestions.isFetching,
                   },
                 )}
                 disabled={suggestions.isFetching}
+                type="button"
+                onClick={() => onClick?.(suggestion)}
               >
                 {suggestion}
               </button>
@@ -59,6 +62,8 @@ export const Suggestions = ({ className }: Props) => {
             <div className="w-[8rem] h-8 rounded bg-neutral-700 animate-pulse" />
             <div className="w-[12rem] h-8 rounded bg-neutral-700 animate-pulse" />
             <div className="w-[6rem] h-8 rounded bg-neutral-700 animate-pulse" />
+            <div className="w-[6rem] h-8 rounded bg-neutral-700 animate-pulse" />
+            <div className="w-[8rem] h-8 rounded bg-neutral-700 animate-pulse" />
           </>
         )}
       </div>

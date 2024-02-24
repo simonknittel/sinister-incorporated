@@ -22,7 +22,7 @@ interface Props {
 export const Create = ({ className, enableSuggestions }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const { register, handleSubmit, reset } = useForm<FormValues>();
+  const { register, handleSubmit, reset, setValue } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
   const inputId = useId();
 
@@ -83,7 +83,12 @@ export const Create = ({ className, enableSuggestions }: Readonly<Props>) => {
             autoFocus
           />
 
-          {enableSuggestions && <Suggestions className="mt-4" />}
+          {enableSuggestions && (
+            <Suggestions
+              className="mt-4"
+              onClick={(roleName) => setValue("name", roleName)}
+            />
+          )}
 
           <div className="flex justify-end mt-8">
             <Button type="submit" disabled={isLoading}>
