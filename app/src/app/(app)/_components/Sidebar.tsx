@@ -31,6 +31,7 @@ const Sidebar = async () => {
               <Link
                 href="/dashboard"
                 className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                prefetch={false}
               >
                 <FaHome />
                 Dashboard
@@ -47,6 +48,7 @@ const Sidebar = async () => {
                 <Link
                   href="/events"
                   className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                  prefetch={false}
                 >
                   <FaCalendarDay />
                   Events
@@ -65,6 +67,7 @@ const Sidebar = async () => {
                 <Link
                   href="/operations"
                   className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                  prefetch={false}
                 >
                   <RiSwordFill />
                   Operationen
@@ -77,6 +80,7 @@ const Sidebar = async () => {
               <Link
                 href="/preview-channel"
                 className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                prefetch={false}
               >
                 <FaClock />
                 Preview Channel
@@ -130,6 +134,7 @@ const Sidebar = async () => {
                     <Link
                       href="/fleet/my-ships"
                       className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                      prefetch={false}
                     >
                       <RiSpaceShipFill />
                       Meine Schiffe
@@ -147,6 +152,7 @@ const Sidebar = async () => {
                     <Link
                       href="/fleet/settings"
                       className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                      prefetch={false}
                     >
                       <FaCog />
                       Einstellungen
@@ -192,6 +198,7 @@ const Sidebar = async () => {
                         <Link
                           href="/spynet/search"
                           className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                          prefetch={false}
                         >
                           <FaSearch />
                           Suche
@@ -244,6 +251,7 @@ const Sidebar = async () => {
                     <Link
                       href="/spynet/settings"
                       className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                      prefetch={false}
                     >
                       <FaCog />
                       Einstellungen
@@ -326,6 +334,7 @@ const Sidebar = async () => {
                     <Link
                       href="/settings"
                       className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                      prefetch={false}
                     >
                       <FaCog />
                       Einstellungen

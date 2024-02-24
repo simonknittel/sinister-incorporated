@@ -79,6 +79,7 @@ const Table = ({ users }: Readonly<Props>) => {
             <Link
               href={`/spynet/entity/${entityId}`}
               className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
+              prefetch={false}
             >
               <span className="hidden sm:inline">Spynet</span>{" "}
               <FaExternalLinkAlt />

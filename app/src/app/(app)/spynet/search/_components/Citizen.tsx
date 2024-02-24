@@ -7,7 +7,7 @@ interface Props {
 
 const Citizen = ({ hit }: Readonly<Props>) => {
   return (
-    <Link href={`/spynet/entity/${hit.objectID}`}>
+    <Link href={`/spynet/entity/${hit.objectID}`} prefetch={false}>
       {hit.handles.length > 0 ? (
         <span className="flex gap-2 items-baseline">
           <p>{hit.handles[0]}</p>
