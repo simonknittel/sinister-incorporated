@@ -59,6 +59,7 @@ export const env = createEnv({
     EMAIL_FUNCTION_ENDPOINT: z.string().url().optional(),
     API_CLIENT_KEY: z.string().transform((str) => str.replace(/\\n/g, "\n")),
     API_CLIENT_CERT: z.string().transform((str) => str.replace(/\\n/g, "\n")),
+    OPENAI_API_KEY: z.string().optional(),
   },
 
   /*
@@ -111,6 +112,7 @@ export const env = createEnv({
     BASE_URL: process.env.BASE_URL,
     API_CLIENT_CERT: process.env.API_CLIENT_CERT,
     API_CLIENT_KEY: process.env.API_CLIENT_KEY,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
 
   emptyStringAsUndefined: true,
