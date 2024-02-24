@@ -7,6 +7,8 @@
     "gltf",
     "lcov",
     "Notizart",
+    "openai",
+    "OPENAI",
     "prisma",
     "pscale",
     "psdb",
