@@ -27,14 +27,14 @@ export const aiRouter = createTRPCRouter({
       apiKey: env.OPENAI_API_KEY,
     });
 
-    const messages: ChatCompletionMessageParam[] = [
+    const messages = [
       {
         role: "system",
         content:
-          'We are a military organization in a sci-fi setting. We want to set up the organization structure. Generate four new role names based on the given ones. Also, generate one additional one which is not based on the given ones. Only respond with the role names. Don\'t include a description or similar. Respond using the JSON format. The JSON key should be named "roleNames".',
+          'We are a military organization in a sci-fi setting. We want to set up the organization structure. Generate four new role names based on the given ones. Also, generate an additional one which is not based on the other ones. Only respond with the role names. Don\'t include a description or similar. Respond using the JSON format. The JSON key should be named "roleNames".',
       },
       { role: "user", content: existingRoleNames.join(", ") },
-    ];
+    ] satisfies ChatCompletionMessageParam[];
 
     const chatCompletion = await openai.chat.completions.create({
       messages,
@@ -67,7 +67,13 @@ export const aiRouter = createTRPCRouter({
         })
         .parse(parsedJson);
 
-      return response.roleNames;
+      return {
+        prompt: {
+          system: messages[0]!.content,
+          user: messages[1]!.content,
+        },
+        roleNames: response.roleNames,
+      };
     } catch (error) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
