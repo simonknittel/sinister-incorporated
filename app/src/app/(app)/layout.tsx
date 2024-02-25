@@ -27,18 +27,12 @@ export default async function AppLayout({
   await requireConfirmedEmailForPage(authentication.session);
 
   if (
-    authentication.authorize([
+    !authentication.authorize([
       {
         resource: "login",
         operation: "manage",
       },
-    ]) === false ||
-    authentication.authorize([
-      {
-        resource: "login",
-        operation: "negate",
-      },
-    ]) === true
+    ])
   )
     redirect("/clearance");
 

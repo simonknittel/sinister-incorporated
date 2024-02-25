@@ -58,13 +58,9 @@ export async function POST(request: Request, { params }: { params: Params }) {
     await requireConfirmedEmailForApi(authentication.session);
 
     /**
-     * Validate the request params
+     * Validate the request
      */
     const paramsData = await paramsSchema.parseAsync(params.id);
-
-    /**
-     * Validate the request body
-     */
     const body: unknown = await request.json();
     const data = await postBodySchema.parseAsync(body);
 
