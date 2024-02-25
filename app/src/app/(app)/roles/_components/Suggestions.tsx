@@ -21,7 +21,7 @@ export const Suggestions = ({ className, onClick }: Props) => {
 
   return (
     <>
-      <div className={clsx(className, "flex items-center gap-4")}>
+      <div className={clsx(className, "flex items-center gap-2")}>
         <p className="flex items-center font-bold gap-2">
           <RiBardFill /> Vorschläge
         </p>

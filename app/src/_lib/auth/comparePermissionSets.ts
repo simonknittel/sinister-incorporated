@@ -13,7 +13,6 @@ export default function comparePermissionSets(
         givenPermissionSet.resource === requiredPermissionSet.resource,
     );
 
-    // Has negate operation
     if (
       givenPermissionSetsForResource.some(
         (givenPermissionSet) => givenPermissionSet.operation === "negate",
@@ -21,32 +20,26 @@ export default function comparePermissionSets(
     )
       return false;
 
-    // Has manage operation
-    if (
-      givenPermissionSetsForResource.some(
-        (givenPermissionSet) => givenPermissionSet.operation === "manage",
-      )
-    ) {
-      if (requiredPermissionSet.operation === "negate") return false;
-      return true;
-    }
-
-    // Has matching operation
     if (
       givenPermissionSetsForResource.some((givenPermissionSet) => {
-        if (givenPermissionSet.operation !== requiredPermissionSet.operation)
+        if (requiredPermissionSet.attributes) {
+          if (!givenPermissionSet.attributes) return false;
+
+          const result = hasMatchingAttributes(
+            requiredPermissionSet.attributes,
+            givenPermissionSet.attributes,
+          );
+          if (!result) return false;
+        }
+
+        if (!requiredPermissionSet.attributes && givenPermissionSet.attributes)
           return false;
 
-        if (!requiredPermissionSet.attributes) return true;
-
-        if (!givenPermissionSet.attributes) return false;
-
-        const result = hasMatchingAttributes(
-          requiredPermissionSet.attributes,
-          givenPermissionSet.attributes,
-        );
-
-        if (!result) return false;
+        if (
+          requiredPermissionSet.operation !== givenPermissionSet.operation &&
+          givenPermissionSet.operation !== "manage"
+        )
+          return false;
 
         return true;
       })

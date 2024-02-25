@@ -22,13 +22,7 @@ export default async function Page() {
         resource: "login",
         operation: "manage",
       },
-    ]) === true &&
-    authentication.authorize([
-      {
-        resource: "login",
-        operation: "negate",
-      },
-    ]) === false
+    ])
   )
     redirect("/dashboard");
 
