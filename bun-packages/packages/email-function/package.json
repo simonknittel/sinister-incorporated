@@ -7,7 +7,7 @@
 		"build": "rm -rf dist && esbuild src/lambda.ts --bundle --outfile=dist/lambda.js --platform=node --target=node20 --minify --metafile=meta.json"
 	},
 	"devDependencies": {
-		"esbuild": "0.20.0",
+		"esbuild": "0.20.1",
 		"typescript": "5.3.3"
 	},
 	"dependencies": {
