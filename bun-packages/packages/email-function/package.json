@@ -19,7 +19,7 @@
 		"dotenv": "16.4.4",
 		"form-data": "4.0.0",
 		"mailgun.js": "10.2.1",
-		"openpgp": "5.11.0",
+		"openpgp": "5.11.1",
 		"serialize-error": "11.0.3",
 		"zod": "3.22.4"
 	}
