@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "0.5.10",
-    "@types/eslint": "8.56.2",
+    "@types/eslint": "8.56.3",
     "@types/lodash": "4.14.202",
     "@types/node": "18.19.18",
     "@types/prettier": "3.0.0",
