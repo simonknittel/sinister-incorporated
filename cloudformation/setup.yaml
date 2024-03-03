@@ -75,6 +75,7 @@ Resources:
                   - apigateway:GetBasePathMappings
                   - apigateway:GetDomainName
                   - apigateway:GetDomainNames
+                  - budgets:ViewBudget
                   - cloudfront:GetCachePolicy
                   - cloudfront:GetDistribution
                   - cloudfront:GetOriginAccessControl

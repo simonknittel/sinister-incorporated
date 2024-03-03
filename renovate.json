@@ -28,5 +28,8 @@
       "automerge": false
     }
   ],
-  "configMigration": true
+  "configMigration": true,
+  "ignorePaths": [
+    "bun-packages/**"
+  ]
 }
