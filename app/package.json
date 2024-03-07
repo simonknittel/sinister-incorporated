@@ -57,7 +57,7 @@
     "@tailwindcss/typography": "0.5.10",
     "@types/eslint": "8.56.4",
     "@types/lodash": "4.14.202",
-    "@types/node": "18.19.19",
+    "@types/node": "18.19.20",
     "@types/prettier": "3.0.0",
     "@types/react": "18.2.60",
     "@types/react-dom": "18.2.19",
