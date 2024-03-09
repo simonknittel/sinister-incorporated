@@ -10,11 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
 
-      - uses: oven-sh/setup-bun@v1.1.1
+      - uses: oven-sh/setup-bun@v1.2.0
         with:
           bun-version: 1.0.29
 
-      - uses: actions/cache@v4.0.0
+      - uses: actions/cache@v4.0.1
         id: node-modules-cache
         with:
           path: bun-packages/node_modules
