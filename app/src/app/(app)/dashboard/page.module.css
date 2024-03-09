@@ -1,0 +1,26 @@
+.tileGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(1, min-content);
+  grid-template-areas:
+    "events"
+    "roles";
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (min-width: 640px) {
+  .tileGrid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(1, min-content);
+    grid-template-areas: "events roles";
+  }
+}
+
+@media (min-width: 1536px) {
+  .tileGrid {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: repeat(1, min-content);
+    grid-template-areas: "events roles";
+  }
+}

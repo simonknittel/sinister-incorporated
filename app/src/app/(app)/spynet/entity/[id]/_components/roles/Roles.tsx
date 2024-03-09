@@ -22,7 +22,7 @@ const Roles = async ({ entity }: Readonly<Props>) => {
 
   return (
     <section
-      className="rounded p-4 lg:p-8 bg-neutral-900/50 backdrop-blur"
+      className="rounded-2xl p-4 lg:p-8 bg-neutral-900/50 backdrop-blur"
       style={{
         gridArea: "roles",
       }}

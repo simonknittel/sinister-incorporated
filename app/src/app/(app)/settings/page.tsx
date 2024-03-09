@@ -42,7 +42,7 @@ export default async function Page() {
           operation: "manage",
         },
       ]) && (
-        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded bg-neutral-900/50 backdrop-blur">
+        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-900/50 backdrop-blur">
           <h2 className="font-bold text-xl">Disable analytics</h2>
 
           <p className="mt-4 mb-4">

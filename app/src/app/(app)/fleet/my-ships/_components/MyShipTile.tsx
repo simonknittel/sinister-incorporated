@@ -19,7 +19,7 @@ interface Props {
 
 const MyShipTile = ({ ship }: Readonly<Props>) => {
   return (
-    <article className="bg-neutral-900/50 backdrop-blur rounded overflow-hidden">
+    <article className="bg-neutral-900/50 backdrop-blur rounded-2xl overflow-hidden">
       <div className="flex justify-between items-center">
         <h3 className="font-bold p-4">{ship.name || ship.variant.name}</h3>
 

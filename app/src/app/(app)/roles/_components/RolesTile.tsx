@@ -38,7 +38,7 @@ const RolesTile = async ({ className }: Readonly<Props>) => {
     <section
       className={clsx(
         className,
-        "max-w-4xl p-4 lg:p-8 rounded bg-neutral-900/50 backdrop-blur",
+        "max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-900/50 backdrop-blur",
       )}
     >
       {sortedRoles.map((role) => (

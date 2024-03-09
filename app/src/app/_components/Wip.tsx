@@ -1,6 +1,6 @@
 import { FaHammer } from "react-icons/fa";
 
-const Wip = () => {
+export const Wip = () => {
   return (
     <div className="flex items-center justify-center text-neutral-500 flex-col flex-1">
       <FaHammer />
@@ -8,5 +8,3 @@ const Wip = () => {
     </div>
   );
 };
-
-export default Wip;

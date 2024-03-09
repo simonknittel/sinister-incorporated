@@ -177,7 +177,7 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
   const limitedRows = limitRows(sortedRows, currentPage);
 
   return (
-    <section className="p-8 pb-10 bg-neutral-900/50 backdrop-blur mt-4 rounded overflow-auto">
+    <section className="p-8 pb-10 bg-neutral-900/50 backdrop-blur mt-4 rounded-2xl overflow-auto">
       <div className="mb-8">
         <Filters rows={authenticatedRows} />
       </div>
