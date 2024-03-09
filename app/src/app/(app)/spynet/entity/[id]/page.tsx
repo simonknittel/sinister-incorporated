@@ -8,10 +8,10 @@ import { serializeError } from "serialize-error";
 import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import { log } from "~/_lib/logging";
 import { prisma } from "~/server/db";
+import { Wip } from "../../../../_components/Wip";
 import DeleteEntity from "./_components/DeleteEntity";
 import Overview from "./_components/Overview";
 import OverviewSkeleton from "./_components/OverviewSkeleton";
-import Wip from "./_components/Wip";
 import Notes from "./_components/notes/Notes";
 import NotesSkeleton from "./_components/notes/NotesSkeleton";
 import Roles from "./_components/roles/Roles";
@@ -107,7 +107,7 @@ export default async function Page({ params }: Readonly<Props>) {
         </Suspense>
 
         <section
-          className="rounded p-4 lg:p-8 bg-neutral-900/50 backdrop-blur flex flex-col"
+          className="rounded-2xl p-4 lg:p-8 bg-neutral-900/50 backdrop-blur flex flex-col"
           style={{
             gridArea: "organizations",
           }}

@@ -10,7 +10,6 @@ export const getUnleashFlag = cache(
       | "EnableCareBearShooter"
       | "DisableConfirmationEmail"
       | "DisableConfirmedEmailRequirement"
-      | "EnableNewDashboard"
       | "DisableRoleNameSuggestions",
   ) => {
     const authentication = await authenticate();

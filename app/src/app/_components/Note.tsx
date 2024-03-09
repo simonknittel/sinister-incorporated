@@ -3,24 +3,19 @@ import { type ReactNode } from "react";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaCheckSquare, FaInfoCircle } from "react-icons/fa";
 
-interface Props {
+type Props = Readonly<{
   className?: string;
   message: ReactNode;
   type?: "info" | "success" | "error";
   error?: Error;
-}
+}>;
 
-const Note = ({
-  className,
-  message,
-  type = "info",
-  error,
-}: Readonly<Props>) => {
+const Note = ({ className, message, type = "info", error }: Props) => {
   return (
     <div
       className={clsx(
         className,
-        "rounded border-t-2 p-4 max-w-4xl flex gap-4 items-start",
+        "rounded-2xl border-t-2 p-4 max-w-4xl flex gap-4 items-start",
         {
           "bg-blue-500/10 border-blue-500": type === "info",
           "bg-green-500/10 border-green-500": type === "success",

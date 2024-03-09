@@ -6,9 +6,9 @@
     "overview"
     "roles"
     "organizations"
-    "sinister"
     "notes";
   gap: 1rem;
+  align-items: start;
 }
 
 @media (min-width: 640px) {
@@ -17,7 +17,7 @@
     grid-template-rows: repeat(3, min-content);
     grid-template-areas:
       "overview roles"
-      "organizations sinister"
+      "overview organizations"
       "notes notes";
   }
 }
@@ -28,7 +28,7 @@
     grid-template-rows: repeat(3, min-content);
     grid-template-areas:
       "notes overview roles"
-      "notes organizations sinister"
+      "notes overview organizations"
       "notes . .";
   }
 }
