@@ -147,30 +147,58 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       },
       include: {
         entity: true,
+        attributes: true,
       },
     });
 
     if (!entityLog) throw new Error("Not found");
 
-    // Only allow deleting certain log types
-    if (
-      [
-        "handle",
-        "teamspeak-id",
-        "discord-id",
-        "citizen-id",
-        "community-moniker",
-        "note",
-      ].includes(entityLog.type) === false
-    )
-      throw new Error("Bad request");
+    switch (entityLog.type) {
+      case "handle":
+      case "teamspeak-id":
+      case "discord-id":
+      case "citizen-id":
+      case "community-moniker":
+        authentication.authorizeApi([
+          {
+            resource: entityLog.type,
+            operation: "delete",
+          },
+        ]);
+        break;
 
-    authentication.authorizeApi([
-      {
-        resource: entityLog.type,
-        operation: "delete",
-      },
-    ]);
+      case "note":
+        const { noteTypeId, classificationLevelId } =
+          getLatestNoteAttributes(entityLog);
+
+        const authorizationAttributes = [];
+
+        if (noteTypeId) {
+          authorizationAttributes.push({
+            key: "noteTypeId",
+            value: noteTypeId.value,
+          });
+        }
+
+        if (classificationLevelId) {
+          authorizationAttributes.push({
+            key: "classificationLevelId",
+            value: classificationLevelId.value,
+          });
+        }
+
+        authentication.authorizeApi([
+          {
+            resource: "note",
+            operation: "delete",
+            attributes: authorizationAttributes,
+          },
+        ]);
+        break;
+
+      default:
+        throw new Error("Bad request");
+    }
 
     await prisma.entityLog.delete({
       where: {

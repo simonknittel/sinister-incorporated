@@ -11,14 +11,24 @@ interface Props {
 export const SpynetTile = ({ className, entity }: Readonly<Props>) => {
   if (!entity)
     return (
-      <section className={clsx(className, "rounded p-4 lg:p-8 bg-neutral-900")}>
+      <section
+        className={clsx(
+          className,
+          "rounded p-4 lg:p-8 bg-neutral-900/50 backdrop-blur",
+        )}
+      >
         <h2 className="font-bold">Mein Spynet</h2>
         <p className="text-neutral-500 italic mt-4">Kein Spynet-Eintrag</p>
       </section>
     );
 
   return (
-    <section className={clsx(className, "rounded p-4 lg:p-8 bg-neutral-900")}>
+    <section
+      className={clsx(
+        className,
+        "rounded p-4 lg:p-8 bg-neutral-900/50 backdrop-blur",
+      )}
+    >
       <h2 className="font-bold mb-4">Mein Spynet</h2>
 
       <Link href={`/spynet/entity/${entity.id}`} prefetch={false}>

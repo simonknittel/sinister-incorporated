@@ -15,7 +15,7 @@ const Overview = async ({ entity }: Readonly<Props>) => {
 
   return (
     <section
-      className="rounded p-4 lg:p-8 bg-neutral-900"
+      className="rounded p-4 lg:p-8 bg-neutral-900/50 backdrop-blur"
       style={{
         gridArea: "overview",
       }}

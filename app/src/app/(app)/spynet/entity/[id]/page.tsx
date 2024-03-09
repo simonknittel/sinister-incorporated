@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { type Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
@@ -9,7 +8,6 @@ import { serializeError } from "serialize-error";
 import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import { log } from "~/_lib/logging";
 import { prisma } from "~/server/db";
-import sinisterIcon from "../../../../../assets/Icons/Membership/logo_white.svg";
 import DeleteEntity from "./_components/DeleteEntity";
 import Overview from "./_components/Overview";
 import OverviewSkeleton from "./_components/OverviewSkeleton";
@@ -109,27 +107,13 @@ export default async function Page({ params }: Readonly<Props>) {
         </Suspense>
 
         <section
-          className="rounded p-4 lg:p-8 bg-neutral-900 flex flex-col"
+          className="rounded p-4 lg:p-8 bg-neutral-900/50 backdrop-blur flex flex-col"
           style={{
             gridArea: "organizations",
           }}
         >
           <h2 className="font-bold flex gap-2 items-center mb-8">
             <FaSitemap /> Organisationen
-          </h2>
-
-          <Wip />
-        </section>
-
-        <section
-          className="rounded p-4 lg:p-8 bg-sinister-radial-gradient flex flex-col"
-          style={{
-            gridArea: "sinister",
-          }}
-        >
-          <h2 className="font-bold flex gap-1 items-center mb-8">
-            <Image src={sinisterIcon as string} alt="" width={24} height={24} />{" "}
-            Sinister Incorporated
           </h2>
 
           <Wip />

@@ -25,7 +25,7 @@ const Event = async ({ className, event }: Readonly<Props>) => {
     <article
       className={clsx(
         className,
-        "block bg-neutral-900 rounded overflow-hidden",
+        "block bg-neutral-900/50 backdrop-blur rounded overflow-hidden",
       )}
     >
       {event.image && (

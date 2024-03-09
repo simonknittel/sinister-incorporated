@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "~/_lib/auth/authenticateAndAuthorize";
 import { requireConfirmedEmailForApi } from "~/_lib/emailConfirmation";
+import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
 import { updateAlgoliaWithGenericLogType } from "../_lib/updateAlgoliaWithGenericLogType";
@@ -45,6 +46,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       },
       include: {
         entity: true,
+        attributes: true,
       },
     });
 
@@ -52,53 +54,55 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 
     switch (entityLog.type) {
       case "handle":
-        authentication.authorizeApi([
-          {
-            resource: "handle",
-            operation: "confirm",
-          },
-        ]);
-        break;
       case "teamspeak-id":
         authentication.authorizeApi([
           {
-            resource: "teamspeak-id",
+            resource: entityLog.type,
             operation: "confirm",
           },
         ]);
         break;
       case "discord-id":
-        authentication.authorizeApi([
-          {
-            resource: "discord-id",
-            operation: "create",
-          },
-        ]);
-        break;
       case "citizen-id":
-        authentication.authorizeApi([
-          {
-            resource: "citizen-id",
-            operation: "create",
-          },
-        ]);
-        break;
       case "community-moniker":
         authentication.authorizeApi([
           {
-            resource: "community-moniker",
+            resource: entityLog.type,
             operation: "create",
           },
         ]);
         break;
       case "note":
+        const { noteTypeId, classificationLevelId } =
+          getLatestNoteAttributes(entityLog);
+
+        const authorizationAttributes = [];
+
+        if (noteTypeId) {
+          authorizationAttributes.push({
+            key: "noteTypeId",
+            value: noteTypeId.value,
+          });
+        }
+
+        if (classificationLevelId) {
+          authorizationAttributes.push({
+            key: "classificationLevelId",
+            value: classificationLevelId.value,
+          });
+        }
+
         authentication.authorizeApi([
           {
             resource: "note",
             operation: "confirm",
+            attributes: authorizationAttributes,
           },
         ]);
         break;
+
+      default:
+        throw new Error("Bad request");
     }
 
     const item = await prisma.entityLogAttribute.create({

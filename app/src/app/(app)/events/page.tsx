@@ -137,7 +137,7 @@ export default async function Page() {
         ))}
 
       {events.length === 0 && (
-        <div className="bg-neutral-900 rounded p-4 lg:p-8 max-w-4xl mt-4">
+        <div className="bg-neutral-900/50 backdrop-blur rounded p-4 lg:p-8 max-w-4xl mt-4">
           <p>Aktuell sind keine Events geplant.</p>
         </div>
       )}

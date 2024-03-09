@@ -15,7 +15,7 @@ const OperationTile = ({ className, operation }: Readonly<Props>) => {
     <article
       className={clsx(
         className,
-        "block bg-neutral-900 rounded overflow-hidden",
+        "block bg-neutral-900/50 backdrop-blur rounded overflow-hidden",
       )}
     >
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 p-4 lg:p-8">
