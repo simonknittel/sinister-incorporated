@@ -8,7 +8,6 @@
     "organizations"
     "notes";
   gap: 1rem;
-  align-items: start;
 }
 
 @media (min-width: 640px) {
