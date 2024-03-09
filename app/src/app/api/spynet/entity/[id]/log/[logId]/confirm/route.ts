@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "~/_lib/auth/authenticateAndAuthorize";
 import { requireConfirmedEmailForApi } from "~/_lib/emailConfirmation";
+import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
 import errorHandler from "~/app/api/_lib/errorHandler";
 import { prisma } from "~/server/db";
 import { updateAlgoliaWithGenericLogType } from "../_lib/updateAlgoliaWithGenericLogType";
@@ -45,6 +46,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       },
       include: {
         entity: true,
+        attributes: true,
       },
     });
 
@@ -92,10 +94,37 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
         ]);
         break;
       case "note":
+        const { noteTypeId, classificationLevelId, confirmed } =
+          getLatestNoteAttributes(entityLog);
+
+        const authorizationAttributes = [];
+
+        if (noteTypeId) {
+          authorizationAttributes.push({
+            key: "noteTypeId",
+            value: noteTypeId.value,
+          });
+        }
+
+        if (classificationLevelId) {
+          authorizationAttributes.push({
+            key: "classificationLevelId",
+            value: classificationLevelId.value,
+          });
+        }
+
+        if (!confirmed || confirmed.value !== "confirmed") {
+          authorizationAttributes.push({
+            key: "alsoUnconfirmed",
+            value: true,
+          });
+        }
+
         authentication.authorizeApi([
           {
             resource: "note",
             operation: "confirm",
+            attributes: authorizationAttributes,
           },
         ]);
         break;

@@ -17,14 +17,14 @@ import ClassificationLevel from "./ClassificationLevel";
 import ClassificationLevelSkeleton from "./ClassificationLevelSkeleton";
 import UpdateNote from "./UpdateNote";
 
-interface Props {
+type Props = Readonly<{
   note: EntityLog & {
     attributes: (EntityLogAttribute & { createdBy: User })[];
     submittedBy: User;
   };
-}
+}>;
 
-const SingleNote = async ({ note }: Readonly<Props>) => {
+const SingleNote = async ({ note }: Props) => {
   const authentication = await requireAuthentication();
 
   const { noteTypeId, classificationLevelId, confirmed } =
