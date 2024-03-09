@@ -22,7 +22,7 @@ export default async function Page({ searchParams }: Readonly<Props>) {
   const activeProviders = authOptions.providers.map((provider) => provider.id);
 
   return (
-    <div className="h-full flex justify-center items-center bg-sinister-radial-gradient">
+    <div className="min-h-screen flex justify-center items-center bg-sinister-radial-gradient">
       <main className="w-full max-w-md py-8 flex flex-col items-center gap-4">
         <Hero text="Sinister Inc" />
 

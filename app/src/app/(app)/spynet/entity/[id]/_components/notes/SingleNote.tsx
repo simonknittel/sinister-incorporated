@@ -57,7 +57,7 @@ const SingleNote = async ({ note }: Readonly<Props>) => {
     <article className="mt-4 lg:mt-8 relative rounded overflow-hidden">
       <div
         className={clsx({
-          "absolute w-full h-24 border-t-2 border-x-2 bg-gradient-to-t from-neutral-900":
+          "absolute w-full h-24 border-t-2 border-x-2 bg-gradient-to-t from-neutral-900/0":
             !confirmed || confirmed?.value === "false-report",
           [`${styles.blueBorder!} to-blue-500/10`]: !confirmed,
           [`${styles.redBorder!} to-red-500/10`]:

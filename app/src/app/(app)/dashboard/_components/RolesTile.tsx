@@ -11,7 +11,12 @@ interface Props {
 export const RolesTile = async ({ className, entity }: Readonly<Props>) => {
   if (!entity)
     return (
-      <section className={clsx(className, "rounded p-4 lg:p-8 bg-neutral-900")}>
+      <section
+        className={clsx(
+          className,
+          "rounded p-4 lg:p-8 bg-neutral-900/50 backdrop-blur",
+        )}
+      >
         <h2 className="font-bold mb-4">Meine Rollen</h2>
         <p className="text-neutral-500 italic">Keine Rollen</p>
       </section>
@@ -20,7 +25,12 @@ export const RolesTile = async ({ className, entity }: Readonly<Props>) => {
   const roles = await getAssignedAndVisibleRoles(entity);
 
   return (
-    <section className={clsx(className, "rounded p-4 lg:p-8 bg-neutral-900")}>
+    <section
+      className={clsx(
+        className,
+        "rounded p-4 lg:p-8 bg-neutral-900/50 backdrop-blur",
+      )}
+    >
       <h2 className="font-bold mb-4">Meine Rollen</h2>
 
       {roles.length > 0 ? (

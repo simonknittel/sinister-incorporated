@@ -251,11 +251,11 @@ export default async function Page({ params }: Readonly<Props>) {
       <p className="mt-2">Teilnehmer: {event.user_count}</p>
 
       {countedOrgShips.length > 0 ? (
-        <div className="rounded bg-neutral-900 p-4 lg:p-8 mt-4 overflow-auto">
+        <div className="rounded bg-neutral-900/50 backdrop-blur p-4 lg:p-8 mt-4 overflow-auto">
           <FleetTable ships={countedOrgShips} />
         </div>
       ) : (
-        <div className="bg-neutral-900 rounded p-4 lg:p-8 max-w-4xl mt-4">
+        <div className="bg-neutral-900/50 backdrop-blur rounded p-4 lg:p-8 max-w-4xl mt-4">
           <p>Keine Teilnehmer oder Teilnehmer ohne Schiffe.</p>
         </div>
       )}

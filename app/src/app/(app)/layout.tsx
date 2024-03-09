@@ -40,14 +40,14 @@ export default async function AppLayout({
     <SessionProviderContainer session={authentication.session}>
       <QueryClientProviderContainer>
         <TRPCReactProvider headers={headers()}>
-          <div className="h-full">
+          <div className="min-h-screen bg-sinister-radial-gradient">
             <SidebarContainer>
               <Suspense fallback={<SidebarSkeleton />}>
                 <Sidebar />
               </Suspense>
             </SidebarContainer>
 
-            <div className="lg:ml-96 h-full">{children}</div>
+            <div className="lg:ml-[26rem] min-h-screen">{children}</div>
           </div>
 
           {fleetModal}

@@ -21,8 +21,8 @@ interface Props {
 
 export default function RootLayout({ children }: Readonly<Props>) {
   return (
-    <html className="h-full" lang="de">
-      <body className="h-full bg-neutral-800 text-neutral-50">
+    <html lang="de">
+      <body className="bg-neutral-800 text-neutral-50">
         {children}
         <ToasterContainer />
         <AnalyticsContainer />

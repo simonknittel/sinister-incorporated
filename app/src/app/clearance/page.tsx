@@ -27,14 +27,14 @@ export default async function Page() {
     redirect("/dashboard");
 
   return (
-    <div className="min-h-screen flex justify-center items-center flex-col py-8">
+    <div className="min-h-screen flex justify-center items-center flex-col py-8 bg-sinister-radial-gradient">
       <main className="w-full max-w-lg">
         <h1 className="mb-4 text-center text-xl text-sinister-red font-bold mx-8">
           <FaRegCheckCircle className="text-green-500 inline relative top-[-2px]" />{" "}
           Anmeldung erfolgreich
         </h1>
 
-        <div className="flex flex-col gap-2 rounded bg-neutral-900 p-8 mx-8">
+        <div className="flex flex-col gap-2 rounded bg-neutral-900/50 backdrop-blur p-8 mx-8">
           <p>Die Leitung muss deinen Account freischalten.</p>
         </div>
       </main>

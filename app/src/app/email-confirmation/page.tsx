@@ -35,14 +35,14 @@ export default async function Page({ searchParams }: Readonly<Props>) {
       : searchParams["new-user"]) === "true";
 
   return (
-    <div className="min-h-screen flex justify-center items-center flex-col py-8">
+    <div className="min-h-screen flex justify-center items-center flex-col py-8 bg-sinister-radial-gradient">
       <main className="w-full max-w-3xl">
         <h1 className="mb-4 text-center text-xl text-sinister-red font-bold mx-8">
           <RiInformationLine className="text-sky-500 text-2xl inline align-text-bottom" />{" "}
           E-Mail-Adresse und Datenschutzerklärung bestätigen
         </h1>
 
-        <div className="flex flex-col gap-2 rounded bg-neutral-900 p-8 mx-8">
+        <div className="flex flex-col gap-2 rounded bg-neutral-900/50 backdrop-blur p-8 mx-8">
           <p>
             Um fortfahren zu können musst du deine E-Mail-Adresse (
             <i>{authentication.session.user.email}</i>) und die{" "}
