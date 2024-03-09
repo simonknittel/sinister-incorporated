@@ -54,47 +54,26 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 
     switch (entityLog.type) {
       case "handle":
-        authentication.authorizeApi([
-          {
-            resource: "handle",
-            operation: "confirm",
-          },
-        ]);
-        break;
       case "teamspeak-id":
         authentication.authorizeApi([
           {
-            resource: "teamspeak-id",
+            resource: entityLog.type,
             operation: "confirm",
           },
         ]);
         break;
       case "discord-id":
-        authentication.authorizeApi([
-          {
-            resource: "discord-id",
-            operation: "create",
-          },
-        ]);
-        break;
       case "citizen-id":
-        authentication.authorizeApi([
-          {
-            resource: "citizen-id",
-            operation: "create",
-          },
-        ]);
-        break;
       case "community-moniker":
         authentication.authorizeApi([
           {
-            resource: "community-moniker",
+            resource: entityLog.type,
             operation: "create",
           },
         ]);
         break;
       case "note":
-        const { noteTypeId, classificationLevelId, confirmed } =
+        const { noteTypeId, classificationLevelId } =
           getLatestNoteAttributes(entityLog);
 
         const authorizationAttributes = [];
@@ -113,13 +92,6 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           });
         }
 
-        if (!confirmed || confirmed.value !== "confirmed") {
-          authorizationAttributes.push({
-            key: "alsoUnconfirmed",
-            value: true,
-          });
-        }
-
         authentication.authorizeApi([
           {
             resource: "note",
@@ -128,6 +100,9 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           },
         ]);
         break;
+
+      default:
+        throw new Error("Bad request");
     }
 
     const item = await prisma.entityLogAttribute.create({
