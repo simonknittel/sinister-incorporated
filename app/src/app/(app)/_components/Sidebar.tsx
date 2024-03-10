@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  FaCalendarDay,
   FaCog,
   FaHome,
   FaLock,
@@ -36,25 +35,6 @@ const Sidebar = async () => {
                 Dashboard
               </Link>
             </li>
-
-            {authentication.authorize([
-              {
-                resource: "event",
-                operation: "read",
-              },
-            ]) && (
-              <li>
-                <Link
-                  href="/events"
-                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                  prefetch={false}
-                >
-                  <FaCalendarDay />
-                  Events
-                  <Chip title="Proof of Concept">PoC</Chip>
-                </Link>
-              </li>
-            )}
 
             {authentication.authorize([
               {

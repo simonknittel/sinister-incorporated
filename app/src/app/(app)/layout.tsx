@@ -15,13 +15,9 @@ import SidebarSkeleton from "./_components/SidebarSkeleton";
 
 interface Props {
   children: ReactNode;
-  fleetModal: ReactNode;
 }
 
-export default async function AppLayout({
-  children,
-  fleetModal,
-}: Readonly<Props>) {
+export default async function AppLayout({ children }: Readonly<Props>) {
   const authentication = await authenticatePage();
 
   await requireConfirmedEmailForPage(authentication.session);
@@ -40,17 +36,15 @@ export default async function AppLayout({
     <SessionProviderContainer session={authentication.session}>
       <QueryClientProviderContainer>
         <TRPCReactProvider headers={headers()}>
-          <div className="min-h-screen bg-sinister-radial-gradient">
+          <div className="min-h-dvh bg-sinister-radial-gradient">
             <SidebarContainer>
               <Suspense fallback={<SidebarSkeleton />}>
                 <Sidebar />
               </Suspense>
             </SidebarContainer>
 
-            <div className="lg:ml-[26rem] min-h-screen">{children}</div>
+            <div className="lg:ml-[26rem] min-h-dvh">{children}</div>
           </div>
-
-          {fleetModal}
 
           <Suspense>
             <ImpersonationBannerContainer />

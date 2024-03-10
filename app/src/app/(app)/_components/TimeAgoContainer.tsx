@@ -2,11 +2,11 @@
 
 import TimeAgo from "react-timeago";
 
-interface Props {
+type Props = Readonly<{
   date: Date | string;
-}
+}>;
 
-const TimeAgoContainer = ({ date }: Readonly<Props>) => {
+const TimeAgoContainer = ({ date }: Props) => {
   return <TimeAgo date={date} />;
 };
 

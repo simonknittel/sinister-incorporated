@@ -3,8 +3,8 @@
   grid-template-columns: 1fr;
   grid-template-rows: repeat(1, min-content);
   grid-template-areas:
-    "events"
-    "roles";
+    "overview"
+    "fleet";
   gap: 1rem;
   align-items: start;
 }
@@ -13,17 +13,7 @@
   .tileGrid {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: repeat(1, min-content);
-    grid-template-areas: "events roles";
-  }
-}
-
-@media (min-width: 1024px) {
-  .tileGrid {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(1, min-content);
-    grid-template-areas:
-      "events"
-      "roles";
+    grid-template-areas: "fleet overview";
   }
 }
 
@@ -31,6 +21,6 @@
   .tileGrid {
     grid-template-columns: 2fr 1fr;
     grid-template-rows: repeat(1, min-content);
-    grid-template-areas: "events roles";
+    grid-template-areas: "fleet overview";
   }
 }

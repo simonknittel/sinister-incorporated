@@ -18,7 +18,8 @@ export type PermissionSet = {
     | "analytics"
     | "lastSeen"
     | "otherRole"
-    | "note";
+    | "note"
+    | "eventFleet";
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   operation:
     | "create"
