@@ -14,7 +14,7 @@ const FullSchedule = ({ schedule }: Readonly<Props>) => {
   const { currentlyLive } = useSchedule(schedule);
 
   return (
-    <section className="mt-4 w-full max-w-xl p-4 lg:p-8 rounded-2xl bg-neutral-900/50 backdrop-blur">
+    <section className="mt-4 w-full max-w-xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50 backdrop-blur">
       <h2 className="font-bold text-xl mb-4">Full schedule</h2>
 
       <ul className="flex flex-col gap-2 list-disc pl-5">

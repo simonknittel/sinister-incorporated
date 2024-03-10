@@ -42,7 +42,7 @@ export default async function Page({ searchParams }: Readonly<Props>) {
           E-Mail-Adresse und Datenschutzerklärung bestätigen
         </h1>
 
-        <div className="flex flex-col gap-2 rounded-2xl bg-neutral-900/50 backdrop-blur p-8 mx-8">
+        <div className="flex flex-col gap-2 rounded-2xl bg-neutral-800/50 backdrop-blur p-8 mx-8">
           <p>
             Um fortfahren zu können musst du deine E-Mail-Adresse (
             <i>{authentication.session.user.email}</i>) und die{" "}

@@ -1,6 +1,6 @@
 const TileSkeleton = () => {
   return (
-    <div className="rounded-2xl bg-neutral-900/50 backdrop-blur p-4 lg:p-8 mt-4 h-96 animate-pulse" />
+    <div className="rounded-2xl bg-neutral-800/50 backdrop-blur p-4 lg:p-8 mt-4 h-96 animate-pulse" />
   );
 };
 

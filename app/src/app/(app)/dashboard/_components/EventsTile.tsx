@@ -10,7 +10,7 @@ export const EventsTile = ({ className }: Props) => {
     <section
       className={clsx(
         className,
-        "rounded-2xl p-4 lg:p-8 bg-neutral-900/50 backdrop-blur min-h-96 flex flex-col",
+        "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 backdrop-blur min-h-64 flex flex-col",
       )}
       style={{ gridArea: "events" }}
     >
