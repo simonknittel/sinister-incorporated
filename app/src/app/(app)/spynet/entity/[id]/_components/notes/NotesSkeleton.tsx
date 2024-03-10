@@ -3,7 +3,7 @@ import { FaListAlt } from "react-icons/fa";
 const NotesSkeleton = () => {
   return (
     <section
-      className="rounded-2xl p-4 lg:p-8 bg-neutral-900/50 backdrop-blur col-span-2 animate-pulse min-h-[22.5rem] w-full place-self-start"
+      className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50 backdrop-blur col-span-2 animate-pulse min-h-[22.5rem] w-full place-self-start"
       style={{
         gridArea: "notes",
       }}

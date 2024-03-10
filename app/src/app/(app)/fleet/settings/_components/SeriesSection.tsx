@@ -12,7 +12,7 @@ interface Props {
 
 const SeriesSection = ({ manufacturer, data }: Readonly<Props>) => {
   return (
-    <div className="mt-2 bg-neutral-900/50 backdrop-blur rounded-2xl overflow-hidden max-w-4xl">
+    <div className="mt-2 bg-neutral-800/50 backdrop-blur rounded-2xl overflow-hidden max-w-4xl">
       <div className="flex justify-between items-center">
         <h2 className="flex gap-4 items-center font-bold">
           <span className="bg-neutral-800 py-2 px-4 rounded-br">

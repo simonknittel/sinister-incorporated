@@ -20,7 +20,7 @@ const SidebarContainer = ({ children }: Readonly<Props>) => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 h-16 bg-neutral-900/50 backdrop-blur flex items-center px-2 z-20 lg:hidden shadow">
+      <div className="fixed top-0 left-0 right-0 h-16 bg-neutral-800/50 backdrop-blur flex items-center px-2 z-20 lg:hidden shadow">
         <Button
           variant="secondary"
           iconOnly={true}
@@ -32,7 +32,7 @@ const SidebarContainer = ({ children }: Readonly<Props>) => {
 
       <div
         className={clsx(
-          "fixed top-16 bottom-0 lg:left-8 lg:top-8 lg:bottom-8 w-96 overflow-auto bg-neutral-900/80 lg:bg-neutral-900/50 backdrop-blur -translate-x-full lg:translate-x-0 z-10 shadow lg:rounded-2xl",
+          "fixed top-16 bottom-0 lg:left-8 lg:top-8 lg:bottom-8 w-96 overflow-auto bg-neutral-800/80 lg:bg-neutral-800/50 backdrop-blur -translate-x-full lg:translate-x-0 z-10 shadow lg:rounded-2xl",
           {
             "-translate-x-full": isVisible === false,
             "translate-x-0": isVisible === true,

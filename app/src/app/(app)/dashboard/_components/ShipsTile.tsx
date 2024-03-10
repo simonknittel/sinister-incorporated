@@ -9,7 +9,7 @@ export const ShipsTile = ({ className }: Readonly<Props>) => {
     <section
       className={clsx(
         className,
-        "rounded-2xl p-4 lg:p-8 bg-neutral-900/50 backdrop-blur",
+        "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 backdrop-blur",
       )}
     >
       <h2 className="font-bold mb-4">Meine Schiffe</h2>

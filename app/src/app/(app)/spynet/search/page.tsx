@@ -19,7 +19,7 @@ export default async function Page() {
   ]);
 
   return (
-    <main className="min-h-screen flex justify-center items-center">
+    <main className="min-h-dvh flex justify-center items-center">
       <div className="w-full max-w-md py-8 flex flex-col items-center gap-4">
         <Hero text="Spynet" />
 

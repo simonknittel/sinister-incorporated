@@ -2,21 +2,31 @@ import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
 import { getAssignedAndVisibleRoles } from "~/app/_lib/getAssignedAndVisibleRoles";
+import { prisma } from "~/server/db";
 import SingleRole from "./SingleRole";
 
-interface Props {
+type Props = Readonly<{
   className?: string;
   entity?: Entity;
-}
+}>;
 
-export const RolesTile = async ({ className, entity }: Readonly<Props>) => {
+export const RolesTile = async ({ className }: Props) => {
+  const authentication = await authenticate();
+
+  const entity = await prisma.entity.findUnique({
+    where: {
+      discordId: authentication.session.discordId,
+    },
+  });
+
   if (!entity)
     return (
       <section
         className={clsx(
           className,
-          "rounded-2xl p-4 lg:p-8 bg-neutral-900/50 backdrop-blur",
+          "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 backdrop-blur",
         )}
       >
         <h2 className="font-bold mb-4">Meine Rollen und Zertifikate</h2>
@@ -31,7 +41,7 @@ export const RolesTile = async ({ className, entity }: Readonly<Props>) => {
     <section
       className={clsx(
         className,
-        "rounded-2xl p-4 lg:p-8 bg-neutral-900/50 backdrop-blur",
+        "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 backdrop-blur",
       )}
       style={{ gridArea: "roles" }}
     >
