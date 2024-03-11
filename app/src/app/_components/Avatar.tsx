@@ -25,18 +25,21 @@ const Avatar = ({ className, name, image, size }: Readonly<Props>) => {
     <span
       className={clsx(
         className,
-        "flex items-center justify-center overflow-hidden rounded uppercase",
+        "flex items-center justify-center overflow-hidden uppercase",
         {
           "text-sm": size === 32,
           "text-2xl": !size || size === 64,
+          "text-3xl": size === 128,
+          "rounded-2xl": size === 128,
+          rounded: size !== 128,
         },
       )}
       style={{
         backgroundColor: image
           ? undefined
           : name
-          ? stringToColor(name)
-          : "#dedfe0",
+            ? stringToColor(name)
+            : "#dedfe0",
         width: size || 64,
         height: size || 64,
       }}

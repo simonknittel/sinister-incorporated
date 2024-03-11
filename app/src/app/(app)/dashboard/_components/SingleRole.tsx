@@ -13,16 +13,16 @@ const SingleRole = ({ className, role }: Readonly<Props>) => {
     <span
       className={clsx(
         className,
-        "pl-2 pr-6 py-3 rounded bg-neutral-800 flex gap-2 items-center whitespace-nowrap text-2xl",
+        "px-2 py-1 rounded bg-neutral-800 flex gap-2 items-center whitespace-nowrap",
       )}
     >
       {role.imageId && (
-        <div className="aspect-square w-16 h-16 flex items-center justify-center rounded overflow-hidden">
+        <div className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
           <Image
             src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.imageId}`}
             alt=""
-            width={64}
-            height={64}
+            width={24}
+            height={24}
             className="max-w-full max-h-full"
           />
         </div>
