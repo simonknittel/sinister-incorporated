@@ -2,8 +2,8 @@ import clsx from "clsx";
 import { type Metadata } from "next";
 import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import { CalendarTile } from "./_components/CalendarTile";
+import { ProfileTile } from "./_components/ProfileTile";
 import { QuotesTile } from "./_components/QuotesTile";
-import { RolesTile } from "./_components/RolesTile";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -26,7 +26,7 @@ export default async function Page() {
 
       <div className={clsx(styles.tileGrid)}>
         {showEventsTile && <CalendarTile />}
-        <RolesTile />
+        <ProfileTile />
         {/* <ShipsTile /> */}
       </div>
 
