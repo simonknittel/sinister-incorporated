@@ -18,6 +18,8 @@ export const getEvent = cache(async (id: string) => {
       scheduled_start_time: todayStart.toISOString(),
       scheduled_end_time: todayEnd.toISOString(),
       user_count: 1,
+      description:
+        "Immer Donnerstags - Fighten lernen und verfeinern 1v1 und Gruppenkampf. Derzeit immer im aktuellsten Master Mode Build.\n\nImmer Donnerstags - Fighten lernen und verfeinern 1v1 und Gruppenkampf. Derzeit immer im aktuellsten Master Mode Build.\n\nImmer Donnerstags - Fighten lernen und verfeinern 1v1 und Gruppenkampf. Derzeit immer im aktuellsten Master Mode Build.",
     };
 
     const data = scheduledEventResponseSchema.parse(body);
@@ -64,10 +66,13 @@ export const getEvent = cache(async (id: string) => {
 const scheduledEventResponseSchema = z.union([
   z.object({
     id: z.string(),
+    guild_id: z.string(),
     name: z.string(),
+    image: z.string().optional().nullable(),
     scheduled_start_time: z.coerce.date(),
     scheduled_end_time: z.coerce.date(),
     user_count: z.number(),
+    description: z.string().optional(),
   }),
 
   z.object({

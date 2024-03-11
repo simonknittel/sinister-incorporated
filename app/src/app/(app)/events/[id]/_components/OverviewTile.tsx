@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
 import { type getEvent } from "~/_lib/getEvent";
@@ -21,6 +22,8 @@ type Props = Readonly<{
 }>;
 
 export const OverviewTile = ({ className, event, date }: Props) => {
+  const descriptionParts = event.description?.split("\n") || [];
+
   return (
     <section
       className={clsx(className)}
@@ -28,51 +31,71 @@ export const OverviewTile = ({ className, event, date }: Props) => {
         gridArea: "overview",
       }}
     >
-      <div className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 overflow-auto">
-        <h2 className="font-bold mb-4">Übersicht</h2>
+      <div className="rounded-2xl bg-neutral-800/50 overflow-auto">
+        {event.image && (
+          <Image
+            src={`https://cdn.discordapp.com/guild-events/${event.id}/${event.image}.webp?size=1024`}
+            alt=""
+            // Discord recommends 800x320px
+            width={800}
+            height={320}
+            className="flex-initial w-full"
+          />
+        )}
 
-        <dl className="mt-4">
-          <dt className="text-neutral-500">Start</dt>
-          <dd>
-            {event.scheduled_start_time.toLocaleDateString("de-DE", {
-              weekday: "short",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}{" "}
-            -{" "}
-            {event.scheduled_start_time.toLocaleTimeString("de-DE", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </dd>
+        <div className="p-4 lg:p-8">
+          <h2 className="font-bold">{event.name}</h2>
 
-          <dt className="text-neutral-500 mt-4">Ende</dt>
-          <dd>
-            {event.scheduled_end_time.toLocaleDateString("de-DE", {
-              weekday: "short",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}{" "}
-            -{" "}
-            {event.scheduled_end_time.toLocaleTimeString("de-DE", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </dd>
+          {descriptionParts.length > 0 &&
+            descriptionParts.map((part, index) => (
+              <p key={index} className="mt-2">
+                {part}
+              </p>
+            ))}
 
-          <dt className="text-neutral-500 mt-4">Teilnehmeranzahl</dt>
-          <dd>{event.user_count}</dd>
-        </dl>
+          <dl className="mt-4">
+            <dt className="text-neutral-500">Start</dt>
+            <dd>
+              {event.scheduled_start_time.toLocaleDateString("de-DE", {
+                weekday: "short",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}{" "}
+              -{" "}
+              {event.scheduled_start_time.toLocaleTimeString("de-DE", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </dd>
 
-        <Link
-          href={`https://discord.com/events/${event.guild_id}/${event.id}`}
-          className="mt-4 inline-flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-neutral-500 text-neutral-500 hover:border-neutral-300 active:border-neutral-300 hover:text-neutral-300 active:text-neutral-300 px-6"
-          prefetch={false}
-        >
-          Discord <FaDiscord />
-        </Link>
+            <dt className="text-neutral-500 mt-4">Ende</dt>
+            <dd>
+              {event.scheduled_end_time.toLocaleDateString("de-DE", {
+                weekday: "short",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}{" "}
+              -{" "}
+              {event.scheduled_end_time.toLocaleTimeString("de-DE", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </dd>
+
+            <dt className="text-neutral-500 mt-4">Teilnehmeranzahl</dt>
+            <dd>{event.user_count}</dd>
+          </dl>
+
+          <Link
+            href={`https://discord.com/events/${event.guild_id}/${event.id}`}
+            className="mt-4 inline-flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-neutral-500 text-neutral-500 hover:border-neutral-300 active:border-neutral-300 hover:text-neutral-300 active:text-neutral-300 px-6"
+            prefetch={false}
+          >
+            Discord <FaDiscord />
+          </Link>
+        </div>
       </div>
 
       {date && (

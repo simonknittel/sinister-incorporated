@@ -1,0 +1,19 @@
+meta {
+  name: Guild scheduled event
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://discord.com/api/v10/guilds/{{DISCORD_GUILD_ID}}/scheduled-events/1216706606486782033?with_user_count=true
+  body: none
+  auth: none
+}
+
+query {
+  with_user_count: true
+}
+
+headers {
+  Authorization: Bot {{DISCORD_TOKEN}}
+}
