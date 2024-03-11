@@ -48,9 +48,7 @@ export const ProfileTile = async ({ className }: Props) => {
             <SingleRole key={role.id} role={role} />
           ))}
         </div>
-      ) : (
-        <p className="text-neutral-500 italic">Keine</p>
-      )}
+      ) : null}
 
       {entity && (
         <Link

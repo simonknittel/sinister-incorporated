@@ -25,10 +25,10 @@ export const AdminEnabler = ({ enabled = false }: Readonly<Props>) => {
   return (
     <button
       className={clsx(
-        "fixed top-4 left-1/2 -translate-x-1/2 backdrop-blur z-50 max-w-xs p-4 rounded gap-4 justify-between opacity-50 hover:opacity-100 transition-opacity",
+        "fixed top-4 left-1/2 -translate-x-1/2 backdrop-blur z-50 max-w-xs p-4 rounded gap-4 justify-between transition-colors",
         {
-          "bg-green-500/50": !enabled,
-          "bg-red-500/50": enabled,
+          "bg-green-500/50 hover:bg-green-500/100": !enabled,
+          "bg-red-500/50 hover:bg-red-500/100": enabled,
         },
       )}
       onClick={handleClick}

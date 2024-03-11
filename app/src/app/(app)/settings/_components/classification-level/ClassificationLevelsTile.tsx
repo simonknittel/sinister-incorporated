@@ -20,7 +20,7 @@ const ClassificationLevelsTile = async ({ className }: Readonly<Props>) => {
     <section
       className={clsx(
         className,
-        "max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50 backdrop-blur",
+        "max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50 ",
       )}
     >
       <h2 className="font-bold text-xl">Geheimhaltungsstufen</h2>

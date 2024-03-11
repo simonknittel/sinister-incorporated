@@ -22,13 +22,10 @@ export const CalendarTile = async ({ className }: Props) => {
 
   return (
     <section
-      className={clsx(
-        className,
-        "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 backdrop-blur flex flex-col gap-4",
-      )}
+      className={clsx(className, "flex flex-col gap-4")}
       style={{ gridArea: "events" }}
     >
-      <h2 className="font-bold mb-4">Kalendar</h2>
+      <h2 className="sr-only">Kalendar</h2>
 
       {events
         .sort(
@@ -40,7 +37,7 @@ export const CalendarTile = async ({ className }: Props) => {
         ))}
 
       {events.length === 0 && (
-        <div className="bg-neutral-800/50 backdrop-blur rounded-2xl p-4 lg:p-8">
+        <div className="bg-neutral-800/50 rounded-2xl p-4 lg:p-8">
           <p>Aktuell sind keine Events geplant.</p>
         </div>
       )}
