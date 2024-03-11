@@ -28,7 +28,7 @@ export const OverviewTile = ({ className, event, date }: Props) => {
         gridArea: "overview",
       }}
     >
-      <div className="rounded-2xl bg-neutral-800/50 backdrop-blur p-4 lg:p-8 overflow-auto">
+      <div className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 overflow-auto">
         <h2 className="font-bold mb-4">Übersicht</h2>
 
         <dl className="mt-4">

@@ -9,7 +9,7 @@ const RolesTileSkeleton = ({ className }: Readonly<Props>) => {
     <div
       className={clsx(
         className,
-        "rounded-2xl bg-neutral-800/50 backdrop-blur animate-pulse min-h-[20rem] max-w-4xl",
+        "rounded-2xl bg-neutral-800/50  animate-pulse min-h-[20rem] max-w-4xl",
       )}
     />
   );

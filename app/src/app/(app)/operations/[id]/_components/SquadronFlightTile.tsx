@@ -34,9 +34,7 @@ const SquadronFlightTile = ({ className, unit }: Readonly<Props>) => {
   );
 
   return (
-    <article
-      className={clsx(className, "rounded-2xl bg-neutral-800/50 backdrop-blur")}
-    >
+    <article className={clsx(className, "rounded-2xl bg-neutral-800/50 ")}>
       <div className="flex justify-between">
         <h4 className="font-bold bg-neutral-950 py-2 px-4 rounded-br">
           {unit.title}

@@ -34,7 +34,7 @@ export default async function Page() {
           Anmeldung erfolgreich
         </h1>
 
-        <div className="flex flex-col gap-2 rounded-2xl bg-neutral-800/50 backdrop-blur p-8 mx-8">
+        <div className="flex flex-col gap-2 rounded-2xl bg-neutral-800/50  p-8 mx-8">
           <p>Die Leitung muss deinen Account freischalten.</p>
         </div>
       </main>

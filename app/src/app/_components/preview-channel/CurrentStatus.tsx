@@ -13,7 +13,7 @@ const CurrentStatus = ({ schedule }: Readonly<Props>) => {
   const { currentlyLive, nextLive } = useSchedule(schedule);
 
   return (
-    <section className="mt-4 w-full max-w-xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50 backdrop-blur">
+    <section className="mt-4 w-full max-w-xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50 ">
       <h2 className="font-bold text-xl mb-4">Current status</h2>
 
       <div className="flex items-baseline gap-2">

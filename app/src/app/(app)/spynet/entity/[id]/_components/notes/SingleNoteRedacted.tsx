@@ -17,7 +17,7 @@ const SingleNoteRedacted = () => {
     <article className="mt-4 lg:mt-8 relative p-4">
       <p>{lorem.generateParagraphs(random(1, 3))}</p>
 
-      <div className="absolute inset-0 backdrop-blur flex items-center justify-center">
+      <div className="absolute inset-0  flex items-center justify-center">
         <p
           className="text-sinister-red-500 font-bold border-2 border-sinister-red-500 rounded px-2 py-1 text-lg relative"
           style={{

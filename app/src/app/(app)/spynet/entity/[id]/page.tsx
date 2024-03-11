@@ -107,7 +107,7 @@ export default async function Page({ params }: Readonly<Props>) {
         </Suspense>
 
         <section
-          className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50 backdrop-blur flex flex-col"
+          className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50  flex flex-col"
           style={{
             gridArea: "organizations",
           }}

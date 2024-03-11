@@ -28,7 +28,7 @@ const Tile = async () => {
   });
 
   return (
-    <section className="rounded-2xl bg-neutral-800/50 backdrop-blur p-4 lg:p-8 mt-4 overflow-auto">
+    <section className="rounded-2xl bg-neutral-800/50  p-4 lg:p-8 mt-4 overflow-auto">
       <FleetTable ships={countedOrgShips} />
     </section>
   );

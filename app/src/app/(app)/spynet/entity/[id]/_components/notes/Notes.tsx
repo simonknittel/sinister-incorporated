@@ -128,7 +128,7 @@ const Notes = async ({ entity }: Readonly<Props>) => {
 
   return (
     <section
-      className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50 backdrop-blur col-span-2 w-full place-self-start"
+      className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50  col-span-2 w-full place-self-start"
       style={{
         gridArea: "notes",
       }}
