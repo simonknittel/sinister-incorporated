@@ -98,13 +98,17 @@ model OperationUnit {
 //
 
 model Entity {
-    id          String      @id @default(cuid())
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @updatedAt
-    logs        EntityLog[]
-    createdById String
-    createdBy   User        @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
+    id                                        String                               @id @default(cuid())
+    createdAt                                 DateTime                             @default(now())
+    updatedAt                                 DateTime                             @updatedAt
+    logs                                      EntityLog[]
+    createdById                               String
+    createdBy                                 User                                 @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
     // careBearShooterScores CareBearShooterScore[]
+    activeOrganizationsMemberships            ActiveOrganizationMembership[]
+    organizationMembershipHistoryEntries      OrganizationMembershipHistoryEntry[] @relation(name: "OrganizationMembershipHistoryEntry")
+    createdOrganizationMemberHistoryEntries   OrganizationMembershipHistoryEntry[] @relation(name: "CreatedOrganizationMemberHistoryEntries")
+    confirmedOrganizationMemberHistoryEntries OrganizationMembershipHistoryEntry[] @relation(name: "ConfirmedOrganizationMemberHistoryEntries")
 
     // Holds the latest confirmed values
     spectrumId       String?
@@ -288,3 +292,48 @@ model EmailConfirmationToken {
 //     score     Int
 //     createdAt DateTime @default(now())
 // }
+
+//
+// Organizations
+//
+
+model Organization {
+    id                       String                               @id @default(cuid())
+    name                     String
+    spectrumId               String                               @unique
+    description              String?
+    logo                     String?
+    activeMemberships        ActiveOrganizationMembership[]
+    membershipHistoryEntries OrganizationMembershipHistoryEntry[]
+}
+
+model ActiveOrganizationMembership {
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    citizenId      String
+    citizen        Entity       @relation(fields: [citizenId], references: [id], onDelete: Cascade)
+
+    @@id([organizationId, citizenId])
+}
+
+enum OrganizationMembershipHistoryEntryType {
+    MAIN
+    AFFILIATE
+    LEFT
+}
+
+model OrganizationMembershipHistoryEntry {
+    id             String                                 @id @default(cuid())
+    organizationId String
+    organization   Organization                           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    citizenId      String
+    citizen        Entity                                 @relation(name: "OrganizationMembershipHistoryEntry", fields: [citizenId], references: [id], onDelete: Cascade)
+    type           OrganizationMembershipHistoryEntryType
+
+    createdAt     DateTime  @default(now())
+    createdById   String
+    createdBy     Entity    @relation(name: "CreatedOrganizationMemberHistoryEntries", fields: [createdById], references: [id], onDelete: Cascade)
+    confirmedAt   DateTime?
+    confirmedById String?
+    confirmedBy   Entity?   @relation(name: "ConfirmedOrganizationMemberHistoryEntries", fields: [confirmedById], references: [id], onDelete: Cascade)
+}
