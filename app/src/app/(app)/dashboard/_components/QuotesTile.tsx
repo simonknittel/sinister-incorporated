@@ -49,7 +49,7 @@ export const QuotesTile = ({ className }: Props) => {
         <p
           className={clsx(
             merriweather.className,
-            "text-xl lg:text-3xl font-serif relative before:absolute before:right-[calc(100%+8px)] before:content-['“'] before:font-bold before:text-neutral-50/50 max-w-[640px]",
+            "text-xl lg:text-2xl font-serif relative before:absolute before:right-[calc(100%+8px)] before:content-['“'] before:font-bold before:text-neutral-50/50 max-w-[640px]",
           )}
         >
           {quote[0]}

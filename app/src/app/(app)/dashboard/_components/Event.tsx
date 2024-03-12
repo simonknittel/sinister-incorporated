@@ -22,8 +22,8 @@ export const Event = async ({ className, event }: Props) => {
   const authentication = await requireAuthentication();
 
   const isToday =
-    event.scheduled_start_time.toDateString().split("T")[0] ===
-    new Date().toDateString().split("T")[0];
+    event.scheduled_start_time.toISOString().split("T")[0] ===
+    new Date().toISOString().split("T")[0];
 
   // Discord recommends 800x320px
   const originalWidth = 800;
