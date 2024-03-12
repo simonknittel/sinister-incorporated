@@ -35,7 +35,15 @@ export const env = createEnv({
     LOKI_AUTH_PASSWORD: z.string().optional(),
     BASE_URL: z.preprocess(
       // Uses VERCEL_URL if BASE_URL is not set, e.g. on Vercel's preview deployments
-      (str) => str || `https://${process.env.VERCEL_URL}`,
+      (str) => {
+        if (str) {
+          return str;
+        } else if (process.env.VERCEL_URL) {
+          return `https://${process.env.VERCEL_URL}`;
+        }
+
+        return "http://localhost:3000";
+      },
       z.string().url(),
     ),
     HOST: z.preprocess(
@@ -45,9 +53,11 @@ export const env = createEnv({
           return str;
         } else if (process.env.BASE_URL) {
           return process.env.BASE_URL.replace(/https?:\/\//, "");
-        } else {
+        } else if (process.env.VERCEL_URL) {
           return process.env.VERCEL_URL;
         }
+
+        return "localhost:3000";
       },
       z.string(),
     ),
