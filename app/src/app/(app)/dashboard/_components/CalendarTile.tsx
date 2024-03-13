@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { getEvents } from "~/_lib/getEvents";
+import { Hero } from "~/app/_components/Hero";
 import { Event } from "./Event";
 
 const TimeAgoContainer = dynamic(
@@ -21,11 +22,8 @@ export const CalendarTile = async ({ className }: Props) => {
   const { date, data: events } = await getEvents();
 
   return (
-    <section
-      className={clsx(className, "flex flex-col gap-4")}
-      style={{ gridArea: "events" }}
-    >
-      <h2 className="sr-only">Kalendar</h2>
+    <section className={clsx(className, "flex flex-col gap-4 items-center")}>
+      <Hero text="Kalender" size="md" />
 
       {events
         .sort(
@@ -37,13 +35,13 @@ export const CalendarTile = async ({ className }: Props) => {
         ))}
 
       {events.length === 0 && (
-        <div className="bg-neutral-800/50 rounded-2xl p-4 lg:p-8">
+        <div className="bg-neutral-800/50 rounded-2xl p-4 lg:p-8 w-full">
           <p>Aktuell sind keine Events geplant.</p>
         </div>
       )}
 
       {date && (
-        <p className="text-neutral-500 flex items-center gap-2">
+        <p className="text-neutral-500 flex items-center gap-2 w-full">
           Letzte Aktualisierung:
           <TimeAgoContainer date={date} />
         </p>

@@ -36,7 +36,6 @@ export const ProfileTile = async ({ className }: Props) => {
         className,
         "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col gap-4 items-center",
       )}
-      style={{ gridArea: "roles" }}
     >
       <Avatar name={name} image={image} size={128} />
 
@@ -56,7 +55,7 @@ export const ProfileTile = async ({ className }: Props) => {
           prefetch={false}
           className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
         >
-          Zu meinem Spynet-Eintrag
+          Vollständiges Profil
           <FaExternalLinkAlt />
         </Link>
       )}
