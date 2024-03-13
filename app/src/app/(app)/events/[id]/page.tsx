@@ -5,7 +5,7 @@ import { getEvent } from "~/_lib/getEvent";
 import { log } from "~/_lib/logging";
 import { FleetTile } from "./_components/FleetTile";
 import { OverviewTile } from "./_components/OverviewTile";
-import styles from "./page.module.css";
+import { ParticipantsTile } from "./_components/ParticipantsTile";
 
 interface Params {
   id: string;
@@ -65,9 +65,13 @@ export default async function Page({ params }: Props) {
         <h1>{event.name}</h1>
       </div>
 
-      <div className={styles.tileGrid}>
-        {showFleetTile && <FleetTile event={event} />}
-        <OverviewTile event={event} date={date} />
+      <div className="flex gap-8 flex-col lg:flex-row lg:items-start">
+        <div className="lg:w-2/3 flex flex-col gap-4">
+          <ParticipantsTile event={event} />
+          {showFleetTile && <FleetTile event={event} />}
+        </div>
+
+        <OverviewTile event={event} date={date} className="lg:w-1/3" />
       </div>
     </main>
   );

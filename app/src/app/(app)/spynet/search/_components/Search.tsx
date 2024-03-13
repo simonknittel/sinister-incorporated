@@ -77,7 +77,7 @@ const Search = () => {
             "hover:!text-sinister-red-500 focus:!text-sinister-red-500",
           loadingIndicator: "[&>svg]:!text-sinister-red-500",
         }}
-        placeholder="Handle, Community Moniker, Spectrum ID, Citizen ID oder Sinister ID ..."
+        placeholder="Suche"
         // renderNoResults={() => "Kein Ergebnisse"} // TODO
       />
     </div>

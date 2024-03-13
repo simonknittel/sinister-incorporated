@@ -83,9 +83,6 @@ export const OverviewTile = ({ className, event, date }: Props) => {
                 minute: "2-digit",
               })}
             </dd>
-
-            <dt className="text-neutral-500 mt-4">Teilnehmeranzahl</dt>
-            <dd>{event.user_count}</dd>
           </dl>
 
           <Link

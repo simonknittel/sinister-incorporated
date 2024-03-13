@@ -32,7 +32,7 @@ export const Event = async ({ className, event }: Props) => {
   const targetWidth = (originalWidth / originalHeight) * targetHeight;
 
   return (
-    <article className={clsx(className, "rounded-2xl overflow-hidden")}>
+    <article className={clsx(className, "rounded-2xl overflow-hidden w-full")}>
       {isToday && (
         <div className="bg-sinister-red-500/50 text-white font-bold text-center p-2">
           <TimeAgoContainer date={event.scheduled_start_time} />
