@@ -7,7 +7,7 @@ import { OrgFleetTile } from "./_components/OrgFleetTile";
 import { TileSkeleton } from "./_components/TileSkeleton";
 
 export const metadata: Metadata = {
-  title: "Übersicht - Flotte | Sinister Incorporated",
+  title: "Flotte | Sinister Incorporated",
 };
 
 export default async function Page() {
@@ -36,14 +36,16 @@ export default async function Page() {
 
       <div className="flex flex-col-reverse xl:flex-row gap-8 items-start mt-4">
         {showOrgFleetTile && (
-          <Suspense fallback={<TileSkeleton className="2xl:flex-1" />}>
-            <OrgFleetTile className="2xl:flex-1" />
+          <Suspense fallback={<TileSkeleton className="w-full 2xl:flex-1" />}>
+            <OrgFleetTile className="w-full 2xl:flex-1" />
           </Suspense>
         )}
 
         {showMyFleetTile && (
-          <Suspense fallback={<TileSkeleton className="2xl:w-[480px]" />}>
-            <MyFleetTile className="2xl:w-[480px]" />
+          <Suspense
+            fallback={<TileSkeleton className="w-full 2xl:w-[480px]" />}
+          >
+            <MyFleetTile className="w-full 2xl:w-[480px]" />
           </Suspense>
         )}
       </div>

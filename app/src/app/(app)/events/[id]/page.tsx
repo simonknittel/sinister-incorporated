@@ -20,7 +20,7 @@ export async function generateMetadata({
     const { data: event } = await getEvent(params.id);
 
     return {
-      title: `Verfügbare Flotte - ${event.name} | Sinister Incorporated`,
+      title: `${event.name} - Event | Sinister Incorporated`,
     };
   } catch (error) {
     log.error(
