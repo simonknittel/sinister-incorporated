@@ -62,7 +62,7 @@ export const FleetTile = async ({ className, event }: Props) => {
       }}
     >
       <h2 className="font-bold mb-4 flex gap-2 items-center">
-        <MdWorkspaces /> Verfügbare Flotte
+        <MdWorkspaces /> Flotte
       </h2>
 
       {countedOrgShips.length > 0 ? (

@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
 import { prisma } from "~/server/db";
 import AssignShip from "./AssignShip";
-import MyShipTile from "./MyShipTile";
+import { MyShipTile } from "./MyShipTile";
 
 type Props = Readonly<{
   className?: string;
@@ -56,7 +56,7 @@ export const MyFleetTile = async ({ className }: Props) => {
       <h2 className="font-bold">Mein Schiffe</h2>
 
       {myShips.map((ship) => (
-        <MyShipTile key={ship.id} ship={ship} />
+        <MyShipTile key={ship.id} ship={ship} className="w-full" />
       ))}
 
       <AssignShip data={allVariants} />

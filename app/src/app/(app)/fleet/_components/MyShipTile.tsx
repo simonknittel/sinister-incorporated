@@ -4,10 +4,12 @@ import {
   type Ship,
   type Variant,
 } from "@prisma/client";
+import clsx from "clsx";
 import DeleteShip from "./DeleteShip";
 import EditShip from "./EditShip";
 
-interface Props {
+type Props = Readonly<{
+  className?: string;
   ship: Ship & {
     variant: Variant & {
       series: Series & {
@@ -15,11 +17,16 @@ interface Props {
       };
     };
   };
-}
+}>;
 
-const MyShipTile = ({ ship }: Readonly<Props>) => {
+export const MyShipTile = ({ className, ship }: Props) => {
   return (
-    <article className="bg-neutral-800/50  rounded-2xl overflow-hidden">
+    <article
+      className={clsx(
+        className,
+        "bg-neutral-800/50 rounded-2xl overflow-hidden",
+      )}
+    >
       <div className="flex justify-between items-center">
         <h3 className="font-bold p-4">{ship.name || ship.variant.name}</h3>
 
@@ -46,5 +53,3 @@ const MyShipTile = ({ ship }: Readonly<Props>) => {
     </article>
   );
 };
-
-export default MyShipTile;
