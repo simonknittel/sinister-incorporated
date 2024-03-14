@@ -1,8 +1,9 @@
 import clsx from "clsx";
 import { groupBy } from "lodash";
+import { MdWorkspaces } from "react-icons/md";
 import { prisma } from "scripts/prisma";
-import { type getEvent } from "~/_lib/getEvent";
-import { getEventUsers } from "~/_lib/getEventUsers";
+import { type getEvent } from "~/_lib/discord/getEvent";
+import { getEventUsers } from "~/_lib/discord/getEventUsers";
 import FleetTable from "~/app/(app)/fleet/_components/FleetTable";
 
 type Props = Readonly<{
@@ -60,7 +61,9 @@ export const FleetTile = async ({ className, event }: Props) => {
         gridArea: "fleet",
       }}
     >
-      <h2 className="font-bold mb-4">Verfügbare Flotte</h2>
+      <h2 className="font-bold mb-4 flex gap-2 items-center">
+        <MdWorkspaces /> Verfügbare Flotte
+      </h2>
 
       {countedOrgShips.length > 0 ? (
         <FleetTable ships={countedOrgShips} />

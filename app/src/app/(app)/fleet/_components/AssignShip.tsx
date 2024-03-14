@@ -1,9 +1,9 @@
 "use client";
 
 import { type Manufacturer, type Series, type Variant } from "@prisma/client";
-import clsx from "clsx";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
+import Button from "~/app/_components/Button";
 import AssignShipModal from "./AssignShipModal";
 
 interface Props {
@@ -20,15 +20,13 @@ const AssignShip = ({ className, data = [] }: Readonly<Props>) => {
 
   return (
     <>
-      <button
-        className={clsx(
-          className,
-          "flex items-center justify-center gap-2 text-sinister-red-500 border-sinister-red-500 border rounded-2xl font-bold uppercase hover:text-sinister-red-300 hover:border-sinister-red-300 min-h-[3rem] lg:min-h-[6rem]",
-        )}
+      <Button
         onClick={() => setIsOpen(true)}
+        variant="tertiary"
+        className={className}
       >
         Hinzufügen <FaPlus />
-      </button>
+      </Button>
 
       <AssignShipModal
         isOpen={isOpen}

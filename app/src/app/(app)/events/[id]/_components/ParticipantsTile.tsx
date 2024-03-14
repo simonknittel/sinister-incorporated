@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { FaExternalLinkAlt } from "react-icons/fa";
-import { type getEvent } from "~/_lib/getEvent";
-import { getEventUsers } from "~/_lib/getEventUsers";
+import { FaExternalLinkAlt, FaUsers } from "react-icons/fa";
+import { type getEvent } from "~/_lib/discord/getEvent";
+import { getEventUsers } from "~/_lib/discord/getEventUsers";
 import { prisma } from "~/server/db";
 
 type Props = Readonly<{
@@ -54,7 +54,10 @@ export const ParticipantsTile = async ({ className, event }: Props) => {
         "rounded-2xl bg-neutral-800/50 p-4 lg:p-8 overflow-auto",
       )}
     >
-      <h2 className="font-bold">Teilnehmer ({event.user_count})</h2>
+      <h2 className="font-bold flex gap-2 items-center">
+        <FaUsers />
+        Teilnehmer ({event.user_count})
+      </h2>
 
       {resolvedUsers.length > 0 ? (
         <div className="flex gap-2 flex-wrap mt-4">

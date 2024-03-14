@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
-import { type getEvent } from "~/_lib/getEvent";
+import { type getEvent } from "~/_lib/discord/getEvent";
 
 const TimeAgoContainer = dynamic(
   () => import("../../../_components/TimeAgoContainer"),
