@@ -59,19 +59,23 @@ export default async function Page({ params }: Props) {
   const { date, data: event } = await getEvent(params.id);
 
   return (
-    <main className="p-2 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl mb-4">
         <span className="text-neutral-500">Event /</span>
         <h1>{event.name}</h1>
       </div>
 
-      <div className="flex gap-8 flex-col lg:flex-row lg:items-start">
-        <div className="lg:w-2/3 flex flex-col gap-4">
+      <div className="flex gap-8 flex-col-reverse 2xl:flex-row 2xl:items-start">
+        <div className="flex flex-col gap-4 2xl:flex-1">
           <ParticipantsTile event={event} />
           {showFleetTile && <FleetTile event={event} />}
         </div>
 
-        <OverviewTile event={event} date={date} className="lg:w-1/3" />
+        <OverviewTile
+          event={event}
+          date={date}
+          className="2xl:w-[480px] 2xl:flex-none"
+        />
       </div>
     </main>
   );

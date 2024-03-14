@@ -14,6 +14,9 @@ export default {
         "sinister-text-gradient":
           "radial-gradient(#BB2222, hsl(0 69% 30% / 1))",
       },
+      screens: {
+        "3xl": "1920px",
+      },
     },
   },
   plugins: [],

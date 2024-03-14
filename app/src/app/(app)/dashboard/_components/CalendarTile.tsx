@@ -22,7 +22,12 @@ export const CalendarTile = async ({ className }: Props) => {
   const { date, data: events } = await getEvents();
 
   return (
-    <section className={clsx(className, "flex flex-col gap-4 items-center")}>
+    <section
+      className={clsx(
+        className,
+        "flex flex-col gap-4 items-center 3xl:overflow-hidden",
+      )}
+    >
       <Hero text="Kalender" size="md" />
 
       {events

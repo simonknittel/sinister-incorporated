@@ -8,6 +8,7 @@
     "dotenv.dotenv-vscode",
     "streetsidesoftware.code-spell-checker-german",
     "vitest.explorer",
-    "ryanluker.vscode-coverage-gutters"
+    "ryanluker.vscode-coverage-gutters",
+    "clinyong.vscode-css-modules"
   ]
 }
