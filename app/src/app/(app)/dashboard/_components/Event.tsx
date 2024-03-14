@@ -25,11 +25,12 @@ export const Event = async ({ className, event }: Props) => {
     event.scheduled_start_time.toISOString().split("T")[0] ===
     new Date().toISOString().split("T")[0];
 
-  // Discord recommends 800x320px
-  const originalWidth = 800;
-  const originalHeight = 320;
-  const targetHeight = 160;
-  const targetWidth = (originalWidth / originalHeight) * targetHeight;
+  /**
+   * Image size:
+   * Discord recommends 800x320px.
+   * Our maximum height should be 160px. Therefore, we calculate the width based on the aspect ratio.
+   * 800 / 320 * 160 = 400
+   */
 
   return (
     <article className={clsx(className, "rounded-2xl overflow-hidden w-full")}>
@@ -39,19 +40,22 @@ export const Event = async ({ className, event }: Props) => {
         </div>
       )}
 
-      <div className="flex flex-col lg:flex-row bg-neutral-800/50">
+      <div className="flex flex-col 3xl:flex-row bg-neutral-800/50">
         {event.image && (
-          <Image
-            src={`https://cdn.discordapp.com/guild-events/${event.id}/${event.image}.webp?size=1024`}
-            alt=""
-            width={targetWidth}
-            height={targetHeight}
-            className="flex-initial"
-          />
+          <div className="3xl:flex-grow-0 3xl:flex-shrink-0 3xl:basis-[400px] max-h-[160px] flex justify-center">
+            <Image
+              src={`https://cdn.discordapp.com/guild-events/${event.id}/${event.image}.webp?size=1024`}
+              alt=""
+              width={400}
+              height={160}
+            />
+          </div>
         )}
 
-        <div className="flex-1 flex flex-col gap-2 p-4 lg:p-8">
-          <h2 className="font-bold text-xl">{event.name}</h2>
+        <div className="flex-1 flex flex-col gap-2 p-4 lg:p-8 3xl:overflow-hidden">
+          <h2 className="font-bold text-xl 3xl:text-ellipsis 3xl:whitespace-nowrap 3xl:overflow-hidden">
+            {event.name}
+          </h2>
 
           <p>
             <span className="text-neutral-500">Start:</span>{" "}
@@ -74,7 +78,7 @@ export const Event = async ({ className, event }: Props) => {
           </p>
         </div>
 
-        <div className="flex-initial flex flex-col gap-2 p-4 pt-0 lg:p-8">
+        <div className="flex-initial flex flex-col gap-2 p-4 pt-0 lg:pl-8 lg:pr-8 lg:pb-8 3xl:pt-8">
           <Link
             href={`https://discord.com/events/${event.guild_id}/${event.id}`}
             className="flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-neutral-500 text-neutral-500 hover:border-neutral-300 active:border-neutral-300 hover:text-neutral-300 active:text-neutral-300 px-6"

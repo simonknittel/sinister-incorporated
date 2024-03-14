@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { type Metadata } from "next";
+import { Suspense } from "react";
 import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
 import { Hero } from "~/app/_components/Hero";
 import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
@@ -7,6 +8,7 @@ import { CalendarTile } from "./_components/CalendarTile";
 import { ProfileTile } from "./_components/ProfileTile";
 import { QuotesTile } from "./_components/QuotesTile";
 import { SpynetSearchTile } from "./_components/SpynetSearchTile";
+import { TileSkeleton } from "./_components/TileSkeleton";
 
 export const metadata: Metadata = {
   title: "Dashboard | Sinister Incorporated",
@@ -25,7 +27,7 @@ export default async function Page() {
   const showSpynetSearchTile = !(await getUnleashFlag("DisableAlgolia"));
 
   return (
-    <main className="p-2 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
         <Hero text="Sinister Inc" />
       </div>
@@ -35,9 +37,13 @@ export default async function Page() {
           "flex gap-8 flex-col xl:flex-row": showEventsTile,
         })}
       >
-        {showEventsTile && <CalendarTile className="xl:w-2/3" />}
+        {showEventsTile && (
+          <Suspense fallback={<TileSkeleton className="flex-1" />}>
+            <CalendarTile className="flex-1" />
+          </Suspense>
+        )}
 
-        <div className="flex flex-col gap-4 xl:w-1/3">
+        <div className="flex flex-col gap-4 xl:w-[480px] flex-none">
           {showSpynetSearchTile && <SpynetSearchTile />}
           <ProfileTile />
         </div>
