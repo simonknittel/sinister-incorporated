@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import dynamic from "next/dynamic";
-import { getEvents } from "~/_lib/getEvents";
+import { getEvents } from "~/_lib/discord/getEvents";
 import { Hero } from "~/app/_components/Hero";
 import { Event } from "./Event";
 

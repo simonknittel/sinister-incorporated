@@ -73,7 +73,7 @@ export default async function Page({ params }: Readonly<Props>) {
   if (!entity) notFound();
 
   return (
-    <main className="p-2 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/spynet/search"

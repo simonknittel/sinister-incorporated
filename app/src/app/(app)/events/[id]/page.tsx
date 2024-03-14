@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 import { serializeError } from "serialize-error";
 import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
-import { getEvent } from "~/_lib/getEvent";
+import { getEvent } from "~/_lib/discord/getEvent";
 import { log } from "~/_lib/logging";
 import { FleetTile } from "./_components/FleetTile";
 import { OverviewTile } from "./_components/OverviewTile";

@@ -8,7 +8,7 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
-import { RiSpaceShipFill, RiSwordFill } from "react-icons/ri";
+import { RiSwordFill } from "react-icons/ri";
 import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import { Footer } from "~/app/_components/Footer";
 import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
@@ -65,82 +65,25 @@ const Sidebar = async () => {
                 Preview Channel
               </Link>
             </li> */}
+
+            {authentication.authorize([
+              {
+                resource: "orgFleet",
+                operation: "read",
+              },
+            ]) && (
+              <li>
+                <Link
+                  href="/fleet"
+                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                  prefetch={false}
+                >
+                  <MdWorkspaces />
+                  Flotte
+                </Link>
+              </li>
+            )}
           </ul>
-
-          {authentication.authorize([
-            {
-              resource: "orgFleet",
-              operation: "read",
-            },
-            {
-              resource: "ship",
-              operation: "manage",
-            },
-            {
-              resource: "manufacturersSeriesAndVariants",
-              operation: "manage",
-            },
-          ]) && (
-            <div className="mt-4">
-              <p className="ml-4 text-neutral-500 mt-4">Flotte</p>
-
-              <ul>
-                {authentication.authorize([
-                  {
-                    resource: "orgFleet",
-                    operation: "read",
-                  },
-                ]) && (
-                  <li>
-                    <Link
-                      href="/fleet"
-                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                      prefetch={false}
-                    >
-                      <MdWorkspaces />
-                      Übersicht
-                    </Link>
-                  </li>
-                )}
-
-                {authentication.authorize([
-                  {
-                    resource: "ship",
-                    operation: "manage",
-                  },
-                ]) && (
-                  <li>
-                    <Link
-                      href="/fleet/my-ships"
-                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                      prefetch={false}
-                    >
-                      <RiSpaceShipFill />
-                      Meine Schiffe
-                    </Link>
-                  </li>
-                )}
-
-                {authentication.authorize([
-                  {
-                    resource: "manufacturersSeriesAndVariants",
-                    operation: "manage",
-                  },
-                ]) && (
-                  <li>
-                    <Link
-                      href="/fleet/settings"
-                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                      prefetch={false}
-                    >
-                      <FaCog />
-                      Einstellungen
-                    </Link>
-                  </li>
-                )}
-              </ul>
-            </div>
-          )}
 
           {authentication.authorize([
             {
@@ -295,6 +238,24 @@ const Sidebar = async () => {
                     >
                       <FaLock />
                       Rollen
+                    </Link>
+                  </li>
+                )}
+
+                {authentication.authorize([
+                  {
+                    resource: "manufacturersSeriesAndVariants",
+                    operation: "manage",
+                  },
+                ]) && (
+                  <li>
+                    <Link
+                      href="/fleet/settings"
+                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                      prefetch={false}
+                    >
+                      <FaCog />
+                      Schiffe
                     </Link>
                   </li>
                 )}
