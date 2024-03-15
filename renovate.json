@@ -26,6 +26,13 @@
         "@biomejs/biome"
       ],
       "automerge": false
+    },
+    {
+      "matchPackageNames": [
+        "mysql",
+        "postgres"
+      ],
+      "enabled": false
     }
   ],
   "configMigration": true,
