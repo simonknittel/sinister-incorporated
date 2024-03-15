@@ -1,8 +1,10 @@
 import { cache } from "react";
 import { z } from "zod";
 import { env } from "~/env.mjs";
+import { checkResponseForError } from "./checkResponseForError";
 
 export const getEventUsers = cache(async (id: string) => {
+  // https://discord.com/developers/docs/resources/guild-scheduled-event#get-guild-scheduled-event-users
   const response = await fetch(
     `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}/users?with_member=true`,
     {
@@ -16,29 +18,14 @@ export const getEventUsers = cache(async (id: string) => {
   );
 
   const body: unknown = await response.json();
-  console.log(body);
-  const data = scheduledEventUsersResponseSchema.parse(body);
+  const data = responseSchema.parse(body);
 
-  if ("message" in data) {
-    if (data.message === "You are being rate limited.") {
-      throw new Error("Rate Limiting der Discord API");
-    } else if (data.message === "Unknown Guild") {
-      throw new Error(
-        `Der Discord Server "${env.DISCORD_GUILD_ID}" existiert nicht.`,
-      );
-    } else if (data.message === "Missing Access") {
-      throw new Error(
-        `Diese Anwendung hat keinen Zugriff auf den Discord Server "${env.DISCORD_GUILD_ID}".`,
-      );
-    } else {
-      throw new Error(data.message);
-    }
-  }
+  checkResponseForError(data);
 
   return data;
 });
 
-const scheduledEventUsersResponseSchema = z.union([
+const responseSchema = z.union([
   z.array(
     z.object({
       user: z.object({
