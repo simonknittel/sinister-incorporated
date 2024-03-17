@@ -1,6 +1,6 @@
 # Setup Test and Production
 
-## 1. Set up PlanetScale
+## 1. Set up a PostgreSQL database
 
 ## 2. Set up Mailgun
 

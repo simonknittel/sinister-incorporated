@@ -4,6 +4,7 @@
 		"hashicorp",
 		"oidc",
 		"OIDC",
+		"postgres",
 		"prisma",
 		"tfbackend",
 		"tfvars"

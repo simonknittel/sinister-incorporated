@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-    provider     = "mysql"
+    provider     = "postgresql"
     url          = env("DATABASE_URL")
-    relationMode = "prisma" // PlanetScale doesn't support foreign keys
+    relationMode = "prisma" // PlanetScale doesn't support foreign keys // TODO: Remove since we are not using PlanetScale anymore
 }
 
 //
@@ -89,7 +89,7 @@ model OperationUnit {
     members     OperationMember[]
 
     parentUnitId String?
-    parentUnit   OperationUnit?  @relation("ChildUnits", fields: [parentUnitId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    parentUnit   OperationUnit?  @relation("ChildUnits", fields: [parentUnitId], references: [id], onDelete: Restrict, onUpdate: Restrict)
     childUnits   OperationUnit[] @relation("ChildUnits")
 }
 

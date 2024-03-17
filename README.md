@@ -18,7 +18,6 @@ Tools of the Star Citizen organization _Sinister Incorporated_.
 - [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Prisma](https://www.prisma.io/)
-- [PlanetScale](https://planetscale.com/)
 - [Vercel](https://vercel.com/)
 - [NextAuth.js](https://next-auth.js.org/)
 - [React Table](https://github.com/TanStack/table)
@@ -29,6 +28,7 @@ Tools of the Star Citizen organization _Sinister Incorporated_.
 - [React Email](https://react.email/)
 - [Mailgun](https://www.mailgun.com/)
 - [AWS](https://aws.amazon.com/)
+- [PostgreSQL](https://www.postgresql.org/)
 
 ## Setup
 

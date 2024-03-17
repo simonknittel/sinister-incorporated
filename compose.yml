@@ -1,11 +1,11 @@
 version: "3.8"
 
 services:
-  db:
-    image: mysql:8.3.0
+  psql:
+    image: postgres:15.6-alpine3.19
     restart: on-failure
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: db
     ports:
-      - 3306:3306
+      - 5432:5432
