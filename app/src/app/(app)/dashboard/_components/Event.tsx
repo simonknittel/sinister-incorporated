@@ -80,7 +80,7 @@ export const Event = async ({ className, event }: Props) => {
 
         <div className="flex-initial flex flex-col gap-2 p-4 pt-0 lg:pl-8 lg:pr-8 lg:pb-8 3xl:pt-8">
           <Link
-            href={`https://discord.com/events/${event.guild_id}/${event.id}`}
+            href={`discord://-/events/${event.guild_id}/${event.id}`}
             className="flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-neutral-500 text-neutral-500 hover:border-neutral-300 active:border-neutral-300 hover:text-neutral-300 active:text-neutral-300 px-6"
             prefetch={false}
           >
