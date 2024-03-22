@@ -83,6 +83,8 @@ declare module "next-auth" {
   }
 }
 
+const adapter = PrismaAdapter(prisma);
+
 const maxAge = 60 * 60 * 24 * 7; // 7 days
 
 /**
@@ -276,15 +278,22 @@ export const authOptions: NextAuthOptions = {
             latestConfirmedHandleEntityLog?.content ||
             latestConfirmedDiscordIdEntityLog.entityId;
         }
-
-        await requestEmailConfirmation(user.id, user.email);
       }
 
       return true;
     },
   },
 
-  adapter: PrismaAdapter(prisma),
+  adapter: {
+    ...adapter,
+    createUser: async (user) => {
+      const createdUser = await adapter.createUser!(user);
+
+      await requestEmailConfirmation(createdUser.id, user.email);
+
+      return createdUser;
+    },
+  },
 
   providers: [
     DiscordProvider({
