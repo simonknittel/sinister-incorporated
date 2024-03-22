@@ -19,13 +19,13 @@ export const requestEmailConfirmation = async (
 
   await prisma.emailConfirmationToken.deleteMany({
     where: {
-      userId: userId,
+      userId,
     },
   });
 
   await prisma.emailConfirmationToken.create({
     data: {
-      userId: userId,
+      userId,
       token: emailConfirmationToken,
       email: userEmail,
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
