@@ -54,9 +54,11 @@ export default async function Page({ searchParams }: Readonly<Props>) {
 
           <form action={requestEmailConfirmationAction}>
             {newUser ? (
-              <p>Zur Bestätigung haben wir dir eine E-Mail geschickt.</p>
+              <p className="mb-3 font-bold">
+                Zur Bestätigung haben wir dir eine E-Mail geschickt.
+              </p>
             ) : (
-              <div className="flex justify-center mt-4 mb-3">
+              <div className="flex justify-center mt-2 mb-3">
                 <RequestConfirmationEmailButton>
                   Bestätigungs-E-Mail verschicken
                 </RequestConfirmationEmailButton>
