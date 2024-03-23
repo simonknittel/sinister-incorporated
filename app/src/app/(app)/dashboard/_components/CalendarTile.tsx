@@ -35,8 +35,8 @@ export const CalendarTile = async ({ className }: Props) => {
           (a, b) =>
             a.scheduled_start_time.getTime() - b.scheduled_start_time.getTime(),
         )
-        .map((event) => (
-          <Event key={event.id} event={event} />
+        .map((event, index) => (
+          <Event key={event.id} event={event} index={index} />
         ))}
 
       {events.length === 0 && (
