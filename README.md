@@ -1,6 +1,16 @@
-# Sinister Incorporated
+<h1 align="center">Sinister Incorporated</h1>
 
-Tools of the Star Citizen organization _Sinister Incorporated_.
+<p align="center">Monorepo for the apps of the Star Citizen organization `Sinister Incorporated`.</p>
+
+<p align="center">
+  <a href="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-dashboard.png" style="display: block;">
+    <img src="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-dashboard.png?raw=true" height="240">
+  </a>
+
+  <a href="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-spynet-citizen.png" style="display: block;">
+    <img src="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-spynet-citizen.png?raw=true" height="240">
+  </a>
+</p>
 
 ## Features
 

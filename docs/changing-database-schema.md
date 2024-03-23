@@ -1,9 +1,8 @@
 # Changing database schema
 
-1. Update `schema.prisma`
-2. Start local database: `docker compose up`
-3. Update local database: `npx prisma db push`
-4. Commit and push everything to develop
-5. Update stage database: `DATABASE_URL= npx prisma db push`
-6. Run production deployment
-7. Update production database: `DATABASE_URL= npx prisma db push`
+1. Update `schema.prisma` as required
+2. Run `npx prisma db push`
+3. Create migration `npx prisma migrate dev --name my-migration`
+4. Commit
+5. Apply to other developer databases: `npx prisma migrate dev`
+6. Apply to production databases: `DATABASE_URL=... npx prisma migrate deploy`
