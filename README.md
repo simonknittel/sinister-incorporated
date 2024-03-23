@@ -4,11 +4,11 @@
 
 <p align="center">
   <a href="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-dashboard.png" style="display: block;">
-    <img src="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-dashboard.png?raw=true" height="240">
+    <img src="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-dashboard.png?raw=true" height="200" width="361">
   </a>
 
   <a href="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-spynet-citizen.png" style="display: block;">
-    <img src="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-spynet-citizen.png?raw=true" height="240">
+    <img src="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-spynet-citizen.png?raw=true" height="200" width="361">
   </a>
 </p>
 
