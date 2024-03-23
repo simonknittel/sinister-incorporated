@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { type Metadata } from "next";
 import { Suspense } from "react";
 import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   const authentication = await authenticatePage();
 
-  const showEventsTile = authentication.authorize([
+  const showCalendar = authentication.authorize([
     {
       resource: "event",
       operation: "read",
@@ -32,12 +31,8 @@ export default async function Page() {
         <Hero text="Sinister Inc" />
       </div>
 
-      <div
-        className={clsx("mt-8", {
-          "flex gap-8 flex-col xl:flex-row": showEventsTile,
-        })}
-      >
-        {showEventsTile && (
+      <div className="mt-8 flex gap-8 flex-col xl:flex-row justify-center">
+        {showCalendar && (
           <Suspense fallback={<TileSkeleton className="flex-1" />}>
             <CalendarTile className="flex-1" />
           </Suspense>

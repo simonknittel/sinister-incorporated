@@ -15,7 +15,7 @@ import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
 import Account from "./Account";
 import { Chip } from "./Chip";
 
-const Sidebar = async () => {
+export const Sidebar = async () => {
   const authentication = await requireAuthentication();
 
   return (
@@ -90,10 +90,6 @@ const Sidebar = async () => {
               resource: "citizen",
               operation: "read",
             },
-            {
-              resource: "noteType",
-              operation: "manage",
-            },
           ]) && (
             <div className="mt-4">
               <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
@@ -162,46 +158,40 @@ const Sidebar = async () => {
                     </li>
                   </>
                 )}
-
-                {authentication.authorize([
-                  {
-                    resource: "noteType",
-                    operation: "manage",
-                  },
-                ]) && (
-                  <li>
-                    <Link
-                      href="/spynet/settings"
-                      className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                      prefetch={false}
-                    >
-                      <FaCog />
-                      Einstellungen
-                    </Link>
-                  </li>
-                )}
               </ul>
             </div>
           )}
 
-          {authentication.authorize([
+          {(authentication.authorize([
             {
               resource: "user",
               operation: "read",
             },
-            {
-              resource: "role",
-              operation: "manage",
-            },
-            {
-              resource: "classificationLevel",
-              operation: "manage",
-            },
-            {
-              resource: "analytics",
-              operation: "manage",
-            },
-          ]) && (
+          ]) ||
+            authentication.authorize([
+              {
+                resource: "role",
+                operation: "manage",
+              },
+            ]) ||
+            authentication.authorize([
+              {
+                resource: "classificationLevel",
+                operation: "manage",
+              },
+            ]) ||
+            authentication.authorize([
+              {
+                resource: "noteType",
+                operation: "manage",
+              },
+            ]) ||
+            authentication.authorize([
+              {
+                resource: "analytics",
+                operation: "manage",
+              },
+            ])) && (
             <div className="mt-4">
               <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
@@ -260,16 +250,24 @@ const Sidebar = async () => {
                   </li>
                 )}
 
-                {authentication.authorize([
+                {(authentication.authorize([
                   {
-                    resource: "classificationLevel",
+                    resource: "noteType",
                     operation: "manage",
                   },
-                  {
-                    resource: "analytics",
-                    operation: "manage",
-                  },
-                ]) && (
+                ]) ||
+                  authentication.authorize([
+                    {
+                      resource: "classificationLevel",
+                      operation: "manage",
+                    },
+                  ]) ||
+                  authentication.authorize([
+                    {
+                      resource: "analytics",
+                      operation: "manage",
+                    },
+                  ])) && (
                   <li>
                     <Link
                       href="/settings"
@@ -291,5 +289,3 @@ const Sidebar = async () => {
     </div>
   );
 };
-
-export default Sidebar;
