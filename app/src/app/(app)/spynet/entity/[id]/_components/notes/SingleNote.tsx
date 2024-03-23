@@ -69,9 +69,7 @@ const SingleNote = async ({ note }: Props) => {
         <div className="px-4 pt-4 flex gap-2 relative z-10 items-start">
           <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-[2px]" />
           <div className="flex gap-2 lg:gap-4 flex-wrap">
-            <p className="font-bold text-sm">
-              Diese Notiz ist noch nicht bestätigt.
-            </p>
+            <p className="font-bold text-sm">Unbestätigt</p>
 
             {authentication.authorize([
               {

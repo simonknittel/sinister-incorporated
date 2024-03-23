@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { log } from "~/_lib/logging";
 import { authOptions } from "~/server/auth";
-import comparePermissionSets from "./comparePermissionSets";
 import { type PermissionSet } from "./PermissionSet";
+import comparePermissionSets from "./comparePermissionSets";
 
 export const authenticate = cache(async () => {
   const session = await getServerSession(authOptions);
@@ -23,11 +23,13 @@ export const authenticate = cache(async () => {
 
 export async function authenticatePage() {
   const authentication = await authenticate();
+
   if (!authentication) {
     log.info("Unauthenticated request to page", {
       // TODO: Add request path
       reason: "No session",
     });
+
     redirect("/");
   }
 
@@ -35,6 +37,7 @@ export async function authenticatePage() {
     ...authentication,
     authorizePage: (requiredPermissionSets?: PermissionSet[]) => {
       const result = authentication.authorize(requiredPermissionSets);
+
       if (!result) {
         log.info("Unauthorized request to page", {
           userId: authentication.session.user.id,
@@ -42,6 +45,7 @@ export async function authenticatePage() {
         });
         redirect("/");
       }
+
       return result;
     },
   };

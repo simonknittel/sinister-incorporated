@@ -1,4 +1,5 @@
 import { type Entity } from "@prisma/client";
+import clsx from "clsx";
 import { FaLock } from "react-icons/fa";
 import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import { getAssignableRoles } from "~/app/_lib/getAssignableRoles";
@@ -6,11 +7,12 @@ import { getAssignedAndVisibleRoles } from "~/app/_lib/getAssignedAndVisibleRole
 import AddRoles from "./AddRoles";
 import SingleRole from "./SingleRole";
 
-interface Props {
+type Props = Readonly<{
+  className?: string;
   entity: Entity;
-}
+}>;
 
-const Roles = async ({ entity }: Readonly<Props>) => {
+export const Roles = async ({ className, entity }: Props) => {
   const authentication = await requireAuthentication();
 
   const assignedAndVisibleRoles = await getAssignedAndVisibleRoles(entity);
@@ -22,10 +24,7 @@ const Roles = async ({ entity }: Readonly<Props>) => {
 
   return (
     <section
-      className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50 "
-      style={{
-        gridArea: "roles",
-      }}
+      className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
     >
       <h2 className="font-bold flex gap-2 items-center">
         <FaLock /> Rollen
@@ -66,5 +65,3 @@ const Roles = async ({ entity }: Readonly<Props>) => {
     </section>
   );
 };
-
-export default Roles;

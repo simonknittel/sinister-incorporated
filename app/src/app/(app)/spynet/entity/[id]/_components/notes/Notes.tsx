@@ -4,6 +4,7 @@ import {
   type EntityLogAttribute,
   type NoteType,
 } from "@prisma/client";
+import clsx from "clsx";
 import { FaListAlt } from "react-icons/fa";
 import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import Tab from "~/app/_components/tabs/Tab";
@@ -15,11 +16,12 @@ import NoteTypeTab from "./Tab";
 import isAllowedToRead from "./lib/isAllowedToRead";
 import isAllowedToReadRedacted from "./lib/isAllowedToReadRedacted";
 
-interface Props {
+type Props = Readonly<{
+  className?: string;
   entity: Entity;
-}
+}>;
 
-const Notes = async ({ entity }: Readonly<Props>) => {
+export const Notes = async ({ className, entity }: Props) => {
   const authentication = await requireAuthentication();
 
   const [notes, allNoteTypes] = await prisma.$transaction([
@@ -128,10 +130,7 @@ const Notes = async ({ entity }: Readonly<Props>) => {
 
   return (
     <section
-      className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50  col-span-2 w-full place-self-start"
-      style={{
-        gridArea: "notes",
-      }}
+      className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
     >
       <h2 className="font-bold flex gap-2 items-center mb-2">
         <FaListAlt /> Notizen
@@ -158,5 +157,3 @@ const Notes = async ({ entity }: Readonly<Props>) => {
     </section>
   );
 };
-
-export default Notes;

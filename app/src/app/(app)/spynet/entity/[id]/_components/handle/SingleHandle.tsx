@@ -44,9 +44,7 @@ const SingleHandle = ({ log }: Readonly<Props>) => {
         <div className="px-4 pt-4 flex items-start gap-2 relative z-10">
           <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-1" />
           <div className="flex gap-4">
-            <p className="font-bold">
-              Dieser Eintrag ist noch nicht bestätigt.
-            </p>
+            <p className="font-bold">Unbestätigt</p>
 
             {authentication &&
               authentication.authorize([

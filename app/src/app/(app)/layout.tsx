@@ -9,7 +9,7 @@ import ImpersonationBannerContainer from "./_components/ImpersonationBannerConta
 import PreviewComments from "./_components/PreviewComments";
 import QueryClientProviderContainer from "./_components/QueryClientProviderContainer";
 import SessionProviderContainer from "./_components/SessionProviderContainer";
-import Sidebar from "./_components/Sidebar";
+import { Sidebar } from "./_components/Sidebar";
 import SidebarContainer from "./_components/SidebarContainer";
 import SidebarSkeleton from "./_components/SidebarSkeleton";
 

@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -10,13 +9,12 @@ import { log } from "~/_lib/logging";
 import { prisma } from "~/server/db";
 import { Wip } from "../../../../_components/Wip";
 import DeleteEntity from "./_components/DeleteEntity";
-import Overview from "./_components/Overview";
-import OverviewSkeleton from "./_components/OverviewSkeleton";
-import Notes from "./_components/notes/Notes";
-import NotesSkeleton from "./_components/notes/NotesSkeleton";
-import Roles from "./_components/roles/Roles";
-import RolesSkeleton from "./_components/roles/RolesSkeleton";
-import styles from "./page.module.css";
+import { Overview } from "./_components/Overview";
+import { OverviewSkeleton } from "./_components/OverviewSkeleton";
+import { Notes } from "./_components/notes/Notes";
+import { NotesSkeleton } from "./_components/notes/NotesSkeleton";
+import { Roles } from "./_components/roles/Roles";
+import { RolesSkeleton } from "./_components/roles/RolesSkeleton";
 
 const getEntity = cache(async (id: string) => {
   return prisma.entity.findUnique({
@@ -26,9 +24,9 @@ const getEntity = cache(async (id: string) => {
   });
 });
 
-interface Params {
+type Params = Readonly<{
   id: string;
-}
+}>;
 
 export async function generateMetadata({
   params,
@@ -56,11 +54,11 @@ export async function generateMetadata({
   }
 }
 
-interface Props {
+type Props = Readonly<{
   params: Params;
-}
+}>;
 
-export default async function Page({ params }: Readonly<Props>) {
+export default async function Page({ params }: Props) {
   const authentication = await authenticatePage();
   authentication.authorizePage([
     {
@@ -97,30 +95,29 @@ export default async function Page({ params }: Readonly<Props>) {
         ]) && <DeleteEntity entity={entity} />}
       </div>
 
-      <div className={clsx("mt-4", styles.pageGrid)}>
-        <Suspense fallback={<OverviewSkeleton />}>
-          <Overview entity={entity} />
-        </Suspense>
+      <div className="mt-4 flex flex-col xl:flex-row-reverse gap-8">
+        <div className="flex flex-col gap-4 md:flex-row xl:w-[720px]">
+          <Suspense fallback={<OverviewSkeleton className="md:w-1/2" />}>
+            <Overview entity={entity} className="md:w-1/2" />
+          </Suspense>
 
-        <Suspense fallback={<RolesSkeleton />}>
-          <Roles entity={entity} />
-        </Suspense>
+          <div className="flex flex-col gap-4 md:w-1/2">
+            <Suspense fallback={<RolesSkeleton />}>
+              <Roles entity={entity} />
+            </Suspense>
 
-        <section
-          className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50  flex flex-col"
-          style={{
-            gridArea: "organizations",
-          }}
-        >
-          <h2 className="font-bold flex gap-2 items-center mb-8">
-            <FaSitemap /> Organisationen
-          </h2>
+            <section className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col">
+              <h2 className="font-bold flex gap-2 items-center mb-8">
+                <FaSitemap /> Organisationen
+              </h2>
 
-          <Wip />
-        </section>
+              <Wip />
+            </section>
+          </div>
+        </div>
 
         <Suspense fallback={<NotesSkeleton />}>
-          <Notes entity={entity} />
+          <Notes entity={entity} className="flex-1 self-start" />
         </Suspense>
       </div>
     </main>
