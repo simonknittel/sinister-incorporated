@@ -1,4 +1,5 @@
 import { type Entity } from "@prisma/client";
+import clsx from "clsx";
 import { Suspense } from "react";
 import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
@@ -6,19 +7,17 @@ import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import { LastSeenAt } from "../../../citizen/_components/LastSeenAt";
 import { OverviewSection } from "./generic-log-type/OverviewSection";
 
-interface Props {
+type Props = Readonly<{
+  className?: string;
   entity: Entity;
-}
+}>;
 
-const Overview = async ({ entity }: Readonly<Props>) => {
+export const Overview = async ({ className, entity }: Props) => {
   const authentication = await requireAuthentication();
 
   return (
     <section
-      className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50 "
-      style={{
-        gridArea: "overview",
-      }}
+      className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
     >
       <h2 className="font-bold">Übersicht</h2>
 
@@ -95,5 +94,3 @@ const Overview = async ({ entity }: Readonly<Props>) => {
     </section>
   );
 };
-
-export default Overview;

@@ -27,7 +27,9 @@ export const OverviewSection = async ({
       </dt>
 
       <dd className="flex gap-4 items-center">
-        {entity[camelCase(type)] || <span className="italic">Unbekannt</span>}
+        <span className="whitespace-nowrap overflow-hidden text-ellipsis">
+          {entity[camelCase(type)] || <span className="italic">Unbekannt</span>}
+        </span>
 
         <HistoryModal type={type} entity={entity} />
       </dd>
