@@ -1,9 +1,8 @@
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Link from "next/link";
-import { FaDiscord } from "react-icons/fa";
 import { type getEvent } from "~/_lib/discord/getEvent";
+import { DiscordButton } from "~/app/(app)/_components/DiscordButton";
 
 const TimeAgoContainer = dynamic(
   () => import("../../../_components/TimeAgoContainer"),
@@ -40,6 +39,7 @@ export const OverviewTile = ({ className, event, date }: Props) => {
             width={800}
             height={320}
             className="flex-initial w-full"
+            priority
           />
         )}
 
@@ -85,13 +85,10 @@ export const OverviewTile = ({ className, event, date }: Props) => {
             </dd>
           </dl>
 
-          <Link
-            href={`discord://-/events/${event.guild_id}/${event.id}`}
-            className="mt-4 inline-flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-neutral-500 text-neutral-500 hover:border-neutral-300 active:border-neutral-300 hover:text-neutral-300 active:text-neutral-300 px-6"
-            prefetch={false}
-          >
-            Discord <FaDiscord />
-          </Link>
+          <DiscordButton
+            path={`events/${event.guild_id}/${event.id}`}
+            className="mt-4"
+          />
         </div>
       </div>
 

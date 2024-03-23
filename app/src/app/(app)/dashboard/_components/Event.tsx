@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { FaDiscord } from "react-icons/fa";
 import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
+import { DiscordButton } from "../../_components/DiscordButton";
 import TimeAgoContainer from "../../_components/TimeAgoContainer";
 
 type Props = Readonly<{
@@ -16,9 +16,10 @@ type Props = Readonly<{
     scheduled_end_time: Date;
     user_count: number;
   };
+  index: number;
 }>;
 
-export const Event = async ({ className, event }: Props) => {
+export const Event = async ({ className, event, index }: Props) => {
   const authentication = await requireAuthentication();
 
   const isToday =
@@ -48,6 +49,7 @@ export const Event = async ({ className, event }: Props) => {
               alt=""
               width={400}
               height={160}
+              priority={index < 3}
             />
           </div>
         )}
@@ -79,13 +81,7 @@ export const Event = async ({ className, event }: Props) => {
         </div>
 
         <div className="flex-initial flex flex-col gap-2 p-4 pt-0 lg:pl-8 lg:pr-8 lg:pb-8 3xl:pt-8">
-          <Link
-            href={`discord://-/events/${event.guild_id}/${event.id}`}
-            className="flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-neutral-500 text-neutral-500 hover:border-neutral-300 active:border-neutral-300 hover:text-neutral-300 active:text-neutral-300 px-6"
-            prefetch={false}
-          >
-            Discord <FaDiscord />
-          </Link>
+          <DiscordButton path={`events/${event.guild_id}/${event.id}`} />
 
           {authentication.authorize([
             {
