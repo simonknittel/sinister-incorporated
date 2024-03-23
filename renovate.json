@@ -29,7 +29,6 @@
     },
     {
       "matchPackageNames": [
-        "mysql",
         "postgres"
       ],
       "enabled": false
