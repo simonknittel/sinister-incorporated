@@ -36,6 +36,7 @@
     "algoliasearch": "4.22.1",
     "change-case": "5.4.3",
     "clsx": "2.1.0",
+    "cmdk": "1.0.0",
     "leva": "0.9.35",
     "lodash": "4.17.21",
     "lorem-ipsum": "2.0.8",

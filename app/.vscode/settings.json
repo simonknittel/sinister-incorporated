@@ -3,6 +3,7 @@
     "algoliasearch",
     "APAC",
     "clsx",
+    "cmdk",
     "esnext",
     "gltf",
     "lcov",
@@ -14,8 +15,10 @@
     "prisma",
     "pscale",
     "psdb",
+    "Strg",
     "trpc",
-    "uidotdev"
+    "uidotdev",
+    "vercel"
   ],
   "dotenv.enableAutocloaking": false,
   "typescript.tsdk": "node_modules/typescript/lib",

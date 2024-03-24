@@ -1,0 +1,211 @@
+import { Command } from "cmdk";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { FaCog, FaHome, FaLock, FaUsers } from "react-icons/fa";
+import { MdWorkspaces } from "react-icons/md";
+import useAuthentication from "~/_lib/auth/useAuthentication";
+import "./CmdK.css";
+
+type Props = Readonly<{
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}>;
+
+export const CmdK = ({ open, setOpen }: Props) => {
+  const authentication = useAuthentication();
+  const [search, setSearch] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    const down: EventListener = (e) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, [setOpen]);
+
+  if (!authentication) return null;
+
+  return (
+    <Command.Dialog
+      open={open}
+      onOpenChange={setOpen}
+      overlayClassName="cmdk"
+      contentClassName="cmdk"
+    >
+      <Command.Input value={search} onValueChange={setSearch} placeholder="" />
+
+      <Command.List>
+        <Command.Empty>Kein Treffer</Command.Empty>
+
+        <Command.Group heading="Dashboard">
+          <Command.Item
+            keywords={["Dashboard", "Startseite", "Homepage"]}
+            onSelect={() => {
+              router.push("/dashboard");
+              setOpen(false);
+            }}
+          >
+            <FaHome />
+            Öffnen
+          </Command.Item>
+        </Command.Group>
+
+        {(authentication.authorize([
+          {
+            resource: "orgFleet",
+            operation: "read",
+          },
+        ]) ||
+          authentication.authorize([
+            {
+              resource: "ship",
+              operation: "manage",
+            },
+          ])) && (
+          <Command.Group heading="Flotte">
+            <Command.Item
+              keywords={["Flotte", "Fleet", "Schiffe", "Ships"]}
+              onSelect={() => {
+                router.push("/fleet");
+                setOpen(false);
+              }}
+            >
+              <MdWorkspaces />
+              Übersicht öffnen
+            </Command.Item>
+          </Command.Group>
+        )}
+
+        {(authentication.authorize([
+          {
+            resource: "user",
+            operation: "read",
+          },
+        ]) ||
+          authentication.authorize([
+            {
+              resource: "role",
+              operation: "manage",
+            },
+          ]) ||
+          authentication.authorize([
+            {
+              resource: "classificationLevel",
+              operation: "manage",
+            },
+          ]) ||
+          authentication.authorize([
+            {
+              resource: "noteType",
+              operation: "manage",
+            },
+          ]) ||
+          authentication.authorize([
+            {
+              resource: "analytics",
+              operation: "manage",
+            },
+          ]) ||
+          authentication.authorize([
+            {
+              resource: "manufacturersSeriesAndVariants",
+              operation: "manage",
+            },
+          ])) && (
+          <Command.Group heading="Admin">
+            {(authentication.authorize([
+              {
+                resource: "noteType",
+                operation: "manage",
+              },
+            ]) ||
+              authentication.authorize([
+                {
+                  resource: "classificationLevel",
+                  operation: "manage",
+                },
+              ]) ||
+              authentication.authorize([
+                {
+                  resource: "analytics",
+                  operation: "manage",
+                },
+              ])) && (
+              <Command.Item
+                keywords={["Admin", "Settings"]}
+                onSelect={() => {
+                  router.push("/settings");
+                  setOpen(false);
+                }}
+              >
+                <FaCog />
+                Einstellungen öffnen
+              </Command.Item>
+            )}
+
+            {authentication.authorize([
+              {
+                resource: "role",
+                operation: "manage",
+              },
+            ]) && (
+              <Command.Item
+                keywords={["Admin", "Berechtigungen"]}
+                onSelect={() => {
+                  router.push("/roles");
+                  setOpen(false);
+                }}
+              >
+                <FaLock />
+                Rollen öffnen
+              </Command.Item>
+            )}
+
+            {authentication.authorize([
+              {
+                resource: "manufacturersSeriesAndVariants",
+                operation: "manage",
+              },
+            ]) && (
+              <Command.Item
+                keywords={["Admin", "Ships"]}
+                onSelect={() => {
+                  router.push("/fleet/settings");
+                  setOpen(false);
+                }}
+              >
+                <FaCog />
+                Schiffe öffnen
+              </Command.Item>
+            )}
+
+            {authentication.authorize([
+              {
+                resource: "user",
+                operation: "read",
+              },
+            ]) && (
+              <Command.Item
+                keywords={["Admin", "Users"]}
+                onSelect={() => {
+                  router.push("/users");
+                  setOpen(false);
+                }}
+              >
+                <FaUsers />
+                Benutzer öffnen
+              </Command.Item>
+            )}
+          </Command.Group>
+        )}
+      </Command.List>
+    </Command.Dialog>
+  );
+};
+
+export default CmdK;

@@ -1,0 +1,51 @@
+.cmdk[cmdk-overlay] {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background-color: rgb(38 38 38 / 0.5);
+  backdrop-filter: blur(8px);
+}
+
+.cmdk[cmdk-dialog] {
+  position: fixed;
+  left: 50%;
+  top: 15%;
+  transform: translateX(-50%);
+  z-index: 40;
+  background-color: rgb(38 38 38);
+  padding: 2rem;
+  padding-bottom: 1rem;
+  border-radius: 1rem;
+  width: 640px;
+}
+
+.cmdk [cmdk-input] {
+  padding: 0.5rem;
+  background-color: rgb(23 23 23);
+  border-radius: 0.25rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.cmdk [cmdk-group-heading] {
+  color: rgb(115 115 115);
+  padding-left: 1rem;
+  padding-top: 1rem;
+  margin-left: -1rem;
+  margin-right: -1rem;
+}
+
+.cmdk [cmdk-item] {
+  padding: 1rem;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cmdk [cmdk-item][data-selected="true"] {
+  background-color: rgb(64 64 64);
+  border-radius: 0.25rem;
+}

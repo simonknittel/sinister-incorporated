@@ -12,6 +12,7 @@ import { RiSwordFill } from "react-icons/ri";
 import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
 import { Footer } from "~/app/_components/Footer";
 import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
+import { CmdKLoader } from "../../_components/CmdKLoader";
 import Account from "./Account";
 import { Chip } from "./Chip";
 
@@ -22,6 +23,8 @@ export const Sidebar = async () => {
     <div className="flex h-full flex-col justify-between">
       <div>
         <Account />
+
+        <CmdKLoader className="mt-4 mx-auto" />
 
         <nav className="p-4 border-neutral-800">
           <ul>
@@ -66,12 +69,18 @@ export const Sidebar = async () => {
               </Link>
             </li> */}
 
-            {authentication.authorize([
+            {(authentication.authorize([
               {
                 resource: "orgFleet",
                 operation: "read",
               },
-            ]) && (
+            ]) ||
+              authentication.authorize([
+                {
+                  resource: "ship",
+                  operation: "manage",
+                },
+              ])) && (
               <li>
                 <Link
                   href="/fleet"
@@ -191,25 +200,43 @@ export const Sidebar = async () => {
                 resource: "analytics",
                 operation: "manage",
               },
+            ]) ||
+            authentication.authorize([
+              {
+                resource: "manufacturersSeriesAndVariants",
+                operation: "manage",
+              },
             ])) && (
             <div className="mt-4">
               <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
               <ul>
-                {authentication.authorize([
+                {(authentication.authorize([
                   {
-                    resource: "user",
-                    operation: "read",
+                    resource: "noteType",
+                    operation: "manage",
                   },
-                ]) && (
+                ]) ||
+                  authentication.authorize([
+                    {
+                      resource: "classificationLevel",
+                      operation: "manage",
+                    },
+                  ]) ||
+                  authentication.authorize([
+                    {
+                      resource: "analytics",
+                      operation: "manage",
+                    },
+                  ])) && (
                   <li>
                     <Link
-                      href="/users"
+                      href="/settings"
                       className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                       prefetch={false}
                     >
-                      <FaUsers />
-                      Benutzer
+                      <FaCog />
+                      Einstellungen
                     </Link>
                   </li>
                 )}
@@ -249,33 +276,20 @@ export const Sidebar = async () => {
                     </Link>
                   </li>
                 )}
-
-                {(authentication.authorize([
+                {authentication.authorize([
                   {
-                    resource: "noteType",
-                    operation: "manage",
+                    resource: "user",
+                    operation: "read",
                   },
-                ]) ||
-                  authentication.authorize([
-                    {
-                      resource: "classificationLevel",
-                      operation: "manage",
-                    },
-                  ]) ||
-                  authentication.authorize([
-                    {
-                      resource: "analytics",
-                      operation: "manage",
-                    },
-                  ])) && (
+                ]) && (
                   <li>
                     <Link
-                      href="/settings"
+                      href="/users"
                       className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                       prefetch={false}
                     >
-                      <FaCog />
-                      Einstellungen
+                      <FaUsers />
+                      Benutzer
                     </Link>
                   </li>
                 )}
