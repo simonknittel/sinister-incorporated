@@ -35,14 +35,14 @@ export const CmdKSpynetSearch = ({ search, onSelect }: Props) => {
   }, [search]);
 
   return (
-    <>
+    <Command.Group heading="Spynet > Suchen">
       {loading ? (
         <>
-          <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8" />
+          <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8 mt-2" />
           <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8 mt-2" />
           <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8 mt-2" />
         </>
-      ) : (
+      ) : results.length > 0 ? (
         results.map((result) => (
           <Command.Item
             key={result.objectID}
@@ -50,7 +50,7 @@ export const CmdKSpynetSearch = ({ search, onSelect }: Props) => {
               router.push(`/spynet/entity/${result.objectID}`);
               onSelect?.();
             }}
-            className="flex flex-col !gap-0 [&+&]:mt-2"
+            className="flex flex-col !gap-0 mt-2"
           >
             {result.handles && result.handles.length > 0 ? (
               <span className="flex gap-2 items-baseline w-full">
@@ -84,7 +84,9 @@ export const CmdKSpynetSearch = ({ search, onSelect }: Props) => {
             </span>
           </Command.Item>
         ))
+      ) : (
+        <Command.Item disabled>Keine Ergebnisse</Command.Item>
       )}
-    </>
+    </Command.Group>
   );
 };

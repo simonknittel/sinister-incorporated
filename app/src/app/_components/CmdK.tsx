@@ -55,8 +55,6 @@ export const CmdK = ({ open, setOpen }: Props) => {
       <Command.Input value={search} onValueChange={setSearch} placeholder="" />
 
       <Command.List>
-        <Command.Empty>Kein Treffer</Command.Empty>
-
         {!page && (
           <>
             <Command.Group heading="Dashboard">
