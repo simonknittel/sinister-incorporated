@@ -39,13 +39,12 @@
   color: rgb(115 115 115);
   padding-left: 1rem;
   padding-top: 1rem;
-  margin-left: 2rem;
-  margin-right: 2rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .cmdk [cmdk-item] {
   padding: 1rem;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -53,9 +52,10 @@
   margin-right: 1rem;
 }
 
-.cmdk [cmdk-item][data-selected="true"] {
+.cmdk [cmdk-item][data-selected="true"]:not([data-disabled="true"]) {
   background-color: rgb(64 64 64);
   border-radius: 0.25rem;
+  cursor: pointer;
 }
 
 .cmdk [cmdk-empty] {

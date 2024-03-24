@@ -1,8 +1,25 @@
 import { Command } from "cmdk";
+import { debounce } from "lodash";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import useSWR from "swr";
 import { env } from "~/env.mjs";
 import { type CitizenHit } from "../(app)/spynet/search/_components/Search";
+
+const fetcher = async (key: string) => {
+  const res = await fetch(key, {
+    headers: {
+      "X-Algolia-Application-Id": env.NEXT_PUBLIC_ALGOLIA_APP_ID,
+      "X-Algolia-API-Key": env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY,
+    },
+  });
+
+  return res.json();
+};
+
+type AlgoliaResponse = Readonly<{
+  hits: Array<CitizenHit>;
+}>;
 
 type Props = Readonly<{
   search: string;
@@ -11,46 +28,44 @@ type Props = Readonly<{
 
 export const CmdKSpynetSearch = ({ search, onSelect }: Props) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<Array<CitizenHit>>([]);
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+  const handleSearch = (value: string) => {
+    setDebouncedSearch(value);
+  };
+
+  const debouncedHandleSearch = useMemo(() => debounce(handleSearch, 500), []);
+
+  const { data, isValidating } = useSWR<AlgoliaResponse>(
+    `https://${env.NEXT_PUBLIC_ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/spynet_entities?query=${debouncedSearch}&hitsPerPage=5`,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
+  );
 
   useEffect(() => {
-    setLoading(true);
-    // https://www.algolia.com/doc/rest-api/search/#search-endpoints
-    fetch(
-      `https://${env.NEXT_PUBLIC_ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/spynet_entities?query=${search}&hitsPerPage=5`,
-      {
-        headers: {
-          "X-Algolia-Application-Id": env.NEXT_PUBLIC_ALGOLIA_APP_ID,
-          "X-Algolia-API-Key": env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY,
-        },
-      },
-    )
-      .then((response) => response.json())
-      .then(({ hits }) => {
-        setResults(hits);
-        setLoading(false);
-      })
-      .catch((error) => console.error(error));
-  }, [search]);
+    debouncedHandleSearch(search);
+  }, [debouncedHandleSearch, search]);
 
   return (
-    <>
-      {loading ? (
+    <Command.Group heading="Spynet > Suchen">
+      {isValidating || !data ? (
         <>
-          <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8" />
           <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8 mt-2" />
           <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8 mt-2" />
+          <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8 mt-2 mb-3" />
         </>
-      ) : (
-        results.map((result) => (
+      ) : data.hits.length > 0 ? (
+        data.hits.map((result) => (
           <Command.Item
             key={result.objectID}
             onSelect={() => {
               router.push(`/spynet/entity/${result.objectID}`);
               onSelect?.();
             }}
-            className="flex flex-col !gap-0 [&+&]:mt-2"
+            className="flex flex-col !gap-0 mt-2"
           >
             {result.handles && result.handles.length > 0 ? (
               <span className="flex gap-2 items-baseline w-full">
@@ -84,7 +99,9 @@ export const CmdKSpynetSearch = ({ search, onSelect }: Props) => {
             </span>
           </Command.Item>
         ))
+      ) : (
+        <Command.Item disabled>Keine Ergebnisse</Command.Item>
       )}
-    </>
+    </Command.Group>
   );
 };
