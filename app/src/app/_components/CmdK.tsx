@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { FaCog, FaHome, FaLock, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
+import { RiSpyFill } from "react-icons/ri";
 import useAuthentication from "~/_lib/auth/useAuthentication";
 import "./CmdK.css";
 
@@ -77,6 +78,28 @@ export const CmdK = ({ open, setOpen }: Props) => {
             >
               <MdWorkspaces />
               Übersicht öffnen
+            </Command.Item>
+          </Command.Group>
+        )}
+
+        {authentication.authorize([
+          {
+            resource: "citizen",
+            operation: "read",
+          },
+        ]) && (
+          <Command.Group heading="Spynet">
+            <Command.Item
+              keywords={["Spynet"]}
+              onSelect={() => {
+                router.push(
+                  `/spynet/entity/${authentication.session.entityId}`,
+                );
+                setOpen(false);
+              }}
+            >
+              <RiSpyFill />
+              Eigenes Profil öffnen
             </Command.Item>
           </Command.Group>
         )}

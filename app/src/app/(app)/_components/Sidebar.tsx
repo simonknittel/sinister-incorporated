@@ -24,7 +24,7 @@ export const Sidebar = async () => {
       <div>
         <Account />
 
-        <CmdKLoader className="mt-4 mx-auto" />
+        <CmdKLoader className="hidden lg:block mt-4 mx-auto" />
 
         <nav className="p-4 border-neutral-800">
           <ul>

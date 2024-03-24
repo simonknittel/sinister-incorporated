@@ -15,6 +15,7 @@ type Props = Readonly<{
 
 export const ProfileTile = async ({ className }: Props) => {
   const authentication = await authenticate();
+  if (!authentication) return null;
 
   const name =
     authentication.session.user.name || authentication.session.discordId;
@@ -49,9 +50,9 @@ export const ProfileTile = async ({ className }: Props) => {
         </div>
       ) : null}
 
-      {entity && (
+      {authentication.session.entityId && (
         <Link
-          href={`/spynet/entity/${entity.id}`}
+          href={`/spynet/entity/${authentication.session.entityId}`}
           prefetch={false}
           className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
         >

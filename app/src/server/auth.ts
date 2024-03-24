@@ -75,6 +75,7 @@ declare module "next-auth" {
     } & DefaultSession["user"];
     discordId: string;
     givenPermissionSets: PermissionSet[];
+    entityId: string | null;
   }
 
   interface User {
@@ -154,7 +155,8 @@ export const authOptions: NextAuthOptions = {
           emailVerified: user.emailVerified,
         },
         discordId: discordAccount!.providerAccountId,
-        givenPermissionSets: givenPermissionSets,
+        givenPermissionSets,
+        entityId: entity?.id,
       };
     },
 
