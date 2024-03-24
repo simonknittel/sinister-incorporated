@@ -8,7 +8,7 @@ interface Props {
 const Citizen = ({ hit }: Readonly<Props>) => {
   return (
     <Link href={`/spynet/entity/${hit.objectID}`} prefetch={false}>
-      {hit.handles.length > 0 ? (
+      {hit.handles && hit.handles.length > 0 ? (
         <span className="flex gap-2 items-baseline">
           <p>{hit.handles[0]}</p>
 
@@ -23,13 +23,13 @@ const Citizen = ({ hit }: Readonly<Props>) => {
       )}
 
       <span className="block text-sm text-neutral-500 mt-2">
-        {hit.communityMonikers.length > 0 && (
+        {hit.communityMonikers && hit.communityMonikers.length > 0 && (
           <p>Community Monikers: {hit.communityMonikers.join(", ")}</p>
         )}
 
         <p>Spectrum ID: {hit.spectrumId}</p>
 
-        {hit.citizenIds.length > 0 && (
+        {hit.citizenIds && hit.citizenIds.length > 0 && (
           <p>Citizen IDs: {hit.citizenIds.join(", ")}</p>
         )}
 

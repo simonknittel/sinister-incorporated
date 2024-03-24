@@ -9,9 +9,9 @@ import Citizen from "./Citizen";
 export interface CitizenHit {
   objectID: string;
   spectrumId: string;
-  handles: string[];
-  citizenIds: string[];
-  communityMonikers: string[];
+  handles?: string[];
+  citizenIds?: string[];
+  communityMonikers?: string[];
 }
 
 const searchClient = algoliasearch(
