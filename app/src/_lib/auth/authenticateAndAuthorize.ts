@@ -2,8 +2,8 @@ import { getServerSession, type Session } from "next-auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
-import { log } from "~/_lib/logging";
-import { authOptions } from "~/server/auth";
+import { authOptions } from "../../server/auth";
+import { log } from "../logging";
 import { type PermissionSet } from "./PermissionSet";
 import comparePermissionSets from "./comparePermissionSets";
 

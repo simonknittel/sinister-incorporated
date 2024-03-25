@@ -1,4 +1,4 @@
-import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "../../../_lib/auth/authenticateAndAuthorize";
 import Avatar from "../../_components/Avatar";
 import LogoutButton from "./LogoutButton";
 

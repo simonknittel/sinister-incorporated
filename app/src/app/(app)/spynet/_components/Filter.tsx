@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import Button from "~/app/_components/Button";
+import Button from "../../../_components/Button";
 
 interface Props {
   name: string;

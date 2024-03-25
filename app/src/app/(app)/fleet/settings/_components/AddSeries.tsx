@@ -3,7 +3,7 @@
 import { type Manufacturer } from "@prisma/client";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import Button from "~/app/_components/Button";
+import Button from "../../../../_components/Button";
 import AddSeriesModal from "./AddSeriesModal";
 
 interface Props {

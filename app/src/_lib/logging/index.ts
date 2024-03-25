@@ -1,4 +1,4 @@
-import { env } from "~/env.mjs";
+import { env } from "../../env.mjs";
 import { logToAxiom } from "./axiom";
 import { logToConsole } from "./console";
 import { logToLoki } from "./loki";

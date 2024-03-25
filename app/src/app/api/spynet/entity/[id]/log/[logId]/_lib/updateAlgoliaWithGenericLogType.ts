@@ -1,7 +1,7 @@
 import { type EntityLog } from "@prisma/client";
-import { updateObject } from "~/app/api/_lib/algolia";
-import { prisma } from "~/server/db";
-import { type EntityLogType } from "~/types";
+import { prisma } from "../../../../../../../../server/db";
+import { type EntityLogType } from "../../../../../../../../types";
+import { updateObject } from "../../../../../../_lib/algolia";
 
 export async function updateAlgoliaWithGenericLogType(
   type: EntityLogType,

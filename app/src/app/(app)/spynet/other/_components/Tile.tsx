@@ -1,5 +1,5 @@
-import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
-import { prisma } from "~/server/db";
+import { requireAuthentication } from "../../../../../_lib/auth/authenticateAndAuthorize";
+import { prisma } from "../../../../../server/db";
 import Pagination from "../../_components/Pagination";
 import {
   PER_PAGE,

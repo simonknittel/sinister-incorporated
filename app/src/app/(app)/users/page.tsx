@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../../_lib/auth/authenticateAndAuthorize";
 import Tile from "./_components/Tile";
 import TileSkeleton from "./_components/TileSkeleton";
 

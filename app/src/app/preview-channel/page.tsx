@@ -1,10 +1,10 @@
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
-import { TileSkeleton } from "~/app/_components/preview-channel/TileSkeleton";
-import { schedule } from "~/app/_components/preview-channel/_lib/schedule";
+import { TileSkeleton } from "../_components/preview-channel/TileSkeleton";
+import { schedule } from "../_components/preview-channel/_lib/schedule";
 
 const CurrentStatus = dynamic(
-  () => import("~/app/_components/preview-channel/CurrentStatus"),
+  () => import("../_components/preview-channel/CurrentStatus"),
   {
     ssr: false,
     loading: () => <TileSkeleton className="mt-4" />,
@@ -12,7 +12,7 @@ const CurrentStatus = dynamic(
 );
 
 const FullSchedule = dynamic(
-  () => import("~/app/_components/preview-channel/FullSchedule"),
+  () => import("../_components/preview-channel/FullSchedule"),
   {
     ssr: false,
     loading: () => <TileSkeleton className="mt-4" />,

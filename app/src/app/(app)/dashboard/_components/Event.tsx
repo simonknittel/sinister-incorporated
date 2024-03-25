@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "../../../../_lib/auth/authenticateAndAuthorize";
 import { DiscordButton } from "../../_components/DiscordButton";
 import TimeAgoContainer from "../../_components/TimeAgoContainer";
 

@@ -1,11 +1,11 @@
 import { type Entity } from "@prisma/client";
 import algoliasearch from "algoliasearch";
-import { env } from "~/env.mjs";
+import { env } from "../../../env.mjs";
 
 function getIndex() {
   const client = algoliasearch(
     env.NEXT_PUBLIC_ALGOLIA_APP_ID,
-    env.ALGOLIA_ADMIN_API_KEY
+    env.ALGOLIA_ADMIN_API_KEY,
   );
 
   return client.initIndex("spynet_entities");
@@ -13,7 +13,7 @@ function getIndex() {
 
 export function saveObject(
   entityId: Entity["id"],
-  attributes: Record<string, any>
+  attributes: Record<string, any>,
 ) {
   const index = getIndex();
 
@@ -25,7 +25,7 @@ export function saveObject(
 
 export function updateObject(
   entityId: Entity["id"],
-  attributes: Record<string, any>
+  attributes: Record<string, any>,
 ) {
   const index = getIndex();
 

@@ -1,8 +1,8 @@
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
-import { Hero } from "~/app/_components/Hero";
-import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
+import { authenticatePage } from "../../../_lib/auth/authenticateAndAuthorize";
+import { getUnleashFlag } from "../../../_lib/getUnleashFlag";
+import { Hero } from "../../_components/Hero";
 import { CalendarTile } from "./_components/CalendarTile";
 import { ProfileTile } from "./_components/ProfileTile";
 import { QuotesTile } from "./_components/QuotesTile";

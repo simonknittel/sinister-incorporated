@@ -1,4 +1,4 @@
-import { type GenericEntityLogType } from "~/types";
+import { type GenericEntityLogType } from "../../types";
 
 export type PermissionSet = {
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)

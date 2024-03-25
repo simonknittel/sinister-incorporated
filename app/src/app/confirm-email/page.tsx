@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { prisma } from "scripts/prisma";
-import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../_lib/auth/authenticateAndAuthorize";
+import { prisma } from "../../server/db";
 
 interface Props {
   searchParams: { [key: string]: string | string[] | undefined };

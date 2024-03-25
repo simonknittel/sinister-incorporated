@@ -15,9 +15,9 @@ import { useId, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
-import Button from "~/app/_components/Button";
-import Modal from "~/app/_components/Modal";
 import f7hornetImage from "../../../../../assets/ships/f7-hornet.png";
+import Button from "../../../../_components/Button";
+import Modal from "../../../../_components/Modal";
 
 interface Props {
   type:

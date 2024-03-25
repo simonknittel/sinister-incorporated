@@ -1,7 +1,7 @@
 import { type EntityLog } from "@prisma/client";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaCheckCircle, FaInfoCircle } from "react-icons/fa";
-import { type EntityLogConfirmationState } from "~/types";
+import { type EntityLogConfirmationState } from "../../../../../types";
 import ConfirmLog from "../../entity/[id]/_components/ConfirmLog";
 
 interface Props {

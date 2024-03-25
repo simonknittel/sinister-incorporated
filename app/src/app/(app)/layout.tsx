@@ -1,9 +1,9 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
-import { requireConfirmedEmailForPage } from "~/_lib/emailConfirmation";
-import { TRPCReactProvider } from "~/trpc/react";
 import { authenticatePage } from "../../_lib/auth/authenticateAndAuthorize";
+import { requireConfirmedEmailForPage } from "../../_lib/emailConfirmation";
+import { TRPCReactProvider } from "../../trpc/react";
 import { AdminEnabler } from "./_components/AdminEnabler";
 import ImpersonationBannerContainer from "./_components/ImpersonationBannerContainer";
 import PreviewComments from "./_components/PreviewComments";

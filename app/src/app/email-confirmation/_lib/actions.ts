@@ -2,9 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { serializeError } from "serialize-error";
-import { authenticateApi } from "~/_lib/auth/authenticateAndAuthorize";
-import { requestEmailConfirmation } from "~/_lib/emailConfirmation";
-import { log } from "~/_lib/logging";
+import { authenticateApi } from "../../../_lib/auth/authenticateAndAuthorize";
+import { requestEmailConfirmation } from "../../../_lib/emailConfirmation";
+import { log } from "../../../_lib/logging";
 
 export const requestEmailConfirmationAction = async () => {
   const authentication = await authenticateApi();

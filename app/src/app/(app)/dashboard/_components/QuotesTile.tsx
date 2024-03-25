@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { unstable_noStore } from "next/cache";
-import { merriweather } from "~/app/fonts";
+import { merriweather } from "../../../fonts";
 
 const quotes = [
   ["Pretend inferiority and encourage his arrogance.", "Sun Tzu"],

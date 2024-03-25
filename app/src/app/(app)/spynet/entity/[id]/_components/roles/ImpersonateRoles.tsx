@@ -3,7 +3,7 @@
 import { type Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { RiSpyFill } from "react-icons/ri";
-import Button from "~/app/_components/Button";
+import Button from "../../../../../../_components/Button";
 
 interface Props {
   roles: Role[];

@@ -11,11 +11,11 @@ import { useId, useState } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
-import useAuthentication from "~/_lib/auth/useAuthentication";
-import Button from "~/app/_components/Button";
-import Modal from "~/app/_components/Modal";
-import Select from "~/app/_components/Select";
-import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
+import useAuthentication from "../../../../../../../_lib/auth/useAuthentication";
+import getLatestNoteAttributes from "../../../../../../../_lib/getLatestNoteAttributes";
+import Button from "../../../../../../_components/Button";
+import Modal from "../../../../../../_components/Modal";
+import Select from "../../../../../../_components/Select";
 
 interface Props {
   className?: string;

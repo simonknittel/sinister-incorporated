@@ -6,13 +6,13 @@ import {
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import { z } from "zod";
-import { type PermissionSet } from "~/_lib/auth/PermissionSet";
-import getPermissionSetsByRoles from "~/_lib/auth/getPermissionSetsByRoles";
-import { requestEmailConfirmation } from "~/_lib/emailConfirmation";
-import { log } from "~/_lib/logging";
-import { env } from "~/env.mjs";
-import { prisma } from "~/server/db";
-import { type UserRole } from "~/types";
+import { type PermissionSet } from "../_lib/auth/PermissionSet";
+import getPermissionSetsByRoles from "../_lib/auth/getPermissionSetsByRoles";
+import { requestEmailConfirmation } from "../_lib/emailConfirmation";
+import { log } from "../_lib/logging";
+import { env } from "../env.mjs";
+import { type UserRole } from "../types";
+import { prisma } from "./db";
 
 const guildMemberResponseSchema = z.union([
   z.object({

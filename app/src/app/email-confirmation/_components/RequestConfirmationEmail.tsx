@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { FaEnvelope, FaSpinner } from "react-icons/fa";
-import Button from "~/app/_components/Button";
+import Button from "../../_components/Button";
 
 interface Props {
   className?: string;

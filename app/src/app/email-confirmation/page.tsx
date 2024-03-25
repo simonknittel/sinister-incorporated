@@ -3,9 +3,9 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { RiInformationLine } from "react-icons/ri";
-import { requiresEmailConfirmation } from "~/_lib/emailConfirmation";
 import { AdminEnabler } from "../(app)/_components/AdminEnabler";
 import { authenticatePage } from "../../_lib/auth/authenticateAndAuthorize";
+import { requiresEmailConfirmation } from "../../_lib/emailConfirmation";
 import { Footer } from "../_components/Footer";
 import { PageRefresher } from "./_components/PageRefresher";
 import {

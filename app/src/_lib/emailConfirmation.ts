@@ -3,9 +3,9 @@ import { TRPCError } from "@trpc/server";
 import { type Session } from "next-auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
-import { env } from "~/env.mjs";
-import { prisma } from "~/server/db";
+import { env } from "../env.mjs";
+import { prisma } from "../server/db";
+import { getUnleashFlag } from "./getUnleashFlag";
 import { log } from "./logging";
 import { sendEmail } from "./sendEmail";
 

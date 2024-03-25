@@ -4,7 +4,7 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { FaCog, FaHome, FaLock, FaSearch, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
-import useAuthentication from "~/_lib/auth/useAuthentication";
+import useAuthentication from "../../_lib/auth/useAuthentication";
 import "./CmdK.css";
 import { CmdKSpynetSearch } from "./CmdKSpynetSearch";
 

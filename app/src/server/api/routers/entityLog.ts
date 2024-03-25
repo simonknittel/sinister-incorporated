@@ -1,7 +1,6 @@
 import { z } from "zod";
-import { authorize } from "~/_lib/auth/authenticateAndAuthorize";
-
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { authorize } from "../../../_lib/auth/authenticateAndAuthorize";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const entityLogRouter = createTRPCRouter({
   getHistory: protectedProcedure

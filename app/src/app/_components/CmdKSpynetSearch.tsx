@@ -3,8 +3,8 @@ import { debounce } from "lodash";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
-import { env } from "~/env.mjs";
 import { type CitizenHit } from "../(app)/spynet/search/_components/Search";
+import { env } from "../../env.mjs";
 
 const fetcher = async (key: string) => {
   const res = await fetch(key, {

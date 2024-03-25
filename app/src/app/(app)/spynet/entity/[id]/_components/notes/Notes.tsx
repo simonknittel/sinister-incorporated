@@ -6,13 +6,12 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import { FaListAlt } from "react-icons/fa";
-import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
-import Tab from "~/app/_components/tabs/Tab";
-import TabList from "~/app/_components/tabs/TabList";
-import { TabsProvider } from "~/app/_components/tabs/TabsContext";
-import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
-import { prisma } from "~/server/db";
-import NoteTypeTab from "./Tab";
+import { requireAuthentication } from "../../../../../../../_lib/auth/authenticateAndAuthorize";
+import getLatestNoteAttributes from "../../../../../../../_lib/getLatestNoteAttributes";
+import { prisma } from "../../../../../../../server/db";
+import TabList from "../../../../../../_components/tabs/TabList";
+import { TabsProvider } from "../../../../../../_components/tabs/TabsContext";
+import { default as NoteTypeTab, default as Tab } from "./Tab";
 import isAllowedToRead from "./lib/isAllowedToRead";
 import isAllowedToReadRedacted from "./lib/isAllowedToReadRedacted";
 

@@ -2,8 +2,8 @@ import { type Role } from "@prisma/client";
 import clsx from "clsx";
 import { useFormContext, useWatch } from "react-hook-form";
 import { FaPlus, FaTrash } from "react-icons/fa";
-import { type FormValues } from "~/_lib/auth/FormValues";
-import Button from "~/app/_components/Button";
+import { type FormValues } from "../../../../../../_lib/auth/FormValues";
+import Button from "../../../../../_components/Button";
 
 interface Props {
   className?: string;

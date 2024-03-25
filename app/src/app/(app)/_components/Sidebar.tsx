@@ -9,10 +9,10 @@ import {
 } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSwordFill } from "react-icons/ri";
-import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
-import { Footer } from "~/app/_components/Footer";
-import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
+import { requireAuthentication } from "../../../_lib/auth/authenticateAndAuthorize";
+import { getUnleashFlag } from "../../../_lib/getUnleashFlag";
 import { CmdKLoader } from "../../_components/CmdKLoader";
+import { Footer } from "../../_components/Footer";
 import Account from "./Account";
 import { Chip } from "./Chip";
 

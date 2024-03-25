@@ -1,6 +1,6 @@
 import { type Role } from "@prisma/client";
 import { type z } from "zod";
-import { prisma } from "~/server/db";
+import { prisma } from "../../server/db";
 import { type PermissionSet } from "./PermissionSet";
 import type postBodySchema from "./postBodySchema";
 

@@ -1,8 +1,8 @@
 import { type Entity } from "@prisma/client";
 import { camelCase } from "change-case";
 import { type ReactNode } from "react";
-import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
-import { type GenericEntityLogType } from "~/types";
+import { requireAuthentication } from "../../../../../../../_lib/auth/authenticateAndAuthorize";
+import { type GenericEntityLogType } from "../../../../../../../types";
 import { HistoryModal } from "./HistoryModal";
 
 interface Props {

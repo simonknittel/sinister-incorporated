@@ -1,5 +1,5 @@
 import { type Entity } from "@prisma/client";
-import { getLastSeenAt } from "~/app/_lib/getLastSeenAt";
+import { getLastSeenAt } from "../../../../../_lib/getLastSeenAt";
 
 interface Props {
   entity: Entity;

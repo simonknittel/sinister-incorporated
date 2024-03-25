@@ -1,9 +1,9 @@
 "use client";
 
 import { useFormContext } from "react-hook-form";
-import { type FormValues } from "~/_lib/auth/FormValues";
-import YesNoCheckbox from "~/app/_components/YesNoCheckbox";
-import TabPanel from "~/app/_components/tabs/TabPanel";
+import { type FormValues } from "../../../../../_lib/auth/FormValues";
+import YesNoCheckbox from "../../../../_components/YesNoCheckbox";
+import TabPanel from "../../../../_components/tabs/TabPanel";
 
 const EventsTab = () => {
   const { register } = useFormContext<FormValues>();

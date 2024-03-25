@@ -5,8 +5,8 @@ import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
 import { FiRefreshCcw } from "react-icons/fi";
 import { RiBardFill } from "react-icons/ri";
-import Button from "~/app/_components/Button";
-import { api } from "~/trpc/react";
+import { api } from "../../../../trpc/react";
+import Button from "../../../_components/Button";
 
 type Props = Readonly<{
   className?: string;

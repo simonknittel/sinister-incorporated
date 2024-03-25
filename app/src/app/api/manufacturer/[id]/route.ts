@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { requireConfirmedEmailForApi } from "~/_lib/emailConfirmation";
-import { prisma } from "~/server/db";
 import { authenticateApi } from "../../../../_lib/auth/authenticateAndAuthorize";
+import { requireConfirmedEmailForApi } from "../../../../_lib/emailConfirmation";
+import { prisma } from "../../../../server/db";
 import errorHandler from "../../_lib/errorHandler";
 
 interface Params {

@@ -1,4 +1,4 @@
-import { type EntityLogType } from "~/types";
+import { type EntityLogType } from "../types";
 
 export const entityLogTypeTranslations: Record<EntityLogType, string> = {
   handle: "Handle",

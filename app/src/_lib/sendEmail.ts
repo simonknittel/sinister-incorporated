@@ -1,7 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import https from "node:https";
 import { serializeError } from "serialize-error";
-import { env } from "~/env.mjs";
+import { env } from "../env.mjs";
 import { CustomError } from "./logging/CustomError";
 
 export const sendEmail = async (

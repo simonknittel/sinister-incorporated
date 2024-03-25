@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Hero } from "~/app/_components/Hero";
+import { Hero } from "../../../_components/Hero";
 import Search from "../../spynet/search/_components/Search";
 
 type Props = Readonly<{

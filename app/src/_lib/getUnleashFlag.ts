@@ -1,8 +1,8 @@
 import { flag } from "@unleash/nextjs";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
-import { log } from "~/_lib/logging";
-import { authenticate } from "../../_lib/auth/authenticateAndAuthorize";
+import { authenticate } from "./auth/authenticateAndAuthorize";
+import { log } from "./logging";
 
 export const getUnleashFlag = cache(
   async (
