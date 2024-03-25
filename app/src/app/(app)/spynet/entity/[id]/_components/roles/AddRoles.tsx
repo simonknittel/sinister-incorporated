@@ -6,9 +6,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaPen } from "react-icons/fa";
-import Button from "~/app/_components/Button";
-import Modal from "~/app/_components/Modal";
-import { env } from "~/env.mjs";
+import { env } from "../../../../../../../env.mjs";
+import Button from "../../../../../../_components/Button";
+import Modal from "../../../../../../_components/Modal";
 import RoleCheckbox from "./RoleCheckbox";
 
 interface Props {

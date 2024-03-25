@@ -8,8 +8,8 @@ import {
   type SetStateAction,
 } from "react";
 import { FaEllipsisH, FaTimes } from "react-icons/fa";
-import Button from "~/app/_components/Button";
 import styles from "./Actions.module.css";
+import Button from "./Button";
 
 interface Props {
   children?: ReactNode;

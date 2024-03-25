@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 import { Suspense } from "react";
 import { MdWorkspaces } from "react-icons/md";
-import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../../lib/auth/authenticateAndAuthorize";
 import { MyFleetTile } from "./_components/MyFleetTile";
 import { OrgFleetTile } from "./_components/OrgFleetTile";
 import { TileSkeleton } from "./_components/TileSkeleton";

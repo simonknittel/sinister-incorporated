@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type ChangeEventHandler } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner } from "react-icons/fa";
-import useUpload from "~/app/_lib/useUpload";
-import { env } from "~/env.mjs";
+import { env } from "../../../../env.mjs";
+import useUpload from "../../../../lib/useUpload";
 
 interface Props {
   className?: string;

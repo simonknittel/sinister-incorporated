@@ -2,7 +2,7 @@ import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { getUnleashFlag } from "~/app/_lib/getUnleashFlag";
+import { getUnleashFlag } from "../../lib/getUnleashFlag";
 
 const Game = dynamic(() => import("./_components/Game/Game"), {
   ssr: false,

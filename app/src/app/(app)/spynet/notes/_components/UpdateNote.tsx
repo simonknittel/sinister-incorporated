@@ -1,6 +1,6 @@
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
-import getAllClassificationLevels from "~/app/_lib/cached/getAllClassificationLevels";
-import getAllNoteTypes from "~/app/_lib/cached/getAllNoteTypes";
+import getAllClassificationLevels from "../../../../../lib/cached/getAllClassificationLevels";
+import getAllNoteTypes from "../../../../../lib/cached/getAllNoteTypes";
 import UpdateNoteModal from "../../entity/[id]/_components/notes/UpdateNoteModal";
 
 interface Props {

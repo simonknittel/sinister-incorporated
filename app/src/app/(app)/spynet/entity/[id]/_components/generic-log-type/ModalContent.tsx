@@ -1,9 +1,9 @@
 "use client";
 
 import { type Entity } from "@prisma/client";
-import useAuthentication from "~/_lib/auth/useAuthentication";
-import { api } from "~/trpc/react";
-import { type GenericEntityLogType } from "~/types";
+import useAuthentication from "../../../../../../../lib/auth/useAuthentication";
+import { api } from "../../../../../../../trpc/react";
+import { type GenericEntityLogType } from "../../../../../../../types";
 import { Create } from "./Create";
 import { HistoryEntry } from "./HistoryEntry";
 import { HistoryEntrySkelton } from "./HistoryEntrySkeleton";

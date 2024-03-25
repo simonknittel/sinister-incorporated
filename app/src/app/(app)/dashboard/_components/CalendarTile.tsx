@@ -1,11 +1,11 @@
 import clsx from "clsx";
 import dynamic from "next/dynamic";
-import { getEvents } from "~/_lib/discord/getEvents";
-import { Hero } from "~/app/_components/Hero";
+import { getEvents } from "../../../../lib/discord/getEvents";
+import { Hero } from "../../../_components/Hero";
 import { Event } from "./Event";
 
 const TimeAgoContainer = dynamic(
-  () => import("../../_components/TimeAgoContainer"),
+  () => import("../../../_components/TimeAgoContainer"),
   {
     ssr: false,
     loading: () => (

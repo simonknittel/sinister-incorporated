@@ -6,9 +6,9 @@ import { useId, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
-import Button from "~/app/_components/Button";
-import { api } from "~/trpc/react";
-import { type GenericEntityLogType } from "~/types";
+import { api } from "../../../../../../../trpc/react";
+import { type GenericEntityLogType } from "../../../../../../../types";
+import Button from "../../../../../../_components/Button";
 
 interface Props {
   type: GenericEntityLogType;

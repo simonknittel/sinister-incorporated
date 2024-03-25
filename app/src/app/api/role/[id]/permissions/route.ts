@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authenticateApi } from "~/_lib/auth/authenticateAndAuthorize";
-import formValuesToPrismaOperations from "~/_lib/auth/formValuesToPrismaOperations";
-import postBodySchema from "~/_lib/auth/postBodySchema";
-import { requireConfirmedEmailForApi } from "~/_lib/emailConfirmation";
-import errorHandler from "~/app/api/_lib/errorHandler";
-import { prisma } from "~/server/db";
+import { authenticateApi } from "../../../../../lib/auth/authenticateAndAuthorize";
+import formValuesToPrismaOperations from "../../../../../lib/auth/formValuesToPrismaOperations";
+import postBodySchema from "../../../../../lib/auth/postBodySchema";
+import { requireConfirmedEmailForApi } from "../../../../../lib/emailConfirmation";
+import { prisma } from "../../../../../server/db";
+import errorHandler from "../../../_lib/errorHandler";
 
 interface Params {
   id: string;

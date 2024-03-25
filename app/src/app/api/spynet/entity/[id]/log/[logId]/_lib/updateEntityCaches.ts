@@ -1,6 +1,6 @@
 import { type EntityLog } from "@prisma/client";
 import { camelCase } from "change-case";
-import { prisma } from "~/server/db";
+import { prisma } from "../../../../../../../../server/db";
 
 export const updateEntityCaches = async (entityLog: EntityLog) => {
   if (

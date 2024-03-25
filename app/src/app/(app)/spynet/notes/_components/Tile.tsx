@@ -1,18 +1,18 @@
-import { requireAuthentication } from "~/_lib/auth/authenticateAndAuthorize";
-import getAllClassificationLevels from "~/app/_lib/cached/getAllClassificationLevels";
-import getAllNoteTypes from "~/app/_lib/cached/getAllNoteTypes";
-import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
-import { prisma } from "~/server/db";
-import Pagination from "../../_components/Pagination";
+import { requireAuthentication } from "../../../../../lib/auth/authenticateAndAuthorize";
+import getAllClassificationLevels from "../../../../../lib/cached/getAllClassificationLevels";
+import getAllNoteTypes from "../../../../../lib/cached/getAllNoteTypes";
+import getLatestNoteAttributes from "../../../../../lib/getLatestNoteAttributes";
 import {
   PER_PAGE,
   getCurrentPageFromSearchParams,
   limitRows,
-} from "../../_lib/pagination";
+} from "../../../../../lib/pagination";
 import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
-} from "../../_lib/sorting";
+} from "../../../../../lib/sorting";
+import { prisma } from "../../../../../server/db";
+import Pagination from "../../_components/Pagination";
 import isAllowedToRead from "../../entity/[id]/_components/notes/lib/isAllowedToRead";
 import Filters from "./Filters";
 import Table, { type Row } from "./Table";

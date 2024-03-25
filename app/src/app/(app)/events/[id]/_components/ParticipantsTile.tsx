@@ -2,9 +2,9 @@ import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { FaExternalLinkAlt, FaUsers } from "react-icons/fa";
-import { type getEvent } from "~/_lib/discord/getEvent";
-import { getEventUsers } from "~/_lib/discord/getEventUsers";
-import { prisma } from "~/server/db";
+import { type getEvent } from "../../../../../lib/discord/getEvent";
+import { getEventUsers } from "../../../../../lib/discord/getEventUsers";
+import { prisma } from "../../../../../server/db";
 
 type Props = Readonly<{
   className?: string;

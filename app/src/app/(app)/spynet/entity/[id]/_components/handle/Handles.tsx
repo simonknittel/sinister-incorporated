@@ -8,9 +8,9 @@ import {
 } from "@prisma/client";
 import { useState } from "react";
 import { FaHistory } from "react-icons/fa";
-import useAuthentication from "~/_lib/auth/useAuthentication";
-import Button from "~/app/_components/Button";
-import Modal from "~/app/_components/Modal";
+import useAuthentication from "../../../../../../../lib/auth/useAuthentication";
+import Button from "../../../../../../_components/Button";
+import Modal from "../../../../../../_components/Modal";
 import Create from "./Create";
 import SingleHandle from "./SingleHandle";
 

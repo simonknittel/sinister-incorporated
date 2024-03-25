@@ -2,10 +2,10 @@ import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import { authenticate } from "~/_lib/auth/authenticateAndAuthorize";
-import Avatar from "~/app/_components/Avatar";
-import { getAssignedAndVisibleRoles } from "~/app/_lib/getAssignedAndVisibleRoles";
-import { prisma } from "~/server/db";
+import { authenticate } from "../../../../lib/auth/authenticateAndAuthorize";
+import { getAssignedAndVisibleRoles } from "../../../../lib/getAssignedAndVisibleRoles";
+import { prisma } from "../../../../server/db";
+import Avatar from "../../../_components/Avatar";
 import SingleRole from "./SingleRole";
 
 type Props = Readonly<{

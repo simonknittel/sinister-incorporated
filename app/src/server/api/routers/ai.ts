@@ -1,12 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import OpenAI from "openai";
-import { type ChatCompletionMessageParam } from "openai/resources";
+import { type ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import { env } from "process";
 import { z } from "zod";
-import { isOpenAIEnabled } from "~/_lib/isOpenAIEnabled";
-import { log } from "~/_lib/logging";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { prisma } from "~/server/db";
+import { isOpenAIEnabled } from "../../../lib/isOpenAIEnabled";
+import { log } from "../../../lib/logging";
+import { prisma } from "../../db";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const aiRouter = createTRPCRouter({
   getRoleNameSuggestions: protectedProcedure.query(async () => {

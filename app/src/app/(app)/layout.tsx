@@ -1,17 +1,17 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
-import { requireConfirmedEmailForPage } from "~/_lib/emailConfirmation";
-import { TRPCReactProvider } from "~/trpc/react";
-import { authenticatePage } from "../../_lib/auth/authenticateAndAuthorize";
-import { AdminEnabler } from "./_components/AdminEnabler";
-import ImpersonationBannerContainer from "./_components/ImpersonationBannerContainer";
-import PreviewComments from "./_components/PreviewComments";
-import QueryClientProviderContainer from "./_components/QueryClientProviderContainer";
-import SessionProviderContainer from "./_components/SessionProviderContainer";
-import { Sidebar } from "./_components/Sidebar";
-import SidebarContainer from "./_components/SidebarContainer";
-import SidebarSkeleton from "./_components/SidebarSkeleton";
+import { authenticatePage } from "../../lib/auth/authenticateAndAuthorize";
+import { requireConfirmedEmailForPage } from "../../lib/emailConfirmation";
+import { TRPCReactProvider } from "../../trpc/react";
+import { AdminEnabler } from "../_components/AdminEnabler";
+import ImpersonationBannerContainer from "../_components/ImpersonationBannerContainer";
+import PreviewComments from "../_components/PreviewComments";
+import QueryClientProviderContainer from "../_components/QueryClientProviderContainer";
+import SessionProviderContainer from "../_components/SessionProviderContainer";
+import { Sidebar } from "../_components/Sidebar";
+import SidebarContainer from "../_components/SidebarContainer";
+import SidebarSkeleton from "../_components/SidebarSkeleton";
 
 interface Props {
   children: ReactNode;

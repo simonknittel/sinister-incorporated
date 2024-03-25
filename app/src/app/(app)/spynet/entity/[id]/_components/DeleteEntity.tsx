@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
-import Button from "~/app/_components/Button";
+import Button from "../../../../../_components/Button";
 
 interface Props {
   entity: Entity;
@@ -20,7 +20,7 @@ const DeleteEntity = ({ entity }: Readonly<Props>) => {
 
     try {
       const confirmation = window.confirm(
-        `Willst du diesen Citizen komplett löschen?`
+        `Willst du diesen Citizen komplett löschen?`,
       );
 
       if (!confirmation) {

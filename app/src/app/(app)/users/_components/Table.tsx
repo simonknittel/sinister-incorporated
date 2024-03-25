@@ -16,7 +16,7 @@ import {
   FaSortAlphaDown,
   FaSortAlphaUpAlt,
 } from "react-icons/fa";
-import Avatar from "~/app/_components/Avatar";
+import Avatar from "../../../_components/Avatar";
 
 interface Props {
   users: {

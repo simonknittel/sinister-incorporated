@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authenticateApi } from "~/_lib/auth/authenticateAndAuthorize";
-import { requireConfirmedEmailForApi } from "~/_lib/emailConfirmation";
-import getLatestNoteAttributes from "~/app/_lib/getLatestNoteAttributes";
-import errorHandler from "~/app/api/_lib/errorHandler";
-import { prisma } from "~/server/db";
+import { authenticateApi } from "../../../../../../../../lib/auth/authenticateAndAuthorize";
+import { requireConfirmedEmailForApi } from "../../../../../../../../lib/emailConfirmation";
+import getLatestNoteAttributes from "../../../../../../../../lib/getLatestNoteAttributes";
+import { prisma } from "../../../../../../../../server/db";
+import errorHandler from "../../../../../../_lib/errorHandler";
 import { updateAlgoliaWithGenericLogType } from "../_lib/updateAlgoliaWithGenericLogType";
 import { updateEntityCaches } from "../_lib/updateEntityCaches";
 

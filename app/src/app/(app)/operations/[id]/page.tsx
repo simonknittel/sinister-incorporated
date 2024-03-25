@@ -3,10 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
-import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
-import { log } from "~/_lib/logging";
-import Avatar from "~/app/_components/Avatar";
-import { prisma } from "~/server/db";
+import { authenticatePage } from "../../../../lib/auth/authenticateAndAuthorize";
+import { getUnleashFlag } from "../../../../lib/getUnleashFlag";
+import { log } from "../../../../lib/logging";
+import { prisma } from "../../../../server/db";
+import Avatar from "../../../_components/Avatar";
 import ConfirmParticipation from "./_components/ConfirmParticipation";
 import CreateUnit from "./_components/CreateUnit";
 import DeleteOperation from "./_components/DeleteOperation";
@@ -93,6 +94,8 @@ interface Props {
 }
 
 export default async function Page({ params }: Readonly<Props>) {
+  if (!(await getUnleashFlag("EnableOperations"))) notFound();
+
   const authentication = await authenticatePage();
   authentication.authorizePage([
     {

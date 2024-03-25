@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
-import Button from "~/app/_components/Button";
-import { api } from "~/trpc/react";
+import { api } from "../../../../../../trpc/react";
+import Button from "../../../../../_components/Button";
 
 interface Props {
   log: EntityLog;

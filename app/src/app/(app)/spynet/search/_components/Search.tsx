@@ -2,7 +2,7 @@
 
 import { getAlgoliaResults } from "@algolia/autocomplete-js";
 import algoliasearch from "algoliasearch";
-import { env } from "~/env.mjs";
+import { env } from "../../../../../env.mjs";
 import Autocomplete from "./Autocomplete";
 import Citizen from "./Citizen";
 

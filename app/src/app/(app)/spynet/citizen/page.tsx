@@ -1,8 +1,8 @@
 import { type Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { authenticatePage } from "~/_lib/auth/authenticateAndAuthorize";
-import nextjsSearchParamsToNativeSearchParams from "~/app/_lib/nextjsSearchParamsToNativeSearchParams";
+import { authenticatePage } from "../../../../lib/auth/authenticateAndAuthorize";
+import nextjsSearchParamsToNativeSearchParams from "../../../../lib/nextjsSearchParamsToNativeSearchParams";
 import Tile from "./_components/Tile";
 import TileSkeleton from "./_components/TileSkeleton";
 
