@@ -12,7 +12,7 @@ import SingleNote from "./SingleNote";
 import SingleNoteRedacted from "./SingleNoteRedacted";
 import isAllowedToCreate from "./lib/isAllowedToCreate";
 
-interface Props {
+type Props = Readonly<{
   noteType: NoteType;
   notes: (
     | (EntityLog & {
@@ -21,9 +21,9 @@ interface Props {
     | { id: EntityLog["id"]; redacted: true }
   )[];
   entityId: Entity["id"];
-}
+}>;
 
-const NoteTypeTab = async ({ noteType, notes, entityId }: Readonly<Props>) => {
+export const NoteTypePanel = async ({ noteType, notes, entityId }: Props) => {
   const [authentication, allClassificationLevels] = await Promise.all([
     authenticate(),
     getAllClassificationLevels(),
@@ -34,27 +34,30 @@ const NoteTypeTab = async ({ noteType, notes, entityId }: Readonly<Props>) => {
       isAllowedToCreate(classificationLevel.id, authentication, noteType.id),
   );
 
+  const showAddNote =
+    authentication &&
+    authentication.authorize([
+      {
+        resource: "note",
+        operation: "create",
+        attributes: [
+          {
+            key: "noteTypeId",
+            value: noteType.id,
+          },
+        ],
+      },
+    ]);
+
   return (
     <TabPanel id={noteType.id}>
-      {authentication &&
-        authentication.authorize([
-          {
-            resource: "note",
-            operation: "create",
-            attributes: [
-              {
-                key: "noteTypeId",
-                value: noteType.id,
-              },
-            ],
-          },
-        ]) && (
-          <AddNote
-            entityId={entityId}
-            noteTypeId={noteType.id}
-            classificationLevels={filteredClassificationLevels}
-          />
-        )}
+      {showAddNote && (
+        <AddNote
+          entityId={entityId}
+          noteTypeId={noteType.id}
+          classificationLevels={filteredClassificationLevels}
+        />
+      )}
 
       {notes.map((note) => {
         if ("redacted" in note) return <SingleNoteRedacted key={note.id} />;
@@ -67,5 +70,3 @@ const NoteTypeTab = async ({ noteType, notes, entityId }: Readonly<Props>) => {
     </TabPanel>
   );
 };
-
-export default NoteTypeTab;
