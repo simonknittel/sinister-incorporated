@@ -74,7 +74,7 @@ export default async function Page({ params }: Props) {
         <OverviewTile
           event={event}
           date={date}
-          className="2xl:w-[480px] 2xl:flex-none"
+          className="max-w-[480px] self-center 2xl:flex-none"
         />
       </div>
     </main>

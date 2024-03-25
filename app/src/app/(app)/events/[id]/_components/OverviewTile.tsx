@@ -93,7 +93,7 @@ export const OverviewTile = ({ className, event, date }: Props) => {
       </div>
 
       {date && (
-        <p className="text-neutral-500 mt-4 flex items-center gap-2 pl-8">
+        <p className="text-neutral-500 mt-4 flex items-center gap-2 pl-4 lg:pl-8">
           Letzte Aktualisierung:
           <TimeAgoContainer date={date} />
         </p>

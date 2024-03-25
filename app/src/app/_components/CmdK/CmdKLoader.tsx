@@ -8,9 +8,10 @@ const CmdK = dynamic(() => import("./CmdK"), { ssr: false });
 
 type Props = Readonly<{
   className?: string;
+  disableAlgolia: boolean;
 }>;
 
-export const CmdKLoader = ({ className }: Props) => {
+export const CmdKLoader = ({ className, disableAlgolia }: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -30,7 +31,7 @@ export const CmdKLoader = ({ className }: Props) => {
       </button>
 
       <Suspense>
-        <CmdK open={open} setOpen={setOpen} />
+        <CmdK open={open} setOpen={setOpen} disableAlgolia={disableAlgolia} />
       </Suspense>
     </>
   );

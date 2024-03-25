@@ -28,12 +28,17 @@ export const Sidebar = async () => {
       },
     ]);
 
+  const disableAlgolia = await getUnleashFlag("DisableAlgolia");
+
   return (
     <div className="flex h-full flex-col justify-between">
       <div>
         <Account />
 
-        <CmdKLoader className="hidden lg:block mt-4 mx-auto" />
+        <CmdKLoader
+          disableAlgolia={disableAlgolia}
+          className="hidden lg:block mt-4 mx-auto"
+        />
 
         <nav className="p-4 border-neutral-800">
           <ul>

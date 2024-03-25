@@ -11,9 +11,10 @@ import { SpynetSearchPage } from "./SpynetSearchPage";
 type Props = Readonly<{
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  disableAlgolia: boolean;
 }>;
 
-export const CmdK = ({ open, setOpen }: Props) => {
+export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
   const authentication = useAuthentication();
   const [search, setSearch] = useState("");
   const router = useRouter();
@@ -105,16 +106,18 @@ export const CmdK = ({ open, setOpen }: Props) => {
               },
             ]) && (
               <Command.Group heading="Spynet">
-                <Command.Item
-                  keywords={["Spynet", "Search"]}
-                  onSelect={() => {
-                    setPages(() => [...pages, "spynet-search"]);
-                    setSearch("");
-                  }}
-                >
-                  <FaSearch />
-                  Suchen
-                </Command.Item>
+                {!disableAlgolia && (
+                  <Command.Item
+                    keywords={["Spynet", "Search"]}
+                    onSelect={() => {
+                      setPages(() => [...pages, "spynet-search"]);
+                      setSearch("");
+                    }}
+                  >
+                    <FaSearch />
+                    Suchen
+                  </Command.Item>
+                )}
 
                 <Command.Item
                   keywords={["Spynet"]}

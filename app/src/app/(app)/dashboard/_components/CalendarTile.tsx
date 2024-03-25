@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { getEvents } from "../../../../lib/discord/getEvents";
-import { Hero } from "../../../_components/Hero";
 import { Event } from "./Event";
 
 const TimeAgoContainer = dynamic(
@@ -28,10 +27,11 @@ export const CalendarTile = async ({ className }: Props) => {
         "flex flex-col gap-4 items-center 3xl:overflow-hidden",
       )}
     >
-      <Hero text="Kalender" size="md" />
+      <h2 className="font-bold text-xl self-start">Kalender</h2>
+      {/* <Hero text="Kalender" size="md" /> */}
 
       {events
-        .sort(
+        .toSorted(
           (a, b) =>
             a.scheduled_start_time.getTime() - b.scheduled_start_time.getTime(),
         )

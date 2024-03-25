@@ -31,17 +31,22 @@ export default async function Page() {
         <Hero text="Sinister Inc" />
       </div>
 
-      <div className="mt-8 flex gap-8 flex-col xl:flex-row justify-center">
+      <div className="mt-8 flex gap-8 flex-col xl:flex-row justify-center max-w-[400px] mx-auto xl:max-w-none">
         {showCalendar && (
-          <Suspense fallback={<TileSkeleton className="flex-1" />}>
-            <CalendarTile className="flex-1" />
+          <Suspense
+            fallback={
+              <TileSkeleton className="flex-1 xl:max-w-[400px] 3xl:max-w-none" />
+            }
+          >
+            <CalendarTile className="flex-1 xl:max-w-[400px] 3xl:max-w-none" />
           </Suspense>
         )}
 
-        <div className="flex flex-col gap-4 xl:w-[480px] flex-none">
+        <section className="flex flex-col gap-4 xl:w-[400px] flex-none">
+          <h2 className="font-bold text-xl self-start">Spynet</h2>
           {showSpynetSearchTile && <SpynetSearchTile />}
           <ProfileTile />
-        </div>
+        </section>
       </div>
 
       <QuotesTile className="mt-4" />

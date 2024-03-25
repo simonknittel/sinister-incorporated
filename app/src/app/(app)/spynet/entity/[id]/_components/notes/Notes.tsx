@@ -130,7 +130,10 @@ export const Notes = async ({ className, entity }: Props) => {
 
   return (
     <section
-      className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
+      className={clsx(
+        className,
+        "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 w-full",
+      )}
     >
       <h2 className="font-bold flex gap-2 items-center mb-2">
         <FaListAlt /> Notizen
