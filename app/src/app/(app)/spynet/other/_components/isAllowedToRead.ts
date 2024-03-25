@@ -1,5 +1,5 @@
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
-import { type requireAuthentication } from "../../../../../_lib/auth/authenticateAndAuthorize";
+import { type requireAuthentication } from "../../../../../lib/auth/authenticateAndAuthorize";
 
 export default function isAllowedToRead(
   entityLog: EntityLog & {

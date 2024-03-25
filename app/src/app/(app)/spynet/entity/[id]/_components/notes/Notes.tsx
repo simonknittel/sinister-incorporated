@@ -6,8 +6,8 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import { FaListAlt } from "react-icons/fa";
-import { requireAuthentication } from "../../../../../../../_lib/auth/authenticateAndAuthorize";
-import getLatestNoteAttributes from "../../../../../../../_lib/getLatestNoteAttributes";
+import { requireAuthentication } from "../../../../../../../lib/auth/authenticateAndAuthorize";
+import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
 import { prisma } from "../../../../../../../server/db";
 import TabList from "../../../../../../_components/tabs/TabList";
 import { TabsProvider } from "../../../../../../_components/tabs/TabsContext";

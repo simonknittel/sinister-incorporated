@@ -2,7 +2,7 @@
 
 import { type ClassificationLevel, type NoteType } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
-import { type FormValues } from "../../../../../_lib/auth/FormValues";
+import { type FormValues } from "../../../../../lib/auth/FormValues";
 import YesNoCheckbox from "../../../../_components/YesNoCheckbox";
 import TabPanel from "../../../../_components/tabs/TabPanel";
 import { CitizenIdSection } from "./components/CitizenIdSection";

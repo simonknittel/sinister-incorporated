@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import { groupBy } from "lodash";
 import { MdWorkspaces } from "react-icons/md";
-import { type getEvent } from "../../../../../_lib/discord/getEvent";
-import { getEventUsers } from "../../../../../_lib/discord/getEventUsers";
+import { type getEvent } from "../../../../../lib/discord/getEvent";
+import { getEventUsers } from "../../../../../lib/discord/getEventUsers";
 import { prisma } from "../../../../../server/db";
 import FleetTable from "../../../fleet/_components/FleetTable";
 

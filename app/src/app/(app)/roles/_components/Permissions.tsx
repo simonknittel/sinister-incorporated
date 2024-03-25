@@ -20,8 +20,8 @@ import {
 } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
-import { type FormValues } from "../../../../_lib/auth/FormValues";
-import databaseRoleToFormValues from "../../../../_lib/auth/databaseRoleToFormValues";
+import { type FormValues } from "../../../../lib/auth/FormValues";
+import databaseRoleToFormValues from "../../../../lib/auth/databaseRoleToFormValues";
 import Button from "../../../_components/Button";
 import Modal from "../../../_components/Modal";
 import Tab from "../../../_components/tabs/Tab";

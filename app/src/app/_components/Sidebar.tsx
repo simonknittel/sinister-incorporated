@@ -9,12 +9,12 @@ import {
 } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSwordFill } from "react-icons/ri";
-import { requireAuthentication } from "../../../_lib/auth/authenticateAndAuthorize";
-import { getUnleashFlag } from "../../../_lib/getUnleashFlag";
-import { CmdKLoader } from "../../_components/CmdKLoader";
-import { Footer } from "../../_components/Footer";
+import { requireAuthentication } from "../../lib/auth/authenticateAndAuthorize";
+import { getUnleashFlag } from "../../lib/getUnleashFlag";
 import Account from "./Account";
 import { Chip } from "./Chip";
+import { CmdKLoader } from "./CmdK/CmdKLoader";
+import { Footer } from "./Footer";
 
 export const Sidebar = async () => {
   const authentication = await requireAuthentication();

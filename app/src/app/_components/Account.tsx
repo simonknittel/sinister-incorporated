@@ -1,5 +1,5 @@
-import { requireAuthentication } from "../../../_lib/auth/authenticateAndAuthorize";
-import Avatar from "../../_components/Avatar";
+import { requireAuthentication } from "../../lib/auth/authenticateAndAuthorize";
+import Avatar from "./Avatar";
 import LogoutButton from "./LogoutButton";
 
 const Account = async () => {

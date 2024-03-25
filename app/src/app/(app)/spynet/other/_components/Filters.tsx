@@ -1,4 +1,4 @@
-import { entityLogTypeTranslations } from "../../../../../_lib/entityLogTypeTranslations";
+import { entityLogTypeTranslations } from "../../../../../lib/entityLogTypeTranslations";
 import { type EntityLogType } from "../../../../../types";
 import { Filter } from "../../_components/Filter";
 import ConfirmationStateFilter from "./ConfirmationStateFilter";

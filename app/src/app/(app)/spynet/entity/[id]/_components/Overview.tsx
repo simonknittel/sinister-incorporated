@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { Suspense } from "react";
 import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
-import { requireAuthentication } from "../../../../../../_lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "../../../../../../lib/auth/authenticateAndAuthorize";
 import { LastSeenAt } from "../../../citizen/_components/LastSeenAt";
 import { OverviewSection } from "./generic-log-type/OverviewSection";
 

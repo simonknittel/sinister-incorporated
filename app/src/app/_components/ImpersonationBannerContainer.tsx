@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { prisma } from "../../../server/db";
+import { prisma } from "../../server/db";
 import ImpersonationBanner from "./ImpersonationBanner";
 
 async function getImpersonatedRoles() {

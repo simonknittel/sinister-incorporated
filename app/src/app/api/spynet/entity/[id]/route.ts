@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authenticateApi } from "../../../../../_lib/auth/authenticateAndAuthorize";
-import { requireConfirmedEmailForApi } from "../../../../../_lib/emailConfirmation";
+import { deleteObject } from "../../../../../lib/algolia";
+import { authenticateApi } from "../../../../../lib/auth/authenticateAndAuthorize";
+import { requireConfirmedEmailForApi } from "../../../../../lib/emailConfirmation";
 import { prisma } from "../../../../../server/db";
-import { deleteObject } from "../../../_lib/algolia";
 import errorHandler from "../../../_lib/errorHandler";
 
 interface Params {

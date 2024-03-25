@@ -2,9 +2,9 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authenticateApi } from "../../../_lib/auth/authenticateAndAuthorize";
-import { requireConfirmedEmailForApi } from "../../../_lib/emailConfirmation";
 import { env } from "../../../env.mjs";
+import { authenticateApi } from "../../../lib/auth/authenticateAndAuthorize";
+import { requireConfirmedEmailForApi } from "../../../lib/emailConfirmation";
 import { prisma } from "../../../server/db";
 import errorHandler from "../_lib/errorHandler";
 

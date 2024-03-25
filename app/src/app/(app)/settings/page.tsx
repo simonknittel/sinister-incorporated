@@ -1,8 +1,8 @@
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
-import { authenticatePage } from "../../../_lib/auth/authenticateAndAuthorize";
-import { log } from "../../../_lib/logging";
+import { authenticatePage } from "../../../lib/auth/authenticateAndAuthorize";
+import { log } from "../../../lib/logging";
 import ClassificationLevelsTile from "./_components/classification-level/ClassificationLevelsTile";
 import NoteTypesTile from "./_components/note-type/NoteTypesTile";
 

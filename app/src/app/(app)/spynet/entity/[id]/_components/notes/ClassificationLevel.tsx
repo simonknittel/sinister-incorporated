@@ -4,8 +4,8 @@ import {
   type User,
 } from "@prisma/client";
 import clsx from "clsx";
-import getAllClassificationLevels from "../../../../../../../_lib/cached/getAllClassificationLevels";
-import getLatestNoteAttributes from "../../../../../../../_lib/getLatestNoteAttributes";
+import getAllClassificationLevels from "../../../../../../../lib/cached/getAllClassificationLevels";
+import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
 
 interface Props {
   className?: string;

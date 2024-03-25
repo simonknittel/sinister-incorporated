@@ -2,7 +2,7 @@ import { type ClassificationLevel, type NoteType } from "@prisma/client";
 import clsx from "clsx";
 import { useFormContext, useWatch } from "react-hook-form";
 import { FaPlus, FaTrash } from "react-icons/fa";
-import { type FormValues } from "../../../../../../_lib/auth/FormValues";
+import { type FormValues } from "../../../../../../lib/auth/FormValues";
 import Button from "../../../../../_components/Button";
 import YesNoCheckbox from "../../../../../_components/YesNoCheckbox";
 

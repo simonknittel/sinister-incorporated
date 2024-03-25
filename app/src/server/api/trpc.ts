@@ -9,7 +9,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { requireConfirmedEmailForTrpc } from "../../_lib/emailConfirmation";
+import { requireConfirmedEmailForTrpc } from "../../lib/emailConfirmation";
 import { getServerAuthSession } from "../auth";
 import { prisma } from "../db";
 

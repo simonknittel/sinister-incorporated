@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";
 import { ZodError } from "zod";
-import { log } from "../../../_lib/logging";
+import { log } from "../../../lib/logging";
 
 export default function errorHandler(error: unknown) {
   if (error instanceof ZodError) {

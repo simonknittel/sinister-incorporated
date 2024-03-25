@@ -6,11 +6,11 @@ import {
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import { z } from "zod";
-import { type PermissionSet } from "../_lib/auth/PermissionSet";
-import getPermissionSetsByRoles from "../_lib/auth/getPermissionSetsByRoles";
-import { requestEmailConfirmation } from "../_lib/emailConfirmation";
-import { log } from "../_lib/logging";
 import { env } from "../env.mjs";
+import { type PermissionSet } from "../lib/auth/PermissionSet";
+import getPermissionSetsByRoles from "../lib/auth/getPermissionSetsByRoles";
+import { requestEmailConfirmation } from "../lib/emailConfirmation";
+import { log } from "../lib/logging";
 import { type UserRole } from "../types";
 import { prisma } from "./db";
 

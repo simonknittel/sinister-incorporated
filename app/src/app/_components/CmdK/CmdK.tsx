@@ -4,9 +4,9 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { FaCog, FaHome, FaLock, FaSearch, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
-import useAuthentication from "../../_lib/auth/useAuthentication";
+import useAuthentication from "../../../lib/auth/useAuthentication";
 import "./CmdK.css";
-import { CmdKSpynetSearch } from "./CmdKSpynetSearch";
+import { SpynetSearchPage } from "./SpynetSearchPage";
 
 type Props = Readonly<{
   open: boolean;
@@ -262,7 +262,7 @@ export const CmdK = ({ open, setOpen }: Props) => {
         )}
 
         {page === "spynet-search" && (
-          <CmdKSpynetSearch
+          <SpynetSearchPage
             search={search}
             onSelect={() => {
               setOpen(false);

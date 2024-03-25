@@ -4,8 +4,8 @@ import {
   type EntityLogAttribute,
   type NoteType,
 } from "@prisma/client";
-import { authenticate } from "../../../../../../../_lib/auth/authenticateAndAuthorize";
-import getAllClassificationLevels from "../../../../../../../_lib/cached/getAllClassificationLevels";
+import { authenticate } from "../../../../../../../lib/auth/authenticateAndAuthorize";
+import getAllClassificationLevels from "../../../../../../../lib/cached/getAllClassificationLevels";
 import TabPanel from "../../../../../../_components/tabs/TabPanel";
 import AddNote from "./AddNote";
 import SingleNote from "./SingleNote";

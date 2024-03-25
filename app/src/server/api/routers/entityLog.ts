@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { authorize } from "../../../_lib/auth/authenticateAndAuthorize";
+import { authorize } from "../../../lib/auth/authenticateAndAuthorize";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const entityLogRouter = createTRPCRouter({

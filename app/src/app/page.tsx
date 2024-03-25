@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
-import { authenticate } from "../_lib/auth/authenticateAndAuthorize";
+import { authenticate } from "../lib/auth/authenticateAndAuthorize";
 import { authOptions } from "../server/auth";
 import { Hero } from "./_components/Hero";
 import LoginButtons from "./_components/LoginButtons";

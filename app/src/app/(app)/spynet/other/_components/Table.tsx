@@ -6,7 +6,7 @@ import {
 } from "@prisma/client";
 import Link from "next/link";
 import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
-import { entityLogTypeTranslations } from "../../../../../_lib/entityLogTypeTranslations";
+import { entityLogTypeTranslations } from "../../../../../lib/entityLogTypeTranslations";
 import { type EntityLogConfirmationState } from "../../../../../types";
 import Actions from "../../../../_components/Actions";
 import ConfirmationState from "./ConfirmationState";

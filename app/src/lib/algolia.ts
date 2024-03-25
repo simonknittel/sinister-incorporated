@@ -1,6 +1,6 @@
 import { type Entity } from "@prisma/client";
 import algoliasearch from "algoliasearch";
-import { env } from "../../../env.mjs";
+import { env } from "../env.mjs";
 
 function getIndex() {
   const client = algoliasearch(

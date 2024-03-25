@@ -3,7 +3,7 @@
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { FaSignOutAlt, FaSpinner } from "react-icons/fa";
-import Button from "../../_components/Button";
+import Button from "./Button";
 
 const LogoutButton = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);

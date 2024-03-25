@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { authenticate } from "../../../../_lib/auth/authenticateAndAuthorize";
+import { authenticate } from "../../../../lib/auth/authenticateAndAuthorize";
 import { prisma } from "../../../../server/db";
 import AssignShip from "./AssignShip";
 import { MyShipTile } from "./MyShipTile";
