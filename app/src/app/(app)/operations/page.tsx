@@ -1,5 +1,7 @@
 import { type Metadata } from "next";
+import { notFound } from "next/navigation";
 import { authenticatePage } from "../../../lib/auth/authenticateAndAuthorize";
+import { getUnleashFlag } from "../../../lib/getUnleashFlag";
 import { prisma } from "../../../server/db";
 import Note from "../../_components/Note";
 import CreateOperation from "./_components/CreateOperation";
@@ -10,6 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  if (!(await getUnleashFlag("EnableOperations"))) notFound();
+
   const authentication = await authenticatePage();
   authentication.authorizePage([
     {

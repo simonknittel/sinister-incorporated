@@ -51,11 +51,7 @@ export const SpynetSearchPage = ({ search, onSelect }: Props) => {
   return (
     <Command.Group heading="Spynet > Suchen">
       {isValidating || !data ? (
-        <>
-          <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8 mt-2" />
-          <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8 mt-2" />
-          <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8 mt-2 mb-3" />
-        </>
+        <div className="animate-pulse rounded bg-neutral-700 h-24 mx-8 mt-2 mb-3" />
       ) : data.hits.length > 0 ? (
         data.hits.map((result) => (
           <SpynetSearchResultEntry

@@ -19,6 +19,15 @@ import { Footer } from "./Footer";
 export const Sidebar = async () => {
   const authentication = await requireAuthentication();
 
+  const showOperations =
+    (await getUnleashFlag("EnableOperations")) &&
+    authentication.authorize([
+      {
+        resource: "operation",
+        operation: "manage",
+      },
+    ]);
+
   return (
     <div className="flex h-full flex-col justify-between">
       <div>
@@ -39,12 +48,7 @@ export const Sidebar = async () => {
               </Link>
             </li>
 
-            {authentication.authorize([
-              {
-                resource: "operation",
-                operation: "manage",
-              },
-            ]) && (
+            {showOperations && (
               <li>
                 <Link
                   href="/operations"

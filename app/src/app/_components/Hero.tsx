@@ -10,7 +10,7 @@ export const Hero = ({ text, size = "lg" }: Readonly<Props>) => {
   return (
     <h1
       className={clsx(
-        "inline-block uppercase font-extrabold bg-clip-text text-transparent bg-sinister-text-gradient relative z-10 whitespace-nowrap",
+        "inline-block uppercase font-extrabold bg-clip-text text-transparent bg-sinister-text-gradient relative z-[1] whitespace-nowrap",
         {
           "text-5xl lg:text-6xl": size === "lg",
           [styles.layers!]: size === "lg",

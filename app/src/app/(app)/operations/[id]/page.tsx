@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
 import { authenticatePage } from "../../../../lib/auth/authenticateAndAuthorize";
+import { getUnleashFlag } from "../../../../lib/getUnleashFlag";
 import { log } from "../../../../lib/logging";
 import { prisma } from "../../../../server/db";
 import Avatar from "../../../_components/Avatar";
@@ -93,6 +94,8 @@ interface Props {
 }
 
 export default async function Page({ params }: Readonly<Props>) {
+  if (!(await getUnleashFlag("EnableOperations"))) notFound();
+
   const authentication = await authenticatePage();
   authentication.authorizePage([
     {
