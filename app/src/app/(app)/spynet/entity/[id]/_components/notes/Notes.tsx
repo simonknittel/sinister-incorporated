@@ -9,9 +9,10 @@ import { FaListAlt } from "react-icons/fa";
 import { requireAuthentication } from "../../../../../../../lib/auth/authenticateAndAuthorize";
 import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
 import { prisma } from "../../../../../../../server/db";
+import Tab from "../../../../../../_components/tabs/Tab";
 import TabList from "../../../../../../_components/tabs/TabList";
 import { TabsProvider } from "../../../../../../_components/tabs/TabsContext";
-import { default as NoteTypeTab, default as Tab } from "./Tab";
+import { NoteTypePanel } from "./NoteTypePanel";
 import isAllowedToRead from "./lib/isAllowedToRead";
 import isAllowedToReadRedacted from "./lib/isAllowedToReadRedacted";
 
@@ -145,7 +146,7 @@ export const Notes = async ({ className, entity }: Props) => {
         </TabList>
 
         {filteredNoteTypes.map((noteType) => (
-          <NoteTypeTab
+          <NoteTypePanel
             key={noteType.id}
             noteType={noteType}
             notes={tabs[noteType.id] || []}
