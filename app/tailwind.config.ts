@@ -5,6 +5,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        "sinister-red-900": "#330a0a",
         "sinister-red-500": "#BB2222",
         "sinister-red-300": "#CC4444",
       },

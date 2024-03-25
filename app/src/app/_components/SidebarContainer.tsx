@@ -32,7 +32,7 @@ const SidebarContainer = ({ children }: Readonly<Props>) => {
 
       <div
         className={clsx(
-          "fixed top-16 bottom-0 lg:left-8 lg:top-8 lg:bottom-8 w-96 overflow-auto bg-neutral-800/80 lg:bg-neutral-800/50 backdrop-blur lg:backdrop-blur-none -translate-x-full lg:translate-x-0 z-10 shadow lg:rounded-2xl",
+          "fixed top-16 bottom-0 lg:left-8 lg:top-8 lg:bottom-8 w-96 -translate-x-full lg:translate-x-0 z-10 flex flex-col",
           {
             "-translate-x-full": isVisible === false,
             "translate-x-0": isVisible === true,
