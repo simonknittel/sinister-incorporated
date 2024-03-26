@@ -2,8 +2,8 @@ import { Command } from "cmdk";
 import { debounce } from "lodash";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
-import { type CitizenHit } from "../../(app)/spynet/search/_components/Search";
 import { env } from "../../../env.mjs";
+import { type CitizenHit } from "../../app/spynet/search/_components/Search";
 import { SpynetSearchResultEntry } from "./SpynetSearchResultEntry";
 
 const fetcher = async (key: string) => {

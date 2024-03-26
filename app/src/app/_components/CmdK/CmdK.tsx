@@ -62,7 +62,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
               <Command.Item
                 keywords={["Dashboard", "Startseite", "Homepage"]}
                 onSelect={() => {
-                  router.push("/dashboard");
+                  router.push("/app/dashboard");
                   setOpen(false);
                   setSearch("");
                 }}
@@ -88,7 +88,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                 <Command.Item
                   keywords={["Flotte", "Fleet", "Schiffe", "Ships"]}
                   onSelect={() => {
-                    router.push("/fleet");
+                    router.push("/app/fleet");
                     setOpen(false);
                     setSearch("");
                   }}
@@ -123,7 +123,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   keywords={["Spynet"]}
                   onSelect={() => {
                     router.push(
-                      `/spynet/entity/${authentication.session.entityId}`,
+                      `/app/spynet/entity/${authentication.session.entityId}`,
                     );
                     setOpen(false);
                     setSearch("");
@@ -193,7 +193,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   <Command.Item
                     keywords={["Admin", "Settings"]}
                     onSelect={() => {
-                      router.push("/settings");
+                      router.push("/app/settings");
                       setOpen(false);
                       setSearch("");
                     }}
@@ -212,7 +212,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   <Command.Item
                     keywords={["Admin", "Berechtigungen"]}
                     onSelect={() => {
-                      router.push("/roles");
+                      router.push("/app/roles");
                       setOpen(false);
                       setSearch("");
                     }}
@@ -231,7 +231,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   <Command.Item
                     keywords={["Admin", "Ships"]}
                     onSelect={() => {
-                      router.push("/fleet/settings");
+                      router.push("/app/fleet/settings");
                       setOpen(false);
                       setSearch("");
                     }}
@@ -250,7 +250,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   <Command.Item
                     keywords={["Admin", "Users"]}
                     onSelect={() => {
-                      router.push("/users");
+                      router.push("/app/users");
                       setOpen(false);
                       setSearch("");
                     }}
