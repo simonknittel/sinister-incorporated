@@ -95,8 +95,8 @@ export default async function Page({ params }: Props) {
         ]) && <DeleteEntity entity={entity} />}
       </div>
 
-      <div className="mt-4 flex flex-col xl:flex-row-reverse gap-8">
-        <div className="flex flex-col gap-4 md:flex-row xl:w-[720px]">
+      <div className="mt-4 flex flex-col 3xl:flex-row-reverse gap-8">
+        <div className="flex flex-col gap-4 md:flex-row 3xl:w-[720px]">
           <Suspense fallback={<OverviewSkeleton className="md:w-1/2" />}>
             <Overview entity={entity} className="md:w-1/2" />
           </Suspense>

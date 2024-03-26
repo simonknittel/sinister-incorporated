@@ -75,7 +75,7 @@ export const Event = async ({ className, event, index }: Props) => {
           </p>
 
           <p>
-            <span className="text-neutral-500">Teilnehmeranzahl:</span>{" "}
+            <span className="text-neutral-500">Teilnehmer:</span>{" "}
             {event.user_count}
           </p>
         </div>
