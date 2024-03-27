@@ -76,7 +76,7 @@ const renderTextEmail = (templateProps: EmailConfirmationProps) => {
 Deine E-Mail-Adresse und die Datenschutzerklärung müssen bestätigt werden bevor du ${host} nutzen kannst.
 
 Öffne folgenden Link in deinem Browser um diese zu bestätigen:
-${baseUrl}/confirm-email?token=${token}
+${baseUrl}/api/confirm-email?token=${token}
 
 Falls du diese E-Mail nicht erwartet hast, melde dich bei info@sinister-incorporated.de.
 

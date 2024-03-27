@@ -1,0 +1,24 @@
+meta {
+  name: Confirm email
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{appBaseUrl}}/api/confirm-email?token=o2r9212zkru3k4b4kxuvh9sq
+  body: none
+  auth: none
+}
+
+query {
+  token: o2r9212zkru3k4b4kxuvh9sq
+}
+
+headers {
+  Cookie: next-auth.session-token=ef528053-0266-4def-9322-c6982d23f0b6
+}
+
+script:pre-request {
+  req.setMaxRedirects(0);
+  
+}
