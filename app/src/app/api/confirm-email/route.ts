@@ -14,12 +14,6 @@ export async function GET(request: NextRequest) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi();
-    authentication.authorizeApi([
-      {
-        resource: "login",
-        operation: "manage",
-      },
-    ]);
 
     /**
      * Validate the request body
