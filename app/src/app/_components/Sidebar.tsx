@@ -47,7 +47,7 @@ export const Sidebar = async () => {
             <ul>
               <li>
                 <Link
-                  href="/dashboard"
+                  href="/app/dashboard"
                   className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                   prefetch={false}
                 >
@@ -59,7 +59,7 @@ export const Sidebar = async () => {
               {showOperations && (
                 <li>
                   <Link
-                    href="/operations"
+                    href="/app/operations"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                     prefetch={false}
                   >
@@ -72,7 +72,7 @@ export const Sidebar = async () => {
 
               {/* <li>
               <Link
-                href="/preview-channel"
+                href="/app/preview-channel"
                 className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                 prefetch={false}
               >
@@ -95,7 +95,7 @@ export const Sidebar = async () => {
                 ])) && (
                 <li>
                   <Link
-                    href="/fleet"
+                    href="/app/fleet"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                     prefetch={false}
                   >
@@ -135,7 +135,7 @@ export const Sidebar = async () => {
                           </span>
                         ) : (
                           <Link
-                            href="/spynet/search"
+                            href="/app/spynet/search"
                             className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                             prefetch={false}
                           >
@@ -147,7 +147,7 @@ export const Sidebar = async () => {
 
                       <li>
                         <Link
-                          href="/spynet/citizen"
+                          href="/app/spynet/citizen"
                           className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                           prefetch={false}
                         >
@@ -158,7 +158,7 @@ export const Sidebar = async () => {
 
                       <li>
                         <Link
-                          href="/spynet/notes"
+                          href="/app/spynet/notes"
                           className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                           prefetch={false}
                         >
@@ -169,7 +169,7 @@ export const Sidebar = async () => {
 
                       <li>
                         <Link
-                          href="/spynet/other"
+                          href="/app/spynet/other"
                           className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                           prefetch={false}
                         >
@@ -243,7 +243,7 @@ export const Sidebar = async () => {
                     ])) && (
                     <li>
                       <Link
-                        href="/settings"
+                        href="/app/settings"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                         prefetch={false}
                       >
@@ -261,7 +261,7 @@ export const Sidebar = async () => {
                   ]) && (
                     <li>
                       <Link
-                        href="/roles"
+                        href="/app/roles"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                         prefetch={false}
                       >
@@ -279,7 +279,7 @@ export const Sidebar = async () => {
                   ]) && (
                     <li>
                       <Link
-                        href="/fleet/settings"
+                        href="/app/fleet/settings"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                         prefetch={false}
                       >
@@ -296,7 +296,7 @@ export const Sidebar = async () => {
                   ]) && (
                     <li>
                       <Link
-                        href="/users"
+                        href="/app/users"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                         prefetch={false}
                       >

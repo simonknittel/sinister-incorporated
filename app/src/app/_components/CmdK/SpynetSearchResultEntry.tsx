@@ -1,6 +1,6 @@
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
-import { type CitizenHit } from "../../(app)/spynet/search/_components/Search";
+import { type CitizenHit } from "../../app/spynet/search/_components/Search";
 
 type Props = Readonly<{
   citizen: CitizenHit;
@@ -13,7 +13,7 @@ export const SpynetSearchResultEntry = ({ citizen, onSelect }: Props) => {
   return (
     <Command.Item
       onSelect={() => {
-        router.push(`/spynet/entity/${citizen.objectID}`);
+        router.push(`/app/spynet/entity/${citizen.objectID}`);
         onSelect?.();
       }}
       className="flex flex-col !gap-0 mt-2"
