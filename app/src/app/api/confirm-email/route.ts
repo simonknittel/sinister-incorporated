@@ -1,0 +1,81 @@
+import { NextResponse, type NextRequest } from "next/server";
+import { zfd } from "zod-form-data";
+import { authenticateApi } from "../../../lib/auth/authenticateAndAuthorize";
+import { prisma } from "../../../server/db";
+import errorHandler from "../_lib/errorHandler";
+
+const paramsSchema = zfd.formData({
+  token: zfd.text(),
+});
+
+export async function GET(request: NextRequest) {
+  try {
+    /**
+     * Authenticate and authorize the request
+     */
+    const authentication = await authenticateApi();
+    authentication.authorizeApi([
+      {
+        resource: "login",
+        operation: "manage",
+      },
+    ]);
+
+    /**
+     * Validate the request body
+     */
+    const paramsData = paramsSchema.parse(request.nextUrl.searchParams);
+
+    /**
+     * Do the thing
+     */
+    const result = await prisma.emailConfirmationToken.findUnique({
+      where: {
+        userId: authentication.session.user.id,
+        email: authentication.session.user.email!,
+        token: paramsData.token,
+        expires: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!result)
+      return NextResponse.redirect(
+        new URL("/email-confirmation", request.url),
+        {
+          headers: {
+            "Referrer-Policy": "no-referrer",
+          },
+        },
+      );
+
+    await prisma.$transaction([
+      prisma.emailConfirmationToken.deleteMany({
+        where: {
+          userId: authentication.session.user.id,
+        },
+      }),
+      prisma.user.update({
+        where: {
+          id: authentication.session.user.id,
+        },
+        data: {
+          emailVerified: new Date(),
+        },
+      }),
+    ]);
+
+    return NextResponse.redirect(new URL("/clearance", request.url), {
+      headers: {
+        "Referrer-Policy": "no-referrer",
+      },
+    });
+  } catch (error) {
+    return errorHandler(error, {
+      headers: {
+        "Referrer-Policy": "no-referrer",
+      },
+    });
+  }
+}

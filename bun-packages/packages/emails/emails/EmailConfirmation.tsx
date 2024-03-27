@@ -47,7 +47,7 @@ export default function Email({
               Sinister Inc
             </Text>
             <Text className="font-bold">
-              Deine E-Mail-Adresse und die <Link href={`${baseUrl}/confirm-email?token=${token}`} className="text-sinister-red-500">Datenschutzerklärung</Link> müssen bestätigt werden bevor du{" "}
+              Deine E-Mail-Adresse und die <Link href={`${baseUrl}/api/confirm-email?token=${token}`} className="text-sinister-red-500">Datenschutzerklärung</Link> müssen bestätigt werden bevor du{" "}
               <Link href={baseUrl} className="text-sinister-red-500">
                 {host}
               </Link>{" "}
@@ -55,7 +55,7 @@ export default function Email({
             </Text>
             <Container className="text-center">
               <Button
-                href={`${baseUrl}/confirm-email?token=${token}`}
+                href={`${baseUrl}/api/confirm-email?token=${token}`}
                 className="rounded uppercase gap-4 text-base font-bold bg-sinister-red-500 text-neutral-50 px-6 py-4"
               >
                 Bestätigen
@@ -65,10 +65,10 @@ export default function Email({
               Falls der Button nicht funktioniert, öffne folgenden Link in
               deinem Browser:{" "}
               <Link
-                href={`${baseUrl}/confirm-email?token=${token}`}
+                href={`${baseUrl}/api/confirm-email?token=${token}`}
                 className="text-sinister-red-500"
               >
-                {baseUrl}/confirm-email?token={token}
+                {baseUrl}/api/confirm-email?token={token}
               </Link>
             </Text>
             <Text>

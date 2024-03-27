@@ -3,28 +3,31 @@ import { serializeError } from "serialize-error";
 import { ZodError } from "zod";
 import { log } from "../../../lib/logging";
 
-export default function errorHandler(error: unknown) {
+export default function errorHandler(
+  error: unknown,
+  responseInit: ResponseInit = {},
+) {
   if (error instanceof ZodError) {
     return NextResponse.json(
       {
         message: "Invalid request params or body",
         errors: error.errors,
       },
-      { status: 400 },
+      { status: 400, ...responseInit },
     );
   } else if (error instanceof Error && error.message === "Unauthorized") {
     return NextResponse.json(
       {
         message: "Unauthorized",
       },
-      { status: 401 },
+      { status: 401, ...responseInit },
     );
   } else if (error instanceof Error && error.message === "Not Found") {
     return NextResponse.json(
       {
         message: "Not Found",
       },
-      { status: 404 },
+      { status: 404, ...responseInit },
     );
   } else if (
     error instanceof Error &&
@@ -34,7 +37,7 @@ export default function errorHandler(error: unknown) {
       {
         message: "Bad request",
       },
-      { status: 400 },
+      { status: 400, ...responseInit },
     );
   }
 
@@ -46,6 +49,6 @@ export default function errorHandler(error: unknown) {
     {
       message: "Internal server error",
     },
-    { status: 500 },
+    { status: 500, ...responseInit },
   );
 }

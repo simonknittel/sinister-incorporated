@@ -86,7 +86,7 @@ declare module "next-auth" {
 
 const adapter = PrismaAdapter(prisma);
 
-const maxAge = 60 * 60 * 24 * 7; // 7 days
+const maxAge = 60 * 60 * 24 * 31; // 31 days
 
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
