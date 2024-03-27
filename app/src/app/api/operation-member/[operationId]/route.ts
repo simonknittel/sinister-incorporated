@@ -22,7 +22,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await paramsSchema.parseAsync(params.operationId);
+    const paramsData = paramsSchema.parse(params.operationId);
 
     /**
      * Get
@@ -75,13 +75,13 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await paramsSchema.parseAsync(params.operationId);
+    const paramsData = paramsSchema.parse(params.operationId);
 
     /**
      * Validate the request body
      */
     const body: unknown = await request.json();
-    const data = await patchBodySchema.parseAsync(body);
+    const data = patchBodySchema.parse(body);
 
     /**
      * Make sure the item exists.
@@ -132,7 +132,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await paramsSchema.parseAsync(params.operationId);
+    const paramsData = paramsSchema.parse(params.operationId);
 
     /**
      * Delete

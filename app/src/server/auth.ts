@@ -39,7 +39,7 @@ async function getGuildMember(access_token: string) {
   );
 
   const body: unknown = await response.json();
-  const data = await guildMemberResponseSchema.parseAsync(body);
+  const data = guildMemberResponseSchema.parse(body);
 
   return data;
 }

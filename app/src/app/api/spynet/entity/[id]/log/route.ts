@@ -60,9 +60,9 @@ export async function POST(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request
      */
-    const paramsData = await paramsSchema.parseAsync(params.id);
+    const paramsData = paramsSchema.parse(params.id);
     const body: unknown = await request.json();
-    const data = await postBodySchema.parseAsync(body);
+    const data = postBodySchema.parse(body);
 
     /**
      * Authorize the request

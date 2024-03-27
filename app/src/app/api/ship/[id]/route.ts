@@ -32,13 +32,13 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await paramsSchema.parseAsync(params.id);
+    const paramsData = paramsSchema.parse(params.id);
 
     /**
      * Validate the request body
      */
     const body: unknown = await request.json();
-    const data = await patchBodySchema.parseAsync(body);
+    const data = patchBodySchema.parse(body);
 
     /**
      * Make sure the item exists.
@@ -87,7 +87,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await paramsSchema.parseAsync(params.id);
+    const paramsData = paramsSchema.parse(params.id);
 
     /**
      * Delete

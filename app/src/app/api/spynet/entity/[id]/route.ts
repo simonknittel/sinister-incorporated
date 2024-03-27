@@ -29,7 +29,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await paramsSchema.parseAsync(params.id);
+    const paramsData = paramsSchema.parse(params.id);
 
     /**
      * Delete
