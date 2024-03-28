@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "../../../../../../lib/auth/authenticateAndAuthorize";
-import { requireConfirmedEmailForApi } from "../../../../../../lib/emailConfirmation";
 import { prisma } from "../../../../../../server/db";
 import errorHandler from "../../../../_lib/errorHandler";
 import { updateEntityRolesCache } from "./_lib/updateEntityRolesCache";
@@ -54,8 +53,10 @@ export async function POST(request: Request, { params }: { params: Params }) {
     /**
      * Authenticate the request
      */
-    const authentication = await authenticateApi();
-    await requireConfirmedEmailForApi(authentication.session);
+    const authentication = await authenticateApi(
+      "/api/spynet/entity/[id]/log",
+      "POST",
+    );
 
     /**
      * Validate the request

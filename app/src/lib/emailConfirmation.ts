@@ -75,6 +75,7 @@ export const requireConfirmedEmailForApi = async (session: Session) => {
 
   if (!session.user.emailVerified) {
     log.info("Unauthenticated request to API", {
+      // TODO: Add request path
       userId: session.user.id,
       reason: "Unconfirmed email",
     });

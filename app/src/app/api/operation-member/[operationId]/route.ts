@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "../../../../lib/auth/authenticateAndAuthorize";
-import { requireConfirmedEmailForApi } from "../../../../lib/emailConfirmation";
 import { prisma } from "../../../../server/db";
 import errorHandler from "../../_lib/errorHandler";
 
@@ -16,8 +15,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     /**
      * Authenticate the request
      */
-    const authentication = await authenticateApi();
-    await requireConfirmedEmailForApi(authentication.session);
+    await authenticateApi("/api/operation-member/[operationId]", "GET");
 
     /**
      * Validate the request params
@@ -69,8 +67,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Authenticate the request
      */
-    const authentication = await authenticateApi();
-    await requireConfirmedEmailForApi(authentication.session);
+    await authenticateApi("/api/operation-member/[operationId]", "PATCH");
 
     /**
      * Validate the request params
@@ -126,8 +123,10 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Authenticate the request
      */
-    const authentication = await authenticateApi();
-    await requireConfirmedEmailForApi(authentication.session);
+    const authentication = await authenticateApi(
+      "/api/operation-member/[operationId]",
+      "DELETE",
+    );
 
     /**
      * Validate the request params
