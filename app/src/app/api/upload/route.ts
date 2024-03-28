@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { env } from "../../../env.mjs";
 import { authenticateApi } from "../../../lib/auth/authenticateAndAuthorize";
-import { requireConfirmedEmailForApi } from "../../../lib/emailConfirmation";
 import { prisma } from "../../../server/db";
 import errorHandler from "../_lib/errorHandler";
 
@@ -18,8 +17,7 @@ export async function POST(request: Request) {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateApi();
-    await requireConfirmedEmailForApi(authentication.session);
+    const authentication = await authenticateApi("/api/upload", "POST");
     authentication.authorizeApi([
       {
         resource: "role",

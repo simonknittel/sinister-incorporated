@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "../../../lib/auth/authenticateAndAuthorize";
-import { requireConfirmedEmailForApi } from "../../../lib/emailConfirmation";
 import { prisma } from "../../../server/db";
 import errorHandler from "../_lib/errorHandler";
 
@@ -24,8 +23,10 @@ export async function POST(request: Request) {
     /**
      * Authenticate the request
      */
-    const authentication = await authenticateApi();
-    await requireConfirmedEmailForApi(authentication.session);
+    const authentication = await authenticateApi(
+      "/api/operation-member",
+      "POST",
+    );
 
     /**
      * Validate the request body

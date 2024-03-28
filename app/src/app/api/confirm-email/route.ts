@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { zfd } from "zod-form-data";
-import { authenticateApi } from "../../../lib/auth/authenticateAndAuthorize";
+import { authenticate } from "../../../lib/auth/authenticateAndAuthorize";
+import { log } from "../../../lib/logging";
 import { prisma } from "../../../server/db";
 import errorHandler from "../_lib/errorHandler";
 
@@ -13,7 +14,16 @@ export async function GET(request: NextRequest) {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateApi();
+    const authentication = await authenticate();
+    if (!authentication) {
+      log.info("Unauthenticated request to API", {
+        requestPath: "/api/confirm-email",
+        requestMethod: "GET",
+        reason: "No session",
+      });
+
+      throw new Error("Unauthenticated");
+    }
 
     /**
      * Validate the request body

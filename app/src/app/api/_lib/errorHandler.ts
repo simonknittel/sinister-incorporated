@@ -15,12 +15,19 @@ export default function errorHandler(
       },
       { status: 400, ...responseInit },
     );
-  } else if (error instanceof Error && error.message === "Unauthorized") {
+  } else if (error instanceof Error && error.message === "Unauthenticated") {
     return NextResponse.json(
       {
         message: "Unauthorized",
       },
       { status: 401, ...responseInit },
+    );
+  } else if (error instanceof Error && error.message === "Unauthorized") {
+    return NextResponse.json(
+      {
+        message: "Forbidden",
+      },
+      { status: 403, ...responseInit },
     );
   } else if (error instanceof Error && error.message === "Not Found") {
     return NextResponse.json(

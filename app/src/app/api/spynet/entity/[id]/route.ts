@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { deleteObject } from "../../../../../lib/algolia";
 import { authenticateApi } from "../../../../../lib/auth/authenticateAndAuthorize";
-import { requireConfirmedEmailForApi } from "../../../../../lib/emailConfirmation";
 import { prisma } from "../../../../../server/db";
 import errorHandler from "../../../_lib/errorHandler";
 
@@ -17,8 +16,10 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateApi();
-    await requireConfirmedEmailForApi(authentication.session);
+    const authentication = await authenticateApi(
+      "/api/spynet/entity/[id]",
+      "DELETE",
+    );
     authentication.authorizeApi([
       {
         resource: "citizen",

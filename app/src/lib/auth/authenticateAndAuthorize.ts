@@ -3,7 +3,10 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { authOptions } from "../../server/auth";
-import { requireConfirmedEmailForPage } from "../emailConfirmation";
+import {
+  requireConfirmedEmailForApi,
+  requireConfirmedEmailForPage,
+} from "../emailConfirmation";
 import { log } from "../logging";
 import { type PermissionSet } from "./PermissionSet";
 import comparePermissionSets from "./comparePermissionSets";
@@ -66,26 +69,50 @@ export async function authenticatePage(requestPath?: string) {
   };
 }
 
-export async function authenticateApi() {
+export async function authenticateApi(
+  requestPath?: string,
+  requestMethod?: string,
+) {
   const authentication = await authenticate();
+
   if (!authentication) {
     log.info("Unauthenticated request to API", {
+      requestPath,
+      requestMethod,
       reason: "No session",
     });
-    throw new Error("Unauthorized");
+
+    throw new Error("Unauthenticated");
   }
+
+  await requireConfirmedEmailForApi(authentication.session);
+
+  if (
+    !authentication.authorize([
+      {
+        resource: "login",
+        operation: "manage",
+      },
+    ])
+  )
+    throw new Error("Unauthorized");
 
   return {
     ...authentication,
     authorizeApi: (requiredPermissionSets?: PermissionSet[]) => {
       const result = authentication.authorize(requiredPermissionSets);
+
       if (!result) {
         log.info("Unauthorized request to API", {
+          requestPath,
+          requestMethod,
           userId: authentication.session.user.id,
           reason: "Insufficient permissions",
         });
+
         throw new Error("Unauthorized");
       }
+
       return result;
     },
   };
