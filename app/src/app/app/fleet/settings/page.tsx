@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage();
+  const authentication = await authenticatePage("/app/fleet/settings");
   authentication.authorizePage([
     {
       resource: "manufacturersSeriesAndVariants",

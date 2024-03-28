@@ -96,7 +96,7 @@ interface Props {
 export default async function Page({ params }: Readonly<Props>) {
   if (!(await getUnleashFlag("EnableOperations"))) notFound();
 
-  const authentication = await authenticatePage();
+  const authentication = await authenticatePage("/app/operations/[id]");
   authentication.authorizePage([
     {
       resource: "operation",

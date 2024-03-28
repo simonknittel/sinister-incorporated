@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   if (!(await getUnleashFlag("EnableOperations"))) notFound();
 
-  const authentication = await authenticatePage();
+  const authentication = await authenticatePage("/app/operations");
   authentication.authorizePage([
     {
       resource: "operation",

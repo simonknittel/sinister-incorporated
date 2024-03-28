@@ -65,6 +65,7 @@ export const requireConfirmedEmailForPage = async (session: Session) => {
       userId: session.user.id,
       reason: "Unconfirmed email",
     });
+
     redirect("/email-confirmation");
   }
 };
@@ -77,6 +78,7 @@ export const requireConfirmedEmailForApi = async (session: Session) => {
       userId: session.user.id,
       reason: "Unconfirmed email",
     });
+
     throw new Error("Unauthorized");
   }
 };

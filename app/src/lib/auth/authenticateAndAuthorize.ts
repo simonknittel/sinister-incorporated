@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { authOptions } from "../../server/auth";
+import { requireConfirmedEmailForPage } from "../emailConfirmation";
 import { log } from "../logging";
 import { type PermissionSet } from "./PermissionSet";
 import comparePermissionSets from "./comparePermissionSets";
@@ -21,17 +22,29 @@ export const authenticate = cache(async () => {
   }
 });
 
-export async function authenticatePage() {
+export async function authenticatePage(requestPath?: string) {
   const authentication = await authenticate();
 
   if (!authentication) {
     log.info("Unauthenticated request to page", {
-      // TODO: Add request path
+      requestPath,
       reason: "No session",
     });
 
     redirect("/");
   }
+
+  await requireConfirmedEmailForPage(authentication.session);
+
+  if (
+    !authentication.authorize([
+      {
+        resource: "login",
+        operation: "manage",
+      },
+    ])
+  )
+    redirect("/clearance");
 
   return {
     ...authentication,
@@ -40,10 +53,12 @@ export async function authenticatePage() {
 
       if (!result) {
         log.info("Unauthorized request to page", {
+          requestPath,
           userId: authentication.session.user.id,
           reason: "Insufficient permissions",
         });
-        redirect("/");
+
+        redirect("/app/unauthorized");
       }
 
       return result;

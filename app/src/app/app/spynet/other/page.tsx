@@ -19,7 +19,7 @@ interface Props {
 export default async function Page({
   searchParams: _searchParams,
 }: Readonly<Props>) {
-  const authentication = await authenticatePage();
+  const authentication = await authenticatePage("/app/spynet/other");
   authentication.authorizePage([
     {
       resource: "citizen",
