@@ -5,6 +5,8 @@ import { log } from "../../../lib/logging";
 import { prisma } from "../../../server/db";
 import errorHandler from "../_lib/errorHandler";
 
+export const dynamic = "force-dynamic";
+
 const paramsSchema = zfd.formData({
   token: zfd.text(),
 });
