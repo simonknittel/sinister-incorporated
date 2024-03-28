@@ -13,6 +13,7 @@
   "dependencies": {
     "@algolia/autocomplete-js": "1.17.0",
     "@algolia/autocomplete-theme-classic": "1.17.0",
+    "@aws-sdk/client-eventbridge": "3.540.0",
     "@aws-sdk/client-s3": "3.537.0",
     "@aws-sdk/s3-request-presigner": "3.537.0",
     "@next-auth/prisma-adapter": "1.0.7",
@@ -68,17 +69,17 @@
     "@typescript-eslint/eslint-plugin": "7.3.1",
     "@typescript-eslint/parser": "7.3.1",
     "@vitest/coverage-istanbul": "1.4.0",
-    "autoprefixer": "10.4.18",
+    "autoprefixer": "10.4.19",
     "csv": "6.3.8",
     "eslint": "8.57.0",
     "eslint-config-next": "14.1.4",
-    "postcss": "8.4.37",
+    "postcss": "8.4.38",
     "prettier": "3.2.5",
     "prettier-plugin-organize-imports": "3.2.4",
     "prettier-plugin-tailwindcss": "0.5.12",
     "prisma": "5.11.0",
     "tailwindcss": "3.4.1",
-    "typescript": "5.4.2",
+    "typescript": "5.4.3",
     "vercel": "33.6.1",
     "vitest": "1.4.0"
   }

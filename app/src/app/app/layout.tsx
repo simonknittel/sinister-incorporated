@@ -1,8 +1,6 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 import { authenticatePage } from "../../lib/auth/authenticateAndAuthorize";
-import { requireConfirmedEmailForPage } from "../../lib/emailConfirmation";
 import { TRPCReactProvider } from "../../trpc/react";
 import { AdminEnabler } from "../_components/AdminEnabler";
 import ImpersonationBannerContainer from "../_components/ImpersonationBannerContainer";
@@ -19,18 +17,6 @@ interface Props {
 
 export default async function AppLayout({ children }: Readonly<Props>) {
   const authentication = await authenticatePage();
-
-  await requireConfirmedEmailForPage(authentication.session);
-
-  if (
-    !authentication.authorize([
-      {
-        resource: "login",
-        operation: "manage",
-      },
-    ])
-  )
-    redirect("/clearance");
 
   return (
     <SessionProviderContainer session={authentication.session}>

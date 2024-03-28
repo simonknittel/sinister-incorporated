@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage();
+  const authentication = await authenticatePage("/app/fleet");
 
   const showOrgFleetTile = authentication.authorize([
     {

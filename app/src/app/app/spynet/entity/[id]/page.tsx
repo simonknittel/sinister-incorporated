@@ -59,7 +59,7 @@ type Props = Readonly<{
 }>;
 
 export default async function Page({ params }: Props) {
-  const authentication = await authenticatePage();
+  const authentication = await authenticatePage("/app/spynet/entity/[id]");
   authentication.authorizePage([
     {
       resource: "citizen",

@@ -3,8 +3,9 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { RiInformationLine } from "react-icons/ri";
-import { authenticatePage } from "../../lib/auth/authenticateAndAuthorize";
+import { authenticate } from "../../lib/auth/authenticateAndAuthorize";
 import { requiresEmailConfirmation } from "../../lib/emailConfirmation";
+import { log } from "../../lib/logging";
 import { AdminEnabler } from "../_components/AdminEnabler";
 import { Footer } from "../_components/Footer";
 import { PageRefresher } from "./_components/PageRefresher";
@@ -24,9 +25,20 @@ interface Props {
 }
 
 export default async function Page({ searchParams }: Readonly<Props>) {
-  const authentication = await authenticatePage();
+  const authentication = await authenticate();
+
+  if (!authentication) {
+    log.info("Unauthenticated request to page", {
+      requestPath: "/email-confirmation",
+      reason: "No session",
+    });
+
+    redirect("/");
+  }
+
   if ((await requiresEmailConfirmation(authentication.session)) === false)
     redirect("/clearance");
+
   if (authentication.session.user.emailVerified) redirect("/clearance");
 
   const newUser =
