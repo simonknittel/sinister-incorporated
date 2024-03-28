@@ -7,7 +7,7 @@ import { env } from "../env.mjs";
 import { prisma } from "../server/db";
 import { getUnleashFlag } from "./getUnleashFlag";
 import { log } from "./logging";
-import { sendEmail } from "./sendEmail";
+import { sendEmailV2 } from "./sendEmail";
 
 export const requestEmailConfirmation = async (
   userId: string,
@@ -32,7 +32,7 @@ export const requestEmailConfirmation = async (
     },
   });
 
-  await sendEmail("emailConfirmation", [
+  await sendEmailV2("emailConfirmation", [
     {
       to: userEmail,
       templateProps: {
