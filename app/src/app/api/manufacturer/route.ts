@@ -27,7 +27,7 @@ export async function POST(request: Request) {
      * Validate the request body
      */
     const body: unknown = await request.json();
-    const data = await postBodySchema.parseAsync(body);
+    const data = postBodySchema.parse(body);
 
     /**
      * Create

@@ -34,9 +34,9 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params and body
      */
-    const paramsData = await paramsSchema.parseAsync(params);
+    const paramsData = paramsSchema.parse(params);
     const body: unknown = await request.json();
-    const data = await patchBodySchema.parseAsync(body);
+    const data = patchBodySchema.parse(body);
 
     /**
      * Do the thing
@@ -136,7 +136,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = await paramsSchema.parseAsync(params);
+    const paramsData = paramsSchema.parse(params);
 
     /**
      * Do the thing
