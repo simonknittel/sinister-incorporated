@@ -36,6 +36,13 @@ export default function errorHandler(
       },
       { status: 404, ...responseInit },
     );
+  } else if (error instanceof Error && error.message === "Duplicate") {
+    return NextResponse.json(
+      {
+        message: "Conflict",
+      },
+      { status: 409, ...responseInit },
+    );
   } else if (
     error instanceof Error &&
     ["Bad request", "Unexpected end of JSON input"].includes(error.message)

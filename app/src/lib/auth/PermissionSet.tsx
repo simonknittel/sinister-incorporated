@@ -11,6 +11,7 @@ export type PermissionSet = {
     | "ship"
     | "manufacturersSeriesAndVariants"
     | "citizen"
+    | "organization"
     | "noteType"
     | "user"
     | "role"

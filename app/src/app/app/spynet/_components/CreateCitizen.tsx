@@ -9,16 +9,14 @@ import Button from "../../../_components/Button";
 import Modal from "../../../_components/Modal";
 
 interface FormValues {
-  type: string;
   spectrumId: string;
 }
 
-const CreateEntity = () => {
+export const CreateCitizen = () => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
-  const selectId = useId();
   const inputId = useId();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -28,7 +26,7 @@ const CreateEntity = () => {
       const response = await fetch(`/api/spynet/entity`, {
         method: "POST",
         body: JSON.stringify({
-          type: data.type,
+          type: "citizen",
           spectrumId: data.spectrumId,
         }),
       });
@@ -52,7 +50,7 @@ const CreateEntity = () => {
   return (
     <>
       <Button variant="tertiary" onClick={() => setIsOpen(true)}>
-        <FaPlus /> Neu anlegen
+        <FaPlus /> Neuer Citizen
       </Button>
 
       <Modal
@@ -60,26 +58,10 @@ const CreateEntity = () => {
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
       >
-        <h2 className="text-xl font-bold">Neu anlegen</h2>
+        <h2 className="text-xl font-bold">Neuer Citizen</h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label className="mt-6 block" htmlFor={selectId}>
-            Typ
-          </label>
-
-          <select
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
-            id={selectId}
-            {...register("type", { required: true })}
-          >
-            <option value="citizen">Citizen</option>
-
-            <option value="organization" disabled>
-              Organization
-            </option>
-          </select>
-
-          <label className="mt-4 block" htmlFor={inputId}>
+          <label className="mt-6 block" htmlFor={inputId}>
             Spectrum ID
           </label>
 
@@ -101,5 +83,3 @@ const CreateEntity = () => {
     </>
   );
 };
-
-export default CreateEntity;
