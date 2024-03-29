@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaExternalLinkAlt, FaListAlt } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import { requireAuthentication } from "../../../../../../lib/auth/authenticateAndAuthorize";
 import { prisma } from "../../../../../../server/db";
@@ -177,7 +177,9 @@ export const ActivityTile = async ({ className, id }: Props) => {
     <section
       className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
     >
-      <h2 className="font-bold">Aktivität</h2>
+      <h2 className="font-bold flex gap-2 items-center">
+        <FaListAlt /> Aktivität
+      </h2>
 
       <ul className="mt-4 flex flex-col gap-8">
         {sortedEntries.map((entry) => (

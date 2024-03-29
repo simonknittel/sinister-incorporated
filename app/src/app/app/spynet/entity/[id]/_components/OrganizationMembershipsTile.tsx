@@ -1,8 +1,10 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaExternalLinkAlt, FaSitemap } from "react-icons/fa";
 import { requireAuthentication } from "../../../../../../lib/auth/authenticateAndAuthorize";
+import { getUnleashFlag } from "../../../../../../lib/getUnleashFlag";
 import { prisma } from "../../../../../../server/db";
+import { Wip } from "../../../../../_components/Wip";
 
 type Props = Readonly<{
   className?: string;
@@ -10,6 +12,17 @@ type Props = Readonly<{
 }>;
 
 export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
+  if (!(await getUnleashFlag("EnableOrganizations")))
+    return (
+      <section className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col">
+        <h2 className="font-bold flex gap-2 items-center mb-8">
+          <FaSitemap /> Organisationen
+        </h2>
+
+        <Wip />
+      </section>
+    );
+
   const authentication = await requireAuthentication();
   if (
     !authentication.authorize([
@@ -56,7 +69,9 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
     <section
       className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
     >
-      <h2 className="font-bold">Organisationen</h2>
+      <h2 className="font-bold flex gap-2 items-center">
+        <FaSitemap /> Organisationen
+      </h2>
 
       {activeOrganizationMemberships.length > 0 ? (
         <ul className="flex gap-2 flex-wrap mt-4">

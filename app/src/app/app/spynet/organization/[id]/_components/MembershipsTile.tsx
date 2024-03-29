@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaExternalLinkAlt, FaUsers } from "react-icons/fa";
 import { requireAuthentication } from "../../../../../../lib/auth/authenticateAndAuthorize";
 import { prisma } from "../../../../../../server/db";
 
@@ -56,7 +56,9 @@ export const MembershipsTile = async ({ className, id }: Props) => {
     <section
       className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
     >
-      <h2 className="font-bold">Mitglieder</h2>
+      <h2 className="font-bold flex gap-2 items-center">
+        <FaUsers /> Mitglieder
+      </h2>
 
       {activeOrganizationMemberships.length > 0 ? (
         <ul className="flex gap-2 flex-wrap mt-4">
