@@ -109,11 +109,11 @@ export default async function Page({ params }: Props) {
 
       <div className="mt-4 flex flex-col 3xl:flex-row-reverse gap-8">
         <div className="flex flex-col gap-4 md:flex-row 3xl:w-[720px]">
-          <Suspense fallback={<Skeleton className="md:w-1/2" />}>
-            <OverviewTile className="md:w-1/2" id={params.id} />
+          <Suspense fallback={<Skeleton className="md:w-1/2 3xl:self-start" />}>
+            <OverviewTile className="md:w-1/2 3xl:self-start" id={params.id} />
           </Suspense>
 
-          <section className="md:w-1/2 rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col">
+          <section className="md:w-1/2 rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col 3xl:self-start">
             <h2 className="font-bold flex gap-2 items-center mb-8">
               <FaSitemap /> Mitglieder
             </h2>

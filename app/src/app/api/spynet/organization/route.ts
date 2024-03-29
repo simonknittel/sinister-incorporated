@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { saveObject } from "../../../../lib/algolia";
 import { authenticateApi } from "../../../../lib/auth/authenticateAndAuthorize";
 import { getUnleashFlag } from "../../../../lib/getUnleashFlag";
 import { prisma } from "../../../../server/db";
@@ -85,10 +86,14 @@ export async function POST(request: Request) {
     /**
      * Add new organization to Algolia
      */
-    // TODO
+    await saveObject(createdOrganization.id, {
+      type: "organization",
+      spectrumId: createdOrganization.spectrumId,
+      names: [createdOrganization.name],
+    });
 
     /**
-     * Respond with the result
+     * Respond
      */
     return NextResponse.json(createdOrganization);
   } catch (error) {

@@ -3,7 +3,7 @@ import { debounce } from "lodash";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { env } from "../../../env.mjs";
-import { type CitizenHit } from "../../app/spynet/search/_components/Search";
+import { type Hit } from "../../app/spynet/search/_components/Search";
 import { SpynetSearchResultEntry } from "./SpynetSearchResultEntry";
 
 const fetcher = async (key: string) => {
@@ -18,7 +18,7 @@ const fetcher = async (key: string) => {
 };
 
 type AlgoliaResponse = Readonly<{
-  hits: Array<CitizenHit>;
+  hits: Array<Hit>;
 }>;
 
 type Props = Readonly<{
@@ -56,7 +56,7 @@ export const SpynetSearchPage = ({ search, onSelect }: Props) => {
         data.hits.map((result) => (
           <SpynetSearchResultEntry
             key={result.objectID}
-            citizen={result}
+            hit={result}
             onSelect={onSelect}
           />
         ))

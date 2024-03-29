@@ -26,6 +26,7 @@ export const OverviewTile = async ({ className, id }: Props) => {
     select: {
       id: true,
       spectrumId: true,
+      name: true,
     },
   });
   if (!organization) throw new Error("Organization not found");
@@ -41,11 +42,10 @@ export const OverviewTile = async ({ className, id }: Props) => {
         <dd>{organization.id}</dd>
 
         <dt className="text-neutral-500 mt-4">Spectrum ID</dt>
-        <dd>
-          {organization.spectrumId || <span className="italic">Unbekannt</span>}
-        </dd>
+        <dd>{organization.spectrumId}</dd>
 
-        {/* <OverviewSection type="name" name="Name" organization={organization} /> */}
+        <dt className="text-neutral-500 mt-4">Name</dt>
+        <dd>{organization.name}</dd>
       </dl>
     </section>
   );
