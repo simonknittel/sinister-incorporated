@@ -1,4 +1,6 @@
 import clsx from "clsx";
+import Link from "next/link";
+import { FaExternalLinkAlt } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import { requireAuthentication } from "../../../../../../lib/auth/authenticateAndAuthorize";
 import { prisma } from "../../../../../../server/db";
@@ -20,6 +22,19 @@ export const ActivityTile = async ({ className, id }: Props) => {
   )
     throw new Error("Unauthorized");
 
+  const alsoVisibilityRedacted = authentication.authorize([
+    {
+      resource: "organizationMembership",
+      operation: "read",
+      attributes: [
+        {
+          key: "alsoVisibilityRedacted",
+          value: true,
+        },
+      ],
+    },
+  ]);
+
   const organization = await prisma.organization.findUnique({
     where: {
       id,
@@ -35,6 +50,28 @@ export const ActivityTile = async ({ className, id }: Props) => {
           attributeKey: true,
           createdAt: true,
           newValue: true,
+        },
+      },
+      membershipHistoryEntries: {
+        where: {
+          visibility: {
+            in: alsoVisibilityRedacted ? ["PUBLIC", "REDACTED"] : ["PUBLIC"],
+          },
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        select: {
+          id: true,
+          citizen: {
+            select: {
+              id: true,
+              handle: true,
+            },
+          },
+          type: true,
+          visibility: true,
+          createdAt: true,
         },
       },
     },
@@ -72,6 +109,63 @@ export const ActivityTile = async ({ className, id }: Props) => {
           throw new Error(`Unknown attribute key: ${entry.attributeKey}`);
       }
     }),
+    ...organization.membershipHistoryEntries.map((entry) => {
+      switch (entry.type) {
+        case "MAIN":
+          return {
+            key: entry.id,
+            date: entry.createdAt,
+            message: (
+              <p>
+                <Link
+                  href={`/app/spynet/entity/${entry.citizen.id}`}
+                  className="inline-flex gap-2 items-center text-sinister-red-500 hover:text-sinister-red-300 font-bold mr-1"
+                >
+                  {entry.citizen.handle}
+                  <FaExternalLinkAlt className="text-xs" />
+                </Link>{" "}
+                wurde als <strong>Main</strong> hinzugefügt
+              </p>
+            ),
+          };
+
+        case "AFFILIATE":
+          return {
+            key: entry.id,
+            date: entry.createdAt,
+            message: (
+              <p>
+                <Link
+                  href={`/app/spynet/entity/${entry.citizen.id}`}
+                  className="inline-flex gap-2 items-center text-sinister-red-500 hover:text-sinister-red-300 font-bold mr-1"
+                >
+                  {entry.citizen.handle}
+                  <FaExternalLinkAlt className="text-xs" />
+                </Link>{" "}
+                wurde als <strong>Affiliate</strong> hinzugefügt
+              </p>
+            ),
+          };
+
+        case "LEFT":
+          return {
+            key: entry.id,
+            date: entry.createdAt,
+            message: (
+              <p>
+                <Link
+                  href={`/app/spynet/entity/${entry.citizen.id}`}
+                  className="inline-flex gap-2 items-center text-sinister-red-500 hover:text-sinister-red-300 font-bold mr-1"
+                >
+                  {entry.citizen.handle}
+                  <FaExternalLinkAlt className="text-xs" />
+                </Link>{" "}
+                wurde entfernt
+              </p>
+            ),
+          };
+      }
+    }),
   ];
 
   // Sort entries by date in descending order
@@ -85,7 +179,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
     >
       <h2 className="font-bold">Aktivität</h2>
 
-      <ul className="mt-4">
+      <ul className="mt-4 flex flex-col gap-8">
         {sortedEntries.map((entry) => (
           <li key={entry.key} className="flex gap-2">
             <div className="h-[20px] flex items-center">

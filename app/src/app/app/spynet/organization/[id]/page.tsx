@@ -2,14 +2,13 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
-import { FaSitemap } from "react-icons/fa";
 import { serializeError } from "serialize-error";
 import { authenticatePage } from "../../../../../lib/auth/authenticateAndAuthorize";
 import { getUnleashFlag } from "../../../../../lib/getUnleashFlag";
 import { log } from "../../../../../lib/logging";
 import { prisma } from "../../../../../server/db";
-import { Wip } from "../../../../_components/Wip";
 import { ActivityTile } from "./_components/ActivityTile";
+import { MembershipsTile } from "./_components/MembershipsTile";
 import { OverviewTile } from "./_components/OverviewTile";
 import { Skeleton } from "./_components/Skeleton";
 
@@ -113,13 +112,12 @@ export default async function Page({ params }: Props) {
             <OverviewTile className="md:w-1/2 3xl:self-start" id={params.id} />
           </Suspense>
 
-          <section className="md:w-1/2 rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col 3xl:self-start">
-            <h2 className="font-bold flex gap-2 items-center mb-8">
-              <FaSitemap /> Mitglieder
-            </h2>
-
-            <Wip />
-          </section>
+          <Suspense fallback={<Skeleton className="md:w-1/2 3xl:self-start" />}>
+            <MembershipsTile
+              className="md:w-1/2 3xl:self-start"
+              id={params.id}
+            />
+          </Suspense>
         </div>
 
         <Suspense fallback={<Skeleton className="flex-1" />}>

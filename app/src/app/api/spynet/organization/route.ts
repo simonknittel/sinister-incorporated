@@ -81,6 +81,11 @@ export async function POST(request: Request) {
           },
         },
       },
+      select: {
+        id: true,
+        spectrumId: true,
+        name: true,
+      },
     });
 
     /**

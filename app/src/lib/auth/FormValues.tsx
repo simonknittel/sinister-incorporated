@@ -74,6 +74,16 @@ export interface FormValues {
     read: boolean;
     delete: boolean;
   };
+  organization: {
+    create: boolean;
+    read: boolean;
+    delete: boolean;
+  };
+  organizationMembership: {
+    create: boolean;
+    read: boolean;
+    readRedacted: boolean;
+  };
   note: {
     noteTypeId: string;
     classificationLevelId: string;
