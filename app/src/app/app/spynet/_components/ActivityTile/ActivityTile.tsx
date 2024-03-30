@@ -11,7 +11,14 @@ type Props = Readonly<{
 }>;
 
 export const ActivityTile = async ({ className }: Props) => {
-  await requireAuthentication();
+  const authentication = await requireAuthentication();
+
+  const canConfirm = authentication.authorize([
+    {
+      resource: "organizationMembership",
+      operation: "confirm",
+    },
+  ]);
 
   const result = await prisma.$transaction([
     prisma.organization.findMany({
@@ -55,6 +62,9 @@ export const ActivityTile = async ({ className }: Props) => {
           createdAt: "desc",
         },
       ],
+      where: {
+        confirmed: canConfirm ? undefined : "CONFIRMED",
+      },
       take: 15,
       select: {
         id: true,
@@ -73,6 +83,7 @@ export const ActivityTile = async ({ className }: Props) => {
         createdAt: true,
         type: true,
         visibility: true,
+        confirmed: true,
       },
     }),
   ]);
@@ -92,6 +103,10 @@ export const ActivityTile = async ({ className }: Props) => {
   return (
     <section className={clsx(className)}>
       <h2 className="font-bold text-xl self-start">Aktivität</h2>
+      <small className="text-neutral-500 italic">
+        Aktuell werden hier nur Änderungen an Organisationen aufgelistet.
+        Änderungen an Citizens folgen später.
+      </small>
 
       <div className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50 mt-4">
         {entries.length > 0 ? (

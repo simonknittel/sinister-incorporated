@@ -110,8 +110,10 @@ export default async function Page({ params }: Props) {
 
       <div className="mt-4 flex flex-col 3xl:flex-row-reverse gap-8">
         <div className="flex flex-col gap-4 md:flex-row 3xl:w-[720px]">
-          <Suspense fallback={<OverviewSkeleton className="md:w-1/2" />}>
-            <Overview entity={entity} className="md:w-1/2" />
+          <Suspense
+            fallback={<OverviewSkeleton className="md:w-1/2 3xl:self-start" />}
+          >
+            <Overview entity={entity} className="md:w-1/2 3xl:self-start" />
           </Suspense>
 
           <div className="flex flex-col gap-4 md:w-1/2">

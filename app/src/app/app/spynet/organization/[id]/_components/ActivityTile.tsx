@@ -35,6 +35,13 @@ export const ActivityTile = async ({ className, id }: Props) => {
     },
   ]);
 
+  const canConfirm = authentication.authorize([
+    {
+      resource: "organizationMembership",
+      operation: "confirm",
+    },
+  ]);
+
   const organization = await prisma.organization.findUnique({
     where: {
       id,
@@ -58,6 +65,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
           visibility: {
             in: alsoVisibilityRedacted ? ["PUBLIC", "REDACTED"] : ["PUBLIC"],
           },
+          confirmed: canConfirm ? undefined : "CONFIRMED",
         },
         orderBy: {
           createdAt: "asc",
@@ -73,6 +81,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
           type: true,
           visibility: true,
           createdAt: true,
+          confirmed: true,
         },
       },
     },

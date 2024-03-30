@@ -117,7 +117,8 @@ const SingleNote = async ({ note }: Props) => {
               <ClassificationLevel note={note} />
             </Suspense>
 
-            <span>&bull;</span>
+            {/* TODO: Introduce permission to see submittedBy and confirmedBy */}
+            {/* <span>&bull;</span>
             <p>Eingereicht von {note.submittedBy.name}</p>
 
             {confirmed && (
@@ -125,7 +126,7 @@ const SingleNote = async ({ note }: Props) => {
                 <span>&bull;</span>
                 <p>Bestätigt von {confirmed.createdBy.name}</p>
               </>
-            )}
+            )} */}
 
             {authentication.authorize([
               {
