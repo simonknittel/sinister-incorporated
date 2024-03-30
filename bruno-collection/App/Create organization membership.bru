@@ -1,0 +1,23 @@
+meta {
+  name: Create organization membership
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{appBaseUrl}}/api/spynet/organization/clucjzyxm0002yjqkhr5wvdlw/membership
+  body: json
+  auth: none
+}
+
+headers {
+  Cookie: next-auth.session-token={{appSessionToken}}; enableAdmin=enableAdmin
+}
+
+body:json {
+  {
+    "citizenId": "clu5b4uh5000c129dm3nfcg8b",
+    "type": "MAIN",
+    "visibility": "PUBLIC"
+  }
+}

@@ -81,6 +81,16 @@ const postBodySchema = z.object({
     read: z.boolean(),
     delete: z.boolean(),
   }),
+  organization: z.object({
+    create: z.boolean(),
+    read: z.boolean(),
+    delete: z.boolean(),
+  }),
+  organizationMembership: z.object({
+    create: z.boolean(),
+    read: z.boolean(),
+    readRedacted: z.boolean(),
+  }),
   note: z
     .array(
       z.object({

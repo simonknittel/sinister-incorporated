@@ -2,15 +2,15 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
-import { FaSitemap } from "react-icons/fa";
 import { serializeError } from "serialize-error";
 import { authenticatePage } from "../../../../../lib/auth/authenticateAndAuthorize";
 import { log } from "../../../../../lib/logging";
 import { prisma } from "../../../../../server/db";
-import { Wip } from "../../../../_components/Wip";
 import DeleteEntity from "./_components/DeleteEntity";
+import { OrganizationMembershipsTile } from "./_components/OrganizationMembershipsTile";
 import { Overview } from "./_components/Overview";
 import { OverviewSkeleton } from "./_components/OverviewSkeleton";
+import { Skeleton } from "./_components/Skeleton";
 import { Notes } from "./_components/notes/Notes";
 import { NotesSkeleton } from "./_components/notes/NotesSkeleton";
 import { Roles } from "./_components/roles/Roles";
@@ -106,13 +106,9 @@ export default async function Page({ params }: Props) {
               <Roles entity={entity} />
             </Suspense>
 
-            <section className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col">
-              <h2 className="font-bold flex gap-2 items-center mb-8">
-                <FaSitemap /> Organisationen
-              </h2>
-
-              <Wip />
-            </section>
+            <Suspense fallback={<Skeleton />}>
+              <OrganizationMembershipsTile id={entity.id} />
+            </Suspense>
           </div>
         </div>
 

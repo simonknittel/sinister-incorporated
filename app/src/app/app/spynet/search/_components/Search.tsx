@@ -4,15 +4,27 @@ import { getAlgoliaResults } from "@algolia/autocomplete-js";
 import algoliasearch from "algoliasearch";
 import { env } from "../../../../../env.mjs";
 import Autocomplete from "./Autocomplete";
-import Citizen from "./Citizen";
+import { Citizen } from "./Citizen";
+import { Organization } from "./Organization";
 
-export interface CitizenHit {
+type HitBase = Readonly<{
   objectID: string;
   spectrumId: string;
+}>;
+
+export type CitizenHit = HitBase & {
+  type: "citizen";
   handles?: string[];
   citizenIds?: string[];
   communityMonikers?: string[];
-}
+};
+
+export type OrganizationHit = HitBase & {
+  type: "organization";
+  names: Array<string>;
+};
+
+export type Hit = CitizenHit | OrganizationHit;
 
 const searchClient = algoliasearch(
   env.NEXT_PUBLIC_ALGOLIA_APP_ID,
@@ -20,7 +32,7 @@ const searchClient = algoliasearch(
 );
 
 function debouncePromise(fn, time) {
-  let timerId = undefined;
+  let timerId: NodeJS.Timeout | undefined = undefined;
 
   return function debounced(...args) {
     if (timerId) {
@@ -55,13 +67,17 @@ const Search = () => {
                   ],
                 });
               },
-              getItemUrl({ item }: { item: CitizenHit }) {
+              getItemUrl({ item }: { item: Hit }) {
                 return `/app/spynet/entity/${item.objectID}`;
               },
               templates: {
-                item: ({ item }: { item: CitizenHit }) => (
-                  <Citizen hit={item} />
-                ),
+                item: ({ item }: { item: Hit }) => {
+                  if (item.type === "citizen") {
+                    return <Citizen hit={item} />;
+                  } else if (item.type === "organization") {
+                    return <Organization hit={item} />;
+                  }
+                },
               },
             },
           ]);

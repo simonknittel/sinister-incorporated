@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { type CitizenHit } from "./Search";
 
-interface Props {
+type Props = Readonly<{
   hit: CitizenHit;
-}
+}>;
 
-const Citizen = ({ hit }: Readonly<Props>) => {
+export const Citizen = ({ hit }: Props) => {
   return (
     <Link href={`/app/spynet/entity/${hit.objectID}`} prefetch={false}>
       {hit.handles && hit.handles.length > 0 ? (
@@ -38,5 +38,3 @@ const Citizen = ({ hit }: Readonly<Props>) => {
     </Link>
   );
 };
-
-export default Citizen;

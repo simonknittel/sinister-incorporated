@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     ]);
 
     /**
-     * Validate the request body
+     * Validate the request
      */
     const body: unknown = await request.json();
     const data = postBodySchema.parse(body);

@@ -122,7 +122,7 @@ export const requireAuthentication = cache(async () => {
   const authentication = await authenticate();
 
   if (!authentication) {
-    throw new Error("Unauthorized");
+    throw new Error("Unauthenticated");
   }
 
   return authentication;

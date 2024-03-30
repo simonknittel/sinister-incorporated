@@ -11,6 +11,8 @@ export type PermissionSet = {
     | "ship"
     | "manufacturersSeriesAndVariants"
     | "citizen"
+    | "organization"
+    | "organizationMembership"
     | "noteType"
     | "user"
     | "role"
@@ -42,6 +44,7 @@ export type PermissionSetAttribute = {
     | "noteTypeId"
     | "classificationLevelId"
     | "alsoUnconfirmed"
-    | "roleId";
+    | "roleId"
+    | "alsoVisibilityRedacted";
   value: string | boolean;
 };
