@@ -34,7 +34,7 @@ export default async function Page() {
       },
     ])
   )
-    redirect("/app/dashboard");
+    redirect("/app");
 
   return (
     <div className="min-h-dvh flex justify-center items-center flex-col py-8 bg-sinister-radial-gradient">

@@ -120,11 +120,7 @@ export const authOptions: NextAuthOptions = {
             },
           },
           include: {
-            permissions: {
-              include: {
-                attributes: true,
-              },
-            },
+            permissionStrings: true,
           },
         });
 

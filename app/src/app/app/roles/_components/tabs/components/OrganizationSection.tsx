@@ -2,35 +2,33 @@ import clsx from "clsx";
 import YesNoCheckbox from "../../../../../_components/YesNoCheckbox";
 import { usePermissionsContext } from "../../PermissionsContext";
 
-interface Props {
+type Props = Readonly<{
   className?: string;
-}
+}>;
 
-const CitizenSection = ({ className }: Readonly<Props>) => {
+export const OrganizationSection = ({ className }: Props) => {
   const { register } = usePermissionsContext();
 
   return (
     <div className={clsx(className)}>
-      <h4 className="font-bold">Citizen</h4>
+      <h4 className="font-bold">Organisationen</h4>
 
       <div className="border border-neutral-700 p-4 rounded mt-2 grid grid-cols-3">
         <div>
-          <h5 className="font-bold mb-2">Erstellen</h5>
-          <YesNoCheckbox {...register("citizen;create")} />
+          <h5 className="font-bold mb-2">Lesen</h5>
+          <YesNoCheckbox {...register("organization;read")} />
         </div>
 
         <div>
-          <h5 className="font-bold mb-2">Einsehen</h5>
-          <YesNoCheckbox {...register("citizen;read")} />
+          <h5 className="font-bold mb-2">Erstellen</h5>
+          <YesNoCheckbox {...register("organization;create")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Löschen</h5>
-          <YesNoCheckbox {...register("citizen;delete")} />
+          <YesNoCheckbox {...register("organization;delete")} />
         </div>
       </div>
     </div>
   );
 };
-
-export default CitizenSection;

@@ -1,14 +1,13 @@
 import clsx from "clsx";
-import { useFormContext } from "react-hook-form";
-import { type FormValues } from "../../../../../../lib/auth/FormValues";
 import YesNoCheckbox from "../../../../../_components/YesNoCheckbox";
+import { usePermissionsContext } from "../../PermissionsContext";
 
 interface Props {
   className?: string;
 }
 
 const DiscordIdSection = ({ className }: Readonly<Props>) => {
-  const { register } = useFormContext<FormValues>();
+  const { register } = usePermissionsContext();
 
   return (
     <div className={clsx(className)}>
@@ -17,22 +16,22 @@ const DiscordIdSection = ({ className }: Readonly<Props>) => {
       <div className="border border-neutral-700 p-4 rounded mt-2 grid grid-cols-4">
         <div>
           <h5 className="font-bold mb-2">Erstellen</h5>
-          <YesNoCheckbox register={register("discord-id.create")} />
+          <YesNoCheckbox {...register("discord-id;create")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Einsehen</h5>
-          <YesNoCheckbox register={register("discord-id.read")} />
+          <YesNoCheckbox {...register("discord-id;read")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Löschen</h5>
-          <YesNoCheckbox register={register("discord-id.delete")} />
+          <YesNoCheckbox {...register("discord-id;delete")} />
         </div>
 
         <div>
           <h5 className="font-bold mb-2">Bestätigen</h5>
-          <YesNoCheckbox register={register("discord-id.confirm")} />
+          <YesNoCheckbox {...register("discord-id;confirm")} />
         </div>
       </div>
     </div>

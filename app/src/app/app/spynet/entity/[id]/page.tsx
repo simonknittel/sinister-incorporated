@@ -6,11 +6,11 @@ import { serializeError } from "serialize-error";
 import { authenticatePage } from "../../../../../lib/auth/authenticateAndAuthorize";
 import { log } from "../../../../../lib/logging";
 import { prisma } from "../../../../../server/db";
+import { SkeletonTile } from "../../../../_components/SkeletonTile";
 import DeleteEntity from "./_components/DeleteEntity";
 import { OrganizationMembershipsTile } from "./_components/OrganizationMembershipsTile";
 import { Overview } from "./_components/Overview";
 import { OverviewSkeleton } from "./_components/OverviewSkeleton";
-import { Skeleton } from "./_components/Skeleton";
 import { Notes } from "./_components/notes/Notes";
 import { NotesSkeleton } from "./_components/notes/NotesSkeleton";
 import { Roles } from "./_components/roles/Roles";
@@ -70,16 +70,29 @@ export default async function Page({ params }: Props) {
   const entity = await getEntity(params.id);
   if (!entity) notFound();
 
+  const showOrganizationMembershipsTile = authentication.authorize([
+    {
+      resource: "organizationMembership",
+      operation: "read",
+    },
+  ]);
+
   return (
     <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl">
         <Link
-          href="/app/spynet/search"
+          href="/app/spynet"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
           prefetch={false}
         >
           Spynet
         </Link>
+
+        <span className="text-neutral-500">/</span>
+
+        <span className="text-neutral-500 flex gap-1 items-center">
+          Citizen
+        </span>
 
         <span className="text-neutral-500">/</span>
 
@@ -106,9 +119,11 @@ export default async function Page({ params }: Props) {
               <Roles entity={entity} />
             </Suspense>
 
-            <Suspense fallback={<Skeleton />}>
-              <OrganizationMembershipsTile id={entity.id} />
-            </Suspense>
+            {showOrganizationMembershipsTile && (
+              <Suspense fallback={<SkeletonTile />}>
+                <OrganizationMembershipsTile id={entity.id} />
+              </Suspense>
+            )}
           </div>
         </div>
 

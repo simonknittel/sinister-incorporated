@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 import { Suspense } from "react";
 import { authenticatePage } from "../../../lib/auth/authenticateAndAuthorize";
-import RolesTile from "./_components/RolesTile";
+import { RolesTile } from "./_components/RolesTile";
 import RolesTileSkeleton from "./_components/RolesTileSkeleton";
 
 export const metadata: Metadata = {

@@ -17,7 +17,7 @@ interface Props {
 
 export default async function Page({ searchParams }: Readonly<Props>) {
   const authentication = await authenticate();
-  if (authentication) redirect("/app/dashboard");
+  if (authentication) redirect("/app");
 
   const activeProviders = authOptions.providers.map((provider) => provider.id);
 

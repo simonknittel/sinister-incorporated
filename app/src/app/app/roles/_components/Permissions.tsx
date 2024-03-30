@@ -3,13 +3,10 @@
 import {
   type ClassificationLevel,
   type NoteType,
-  type Permission,
-  type PermissionAttribute,
   type Role,
 } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { FormProvider, useForm, type SubmitHandler } from "react-hook-form";
+import { useState, type FormEvent } from "react";
 import toast from "react-hot-toast";
 import {
   FaCalendarDay,
@@ -19,68 +16,53 @@ import {
   FaSpinner,
 } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
-import { RiSpyFill, RiSwordFill } from "react-icons/ri";
-import { type FormValues } from "../../../../lib/auth/FormValues";
-import databaseRoleToFormValues from "../../../../lib/auth/databaseRoleToFormValues";
+import { RiSpyFill } from "react-icons/ri";
 import Button from "../../../_components/Button";
 import Modal from "../../../_components/Modal";
 import Tab from "../../../_components/tabs/Tab";
 import TabList from "../../../_components/tabs/TabList";
 import { TabsProvider } from "../../../_components/tabs/TabsContext";
+import { usePermissionsContext } from "./PermissionsContext";
+import { CitizenTab } from "./tabs/CitizenTab";
 import EventsTab from "./tabs/EventsTab";
 import FleetTab from "./tabs/FleetTab";
-import OperationsTab from "./tabs/OperationsTab";
+import { OrganizationsTab } from "./tabs/OrganizationsTab";
 import OtherTab from "./tabs/OtherTab";
-import SpynetTab from "./tabs/SpynetTab";
 
-interface Props {
-  role: Role & {
-    permissions: (Permission & { attributes: PermissionAttribute[] })[];
-  };
+type Props = Readonly<{
   noteTypes: NoteType[];
   classificationLevels: ClassificationLevel[];
   allRoles: Role[];
-}
+  enableOperations: boolean;
+}>;
 
-const Permissions = ({
-  role,
+export const Permissions = ({
   noteTypes,
   classificationLevels,
   allRoles,
-}: Readonly<Props>) => {
+  enableOperations,
+}: Props) => {
+  const { handleSubmit, isLoading } = usePermissionsContext();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const methods = useForm<FormValues>({
-    defaultValues: databaseRoleToFormValues(role),
-  });
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleRequestClose = () => {
     setIsOpen(false);
     router.refresh();
   };
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    setIsLoading(true);
+  const _handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
     try {
-      const response = await fetch(`/api/role/${role.id}/permissions`, {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      await handleSubmit(e);
 
-      if (response.ok) {
-        router.refresh();
-        toast.success("Erfolgreich gespeichert");
-      } else {
-        toast.error("Beim Speichern ist ein Fehler aufgetreten.");
-      }
+      router.refresh();
+      toast.success("Erfolgreich gespeichert");
     } catch (error) {
       toast.error("Beim Speichern ist ein Fehler aufgetreten.");
       console.error(error);
     }
-
-    setIsLoading(false);
   };
 
   return (
@@ -96,56 +78,48 @@ const Permissions = ({
       >
         <h2 className="text-xl font-bold mb-4">Berechtigungen</h2>
 
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <TabsProvider initialActiveTab="spynet">
-              <TabList>
-                <Tab id="spynet">
-                  <RiSpyFill /> Spynet
-                </Tab>
+        <form onSubmit={_handleSubmit}>
+          <TabsProvider initialActiveTab="citizen">
+            <TabList>
+              <Tab id="citizen">
+                <RiSpyFill /> Citizen
+              </Tab>
 
-                <Tab id="fleet">
-                  <MdWorkspaces /> Flotte
-                </Tab>
+              <Tab id="organizations">
+                <RiSpyFill /> Organisationen
+              </Tab>
 
-                <Tab id="operations">
-                  <RiSwordFill /> Operationen
-                </Tab>
+              <Tab id="fleet">
+                <MdWorkspaces /> Flotte
+              </Tab>
 
-                <Tab id="events">
-                  <FaCalendarDay /> Events
-                </Tab>
+              <Tab id="events">
+                <FaCalendarDay /> Events
+              </Tab>
 
-                <Tab id="other">
-                  <FaCog /> Sonstiges
-                </Tab>
-              </TabList>
+              <Tab id="other">
+                <FaCog /> Sonstiges
+              </Tab>
+            </TabList>
 
-              <SpynetTab
-                noteTypes={noteTypes}
-                classificationLevels={classificationLevels}
-              />
-              <FleetTab />
-              <OperationsTab />
-              <EventsTab />
-              <OtherTab roles={allRoles} />
-            </TabsProvider>
+            <CitizenTab
+              noteTypes={noteTypes}
+              classificationLevels={classificationLevels}
+            />
+            <OrganizationsTab />
+            <FleetTab />
+            <EventsTab enableOperations={enableOperations} />
+            <OtherTab roles={allRoles} />
+          </TabsProvider>
 
-            <div className="flex justify-end mt-8">
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? (
-                  <FaSpinner className="animate-spin" />
-                ) : (
-                  <FaSave />
-                )}
-                Speichern
-              </Button>
-            </div>
-          </form>
-        </FormProvider>
+          <div className="flex justify-end mt-8">
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
+              Speichern
+            </Button>
+          </div>
+        </form>
       </Modal>
     </>
   );
 };
-
-export default Permissions;

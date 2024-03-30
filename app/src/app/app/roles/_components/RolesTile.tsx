@@ -3,27 +3,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaTable } from "react-icons/fa";
 import { env } from "../../../../env.mjs";
+import { getUnleashFlag } from "../../../../lib/getUnleashFlag";
 import { isOpenAIEnabled } from "../../../../lib/isOpenAIEnabled";
 import { prisma } from "../../../../server/db";
 import Actions from "../../../_components/Actions";
 import { Create } from "./Create";
 import Delete from "./Delete";
-import Permissions from "./Permissions";
+import { Permissions } from "./Permissions";
+import { PermissionsProvider } from "./PermissionsContext";
 import Update from "./Update";
 
-interface Props {
+type Props = Readonly<{
   className?: string;
-}
+}>;
 
-const RolesTile = async ({ className }: Readonly<Props>) => {
+export const RolesTile = async ({ className }: Props) => {
   const [roles, noteTypes, classificationLevels] = await prisma.$transaction([
     prisma.role.findMany({
       include: {
-        permissions: {
-          include: {
-            attributes: true,
-          },
-        },
+        permissionStrings: true,
       },
     }),
 
@@ -33,6 +31,8 @@ const RolesTile = async ({ className }: Readonly<Props>) => {
   ]);
 
   const sortedRoles = roles.sort((a, b) => a.name.localeCompare(b.name));
+
+  const enableOperations = await getUnleashFlag("EnableOperations");
 
   return (
     <section
@@ -71,12 +71,14 @@ const RolesTile = async ({ className }: Readonly<Props>) => {
             <Actions>
               <Update role={role} />
 
-              <Permissions
-                role={role}
-                noteTypes={noteTypes}
-                classificationLevels={classificationLevels}
-                allRoles={roles}
-              />
+              <PermissionsProvider role={role}>
+                <Permissions
+                  noteTypes={noteTypes}
+                  classificationLevels={classificationLevels}
+                  allRoles={roles}
+                  enableOperations={enableOperations}
+                />
+              </PermissionsProvider>
 
               <Delete role={role} />
 
@@ -104,5 +106,3 @@ const RolesTile = async ({ className }: Readonly<Props>) => {
     </section>
   );
 };
-
-export default RolesTile;

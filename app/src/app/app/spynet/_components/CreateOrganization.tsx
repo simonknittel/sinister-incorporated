@@ -51,8 +51,12 @@ export const CreateOrganization = () => {
 
   return (
     <>
-      <Button variant="tertiary" onClick={() => setIsOpen(true)}>
-        <FaPlus /> Neue Organisation
+      <Button
+        variant="secondary"
+        onClick={() => setIsOpen(true)}
+        title="Neue Organisation anlegen"
+      >
+        <FaPlus /> Organisation
       </Button>
 
       <Modal
@@ -60,7 +64,7 @@ export const CreateOrganization = () => {
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
       >
-        <h2 className="text-xl font-bold">Neue Organisation</h2>
+        <h2 className="text-xl font-bold">Neue Organisation anlegen</h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <label className="mt-6 block" htmlFor={spectrumIdInputId}>

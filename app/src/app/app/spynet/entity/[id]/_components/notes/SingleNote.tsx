@@ -100,7 +100,7 @@ const SingleNote = async ({ note }: Props) => {
         </div>
 
         <div className="flex-1">
-          <div className="text-sm flex gap-2 border-b pb-2 items-center border-neutral-800 flex-wrap text-neutral-500">
+          <div className="text-sm flex gap-2 border-b pb-2 items-center border-neutral-800/50 flex-wrap text-neutral-500">
             <p>
               <time dateTime={note.createdAt.toISOString()}>
                 {note.createdAt.toLocaleDateString("de-DE", {

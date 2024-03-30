@@ -4,13 +4,12 @@ import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { serializeError } from "serialize-error";
 import { authenticatePage } from "../../../../../lib/auth/authenticateAndAuthorize";
-import { getUnleashFlag } from "../../../../../lib/getUnleashFlag";
 import { log } from "../../../../../lib/logging";
 import { prisma } from "../../../../../server/db";
+import { SkeletonTile } from "../../../../_components/SkeletonTile";
 import { ActivityTile } from "./_components/ActivityTile";
 import { MembershipsTile } from "./_components/MembershipsTile";
 import { OverviewTile } from "./_components/OverviewTile";
-import { Skeleton } from "./_components/Skeleton";
 
 const getOrganization = cache(async (id: string) => {
   return prisma.organization.findUnique({
@@ -33,8 +32,6 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   try {
-    if (!(await getUnleashFlag("EnableOrganizations"))) return {};
-
     const organization = await getOrganization(params.id);
     if (!organization) return {};
 
@@ -60,8 +57,6 @@ type Props = Readonly<{
 }>;
 
 export default async function Page({ params }: Props) {
-  if (!(await getUnleashFlag("EnableOrganizations"))) notFound();
-
   const authentication = await authenticatePage(
     "/app/spynet/organization/[id]",
   );
@@ -79,7 +74,7 @@ export default async function Page({ params }: Props) {
     <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl">
         <Link
-          href="/app/spynet/search"
+          href="/app/spynet"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
           prefetch={false}
         >
@@ -108,11 +103,15 @@ export default async function Page({ params }: Props) {
 
       <div className="mt-4 flex flex-col 3xl:flex-row-reverse gap-8">
         <div className="flex flex-col gap-4 md:flex-row 3xl:w-[720px]">
-          <Suspense fallback={<Skeleton className="md:w-1/2 3xl:self-start" />}>
+          <Suspense
+            fallback={<SkeletonTile className="md:w-1/2 3xl:self-start" />}
+          >
             <OverviewTile className="md:w-1/2 3xl:self-start" id={params.id} />
           </Suspense>
 
-          <Suspense fallback={<Skeleton className="md:w-1/2 3xl:self-start" />}>
+          <Suspense
+            fallback={<SkeletonTile className="md:w-1/2 3xl:self-start" />}
+          >
             <MembershipsTile
               className="md:w-1/2 3xl:self-start"
               id={params.id}
@@ -120,7 +119,7 @@ export default async function Page({ params }: Props) {
           </Suspense>
         </div>
 
-        <Suspense fallback={<Skeleton className="flex-1" />}>
+        <Suspense fallback={<SkeletonTile className="flex-1" />}>
           <ActivityTile className="flex-1 3xl:self-start" id={params.id} />
         </Suspense>
       </div>

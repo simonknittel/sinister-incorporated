@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { saveObject } from "../../../../lib/algolia";
 import { authenticateApi } from "../../../../lib/auth/authenticateAndAuthorize";
-import { getUnleashFlag } from "../../../../lib/getUnleashFlag";
 import { prisma } from "../../../../server/db";
 import errorHandler from "../../_lib/errorHandler";
 
@@ -13,9 +12,6 @@ const postBodySchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    if (!(await getUnleashFlag("EnableOrganizations")))
-      throw new Error("Not Found");
-
     /**
      * Authenticate the request
      */
