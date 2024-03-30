@@ -175,28 +175,9 @@ model ClassificationLevel {
 model Role {
     id                String             @id @default(cuid())
     name              String             @unique
-    permissions       Permission[]
     imageId           String?
     image             Upload?            @relation(fields: [imageId], references: [id], onDelete: SetNull)
     permissionStrings PermissionString[]
-}
-
-model Permission {
-    id         String                @id @default(cuid())
-    roleId     String
-    role       Role                  @relation(fields: [roleId], references: [id], onDelete: Cascade)
-    resource   String // TODO: PermissionSet.ts
-    operation  String // TODO: PermissionSet.ts
-    attributes PermissionAttribute[]
-}
-
-model PermissionAttribute {
-    permissionId String
-    permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-    key          String // TODO: PermissionSet.ts
-    value        String
-
-    @@id([permissionId, key])
 }
 
 model PermissionString {
