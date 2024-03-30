@@ -69,7 +69,7 @@ const ConfirmationStateFilter = ({ confirmationStates }: Readonly<Props>) => {
             Unbestätigt
           </label>
           <YesNoCheckbox
-            register={register("values")}
+            {...register("values")}
             id="confirmation-unconfirmed"
             value="confirmation-unconfirmed"
           />
@@ -85,7 +85,7 @@ const ConfirmationStateFilter = ({ confirmationStates }: Readonly<Props>) => {
             Bestätigt
           </label>
           <YesNoCheckbox
-            register={register("values")}
+            {...register("values")}
             id="confirmation-confirmed"
             value="confirmation-confirmed"
           />
@@ -101,7 +101,7 @@ const ConfirmationStateFilter = ({ confirmationStates }: Readonly<Props>) => {
             Falschmeldung
           </label>
           <YesNoCheckbox
-            register={register("values")}
+            {...register("values")}
             id="confirmation-false-report"
             value="confirmation-false-report"
           />

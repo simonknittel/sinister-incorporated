@@ -72,7 +72,7 @@ const UnknownsFilter = ({
           Handles
         </label>
         <YesNoCheckbox
-          register={register("values")}
+          {...register("values")}
           id="unknown-handle"
           value="unknown-handle"
         />
@@ -87,7 +87,7 @@ const UnknownsFilter = ({
             Discord IDs
           </label>
           <YesNoCheckbox
-            register={register("values")}
+            {...register("values")}
             id="unknown-discord-id"
             value="unknown-discord-id"
           />
@@ -103,7 +103,7 @@ const UnknownsFilter = ({
             TeamSpeak IDs
           </label>
           <YesNoCheckbox
-            register={register("values")}
+            {...register("values")}
             id="unknown-teamspeak-id"
             value="unknown-teamspeak-id"
           />

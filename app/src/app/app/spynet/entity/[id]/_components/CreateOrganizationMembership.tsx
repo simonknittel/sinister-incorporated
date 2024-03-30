@@ -140,7 +140,7 @@ export const CreateOrganizationMembership = ({
             <label htmlFor={visibilityInputId}>Redacted</label>
 
             <YesNoCheckbox
-              register={register("visibility")}
+              {...register("visibility")}
               id={visibilityInputId}
               value="REDACTED"
             />

@@ -86,7 +86,7 @@ const RoleCheckbox = ({ entity, role, checked = false }: Readonly<Props>) => {
 
   return (
     <YesNoCheckbox
-      register={register("checked", {
+      {...register("checked", {
         disabled: isLoading || disabled,
       })}
     />

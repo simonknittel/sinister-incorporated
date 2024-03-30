@@ -73,7 +73,7 @@ const EntityLogTypeFilter = ({ entityLogTypes }: Readonly<Props>) => {
             </label>
 
             <YesNoCheckbox
-              register={register("values")}
+              {...register("values")}
               id={type}
               value={`type-${type}`}
             />

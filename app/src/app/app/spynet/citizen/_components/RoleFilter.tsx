@@ -85,7 +85,7 @@ const RoleFilter = ({ roles }: Readonly<Props>) => {
           </label>
 
           <YesNoCheckbox
-            register={register("values")}
+            {...register("values")}
             id={role.id}
             value={`role-${role.id}`}
           />

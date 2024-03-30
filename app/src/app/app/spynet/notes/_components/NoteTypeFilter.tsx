@@ -71,7 +71,7 @@ const RoleFilter = ({ noteTypes }: Readonly<Props>) => {
           </label>
 
           <YesNoCheckbox
-            register={register("values")}
+            {...register("values")}
             id={noteType.id}
             value={`note-type-${noteType.id}`}
           />
