@@ -49,6 +49,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
           id: true,
           attributeKey: true,
           createdAt: true,
+          oldValue: true,
           newValue: true,
         },
       },
@@ -88,27 +89,29 @@ export const ActivityTile = async ({ className, id }: Props) => {
       message: (
         <p>
           Erstellt unter dem Namen{" "}
-          <strong>{organization.attributeHistoryEntries[0]!.newValue}</strong>
+          <em>{organization.attributeHistoryEntries[0]!.newValue}</em>
         </p>
       ),
     },
-    ...organization.attributeHistoryEntries.toSpliced(0, 1).map((entry) => {
-      switch (entry.attributeKey) {
-        case "name":
-          return {
-            key: entry.id,
-            date: entry.createdAt,
-            message: (
-              <p>
-                Unbenannt in <strong>{entry.newValue}</strong>
-              </p>
-            ),
-          };
+    ...organization.attributeHistoryEntries
+      .filter((entry) => !(entry.attributeKey === "name" && !entry.oldValue)) // Filter out initial name
+      .map((entry) => {
+        switch (entry.attributeKey) {
+          case "name":
+            return {
+              key: entry.id,
+              date: entry.createdAt,
+              message: (
+                <p>
+                  Unbenannt in <em>{entry.newValue}</em>
+                </p>
+              ),
+            };
 
-        default:
-          throw new Error(`Unknown attribute key: ${entry.attributeKey}`);
-      }
-    }),
+          default:
+            throw new Error(`Unknown attribute key: ${entry.attributeKey}`);
+        }
+      }),
     ...organization.membershipHistoryEntries.map((entry) => {
       switch (entry.type) {
         case "MAIN":
@@ -119,12 +122,12 @@ export const ActivityTile = async ({ className, id }: Props) => {
               <p>
                 <Link
                   href={`/app/spynet/entity/${entry.citizen.id}`}
-                  className="inline-flex gap-2 items-center text-sinister-red-500 hover:text-sinister-red-300 font-bold mr-1"
+                  className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.citizen.handle}
                   <FaExternalLinkAlt className="text-xs" />
                 </Link>{" "}
-                wurde als <strong>Main</strong> hinzugefügt
+                wurde als <em>Main</em> hinzugefügt
               </p>
             ),
           };
@@ -137,12 +140,12 @@ export const ActivityTile = async ({ className, id }: Props) => {
               <p>
                 <Link
                   href={`/app/spynet/entity/${entry.citizen.id}`}
-                  className="inline-flex gap-2 items-center text-sinister-red-500 hover:text-sinister-red-300 font-bold mr-1"
+                  className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300 mr-1"
                 >
                   {entry.citizen.handle}
                   <FaExternalLinkAlt className="text-xs" />
                 </Link>{" "}
-                wurde als <strong>Affiliate</strong> hinzugefügt
+                wurde als <em>Affiliate</em> hinzugefügt
               </p>
             ),
           };
@@ -155,7 +158,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
               <p>
                 <Link
                   href={`/app/spynet/entity/${entry.citizen.id}`}
-                  className="inline-flex gap-2 items-center text-sinister-red-500 hover:text-sinister-red-300 font-bold mr-1"
+                  className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.citizen.handle}
                   <FaExternalLinkAlt className="text-xs" />
@@ -181,31 +184,35 @@ export const ActivityTile = async ({ className, id }: Props) => {
         <FaListAlt /> Aktivität
       </h2>
 
-      <ul className="mt-4 flex flex-col gap-8">
-        {sortedEntries.map((entry) => (
-          <li key={entry.key} className="flex gap-2">
-            <div className="h-[20px] flex items-center">
-              <TbCircleDot />
-            </div>
-
-            <div className="flex-1">
-              <div className="text-sm flex gap-2 border-b pb-2 mb-2 items-center border-neutral-800 flex-wrap text-neutral-500">
-                <p>
-                  <time dateTime={entry.date.toISOString()}>
-                    {entry.date.toLocaleDateString("de-DE", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}
-                  </time>
-                </p>
+      {sortedEntries.length > 0 ? (
+        <ul className="mt-4 flex flex-col gap-8">
+          {sortedEntries.map((entry) => (
+            <li key={entry.key} className="flex gap-2">
+              <div className="h-[20px] flex items-center">
+                <TbCircleDot />
               </div>
 
-              <div>{entry.message}</div>
-            </div>
-          </li>
-        ))}
-      </ul>
+              <div className="flex-1">
+                <div className="text-sm flex gap-2 border-b pb-2 mb-2 items-center border-neutral-800/50 flex-wrap text-neutral-500">
+                  <p>
+                    <time dateTime={entry.date.toISOString()}>
+                      {entry.date.toLocaleDateString("de-DE", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
+                    </time>
+                  </p>
+                </div>
+
+                <div>{entry.message}</div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-neutral-500 mt-4">Keine Aktivität</p>
+      )}
     </section>
   );
 };

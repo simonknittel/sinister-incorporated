@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Hero } from "../../../_components/Hero";
+import { Hero } from "../../_components/Hero";
 
 type Props = Readonly<{
   className?: string;

@@ -1,46 +1,36 @@
 import { type ClassificationLevel, type NoteType } from "@prisma/client";
 import clsx from "clsx";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useState } from "react";
 import { FaPlus, FaTrash } from "react-icons/fa";
-import { type FormValues } from "../../../../../../lib/auth/FormValues";
 import Button from "../../../../../_components/Button";
 import YesNoCheckbox from "../../../../../_components/YesNoCheckbox";
+import { usePermissionsContext } from "../../PermissionsContext";
 
-interface Props {
+type Props = Readonly<{
   className?: string;
   noteTypes: NoteType[];
   classificationLevels: ClassificationLevel[];
-}
+}>;
 
-const NoteSection = ({
+export const NoteSection = ({
   className,
   noteTypes,
   classificationLevels,
-}: Readonly<Props>) => {
-  const { register, setValue, getValues } = useFormContext<FormValues>();
-  const rules = useWatch<FormValues, "note">({ name: "note" });
+}: Props) => {
+  const { permissionStrings } = usePermissionsContext();
+
+  const [rules, setRules] = useState<Array<string>>(
+    permissionStrings.filter((permissionString) =>
+      permissionString.startsWith("note;"),
+    ),
+  );
 
   const handleCreate = () => {
-    const rules = getValues("note");
-
-    setValue("note", [
-      ...(rules || []),
-      {
-        noteTypeId: "",
-        classificationLevelId: "",
-        alsoUnconfirmed: false,
-        operation: "create",
-      },
-    ]);
+    setRules((rules) => [...rules, `note`]);
   };
 
   const handleDelete = (indexToRemove: number) => {
-    const rules = getValues("note");
-
-    setValue(
-      "note",
-      rules.filter((rule, index) => index !== indexToRemove),
-    );
+    setRules((rules) => rules.filter((rule, index) => index !== indexToRemove));
   };
 
   return (
@@ -55,72 +45,15 @@ const NoteSection = ({
           <span>Aktion</span>
         </div>
 
-        {rules && rules.length > 0 ? (
+        {rules.length > 0 ? (
           rules.map((rule, index) => (
-            <div key={index} className="grid grid-cols-5 gap-2 mt-2">
-              <select
-                {...register(`note.${index}.noteTypeId`, { required: true })}
-                className="bg-neutral-900 rounded px-4 h-11"
-              >
-                <option value="*">Alle</option>
-
-                {noteTypes.map((noteType) => (
-                  <option key={noteType.id} value={noteType.id}>
-                    {noteType.name}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                {...register(`note.${index}.classificationLevelId`, {
-                  required: true,
-                })}
-                className="bg-neutral-900 rounded px-4 h-11"
-              >
-                <option value="*">Alle</option>
-
-                {classificationLevels.map((classificationLevel) => (
-                  <option
-                    key={classificationLevel.id}
-                    value={classificationLevel.id}
-                  >
-                    {classificationLevel.name}
-                  </option>
-                ))}
-              </select>
-
-              <div className="flex items-center">
-                <YesNoCheckbox
-                  register={register(`note.${index}.alsoUnconfirmed`)}
-                />
-              </div>
-
-              <select
-                {...register(`note.${index}.operation`, {
-                  required: true,
-                })}
-                className="bg-neutral-900 rounded px-4 h-11"
-              >
-                <option value="manage">Alle</option>
-
-                <option value="create">Erstellen</option>
-                <option value="read">Lesen</option>
-                <option value="readRedacted">Lesen (Redacted)</option>
-                <option value="update">Bearbeiten</option>
-                <option value="delete">Löschen</option>
-                <option value="confirm">Bestätigen</option>
-              </select>
-
-              <div className="flex items-center justify-end">
-                <Button
-                  variant="tertiary"
-                  onClick={() => handleDelete(index)}
-                  type="button"
-                >
-                  <FaTrash /> Löschen
-                </Button>
-              </div>
-            </div>
+            <Rule
+              key={index}
+              ruleString={rule}
+              noteTypes={noteTypes}
+              classificationLevels={classificationLevels}
+              handleDelete={() => handleDelete(index)}
+            />
           ))
         ) : (
           <p className="text-neutral-500 italic mt-2">
@@ -136,4 +69,113 @@ const NoteSection = ({
   );
 };
 
-export default NoteSection;
+type RuleProps = Readonly<{
+  ruleString: string;
+  noteTypes: NoteType[];
+  classificationLevels: ClassificationLevel[];
+  handleDelete: () => void;
+}>;
+
+const Rule = ({
+  ruleString,
+  noteTypes,
+  classificationLevels,
+  handleDelete,
+}: RuleProps) => {
+  const [resource, _operation = "", ...attributeStrings] =
+    ruleString.split(";");
+  if (!resource) throw new Error("Invalid rule");
+  const attributes = attributeStrings.map((attributeString) => {
+    const [key, value] = attributeString.split("=");
+    if (!key || !value) throw new Error("Invalid attribute");
+    return { key, value };
+  });
+
+  const [operation, setOperation] = useState<string>(_operation || "");
+
+  const [alsoUnconfirmed, setAlsoUnconfirmed] = useState<boolean>(
+    attributes.some((attribute) => attribute.key === "alsoUnconfirmed"),
+  );
+
+  const [noteTypeId, setNoteTypeId] = useState<string>(
+    attributes.find((attribute) => attribute.key === "noteTypeId")?.value || "",
+  );
+
+  const [classificationLevelId, setClassificationLevelId] = useState<string>(
+    attributes.find((attribute) => attribute.key === "classificationLevelId")
+      ?.value || "",
+  );
+
+  let inputName = `note;${operation}`;
+  if (noteTypeId) inputName += `;noteTypeId=${noteTypeId}`;
+  if (classificationLevelId)
+    inputName += `;classificationLevelId=${classificationLevelId}`;
+  if (alsoUnconfirmed) inputName += `;alsoUnconfirmed=true`;
+
+  return (
+    <div className="grid grid-cols-5 gap-2 mt-2">
+      {operation && <input type="hidden" name={inputName} />}
+
+      <select
+        defaultValue={noteTypeId}
+        required
+        className="bg-neutral-900 rounded px-4 h-11"
+        onChange={(event) => setNoteTypeId(event.target.value)}
+      >
+        <option disabled hidden value=""></option>
+        <option value="*">Alle</option>
+
+        {noteTypes.map((noteType) => (
+          <option key={noteType.id} value={noteType.id}>
+            {noteType.name}
+          </option>
+        ))}
+      </select>
+
+      <select
+        defaultValue={classificationLevelId}
+        required
+        className="bg-neutral-900 rounded px-4 h-11"
+        onChange={(event) => setClassificationLevelId(event.target.value)}
+      >
+        <option disabled hidden value=""></option>
+        <option value="*">Alle</option>
+
+        {classificationLevels.map((classificationLevel) => (
+          <option key={classificationLevel.id} value={classificationLevel.id}>
+            {classificationLevel.name}
+          </option>
+        ))}
+      </select>
+
+      <div className="flex items-center">
+        <YesNoCheckbox
+          defaultChecked={alsoUnconfirmed}
+          onChange={(event) => setAlsoUnconfirmed(event.target.checked)}
+        />
+      </div>
+
+      <select
+        required
+        className="bg-neutral-900 rounded px-4 h-11"
+        defaultValue={operation}
+        onChange={(event) => setOperation(event.target.value)}
+      >
+        <option disabled hidden value=""></option>
+        <option value="manage">Alle</option>
+        <option value="create">Erstellen</option>
+        <option value="read">Lesen</option>
+        <option value="readRedacted">Lesen (Redacted)</option>
+        <option value="update">Bearbeiten</option>
+        <option value="delete">Löschen</option>
+        <option value="confirm">Bestätigen</option>
+      </select>
+
+      <div className="flex items-center justify-end">
+        <Button variant="tertiary" onClick={() => handleDelete()} type="button">
+          <FaTrash /> Löschen
+        </Button>
+      </div>
+    </div>
+  );
+};

@@ -1,12 +1,12 @@
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { authenticatePage } from "../../../lib/auth/authenticateAndAuthorize";
-import { getUnleashFlag } from "../../../lib/getUnleashFlag";
-import { Hero } from "../../_components/Hero";
+import { authenticatePage } from "../../lib/auth/authenticateAndAuthorize";
+import { getUnleashFlag } from "../../lib/getUnleashFlag";
+import { Hero } from "../_components/Hero";
+import { SpynetSearchTile } from "../_components/SpynetSearchTile/SpynetSearchTile";
 import { CalendarTile } from "./_components/CalendarTile";
 import { ProfileTile } from "./_components/ProfileTile";
 import { QuotesTile } from "./_components/QuotesTile";
-import { SpynetSearchTile } from "./_components/SpynetSearchTile";
 import { TileSkeleton } from "./_components/TileSkeleton";
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/dashboard");
+  const authentication = await authenticatePage("/app");
 
   const showCalendar = authentication.authorize([
     {

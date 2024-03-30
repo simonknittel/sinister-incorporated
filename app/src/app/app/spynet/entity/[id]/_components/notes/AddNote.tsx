@@ -76,7 +76,7 @@ const AddNote = ({
         {classificationLevels.length > 1 && (
           <Select
             id={classificationLevelSelectId}
-            register={register("classificationLevelId", { required: true })}
+            {...register("classificationLevelId", { required: true })}
             className="!bg-neutral-800"
           >
             {classificationLevels.map((classificationLevel) => (

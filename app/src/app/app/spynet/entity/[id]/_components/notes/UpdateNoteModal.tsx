@@ -139,7 +139,7 @@ const UpdateNoteModal = ({
           <Select
             className="mt-2"
             id={noteTypeSelectId}
-            register={register("noteTypeId")}
+            {...register("noteTypeId")}
           >
             {noteTypes.map((noteTye) => (
               <option key={noteTye.id} value={noteTye.id}>
@@ -155,7 +155,7 @@ const UpdateNoteModal = ({
           <Select
             className="mt-2"
             id={classificationLevelSelectId}
-            register={register("classificationLevelId")}
+            {...register("classificationLevelId")}
           >
             {filteredClassificationLevels.map((classificationLevel) => (
               <option

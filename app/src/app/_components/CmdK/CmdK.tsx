@@ -36,6 +36,20 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
 
   const page = pages[pages.length - 1];
 
+  const showSpynet =
+    authentication.authorize([
+      {
+        resource: "citizen",
+        operation: "read",
+      },
+    ]) ||
+    authentication.authorize([
+      {
+        resource: "organization",
+        operation: "read",
+      },
+    ]);
+
   return (
     <Command.Dialog
       open={open}
@@ -62,7 +76,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
               <Command.Item
                 keywords={["Dashboard", "Startseite", "Homepage"]}
                 onSelect={() => {
-                  router.push("/app/dashboard");
+                  router.push("/app");
                   setOpen(false);
                   setSearch("");
                 }}
@@ -86,12 +100,13 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
               ])) && (
               <Command.Group heading="Flotte">
                 <Command.Item
-                  keywords={["Flotte", "Fleet", "Schiffe", "Ships"]}
+                  keywords={["Flotte", "Fleet", "Schiffe", "Ships", "Overview"]}
                   onSelect={() => {
                     router.push("/app/fleet");
                     setOpen(false);
                     setSearch("");
                   }}
+                  value="fleet_overview"
                 >
                   <MdWorkspaces />
                   Übersicht öffnen
@@ -99,12 +114,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
               </Command.Group>
             )}
 
-            {authentication.authorize([
-              {
-                resource: "citizen",
-                operation: "read",
-              },
-            ]) && (
+            {showSpynet && (
               <Command.Group heading="Spynet">
                 {!disableAlgolia && (
                   <Command.Item
@@ -118,6 +128,19 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                     Suchen
                   </Command.Item>
                 )}
+
+                <Command.Item
+                  keywords={["Spynet", "Overview"]}
+                  onSelect={() => {
+                    router.push("/app/spynet");
+                    setOpen(false);
+                    setSearch("");
+                  }}
+                  value="spynet_overview"
+                >
+                  <RiSpyFill />
+                  Übersicht öffnen
+                </Command.Item>
 
                 <Command.Item
                   keywords={["Spynet"]}

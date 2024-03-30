@@ -13,8 +13,7 @@ export const getUnleashFlag = cache(
       | "DisableConfirmationEmail"
       | "DisableConfirmedEmailRequirement"
       | "DisableRoleNameSuggestions"
-      | "EnableOperations"
-      | "EnableOrganizations",
+      | "EnableOperations",
   ) => {
     const authentication = await authenticate();
 

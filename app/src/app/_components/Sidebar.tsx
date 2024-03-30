@@ -1,14 +1,7 @@
 import Link from "next/link";
-import {
-  FaCog,
-  FaHome,
-  FaLock,
-  FaSearch,
-  FaTable,
-  FaUsers,
-} from "react-icons/fa";
+import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
-import { RiSwordFill } from "react-icons/ri";
+import { RiSpyFill, RiSwordFill } from "react-icons/ri";
 import { requireAuthentication } from "../../lib/auth/authenticateAndAuthorize";
 import { getUnleashFlag } from "../../lib/getUnleashFlag";
 import Account from "./Account";
@@ -18,6 +11,20 @@ import { Footer } from "./Footer";
 
 export const Sidebar = async () => {
   const authentication = await requireAuthentication();
+
+  const showSpynet =
+    authentication.authorize([
+      {
+        resource: "citizen",
+        operation: "read",
+      },
+    ]) ||
+    authentication.authorize([
+      {
+        resource: "organization",
+        operation: "read",
+      },
+    ]);
 
   const showOperations =
     (await getUnleashFlag("EnableOperations")) &&
@@ -47,7 +54,7 @@ export const Sidebar = async () => {
             <ul>
               <li>
                 <Link
-                  href="/app/dashboard"
+                  href="/app"
                   className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                   prefetch={false}
                 >
@@ -55,6 +62,19 @@ export const Sidebar = async () => {
                   Dashboard
                 </Link>
               </li>
+
+              {showSpynet && (
+                <li>
+                  <Link
+                    href="/app/spynet"
+                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                    prefetch={false}
+                  >
+                    <RiSpyFill />
+                    Spynet
+                  </Link>
+                </li>
+              )}
 
               {showOperations && (
                 <li>
@@ -123,28 +143,6 @@ export const Sidebar = async () => {
                     },
                   ]) && (
                     <>
-                      <li>
-                        {(await getUnleashFlag("DisableAlgolia")) ? (
-                          <span className="flex gap-2 items-center p-4 rounded">
-                            <span className="line-through text-neutral-500 flex gap-2 items-center">
-                              <FaSearch />
-                              Suche
-                            </span>
-
-                            <Chip>Deaktiviert</Chip>
-                          </span>
-                        ) : (
-                          <Link
-                            href="/app/spynet/search"
-                            className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                            prefetch={false}
-                          >
-                            <FaSearch />
-                            Suche
-                          </Link>
-                        )}
-                      </li>
-
                       <li>
                         <Link
                           href="/app/spynet/citizen"

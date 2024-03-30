@@ -1,33 +1,27 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { authenticateApi } from "../../../../../../lib/auth/authenticateAndAuthorize";
-import { getUnleashFlag } from "../../../../../../lib/getUnleashFlag";
-import { prisma } from "../../../../../../server/db";
-import errorHandler from "../../../../_lib/errorHandler";
+import { authenticateApi } from "../../../../../../../lib/auth/authenticateAndAuthorize";
+import { prisma } from "../../../../../../../server/db";
+import errorHandler from "../../../../../_lib/errorHandler";
 
 type Params = Readonly<{
-  id: string;
+  organizationId: string;
+  citizenId: string;
 }>;
 
-const paramsSchema = z.object({ id: z.string().cuid2() });
-
-const postBodySchema = z.object({
+const paramsSchema = z.object({
+  organizationId: z.string().cuid2(),
   citizenId: z.string().cuid2(),
-  type: z.union([z.literal("MAIN"), z.literal("AFFILIATE")]),
-  visibility: z.union([z.literal("PUBLIC"), z.literal("REDACTED")]),
 });
 
-export async function POST(request: Request, { params }: { params: Params }) {
+export async function DELETE(request: Request, { params }: { params: Params }) {
   try {
-    if (!(await getUnleashFlag("EnableOrganizations")))
-      throw new Error("Not Found");
-
     /**
      * Authenticate the request
      */
     const authentication = await authenticateApi(
-      "/api/spynet/organization/[id]/membership",
-      "POST",
+      "/api/spynet/organization/[organizationId]/membership/[citizenId]",
+      "DELETE",
     );
     authentication.authorizeApi([
       {
@@ -40,27 +34,32 @@ export async function POST(request: Request, { params }: { params: Params }) {
      * Validate the request
      */
     const paramsData = paramsSchema.parse(params);
-    const body: unknown = await request.json();
-    const data = postBodySchema.parse(body);
 
     /**
      * Do the thing
      */
+    const organizationMembership =
+      await prisma.activeOrganizationMembership.findUnique({
+        where: {
+          organizationId_citizenId: {
+            organizationId: paramsData.organizationId,
+            citizenId: paramsData.citizenId,
+          },
+        },
+        select: {
+          visibility: true,
+        },
+      });
+
+    if (!organizationMembership) throw new Error("Not Found");
+
     await prisma.$transaction([
-      prisma.activeOrganizationMembership.create({
-        data: {
-          organization: {
-            connect: {
-              id: paramsData.id,
-            },
+      prisma.activeOrganizationMembership.delete({
+        where: {
+          organizationId_citizenId: {
+            organizationId: paramsData.organizationId,
+            citizenId: paramsData.citizenId,
           },
-          citizen: {
-            connect: {
-              id: data.citizenId,
-            },
-          },
-          type: data.type,
-          visibility: data.visibility,
         },
       }),
 
@@ -68,16 +67,16 @@ export async function POST(request: Request, { params }: { params: Params }) {
         data: {
           organization: {
             connect: {
-              id: paramsData.id,
+              id: paramsData.organizationId,
             },
           },
           citizen: {
             connect: {
-              id: data.citizenId,
+              id: paramsData.citizenId,
             },
           },
-          type: data.type,
-          visibility: data.visibility,
+          type: "LEFT",
+          visibility: organizationMembership.visibility,
           createdBy: {
             connect: {
               /**

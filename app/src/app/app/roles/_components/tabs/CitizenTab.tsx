@@ -1,33 +1,38 @@
 "use client";
 
 import { type ClassificationLevel, type NoteType } from "@prisma/client";
-import { useFormContext } from "react-hook-form";
-import { type FormValues } from "../../../../../lib/auth/FormValues";
 import YesNoCheckbox from "../../../../_components/YesNoCheckbox";
 import TabPanel from "../../../../_components/tabs/TabPanel";
+import { usePermissionsContext } from "../PermissionsContext";
 import { CitizenIdSection } from "./components/CitizenIdSection";
 import CitizenSection from "./components/CitizenSection";
 import { CommunityMonikerSection } from "./components/CommunityMonikerSection";
 import DiscordIdSection from "./components/DiscordIdSection";
 import HandleSection from "./components/HandleSection";
 import LastSeenSection from "./components/LastSeenSection";
-import NoteSection from "./components/NoteSection";
+import { NoteSection } from "./components/NoteSection";
 import TeamspeakIdSection from "./components/TeamspeakIdSection";
 
-interface Props {
+type Props = Readonly<{
   noteTypes: NoteType[];
   classificationLevels: ClassificationLevel[];
-}
+}>;
 
-const SpynetTab = ({ noteTypes, classificationLevels }: Readonly<Props>) => {
-  const { register } = useFormContext<FormValues>();
+export const CitizenTab = ({ noteTypes, classificationLevels }: Props) => {
+  const { register } = usePermissionsContext();
 
   return (
-    <TabPanel id="spynet">
+    <TabPanel id="citizen">
       <div className="py-2 flex justify-between items-center">
         <h4 className="font-bold">Notizarten verwalten</h4>
 
-        <YesNoCheckbox register={register("noteType.manage")} />
+        <YesNoCheckbox {...register("noteType;manage")} />
+      </div>
+
+      <div className="py-2 flex justify-between items-center">
+        <h4 className="font-bold">Geheimhaltungsstufen verwalten</h4>
+
+        <YesNoCheckbox {...register("classificationLevel;manage")} />
       </div>
 
       <CitizenSection className="mt-4" />
@@ -52,5 +57,3 @@ const SpynetTab = ({ noteTypes, classificationLevels }: Readonly<Props>) => {
     </TabPanel>
   );
 };
-
-export default SpynetTab;

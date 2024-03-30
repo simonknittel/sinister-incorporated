@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import Search from "../../spynet/search/_components/Search";
+import Search from "./Search";
 
 type Props = Readonly<{
   className?: string;

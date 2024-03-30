@@ -3,7 +3,7 @@ import { debounce } from "lodash";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { env } from "../../../env.mjs";
-import { type Hit } from "../../app/spynet/search/_components/Search";
+import { type Hit } from "../SpynetSearchTile/Search";
 import { SpynetSearchResultEntry } from "./SpynetSearchResultEntry";
 
 const fetcher = async (key: string) => {

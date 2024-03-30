@@ -4,7 +4,7 @@ type Props = Readonly<{
   className?: string;
 }>;
 
-export const Skeleton = ({ className }: Props) => {
+export const SkeletonTile = ({ className }: Props) => {
   return (
     <section
       className={clsx(

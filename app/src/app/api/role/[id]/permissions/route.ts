@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "../../../../../lib/auth/authenticateAndAuthorize";
-import formValuesToPrismaOperations from "../../../../../lib/auth/formValuesToPrismaOperations";
-import postBodySchema from "../../../../../lib/auth/postBodySchema";
 import { prisma } from "../../../../../server/db";
 import errorHandler from "../../../_lib/errorHandler";
 
@@ -11,6 +9,14 @@ interface Params {
 }
 
 const paramsSchema = z.object({ id: z.string().cuid2() });
+
+const postBodySchema = z.array(
+  z
+    .string()
+    .trim()
+    .min(1)
+    .regex(/^[\w\-]+;[\w\-]+(?:;[\w\-]+=[\w\-\*]+)*$/),
+);
 
 export async function POST(request: Request, { params }: { params: Params }) {
   try {
@@ -39,13 +45,20 @@ export async function POST(request: Request, { params }: { params: Params }) {
      * Do the thing
      */
     await prisma.$transaction([
-      prisma.permission.deleteMany({
+      prisma.permissionString.deleteMany({
         where: {
           roleId: paramsData.id,
         },
       }),
 
-      ...formValuesToPrismaOperations(paramsData.id, data),
+      ...data.map((permissionString) => {
+        return prisma.permissionString.create({
+          data: {
+            roleId: paramsData.id,
+            permissionString,
+          },
+        });
+      }),
     ]);
 
     /**

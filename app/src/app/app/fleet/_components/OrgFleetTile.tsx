@@ -33,7 +33,7 @@ export const OrgFleetTile = async ({ className }: Props) => {
 
   return (
     <section className={className}>
-      <h2 className="font-bold">Organization</h2>
+      <h2 className="font-bold">Sinister Incorporated</h2>
 
       <div className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 mt-4 overflow-x-auto">
         <FleetTable ships={countedOrgShips} />

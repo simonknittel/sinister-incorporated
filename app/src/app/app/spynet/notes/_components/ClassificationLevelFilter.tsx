@@ -73,7 +73,7 @@ const ClassificationLevelFilter = ({
           </label>
 
           <YesNoCheckbox
-            register={register("values")}
+            {...register("values")}
             id={noteType.id}
             value={`classification-level-${noteType.id}`}
           />
