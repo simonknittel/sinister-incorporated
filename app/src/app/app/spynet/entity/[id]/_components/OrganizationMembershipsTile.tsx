@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Image from "next/image";
 import Link from "next/link";
 import { FaExternalLinkAlt, FaSitemap } from "react-icons/fa";
 import { requireAuthentication } from "../../../../../../lib/auth/authenticateAndAuthorize";
@@ -40,6 +41,7 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
           select: {
             id: true,
             name: true,
+            logo: true,
           },
         },
       },
@@ -68,14 +70,27 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
           {activeOrganizationMemberships.map((membership) => (
             <li
               key={membership.organization.id}
-              className="rounded bg-neutral-700/50 flex"
+              className="rounded bg-neutral-700/50 flex overflow-hidden"
             >
               <Link
                 href={`/app/spynet/organization/${membership.organization.id}`}
-                className="inline-flex gap-2 px-2 py-1 items-center"
+                className="inline-flex"
               >
-                {membership.organization.name}
-                <FaExternalLinkAlt className="text-sinister-red-500 hover:text-sinister-red-300 text-xs" />
+                {membership.organization.logo && (
+                  <span className="bg-black align-bottom flex w-[32px] items-center justify-center">
+                    <Image
+                      src={`https://robertsspaceindustries.com${membership.organization.logo}`}
+                      alt=""
+                      width={24}
+                      height={24}
+                    />
+                  </span>
+                )}
+
+                <span className="inline-flex gap-2 px-2 py-1 items-center">
+                  {membership.organization.name}
+                  <FaExternalLinkAlt className="text-sinister-red-500 hover:text-sinister-red-300 text-xs" />
+                </span>
               </Link>
 
               {showDeleteButton && (

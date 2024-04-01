@@ -120,10 +120,10 @@ export const ActivityTile = async ({ className, id }: Props) => {
               <p>
                 <Link
                   href={`/app/spynet/entity/${entry.citizen.id}`}
-                  className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
+                  className="text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.citizen.handle}
-                  <FaExternalLinkAlt className="text-xs" />
+                  <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
                 </Link>{" "}
                 wurde als <em>Main</em> hinzugefügt
               </p>
@@ -138,10 +138,10 @@ export const ActivityTile = async ({ className, id }: Props) => {
               <p>
                 <Link
                   href={`/app/spynet/entity/${entry.citizen.id}`}
-                  className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300 mr-1"
+                  className="text-sinister-red-500 hover:text-sinister-red-300 mr-1"
                 >
                   {entry.citizen.handle}
-                  <FaExternalLinkAlt className="text-xs" />
+                  <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
                 </Link>{" "}
                 wurde als <em>Affiliate</em> hinzugefügt
               </p>
@@ -156,10 +156,10 @@ export const ActivityTile = async ({ className, id }: Props) => {
               <p>
                 <Link
                   href={`/app/spynet/entity/${entry.citizen.id}`}
-                  className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
+                  className="text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.citizen.handle}
-                  <FaExternalLinkAlt className="text-xs" />
+                  <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
                 </Link>{" "}
                 wurde entfernt
               </p>

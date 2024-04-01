@@ -3,6 +3,7 @@ import {
   type Organization,
   type OrganizationMembershipHistoryEntry,
 } from "@prisma/client";
+import Image from "next/image";
 import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { requireAuthentication } from "../../../../../lib/auth/authenticateAndAuthorize";
@@ -14,7 +15,7 @@ export const mapOrganizationMembershipHistoryEntries = async (
       "id" | "createdAt" | "type" | "visibility"
     > & {
       citizen: Pick<Entity, "id" | "handle">;
-      organization: Pick<Organization, "id" | "name">;
+      organization: Pick<Organization, "id" | "name" | "logo">;
     }
   >,
 ) => {
@@ -58,10 +59,20 @@ export const mapOrganizationMembershipHistoryEntries = async (
                 wurde der Organisation{" "}
                 <Link
                   href={`/app/spynet/organization/${entry.organization.id}`}
-                  className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
+                  className="text-sinister-red-500 hover:text-sinister-red-300"
                 >
-                  {entry.organization.name}
-                  <FaExternalLinkAlt className="text-xs" />
+                  {entry.organization.logo && (
+                    <span className="inline-block rounded bg-black mr-1 align-bottom">
+                      <Image
+                        src={`https://robertsspaceindustries.com${entry.organization.logo}`}
+                        alt=""
+                        width={24}
+                        height={24}
+                      />
+                    </span>
+                  )}
+                  {entry.organization.name}{" "}
+                  <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
                 </Link>{" "}
                 als <em>Main</em> hinzugefügt
               </p>

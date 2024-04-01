@@ -26,6 +26,10 @@ const config = {
         protocol: "https",
         hostname: process.env.NEXT_PUBLIC_R2_PUBLIC_URL,
       },
+      {
+        protocol: "https",
+        hostname: "robertsspaceindustries.com",
+      },
     ],
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
