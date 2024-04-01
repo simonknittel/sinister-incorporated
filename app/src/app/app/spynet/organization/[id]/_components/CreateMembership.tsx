@@ -56,7 +56,7 @@ export const CreateMembership = ({ className, organizationId }: Props) => {
           body: JSON.stringify({
             citizenId: data.citizenId,
             type: data.type,
-            visibility: data.visibility,
+            redacted: data.visibility || false,
             confirmed:
               e.nativeEvent.submitter.name === "confirmed"
                 ? "CONFIRMED"

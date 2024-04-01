@@ -59,7 +59,7 @@ export const CreateOrganizationMembership = ({
           body: JSON.stringify({
             citizenId,
             type: data.type,
-            visibility: data.visibility,
+            redacted: data.visibility || false,
             confirmed:
               e.nativeEvent.submitter.name === "confirmed"
                 ? "CONFIRMED"
