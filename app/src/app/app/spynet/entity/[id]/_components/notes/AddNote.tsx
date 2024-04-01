@@ -11,7 +11,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import Button from "../../../../../../_components/Button";
-import Select from "../../../../../../_components/Select";
+import { Select } from "../../../../../../_components/Select";
 
 interface Props {
   entityId: Entity["id"];

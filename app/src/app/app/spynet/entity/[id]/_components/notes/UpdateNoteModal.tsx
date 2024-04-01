@@ -15,7 +15,7 @@ import useAuthentication from "../../../../../../../lib/auth/useAuthentication";
 import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
 import Button from "../../../../../../_components/Button";
 import Modal from "../../../../../../_components/Modal";
-import Select from "../../../../../../_components/Select";
+import { Select } from "../../../../../../_components/Select";
 
 interface Props {
   className?: string;

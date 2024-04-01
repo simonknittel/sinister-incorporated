@@ -5,21 +5,18 @@ import { forwardRef } from "react";
 
 type Props = JSX.IntrinsicElements["select"];
 
-const Select = forwardRef<HTMLSelectElement, Props>(
+export const Select = forwardRef<HTMLSelectElement, Props>(
   function Select(props, ref) {
+    const { className, children, ...rest } = props;
+
     return (
       <select
-        className={clsx(
-          props.className,
-          "bg-neutral-900 rounded px-4 h-11 w-full",
-        )}
+        className={clsx(className, "bg-neutral-900 rounded px-4 h-11 w-full")}
         ref={ref}
-        {...props}
+        {...rest}
       >
-        {props.children}
+        {children}
       </select>
     );
   },
 );
-
-export default Select;
