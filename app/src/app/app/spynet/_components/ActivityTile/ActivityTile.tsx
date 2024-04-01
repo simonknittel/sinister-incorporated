@@ -28,6 +28,7 @@ export const ActivityTile = async ({ className }: Props) => {
         id: true,
         name: true,
         createdAt: true,
+        logo: true,
       },
     }),
 
@@ -70,6 +71,7 @@ export const ActivityTile = async ({ className }: Props) => {
           select: {
             id: true,
             name: true,
+            logo: true,
           },
         },
         citizen: {

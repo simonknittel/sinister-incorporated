@@ -33,9 +33,10 @@ export const mapOrganizationAttributeHistoryEntries = async (
                 Organisation unbenannt in{" "}
                 <Link
                   href={`/app/spynet/organization/${entry.organizationId}`}
-                  className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
+                  className=" text-sinister-red-500 hover:text-sinister-red-300"
                 >
-                  {entry.newValue} <FaExternalLinkAlt className="text-xs" />
+                  {entry.newValue}{" "}
+                  <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
                 </Link>
               </p>
             ),

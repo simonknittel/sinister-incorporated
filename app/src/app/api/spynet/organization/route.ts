@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { saveObject } from "../../../../lib/algolia";
 import { authenticateApi } from "../../../../lib/auth/authenticateAndAuthorize";
+import { log } from "../../../../lib/logging";
+import { scrapeOrganizationLogo } from "../../../../lib/scrapeOrganizationLogo";
 import { prisma } from "../../../../server/db";
 import errorHandler from "../../_lib/errorHandler";
 
@@ -37,10 +40,21 @@ export async function POST(request: Request) {
     });
     if (existingOrganization) throw new Error("Duplicate");
 
+    let logo: string | undefined;
+    try {
+      logo = await scrapeOrganizationLogo(data.spectrumId);
+    } catch (error) {
+      log.error("Failed to scrape organization logo", {
+        spectrumId: data.spectrumId,
+        error: serializeError(error),
+      });
+    }
+
     const createdOrganization = await prisma.organization.create({
       data: {
         spectrumId: data.spectrumId,
         name: data.name,
+        logo,
         createdBy: {
           connect: {
             /**
