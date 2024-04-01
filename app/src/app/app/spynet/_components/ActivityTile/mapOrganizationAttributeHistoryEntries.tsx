@@ -18,15 +18,7 @@ export const mapOrganizationAttributeHistoryEntries = async (
 ) => {
   const authentication = await requireAuthentication();
 
-  if (
-    !authentication.authorize([
-      {
-        resource: "organization",
-        operation: "read",
-      },
-    ])
-  )
-    return [];
+  if (!authentication.authorize("organization", "read")) return [];
 
   return entries
     .filter((entry) => !(entry.attributeKey === "name" && !entry.oldValue)) // Filter out initial name

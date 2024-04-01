@@ -60,12 +60,7 @@ export default async function Page({ params }: Props) {
   const authentication = await authenticatePage(
     "/app/spynet/organization/[id]",
   );
-  authentication.authorizePage([
-    {
-      resource: "organization",
-      operation: "read",
-    },
-  ]);
+  authentication.authorizePage("organization", "read");
 
   const organization = await getOrganization(params.id);
   if (!organization) notFound();
@@ -93,12 +88,7 @@ export default async function Page({ params }: Props) {
           {organization.name}
         </h1>
 
-        {/* {authentication.authorize([
-          {
-            resource: "organization",
-            operation: "delete",
-          },
-        ]) && <DeleteEntity entity={organization} />} */}
+        {/* {authentication.authorize("organization", "delete") && <DeleteEntity entity={organization} />} */}
       </div>
 
       <div className="mt-4 flex flex-col 3xl:flex-row-reverse gap-8">

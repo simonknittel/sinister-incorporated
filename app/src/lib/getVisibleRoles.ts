@@ -8,16 +8,10 @@ export default async function getVisibleRoles() {
 
   const visibleRoles = allRoles
     .filter((role) => {
-      return authentication.authorize([
+      return authentication.authorize("otherRole", "read", [
         {
-          resource: "otherRole",
-          operation: "read",
-          attributes: [
-            {
-              key: "roleId",
-              value: role.id,
-            },
-          ],
+          key: "roleId",
+          value: role.id,
         },
       ]);
     })

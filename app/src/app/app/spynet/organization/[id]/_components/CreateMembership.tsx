@@ -83,12 +83,7 @@ export const CreateMembership = ({ className, organizationId }: Props) => {
 
   const showCreateAndConfirmButton =
     authentication &&
-    authentication.authorize([
-      {
-        resource: "organizationMembership",
-        operation: "confirm",
-      },
-    ]);
+    authentication.authorize("organizationMembership", "confirm");
 
   return (
     <>

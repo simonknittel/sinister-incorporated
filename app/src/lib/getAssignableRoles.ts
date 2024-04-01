@@ -12,16 +12,10 @@ export const getAssignableRoles = cache(async () => {
     .filter((role) => {
       return (
         authentication &&
-        authentication.authorize([
+        authentication.authorize("otherRole", "read", [
           {
-            resource: "otherRole",
-            operation: "read",
-            attributes: [
-              {
-                key: "roleId",
-                value: role.id,
-              },
-            ],
+            key: "roleId",
+            value: role.id,
           },
         ])
       );
@@ -29,28 +23,16 @@ export const getAssignableRoles = cache(async () => {
     .filter((role) => {
       return (
         authentication &&
-        (authentication.authorize([
+        (authentication.authorize("otherRole", "assign", [
           {
-            resource: "otherRole",
-            operation: "assign",
-            attributes: [
-              {
-                key: "roleId",
-                value: role.id,
-              },
-            ],
+            key: "roleId",
+            value: role.id,
           },
         ]) ||
-          authentication.authorize([
+          authentication.authorize("otherRole", "dismiss", [
             {
-              resource: "otherRole",
-              operation: "dismiss",
-              attributes: [
-                {
-                  key: "roleId",
-                  value: role.id,
-                },
-              ],
+              key: "roleId",
+              value: role.id,
             },
           ]))
       );

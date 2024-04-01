@@ -26,15 +26,7 @@ export default async function Page() {
 
   await requireConfirmedEmailForPage(authentication.session);
 
-  if (
-    authentication.authorize([
-      {
-        resource: "login",
-        operation: "manage",
-      },
-    ])
-  )
-    redirect("/app");
+  if (authentication.authorize("login", "manage")) redirect("/app");
 
   return (
     <div className="min-h-dvh flex justify-center items-center flex-col py-8 bg-sinister-radial-gradient">

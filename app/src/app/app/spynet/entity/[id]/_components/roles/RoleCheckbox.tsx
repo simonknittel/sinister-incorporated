@@ -30,25 +30,13 @@ const RoleCheckbox = ({ entity, role, checked = false }: Readonly<Props>) => {
 
   if (
     checked &&
-    (!authentication ||
-      !authentication.authorize([
-        {
-          resource: "otherRole",
-          operation: "dismiss",
-        },
-      ]))
+    (!authentication || !authentication.authorize("otherRole", "dismiss"))
   )
     disabled = true;
 
   if (
     !checked &&
-    (!authentication ||
-      !authentication.authorize([
-        {
-          resource: "otherRole",
-          operation: "assign",
-        },
-      ]))
+    (!authentication || !authentication.authorize("otherRole", "assign"))
   )
     disabled = true;
 

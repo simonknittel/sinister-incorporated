@@ -20,12 +20,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi("/api/variant/[id]", "PATCH");
-    authentication.authorizeApi([
-      {
-        resource: "manufacturersSeriesAndVariants",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("manufacturersSeriesAndVariants", "manage");
 
     /**
      * Validate the request params
@@ -70,12 +65,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi("/api/variant/[id]", "DELETE");
-    authentication.authorizeApi([
-      {
-        resource: "manufacturersSeriesAndVariants",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("manufacturersSeriesAndVariants", "manage");
 
     /**
      * Validate the request params

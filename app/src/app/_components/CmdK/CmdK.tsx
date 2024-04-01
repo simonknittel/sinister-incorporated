@@ -37,18 +37,8 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
   const page = pages[pages.length - 1];
 
   const showSpynet =
-    authentication.authorize([
-      {
-        resource: "citizen",
-        operation: "read",
-      },
-    ]) ||
-    authentication.authorize([
-      {
-        resource: "organization",
-        operation: "read",
-      },
-    ]);
+    authentication.authorize("citizen", "read") ||
+    authentication.authorize("organization", "read");
 
   return (
     <Command.Dialog
@@ -86,18 +76,8 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
               </Command.Item>
             </Command.Group>
 
-            {(authentication.authorize([
-              {
-                resource: "orgFleet",
-                operation: "read",
-              },
-            ]) ||
-              authentication.authorize([
-                {
-                  resource: "ship",
-                  operation: "manage",
-                },
-              ])) && (
+            {(authentication.authorize("orgFleet", "read") ||
+              authentication.authorize("ship", "manage")) && (
               <Command.Group heading="Flotte">
                 <Command.Item
                   keywords={["Flotte", "Fleet", "Schiffe", "Ships", "Overview"]}
@@ -158,61 +138,19 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
               </Command.Group>
             )}
 
-            {(authentication.authorize([
-              {
-                resource: "user",
-                operation: "read",
-              },
-            ]) ||
-              authentication.authorize([
-                {
-                  resource: "role",
-                  operation: "manage",
-                },
-              ]) ||
-              authentication.authorize([
-                {
-                  resource: "classificationLevel",
-                  operation: "manage",
-                },
-              ]) ||
-              authentication.authorize([
-                {
-                  resource: "noteType",
-                  operation: "manage",
-                },
-              ]) ||
-              authentication.authorize([
-                {
-                  resource: "analytics",
-                  operation: "manage",
-                },
-              ]) ||
-              authentication.authorize([
-                {
-                  resource: "manufacturersSeriesAndVariants",
-                  operation: "manage",
-                },
-              ])) && (
+            {(authentication.authorize("user", "read") ||
+              authentication.authorize("role", "manage") ||
+              authentication.authorize("classificationLevel", "manage") ||
+              authentication.authorize("noteType", "manage") ||
+              authentication.authorize("analytics", "manage") ||
+              authentication.authorize(
+                "manufacturersSeriesAndVariants",
+                "manage",
+              )) && (
               <Command.Group heading="Admin">
-                {(authentication.authorize([
-                  {
-                    resource: "noteType",
-                    operation: "manage",
-                  },
-                ]) ||
-                  authentication.authorize([
-                    {
-                      resource: "classificationLevel",
-                      operation: "manage",
-                    },
-                  ]) ||
-                  authentication.authorize([
-                    {
-                      resource: "analytics",
-                      operation: "manage",
-                    },
-                  ])) && (
+                {(authentication.authorize("noteType", "manage") ||
+                  authentication.authorize("classificationLevel", "manage") ||
+                  authentication.authorize("analytics", "manage")) && (
                   <Command.Item
                     keywords={["Admin", "Settings"]}
                     onSelect={() => {
@@ -226,12 +164,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   </Command.Item>
                 )}
 
-                {authentication.authorize([
-                  {
-                    resource: "role",
-                    operation: "manage",
-                  },
-                ]) && (
+                {authentication.authorize("role", "manage") && (
                   <Command.Item
                     keywords={["Admin", "Berechtigungen"]}
                     onSelect={() => {
@@ -245,12 +178,10 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   </Command.Item>
                 )}
 
-                {authentication.authorize([
-                  {
-                    resource: "manufacturersSeriesAndVariants",
-                    operation: "manage",
-                  },
-                ]) && (
+                {authentication.authorize(
+                  "manufacturersSeriesAndVariants",
+                  "manage",
+                ) && (
                   <Command.Item
                     keywords={["Admin", "Ships"]}
                     onSelect={() => {
@@ -264,12 +195,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   </Command.Item>
                 )}
 
-                {authentication.authorize([
-                  {
-                    resource: "user",
-                    operation: "read",
-                  },
-                ]) && (
+                {authentication.authorize("user", "read") && (
                   <Command.Item
                     keywords={["Admin", "Users"]}
                     onSelect={() => {

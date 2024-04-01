@@ -13,28 +13,19 @@ type Props = Readonly<{
 
 export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();
-  if (
-    !authentication.authorize([
-      {
-        resource: "organizationMembership",
-        operation: "read",
-      },
-    ])
-  )
+  if (!authentication.authorize("organizationMembership", "read"))
     throw new Error("Unauthorized");
 
-  const alsoVisibilityRedacted = authentication.authorize([
-    {
-      resource: "organizationMembership",
-      operation: "read",
-      attributes: [
-        {
-          key: "alsoVisibilityRedacted",
-          value: true,
-        },
-      ],
-    },
-  ]);
+  const alsoVisibilityRedacted = authentication.authorize(
+    "organizationMembership",
+    "read",
+    [
+      {
+        key: "alsoVisibilityRedacted",
+        value: true,
+      },
+    ],
+  );
 
   const activeOrganizationMemberships =
     await prisma.activeOrganizationMembership.findMany({
@@ -54,19 +45,15 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
       },
     });
 
-  const showDeleteButton = authentication.authorize([
-    {
-      resource: "organizationMembership",
-      operation: "delete",
-    },
-  ]);
+  const showDeleteButton = authentication.authorize(
+    "organizationMembership",
+    "delete",
+  );
 
-  const showCreateButton = authentication.authorize([
-    {
-      resource: "organizationMembership",
-      operation: "create",
-    },
-  ]);
+  const showCreateButton = authentication.authorize(
+    "organizationMembership",
+    "create",
+  );
 
   return (
     <section

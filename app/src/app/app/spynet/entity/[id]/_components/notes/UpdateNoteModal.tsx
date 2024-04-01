@@ -72,13 +72,7 @@ const UpdateNoteModal = ({
 
       return (
         authentication &&
-        authentication.authorize([
-          {
-            resource: "note",
-            operation: "create",
-            attributes: authorizationAttributes,
-          },
-        ])
+        authentication.authorize("note", "create", authorizationAttributes)
       );
     },
   );

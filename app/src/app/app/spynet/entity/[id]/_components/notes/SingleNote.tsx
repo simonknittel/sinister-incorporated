@@ -71,13 +71,11 @@ const SingleNote = async ({ note }: Props) => {
           <div className="flex gap-2 lg:gap-4 flex-wrap">
             <p className="font-bold text-sm">Unbestätigt</p>
 
-            {authentication.authorize([
-              {
-                resource: "note",
-                operation: "confirm",
-                attributes: authorizationAttributes,
-              },
-            ]) && <ConfirmLog log={note} />}
+            {authentication.authorize(
+              "note",
+              "confirm",
+              authorizationAttributes,
+            ) && <ConfirmLog log={note} />}
           </div>
         </div>
       )}
@@ -128,25 +126,21 @@ const SingleNote = async ({ note }: Props) => {
               </>
             )} */}
 
-            {authentication.authorize([
-              {
-                resource: "note",
-                operation: "update",
-                attributes: authorizationAttributes,
-              },
-            ]) && (
+            {authentication.authorize(
+              "note",
+              "update",
+              authorizationAttributes,
+            ) && (
               <Suspense>
                 <UpdateNote note={note} />
               </Suspense>
             )}
 
-            {authentication.authorize([
-              {
-                resource: "note",
-                operation: "delete",
-                attributes: authorizationAttributes,
-              },
-            ]) && (
+            {authentication.authorize(
+              "note",
+              "delete",
+              authorizationAttributes,
+            ) && (
               <>
                 <span>&bull;</span>
                 <DeleteLog log={note} />

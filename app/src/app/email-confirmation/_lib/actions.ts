@@ -2,12 +2,21 @@
 
 import { redirect } from "next/navigation";
 import { serializeError } from "serialize-error";
-import { authenticateApi } from "../../../lib/auth/authenticateAndAuthorize";
+import { authenticate } from "../../../lib/auth/authenticateAndAuthorize";
 import { requestEmailConfirmation } from "../../../lib/emailConfirmation";
 import { log } from "../../../lib/logging";
 
 export const requestEmailConfirmationAction = async () => {
-  const authentication = await authenticateApi();
+  const authentication = await authenticate();
+
+  if (!authentication) {
+    log.info("Unauthenticated request to Server Action", {
+      serverAction: "requestEmailConfirmationAction",
+      reason: "No session",
+    });
+
+    throw new Error("Unauthenticated");
+  }
 
   if (authentication.session.user.emailVerified) redirect("/clearance");
 

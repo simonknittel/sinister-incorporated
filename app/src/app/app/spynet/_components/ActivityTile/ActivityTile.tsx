@@ -13,12 +13,10 @@ type Props = Readonly<{
 export const ActivityTile = async ({ className }: Props) => {
   const authentication = await requireAuthentication();
 
-  const canConfirm = authentication.authorize([
-    {
-      resource: "organizationMembership",
-      operation: "confirm",
-    },
-  ]);
+  const canConfirm = authentication.authorize(
+    "organizationMembership",
+    "confirm",
+  );
 
   const result = await prisma.$transaction([
     prisma.organization.findMany({

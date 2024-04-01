@@ -75,25 +75,15 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       });
     }
 
-    authentication.authorizeApi([
+    authentication.authorizeApi("note", "update", authorizationAttributes);
+    authentication.authorizeApi("note", "create", [
       {
-        resource: "note",
-        operation: "update",
-        attributes: authorizationAttributes,
+        key: "noteTypeId",
+        value: data.noteTypeId,
       },
       {
-        resource: "note",
-        operation: "create",
-        attributes: [
-          {
-            key: "noteTypeId",
-            value: data.noteTypeId,
-          },
-          {
-            key: "classificationLevelId",
-            value: data.classificationLevelId,
-          },
-        ],
+        key: "classificationLevelId",
+        value: data.classificationLevelId,
       },
     ]);
 
@@ -162,12 +152,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       case "discord-id":
       case "citizen-id":
       case "community-moniker":
-        authentication.authorizeApi([
-          {
-            resource: entityLog.type,
-            operation: "delete",
-          },
-        ]);
+        authentication.authorizeApi(entityLog.type, "delete");
         break;
 
       case "note":
@@ -190,13 +175,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
           });
         }
 
-        authentication.authorizeApi([
-          {
-            resource: "note",
-            operation: "delete",
-            attributes: authorizationAttributes,
-          },
-        ]);
+        authentication.authorizeApi("note", "delete", authorizationAttributes);
         break;
 
       default:

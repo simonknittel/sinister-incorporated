@@ -15,10 +15,12 @@ export default function useAuthentication() {
   /**
    * Authorize
    */
-  function authorize(requiredPermissionSets?: PermissionSet[]) {
+  function authorize(
+    resource: PermissionSet["resource"],
+    operation: PermissionSet["operation"],
+    attributes?: PermissionSet["attributes"],
+  ) {
     if (!session) return false;
-
-    if (!requiredPermissionSets) return session;
 
     const enableAdmin =
       typeof document !== "undefined"
@@ -28,7 +30,11 @@ export default function useAuthentication() {
     if (session.user.role === "admin" && enableAdmin) return session;
 
     const result = comparePermissionSets(
-      requiredPermissionSets,
+      {
+        resource,
+        operation,
+        attributes,
+      },
       session.givenPermissionSets,
     );
 

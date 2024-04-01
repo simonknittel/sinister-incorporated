@@ -70,88 +70,45 @@ export async function POST(request: Request, { params }: { params: Params }) {
      */
     switch (data.type) {
       case "handle":
-        authentication.authorizeApi([
-          {
-            resource: "handle",
-            operation: "create",
-          },
-        ]);
+        authentication.authorizeApi("handle", "create");
         break;
       case "teamspeak-id":
-        authentication.authorizeApi([
-          {
-            resource: "teamspeak-id",
-            operation: "create",
-          },
-        ]);
+        authentication.authorizeApi("teamspeak-id", "create");
         break;
       case "note":
-        authentication.authorizeApi([
+        authentication.authorizeApi("note", "create", [
           {
-            resource: "note",
-            operation: "create",
-            attributes: [
-              {
-                key: "noteTypeId",
-                value: data.noteTypeId,
-              },
-              {
-                key: "classificationLevelId",
-                value: data.classificationLevelId,
-              },
-            ],
+            key: "noteTypeId",
+            value: data.noteTypeId,
+          },
+          {
+            key: "classificationLevelId",
+            value: data.classificationLevelId,
           },
         ]);
         break;
       case "discord-id":
-        authentication.authorizeApi([
-          {
-            resource: "discord-id",
-            operation: "create",
-          },
-        ]);
+        authentication.authorizeApi("discord-id", "create");
         break;
       case "citizen-id":
-        authentication.authorizeApi([
-          {
-            resource: "citizen-id",
-            operation: "create",
-          },
-        ]);
+        authentication.authorizeApi("citizen-id", "create");
         break;
       case "community-moniker":
-        authentication.authorizeApi([
-          {
-            resource: "community-moniker",
-            operation: "create",
-          },
-        ]);
+        authentication.authorizeApi("community-moniker", "create");
         break;
       case "role-added":
-        authentication.authorizeApi([
+        authentication.authorizeApi("otherRole", "assign", [
           {
-            resource: "otherRole",
-            operation: "assign",
-            attributes: [
-              {
-                key: "roleId",
-                value: data.content,
-              },
-            ],
+            key: "roleId",
+            value: data.content,
           },
         ]);
         break;
       case "role-removed":
-        authentication.authorizeApi([
+        authentication.authorizeApi("otherRole", "dismiss", [
           {
-            resource: "otherRole",
-            operation: "dismiss",
-            attributes: [
-              {
-                key: "roleId",
-                value: data.content,
-              },
-            ],
+            key: "roleId",
+            value: data.content,
           },
         ]);
         break;

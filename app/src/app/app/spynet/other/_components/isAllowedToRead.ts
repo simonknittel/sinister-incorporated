@@ -8,12 +8,7 @@ export default function isAllowedToRead(
   authentication: Awaited<ReturnType<typeof requireAuthentication>>,
 ) {
   if (["discord-id", "teamspeak-id"].includes(entityLog.type)) {
-    const allowedToRead = authentication.authorize([
-      {
-        resource: entityLog.type,
-        operation: "read",
-      },
-    ]);
+    const allowedToRead = authentication.authorize(entityLog.type, "read");
 
     if (!allowedToRead) return false;
   }
@@ -23,12 +18,7 @@ export default function isAllowedToRead(
   );
 
   if (!confirmed || confirmed.value !== "confirmed") {
-    return authentication.authorize([
-      {
-        resource: entityLog.type,
-        operation: "confirm",
-      },
-    ]);
+    return authentication.authorize(entityLog.type, "confirm");
   }
 
   return true;

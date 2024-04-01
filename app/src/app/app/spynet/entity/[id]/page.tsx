@@ -60,22 +60,15 @@ type Props = Readonly<{
 
 export default async function Page({ params }: Props) {
   const authentication = await authenticatePage("/app/spynet/entity/[id]");
-  authentication.authorizePage([
-    {
-      resource: "citizen",
-      operation: "read",
-    },
-  ]);
+  authentication.authorizePage("citizen", "read");
 
   const entity = await getEntity(params.id);
   if (!entity) notFound();
 
-  const showOrganizationMembershipsTile = authentication.authorize([
-    {
-      resource: "organizationMembership",
-      operation: "read",
-    },
-  ]);
+  const showOrganizationMembershipsTile = authentication.authorize(
+    "organizationMembership",
+    "read",
+  );
 
   return (
     <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">
@@ -100,12 +93,9 @@ export default async function Page({ params }: Props) {
           {entity.handle || entity.id}
         </h1>
 
-        {authentication.authorize([
-          {
-            resource: "citizen",
-            operation: "delete",
-          },
-        ]) && <DeleteEntity entity={entity} />}
+        {authentication.authorize("citizen", "delete") && (
+          <DeleteEntity entity={entity} />
+        )}
       </div>
 
       <div className="mt-4 flex flex-col 3xl:flex-row-reverse gap-8">

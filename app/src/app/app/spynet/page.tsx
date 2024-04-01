@@ -16,19 +16,12 @@ export const metadata: Metadata = {
 export default async function Page() {
   const authentication = await authenticatePage("/app/spynet");
 
-  const showCreateCitizen = authentication.authorize([
-    {
-      resource: "citizen",
-      operation: "create",
-    },
-  ]);
+  const showCreateCitizen = authentication.authorize("citizen", "create");
 
-  const showCreateOrganization = authentication.authorize([
-    {
-      resource: "organization",
-      operation: "create",
-    },
-  ]);
+  const showCreateOrganization = authentication.authorize(
+    "organization",
+    "create",
+  );
 
   return (
     <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">

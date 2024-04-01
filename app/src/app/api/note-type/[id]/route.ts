@@ -23,12 +23,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       "/api/note-type/[id]",
       "PATCH",
     );
-    authentication.authorizeApi([
-      {
-        resource: "noteType",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("noteType", "manage");
 
     /**
      * Validate the request params and body
@@ -68,12 +63,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       "/api/note-type/[id]",
       "DELETE",
     );
-    authentication.authorizeApi([
-      {
-        resource: "noteType",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("noteType", "manage");
 
     /**
      * Validate the request params

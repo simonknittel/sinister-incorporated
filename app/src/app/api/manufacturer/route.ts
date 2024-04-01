@@ -14,12 +14,7 @@ export async function POST(request: Request) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi("/api/manufacturer", "POST");
-    authentication.authorizeApi([
-      {
-        resource: "manufacturersSeriesAndVariants",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("manufacturersSeriesAndVariants", "manage");
 
     /**
      * Validate the request body

@@ -10,12 +10,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const authentication = await authenticatePage("/app/users");
-  authentication.authorizePage([
-    {
-      resource: "user",
-      operation: "read",
-    },
-  ]);
+  authentication.authorizePage("user", "read");
 
   return (
     <main className="p-2 lg:p-8 pt-20">

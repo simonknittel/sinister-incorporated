@@ -36,16 +36,10 @@ export const NoteTypePanel = async ({ noteType, notes, entityId }: Props) => {
 
   const showAddNote =
     authentication &&
-    authentication.authorize([
+    authentication.authorize("note", "create", [
       {
-        resource: "note",
-        operation: "create",
-        attributes: [
-          {
-            key: "noteTypeId",
-            value: noteType.id,
-          },
-        ],
+        key: "noteTypeId",
+        value: noteType.id,
       },
     ]);
 

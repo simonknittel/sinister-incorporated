@@ -20,28 +20,18 @@ export const mapOrganizationMembershipHistoryEntries = async (
 ) => {
   const authentication = await requireAuthentication();
 
-  if (
-    !authentication.authorize([
-      {
-        resource: "organization",
-        operation: "read",
-      },
-    ])
-  )
-    return [];
+  if (!authentication.authorize("organization", "read")) return [];
 
-  const alsoVisibilityRedacted = authentication.authorize([
-    {
-      resource: "organizationMembership",
-      operation: "read",
-      attributes: [
-        {
-          key: "alsoVisibilityRedacted",
-          value: true,
-        },
-      ],
-    },
-  ]);
+  const alsoVisibilityRedacted = authentication.authorize(
+    "organizationMembership",
+    "read",
+    [
+      {
+        key: "alsoVisibilityRedacted",
+        value: true,
+      },
+    ],
+  );
 
   return entries
     .filter((entry) =>

@@ -34,11 +34,5 @@ export default function isAllowedToReadRedacted(
     });
   }
 
-  return authentication.authorize([
-    {
-      resource: "note",
-      operation: "readRedacted",
-      attributes,
-    },
-  ]);
+  return authentication.authorize("note", "readRedacted", attributes);
 }

@@ -16,12 +16,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   const authentication = await authenticatePage("/app");
 
-  const showCalendar = authentication.authorize([
-    {
-      resource: "event",
-      operation: "read",
-    },
-  ]);
+  const showCalendar = authentication.authorize("event", "read");
 
   const showSpynetSearchTile = !(await getUnleashFlag("DisableAlgolia"));
 

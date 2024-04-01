@@ -15,18 +15,8 @@ const Filters = async () => {
 
       <Filter name="Unbekannt">
         <UnknownsFilter
-          showDiscordId={authentication.authorize([
-            {
-              resource: "discord-id",
-              operation: "read",
-            },
-          ])}
-          showTeamspeakId={authentication.authorize([
-            {
-              resource: "teamspeak-id",
-              operation: "read",
-            },
-          ])}
+          showDiscordId={authentication.authorize("discord-id", "read")}
+          showTeamspeakId={authentication.authorize("teamspeak-id", "read")}
         />
       </Filter>
 

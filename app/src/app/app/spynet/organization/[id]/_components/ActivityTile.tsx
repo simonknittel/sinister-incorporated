@@ -12,35 +12,24 @@ type Props = Readonly<{
 
 export const ActivityTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();
-  if (
-    !authentication.authorize([
-      {
-        resource: "organization",
-        operation: "read",
-      },
-    ])
-  )
+  if (!authentication.authorize("organization", "read"))
     throw new Error("Unauthorized");
 
-  const alsoVisibilityRedacted = authentication.authorize([
-    {
-      resource: "organizationMembership",
-      operation: "read",
-      attributes: [
-        {
-          key: "alsoVisibilityRedacted",
-          value: true,
-        },
-      ],
-    },
-  ]);
+  const alsoVisibilityRedacted = authentication.authorize(
+    "organizationMembership",
+    "read",
+    [
+      {
+        key: "alsoVisibilityRedacted",
+        value: true,
+      },
+    ],
+  );
 
-  const canConfirm = authentication.authorize([
-    {
-      resource: "organizationMembership",
-      operation: "confirm",
-    },
-  ]);
+  const canConfirm = authentication.authorize(
+    "organizationMembership",
+    "confirm",
+  );
 
   const organization = await prisma.organization.findUnique({
     where: {

@@ -1,26 +1,25 @@
 "use client";
 
 import clsx from "clsx";
-import { type ReactNode } from "react";
-import { type UseFormRegisterReturn } from "react-hook-form";
+import { forwardRef } from "react";
 
-interface Props {
-  register: UseFormRegisterReturn;
-  children?: ReactNode;
-  id?: string;
-  className?: string;
-}
+type Props = JSX.IntrinsicElements["select"];
 
-const Select = ({ register, id, children, className }: Readonly<Props>) => {
-  return (
-    <select
-      id={id}
-      {...register}
-      className={clsx(className, "bg-neutral-900 rounded px-4 h-11 w-full")}
-    >
-      {children}
-    </select>
-  );
-};
+const Select = forwardRef<HTMLSelectElement, Props>(
+  function Select(props, ref) {
+    return (
+      <select
+        className={clsx(
+          props.className,
+          "bg-neutral-900 rounded px-4 h-11 w-full",
+        )}
+        ref={ref}
+        {...props}
+      >
+        {props.children}
+      </select>
+    );
+  },
+);
 
 export default Select;

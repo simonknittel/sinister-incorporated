@@ -19,12 +19,7 @@ export async function POST(request: Request) {
       "/api/spynet/organization",
       "POST",
     );
-    authentication.authorizeApi([
-      {
-        resource: "organization",
-        operation: "create",
-      },
-    ]);
+    authentication.authorizeApi("organization", "create");
 
     /**
      * Validate the request

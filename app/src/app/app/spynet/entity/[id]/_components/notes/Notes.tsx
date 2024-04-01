@@ -87,40 +87,22 @@ export const Notes = async ({ className, entity }: Props) => {
 
   const filteredNoteTypes = allNoteTypes.filter((noteType) => {
     return (
-      authentication.authorize([
+      authentication.authorize("note", "read", [
         {
-          resource: "note",
-          operation: "read",
-          attributes: [
-            {
-              key: "noteTypeId",
-              value: noteType.id,
-            },
-          ],
+          key: "noteTypeId",
+          value: noteType.id,
         },
       ]) ||
-      authentication.authorize([
+      authentication.authorize("note", "readRedacted", [
         {
-          resource: "note",
-          operation: "readRedacted",
-          attributes: [
-            {
-              key: "noteTypeId",
-              value: noteType.id,
-            },
-          ],
+          key: "noteTypeId",
+          value: noteType.id,
         },
       ]) ||
-      authentication.authorize([
+      authentication.authorize("note", "create", [
         {
-          resource: "note",
-          operation: "create",
-          attributes: [
-            {
-              key: "noteTypeId",
-              value: noteType.id,
-            },
-          ],
+          key: "noteTypeId",
+          value: noteType.id,
         },
       ])
     );

@@ -40,12 +40,7 @@ export const Overview = async ({ className, entity }: Props) => {
           entity={entity}
         />
 
-        {authentication.authorize([
-          {
-            resource: "discord-id",
-            operation: "read",
-          },
-        ]) && (
+        {authentication.authorize("discord-id", "read") && (
           <OverviewSection
             type="discord-id"
             icon={<FaDiscord />}
@@ -54,12 +49,7 @@ export const Overview = async ({ className, entity }: Props) => {
           />
         )}
 
-        {authentication.authorize([
-          {
-            resource: "teamspeak-id",
-            operation: "read",
-          },
-        ]) && (
+        {authentication.authorize("teamspeak-id", "read") && (
           <OverviewSection
             type="teamspeak-id"
             icon={<FaTeamspeak />}
@@ -68,12 +58,7 @@ export const Overview = async ({ className, entity }: Props) => {
           />
         )}
 
-        {authentication.authorize([
-          {
-            resource: "lastSeen",
-            operation: "read",
-          },
-        ]) && (
+        {authentication.authorize("lastSeen", "read") && (
           <>
             <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
               <RiTimeLine />

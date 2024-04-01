@@ -11,15 +11,7 @@ type Props = Readonly<{
 export const MyFleetTile = async ({ className }: Props) => {
   const authentication = await authenticate();
 
-  if (
-    !authentication ||
-    !authentication.authorize([
-      {
-        resource: "ship",
-        operation: "manage",
-      },
-    ])
-  )
+  if (!authentication || !authentication.authorize("ship", "manage"))
     throw new Error("Unauthenticated");
 
   const [myShips, allVariants] = await prisma.$transaction([

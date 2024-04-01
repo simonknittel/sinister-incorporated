@@ -20,12 +20,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       "/api/spynet/entity/[id]",
       "DELETE",
     );
-    authentication.authorizeApi([
-      {
-        resource: "citizen",
-        operation: "delete",
-      },
-    ]);
+    authentication.authorizeApi("citizen", "delete");
 
     /**
      * Validate the request params

@@ -13,19 +13,9 @@ export const metadata: Metadata = {
 export default async function Page() {
   const authentication = await authenticatePage("/app/fleet");
 
-  const showOrgFleetTile = authentication.authorize([
-    {
-      resource: "orgFleet",
-      operation: "read",
-    },
-  ]);
+  const showOrgFleetTile = authentication.authorize("orgFleet", "read");
 
-  const showMyFleetTile = authentication.authorize([
-    {
-      resource: "ship",
-      operation: "manage",
-    },
-  ]);
+  const showMyFleetTile = authentication.authorize("ship", "manage");
 
   return (
     <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">

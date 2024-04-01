@@ -21,13 +21,6 @@ export default function isAllowedToCreate(
   }
 
   return (
-    authentication &&
-    authentication.authorize([
-      {
-        resource: "note",
-        operation: "create",
-        attributes,
-      },
-    ])
+    authentication && authentication.authorize("note", "create", attributes)
   );
 }

@@ -38,12 +38,7 @@ const Handles = ({ entity }: Readonly<Props>) => {
       if (confirmed && confirmed.value === "confirmed") return true;
       if (!authentication) return false;
 
-      return authentication.authorize([
-        {
-          resource: "handle",
-          operation: "confirm",
-        },
-      ]);
+      return authentication.authorize("handle", "confirm");
     })
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
@@ -64,13 +59,9 @@ const Handles = ({ entity }: Readonly<Props>) => {
       >
         <h2 className="text-xl font-bold">History</h2>
 
-        {authentication &&
-          authentication.authorize([
-            {
-              resource: "handle",
-              operation: "create",
-            },
-          ]) && <Create entity={entity} />}
+        {authentication && authentication.authorize("handle", "create") && (
+          <Create entity={entity} />
+        )}
 
         {handles.length > 0 ? (
           <ul className="mt-8 flex flex-col gap-4">

@@ -97,12 +97,7 @@ export default async function Page({ params }: Readonly<Props>) {
   if (!(await getUnleashFlag("EnableOperations"))) notFound();
 
   const authentication = await authenticatePage("/app/operations/[id]");
-  authentication.authorizePage([
-    {
-      resource: "operation",
-      operation: "manage",
-    },
-  ]);
+  authentication.authorizePage("operation", "manage");
 
   const operation = await getOperation(params.id);
   if (!operation) notFound();

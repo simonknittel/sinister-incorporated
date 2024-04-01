@@ -8,15 +8,7 @@ export const mapOrganizationEntries = async (
 ) => {
   const authentication = await requireAuthentication();
 
-  if (
-    !authentication.authorize([
-      {
-        resource: "organization",
-        operation: "read",
-      },
-    ])
-  )
-    return [];
+  if (!authentication.authorize("organization", "read")) return [];
 
   return entries.map((entry) => ({
     key: `${entry.id}-${entry.createdAt.getTime()}`,

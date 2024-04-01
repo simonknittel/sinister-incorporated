@@ -17,8 +17,11 @@ export const authenticate = cache(async () => {
   if (session) {
     return {
       session,
-      authorize: (requiredPermissionSets?: PermissionSet[]) =>
-        authorize(session, requiredPermissionSets),
+      authorize: (
+        resource: PermissionSet["resource"],
+        operation: PermissionSet["operation"],
+        attributes?: PermissionSet["attributes"],
+      ) => authorize(session, resource, operation, attributes),
     };
   } else {
     return false;
@@ -39,20 +42,16 @@ export async function authenticatePage(requestPath?: string) {
 
   await requireConfirmedEmailForPage(authentication.session);
 
-  if (
-    !authentication.authorize([
-      {
-        resource: "login",
-        operation: "manage",
-      },
-    ])
-  )
-    redirect("/clearance");
+  if (!authentication.authorize("login", "manage")) redirect("/clearance");
 
   return {
     ...authentication,
-    authorizePage: (requiredPermissionSets?: PermissionSet[]) => {
-      const result = authentication.authorize(requiredPermissionSets);
+    authorizePage: (
+      resource: PermissionSet["resource"],
+      operation: PermissionSet["operation"],
+      attributes?: PermissionSet["attributes"],
+    ) => {
+      const result = authentication.authorize(resource, operation, attributes);
 
       if (!result) {
         log.info("Unauthorized request to page", {
@@ -87,20 +86,17 @@ export async function authenticateApi(
 
   await requireConfirmedEmailForApi(authentication.session);
 
-  if (
-    !authentication.authorize([
-      {
-        resource: "login",
-        operation: "manage",
-      },
-    ])
-  )
+  if (!authentication.authorize("login", "manage"))
     throw new Error("Unauthorized");
 
   return {
     ...authentication,
-    authorizeApi: (requiredPermissionSets?: PermissionSet[]) => {
-      const result = authentication.authorize(requiredPermissionSets);
+    authorizeApi: (
+      resource: PermissionSet["resource"],
+      operation: PermissionSet["operation"],
+      attributes?: PermissionSet["attributes"],
+    ) => {
+      const result = authentication.authorize(resource, operation, attributes);
 
       if (!result) {
         log.info("Unauthorized request to API", {
@@ -129,35 +125,24 @@ export const requireAuthentication = cache(async () => {
 });
 
 export function authorize(
-  session?: Session | null,
-  requiredPermissionSets?: PermissionSet[] | null,
+  session: Session,
+  resource: PermissionSet["resource"],
+  operation: PermissionSet["operation"],
+  attributes?: PermissionSet["attributes"],
 ) {
-  /**
-   * Authenticate
-   */
-  if (!session) return false;
-
-  /**
-   * Authorize
-   */
-  if (!requiredPermissionSets) return true;
-
   if (
     session.user.role === "admin" &&
     cookies().get("enableAdmin")?.value === "enableAdmin"
   ) {
-    if (
-      requiredPermissionSets.find(
-        (permissionSet) => permissionSet.operation === "negate",
-      )
-    )
-      return false;
-
-    return true;
+    return operation !== "negate";
   }
 
   const result = comparePermissionSets(
-    requiredPermissionSets,
+    {
+      resource,
+      operation,
+      attributes,
+    },
     session.givenPermissionSets,
   );
   if (!result) return false;

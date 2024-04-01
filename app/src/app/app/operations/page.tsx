@@ -15,12 +15,7 @@ export default async function Page() {
   if (!(await getUnleashFlag("EnableOperations"))) notFound();
 
   const authentication = await authenticatePage("/app/operations");
-  authentication.authorizePage([
-    {
-      resource: "operation",
-      operation: "manage",
-    },
-  ]);
+  authentication.authorizePage("operation", "manage");
 
   const operations = await prisma.operation.findMany({
     include: {
