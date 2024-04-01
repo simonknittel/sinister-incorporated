@@ -23,12 +23,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       "/api/manufacturer/[id]",
       "PATCH",
     );
-    authentication.authorizeApi([
-      {
-        resource: "manufacturersSeriesAndVariants",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("manufacturersSeriesAndVariants", "manage");
 
     /**
      * Validate the request params
@@ -76,12 +71,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       "/api/manufacturer/[id]",
       "DELETE",
     );
-    authentication.authorizeApi([
-      {
-        resource: "manufacturersSeriesAndVariants",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("manufacturersSeriesAndVariants", "manage");
 
     /**
      * Validate the request params

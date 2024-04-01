@@ -11,12 +11,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const authentication = await authenticatePage("/app/fleet/settings");
-  authentication.authorizePage([
-    {
-      resource: "manufacturersSeriesAndVariants",
-      operation: "manage",
-    },
-  ]);
+  authentication.authorizePage("manufacturersSeriesAndVariants", "manage");
 
   const data = await prisma.manufacturer.findMany({
     include: {

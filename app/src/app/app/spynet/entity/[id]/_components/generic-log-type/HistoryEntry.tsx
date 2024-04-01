@@ -48,13 +48,9 @@ export const HistoryEntry = ({ type, log }: Readonly<Props>) => {
           <div className="flex gap-4">
             <p className="font-bold">Unbestätigt</p>
 
-            {authentication &&
-              authentication.authorize([
-                {
-                  resource: type,
-                  operation: "confirm",
-                },
-              ]) && <ConfirmLog log={log} />}
+            {authentication && authentication.authorize(type, "confirm") && (
+              <ConfirmLog log={log} />
+            )}
           </div>
         </div>
       )}
@@ -101,13 +97,9 @@ export const HistoryEntry = ({ type, log }: Readonly<Props>) => {
 
             <span className="text-neutral-500">&bull;</span>
 
-            {authentication &&
-              authentication.authorize([
-                {
-                  resource: type,
-                  operation: "delete",
-                },
-              ]) && <DeleteLog log={log} />}
+            {authentication && authentication.authorize(type, "delete") && (
+              <DeleteLog log={log} />
+            )}
           </div>
 
           <p>{log.content}</p>

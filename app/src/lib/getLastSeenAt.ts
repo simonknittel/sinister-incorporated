@@ -8,15 +8,7 @@ export const getLastSeenAt = cache(async (entity: Entity) => {
 
   let account: (Account & { user: User }) | null = null;
 
-  if (
-    authentication.authorize([
-      {
-        resource: "lastSeen",
-        operation: "read",
-      },
-    ]) &&
-    entity.discordId
-  ) {
+  if (authentication.authorize("lastSeen", "read") && entity.discordId) {
     account = await prisma.account.findFirst({
       where: {
         provider: "discord",

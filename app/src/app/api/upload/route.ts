@@ -18,12 +18,7 @@ export async function POST(request: Request) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi("/api/upload", "POST");
-    authentication.authorizeApi([
-      {
-        resource: "role",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("role", "manage");
 
     /**
      * Validate the request body

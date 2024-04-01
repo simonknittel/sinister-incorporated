@@ -42,19 +42,9 @@ type Props = Readonly<{
 
 export default async function Page({ params }: Props) {
   const authentication = await authenticatePage("/app/events/[id]");
-  authentication.authorizePage([
-    {
-      resource: "event",
-      operation: "read",
-    },
-  ]);
+  authentication.authorizePage("event", "read");
 
-  const showFleetTile = authentication.authorize([
-    {
-      resource: "orgFleet",
-      operation: "read",
-    },
-  ]);
+  const showFleetTile = authentication.authorize("orgFleet", "read");
 
   const { date, data: event } = await getEvent(params.id);
 

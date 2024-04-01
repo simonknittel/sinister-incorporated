@@ -47,12 +47,9 @@ const SingleHandle = ({ log }: Readonly<Props>) => {
             <p className="font-bold">Unbestätigt</p>
 
             {authentication &&
-              authentication.authorize([
-                {
-                  resource: "handle",
-                  operation: "confirm",
-                },
-              ]) && <ConfirmLog log={log} />}
+              authentication.authorize("handle", "confirm") && (
+                <ConfirmLog log={log} />
+              )}
           </div>
         </div>
       )}
@@ -99,13 +96,9 @@ const SingleHandle = ({ log }: Readonly<Props>) => {
 
             <span className="text-neutral-500">&bull;</span>
 
-            {authentication &&
-              authentication.authorize([
-                {
-                  resource: "handle",
-                  operation: "delete",
-                },
-              ]) && <DeleteLog log={log} />}
+            {authentication && authentication.authorize("handle", "delete") && (
+              <DeleteLog log={log} />
+            )}
           </div>
 
           <p>{log.content}</p>

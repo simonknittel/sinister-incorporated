@@ -20,12 +20,7 @@ export default async function Page({
   searchParams: _searchParams,
 }: Readonly<Props>) {
   const authentication = await authenticatePage("/app/spynet/citizen");
-  authentication.authorizePage([
-    {
-      resource: "citizen",
-      operation: "read",
-    },
-  ]);
+  authentication.authorizePage("citizen", "read");
 
   const searchParams = nextjsSearchParamsToNativeSearchParams(_searchParams);
 

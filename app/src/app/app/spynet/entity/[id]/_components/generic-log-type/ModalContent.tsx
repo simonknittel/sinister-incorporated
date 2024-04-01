@@ -42,13 +42,9 @@ export const ModalContent = ({ type, entity }: Readonly<Props>) => {
     <>
       <h2 className="text-xl font-bold">History</h2>
 
-      {authentication &&
-        authentication.authorize([
-          {
-            resource: type,
-            operation: "create",
-          },
-        ]) && <Create type={type} entity={entity} />}
+      {authentication && authentication.authorize(type, "create") && (
+        <Create type={type} entity={entity} />
+      )}
 
       {entries}
     </>

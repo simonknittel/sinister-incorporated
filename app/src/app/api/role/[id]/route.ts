@@ -21,12 +21,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi("/api/role/[id]", "PATCH");
-    authentication.authorizeApi([
-      {
-        resource: "role",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("role", "manage");
 
     /**
      * Validate the request params and body
@@ -63,12 +58,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi("/api/role/[id]", "DELETE");
-    authentication.authorizeApi([
-      {
-        resource: "role",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("role", "manage");
 
     /**
      * Validate the request params

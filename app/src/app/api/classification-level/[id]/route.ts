@@ -23,12 +23,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       "/api/classification-level/[id]",
       "PATCH",
     );
-    authentication.authorizeApi([
-      {
-        resource: "classificationLevel",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("classificationLevel", "manage");
 
     /**
      * Validate the request params and body
@@ -68,12 +63,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       "/api/classification-level/[id]",
       "DELETE",
     );
-    authentication.authorizeApi([
-      {
-        resource: "classificationLevel",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("classificationLevel", "manage");
 
     /**
      * Validate the request params

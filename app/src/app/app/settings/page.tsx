@@ -18,26 +18,14 @@ export const metadata: Metadata = {
 export default async function Page() {
   const authentication = await authenticatePage("/app/settings");
 
-  const showNoteTypes = authentication.authorize([
-    {
-      resource: "noteType",
-      operation: "manage",
-    },
-  ]);
+  const showNoteTypes = authentication.authorize("noteType", "manage");
 
-  const showClassificationLevels = authentication.authorize([
-    {
-      resource: "classificationLevel",
-      operation: "manage",
-    },
-  ]);
+  const showClassificationLevels = authentication.authorize(
+    "classificationLevel",
+    "manage",
+  );
 
-  const showAnalytics = authentication.authorize([
-    {
-      resource: "analytics",
-      operation: "manage",
-    },
-  ]);
+  const showAnalytics = authentication.authorize("analytics", "manage");
 
   if (!showNoteTypes && !showClassificationLevels && !showAnalytics) {
     log.info("Unauthorized request to page", {

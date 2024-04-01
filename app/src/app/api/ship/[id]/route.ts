@@ -20,12 +20,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi("/api/ship/[id]", "PATCH");
-    authentication.authorizeApi([
-      {
-        resource: "ship",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("ship", "manage");
 
     /**
      * Validate the request params
@@ -74,12 +69,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi("/api/ship/[id]", "DELETE");
-    authentication.authorizeApi([
-      {
-        resource: "ship",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("ship", "manage");
 
     /**
      * Validate the request params

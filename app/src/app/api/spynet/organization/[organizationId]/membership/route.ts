@@ -26,12 +26,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
       "/api/spynet/organization/[organizationId]/membership",
       "POST",
     );
-    authentication.authorizeApi([
-      {
-        resource: "organizationMembership",
-        operation: "create",
-      },
-    ]);
+    authentication.authorizeApi("organizationMembership", "create");
 
     /**
      * Validate the request
@@ -45,9 +40,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
      */
     if (
       data.confirmed === "CONFIRMED" &&
-      authentication.authorize([
-        { resource: "organizationMembership", operation: "confirm" },
-      ])
+      authentication.authorize("organizationMembership", "confirm")
     ) {
       await prisma.$transaction([
         prisma.activeOrganizationMembership.create({

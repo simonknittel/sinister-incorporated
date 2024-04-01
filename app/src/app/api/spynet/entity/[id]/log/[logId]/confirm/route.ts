@@ -56,22 +56,12 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     switch (entityLog.type) {
       case "handle":
       case "teamspeak-id":
-        authentication.authorizeApi([
-          {
-            resource: entityLog.type,
-            operation: "confirm",
-          },
-        ]);
+        authentication.authorizeApi(entityLog.type, "confirm");
         break;
       case "discord-id":
       case "citizen-id":
       case "community-moniker":
-        authentication.authorizeApi([
-          {
-            resource: entityLog.type,
-            operation: "create",
-          },
-        ]);
+        authentication.authorizeApi(entityLog.type, "create");
         break;
       case "note":
         const { noteTypeId, classificationLevelId } =
@@ -93,13 +83,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
           });
         }
 
-        authentication.authorizeApi([
-          {
-            resource: "note",
-            operation: "confirm",
-            attributes: authorizationAttributes,
-          },
-        ]);
+        authentication.authorizeApi("note", "confirm", authorizationAttributes);
         break;
 
       default:

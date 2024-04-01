@@ -86,12 +86,7 @@ export const CreateOrganizationMembership = ({
 
   const showCreateAndConfirmButton =
     authentication &&
-    authentication.authorize([
-      {
-        resource: "organizationMembership",
-        operation: "confirm",
-      },
-    ]);
+    authentication.authorize("organizationMembership", "confirm");
 
   return (
     <>

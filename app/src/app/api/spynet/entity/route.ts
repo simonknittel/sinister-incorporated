@@ -16,12 +16,7 @@ export async function POST(request: Request) {
      * Authenticate the request
      */
     const authentication = await authenticateApi("/api/spynet/entity", "POST");
-    authentication.authorizeApi([
-      {
-        resource: "citizen",
-        operation: "create",
-      },
-    ]);
+    authentication.authorizeApi("citizen", "create");
 
     /**
      * Validate the request

@@ -4,52 +4,48 @@ import {
 } from "./PermissionSet";
 
 export default function comparePermissionSets(
-  requiredPermissionSets: PermissionSet[],
+  requiredPermissionSet: PermissionSet,
   givenPermissionSets: PermissionSet[],
 ) {
-  for (const requiredPermissionSet of requiredPermissionSets) {
-    const givenPermissionSetsForResource = givenPermissionSets.filter(
-      (givenPermissionSet) =>
-        givenPermissionSet.resource === requiredPermissionSet.resource,
-    );
+  const givenPermissionSetsForResource = givenPermissionSets.filter(
+    (givenPermissionSet) =>
+      givenPermissionSet.resource === requiredPermissionSet.resource,
+  );
 
-    if (
-      givenPermissionSetsForResource.some(
-        (givenPermissionSet) => givenPermissionSet.operation === "negate",
-      )
+  if (
+    givenPermissionSetsForResource.some(
+      (givenPermissionSet) => givenPermissionSet.operation === "negate",
     )
-      return false;
-
-    if (
-      givenPermissionSetsForResource.some((givenPermissionSet) => {
-        if (requiredPermissionSet.attributes) {
-          if (!givenPermissionSet.attributes) return false;
-
-          const result = hasMatchingAttributes(
-            requiredPermissionSet.attributes,
-            givenPermissionSet.attributes,
-          );
-          if (!result) return false;
-        }
-
-        if (!requiredPermissionSet.attributes && givenPermissionSet.attributes)
-          return false;
-
-        if (
-          requiredPermissionSet.operation !== givenPermissionSet.operation &&
-          givenPermissionSet.operation !== "manage"
-        )
-          return false;
-
-        return true;
-      })
-    )
-      return true;
-
+  )
     return false;
-  }
 
-  return true;
+  if (
+    givenPermissionSetsForResource.some((givenPermissionSet) => {
+      if (requiredPermissionSet.attributes) {
+        if (!givenPermissionSet.attributes) return false;
+
+        const result = hasMatchingAttributes(
+          requiredPermissionSet.attributes,
+          givenPermissionSet.attributes,
+        );
+        if (!result) return false;
+      }
+
+      if (!requiredPermissionSet.attributes && givenPermissionSet.attributes)
+        return false;
+
+      if (
+        requiredPermissionSet.operation !== givenPermissionSet.operation &&
+        givenPermissionSet.operation !== "manage"
+      )
+        return false;
+
+      return true;
+    })
+  )
+    return true;
+
+  return false;
 }
 
 function hasMatchingAttributes(

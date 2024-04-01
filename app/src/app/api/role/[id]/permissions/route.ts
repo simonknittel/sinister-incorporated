@@ -27,12 +27,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
       "/role/[id]/permissions",
       "POST",
     );
-    authentication.authorizeApi([
-      {
-        resource: "role",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorizeApi("role", "manage");
 
     /**
      * Validate the request params and body

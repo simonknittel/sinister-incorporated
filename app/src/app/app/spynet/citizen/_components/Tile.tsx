@@ -114,33 +114,16 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
 
   const assignableRoles = await getAssignableRoles();
 
-  const showLastSeenAtColumn = authentication.authorize([
-    {
-      resource: "lastSeen",
-      operation: "read",
-    },
-  ]);
+  const showLastSeenAtColumn = authentication.authorize("lastSeen", "read");
 
-  const showTeamspeakIdAtColumn = authentication.authorize([
-    {
-      resource: "teamspeak-id",
-      operation: "read",
-    },
-  ]);
+  const showTeamspeakIdAtColumn = authentication.authorize(
+    "teamspeak-id",
+    "read",
+  );
 
-  const showDiscordIdAtColumn = authentication.authorize([
-    {
-      resource: "discord-id",
-      operation: "read",
-    },
-  ]);
+  const showDiscordIdAtColumn = authentication.authorize("discord-id", "read");
 
-  const showDeleteEntityButton = authentication.authorize([
-    {
-      resource: "citizen",
-      operation: "delete",
-    },
-  ]);
+  const showDeleteEntityButton = authentication.authorize("citizen", "delete");
 
   return (
     <section className="p-8 pb-10 bg-neutral-800/50  mt-4 rounded-2xl overflow-auto">

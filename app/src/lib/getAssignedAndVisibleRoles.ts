@@ -17,16 +17,10 @@ export const getAssignedAndVisibleRoles = cache(async (entity: Entity) => {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const assignedAndVisibleRoles = assignedRoles.filter((role) => {
-    return authentication.authorize([
+    return authentication.authorize("otherRole", "read", [
       {
-        resource: "otherRole",
-        operation: "read",
-        attributes: [
-          {
-            key: "roleId",
-            value: role.id,
-          },
-        ],
+        key: "roleId",
+        value: role.id,
       },
     ]);
   });

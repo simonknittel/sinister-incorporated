@@ -13,27 +13,12 @@ export const Sidebar = async () => {
   const authentication = await requireAuthentication();
 
   const showSpynet =
-    authentication.authorize([
-      {
-        resource: "citizen",
-        operation: "read",
-      },
-    ]) ||
-    authentication.authorize([
-      {
-        resource: "organization",
-        operation: "read",
-      },
-    ]);
+    authentication.authorize("citizen", "read") ||
+    authentication.authorize("organization", "read");
 
   const showOperations =
     (await getUnleashFlag("EnableOperations")) &&
-    authentication.authorize([
-      {
-        resource: "operation",
-        operation: "manage",
-      },
-    ]);
+    authentication.authorize("operation", "manage");
 
   const disableAlgolia = await getUnleashFlag("DisableAlgolia");
 
@@ -101,18 +86,8 @@ export const Sidebar = async () => {
               </Link>
             </li> */}
 
-              {(authentication.authorize([
-                {
-                  resource: "orgFleet",
-                  operation: "read",
-                },
-              ]) ||
-                authentication.authorize([
-                  {
-                    resource: "ship",
-                    operation: "manage",
-                  },
-                ])) && (
+              {(authentication.authorize("orgFleet", "read") ||
+                authentication.authorize("ship", "manage")) && (
                 <li>
                   <Link
                     href="/app/fleet"
@@ -126,22 +101,12 @@ export const Sidebar = async () => {
               )}
             </ul>
 
-            {authentication.authorize([
-              {
-                resource: "citizen",
-                operation: "read",
-              },
-            ]) && (
+            {authentication.authorize("citizen", "read") && (
               <div className="mt-4">
                 <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
 
                 <ul>
-                  {authentication.authorize([
-                    {
-                      resource: "citizen",
-                      operation: "read",
-                    },
-                  ]) && (
+                  {authentication.authorize("citizen", "read") && (
                     <>
                       <li>
                         <Link
@@ -181,64 +146,22 @@ export const Sidebar = async () => {
               </div>
             )}
 
-            {(authentication.authorize([
-              {
-                resource: "user",
-                operation: "read",
-              },
-            ]) ||
-              authentication.authorize([
-                {
-                  resource: "role",
-                  operation: "manage",
-                },
-              ]) ||
-              authentication.authorize([
-                {
-                  resource: "classificationLevel",
-                  operation: "manage",
-                },
-              ]) ||
-              authentication.authorize([
-                {
-                  resource: "noteType",
-                  operation: "manage",
-                },
-              ]) ||
-              authentication.authorize([
-                {
-                  resource: "analytics",
-                  operation: "manage",
-                },
-              ]) ||
-              authentication.authorize([
-                {
-                  resource: "manufacturersSeriesAndVariants",
-                  operation: "manage",
-                },
-              ])) && (
+            {(authentication.authorize("user", "read") ||
+              authentication.authorize("role", "manage") ||
+              authentication.authorize("classificationLevel", "manage") ||
+              authentication.authorize("noteType", "manage") ||
+              authentication.authorize("analytics", "manage") ||
+              authentication.authorize(
+                "manufacturersSeriesAndVariants",
+                "manage",
+              )) && (
               <div className="mt-4">
                 <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
                 <ul>
-                  {(authentication.authorize([
-                    {
-                      resource: "noteType",
-                      operation: "manage",
-                    },
-                  ]) ||
-                    authentication.authorize([
-                      {
-                        resource: "classificationLevel",
-                        operation: "manage",
-                      },
-                    ]) ||
-                    authentication.authorize([
-                      {
-                        resource: "analytics",
-                        operation: "manage",
-                      },
-                    ])) && (
+                  {(authentication.authorize("noteType", "manage") ||
+                    authentication.authorize("classificationLevel", "manage") ||
+                    authentication.authorize("analytics", "manage")) && (
                     <li>
                       <Link
                         href="/app/settings"
@@ -251,12 +174,7 @@ export const Sidebar = async () => {
                     </li>
                   )}
 
-                  {authentication.authorize([
-                    {
-                      resource: "role",
-                      operation: "manage",
-                    },
-                  ]) && (
+                  {authentication.authorize("role", "manage") && (
                     <li>
                       <Link
                         href="/app/roles"
@@ -269,12 +187,10 @@ export const Sidebar = async () => {
                     </li>
                   )}
 
-                  {authentication.authorize([
-                    {
-                      resource: "manufacturersSeriesAndVariants",
-                      operation: "manage",
-                    },
-                  ]) && (
+                  {authentication.authorize(
+                    "manufacturersSeriesAndVariants",
+                    "manage",
+                  ) && (
                     <li>
                       <Link
                         href="/app/fleet/settings"
@@ -286,12 +202,7 @@ export const Sidebar = async () => {
                       </Link>
                     </li>
                   )}
-                  {authentication.authorize([
-                    {
-                      resource: "user",
-                      operation: "read",
-                    },
-                  ]) && (
+                  {authentication.authorize("user", "read") && (
                     <li>
                       <Link
                         href="/app/users"

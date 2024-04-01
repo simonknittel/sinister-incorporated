@@ -23,12 +23,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       "/api/spynet/organization/[organizationId]/membership/[citizenId]",
       "DELETE",
     );
-    authentication.authorizeApi([
-      {
-        resource: "organizationMembership",
-        operation: "create",
-      },
-    ]);
+    authentication.authorizeApi("organizationMembership", "create");
 
     /**
      * Validate the request

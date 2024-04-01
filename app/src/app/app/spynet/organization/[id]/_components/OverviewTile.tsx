@@ -9,14 +9,7 @@ type Props = Readonly<{
 
 export const OverviewTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();
-  if (
-    !authentication.authorize([
-      {
-        resource: "organization",
-        operation: "read",
-      },
-    ])
-  )
+  if (!authentication.authorize("organization", "read"))
     throw new Error("Unauthorized");
 
   const organization = await prisma.organization.findUnique({
