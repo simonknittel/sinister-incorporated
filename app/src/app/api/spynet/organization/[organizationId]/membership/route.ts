@@ -13,7 +13,7 @@ const paramsSchema = z.object({ organizationId: z.string().cuid2() });
 const postBodySchema = z.object({
   citizenId: z.string().cuid2(),
   type: z.union([z.literal("MAIN"), z.literal("AFFILIATE")]),
-  visibility: z.union([z.literal("PUBLIC"), z.literal("REDACTED")]),
+  redacted: z.union([z.literal("REDACTED"), z.literal(false)]),
   confirmed: z.literal("CONFIRMED").optional(),
 });
 
@@ -56,7 +56,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
               },
             },
             type: data.type,
-            visibility: data.visibility,
+            visibility: data.redacted || "PUBLIC",
           },
         }),
 
@@ -73,7 +73,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
               },
             },
             type: data.type,
-            visibility: data.visibility,
+            visibility: data.redacted || "PUBLIC",
             createdBy: {
               connect: {
                 /**
@@ -110,7 +110,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
             },
           },
           type: data.type,
-          visibility: data.visibility,
+          visibility: data.redacted,
           createdBy: {
             connect: {
               /**
