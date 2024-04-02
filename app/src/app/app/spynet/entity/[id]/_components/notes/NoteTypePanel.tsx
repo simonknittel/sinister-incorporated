@@ -8,7 +8,7 @@ import { authenticate } from "../../../../../../../lib/auth/authenticateAndAutho
 import getAllClassificationLevels from "../../../../../../../lib/cached/getAllClassificationLevels";
 import TabPanel from "../../../../../../_components/tabs/TabPanel";
 import AddNote from "./AddNote";
-import SingleNote from "./SingleNote";
+import { SingleNote } from "./SingleNote";
 import SingleNoteRedacted from "./SingleNoteRedacted";
 import isAllowedToCreate from "./lib/isAllowedToCreate";
 
