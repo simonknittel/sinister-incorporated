@@ -3,55 +3,46 @@ import comparePermissionSets from "./comparePermissionSets";
 
 describe("comparePermissionSets", () => {
   test("simple", () => {
-    expect(comparePermissionSets([], [])).toBe(true);
-
     expect(
-      comparePermissionSets([{ resource: "lastSeen", operation: "read" }], []),
+      comparePermissionSets({ resource: "lastSeen", operation: "read" }, []),
     ).toBe(false);
 
     expect(
-      comparePermissionSets(
-        [{ resource: "lastSeen", operation: "read" }],
-        [{ resource: "lastSeen", operation: "read" }],
-      ),
+      comparePermissionSets({ resource: "lastSeen", operation: "read" }, [
+        { resource: "lastSeen", operation: "read" },
+      ]),
     ).toBe(true);
   });
 
   test("notes", () => {
     expect(
-      comparePermissionSets(
-        [{ resource: "note", operation: "create" }],
-        [{ resource: "note", operation: "manage" }],
-      ),
+      comparePermissionSets({ resource: "note", operation: "create" }, [
+        { resource: "note", operation: "manage" },
+      ]),
     ).toBe(true);
 
     expect(
-      comparePermissionSets(
-        [{ resource: "note", operation: "create" }],
-        [
-          {
-            resource: "note",
-            operation: "manage",
-            attributes: [{ key: "noteTypeId", value: "1" }],
-          },
-        ],
-      ),
+      comparePermissionSets({ resource: "note", operation: "create" }, [
+        {
+          resource: "note",
+          operation: "manage",
+          attributes: [{ key: "noteTypeId", value: "1" }],
+        },
+      ]),
     ).toBe(false);
 
     expect(
       comparePermissionSets(
-        [
-          {
-            resource: "note",
-            operation: "create",
-            attributes: [
-              {
-                key: "noteTypeId",
-                value: "1",
-              },
-            ],
-          },
-        ],
+        {
+          resource: "note",
+          operation: "create",
+          attributes: [
+            {
+              key: "noteTypeId",
+              value: "1",
+            },
+          ],
+        },
         [
           {
             resource: "note",
@@ -69,18 +60,17 @@ describe("comparePermissionSets", () => {
 
     expect(
       comparePermissionSets(
-        [
-          {
-            resource: "note",
-            operation: "create",
-            attributes: [
-              {
-                key: "noteTypeId",
-                value: "1",
-              },
-            ],
-          },
-        ],
+        {
+          resource: "note",
+          operation: "create",
+          attributes: [
+            {
+              key: "noteTypeId",
+              value: "1",
+            },
+          ],
+        },
+
         [
           {
             resource: "note",
@@ -98,18 +88,17 @@ describe("comparePermissionSets", () => {
 
     expect(
       comparePermissionSets(
-        [
-          {
-            resource: "note",
-            operation: "create",
-            attributes: [
-              {
-                key: "noteTypeId",
-                value: "1",
-              },
-            ],
-          },
-        ],
+        {
+          resource: "note",
+          operation: "create",
+          attributes: [
+            {
+              key: "noteTypeId",
+              value: "1",
+            },
+          ],
+        },
+
         [
           {
             resource: "note",
@@ -127,18 +116,17 @@ describe("comparePermissionSets", () => {
 
     expect(
       comparePermissionSets(
-        [
-          {
-            resource: "note",
-            operation: "read",
-            attributes: [
-              {
-                key: "noteTypeId",
-                value: "1",
-              },
-            ],
-          },
-        ],
+        {
+          resource: "note",
+          operation: "read",
+          attributes: [
+            {
+              key: "noteTypeId",
+              value: "1",
+            },
+          ],
+        },
+
         [
           {
             resource: "note",
@@ -158,12 +146,11 @@ describe("comparePermissionSets", () => {
   test("organizationMembership", () => {
     expect(
       comparePermissionSets(
-        [
-          {
-            resource: "organizationMembership",
-            operation: "read",
-          },
-        ],
+        {
+          resource: "organizationMembership",
+          operation: "read",
+        },
+
         [
           {
             resource: "organizationMembership",
@@ -175,12 +162,11 @@ describe("comparePermissionSets", () => {
 
     expect(
       comparePermissionSets(
-        [
-          {
-            resource: "organizationMembership",
-            operation: "read",
-          },
-        ],
+        {
+          resource: "organizationMembership",
+          operation: "read",
+        },
+
         [
           {
             resource: "organizationMembership",
@@ -196,21 +182,40 @@ describe("comparePermissionSets", () => {
       ),
     ).toBe(false);
 
-    // TODO
     // expect(
     //   comparePermissionSets(
+    //     {
+    //       resource: "organizationMembership",
+    //       operation: "read",
+    //       attributes: [
+    //         {
+    //           key: "alsoVisibilityRedacted",
+    //           value: true,
+    //         },
+    //       ],
+    //     },
     //     [
     //       {
     //         resource: "organizationMembership",
     //         operation: "read",
-    //         attributes: [
-    //           {
-    //             key: "alsoVisibilityRedacted",
-    //             value: true,
-    //           },
-    //         ],
     //       },
     //     ],
+    //   ),
+    // ).toBe(true);
+
+    // expect(
+    //   comparePermissionSets(
+    //     {
+    //       resource: "organizationMembership",
+    //       operation: "read",
+    //       attributes: [
+    //         {
+    //           key: "alsoVisibilityRedacted",
+    //           value: true,
+    //         },
+    //       ],
+    //     },
+
     //     [
     //       {
     //         resource: "organizationMembership",
@@ -225,112 +230,24 @@ describe("comparePermissionSets", () => {
     //     ],
     //   ),
     // ).toBe(true);
-
-    // TODO
-    // expect(
-    //   comparePermissionSets(
-    //     [
-    //       {
-    //         resource: "organizationMembership",
-    //         operation: "read",
-    //       },
-    //       {
-    //         resource: "organizationMembership",
-    //         operation: "read",
-    //         attributes: [
-    //           {
-    //             key: "alsoVisibilityRedacted",
-    //             value: true,
-    //           },
-    //         ],
-    //       },
-    //     ],
-    //     [
-    //       {
-    //         resource: "organizationMembership",
-    //         operation: "read",
-    //         attributes: [
-    //           {
-    //             key: "alsoVisibilityRedacted",
-    //             value: true,
-    //           },
-    //         ],
-    //       },
-    //     ],
-    //   ),
-    // ).toBe(true);
-
-    expect(
-      comparePermissionSets(
-        [
-          {
-            resource: "organizationMembership",
-            operation: "read",
-          },
-          {
-            resource: "organizationMembership",
-            operation: "read",
-            attributes: [
-              {
-                key: "alsoVisibilityRedacted",
-                value: true,
-              },
-            ],
-          },
-        ],
-        [
-          {
-            resource: "organizationMembership",
-            operation: "read",
-          },
-        ],
-      ),
-    ).toBe(true);
-
-    expect(
-      comparePermissionSets(
-        [
-          {
-            resource: "organizationMembership",
-            operation: "read",
-            attributes: [
-              {
-                key: "alsoVisibilityRedacted",
-                value: true,
-              },
-            ],
-          },
-        ],
-        [
-          {
-            resource: "organizationMembership",
-            operation: "read",
-          },
-        ],
-      ),
-    ).toBe(false);
   });
 
   test("login", () => {
     expect(
-      comparePermissionSets(
-        [{ resource: "login", operation: "manage" }],
-        [{ resource: "login", operation: "manage" }],
-      ),
+      comparePermissionSets({ resource: "login", operation: "manage" }, [
+        { resource: "login", operation: "manage" },
+      ]),
     ).toBe(true);
 
     expect(
-      comparePermissionSets([{ resource: "login", operation: "manage" }], []),
+      comparePermissionSets({ resource: "login", operation: "manage" }, []),
     ).toBe(false);
 
     expect(
-      comparePermissionSets(
-        [{ resource: "login", operation: "manage" }],
-        [
-          { resource: "login", operation: "manage" },
-          { resource: "login", operation: "negate" },
-        ],
-      ),
+      comparePermissionSets({ resource: "login", operation: "manage" }, [
+        { resource: "login", operation: "manage" },
+        { resource: "login", operation: "negate" },
+      ]),
     ).toBe(false);
   });
 });
