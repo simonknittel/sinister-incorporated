@@ -59,7 +59,7 @@
     "zod-form-data": "2.0.2"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "0.5.10",
+    "@tailwindcss/typography": "0.5.11",
     "@types/eslint": "8.56.6",
     "@types/lodash": "4.17.0",
     "@types/node": "18.19.26",
