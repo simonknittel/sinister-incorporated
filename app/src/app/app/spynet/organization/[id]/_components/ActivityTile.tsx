@@ -122,7 +122,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
                   href={`/app/spynet/entity/${entry.citizen.id}`}
                   className="text-sinister-red-500 hover:text-sinister-red-300"
                 >
-                  {entry.citizen.handle}
+                  {entry.citizen.handle}{" "}
                   <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
                 </Link>{" "}
                 wurde als <em>Main</em> hinzugefügt
@@ -140,7 +140,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
                   href={`/app/spynet/entity/${entry.citizen.id}`}
                   className="text-sinister-red-500 hover:text-sinister-red-300 mr-1"
                 >
-                  {entry.citizen.handle}
+                  {entry.citizen.handle}{" "}
                   <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
                 </Link>{" "}
                 wurde als <em>Affiliate</em> hinzugefügt
@@ -158,7 +158,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
                   href={`/app/spynet/entity/${entry.citizen.id}`}
                   className="text-sinister-red-500 hover:text-sinister-red-300"
                 >
-                  {entry.citizen.handle}
+                  {entry.citizen.handle}{" "}
                   <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
                 </Link>{" "}
                 wurde entfernt
