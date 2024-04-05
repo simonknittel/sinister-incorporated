@@ -99,9 +99,12 @@ Resources:
                   - iam:GetOpenIDConnectProvider
                   - iam:GetRole
                   - iam:GetRolePolicy
+                  - iam:GetUserPolicy
+                  - iam:ListAccessKeys
                   - iam:ListAttachedRolePolicies
                   - iam:ListOpenIDConnectProviders
                   - iam:ListRolePolicies
+                  - iam:GetUser
                   - kms:DescribeKey
                   - kms:ListAliases
                   - lambda:GetEventSourceMapping
