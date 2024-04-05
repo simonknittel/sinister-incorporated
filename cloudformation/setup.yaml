@@ -96,9 +96,11 @@ Resources:
                   - events:DescribeRule
                   - events:ListTagsForResource
                   - events:ListTargetsByRule
-                  - iam:GetOpenIDConnectProvider
+                  - iam:GetOpenIDConnectProvide
                   - iam:GetRole
                   - iam:GetRolePolicy
+                  - iam:GetUserPolicy
+                  - iam:ListAccessKeys
                   - iam:ListAttachedRolePolicies
                   - iam:ListOpenIDConnectProviders
                   - iam:ListRolePolicies
