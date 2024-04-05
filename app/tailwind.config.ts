@@ -8,6 +8,9 @@ export default {
         "sinister-red-900": "#330a0a",
         "sinister-red-500": "#BB2222",
         "sinister-red-300": "#CC4444",
+        "rsi-blue-100": "#7ef8ff",
+        "rsi-blue-200": "#56a6b6",
+        "rsi-blue-300": "#0e2635",
       },
       backgroundImage: {
         "sinister-radial-gradient":

@@ -22,12 +22,9 @@
   ],
   "dotenv.enableAutocloaking": false,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "vitest.enable": true,
-  "vitest.commandLine": "npx vitest --coverage",
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
-  },
-  "vitest.watchOnStartup": true
+  }
 }

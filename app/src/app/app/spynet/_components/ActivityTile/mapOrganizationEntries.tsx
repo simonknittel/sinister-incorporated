@@ -1,7 +1,6 @@
 import { type Organization } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { FaExternalLinkAlt } from "react-icons/fa";
 import { requireAuthentication } from "../../../../../lib/auth/authenticateAndAuthorize";
 
 export const mapOrganizationEntries = async (
@@ -31,8 +30,7 @@ export const mapOrganizationEntries = async (
               />
             </span>
           )}
-          {entry.name}{" "}
-          <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
+          {entry.name}
         </Link>{" "}
         erstellt
       </p>

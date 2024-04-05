@@ -5,7 +5,6 @@ import {
 } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { FaExternalLinkAlt } from "react-icons/fa";
 import { requireAuthentication } from "../../../../../lib/auth/authenticateAndAuthorize";
 
 export const mapOrganizationMembershipHistoryEntries = async (
@@ -54,7 +53,6 @@ export const mapOrganizationMembershipHistoryEntries = async (
                   className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.citizen.handle}
-                  <FaExternalLinkAlt className="text-xs" />
                 </Link>{" "}
                 wurde der Organisation{" "}
                 <Link
@@ -71,8 +69,7 @@ export const mapOrganizationMembershipHistoryEntries = async (
                       />
                     </span>
                   )}
-                  {entry.organization.name}{" "}
-                  <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
+                  {entry.organization.name}
                 </Link>{" "}
                 als <em>Main</em> hinzugefügt
               </p>
@@ -91,7 +88,6 @@ export const mapOrganizationMembershipHistoryEntries = async (
                   className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.citizen.handle}
-                  <FaExternalLinkAlt className="text-xs" />
                 </Link>{" "}
                 wurde der Organisation{" "}
                 <Link
@@ -99,7 +95,6 @@ export const mapOrganizationMembershipHistoryEntries = async (
                   className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.organization.name}
-                  <FaExternalLinkAlt className="text-xs" />
                 </Link>{" "}
                 als <em>Affiliate</em> hinzugefügt
               </p>
@@ -118,7 +113,6 @@ export const mapOrganizationMembershipHistoryEntries = async (
                   className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.citizen.handle}
-                  <FaExternalLinkAlt className="text-xs" />
                 </Link>{" "}
                 wurde aus der Organisation{" "}
                 <Link
@@ -126,7 +120,6 @@ export const mapOrganizationMembershipHistoryEntries = async (
                   className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.organization.name}
-                  <FaExternalLinkAlt className="text-xs" />
                 </Link>{" "}
                 entfernt
               </p>

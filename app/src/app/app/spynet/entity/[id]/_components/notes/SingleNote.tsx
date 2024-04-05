@@ -10,7 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { BsExclamationOctagonFill } from "react-icons/bs";
-import { FaExternalLinkAlt, FaInfoCircle } from "react-icons/fa";
+import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import { type PermissionSet } from "../../../../../../../lib/auth/PermissionSet";
 import { requireAuthentication } from "../../../../../../../lib/auth/authenticateAndAuthorize";
@@ -119,8 +119,7 @@ export const SingleNote = async ({ note }: Props) => {
               className="text-sinister-red-500 hover:text-sinister-red-300"
               key={index}
             >
-              {citizen.handle || citizen.spectrumId}{" "}
-              <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
+              {citizen.handle || citizen.spectrumId}
             </Link>
           );
         } else if (organizationMatch?.[1]) {
@@ -145,8 +144,7 @@ export const SingleNote = async ({ note }: Props) => {
                   />
                 </span>
               )}
-              {organization.name || organization.spectrumId}{" "}
-              <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
+              {organization.name || organization.spectrumId}
             </Link>
           );
         } else {
