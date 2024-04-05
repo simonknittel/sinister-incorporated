@@ -113,3 +113,7 @@ jobs:
                 body: output
               })
             }
+
+      - name: Break on terraform plan failure
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
