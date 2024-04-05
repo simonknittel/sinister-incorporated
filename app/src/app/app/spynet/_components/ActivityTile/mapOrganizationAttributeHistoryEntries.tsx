@@ -1,6 +1,5 @@
 import { type OrganizationAttributeHistoryEntry } from "@prisma/client";
 import Link from "next/link";
-import { FaExternalLinkAlt } from "react-icons/fa";
 import { requireAuthentication } from "../../../../../lib/auth/authenticateAndAuthorize";
 
 export const mapOrganizationAttributeHistoryEntries = async (
@@ -36,7 +35,6 @@ export const mapOrganizationAttributeHistoryEntries = async (
                   className=" text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.newValue}{" "}
-                  <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
                 </Link>
               </p>
             ),

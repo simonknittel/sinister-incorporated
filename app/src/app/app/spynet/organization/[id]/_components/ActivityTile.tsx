@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { FaExternalLinkAlt, FaListAlt } from "react-icons/fa";
+import { FaListAlt } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import { requireAuthentication } from "../../../../../../lib/auth/authenticateAndAuthorize";
 import { prisma } from "../../../../../../server/db";
@@ -122,8 +122,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
                   href={`/app/spynet/entity/${entry.citizen.id}`}
                   className="text-sinister-red-500 hover:text-sinister-red-300"
                 >
-                  {entry.citizen.handle}{" "}
-                  <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
+                  {entry.citizen.handle}
                 </Link>{" "}
                 wurde als <em>Main</em> hinzugefügt
               </p>
@@ -140,8 +139,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
                   href={`/app/spynet/entity/${entry.citizen.id}`}
                   className="text-sinister-red-500 hover:text-sinister-red-300 mr-1"
                 >
-                  {entry.citizen.handle}{" "}
-                  <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
+                  {entry.citizen.handle}
                 </Link>{" "}
                 wurde als <em>Affiliate</em> hinzugefügt
               </p>
@@ -158,8 +156,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
                   href={`/app/spynet/entity/${entry.citizen.id}`}
                   className="text-sinister-red-500 hover:text-sinister-red-300"
                 >
-                  {entry.citizen.handle}{" "}
-                  <FaExternalLinkAlt className="text-xs inline-block align-baseline" />
+                  {entry.citizen.handle}
                 </Link>{" "}
                 wurde entfernt
               </p>
