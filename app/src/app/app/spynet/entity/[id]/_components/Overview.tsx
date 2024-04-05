@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
 import { requireAuthentication } from "../../../../../../lib/auth/authenticateAndAuthorize";
+import { RSIButton } from "../../../../../_components/RSIButton";
 import { LastSeenAt } from "../../../citizen/_components/LastSeenAt";
 import { OverviewSection } from "./generic-log-type/OverviewSection";
 
@@ -76,6 +77,13 @@ export const Overview = async ({ className, entity }: Props) => {
           </>
         )}
       </dl>
+
+      {entity.handle && (
+        <RSIButton
+          className="mt-8"
+          href={`https://robertsspaceindustries.com/citizens/${entity.handle}`}
+        />
+      )}
     </section>
   );
 };

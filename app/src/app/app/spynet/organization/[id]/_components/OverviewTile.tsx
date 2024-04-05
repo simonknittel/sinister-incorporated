@@ -2,6 +2,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import { requireAuthentication } from "../../../../../../lib/auth/authenticateAndAuthorize";
 import { prisma } from "../../../../../../server/db";
+import { RSIButton } from "../../../../../_components/RSIButton";
 
 type Props = Readonly<{
   className?: string;
@@ -52,6 +53,11 @@ export const OverviewTile = async ({ className, id }: Props) => {
           <dt className="text-neutral-500 mt-4">Sinister ID</dt>
           <dd>{organization.id}</dd>
         </dl>
+
+        <RSIButton
+          className="mt-8"
+          href={`https://robertsspaceindustries.com/orgs/${organization.spectrumId}`}
+        />
       </div>
     </section>
   );
