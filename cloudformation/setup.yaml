@@ -96,7 +96,7 @@ Resources:
                   - events:DescribeRule
                   - events:ListTagsForResource
                   - events:ListTargetsByRule
-                  - iam:GetOpenIDConnectProvide
+                  - iam:GetOpenIDConnectProvider
                   - iam:GetRole
                   - iam:GetRolePolicy
                   - iam:GetUserPolicy
