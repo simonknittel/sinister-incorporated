@@ -21,30 +21,39 @@ export default function comparePermissionSets(
 
   if (
     givenPermissionSetsForResource.some((givenPermissionSet) => {
-      if (requiredPermissionSet.attributes) {
-        if (!givenPermissionSet.attributes) return false;
+      // Check if we have the required operation or manage for this resource
+      if (
+        requiredPermissionSet.operation === givenPermissionSet.operation ||
+        givenPermissionSet.operation === "manage"
+      ) {
+        // Check if any attributes are required and we have some
+        if (requiredPermissionSet.attributes && givenPermissionSet.attributes) {
+          const result = hasMatchingAttributes(
+            requiredPermissionSet.attributes,
+            givenPermissionSet.attributes,
+          );
+          // Check if the required attributes match the given ones
+          if (!result) return false;
+        } else if (
+          !requiredPermissionSet.attributes &&
+          givenPermissionSet.attributes
+        ) {
+          // When no attributes for this resource and operation are required, but we have some, it means that our given permissions are too specific. Therefore, we should return false.
+          return false;
+        }
 
-        const result = hasMatchingAttributes(
-          requiredPermissionSet.attributes,
-          givenPermissionSet.attributes,
-        );
-        if (!result) return false;
+        // If we have the required operation and attributes, we can return true
+        return true;
       }
 
-      if (!requiredPermissionSet.attributes && givenPermissionSet.attributes)
-        return false;
-
-      if (
-        requiredPermissionSet.operation !== givenPermissionSet.operation &&
-        givenPermissionSet.operation !== "manage"
-      )
-        return false;
-
-      return true;
+      // If we don't have the required operation, we should return false
+      return false;
     })
   )
+    // Some of our given permissions match the required ones
     return true;
 
+  // None of our given permissions match the required ones
   return false;
 }
 
@@ -53,9 +62,7 @@ function hasMatchingAttributes(
   givenAttributes: PermissionSetAttribute[],
 ) {
   for (const requiredAttribute of requiredAttributes) {
-    if (typeof requiredAttribute.value === "boolean") {
-      if (requiredAttribute.value === false) continue;
-
+    if (requiredAttribute.value === true) {
       const hasMatchingAttribute = givenAttributes.find(
         (givenAttribute) =>
           givenAttribute.key === requiredAttribute.key &&
