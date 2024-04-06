@@ -5,7 +5,7 @@
       "name": "Next.js: debug server-side",
       "type": "node-terminal",
       "request": "launch",
-      "command": "nvm use && npm run dev",
+      "command": "nvm install && npm run dev",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
         "/turbopack/[project]/*": "${webRoot}/*"
@@ -26,7 +26,7 @@
       "name": "Next.js: debug full stack",
       "type": "node-terminal",
       "request": "launch",
-      "command": "nvm use && npm run dev",
+      "command": "nvm install && npm run dev",
       "serverReadyAction": {
         "pattern": "- Local:.+(https?://.+)",
         "uriFormat": "%s",

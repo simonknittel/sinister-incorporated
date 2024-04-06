@@ -8,6 +8,8 @@
     "dotenv.dotenv-vscode",
     "streetsidesoftware.code-spell-checker-german",
     "vitest.explorer",
-    "clinyong.vscode-css-modules"
+    "clinyong.vscode-css-modules",
+    "ms-vscode-remote.remote-containers",
+    "ms-azuretools.vscode-docker"
   ]
 }
