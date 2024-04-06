@@ -174,7 +174,7 @@ describe("comparePermissionSets", () => {
             attributes: [
               {
                 key: "alsoVisibilityRedacted",
-                value: true,
+                value: "true",
               },
             ],
           },
@@ -182,54 +182,82 @@ describe("comparePermissionSets", () => {
       ),
     ).toBe(false);
 
-    // expect(
-    //   comparePermissionSets(
-    //     {
-    //       resource: "organizationMembership",
-    //       operation: "read",
-    //       attributes: [
-    //         {
-    //           key: "alsoVisibilityRedacted",
-    //           value: true,
-    //         },
-    //       ],
-    //     },
-    //     [
-    //       {
-    //         resource: "organizationMembership",
-    //         operation: "read",
-    //       },
-    //     ],
-    //   ),
-    // ).toBe(true);
+    expect(
+      comparePermissionSets(
+        {
+          resource: "organizationMembership",
+          operation: "read",
+          attributes: [
+            {
+              key: "alsoVisibilityRedacted",
+              value: true,
+            },
+          ],
+        },
+        [
+          {
+            resource: "organizationMembership",
+            operation: "read",
+          },
+        ],
+      ),
+    ).toBe(true);
 
-    // expect(
-    //   comparePermissionSets(
-    //     {
-    //       resource: "organizationMembership",
-    //       operation: "read",
-    //       attributes: [
-    //         {
-    //           key: "alsoVisibilityRedacted",
-    //           value: true,
-    //         },
-    //       ],
-    //     },
+    expect(
+      comparePermissionSets(
+        {
+          resource: "organizationMembership",
+          operation: "read",
+          attributes: [
+            {
+              key: "alsoVisibilityRedacted",
+              value: true,
+            },
+          ],
+        },
 
-    //     [
-    //       {
-    //         resource: "organizationMembership",
-    //         operation: "read",
-    //         attributes: [
-    //           {
-    //             key: "alsoVisibilityRedacted",
-    //             value: true,
-    //           },
-    //         ],
-    //       },
-    //     ],
-    //   ),
-    // ).toBe(true);
+        [
+          {
+            resource: "organizationMembership",
+            operation: "read",
+            attributes: [
+              {
+                key: "alsoVisibilityRedacted",
+                value: "true",
+              },
+            ],
+          },
+        ],
+      ),
+    ).toBe(true);
+
+    expect(
+      comparePermissionSets(
+        {
+          resource: "organizationMembership",
+          operation: "read",
+          attributes: [
+            {
+              key: "alsoVisibilityRedacted",
+              value: true,
+            },
+          ],
+        },
+
+        [
+          {
+            resource: "organizationMembership",
+            operation: "read",
+            attributes: [
+              {
+                key: "confirmed", // Some other attribute which doesn't match the required one
+                value: "true",
+              },
+            ],
+          },
+        ],
+      ),
+    ).toBe(false);
   });
 
   test("login", () => {
