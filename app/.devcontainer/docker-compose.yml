@@ -6,7 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ../..:/workspaces:cached
+      - ..:/workspace:cached
+      - devcontainer-node_modules:/workspace/node_modules
     network_mode: service:db
     command: sleep infinity
 
@@ -20,4 +21,5 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
 volumes:
+  devcontainer-node_modules:
   postgres-data:
