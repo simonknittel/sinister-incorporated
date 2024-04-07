@@ -94,11 +94,13 @@ export const sendEmailV2 = async (
     );
 
   try {
+    // Reference: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/eventbridge/
     const client = new EventBridgeClient({
       credentials: {
         accessKeyId: env.AWS_ACCESS_KEY_ID,
         secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
       },
+      region: "eu-central-1",
     });
 
     const input: PutEventsCommandInput = {
@@ -130,7 +132,7 @@ export const sendEmailV2 = async (
     }
   } catch (error) {
     throw new CustomError("Failed to create EmailConfirmationRequested event", {
-      error: serializeError(error),
+      error,
     });
   }
 };

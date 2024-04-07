@@ -5,6 +5,7 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
+import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { env } from "../env.mjs";
 import { type PermissionSet } from "../lib/auth/PermissionSet";
@@ -287,7 +288,14 @@ export const authOptions: NextAuthOptions = {
     createUser: async (user) => {
       const createdUser = await adapter.createUser!(user);
 
-      await requestEmailConfirmation(createdUser.id, user.email);
+      try {
+        await requestEmailConfirmation(createdUser.id, user.email);
+      } catch (error) {
+        log.error("Failed to request email confirmation for created user", {
+          userId: createdUser.id,
+          error: serializeError(error),
+        });
+      }
 
       return createdUser;
     },
