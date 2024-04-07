@@ -3,7 +3,7 @@
 // - https://code.visualstudio.com/docs/devcontainers/containers
 // - https://code.visualstudio.com/docs/editor/variables-reference
 {
-  "name": "Dev Container / App / Sinister Incorporated",
+  "name": "app / Sinister Incorporated",
 
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
@@ -29,7 +29,7 @@
   "forwardPorts": [3000, "db:5432"],
 
   // Make sure the node user can write to the node_modules folder which is mounted as named volume (see docker-compose.yml)
-  "postCreateCommand": "sudo chown node node_modules && npm ci",
+  "postCreateCommand": "sudo chown node:node node_modules && npm ci",
 
   "remoteUser": "node"
 }

@@ -1,3 +1,5 @@
+# Reference: https://docs.docker.com/compose/compose-file/compose-file-v3/
+
 version: "3.8"
 
 services:
@@ -7,6 +9,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ..:/workspace:cached
+      # Mount node_modules into a volume to improve performance (see https://code.visualstudio.com/remote/advancedcontainers/improve-performance#_use-a-targeted-named-volume)
       - devcontainer-node_modules:/workspace/node_modules
     network_mode: service:db
     command: sleep infinity
