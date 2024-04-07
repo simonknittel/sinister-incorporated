@@ -21,8 +21,8 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: db
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
 
 volumes:
   devcontainer-node_modules:
-  postgres-data:
+  db-data:
