@@ -80,7 +80,7 @@ export const Overview = async ({ className, entity }: Props) => {
 
       {entity.handle && (
         <RSIButton
-          className="mt-8"
+          className="mt-4"
           href={`https://robertsspaceindustries.com/citizens/${entity.handle}`}
         />
       )}

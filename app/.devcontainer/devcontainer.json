@@ -1,0 +1,31 @@
+// Reference: https://containers.dev/
+{
+  "name": "Dev Container",
+
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "prisma.prisma",
+        "deque-systems.vscode-axe-linter",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "dbaeumer.vscode-eslint",
+        "dotenv.dotenv-vscode",
+        "streetsidesoftware.code-spell-checker-german",
+        "vitest.explorer",
+        "clinyong.vscode-css-modules",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+
+  "forwardPorts": [3000, "db:5432"],
+
+  "postCreateCommand": "npm ci",
+
+  "remoteUser": "node"
+}

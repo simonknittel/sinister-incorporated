@@ -55,7 +55,7 @@ export const OverviewTile = async ({ className, id }: Props) => {
         </dl>
 
         <RSIButton
-          className="mt-8"
+          className="mt-4"
           href={`https://robertsspaceindustries.com/orgs/${organization.spectrumId}`}
         />
       </div>

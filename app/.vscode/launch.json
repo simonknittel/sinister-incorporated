@@ -3,9 +3,16 @@
   "configurations": [
     {
       "name": "Next.js: debug server-side",
+      // The `node-terminal` hides some logs from the Debug Console. Notably, this
+      // affects the `GET /my-path 200 in 100ms` logs from Next.js. This happens
+      // since these are written using `process.stdout.write()` instead of `console.log()`.
       "type": "node-terminal",
       "request": "launch",
-      "command": "nvm use && npm run dev",
+      // We don't have nvm installed in the Dev Container. The Dev Container
+      // itself is using the correct Node.js version. Therefore, we ignore
+      // if the command fails. We can't remove the command because this launch
+      // configuration may be used outside of the Dev Container.
+      "command": "nvm install; npm run dev",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
         "/turbopack/[project]/*": "${webRoot}/*"
@@ -24,9 +31,16 @@
     },
     {
       "name": "Next.js: debug full stack",
+      // The `node-terminal` hides some logs from the Debug Console. Notably, this
+      // affects the `GET /my-path 200 in 100ms` logs from Next.js. This happens
+      // since these are written using `process.stdout.write()` instead of `console.log()`.
       "type": "node-terminal",
       "request": "launch",
-      "command": "nvm use && npm run dev",
+      // We don't have nvm installed in the Dev Container. The Dev Container
+      // itself is using the correct Node.js version. Therefore, we ignore
+      // if the command fails. We can't remove the command because this launch
+      // configuration may be used outside of the Dev Container.
+      "command": "nvm install; npm run dev",
       "serverReadyAction": {
         "pattern": "- Local:.+(https?://.+)",
         "uriFormat": "%s",
