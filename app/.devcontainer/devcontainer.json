@@ -1,10 +1,13 @@
-// Reference: https://containers.dev/
+// References:
+// - https://containers.dev/
+// - https://code.visualstudio.com/docs/devcontainers/containers
+// - https://code.visualstudio.com/docs/editor/variables-reference
 {
-  "name": "Dev Container",
+  "name": "app / Sinister Incorporated",
 
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "workspaceFolder": "/workspace",
 
   "customizations": {
     "vscode": {
@@ -25,7 +28,8 @@
 
   "forwardPorts": [3000, "db:5432"],
 
-  "postCreateCommand": "npm ci",
+  // Make sure the node user can write to the node_modules folder which is mounted as named volume (see docker-compose.yml)
+  "postCreateCommand": "sudo chown node:node node_modules && npm ci && npx prisma migrate dev",
 
   "remoteUser": "node"
 }
