@@ -7,7 +7,9 @@
 
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
-  "workspaceFolder": "/workspace",
+
+  // We mount the whole project directory but only want to work on the current subdirectory (see docker-compose.yml)
+  "workspaceFolder": "/workspace/${localWorkspaceFolderBasename}",
 
   "customizations": {
     "vscode": {
