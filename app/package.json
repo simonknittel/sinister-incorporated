@@ -35,7 +35,7 @@
     "@vercel/speed-insights": "1.0.10",
     "@vercel/toolbar": "0.1.13",
     "algoliasearch": "4.23.2",
-    "change-case": "5.4.3",
+    "change-case": "5.4.4",
     "clsx": "2.1.0",
     "cmdk": "1.0.0",
     "leva": "0.9.35",
