@@ -200,7 +200,7 @@ describe("compare permission sets", () => {
     ).toBe(true);
   });
 
-  test("permission set containing one attribute vs. one permission sets containing one attribute but with a different key", () => {
+  test("permission set containing one attribute vs. one permission set containing one attribute but with a different key", () => {
     expect(
       comparePermissionSets(
         {
@@ -230,12 +230,26 @@ describe("compare permission sets", () => {
     ).toBe(false);
   });
 
-  test("permission set containing no attributes vs. one permission sets which is matching but also gets negated", () => {
+  test("permission set containing no attributes vs. one permission set which is matching but with a negation", () => {
     expect(
       comparePermissionSets({ resource: "login", operation: "manage" }, [
         { resource: "login", operation: "manage" },
         { resource: "login", operation: "negate" },
       ]),
     ).toBe(false);
+  });
+
+  // TODO
+  test.skip("permission set containing no attributes vs. one permission set which is matching but with a negation of a more specific permission set", () => {
+    expect(
+      comparePermissionSets({ resource: "login", operation: "manage" }, [
+        { resource: "login", operation: "manage" },
+        {
+          resource: "login",
+          operation: "negate",
+          attributes: [{ key: "confirmed", value: true }],
+        },
+      ]),
+    ).toBe(true);
   });
 });

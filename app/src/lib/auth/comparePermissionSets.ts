@@ -12,6 +12,7 @@ export default function comparePermissionSets(
       givenPermissionSet.resource === requiredPermissionSet.resource,
   );
 
+  // TODO: Checking this early for a negation results in negations for more specific attributes not working (see test)
   if (
     givenPermissionSetsForResource.some(
       (givenPermissionSet) => givenPermissionSet.operation === "negate",
