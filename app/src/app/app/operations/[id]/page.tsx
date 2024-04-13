@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
-import { authenticatePage } from "../../../../lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../../../lib/auth/server";
 import { getUnleashFlag } from "../../../../lib/getUnleashFlag";
 import { log } from "../../../../lib/logging";
 import { prisma } from "../../../../server/db";

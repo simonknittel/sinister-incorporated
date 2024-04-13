@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { type PermissionSet } from "./PermissionSet";
 import comparePermissionSets from "./comparePermissionSets";
 
-export default function useAuthentication() {
+export const useAuthentication = () => {
   const { data: session } = useSession();
 
   /**
@@ -44,4 +44,4 @@ export default function useAuthentication() {
   }
 
   return { session, authorize };
-}
+};

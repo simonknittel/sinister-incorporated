@@ -4,7 +4,7 @@ import { type Entity, type Role } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import useAuthentication from "../../../../../../../lib/auth/useAuthentication";
+import { useAuthentication } from "../../../../../../../lib/auth/client";
 import YesNoCheckbox from "../../../../../../_components/YesNoCheckbox";
 
 interface Props {

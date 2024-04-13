@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { Suspense, type ReactNode } from "react";
-import { authenticatePage } from "../../lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../lib/auth/server";
 import { TRPCReactProvider } from "../../trpc/react";
 import { AdminEnabler } from "../_components/AdminEnabler";
 import ImpersonationBannerContainer from "../_components/ImpersonationBannerContainer";

@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import { serializeError } from "serialize-error";
-import { authenticatePage } from "../../../../lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../../../lib/auth/server";
 import { getEvent } from "../../../../lib/discord/getEvent";
 import { log } from "../../../../lib/logging";
 import { FleetTile } from "./_components/FleetTile";

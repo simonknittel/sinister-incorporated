@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { serializeError } from "serialize-error";
-import { authenticate } from "../../../lib/auth/authenticateAndAuthorize";
+import { authenticate } from "../../../lib/auth/server";
 import { requestEmailConfirmation } from "../../../lib/emailConfirmation";
 import { log } from "../../../lib/logging";
 

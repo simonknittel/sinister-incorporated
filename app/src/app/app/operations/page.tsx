@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { authenticatePage } from "../../../lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../../lib/auth/server";
 import { getUnleashFlag } from "../../../lib/getUnleashFlag";
 import { prisma } from "../../../server/db";
 import Note from "../../_components/Note";

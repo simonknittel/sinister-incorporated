@@ -1,4 +1,4 @@
-import { requireAuthentication } from "../../../../../lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "../../../../../lib/auth/server";
 import getAllClassificationLevels from "../../../../../lib/cached/getAllClassificationLevels";
 import getAllNoteTypes from "../../../../../lib/cached/getAllNoteTypes";
 import getLatestNoteAttributes from "../../../../../lib/getLatestNoteAttributes";

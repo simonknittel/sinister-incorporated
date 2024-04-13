@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { RiInformationLine } from "react-icons/ri";
-import { authenticate } from "../../lib/auth/authenticateAndAuthorize";
+import { authenticate } from "../../lib/auth/server";
 import { requiresEmailConfirmation } from "../../lib/emailConfirmation";
 import { log } from "../../lib/logging";
 import { AdminEnabler } from "../_components/AdminEnabler";

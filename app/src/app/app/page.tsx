@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { authenticatePage } from "../../lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../lib/auth/server";
 import { getUnleashFlag } from "../../lib/getUnleashFlag";
 import { Hero } from "../_components/Hero";
 import { SpynetSearchTile } from "../_components/SpynetSearchTile/SpynetSearchTile";

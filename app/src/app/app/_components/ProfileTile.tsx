@@ -2,7 +2,7 @@ import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import { authenticate } from "../../../lib/auth/authenticateAndAuthorize";
+import { authenticate } from "../../../lib/auth/server";
 import { getAssignedAndVisibleRoles } from "../../../lib/getAssignedAndVisibleRoles";
 import { prisma } from "../../../server/db";
 import Avatar from "../../_components/Avatar";

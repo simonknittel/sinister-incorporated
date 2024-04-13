@@ -13,7 +13,7 @@ import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import { type PermissionSet } from "../../../../../../../lib/auth/PermissionSet";
-import { requireAuthentication } from "../../../../../../../lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "../../../../../../../lib/auth/server";
 import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
 import { prisma } from "../../../../../../../server/db";
 import ConfirmLog from "../ConfirmLog";
