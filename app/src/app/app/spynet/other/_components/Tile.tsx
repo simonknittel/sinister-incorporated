@@ -1,4 +1,4 @@
-import { requireAuthentication } from "../../../../../lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "../../../../../lib/auth/server";
 import {
   PER_PAGE,
   getCurrentPageFromSearchParams,

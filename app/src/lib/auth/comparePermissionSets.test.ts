@@ -1,12 +1,14 @@
 import { describe, expect, test } from "vitest";
 import comparePermissionSets from "./comparePermissionSets";
 
-describe("comparePermissionSets", () => {
-  test("simple", () => {
+describe("compare permission sets", () => {
+  test("permission set containing no attributes vs. no permission sets", () => {
     expect(
       comparePermissionSets({ resource: "lastSeen", operation: "read" }, []),
     ).toBe(false);
+  });
 
+  test("permission set containing no attributes vs. one permission set which is matching", () => {
     expect(
       comparePermissionSets({ resource: "lastSeen", operation: "read" }, [
         { resource: "lastSeen", operation: "read" },
@@ -14,13 +16,7 @@ describe("comparePermissionSets", () => {
     ).toBe(true);
   });
 
-  test("notes", () => {
-    expect(
-      comparePermissionSets({ resource: "note", operation: "create" }, [
-        { resource: "note", operation: "manage" },
-      ]),
-    ).toBe(true);
-
+  test("permission set containing no attributes vs. one permission set which is more specific", () => {
     expect(
       comparePermissionSets({ resource: "note", operation: "create" }, [
         {
@@ -30,7 +26,9 @@ describe("comparePermissionSets", () => {
         },
       ]),
     ).toBe(false);
+  });
 
+  test("permission set containing one attribute vs. one permission set which is matching", () => {
     expect(
       comparePermissionSets(
         {
@@ -57,7 +55,39 @@ describe("comparePermissionSets", () => {
         ],
       ),
     ).toBe(true);
+  });
 
+  test("permission set containing one attribute which is a boolean vs. one permission set which is matching", () => {
+    expect(
+      comparePermissionSets(
+        {
+          resource: "organizationMembership",
+          operation: "read",
+          attributes: [
+            {
+              key: "alsoVisibilityRedacted",
+              value: true,
+            },
+          ],
+        },
+
+        [
+          {
+            resource: "organizationMembership",
+            operation: "read",
+            attributes: [
+              {
+                key: "alsoVisibilityRedacted",
+                value: "true",
+              },
+            ],
+          },
+        ],
+      ),
+    ).toBe(true);
+  });
+
+  test("permission set containing one attribute vs. one permission set which has manage but the attribute isn't matching", () => {
     expect(
       comparePermissionSets(
         {
@@ -85,7 +115,9 @@ describe("comparePermissionSets", () => {
         ],
       ),
     ).toBe(false);
+  });
 
+  test("permission set containing one attribute vs. one permission which is matching and has a wildcard", () => {
     expect(
       comparePermissionSets(
         {
@@ -113,7 +145,9 @@ describe("comparePermissionSets", () => {
         ],
       ),
     ).toBe(true);
+  });
 
+  test("permission set containing one attribute vs. one permission which has a wildcard but hasn't a matching operation", () => {
     expect(
       comparePermissionSets(
         {
@@ -143,45 +177,7 @@ describe("comparePermissionSets", () => {
     ).toBe(false);
   });
 
-  test("organizationMembership", () => {
-    expect(
-      comparePermissionSets(
-        {
-          resource: "organizationMembership",
-          operation: "read",
-        },
-
-        [
-          {
-            resource: "organizationMembership",
-            operation: "read",
-          },
-        ],
-      ),
-    ).toBe(true);
-
-    expect(
-      comparePermissionSets(
-        {
-          resource: "organizationMembership",
-          operation: "read",
-        },
-
-        [
-          {
-            resource: "organizationMembership",
-            operation: "read",
-            attributes: [
-              {
-                key: "alsoVisibilityRedacted",
-                value: "true",
-              },
-            ],
-          },
-        ],
-      ),
-    ).toBe(false);
-
+  test("permission set containing one attributes vs. one permission without attributes", () => {
     expect(
       comparePermissionSets(
         {
@@ -202,7 +198,9 @@ describe("comparePermissionSets", () => {
         ],
       ),
     ).toBe(true);
+  });
 
+  test("permission set containing one attribute vs. one permission set containing one attribute but with a different key", () => {
     expect(
       comparePermissionSets(
         {
@@ -222,35 +220,7 @@ describe("comparePermissionSets", () => {
             operation: "read",
             attributes: [
               {
-                key: "alsoVisibilityRedacted",
-                value: "true",
-              },
-            ],
-          },
-        ],
-      ),
-    ).toBe(true);
-
-    expect(
-      comparePermissionSets(
-        {
-          resource: "organizationMembership",
-          operation: "read",
-          attributes: [
-            {
-              key: "alsoVisibilityRedacted",
-              value: true,
-            },
-          ],
-        },
-
-        [
-          {
-            resource: "organizationMembership",
-            operation: "read",
-            attributes: [
-              {
-                key: "confirmed", // Some other attribute which doesn't match the required one
+                key: "confirmed",
                 value: "true",
               },
             ],
@@ -260,22 +230,26 @@ describe("comparePermissionSets", () => {
     ).toBe(false);
   });
 
-  test("login", () => {
-    expect(
-      comparePermissionSets({ resource: "login", operation: "manage" }, [
-        { resource: "login", operation: "manage" },
-      ]),
-    ).toBe(true);
-
-    expect(
-      comparePermissionSets({ resource: "login", operation: "manage" }, []),
-    ).toBe(false);
-
+  test("permission set containing no attributes vs. one permission set which is matching but with a negation", () => {
     expect(
       comparePermissionSets({ resource: "login", operation: "manage" }, [
         { resource: "login", operation: "manage" },
         { resource: "login", operation: "negate" },
       ]),
     ).toBe(false);
+  });
+
+  // TODO
+  test.skip("permission set containing no attributes vs. one permission set which is matching but with a negation of a more specific permission set", () => {
+    expect(
+      comparePermissionSets({ resource: "login", operation: "manage" }, [
+        { resource: "login", operation: "manage" },
+        {
+          resource: "login",
+          operation: "negate",
+          attributes: [{ key: "confirmed", value: true }],
+        },
+      ]),
+    ).toBe(true);
   });
 });

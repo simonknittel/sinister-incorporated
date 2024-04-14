@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { authenticatePage } from "../../../lib/auth/authenticateAndAuthorize";
+import { authenticatePage } from "../../../lib/auth/server";
 import { Hero } from "../../_components/Hero";
 import { MyFleetTile } from "./_components/MyFleetTile";
 import { OrgFleetTile } from "./_components/OrgFleetTile";

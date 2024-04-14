@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
-import { requireAuthentication } from "../../lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "../../lib/auth/server";
 import { getUnleashFlag } from "../../lib/getUnleashFlag";
 import Account from "./Account";
 import { Chip } from "./Chip";

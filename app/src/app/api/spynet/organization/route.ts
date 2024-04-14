@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { saveObject } from "../../../../lib/algolia";
-import { authenticateApi } from "../../../../lib/auth/authenticateAndAuthorize";
+import { authenticateApi } from "../../../../lib/auth/server";
 import { log } from "../../../../lib/logging";
 import { scrapeOrganizationLogo } from "../../../../lib/scrapeOrganizationLogo";
 import { prisma } from "../../../../server/db";

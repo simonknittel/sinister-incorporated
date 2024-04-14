@@ -1,6 +1,6 @@
 import { type OrganizationAttributeHistoryEntry } from "@prisma/client";
 import Link from "next/link";
-import { requireAuthentication } from "../../../../../lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "../../../../../lib/auth/server";
 
 export const mapOrganizationAttributeHistoryEntries = async (
   entries: Array<

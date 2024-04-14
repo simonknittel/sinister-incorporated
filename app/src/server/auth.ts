@@ -9,7 +9,7 @@ import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { env } from "../env.mjs";
 import { type PermissionSet } from "../lib/auth/PermissionSet";
-import getPermissionSetsByRoles from "../lib/auth/getPermissionSetsByRoles";
+import { getPermissionSetsByRoles } from "../lib/auth/server";
 import { requestEmailConfirmation } from "../lib/emailConfirmation";
 import { log } from "../lib/logging";
 import { type UserRole } from "../types";

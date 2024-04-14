@@ -7,9 +7,7 @@ type Roles = Array<
   }
 >;
 
-export default function getPermissionSetsByRoles(
-  roles: Roles,
-): PermissionSet[] {
+export const getPermissionSetsByRoles = (roles: Roles): PermissionSet[] => {
   const permissionSets = [];
 
   for (const role of roles) {
@@ -38,4 +36,4 @@ export default function getPermissionSetsByRoles(
   }
 
   return permissionSets;
-}
+};

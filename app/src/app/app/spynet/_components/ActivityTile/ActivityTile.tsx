@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { TbCircleDot } from "react-icons/tb";
-import { requireAuthentication } from "../../../../../lib/auth/authenticateAndAuthorize";
+import { requireAuthentication } from "../../../../../lib/auth/server";
 import { prisma } from "../../../../../server/db";
 import { mapOrganizationAttributeHistoryEntries } from "./mapOrganizationAttributeHistoryEntries";
 import { mapOrganizationEntries } from "./mapOrganizationEntries";

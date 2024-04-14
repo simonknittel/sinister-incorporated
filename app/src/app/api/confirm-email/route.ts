@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { zfd } from "zod-form-data";
-import { authenticate } from "../../../lib/auth/authenticateAndAuthorize";
+import { authenticate } from "../../../lib/auth/server";
 import { log } from "../../../lib/logging";
 import { prisma } from "../../../server/db";
 import errorHandler from "../_lib/errorHandler";

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { saveObject } from "../../../../lib/algolia";
-import { authenticateApi } from "../../../../lib/auth/authenticateAndAuthorize";
+import { authenticateApi } from "../../../../lib/auth/server";
 import { prisma } from "../../../../server/db";
 import errorHandler from "../../_lib/errorHandler";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { type Entity } from "@prisma/client";
-import useAuthentication from "../../../../../../../lib/auth/useAuthentication";
+import { useAuthentication } from "../../../../../../../lib/auth/client";
 import { api } from "../../../../../../../trpc/react";
 import { type GenericEntityLogType } from "../../../../../../../types";
 import { Create } from "./Create";
