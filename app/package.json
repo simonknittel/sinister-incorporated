@@ -78,7 +78,7 @@
     "prettier-plugin-tailwindcss": "0.5.13",
     "prisma": "5.12.1",
     "tailwindcss": "3.4.3",
-    "typescript": "5.4.4",
+    "typescript": "5.4.5",
     "vercel": "33.7.0",
     "vitest": "1.4.0"
   }
