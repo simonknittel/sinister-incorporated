@@ -30,7 +30,7 @@ jobs:
     needs: [build_email_function]
 
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.3
 
       - name: Read .terraform-version
         id: terraform_version
@@ -48,7 +48,7 @@ jobs:
           aws-region: eu-central-1
 
       - name: Retrieve email-function artifact
-        uses: actions/download-artifact@v4.1.4
+        uses: actions/download-artifact@v4.1.5
         with:
           name: email-function-dist
           path: bun-packages/packages/email-function/dist
