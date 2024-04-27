@@ -48,7 +48,7 @@ jobs:
           aws-region: eu-central-1
 
       - name: Retrieve email-function artifact
-        uses: actions/download-artifact@v4.1.4
+        uses: actions/download-artifact@v4.1.5
         with:
           name: email-function-dist
           path: bun-packages/packages/email-function/dist
