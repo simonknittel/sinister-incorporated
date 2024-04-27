@@ -1,0 +1,26 @@
+name: Validate commit messages
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4.1.3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4.0.2
+        with:
+          node-version-file: "app/.nvmrc"
+
+      - name: Install commitlint
+        run: npm install --global @commitlint/cli @commitlint/config-conventional
+
+      - name: Run commitlint
+        run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
