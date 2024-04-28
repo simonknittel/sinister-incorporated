@@ -70,7 +70,7 @@
     "@vitest/coverage-v8": "1.5.0",
     "autoprefixer": "10.4.19",
     "csv": "6.3.8",
-    "eslint": "8.57.0",
+    "eslint": "9.1.1",
     "eslint-config-next": "14.2.2",
     "postcss": "8.4.38",
     "prettier": "3.2.5",
