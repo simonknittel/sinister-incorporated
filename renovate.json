@@ -18,7 +18,9 @@
       "internalChecksFilter": "strict",
       "platformAutomerge": false,
       "automergeStrategy": "squash",
-      "prHourlyLimit": 0
+      "prHourlyLimit": 0,
+      "prConcurrentLimit": 5,
+      "branchConcurrentLimit": 5
     },
     {
       "matchPackageNames": [
