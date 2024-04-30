@@ -14,8 +14,6 @@
         "digest"
       ],
       "automerge": true,
-      "timezone": "Europe/Berlin",
-      "prCreation": "not-pending",
       "minimumReleaseAge": "7 days",
       "internalChecksFilter": "strict",
       "platformAutomerge": false,
