@@ -2,14 +2,13 @@ name: Renovate
 
 on:
   schedule:
-    - cron: "30 2 * * 1" # Every Monday at 2:30 AM UTC
-    - cron: "0 3 * * 1" # Every Monday at 3:00 AM UTC (wait for workflows in Pull Requests to finish)
+    - cron: "0,30 3,4,5 * * *" # Every day six chances for Renovate to create or rebase branches and create, rebase or merge PRs
   workflow_dispatch: # Manually run the workflow
   push: # Run the workflow on changes to the configuration
     branches:
       - develop
     paths:
-      - .github/renovate.json
+      - renovate.json
       - .github/workflows/renovate.yml
 
 jobs:
@@ -25,3 +24,5 @@ jobs:
         with:
           configurationFile: .github/renovate-config.js
           token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          LOG_LEVEL: debug
