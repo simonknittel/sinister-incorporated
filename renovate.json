@@ -18,7 +18,7 @@
       "internalChecksFilter": "strict",
       "platformAutomerge": false,
       "automergeStrategy": "squash",
-      "prHourlyLimit": 5,
+      "prHourlyLimit": 10,
       "prConcurrentLimit": 5,
       "branchConcurrentLimit": 5
     },
