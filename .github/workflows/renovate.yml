@@ -10,6 +10,7 @@ on:
     paths:
       - renovate.json
       - .github/workflows/renovate.yml
+      - .github/renovate-config.js
 
 jobs:
   renovate:
