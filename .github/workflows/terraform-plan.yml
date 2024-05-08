@@ -29,6 +29,8 @@ jobs:
 
     needs: [build_email_function]
 
+    environment: terraform-test
+
     steps:
       - uses: actions/checkout@v4.1.3
 
@@ -44,7 +46,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
-          role-to-assume: arn:aws:iam::220746603587:role/github-actions
+          role-to-assume: ${{ vars.IAM_ROLE_ARN }}
           aws-region: eu-central-1
 
       - name: Retrieve email-function artifact
@@ -63,8 +65,8 @@ jobs:
         id: plan
         continue-on-error: true
         env:
-          TF_VAR_cloudflare_api_token: ${{ secrets.TF_VAR_CLOUDFLARE_API_TOKEN }}
-          TF_VAR_api_subdomain: sinister-api-test
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_api_subdomain: ${{ vars.API_SUBDOMAIN }}
           GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
       - uses: actions/github-script@v7.0.1

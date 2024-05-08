@@ -1,0 +1,66 @@
+name: terraform apply
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "test"
+        type: choice
+        options:
+          - test
+
+jobs:
+  build_email_function:
+    uses: ./.github/workflows/build-email-function.yml
+
+  apply:
+    runs-on: ubuntu-22.04
+
+    # Related
+    # - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # - https://docs.github.com/en/rest/authentication/permissions-required-for-github-apps
+    permissions:
+      id-token: write # Required for aws-actions/configure-aws-credentials
+      contents: read # Required for aws-actions/configure-aws-credentials
+
+    needs: [build_email_function]
+
+    environment: "terraform-${{ inputs.environment }}"
+
+    steps:
+      - uses: actions/checkout@v4.1.3
+
+      - name: Read .terraform-version
+        id: terraform_version
+        run: echo "value=$(cat .terraform-version)" >> $GITHUB_OUTPUT
+        working-directory: terraform
+
+      - uses: hashicorp/setup-terraform@v3.0.0
+        with:
+          terraform_version: "${{ steps.terraform_version.outputs.value }}"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: ${{ vars.IAM_ROLE_ARN }}
+          aws-region: eu-central-1
+
+      - name: Retrieve email-function artifact
+        uses: actions/download-artifact@v4.1.6
+        with:
+          name: email-function-dist
+          path: bun-packages/packages/email-function/dist
+
+      - name: terraform init
+        run: terraform init -backend-config=${{ inputs.environment }}.s3.tfbackend
+        working-directory: terraform
+
+      - name: terraform apply
+        run: terraform apply -no-color -auto-approve
+        working-directory: terraform
+        env:
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_api_subdomain: ${{ vars.API_SUBDOMAIN }}
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}

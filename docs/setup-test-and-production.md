@@ -11,19 +11,20 @@
 
 ## 3. Set up GitHub
 
-1. `gh auth login`
-2. `gh api --method PUT -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/simonknittel/sinister-incorporated/actions/oidc/customization/sub -F use_default=false -f "include_claim_keys[]=repo" -f "include_claim_keys[]=job_workflow_ref"`
-   1. `gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/simonknittel/sinister-incorporated/actions/oidc/customization/sub`
-3. Enable "Allow GitHub Actions to create and approve pull requests" in Settings/Actions/General/Workflow permissions
-
-### Related
-
-- https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#customizing-the-token-claims
-- https://docs.github.com/en/rest/actions/oidc?apiVersion=2022-11-28#set-the-customization-template-for-an-oidc-subject-claim-for-a-repository
+1. Create environments
+   1. `terraform-test`
+   2. `terraform-prod`
+2. Create environment secrets
+   - `CLOUDFLARE_API_TOKEN`
+   - `EMAIL_FUNCTION_MAILGUN_API_KEY`
+3. Create environment variables
+   - `API_SUBDOMAIN`
+   - `IAM_ROLE`
+4. Enable "Allow GitHub Actions to create and approve pull requests" in Settings/Actions/General/Workflow permissions
 
 ## 4. Set up AWS
 
-1. Create two AWS accounts
+1. Create AWS accounts
 
    1. `sinister-incorporated-test`
    2. `sinister-incorporated-prod`
@@ -51,16 +52,11 @@
 
 3. Create and deploy setup stack with AWS CloudFormation
 
+   1. Create and populate `test-parameters.json` and `prod-parameters.json`
    1. `AWS_PROFILE=sinister-incorporated-test aws sso login`
-   2. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 cloudformation deploy --template-file ./cloudformation/setup.yaml --stack-name setup --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM --tags ManagedBy=CloudFormation Repository=simonknittel/sinister-incorporated CloudFormationStack=setup`
+   2. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 cloudformation deploy --template-file setup.yaml --stack-name setup --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM --tags ManagedBy=CloudFormation Repository=simonknittel/sinister-incorporated --parameter-override file://test-parameters.json`
 
-4. Create parameters in AWS System Manager (make sure to replace `foobar` with the actual values)
-
-   1. `AWS_PROFILE=sinister-incorporated-test aws sso login`
-   2. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 ssm put-parameter --name /email-function/mailgun-api-key --value foobar --type SecureString --overwrite`
-   3. `AWS_PROFILE=sinister-incorporated-test aws --region eu-central-1 ssm put-parameter --name /email-function/api-key --value foobar --type SecureString --overwrite`
-
-5. Manually set up AWS User Notifications through the console
+4. Manually set up AWS User Notifications through the console
 
    1. Notification hubs: eu-central-1
    2. Create notification configuration for CloudWatch
