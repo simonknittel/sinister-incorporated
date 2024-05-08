@@ -18,7 +18,10 @@ export default async function Page() {
 
   const showCalendar = authentication.authorize("event", "read");
 
-  const showSpynetSearchTile = !(await getUnleashFlag("DisableAlgolia"));
+  const showSpynetSearchTile =
+    !(await getUnleashFlag("DisableAlgolia")) &&
+    (authentication.authorize("citizen", "read") ||
+      authentication.authorize("organization", "read"));
 
   return (
     <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">
