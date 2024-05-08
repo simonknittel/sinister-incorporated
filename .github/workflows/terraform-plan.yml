@@ -20,6 +20,12 @@ on:
         type: choice
         options:
           - test
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        default: "test"
+        type: string
 
 jobs:
   build_email_function:
@@ -69,14 +75,14 @@ jobs:
         working-directory: terraform
 
       - name: terraform plan
-        run: terraform plan -no-color
+        run: terraform plan -no-color -out=tfplan
         working-directory: terraform
         id: plan
         continue-on-error: true
         env:
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TF_VAR_api_subdomain: ${{ vars.API_SUBDOMAIN }}
-          TF_VAR_email_function_mailgun_api_key: ${{ secrets.EMAIL_FUNCTION_MAILGUN_API_KEY }}
+          TF_VAR_email_function_parameters: ${{ secrets.EMAIL_FUNCTION_PARAMETERS }}
           GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
       - uses: actions/github-script@v7.0.1
@@ -128,3 +134,11 @@ jobs:
       - name: Break on terraform plan failure
         if: steps.plan.outcome == 'failure'
         run: exit 1
+
+      - name: Store artifact
+        uses: actions/upload-artifact@v4.3.3
+        if: github.event_name == 'workflow_call'
+        with:
+          name: tfplan
+          path: terraform/tfplan
+          retention-days: 1

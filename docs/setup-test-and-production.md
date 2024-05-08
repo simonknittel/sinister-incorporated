@@ -16,7 +16,8 @@
    2. `terraform-prod`
 2. Create environment secrets
    - `CLOUDFLARE_API_TOKEN`
-   - `EMAIL_FUNCTION_MAILGUN_API_KEY`
+   - `EMAIL_FUNCTION_PARAMETERS`
+      - `[{"name":"...","value":"..."}]`
 3. Create environment variables
    - `API_SUBDOMAIN`
    - `IAM_ROLE`

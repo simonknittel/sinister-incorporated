@@ -12,8 +12,10 @@ on:
           - test
 
 jobs:
-  build_email_function:
-    uses: ./.github/workflows/build-email-function.yml
+  plan:
+    uses: ./.github/workflows/terraform-plan.yml
+    with:
+      environment: ${{ inputs.environment }}
 
   apply:
     runs-on: ubuntu-22.04
@@ -25,7 +27,7 @@ jobs:
       id-token: write # Required for aws-actions/configure-aws-credentials
       contents: read # Required for aws-actions/configure-aws-credentials
 
-    needs: [build_email_function]
+    needs: [plan]
 
     environment: "terraform-${{ inputs.environment }}"
 
@@ -53,15 +55,21 @@ jobs:
           name: email-function-dist
           path: bun-packages/packages/email-function/dist
 
+      - name: Retrieve tfplan artifact
+        uses: actions/download-artifact@v4.1.6
+        with:
+          name: tfplan
+          path: terraform/tfplan
+
       - name: terraform init
         run: terraform init -backend-config=${{ inputs.environment }}.s3.tfbackend
         working-directory: terraform
 
       - name: terraform apply
-        run: terraform apply -no-color -auto-approve
+        run: terraform apply tfplan
         working-directory: terraform
         env:
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TF_VAR_api_subdomain: ${{ vars.API_SUBDOMAIN }}
-          TF_VAR_email_function_mailgun_api_key: ${{ secrets.EMAIL_FUNCTION_MAILGUN_API_KEY }}
+          TF_VAR_email_function_parameters: ${{ secrets.EMAIL_FUNCTION_PARAMETERS }}
           GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}

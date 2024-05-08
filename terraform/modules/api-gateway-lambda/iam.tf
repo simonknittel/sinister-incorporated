@@ -39,7 +39,7 @@ resource "aws_iam_role" "main" {
             [
               data.aws_kms_alias.ssm.target_key_arn,
             ],
-            tolist(data.aws_ssm_parameter.custom[*].arn),
+            tolist(aws_ssm_parameter.custom[*].arn),
           )
         },
       ]
@@ -51,7 +51,9 @@ data "aws_kms_alias" "ssm" {
   name = "alias/aws/ssm"
 }
 
-data "aws_ssm_parameter" "custom" {
-  count = length(var.parameter_store)
-  name  = "/${var.function_name}${var.parameter_store[count.index]}"
+resource "aws_ssm_parameter" "custom" {
+  count = length(var.parameters)
+  type  = "SecureString"
+  name  = "/${var.function_name}${var.parameters[count.index].name}"
+  value = var.parameters[count.index].value
 }

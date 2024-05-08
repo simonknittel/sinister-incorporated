@@ -71,8 +71,5 @@ module "email_function" {
   event_bus                      = aws_cloudwatch_event_bus.api_gateway
   event_bus_detail_type          = "EmailRequested"
   dynamodb                       = aws_dynamodb_table.api_gateway_processed_requests
-
-  parameter_store = [
-    "/mailgun-api-key"
-  ]
+  parameters                     = var.email_function_parameters
 }
