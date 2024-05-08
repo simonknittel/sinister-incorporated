@@ -31,6 +31,10 @@ export const ProfileTile = async ({ className }: Props) => {
   let roles: Awaited<ReturnType<typeof getAssignedAndVisibleRoles>>;
   if (entity) roles = await getAssignedAndVisibleRoles(entity);
 
+  const showLink =
+    authentication.authorize("citizen", "read") ||
+    authentication.authorize("organization", "read");
+
   return (
     <section
       className={clsx(
@@ -50,7 +54,7 @@ export const ProfileTile = async ({ className }: Props) => {
         </div>
       ) : null}
 
-      {authentication.session.entityId && (
+      {authentication.session.entityId && showLink && (
         <Link
           href={`/app/spynet/entity/${authentication.session.entityId}`}
           prefetch={false}
