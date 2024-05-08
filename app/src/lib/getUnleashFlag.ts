@@ -1,4 +1,4 @@
-import { flag } from "@unleash/nextjs";
+import { evaluateFlags, flagsClient, getDefinitions } from "@unleash/nextjs";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
 import { authenticate } from "./auth/server";
@@ -15,18 +15,26 @@ export const getUnleashFlag = cache(
       | "DisableRoleNameSuggestions"
       | "EnableOperations",
   ) => {
-    const authentication = await authenticate();
+    try {
+      const authentication = await authenticate();
 
-    const result = await flag(name, {
-      userId: authentication ? authentication.session.user.id : undefined,
-    });
+      const definitions = await getDefinitions({
+        fetchOptions: {
+          next: { revalidate: 30 },
+        },
+      });
 
-    if (result.error) {
+      const { toggles } = evaluateFlags(definitions, {
+        userId: authentication ? authentication.session.user.id : undefined,
+      });
+
+      const flags = flagsClient(toggles);
+
+      return flags.isEnabled(name);
+    } catch (error) {
       log.error("Error fetching feature flag", {
-        error: serializeError(result.error),
+        error: serializeError(error),
       });
     }
-
-    return result.enabled;
   },
 );
