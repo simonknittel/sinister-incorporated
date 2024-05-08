@@ -76,6 +76,6 @@ data "aws_kms_alias" "ssm" {
 resource "aws_ssm_parameter" "custom" {
   count = length(var.parameters)
   type  = "SecureString"
-  name  = "/${var.function_name}${var.parameters[count.index].name}"
+  name  = "/${var.function_name}/${var.parameters[count.index].name}"
   value = var.parameters[count.index].value
 }
