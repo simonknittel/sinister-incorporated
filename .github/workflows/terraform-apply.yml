@@ -61,7 +61,7 @@ jobs:
         uses: actions/download-artifact@v4.1.6
         with:
           name: tfplan
-          path: terraform/tfplan
+          path: terraform/
 
       - name: terraform init
         run: terraform init -backend-config=${{ inputs.environment }}.s3.tfbackend
