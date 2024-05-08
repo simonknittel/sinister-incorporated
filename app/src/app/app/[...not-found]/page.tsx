@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
  */
 
 export const metadata: Metadata = {
-  title: "404 - Page not found | Sinister Incorporated",
+  title: "404 - Page not found | S.A.M. - Sinister Incorporated",
 };
 
 export default function Page() {

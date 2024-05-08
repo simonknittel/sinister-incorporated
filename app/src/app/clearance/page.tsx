@@ -9,7 +9,7 @@ import { AdminEnabler } from "../_components/AdminEnabler";
 import { Footer } from "../_components/Footer";
 
 export const metadata: Metadata = {
-  title: "Freigabe | Sinister Incorporated",
+  title: "Freigabe | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {

@@ -20,7 +20,7 @@ export async function generateMetadata({
     const { data: event } = await getEvent(params.id);
 
     return {
-      title: `${event.name} - Event | Sinister Incorporated`,
+      title: `${event.name} - Event | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
     log.error(
@@ -31,7 +31,7 @@ export async function generateMetadata({
     );
 
     return {
-      title: `Error | Sinister Incorporated`,
+      title: `Error | S.A.M. - Sinister Incorporated`,
     };
   }
 }

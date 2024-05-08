@@ -1,3 +1,4 @@
+import { env } from "process";
 import { type LogOutput } from "./types";
 
 export const logToConsole: LogOutput = (logEntry) => {
@@ -5,28 +6,51 @@ export const logToConsole: LogOutput = (logEntry) => {
 
   switch (logEntry.level) {
     case "info":
-      console.info(
-        JSON.stringify({
+      if (env.NODE_ENV === "development") {
+        console.info({
           timestamp: timestamp.toISOString(),
           ...rest,
-        }),
-      );
+        });
+      } else {
+        console.info(
+          JSON.stringify({
+            timestamp: timestamp.toISOString(),
+            ...rest,
+          }),
+        );
+      }
       break;
+
     case "warn":
-      console.warn(
-        JSON.stringify({
+      if (env.NODE_ENV === "development") {
+        console.warn({
           timestamp: timestamp.toISOString(),
           ...rest,
-        }),
-      );
+        });
+      } else {
+        console.warn(
+          JSON.stringify({
+            timestamp: timestamp.toISOString(),
+            ...rest,
+          }),
+        );
+      }
       break;
+
     case "error":
-      console.error(
-        JSON.stringify({
+      if (env.NODE_ENV === "development") {
+        console.error({
           timestamp: timestamp.toISOString(),
           ...rest,
-        }),
-      );
+        });
+      } else {
+        console.error(
+          JSON.stringify({
+            timestamp: timestamp.toISOString(),
+            ...rest,
+          }),
+        );
+      }
       break;
   }
 };

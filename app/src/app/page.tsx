@@ -7,7 +7,7 @@ import LoginButtons from "./_components/LoginButtons";
 import Note from "./_components/Note";
 
 export const metadata: Metadata = {
-  title: "Sinister Incorporated - Hoist the Black",
+  title: "S.A.M. - Sinister Incorporated",
   description: "",
 };
 
@@ -24,9 +24,9 @@ export default async function Page({ searchParams }: Readonly<Props>) {
   return (
     <div className="min-h-dvh flex justify-center items-center bg-sinister-radial-gradient">
       <main className="w-full max-w-md py-8 flex flex-col items-center gap-4">
-        <Hero text="Sinister Inc" />
+        <Hero text="S.A.M." />
 
-        <div className="flex flex-col gap-2 rounded max-w-xs w-full">
+        <div className="flex flex-col gap-2 rounded max-w-xs">
           <LoginButtons activeProviders={activeProviders} />
         </div>
 

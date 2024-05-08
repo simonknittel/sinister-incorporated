@@ -10,7 +10,7 @@ import { QuotesTile } from "./_components/QuotesTile";
 import { TileSkeleton } from "./_components/TileSkeleton";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Sinister Incorporated",
+  title: "Dashboard | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {
@@ -23,7 +23,7 @@ export default async function Page() {
   return (
     <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
-        <Hero text="Sinister Inc" />
+        <Hero text="S.A.M." />
       </div>
 
       <div className="mt-8 flex gap-8 flex-col xl:flex-row justify-center max-w-[400px] mx-auto xl:max-w-none">

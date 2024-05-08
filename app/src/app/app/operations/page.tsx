@@ -8,7 +8,7 @@ import CreateOperation from "./_components/CreateOperation";
 import OperationTile from "./_components/OperationTile";
 
 export const metadata: Metadata = {
-  title: "Operationen | Sinister Incorporated",
+  title: "Operationen | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {

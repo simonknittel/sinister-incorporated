@@ -3,7 +3,7 @@ import { Footer } from "../_components/Footer";
 import { Wip } from "../_components/Wip";
 
 export const metadata: Metadata = {
-  title: "Datenschutzerklärung | Sinister Incorporated",
+  title: "Datenschutzerklärung | S.A.M. - Sinister Incorporated",
 };
 
 export default function Page() {

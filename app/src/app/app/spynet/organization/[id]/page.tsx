@@ -36,7 +36,7 @@ export async function generateMetadata({
     if (!organization) return {};
 
     return {
-      title: `${organization.name} - Spynet | Sinister Incorporated`,
+      title: `${organization.name} - Spynet | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
     log.error(
@@ -47,7 +47,7 @@ export async function generateMetadata({
     );
 
     return {
-      title: `Error | Sinister Incorporated`,
+      title: `Error | S.A.M. - Sinister Incorporated`,
     };
   }
 }

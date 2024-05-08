@@ -20,7 +20,7 @@ const FullSchedule = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "Preview Channel | Sinister Incorporated",
+  title: "Preview Channel | S.A.M. - Sinister Incorporated",
 };
 
 export default function Page() {

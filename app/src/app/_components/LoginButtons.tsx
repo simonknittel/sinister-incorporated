@@ -3,7 +3,8 @@
 import { type BuiltInProviderType } from "next-auth/providers";
 import { signIn, type LiteralUnion } from "next-auth/react";
 import { useState } from "react";
-import { FaDiscord, FaSpinner } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
+import { RiLoginCircleLine } from "react-icons/ri";
 import Button from "./Button";
 
 interface Props {
@@ -30,8 +31,8 @@ const LoginButtons = ({ activeProviders }: Readonly<Props>) => {
             <FaSpinner className="animate-spin" />
           ) : (
             <>
-              Mit Discord anmelden
-              <FaDiscord />
+              Login
+              <RiLoginCircleLine />
             </>
           )}
         </Button>

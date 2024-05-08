@@ -3,7 +3,7 @@ import { Footer } from "../_components/Footer";
 import { Wip } from "../_components/Wip";
 
 export const metadata: Metadata = {
-  title: "Impressum | Sinister Incorporated",
+  title: "Impressum | S.A.M. - Sinister Incorporated",
 };
 
 export default function Page() {

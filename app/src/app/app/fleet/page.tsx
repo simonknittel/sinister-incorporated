@@ -7,7 +7,7 @@ import { OrgFleetTile } from "./_components/OrgFleetTile";
 import { TileSkeleton } from "./_components/TileSkeleton";
 
 export const metadata: Metadata = {
-  title: "Flotte | Sinister Incorporated",
+  title: "Flotte | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {

@@ -5,7 +5,7 @@ import Tile from "./_components/Tile";
 import TileSkeleton from "./_components/TileSkeleton";
 
 export const metadata: Metadata = {
-  title: "Benutzer | Sinister Incorporated",
+  title: "Benutzer | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {

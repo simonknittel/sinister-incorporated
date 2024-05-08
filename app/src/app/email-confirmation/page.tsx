@@ -17,7 +17,7 @@ import { requestEmailConfirmationAction } from "./_lib/actions";
 
 export const metadata: Metadata = {
   title:
-    "E-Mail-Adresse und Datenschutzerklärung bestätigen | Sinister Incorporated",
+    "E-Mail-Adresse und Datenschutzerklärung bestätigen | S.A.M. - Sinister Incorporated",
 };
 
 interface Props {

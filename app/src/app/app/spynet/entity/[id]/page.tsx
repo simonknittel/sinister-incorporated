@@ -38,7 +38,7 @@ export async function generateMetadata({
     if (!entity) return {};
 
     return {
-      title: `${entity.handle || entity.id} - Spynet | Sinister Incorporated`,
+      title: `${entity.handle || entity.id} - Spynet | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
     log.error(
@@ -49,7 +49,7 @@ export async function generateMetadata({
     );
 
     return {
-      title: `Error | Sinister Incorporated`,
+      title: `Error | S.A.M. - Sinister Incorporated`,
     };
   }
 }

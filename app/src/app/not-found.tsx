@@ -3,7 +3,7 @@ import { Footer } from "./_components/Footer";
 import { Hero } from "./_components/Hero";
 
 export const metadata: Metadata = {
-  title: "404 - Page not found | Sinister Incorporated",
+  title: "404 - Page not found | S.A.M. - Sinister Incorporated",
 };
 
 export default function NotFound() {

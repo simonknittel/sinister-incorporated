@@ -4,7 +4,7 @@ import { Footer } from "../../_components/Footer";
 import { Hero } from "../../_components/Hero";
 
 export const metadata: Metadata = {
-  title: "Unauthorized | Sinister Incorporated",
+  title: "Unauthorized | S.A.M. - Sinister Incorporated",
 };
 
 export default async function NotFound() {

@@ -9,7 +9,7 @@ import TileSkeleton from "./_components/TileSkeleton";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Notizen - Spynet | Sinister Incorporated",
+  title: "Notizen - Spynet | S.A.M. - Sinister Incorporated",
 };
 
 interface Props {

@@ -2,7 +2,8 @@
 
 import { signOut } from "next-auth/react";
 import { useState } from "react";
-import { FaSignOutAlt, FaSpinner } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
+import { RiLogoutCircleRLine } from "react-icons/ri";
 import Button from "./Button";
 
 const LogoutButton = () => {
@@ -23,7 +24,11 @@ const LogoutButton = () => {
       iconOnly={true}
       disabled={isLoggingOut}
     >
-      {isLoggingOut ? <FaSpinner className="animate-spin" /> : <FaSignOutAlt />}
+      {isLoggingOut ? (
+        <FaSpinner className="animate-spin" />
+      ) : (
+        <RiLogoutCircleRLine />
+      )}
     </Button>
   );
 };

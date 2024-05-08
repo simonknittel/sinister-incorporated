@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Sinister Corporated - Hoist the Black";
+export const alt = "S.A.M. - Sinister Corporated";
 export const size = {
   width: 1200,
   height: 630,
@@ -16,8 +16,8 @@ export default async function og() {
   return new ImageResponse(
     (
       <div tw="w-full h-full flex flex-col justify-end items-center uppercase font-bold p-24 bg-neutral-900">
-        <p tw="text-9xl text-[#BB2222] m-0 w-full">Sinister Inc</p>
-        <p tw="text-6xl text-white m-0 w-full">Hoist the Black</p>
+        <p tw="text-9xl text-[#BB2222] m-0 w-full">S.A.M.</p>
+        <p tw="text-6xl text-white m-0 w-full">Sinister Incorporated</p>
       </div>
     ),
     {
