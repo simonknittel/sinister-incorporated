@@ -6,7 +6,7 @@ import AddSeries from "./_components/AddSeries";
 import SeriesSection from "./_components/SeriesSection";
 
 export const metadata: Metadata = {
-  title: "Einstellungen - Flotte | Sinister Incorporated",
+  title: "Einstellungen - Flotte | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {

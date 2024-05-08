@@ -73,7 +73,7 @@ export async function generateMetadata({
     if (!operation) return {};
 
     return {
-      title: `${operation.title} - Operation | Sinister Incorporated`,
+      title: `${operation.title} - Operation | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
     log.error(
@@ -84,7 +84,7 @@ export async function generateMetadata({
     );
 
     return {
-      title: `Error | Sinister Incorporated`,
+      title: `Error | S.A.M. - Sinister Incorporated`,
     };
   }
 }

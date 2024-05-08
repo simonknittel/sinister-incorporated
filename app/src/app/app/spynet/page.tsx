@@ -10,7 +10,7 @@ import { CreateCitizen } from "./_components/CreateCitizen";
 import { CreateOrganization } from "./_components/CreateOrganization";
 
 export const metadata: Metadata = {
-  title: "Spynet | Sinister Incorporated",
+  title: "Spynet | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {

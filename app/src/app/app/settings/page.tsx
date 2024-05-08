@@ -12,7 +12,7 @@ const AnalyticsCheckbox = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "Einstellungen | Sinister Incorporated",
+  title: "Einstellungen | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {
