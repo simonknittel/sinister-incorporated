@@ -1,6 +1,6 @@
-<h1 align="center">Sinister Incorporated</h1>
+<h1 align="center">Sinister Administration Module (S.A.M.)</h1>
 
-<p align="center">Monorepo for the apps of the Star Citizen organization `Sinister Incorporated`.</p>
+<p align="center">Monorepo for the <i>Sinister Administration Module (S.A.M.)</i> of the Star Citizen organization <i>Sinister Incorporated</i>.</p>
 
 <p align="center">
   <a href="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-dashboard.png" style="display: block;">
