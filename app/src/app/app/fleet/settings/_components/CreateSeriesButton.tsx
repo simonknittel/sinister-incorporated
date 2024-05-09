@@ -4,14 +4,14 @@ import { type Manufacturer } from "@prisma/client";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import Button from "../../../../_components/Button";
-import { AddSeriesModal } from "./AddSeriesModal";
+import { CreateSeriesModal } from "./CreateSeriesModal";
 
 type Props = Readonly<{
   className?: string;
-  manufacturerId: Manufacturer["id"];
+  manufacturerId?: Manufacturer["id"];
 }>;
 
-export const AddSeries = ({ className, manufacturerId }: Props) => {
+export const CreateSeriesButton = ({ className, manufacturerId }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -20,15 +20,17 @@ export const AddSeries = ({ className, manufacturerId }: Props) => {
         className={className}
         variant="tertiary"
         onClick={() => setIsOpen(true)}
+        title="Serie anlegen"
       >
-        Add series <FaPlus />
+        Anlegen <FaPlus />
       </Button>
 
-      <AddSeriesModal
-        isOpen={isOpen}
-        onRequestClose={() => setIsOpen(false)}
-        manufacturerId={manufacturerId}
-      />
+      {isOpen && (
+        <CreateSeriesModal
+          onRequestClose={() => setIsOpen(false)}
+          manufacturerId={manufacturerId}
+        />
+      )}
     </>
   );
 };
