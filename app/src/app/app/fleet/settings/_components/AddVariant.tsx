@@ -17,8 +17,12 @@ const AddVariant = ({ className, series }: Readonly<Props>) => {
 
   return (
     <div className={clsx(className, "flex justify-center")}>
-      <Button variant="tertiary" onClick={() => setIsOpen(true)}>
-        Add variant <FaPlus />
+      <Button
+        variant="tertiary"
+        onClick={() => setIsOpen(true)}
+        title="Add variant"
+      >
+        <FaPlus />
       </Button>
 
       <AddVariantModal

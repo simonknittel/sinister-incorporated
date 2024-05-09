@@ -9,22 +9,22 @@ import { FaSave, FaSpinner } from "react-icons/fa";
 import Button from "../../../../_components/Button";
 import Modal from "../../../../_components/Modal";
 
-interface Props {
+type Props = Readonly<{
   isOpen: boolean;
   onRequestClose: () => void;
-  manufacturers: Manufacturer[];
-}
+  manufacturerId: Manufacturer["id"];
+}>;
 
 interface FormValues {
   manufacturerId: Manufacturer["id"];
   name: Series["name"];
 }
 
-const AddSeriesModal = ({
+export const AddSeriesModal = ({
   isOpen,
   onRequestClose,
-  manufacturers,
-}: Readonly<Props>) => {
+  manufacturerId,
+}: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +37,7 @@ const AddSeriesModal = ({
         method: "POST",
         body: JSON.stringify({
           name: data.name,
-          manufacturerId: data.manufacturerId,
+          manufacturerId,
         }),
       });
 
@@ -63,26 +63,9 @@ const AddSeriesModal = ({
       onRequestClose={onRequestClose}
       className="w-[480px]"
     >
-      <h2 className="text-xl font-bold">Add new series</h2>
+      <h2 className="text-xl font-bold">Add series</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="block mt-6" htmlFor="manufacturer_id">
-          Manufacturer
-        </label>
-
-        <select
-          id="manufacturer_id"
-          className="p-2 rounded bg-neutral-900 w-full mt-2"
-          {...register("manufacturerId", { required: true })}
-          autoFocus
-        >
-          {manufacturers.map((manufacturer) => (
-            <option key={manufacturer.id} value={manufacturer.id}>
-              {manufacturer.name}
-            </option>
-          ))}
-        </select>
-
         <label className="block mt-4" htmlFor="name">
           Name
         </label>
@@ -92,6 +75,7 @@ const AddSeriesModal = ({
           type="text"
           className="p-2 rounded bg-neutral-900 w-full mt-2"
           {...register("name", { required: true })}
+          autoFocus
         />
 
         <div className="flex justify-end mt-4">
@@ -104,5 +88,3 @@ const AddSeriesModal = ({
     </Modal>
   );
 };
-
-export default AddSeriesModal;

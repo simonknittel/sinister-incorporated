@@ -1,43 +1,33 @@
-import { type Manufacturer, type Series, type Variant } from "@prisma/client";
+import { type Series, type Variant } from "@prisma/client";
 import AddVariant from "./AddVariant";
 import DeleteSeriesButton from "./DeleteSeriesButton";
 import VariantTag from "./VariantTag";
 
-interface Props {
-  manufacturer: Manufacturer;
-  data: Series & {
+type Props = Readonly<{
+  series: Series & {
     variants: Variant[];
   };
-}
+}>;
 
-const SeriesSection = ({ manufacturer, data }: Readonly<Props>) => {
+export const SeriesSection = ({ series }: Props) => {
   return (
-    <div className="mt-2 bg-neutral-800/50  rounded-2xl overflow-hidden max-w-4xl">
-      <div className="flex justify-between items-center">
-        <h2 className="flex gap-4 items-center font-bold">
-          <span className="bg-neutral-800 py-2 px-4 rounded-br">
-            {manufacturer.name}
-          </span>
-
-          <span>{data.name}</span>
-        </h2>
-
-        <DeleteSeriesButton series={data} />
+    <div className="px-4 lg:px-8">
+      <div className="flex gap-2 items-center">
+        <h3 className="font-bold">{series.name}</h3>
+        <DeleteSeriesButton series={series} />
       </div>
 
-      <ul className="flex gap-2 items-center p-4 lg:p-8 flex-wrap">
-        {data.variants
+      <ul className="flex gap-2 items-center flex-wrap mt-2">
+        {series.variants
           .sort((a, b) => a.name.localeCompare(b.name))
           .map((variant) => (
             <VariantTag key={variant.id} data={variant} />
           ))}
 
-        <li>
-          <AddVariant series={data} />
+        <li className="pl-2">
+          <AddVariant series={series} />
         </li>
       </ul>
     </div>
   );
 };
-
-export default SeriesSection;
