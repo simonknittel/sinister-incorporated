@@ -1,3 +1,4 @@
+import { VariantStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "../../../lib/auth/server";
@@ -7,6 +8,9 @@ import errorHandler from "../_lib/errorHandler";
 const postBodySchema = z.object({
   name: z.string().trim().min(1),
   seriesId: z.string(),
+  status: z
+    .enum([VariantStatus.FLIGHT_READY, VariantStatus.NOT_FLIGHT_READY])
+    .optional(),
 });
 
 export async function POST(request: Request) {
@@ -27,14 +31,7 @@ export async function POST(request: Request) {
      * Create
      */
     const createdItem = await prisma.variant.create({
-      data: {
-        name: data.name,
-        series: {
-          connect: {
-            id: data.seriesId,
-          },
-        },
-      },
+      data,
     });
 
     return NextResponse.json(createdItem);

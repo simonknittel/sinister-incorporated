@@ -1,6 +1,11 @@
 "use client";
 
-import { type Manufacturer, type Series, type Variant } from "@prisma/client";
+import {
+  VariantStatus,
+  type Manufacturer,
+  type Series,
+  type Variant,
+} from "@prisma/client";
 import {
   createColumnHelper,
   flexRender,
@@ -50,6 +55,18 @@ const FleetTable = ({ ships }: Readonly<Props>) => {
         header: "Hersteller",
         cell: (row) => row.getValue(),
       }),
+      columnHelper.accessor("variant.status", {
+        header: "Status",
+        cell: (row) => {
+          if (row.getValue() === VariantStatus.FLIGHT_READY)
+            return "Flight ready";
+          if (row.getValue() === VariantStatus.NOT_FLIGHT_READY)
+            return (
+              <span className="text-sinister-red-500">Nicht flight ready</span>
+            );
+          return null;
+        },
+      }),
       columnHelper.accessor("count", {
         header: "Anzahl",
         cell: (row) => row.getValue(),
@@ -74,7 +91,7 @@ const FleetTable = ({ ships }: Readonly<Props>) => {
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             key={headerGroup.id}
-            className="grid grid-cols-[2fr_2fr_2fr_1fr] items-center gap-4"
+            className="grid grid-cols-[2fr_2fr_2fr_2fr_1fr] items-center gap-4"
           >
             {headerGroup.headers.map((header) => (
               <th key={header.id} className="text-left text-neutral-500">
@@ -107,10 +124,13 @@ const FleetTable = ({ ships }: Readonly<Props>) => {
         {table.getRowModel().rows.map((row) => (
           <tr
             key={row.id}
-            className="grid grid-cols-[2fr_2fr_2fr_1fr] items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
+            className="grid grid-cols-[2fr_2fr_2fr_2fr_1fr] items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
           >
             {row.getVisibleCells().map((cell) => (
-              <td key={cell.id} className="overflow-hidden text-ellipsis">
+              <td
+                key={cell.id}
+                className="overflow-hidden text-ellipsis whitespace-nowrap"
+              >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}

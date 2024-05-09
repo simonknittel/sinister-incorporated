@@ -17,6 +17,7 @@ type Props = Readonly<{
 interface FormValues {
   seriesId: Series["id"];
   name: Variant["name"];
+  status: Variant["status"];
 }
 
 export const CreateVariantModal = ({
@@ -56,10 +57,7 @@ export const CreateVariantModal = ({
     try {
       const response = await fetch("/api/variant", {
         method: "POST",
-        body: JSON.stringify({
-          name: data.name,
-          seriesId: data.seriesId,
-        }),
+        body: JSON.stringify(data),
       });
 
       if (response.ok) {
@@ -83,16 +81,22 @@ export const CreateVariantModal = ({
       <h2 className="text-xl font-bold">Variante anlegen</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="mt-6 block" htmlFor="name">
+        <label className="mt-6 block" htmlFor="manufacturerId">
           Hersteller
         </label>
 
         {manufacturer.isFetching ? (
-          <div className="p-2 rounded bg-neutral-900 w-full mt-2 animate-pulse h-10" />
+          <div className="rounded bg-neutral-900 mt-2 animate-pulse h-10" />
         ) : (
-          <div className="p-2 rounded bg-neutral-900 w-full mt-2">
-            {manufacturer.data?.name || "???"}
-          </div>
+          <select
+            id="manufacturerId"
+            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            disabled
+          >
+            <option value={manufacturerId}>
+              {manufacturer.data?.name || "???"}
+            </option>
+          </select>
         )}
 
         <label className="block mt-4" htmlFor="seriesId">
@@ -100,7 +104,7 @@ export const CreateVariantModal = ({
         </label>
 
         {series.isFetching ? (
-          <div className="p-2 rounded bg-neutral-900 w-full mt-2 animate-pulse h-10" />
+          <div className="rounded bg-neutral-900 mt-2 animate-pulse h-10" />
         ) : (
           <select
             id="seriesId"
@@ -108,6 +112,7 @@ export const CreateVariantModal = ({
             {...register("seriesId", { required: true })}
             defaultValue={seriesId}
             autoFocus={Boolean(seriesId)}
+            disabled={Boolean(seriesId)}
           >
             {series.data?.map((singleSeries) => (
               <option key={singleSeries.id} value={singleSeries.id}>
@@ -129,10 +134,25 @@ export const CreateVariantModal = ({
           autoFocus
         />
 
+        <label className="mt-6 block" htmlFor="status">
+          Status
+        </label>
+
+        <select
+          id="status"
+          className="p-2 rounded bg-neutral-900 w-full mt-2"
+          {...register("status")}
+        >
+          <option value="FLIGHT_READY">Flight ready</option>
+          <option value="NOT_FLIGHT_READY">Nicht flight ready</option>
+        </select>
+
+        <small className="text-neutral-500">optional</small>
+
         <div className="flex justify-end mt-8">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
-            Add
+            Speichern
           </Button>
         </div>
       </form>

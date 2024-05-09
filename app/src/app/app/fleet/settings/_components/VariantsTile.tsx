@@ -1,9 +1,10 @@
-import { type Manufacturer, type Series } from "@prisma/client";
+import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import clsx from "clsx";
 import { prisma } from "../../../../../server/db";
 import Actions from "../../../../_components/Actions";
 import { CreateVariantButton } from "./CreateVariantButton";
 import { DeleteVariantButton } from "./DeleteVariantButton";
+import { UpdateVariantButton } from "./UpdateVariantButton";
 
 type Props = Readonly<{
   className?: string;
@@ -17,10 +18,6 @@ export const VariantsTile = async ({
   seriesId,
 }: Props) => {
   const variants = await prisma.variant.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
     where: {
       seriesId,
     },
@@ -47,8 +44,10 @@ export const VariantsTile = async ({
 
       <table className="w-full min-w-[320px]">
         <thead>
-          <tr className="grid items-center gap-4 text-left text-neutral-500 grid-cols-[1fr_44px]">
+          <tr className="grid items-center gap-4 text-left text-neutral-500 grid-cols-[1fr_1fr_44px]">
             <th>Name</th>
+
+            <th>Status</th>
           </tr>
         </thead>
 
@@ -57,7 +56,7 @@ export const VariantsTile = async ({
             return (
               <tr
                 key={row.id}
-                className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2 grid-cols-[1fr_44px]"
+                className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2 grid-cols-[1fr_1fr_44px]"
               >
                 <td
                   className="overflow-hidden text-ellipsis whitespace-nowrap"
@@ -66,8 +65,28 @@ export const VariantsTile = async ({
                   {row.name}
                 </td>
 
+                <td
+                  className="overflow-hidden text-ellipsis whitespace-nowrap"
+                  title={
+                    row.status === VariantStatus.FLIGHT_READY
+                      ? "Flight ready"
+                      : row.status === VariantStatus.NOT_FLIGHT_READY
+                        ? "Nicht flight ready"
+                        : undefined
+                  }
+                >
+                  {row.status === VariantStatus.FLIGHT_READY ? (
+                    "Flight ready"
+                  ) : row.status === VariantStatus.NOT_FLIGHT_READY ? (
+                    <span className="text-sinister-red-500">
+                      Nicht flight ready
+                    </span>
+                  ) : null}
+                </td>
+
                 <td>
                   <Actions>
+                    <UpdateVariantButton variant={row} />
                     <DeleteVariantButton variant={row} />
                   </Actions>
                 </td>
