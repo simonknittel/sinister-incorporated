@@ -2,7 +2,6 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { FaChevronLeft } from "react-icons/fa";
 import { serializeError } from "serialize-error";
 import { log } from "../../../../../../lib/logging";
 import { prisma } from "../../../../../../server/db";
@@ -59,12 +58,18 @@ export default async function Page({ params }: Props) {
 
   return (
     <main className="p-2 lg:p-8 pt-20">
-      <Link
-        href="/app/fleet/settings/manufacturer"
-        className="text-neutral-500 hover:text-neutral-50 transition-colors inline-flex gap-2 items-center"
-      >
-        <FaChevronLeft /> Alle Hersteller
-      </Link>
+      <div className="flex gap-2">
+        <Link
+          href="/app/fleet/settings/manufacturer"
+          className="text-sinister-red-500 hover:text-sinister-red-300 transition-colors"
+        >
+          Alle Hersteller
+        </Link>
+
+        <span className="text-neutral-700">/</span>
+
+        <h1 className="font-bold">{manufacturer.name}</h1>
+      </div>
 
       <div className="flex gap-8 items-start mt-4 flex-col xl:flex-row">
         <section className="p-8 pb-10 bg-neutral-800/50 rounded-2xl w-full xl:w-[400px]">
@@ -72,9 +77,7 @@ export default async function Page({ params }: Props) {
 
           <dl>
             <dt className="text-neutral-500">Name</dt>
-            <dd>
-              <h1 className="font-bold">{manufacturer.name}</h1>
-            </dd>
+            <dd>{manufacturer.name}</dd>
           </dl>
         </section>
 

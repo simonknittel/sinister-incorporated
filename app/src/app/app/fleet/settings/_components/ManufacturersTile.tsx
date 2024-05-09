@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { env } from "../../../../../env.mjs";
 import { prisma } from "../../../../../server/db";
 import Actions from "../../../../_components/Actions";
 import { DeleteManufacturerButton } from "./DeleteManufacturerButton";
@@ -8,7 +9,7 @@ export const ManufacturersTile = async () => {
   const rows = await prisma.manufacturer.findMany({
     select: {
       id: true,
-      image: true,
+      imageId: true,
       name: true,
     },
     orderBy: {
@@ -35,9 +36,9 @@ export const ManufacturersTile = async () => {
                 className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2 grid-cols-[48px_1fr_44px]"
               >
                 <td>
-                  {row.image && (
+                  {row.imageId && (
                     <Image
-                      src={row.image}
+                      src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${row.imageId}`}
                       width={48}
                       height={48}
                       alt={`Logo of ${row.name}`}

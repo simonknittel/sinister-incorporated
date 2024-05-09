@@ -1,3 +1,4 @@
+import { VariantStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "../../../../lib/auth/server";
@@ -12,6 +13,9 @@ const paramsSchema = z.string().cuid2();
 
 const patchBodySchema = z.object({
   name: z.string().trim().min(1),
+  status: z
+    .enum([VariantStatus.FLIGHT_READY, VariantStatus.NOT_FLIGHT_READY])
+    .optional(),
 });
 
 export async function PATCH(request: Request, { params }: { params: Params }) {
