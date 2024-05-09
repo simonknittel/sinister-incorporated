@@ -15,6 +15,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(
     const {
       variant = "primary",
       colorScheme = "sinister-red",
+      type = "button",
       iconOnly,
       className,
       ...other
@@ -43,6 +44,7 @@ const Button = forwardRef<HTMLButtonElement, Props>(
           },
           className,
         )}
+        type={type}
         {...other}
         ref={ref}
       />

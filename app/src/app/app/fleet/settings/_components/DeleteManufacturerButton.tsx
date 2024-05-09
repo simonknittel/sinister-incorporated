@@ -1,6 +1,6 @@
 "use client";
 
-import { type Variant } from "@prisma/client";
+import { type Manufacturer } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -8,10 +8,10 @@ import { FaSpinner, FaTrash } from "react-icons/fa";
 import Button from "../../../../_components/Button";
 
 type Props = Readonly<{
-  variant: Pick<Variant, "id" | "name">;
+  manufacturer: Pick<Manufacturer, "id" | "name">;
 }>;
 
-export const DeleteVariantButton = ({ variant }: Props) => {
+export const DeleteManufacturerButton = ({ manufacturer }: Props) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,7 +20,7 @@ export const DeleteVariantButton = ({ variant }: Props) => {
 
     try {
       const confirmation = window.confirm(
-        `Willst du "${variant.name}" löschen?`,
+        `Willst du "${manufacturer.name}" löschen?`,
       );
 
       if (!confirmation) {
@@ -28,7 +28,7 @@ export const DeleteVariantButton = ({ variant }: Props) => {
         return;
       }
 
-      const response = await fetch(`/api/variant/${variant.id}`, {
+      const response = await fetch(`/api/manufacturer/${manufacturer.id}`, {
         method: "DELETE",
       });
 
@@ -49,9 +49,10 @@ export const DeleteVariantButton = ({ variant }: Props) => {
   return (
     <Button
       title="Löschen"
-      disabled={isLoading}
       onClick={() => void handleClick()}
+      disabled={isLoading}
       variant="tertiary"
+      type="button"
     >
       {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />} Löschen
     </Button>

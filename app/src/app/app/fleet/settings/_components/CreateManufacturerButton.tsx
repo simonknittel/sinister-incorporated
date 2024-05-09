@@ -3,23 +3,21 @@
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import Button from "../../../../_components/Button";
-import AddManufacturerModal from "./AddManufacturerModal";
+import { CreateManufacturerModal } from "./CreateManufacturerModal";
 
-const AddManufacturer = () => {
+export const CreateManufacturereButton = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <Button variant="secondary" onClick={() => setIsOpen(true)}>
-        Add manufacturer <FaPlus />
+      <Button variant="primary" onClick={() => setIsOpen(true)}>
+        Hersteller anlegen <FaPlus />
       </Button>
 
-      <AddManufacturerModal
+      <CreateManufacturerModal
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
       />
     </>
   );
 };
-
-export default AddManufacturer;

@@ -1,5 +1,3 @@
-"use client";
-
 import { type Manufacturer } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -9,16 +7,16 @@ import { FaSave, FaSpinner } from "react-icons/fa";
 import Button from "../../../../_components/Button";
 import Modal from "../../../../_components/Modal";
 
-interface Props {
+type Props = Readonly<{
   isOpen: boolean;
   onRequestClose: () => void;
-}
+}>;
 
 interface FormValues {
   name: Manufacturer["name"];
 }
 
-const AddManufacturerModal = ({ isOpen, onRequestClose }: Readonly<Props>) => {
+export const CreateManufacturerModal = ({ isOpen, onRequestClose }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -36,14 +34,14 @@ const AddManufacturerModal = ({ isOpen, onRequestClose }: Readonly<Props>) => {
 
       if (response.ok) {
         router.refresh();
-        toast.success("Successfully created");
+        toast.success("Erfolgreich erstellt");
         reset();
         onRequestClose();
       } else {
-        toast.error("There has been an error while creating.");
+        toast.error("Beim Speichern ist ein Fehler aufgetreten.");
       }
     } catch (error) {
-      toast.error("There has been an error while creating.");
+      toast.error("Beim Speichern ist ein Fehler aufgetreten.");
       console.error(error);
     }
 
@@ -56,7 +54,7 @@ const AddManufacturerModal = ({ isOpen, onRequestClose }: Readonly<Props>) => {
       onRequestClose={onRequestClose}
       className="w-[480px]"
     >
-      <h2 className="text-xl font-bold">Add new manufacturer</h2>
+      <h2 className="text-xl font-bold">Hersteller anlegen</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <label className="mt-6 block" htmlFor="name">
@@ -74,12 +72,10 @@ const AddManufacturerModal = ({ isOpen, onRequestClose }: Readonly<Props>) => {
         <div className="flex justify-end mt-8">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
-            Add
+            Speichern
           </Button>
         </div>
       </form>
     </Modal>
   );
 };
-
-export default AddManufacturerModal;
