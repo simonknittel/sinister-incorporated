@@ -16,9 +16,13 @@ variable "provisioned_concurrent_executions" {
   default = 0
 }
 
-variable "parameter_store" {
-  type    = list(string)
-  default = []
+variable "parameters" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+  default   = []
+  sensitive = true
 }
 
 variable "account_id" {

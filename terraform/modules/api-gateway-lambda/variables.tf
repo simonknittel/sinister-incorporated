@@ -20,8 +20,11 @@ variable "method" {
   type = string
 }
 
-variable "parameter_store" {
-  type    = list(string)
+variable "parameters" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
   default = []
 }
 

@@ -2,11 +2,16 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Description: Initial setup for Terraform and GitHub Actions
 
+Parameters:
+  TerraformBackendBucketName:
+    Type: String
+    Description: The name of the S3 bucket to use as the Terraform backend
+
 Resources:
   TerraformBackendBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: terraform-backend-aowb47tawo48wvt4
+      BucketName: !Ref TerraformBackendBucketName
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced
@@ -37,9 +42,13 @@ Resources:
       ClientIdList:
         - sts.amazonaws.com
       ThumbprintList:
-        # The following thumbprints aren't required as AWS writes: "AWS secures communication with this OIDC identity provider (IdP) using our library of trusted CAs rather than using a certificate thumbprint to verify the server certificate of your IdP. Your legacy thumbprint(s) will remain in your configuration but will no longer be needed for validation."
+        # The following thumbprints aren't required as AWS writes: "AWS secures communication with this
+        # OIDC identity provider (IdP) using our library of trusted CAs rather than using a certificate
+        # thumbprint to verify the server certificate of your IdP. Your legacy thumbprint(s) will remain
+        # in your configuration but will no longer be needed for validation."
         #
-        # Source for the thumbprints: https://github.blog/changelog/2023-06-27-github-actions-update-on-oidc-integration-with-aws/
+        # Source for the thumbprints:
+        # https://github.blog/changelog/2023-06-27-github-actions-update-on-oidc-integration-with-aws/
         - 6938fd4d98bab03faadb97b34396831e3780aea1
         - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
 
@@ -58,12 +67,10 @@ Resources:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               StringLike:
-                # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#customizing-the-token-claims
                 token.actions.githubusercontent.com:sub:
-                  - repo:simonknittel/sinister-incorporated:job_workflow_ref:simonknittel/sinister-incorporated/.github/workflows/terraform-plan.yml@refs/pull/*
-                  - repo:simonknittel/sinister-incorporated:job_workflow_ref:simonknittel/sinister-incorporated/.github/workflows/terraform-apply.yml@refs/heads/main
+                  - repo:simonknittel/sinister-incorporated:*
       Policies:
-        - PolicyName: terraform
+        - PolicyName: terraform-plan
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -142,6 +149,13 @@ Resources:
                   - sqs:ListQueueTags
                   - ssm:GetParameter
                   - sts:GetCallerIdentity
+                Resource: "*"
+        - PolicyName: terraform-apply
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: "*" # TODO: Don't do this
                 Resource: "*"
 
 Outputs:

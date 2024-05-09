@@ -11,6 +11,27 @@ on:
       - terraform/**
       - bun-packages/**
       - cloudformation/**
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "test"
+        type: choice
+        options:
+          - test
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        default: "test"
+        type: string
+
+      # `github.event_name` is `workflow_dispatch` even for `workflow_call`.
+      # https://github.com/actions/runner/discussions/1884
+      workflow_call:
+        required: false
+        type: boolean
 
 jobs:
   build_email_function:
@@ -29,6 +50,8 @@ jobs:
 
     needs: [build_email_function]
 
+    environment: terraform-${{ inputs.environment || 'test' }}
+
     steps:
       - uses: actions/checkout@v4.1.3
 
@@ -44,7 +67,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
-          role-to-assume: arn:aws:iam::220746603587:role/github-actions
+          role-to-assume: ${{ vars.IAM_ROLE_ARN }}
           aws-region: eu-central-1
 
       - name: Retrieve email-function artifact
@@ -54,17 +77,18 @@ jobs:
           path: bun-packages/packages/email-function/dist
 
       - name: terraform init
-        run: terraform init -backend-config=test.s3.tfbackend
+        run: terraform init -backend-config=${{ inputs.environment || 'test' }}.s3.tfbackend
         working-directory: terraform
 
       - name: terraform plan
-        run: terraform plan -no-color
+        run: terraform plan -no-color -out=tfplan
         working-directory: terraform
         id: plan
         continue-on-error: true
         env:
-          TF_VAR_cloudflare_api_token: ${{ secrets.TF_VAR_CLOUDFLARE_API_TOKEN }}
-          TF_VAR_api_subdomain: sinister-api-test
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_api_subdomain: ${{ vars.API_SUBDOMAIN }}
+          TF_VAR_email_function_parameters: ${{ secrets.EMAIL_FUNCTION_PARAMETERS }}
           GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
       - uses: actions/github-script@v7.0.1
@@ -116,3 +140,11 @@ jobs:
       - name: Break on terraform plan failure
         if: steps.plan.outcome == 'failure'
         run: exit 1
+
+      - name: Store artifact
+        uses: actions/upload-artifact@v4.3.3
+        if: inputs.workflow_call
+        with:
+          name: tfplan
+          path: terraform/tfplan
+          retention-days: 1
