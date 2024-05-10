@@ -11,7 +11,8 @@ interface Params {
 const paramsSchema = z.string().cuid2();
 
 const patchBodySchema = z.object({
-  name: z.string().trim().min(1),
+  name: z.string().trim().min(1).optional(),
+  imageId: z.string().trim().min(1).max(255).optional(),
 });
 
 export async function PATCH(request: Request, { params }: { params: Params }) {
@@ -26,25 +27,21 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     authentication.authorizeApi("manufacturersSeriesAndVariants", "manage");
 
     /**
-     * Validate the request params
+     * Validate the request params and body
      */
     const paramsData = paramsSchema.parse(params.id);
-
-    /**
-     * Validate the request body
-     */
     const body: unknown = await request.json();
     const data = patchBodySchema.parse(body);
 
     /**
      * Make sure the item exists.
      */
-    const item = await prisma.manufacturer.findUnique({
+    const existingItem = await prisma.manufacturer.findUnique({
       where: {
         id: paramsData,
       },
     });
-    if (!item) throw new Error("Not found");
+    if (!existingItem) throw new Error("Not found");
 
     /**
      * Update
@@ -56,6 +53,9 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       data,
     });
 
+    /**
+     * Respond with the result
+     */
     return NextResponse.json(updatedItem);
   } catch (error) {
     return errorHandler(error);
