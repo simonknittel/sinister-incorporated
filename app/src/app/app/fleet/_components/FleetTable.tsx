@@ -61,15 +61,13 @@ const FleetTable = ({ ships }: Readonly<Props>) => {
           return (
             <div className="flex items-center gap-2">
               {manufacturer.imageId && (
-                <div className="h-[48px] flex justify-center flex-[0_0_48px]">
-                  <Image
-                    src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.imageId}`}
-                    alt={`Logo of ${manufacturer.name}`}
-                    width={48}
-                    height={48}
-                    className="max-w-full max-h-full w-auto"
-                  />
-                </div>
+                <Image
+                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.imageId}`}
+                  alt={`Logo of ${manufacturer.name}`}
+                  width={48}
+                  height={48}
+                  className="w-[48px] h-[48px] object-contain object-center"
+                />
               )}
 
               {row.getValue()}

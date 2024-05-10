@@ -35,17 +35,15 @@ export const ManufacturersTile = async () => {
                 key={row.id}
                 className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2 grid-cols-[48px_1fr_44px]"
               >
-                <td className="flex justify-center">
+                <td>
                   {row.imageId && (
-                    <div className="w-[48px] h-[48px] flex justify-center">
-                      <Image
-                        src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${row.imageId}`}
-                        width={48}
-                        height={48}
-                        alt={`Logo of ${row.name}`}
-                        className="max-w-full max-h-full w-auto"
-                      />
-                    </div>
+                    <Image
+                      src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${row.imageId}`}
+                      width={48}
+                      height={48}
+                      alt={`Logo of ${row.name}`}
+                      className="w-[48px] h-[48px] object-contain object-center"
+                    />
                   )}
                 </td>
 
