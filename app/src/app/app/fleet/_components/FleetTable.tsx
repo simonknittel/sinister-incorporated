@@ -64,11 +64,13 @@ const FleetTable = ({ ships }: Readonly<Props>) => {
                 <Image
                   src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.imageId}`}
                   alt={`Logo of ${manufacturer.name}`}
-                  width={80}
-                  height={80}
-                  className="max-w-full max-h-full"
+                  width={48}
+                  height={48}
+                  className="max-w-[48px] max-h-[48px] w-auto h-a"
                 />
               )}
+
+              {row.getValue()}
             </span>
           );
         },

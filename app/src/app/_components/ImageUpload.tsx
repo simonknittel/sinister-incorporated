@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type ChangeEventHandler } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner } from "react-icons/fa";
-import { env } from "../../../../../env.mjs";
-import useUpload from "../../../../../lib/useUpload";
+import { env } from "../../env.mjs";
+import useUpload from "../../lib/useUpload";
 
 type Props = Readonly<{
   className?: string;

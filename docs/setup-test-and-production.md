@@ -2,14 +2,16 @@
 
 ## 1. Set up a PostgreSQL database
 
-## 2. Set up Mailgun
+## 2. Set up Cloudflare R2
+
+## 3. Set up Mailgun
 
 1. Create API keys for sending
 
    1. `sinister-incorporated-aws-test`
    2. `sinister-incorporated-aws-prod`
 
-## 3. Set up GitHub
+## 4. Set up GitHub
 
 1. Create environments
    1. `terraform-test`
@@ -23,7 +25,7 @@
    - `IAM_ROLE`
 4. Enable "Allow GitHub Actions to create and approve pull requests" in Settings/Actions/General/Workflow permissions
 
-## 4. Set up AWS
+## 5. Set up AWS
 
 1. Create AWS accounts
 
@@ -89,7 +91,7 @@
   - `iamlive --mode proxy --force-wildcard-resource --output-file policy.json --sort-alphabetical`
   - `HTTP_PROXY=http://127.0.0.1:10080 HTTPS_PROXY=http://127.0.0.1:10080 AWS_CA_BUNDLE=~/.iamlive/ca.pem AWS_CSM_ENABLED=true AWS_PROFILE=sinister-incorporated-test terraform plan -var-file="test.tfvars"`
 
-## 5. Prepare certificates for Mutual TLS (mTLS)
+## 6. Prepare certificates for Mutual TLS (mTLS)
 
 1. `mkdir certificates && cd certificates/`
 2. Create private certificate authority (CA): `openssl genrsa -out RootCA.key 4096`
@@ -109,7 +111,7 @@
    2. `openssl x509 -req -in vercel.csr -CA RootCA.pem -CAkey RootCA.key -set_serial 01 -out vercel.pem -days 3650 -sha256`
 6. Create trust store: `cp RootCA.pem truststore.pem`
 
-## 6. Set up Terraform
+## 7. Set up Terraform
 
 1. Create and populate `test.s3.tfbackend`, `prod.s3.tfbackend`, `test.tfvars` and `prod.tfvars`
 2. `cd bun-packages/ && bun install --frozen-lockfile && cd packages/email-function/ && bun run build`
@@ -119,11 +121,11 @@
    2. `AWS_PROFILE=sinister-incorporated-test terraform init -backend-config=test.s3.tfbackend`
    3. `AWS_PROFILE=sinister-incorporated-test terraform apply -var-file="test.tfvars"`
 
-## 7. Set up Vercel
+## 8. Set up Vercel
 
 1. Set `Ignored Build Step` to `Run my Bash script: bash ../.vercel/ignore-step.sh`
 
-## 8. Left over
+## 9. Left over
 
 1. Manually enable we monthly budget report on AWS
    - Budget report name: `Total monthly costs`
