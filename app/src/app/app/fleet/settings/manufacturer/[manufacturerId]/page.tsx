@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 import { log } from "../../../../../../lib/logging";
 import { prisma } from "../../../../../../server/db";
-import { ImageUpload } from "../../_components/ImageUpload";
+import { ImageUpload } from "../../../../../_components/ImageUpload";
 import { SeriesTile } from "../../_components/SeriesTile";
 import { TileSkeleton } from "../../_components/TileSkeleton";
 

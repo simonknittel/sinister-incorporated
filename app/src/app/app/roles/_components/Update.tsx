@@ -8,8 +8,8 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
 import Button from "../../../_components/Button";
+import { ImageUpload } from "../../../_components/ImageUpload";
 import Modal from "../../../_components/Modal";
-import { ImageUpload } from "../../fleet/settings/_components/ImageUpload";
 
 interface FormValues {
   name: string;
