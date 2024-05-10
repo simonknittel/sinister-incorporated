@@ -83,7 +83,7 @@ export const ImageUpload = ({
             alt={`Logo of ${resource.name}`}
             width={size}
             height={size}
-            className="max-w-full max-h-full"
+            className="max-w-full max-h-full w-auto"
           />
         )}
 

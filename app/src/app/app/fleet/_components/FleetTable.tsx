@@ -59,19 +59,21 @@ const FleetTable = ({ ships }: Readonly<Props>) => {
           const manufacturer = row.row.original.variant.series.manufacturer;
 
           return (
-            <span className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               {manufacturer.imageId && (
-                <Image
-                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.imageId}`}
-                  alt={`Logo of ${manufacturer.name}`}
-                  width={48}
-                  height={48}
-                  className="max-w-[48px] max-h-[48px] w-auto h-a"
-                />
+                <div className="h-[48px] flex justify-center flex-[0_0_48px]">
+                  <Image
+                    src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.imageId}`}
+                    alt={`Logo of ${manufacturer.name}`}
+                    width={48}
+                    height={48}
+                    className="max-w-full max-h-full w-auto"
+                  />
+                </div>
               )}
 
               {row.getValue()}
-            </span>
+            </div>
           );
         },
       }),
