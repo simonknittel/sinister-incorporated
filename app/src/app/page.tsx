@@ -5,26 +5,29 @@ import { authOptions } from "../server/auth";
 import { Hero } from "./_components/Hero";
 import LoginButtons from "./_components/LoginButtons";
 import Note from "./_components/Note";
+import { UwuHero } from "./_components/UwuHero";
 
 export const metadata: Metadata = {
   title: "S.A.M. - Sinister Incorporated",
   description: "",
 };
 
-interface Props {
+type Props = Readonly<{
   searchParams: { [key: string]: string | string[] | undefined };
-}
+}>;
 
-export default async function Page({ searchParams }: Readonly<Props>) {
+export default async function Page({ searchParams }: Props) {
   const authentication = await authenticate();
   if (authentication) redirect("/app");
 
   const activeProviders = authOptions.providers.map((provider) => provider.id);
 
+  const showUwuHero = Object.hasOwn(searchParams, "uwu");
+
   return (
     <div className="min-h-dvh flex justify-center items-center bg-sinister-radial-gradient">
       <main className="w-full max-w-md py-8 flex flex-col items-center gap-4">
-        <Hero text="S.A.M." />
+        {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." />}
 
         <div className="flex flex-col gap-2 rounded max-w-xs">
           <LoginButtons activeProviders={activeProviders} />
