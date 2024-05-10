@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
 import Button from "../../../_components/Button";
 import Modal from "../../../_components/Modal";
-import ImageSection from "./ImageSection";
+import { ImageUpload } from "../../fleet/settings/_components/ImageUpload";
 
 interface FormValues {
   name: string;
@@ -88,7 +88,12 @@ const Update = ({ className, role }: Readonly<Props>) => {
             autoFocus
           />
 
-          <ImageSection role={role} className="mt-6" />
+          <ImageUpload
+            resourceType="role"
+            resource={role}
+            size={128}
+            className="mt-6"
+          />
 
           <div className="flex justify-end mt-8">
             <Button type="submit" disabled={isLoading}>

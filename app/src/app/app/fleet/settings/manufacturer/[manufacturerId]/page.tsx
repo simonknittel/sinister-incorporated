@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 import { log } from "../../../../../../lib/logging";
 import { prisma } from "../../../../../../server/db";
+import { ImageUpload } from "../../_components/ImageUpload";
 import { SeriesTile } from "../../_components/SeriesTile";
 import { TileSkeleton } from "../../_components/TileSkeleton";
 
@@ -75,7 +76,13 @@ export default async function Page({ params }: Props) {
         <section className="p-8 pb-10 bg-neutral-800/50 rounded-2xl w-full xl:w-[400px]">
           <p className="font-bold mb-4">Hersteller</p>
 
-          <dl>
+          <ImageUpload
+            resourceType="manufacturer"
+            resource={manufacturer}
+            size={128}
+          />
+
+          <dl className="mt-4">
             <dt className="text-neutral-500">Name</dt>
             <dd>{manufacturer.name}</dd>
           </dl>

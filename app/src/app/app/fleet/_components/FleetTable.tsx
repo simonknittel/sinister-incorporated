@@ -14,8 +14,10 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { FaSortAlphaDown, FaSortAlphaUpAlt } from "react-icons/fa";
+import { env } from "../../../../env.mjs";
 
 interface OrgShip {
   variant: Variant & {
@@ -53,7 +55,23 @@ const FleetTable = ({ ships }: Readonly<Props>) => {
       }),
       columnHelper.accessor("variant.series.manufacturer.name", {
         header: "Hersteller",
-        cell: (row) => row.getValue(),
+        cell: (row) => {
+          const manufacturer = row.row.original.variant.series.manufacturer;
+
+          return (
+            <span className="flex items-center gap-2">
+              {manufacturer.imageId && (
+                <Image
+                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.imageId}`}
+                  alt={`Logo of ${manufacturer.name}`}
+                  width={80}
+                  height={80}
+                  className="max-w-full max-h-full"
+                />
+              )}
+            </span>
+          );
+        },
       }),
       columnHelper.accessor("variant.status", {
         header: "Status",
