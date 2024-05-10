@@ -4,6 +4,7 @@ import { authenticatePage } from "../../lib/auth/server";
 import { getUnleashFlag } from "../../lib/getUnleashFlag";
 import { Hero } from "../_components/Hero";
 import { SpynetSearchTile } from "../_components/SpynetSearchTile/SpynetSearchTile";
+import { UwuHero } from "../_components/UwuHero";
 import { CalendarTile } from "./_components/CalendarTile";
 import { ProfileTile } from "./_components/ProfileTile";
 import { QuotesTile } from "./_components/QuotesTile";
@@ -13,7 +14,11 @@ export const metadata: Metadata = {
   title: "Dashboard | S.A.M. - Sinister Incorporated",
 };
 
-export default async function Page() {
+type Props = Readonly<{
+  searchParams: { [key: string]: string | string[] | undefined };
+}>;
+
+export default async function Page({ searchParams }: Props) {
   const authentication = await authenticatePage("/app");
 
   const showCalendar = authentication.authorize("event", "read");
@@ -23,10 +28,12 @@ export default async function Page() {
     (authentication.authorize("citizen", "read") ||
       authentication.authorize("organization", "read"));
 
+  const showUwuHero = Object.hasOwn(searchParams, "uwu");
+
   return (
     <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
-        <Hero text="S.A.M." />
+        {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." />}
       </div>
 
       <div className="mt-8 flex gap-8 flex-col xl:flex-row justify-center max-w-[400px] mx-auto xl:max-w-none">
