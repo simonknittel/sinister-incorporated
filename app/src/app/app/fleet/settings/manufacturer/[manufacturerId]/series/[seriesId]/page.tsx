@@ -2,16 +2,50 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { serializeError } from "serialize-error";
+import { log } from "../../../../../../../../lib/logging";
 import { prisma } from "../../../../../../../../server/db";
 import { TileSkeleton } from "../../../../_components/TileSkeleton";
 import { VariantsTile } from "../../../../_components/VariantsTile";
 
-export const metadata: Metadata = {
-  title: "Foobar - Schiffe | S.A.M. - Sinister Incorporated",
-};
+type Params = Readonly<{
+  manufacturerId: string;
+  seriesId: string;
+}>;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  try {
+    const series = await prisma.series.findUnique({
+      where: {
+        id: params.seriesId,
+      },
+    });
+
+    if (!series) return {};
+
+    return {
+      title: `${series.name} - Schiffe | S.A.M. - Sinister Incorporated`,
+    };
+  } catch (error) {
+    log.error(
+      "Error while generating metadata for /(app)/spynet/entity/[id]/page.tsx",
+      {
+        error: serializeError(error),
+      },
+    );
+
+    return {
+      title: `Error | S.A.M. - Sinister Incorporated`,
+    };
+  }
+}
 
 type Props = Readonly<{
-  params: { manufacturerId: string; seriesId: string };
+  params: Params;
 }>;
 
 export default async function Page({ params }: Props) {

@@ -43,7 +43,7 @@ export const Event = async ({ className, event, index }: Props) => {
 
       <div className="flex flex-col 3xl:flex-row bg-neutral-800/50">
         {event.image && (
-          <div className="3xl:flex-grow-0 3xl:flex-shrink-0 3xl:basis-[400px] max-h-[160px] flex justify-center">
+          <div className="3xl:flex-grow-0 3xl:flex-shrink-0 3xl:basis-[400px] max-h-[160px] flex justify-center rounded-r-2xl rounded-b-2xl overflow-hidden">
             <Image
               src={`https://cdn.discordapp.com/guild-events/${event.id}/${event.image}.webp?size=1024`}
               alt=""

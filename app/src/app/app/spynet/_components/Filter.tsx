@@ -63,6 +63,9 @@ const FilterContext = createContext<FilterContextInterface | undefined>(
  */
 export function useFilter() {
   const context = useContext(FilterContext);
-  if (!context) throw new Error("Provider missing!");
+  if (!context)
+    throw new Error(
+      "Provider for `useFilter()` is missing. Make sure to have a `<Filter> ... </Filter>` parent.",
+    );
   return context;
 }

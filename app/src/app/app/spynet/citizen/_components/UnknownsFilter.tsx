@@ -11,15 +11,15 @@ interface FormValues {
   values: string[];
 }
 
-interface Props {
+type Props = Readonly<{
   showDiscordId?: boolean;
   showTeamspeakId?: boolean;
-}
+}>;
 
-const UnknownsFilter = ({
+export const UnknownsFilter = ({
   showDiscordId = false,
   showTeamspeakId = false,
-}: Readonly<Props>) => {
+}: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -118,5 +118,3 @@ const UnknownsFilter = ({
     </form>
   );
 };
-
-export default UnknownsFilter;
