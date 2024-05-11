@@ -2,7 +2,7 @@ import { requireAuthentication } from "../../../../../lib/auth/server";
 import getVisibleRoles from "../../../../../lib/getVisibleRoles";
 import { Filter } from "../../_components/Filter";
 import RoleFilter from "./RoleFilter";
-import UnknownsFilter from "./UnknownsFilter";
+import { UnknownsFilter } from "./UnknownsFilter";
 
 const Filters = async () => {
   const authentication = await requireAuthentication();

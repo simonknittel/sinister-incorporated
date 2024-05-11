@@ -26,11 +26,7 @@ export const CreateVariantModal = ({
   seriesId,
 }: Props) => {
   const router = useRouter();
-  const { register, handleSubmit, reset } = useForm<FormValues>({
-    defaultValues: {
-      seriesId,
-    },
-  });
+  const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
   const manufacturer = api.manufacturer.getById.useQuery(
     {
@@ -92,6 +88,7 @@ export const CreateVariantModal = ({
             id="manufacturerId"
             className="p-2 rounded bg-neutral-900 w-full mt-2"
             disabled
+            autoFocus={!Boolean(manufacturerId)}
           >
             <option value={manufacturerId}>
               {manufacturer.data?.name || "???"}
@@ -111,7 +108,6 @@ export const CreateVariantModal = ({
             className="p-2 rounded bg-neutral-900 w-full mt-2"
             {...register("seriesId", { required: true })}
             defaultValue={seriesId}
-            autoFocus={Boolean(seriesId)}
             disabled={Boolean(seriesId)}
           >
             {series.data?.map((singleSeries) => (
@@ -126,13 +122,21 @@ export const CreateVariantModal = ({
           Name
         </label>
 
-        <input
-          id="name"
-          type="text"
-          className="p-2 rounded bg-neutral-900 w-full mt-2"
-          {...register("name", { required: true })}
-          autoFocus
-        />
+        {series.isFetching ? (
+          <div className="rounded bg-neutral-900 mt-2 animate-pulse h-10" />
+        ) : (
+          <input
+            id="name"
+            type="text"
+            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            {...register("name", { required: true })}
+            autoFocus={Boolean(manufacturerId)}
+            defaultValue={
+              series.data?.find((singleSeries) => singleSeries.id === seriesId)
+                ?.name || ""
+            }
+          />
+        )}
 
         <label className="mt-6 block" htmlFor="status">
           Status

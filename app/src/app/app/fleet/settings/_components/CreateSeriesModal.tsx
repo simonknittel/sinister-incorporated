@@ -79,7 +79,8 @@ export const CreateSeriesModal = ({
             className="p-2 rounded bg-neutral-900 w-full mt-2"
             {...register("manufacturerId", { required: true })}
             defaultValue={manufacturerId}
-            autoFocus={Boolean(manufacturerId)}
+            autoFocus={!Boolean(manufacturerId)}
+            disabled={Boolean(manufacturerId)}
           >
             {manufacturers.data?.map((manufacturer) => (
               <option key={manufacturer.id} value={manufacturer.id}>
@@ -98,7 +99,7 @@ export const CreateSeriesModal = ({
           type="text"
           className="p-2 rounded bg-neutral-900 w-full mt-2"
           {...register("name", { required: true })}
-          autoFocus={!manufacturerId}
+          autoFocus={Boolean(manufacturerId)}
         />
 
         <div className="flex justify-end mt-4">

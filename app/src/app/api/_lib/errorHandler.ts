@@ -1,3 +1,4 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";
 import { ZodError } from "zod";
@@ -36,7 +37,10 @@ export default function errorHandler(
       },
       { status: 404, ...responseInit },
     );
-  } else if (error instanceof Error && error.message === "Duplicate") {
+  } else if (
+    (error instanceof Error && error.message === "Duplicate") ||
+    (error instanceof PrismaClientKnownRequestError && error.code === "P2002")
+  ) {
     return NextResponse.json(
       {
         message: "Conflict",

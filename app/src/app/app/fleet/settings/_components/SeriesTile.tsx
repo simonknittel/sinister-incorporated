@@ -20,6 +20,9 @@ export const SeriesTile = async ({ className, manufacturerId }: Props) => {
     where: {
       manufacturerId,
     },
+    orderBy: {
+      name: "asc",
+    },
   });
 
   return (
