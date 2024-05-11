@@ -8,7 +8,7 @@ import Link from "next/link";
 import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
 import { entityLogTypeTranslations } from "../../../../../lib/entityLogTypeTranslations";
 import { type EntityLogConfirmationState } from "../../../../../types";
-import Actions from "../../../../_components/Actions";
+import { Actions } from "../../../../_components/Actions";
 import ConfirmationState from "./ConfirmationState";
 import DeleteLog from "./DeleteLog";
 

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { env } from "../../../../../env.mjs";
 import { prisma } from "../../../../../server/db";
-import Actions from "../../../../_components/Actions";
+import { Actions } from "../../../../_components/Actions";
 import { DeleteManufacturerButton } from "./DeleteManufacturerButton";
 
 export const ManufacturersTile = async () => {

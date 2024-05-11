@@ -1,7 +1,7 @@
 import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import clsx from "clsx";
 import { prisma } from "../../../../../server/db";
-import Actions from "../../../../_components/Actions";
+import { Actions } from "../../../../_components/Actions";
 import { CreateVariantButton } from "./CreateVariantButton";
 import { DeleteVariantButton } from "./DeleteVariantButton";
 import { UpdateVariantButton } from "./UpdateVariantButton";

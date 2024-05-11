@@ -11,20 +11,19 @@ import {
 import { FaChevronDown } from "react-icons/fa";
 import Button from "../../../_components/Button";
 
-interface Props {
+type Props = Readonly<{
   name: string;
   children?: ReactNode;
-}
+}>;
 
-export const Filter = ({ name, children }: Readonly<Props>) => {
+export const Filter = ({ name, children }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const value = useMemo(
     () => ({
-      isOpen,
       setIsOpen,
     }),
-    [isOpen, setIsOpen],
+    [setIsOpen],
   );
 
   return (
@@ -49,7 +48,6 @@ export const Filter = ({ name, children }: Readonly<Props>) => {
 };
 
 interface FilterContextInterface {
-  isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }
 

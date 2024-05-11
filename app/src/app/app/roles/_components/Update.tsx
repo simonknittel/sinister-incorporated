@@ -7,6 +7,7 @@ import { useId, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
+import { useAction } from "../../../_components/Actions";
 import Button from "../../../_components/Button";
 import { ImageUpload } from "../../../_components/ImageUpload";
 import Modal from "../../../_components/Modal";
@@ -22,6 +23,7 @@ interface Props {
 
 const Update = ({ className, role }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
+  const action = useAction();
 
   const router = useRouter();
   const { register, handleSubmit } = useForm<FormValues>({
@@ -47,6 +49,7 @@ const Update = ({ className, role }: Readonly<Props>) => {
         router.refresh();
         toast.success("Erfolgreich gespeichert");
         setIsOpen(false);
+        action.setIsOpen(false);
       } else {
         toast.error("Beim Speichern ist ein Fehler aufgetreten.");
       }
