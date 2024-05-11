@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -73,19 +74,30 @@ export default async function Page({ params }: Props) {
       </div>
 
       <div className="flex gap-8 items-start mt-4 flex-col xl:flex-row">
-        <section className="p-8 pb-10 bg-neutral-800/50 rounded-2xl w-full xl:w-[400px]">
-          <p className="font-bold mb-4">Hersteller</p>
-
+        <section className="rounded-2xl overflow-hidden w-full xl:w-[400px]">
           <ImageUpload
             resourceType="manufacturer"
             resource={manufacturer}
-            size={128}
+            width={400}
+            height={128}
+            className={clsx(
+              "bg-black p-2 text-neutral-500 hover:text-neutral-300 transition-colors",
+              {
+                "h-32 after:content-['Logo_hochladen'] flex items-center justify-center":
+                  !manufacturer.imageId,
+              },
+            )}
+            imageClassName="w-full h-32"
           />
 
-          <dl className="mt-4">
-            <dt className="text-neutral-500">Name</dt>
-            <dd>{manufacturer.name}</dd>
-          </dl>
+          <div className="p-8 bg-neutral-800/50">
+            <p className="font-bold mb-4">Hersteller</p>
+
+            <dl className="mt-4">
+              <dt className="text-neutral-500">Name</dt>
+              <dd>{manufacturer.name}</dd>
+            </dl>
+          </div>
         </section>
 
         <Suspense fallback={<TileSkeleton className="w-full flex-1" />}>

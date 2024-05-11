@@ -88,11 +88,21 @@ const Update = ({ className, role }: Readonly<Props>) => {
             autoFocus
           />
 
+          <label className="mt-6 block font-bold">Bild</label>
+
           <ImageUpload
             resourceType="role"
             resource={role}
-            size={128}
-            className="mt-6"
+            width={128}
+            height={128}
+            className={clsx(
+              "mt-2 size-32 border border-neutral-700 hover:border-neutral-500 text-neutral-500 hover:text-neutral-300 transition-colors group rounded",
+              {
+                "after:content-['Bild_hochladen'] flex items-center justify-center":
+                  !role.imageId,
+              },
+            )}
+            imageClassName="size-32"
           />
 
           <div className="flex justify-end mt-8">
