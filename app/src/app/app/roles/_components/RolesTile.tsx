@@ -6,7 +6,7 @@ import { env } from "../../../../env.mjs";
 import { getUnleashFlag } from "../../../../lib/getUnleashFlag";
 import { isOpenAIEnabled } from "../../../../lib/isOpenAIEnabled";
 import { prisma } from "../../../../server/db";
-import Actions from "../../../_components/Actions";
+import { Actions } from "../../../_components/Actions";
 import { Create } from "./Create";
 import Delete from "./Delete";
 import { Permissions } from "./Permissions";

@@ -7,6 +7,7 @@ import { useId, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
+import { useAction } from "../../../_components/Actions";
 import Button from "../../../_components/Button";
 import { ImageUpload } from "../../../_components/ImageUpload";
 import Modal from "../../../_components/Modal";
@@ -22,6 +23,7 @@ interface Props {
 
 const Update = ({ className, role }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
+  const action = useAction();
 
   const router = useRouter();
   const { register, handleSubmit } = useForm<FormValues>({
@@ -47,6 +49,7 @@ const Update = ({ className, role }: Readonly<Props>) => {
         router.refresh();
         toast.success("Erfolgreich gespeichert");
         setIsOpen(false);
+        action.setIsOpen(false);
       } else {
         toast.error("Beim Speichern ist ein Fehler aufgetreten.");
       }
@@ -88,11 +91,21 @@ const Update = ({ className, role }: Readonly<Props>) => {
             autoFocus
           />
 
+          <label className="mt-6 block font-bold">Bild</label>
+
           <ImageUpload
             resourceType="role"
             resource={role}
-            size={128}
-            className="mt-6"
+            width={128}
+            height={128}
+            className={clsx(
+              "mt-2 size-32 border border-neutral-700 hover:border-neutral-500 text-neutral-500 hover:text-neutral-300 transition-colors group rounded",
+              {
+                "after:content-['Bild_hochladen'] flex items-center justify-center":
+                  !role.imageId,
+              },
+            )}
+            imageClassName="size-32"
           />
 
           <div className="flex justify-end mt-8">

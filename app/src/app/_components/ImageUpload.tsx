@@ -11,20 +11,24 @@ import useUpload from "../../lib/useUpload";
 
 type Props = Readonly<{
   className?: string;
+  imageClassName?: string;
   resourceType: string;
   resource: {
     id: string;
     name: string;
     imageId?: string | null;
   };
-  size: 16 | 32 | 64 | 128;
+  width: number;
+  height: number;
 }>;
 
 export const ImageUpload = ({
   className,
+  imageClassName,
   resourceType,
   resource,
-  size,
+  width,
+  height,
 }: Props) => {
   const { setFile, upload, setUpload } = useUpload();
   const router = useRouter();
@@ -63,41 +67,27 @@ export const ImageUpload = ({
   };
 
   return (
-    <div className={clsx(className, "inline-block relative")}>
-      <div
-        className={clsx(
-          "aspect-square flex items-center justify-center rounded border border-neutral-700 overflow-hidden flex-shrink-0",
-          {
-            "after:content-['Logo'] after:object-center after:text-neutral-500":
-              !resource.imageId && !isPending,
-            "w-4 h-4": size === 16,
-            "w-8 h-8": size === 32,
-            "w-16 h-16": size === 64,
-            "w-32 h-32": size === 128,
-          },
-        )}
-      >
-        {resource.imageId && !isPending && (
-          <Image
-            src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${resource.imageId}`}
-            alt={`Logo of ${resource.name}`}
-            width={size}
-            height={size}
-            className="w-full h-full object-contain object-center"
-          />
-        )}
+    <div className={clsx(className, "relative")}>
+      {resource.imageId && !isPending && (
+        <Image
+          src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${resource.imageId}`}
+          alt={`Logo of ${resource.name}`}
+          width={width}
+          height={height}
+          className={clsx(imageClassName, "object-contain object-center")}
+        />
+      )}
 
-        {isPending && (
-          <FaSpinner className="animate-spin text-sinister-red-500" />
-        )}
-      </div>
+      {isPending && (
+        <FaSpinner className="animate-spin text-sinister-red-500" />
+      )}
 
       <input
         type="file"
         onChange={changeHandler}
         accept="image/*"
         disabled={isPending}
-        className="absolute inset-0 cursor-pointer opacity-0"
+        className="absolute inset-0 cursor-pointer opacity-0 text-[0]"
       />
     </div>
   );

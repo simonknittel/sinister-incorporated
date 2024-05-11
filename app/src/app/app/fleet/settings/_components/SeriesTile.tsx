@@ -2,7 +2,7 @@ import { type Manufacturer } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
 import { prisma } from "../../../../../server/db";
-import Actions from "../../../../_components/Actions";
+import { Actions } from "../../../../_components/Actions";
 import { CreateSeriesButton } from "./CreateSeriesButton";
 import { DeleteSeriesButton } from "./DeleteSeriesButton";
 

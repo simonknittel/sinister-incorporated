@@ -1,57 +1,72 @@
 "use client";
 
-import clsx from "clsx";
+import * as Popover from "@radix-ui/react-popover";
 import {
+  createContext,
+  useContext,
+  useMemo,
   useState,
-  type Dispatch,
   type ReactNode,
-  type SetStateAction,
 } from "react";
 import { FaEllipsisH, FaTimes } from "react-icons/fa";
-import styles from "./Actions.module.css";
 import Button from "./Button";
 
 interface Props {
   children?: ReactNode;
 }
 
-const Actions = ({ children }: Readonly<Props>) => {
+export const Actions = ({ children }: Readonly<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  return (
-    <div className="relative">
-      <Button
-        onClick={() => setIsOpen((value) => !value)}
-        variant="secondary"
-        iconOnly={true}
-      >
-        {isOpen ? <FaTimes /> : <FaEllipsisH />}
-      </Button>
+  const value = useMemo(
+    () => ({
+      setIsOpen,
+    }),
+    [setIsOpen],
+  );
 
-      {isOpen && <Inner setIsOpen={setIsOpen}>{children}</Inner>}
-    </div>
+  return (
+    <ActionContext.Provider value={value}>
+      <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+        <Popover.Trigger asChild>
+          <Button variant="secondary" iconOnly={true}>
+            {isOpen ? <FaTimes /> : <FaEllipsisH />}
+          </Button>
+        </Popover.Trigger>
+
+        <Popover.Portal>
+          <Popover.Content
+            sideOffset={4}
+            side="left"
+            className="flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10"
+          >
+            {children}
+
+            <Popover.Arrow className="fill-neutral-800" />
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
+    </ActionContext.Provider>
   );
 };
 
-export default Actions;
-
-interface InnerProps {
-  children?: ReactNode;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
+interface ActionContextInterface {
+  setIsOpen: (value: boolean) => void;
 }
 
-const Inner = ({ children, setIsOpen }: InnerProps) => {
-  // const ref = useClickAway(() => setIsOpen(false));
+const ActionContext = createContext<ActionContextInterface | undefined>(
+  undefined,
+);
 
-  return (
-    <div
-      className={clsx(
-        "absolute top-0 right-[calc(100%+.5rem)] flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 border border-neutral-900 z-10",
-        styles.actions,
-      )}
-      // ref={ref}
-    >
-      {children}
-    </div>
-  );
-};
+/**
+ * Check for undefined since the defaultValue of the context is undefined. If
+ * it's still undefined, the provider component is missing.
+ */
+export function useAction() {
+  const context = useContext(ActionContext);
+  if (!context)
+    throw new Error(
+      "Provider for `useAction()` is missing. Make sure to have a `<Action> ... </Action>` parent.",
+    );
+  return context;
+}
