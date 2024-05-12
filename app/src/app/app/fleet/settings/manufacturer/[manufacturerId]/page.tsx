@@ -1,14 +1,13 @@
 import clsx from "clsx";
 import { type Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 import { log } from "../../../../../../lib/logging";
-import { prisma } from "../../../../../../server/db";
 import { ImageUpload } from "../../../../../_components/ImageUpload";
 import { SeriesTile } from "../../_components/SeriesTile";
 import { TileSkeleton } from "../../_components/TileSkeleton";
+import { getManufacturer } from "../_lib/getManufacturer";
 
 type Params = Readonly<{
   manufacturerId: string;
@@ -20,11 +19,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   try {
-    const manufacturer = await prisma.manufacturer.findUnique({
-      where: {
-        id: params.manufacturerId,
-      },
-    });
+    const manufacturer = await getManufacturer(params.manufacturerId);
 
     if (!manufacturer) return {};
 
@@ -50,63 +45,44 @@ type Props = Readonly<{
 }>;
 
 export default async function Page({ params }: Props) {
-  const manufacturer = await prisma.manufacturer.findUnique({
-    where: {
-      id: params.manufacturerId,
-    },
-  });
+  const manufacturer = await getManufacturer(params.manufacturerId);
 
   if (!manufacturer) notFound();
 
   return (
-    <main className="p-2 lg:p-8 pt-20">
-      <div className="flex gap-2">
-        <Link
-          href="/app/fleet/settings/manufacturer"
-          className="text-sinister-red-500 hover:text-sinister-red-300 transition-colors"
-        >
-          Alle Hersteller
-        </Link>
+    <main className="flex gap-8 items-start flex-col xl:flex-row">
+      <section className="rounded-2xl overflow-hidden w-full xl:w-[400px]">
+        <ImageUpload
+          resourceType="manufacturer"
+          resource={manufacturer}
+          width={400}
+          height={128}
+          className={clsx(
+            "bg-black p-2 text-neutral-500 hover:text-neutral-300 transition-colors",
+            {
+              "h-32 after:content-['Logo_hochladen'] flex items-center justify-center":
+                !manufacturer.imageId,
+            },
+          )}
+          imageClassName="w-full h-32"
+        />
 
-        <span className="text-neutral-700">/</span>
+        <div className="p-8 bg-neutral-800/50">
+          <p className="font-bold mb-4">Hersteller</p>
 
-        <h1 className="font-bold">{manufacturer.name}</h1>
-      </div>
+          <dl className="mt-4">
+            <dt className="text-neutral-500">Name</dt>
+            <dd>{manufacturer.name}</dd>
+          </dl>
+        </div>
+      </section>
 
-      <div className="flex gap-8 items-start mt-4 flex-col xl:flex-row">
-        <section className="rounded-2xl overflow-hidden w-full xl:w-[400px]">
-          <ImageUpload
-            resourceType="manufacturer"
-            resource={manufacturer}
-            width={400}
-            height={128}
-            className={clsx(
-              "bg-black p-2 text-neutral-500 hover:text-neutral-300 transition-colors",
-              {
-                "h-32 after:content-['Logo_hochladen'] flex items-center justify-center":
-                  !manufacturer.imageId,
-              },
-            )}
-            imageClassName="w-full h-32"
-          />
-
-          <div className="p-8 bg-neutral-800/50">
-            <p className="font-bold mb-4">Hersteller</p>
-
-            <dl className="mt-4">
-              <dt className="text-neutral-500">Name</dt>
-              <dd>{manufacturer.name}</dd>
-            </dl>
-          </div>
-        </section>
-
-        <Suspense fallback={<TileSkeleton className="w-full flex-1" />}>
-          <SeriesTile
-            manufacturerId={params.manufacturerId}
-            className="w-full flex-1"
-          />
-        </Suspense>
-      </div>
+      <Suspense fallback={<TileSkeleton className="w-full flex-1" />}>
+        <SeriesTile
+          manufacturerId={params.manufacturerId}
+          className="w-full flex-1"
+        />
+      </Suspense>
     </main>
   );
 }
