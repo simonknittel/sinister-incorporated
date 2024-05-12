@@ -1,4 +1,4 @@
-const SidebarSkeleton = () => {
+export const SidebarSkeleton = () => {
   return (
     <div className="flex h-full flex-col justify-between">
       <div />
@@ -9,5 +9,3 @@ const SidebarSkeleton = () => {
     </div>
   );
 };
-
-export default SidebarSkeleton;

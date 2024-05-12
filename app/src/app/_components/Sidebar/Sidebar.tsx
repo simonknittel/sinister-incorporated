@@ -1,13 +1,15 @@
+import clsx from "clsx";
 import Link from "next/link";
 import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
-import { requireAuthentication } from "../../lib/auth/server";
-import { getUnleashFlag } from "../../lib/getUnleashFlag";
-import Account from "./Account";
-import { Chip } from "./Chip";
-import { CmdKLoader } from "./CmdK/CmdKLoader";
-import { Footer } from "./Footer";
+import { requireAuthentication } from "../../../lib/auth/server";
+import { getUnleashFlag } from "../../../lib/getUnleashFlag";
+import { Chip } from "../Chip";
+import { CmdKLoader } from "../CmdK/CmdKLoader";
+import { Footer } from "../Footer";
+import { Account } from "./Account";
+import { RedBar } from "./RedBar";
 
 export const Sidebar = async () => {
   const authentication = await requireAuthentication();
@@ -35,7 +37,10 @@ export const Sidebar = async () => {
             className="hidden lg:block mt-4 mx-auto"
           />
 
-          <nav className="p-4 border-neutral-800">
+          <nav
+            className="p-4 border-neutral-800 relative"
+            data-red-bar-container
+          >
             <ul>
               <li>
                 <Link
@@ -111,7 +116,13 @@ export const Sidebar = async () => {
                       <li>
                         <Link
                           href="/app/spynet/citizen"
-                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
+                          className={clsx(
+                            "flex gap-2 items-center p-4 hover:bg-neutral-800 rounded",
+                            // {
+                            //   "before:w-[2px] before:h-[2em] before:bg-sinister-red-500 before:absolute before:left-0 relative before:rounded bg-neutral-800":
+                            //     true,
+                            // },
+                          )}
                           prefetch={false}
                         >
                           <FaTable />
@@ -193,7 +204,7 @@ export const Sidebar = async () => {
                   ) && (
                     <li>
                       <Link
-                        href="/app/fleet/settings"
+                        href="/app/fleet/settings/manufacturer"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
                         prefetch={false}
                       >
@@ -217,6 +228,8 @@ export const Sidebar = async () => {
                 </ul>
               </div>
             )}
+
+            <RedBar />
           </nav>
         </div>
 

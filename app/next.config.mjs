@@ -75,14 +75,6 @@ const config = {
       fullUrl: true,
     },
   },
-
-  redirects: async () => [
-    {
-      source: "/app/fleet/settings",
-      destination: "/app/fleet/settings/manufacturer",
-      permanent: false,
-    },
-  ],
 };
 
 export default withVercelToolbar()(config);

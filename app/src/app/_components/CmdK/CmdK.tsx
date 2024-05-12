@@ -185,7 +185,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   <Command.Item
                     keywords={["Admin", "Ships"]}
                     onSelect={() => {
-                      router.push("/app/fleet/settings");
+                      router.push("/app/fleet/settings/manufacturer");
                       setOpen(false);
                       setSearch("");
                     }}
