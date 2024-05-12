@@ -1,8 +1,8 @@
-import { requireAuthentication } from "../../lib/auth/server";
-import Avatar from "./Avatar";
-import LogoutButton from "./LogoutButton";
+import { requireAuthentication } from "../../../lib/auth/server";
+import Avatar from "../Avatar";
+import LogoutButton from "../LogoutButton";
 
-const Account = async () => {
+export const Account = async () => {
   const authentication = await requireAuthentication();
 
   const name =
@@ -26,5 +26,3 @@ const Account = async () => {
     </div>
   );
 };
-
-export default Account;

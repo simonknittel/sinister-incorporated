@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
-import Button from "./Button";
+import Button from "../Button";
 
 interface Props {
   children?: ReactNode;
