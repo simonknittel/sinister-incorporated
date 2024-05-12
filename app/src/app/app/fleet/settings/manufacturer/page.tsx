@@ -16,10 +16,8 @@ export default async function Page() {
   authentication.authorizePage("manufacturersSeriesAndVariants", "manage");
 
   return (
-    <main className="p-2 lg:p-8 pt-20">
-      <div className="flex justify-between items-center">
-        <h1 className="text-xl font-bold">Hersteller</h1>
-
+    <main>
+      <div className="flex justify-end items-center">
         <CreateManufacturereButton />
       </div>
 
