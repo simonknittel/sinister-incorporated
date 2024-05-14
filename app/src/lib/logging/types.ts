@@ -1,10 +1,11 @@
 export interface LogEntry {
-  timestamp: Date;
+  /** ISO string of the date (e.g. `new Date().toISOString()`) */
+  timestamp: string;
   level: "info" | "warn" | "error";
   message: string;
   host: string;
   commitSha?: string;
-  [key: string]: unknown;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export type LogOutput = (logEntry: LogEntry) => void;

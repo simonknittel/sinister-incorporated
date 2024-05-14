@@ -7,8 +7,6 @@ export const logToAxiom: LogOutput = (logEntry) => {
 
   // TODO: Debounce this to avoid spamming
 
-  const { timestamp, ...rest } = logEntry;
-
   fetch("https://api.axiom.co/v1/datasets/sinister-incorporated/ingest", {
     method: "POST",
     headers: {
@@ -17,11 +15,8 @@ export const logToAxiom: LogOutput = (logEntry) => {
     },
     body: JSON.stringify([
       {
-        _time: logEntry.timestamp.toISOString(),
-        ...{
-          timestamp: timestamp.toISOString(),
-          ...rest,
-        },
+        _time: logEntry.timestamp,
+        ...logEntry,
       },
     ]),
   })
@@ -29,22 +24,24 @@ export const logToAxiom: LogOutput = (logEntry) => {
       if (res.ok) return;
 
       logToConsole({
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
         level: "error",
         message: "Error posting to Axiom",
         responseBody: await res.text(),
         responseStatus: res.status,
         host: env.NEXTAUTH_URL!,
+        stack: new Error().stack,
         ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
       });
     })
     .catch((err) => {
       logToConsole({
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
         level: "error",
         message: "Error posting to Axiom",
         error: JSON.stringify(err, Object.getOwnPropertyNames(err)),
         host: env.NEXTAUTH_URL!,
+        stack: new Error().stack,
         ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
       });
     });

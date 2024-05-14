@@ -6,14 +6,14 @@ import { type LogEntry } from "./types";
 
 const info = (message: string, args: Record<string, unknown> = {}) => {
   const logEntry: LogEntry = {
-    timestamp: new Date(),
+    timestamp: new Date().toISOString(),
     level: "info",
     message,
     host: env.HOST,
+    stack: new Error().stack,
+    ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
     ...args,
   };
-
-  if (env.COMMIT_SHA) logEntry.commitSha = env.COMMIT_SHA;
 
   logToConsole(logEntry);
   logToAxiom(logEntry);
@@ -22,14 +22,14 @@ const info = (message: string, args: Record<string, unknown> = {}) => {
 
 const warn = (message: string, args: Record<string, unknown> = {}) => {
   const logEntry: LogEntry = {
-    timestamp: new Date(),
+    timestamp: new Date().toISOString(),
     level: "warn",
     message,
     host: env.HOST,
+    stack: new Error().stack,
+    ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
     ...args,
   };
-
-  if (env.COMMIT_SHA) logEntry.commitSha = env.COMMIT_SHA;
 
   logToConsole(logEntry);
   logToAxiom(logEntry);
@@ -38,14 +38,14 @@ const warn = (message: string, args: Record<string, unknown> = {}) => {
 
 const error = (message: string, args: Record<string, unknown> = {}) => {
   const logEntry: LogEntry = {
-    timestamp: new Date(),
+    timestamp: new Date().toISOString(),
     level: "error",
     message,
     host: env.HOST,
+    stack: new Error().stack,
+    ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
     ...args,
   };
-
-  if (env.COMMIT_SHA) logEntry.commitSha = env.COMMIT_SHA;
 
   logToConsole(logEntry);
   logToAxiom(logEntry);
