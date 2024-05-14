@@ -4,7 +4,7 @@ name: Create production deployment
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 8 * * *" # 8am UTC
   workflow_dispatch:
 
 jobs:
