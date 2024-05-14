@@ -11,8 +11,6 @@ export const logToLoki: LogOutput = (logEntry) => {
     env.LOKI_AUTH_USER + ":" + env.LOKI_AUTH_PASSWORD,
   ).toString("base64");
 
-  const { timestamp, ...rest } = logEntry;
-
   const body = JSON.stringify({
     streams: [
       {
@@ -21,11 +19,8 @@ export const logToLoki: LogOutput = (logEntry) => {
         },
         values: [
           [
-            (logEntry.timestamp.getTime() * 1_000_000).toString(),
-            JSON.stringify({
-              timestamp: timestamp.toISOString(),
-              ...rest,
-            }),
+            (new Date(logEntry.timestamp).getTime() * 1_000_000).toString(),
+            JSON.stringify(logEntry),
           ],
         ],
       },
@@ -44,22 +39,24 @@ export const logToLoki: LogOutput = (logEntry) => {
       if (res.ok) return;
 
       logToConsole({
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
         level: "error",
         message: "Error posting to Loki",
         responseBody: await res.text(),
         responseStatus: res.status,
         host: env.NEXTAUTH_URL,
+        stack: new Error().stack,
         ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
       });
     })
     .catch((err) => {
       logToConsole({
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
         level: "error",
         message: "Error posting to Loki",
         error: JSON.stringify(err, Object.getOwnPropertyNames(err)),
         host: env.NEXTAUTH_URL,
+        stack: new Error().stack,
         ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
       });
     });
