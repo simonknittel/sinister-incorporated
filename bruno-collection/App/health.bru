@@ -1,0 +1,16 @@
+meta {
+  name: health
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{appBaseUrl}}/api/health
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  req.setMaxRedirects(0);
+  
+}
