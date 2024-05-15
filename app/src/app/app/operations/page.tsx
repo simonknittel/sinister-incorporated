@@ -38,7 +38,7 @@ export default async function Page() {
       />
 
       {operations
-        .sort((a, b) => a.title.localeCompare(b.title))
+        .toSorted((a, b) => a.title.localeCompare(b.title))
         .map((operation) => (
           <OperationTile
             key={operation.id}
