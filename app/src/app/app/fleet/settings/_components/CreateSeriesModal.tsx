@@ -103,7 +103,10 @@ export const CreateSeriesModal = ({
         />
 
         <div className="flex justify-end mt-4">
-          <Button type="submit" disabled={isLoading}>
+          <Button
+            type="submit"
+            disabled={isLoading || manufacturers.isFetching}
+          >
             {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Speichern
           </Button>
