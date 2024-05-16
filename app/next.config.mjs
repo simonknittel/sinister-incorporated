@@ -75,6 +75,10 @@ const config = {
       fullUrl: true,
     },
   },
+
+  experimental: {
+    typedRoutes: true,
+  },
 };
 
 export default withVercelToolbar()(config);

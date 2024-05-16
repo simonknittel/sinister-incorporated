@@ -14,18 +14,16 @@ import comparePermissionSets from "./comparePermissionSets";
 export const authenticate = cache(async () => {
   const session = await getServerSession(authOptions);
 
-  if (session) {
-    return {
-      session,
-      authorize: (
-        resource: PermissionSet["resource"],
-        operation: PermissionSet["operation"],
-        attributes?: PermissionSet["attributes"],
-      ) => authorize(session, resource, operation, attributes),
-    };
-  } else {
-    return false;
-  }
+  if (!session) return false;
+
+  return {
+    session,
+    authorize: (
+      resource: PermissionSet["resource"],
+      operation: PermissionSet["operation"],
+      attributes?: PermissionSet["attributes"],
+    ) => authorize(session, resource, operation, attributes),
+  };
 });
 
 export async function authenticatePage(requestPath?: string) {
