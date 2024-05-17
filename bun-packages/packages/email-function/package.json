@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "rm -rf dist && esbuild src/lambda.ts --bundle --outfile=dist/lambda.js --platform=node --target=node20 --minify --metafile=meta.json"
+		"build": "rm -rf dist && esbuild src/index.ts --bundle --outfile=dist/index.js --platform=node --target=node20 --minify --metafile=meta.json"
 	},
 	"devDependencies": {
 		"esbuild": "0.20.1",

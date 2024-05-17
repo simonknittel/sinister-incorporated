@@ -51,12 +51,6 @@ jobs:
           role-to-assume: ${{ vars.IAM_ROLE_ARN }}
           aws-region: eu-central-1
 
-      - name: Retrieve email-function artifact
-        uses: actions/download-artifact@v4.1.6
-        with:
-          name: email-function-dist
-          path: bun-packages/packages/email-function/dist
-
       - name: Retrieve tfplan artifact
         uses: actions/download-artifact@v4.1.6
         with:
@@ -74,4 +68,3 @@ jobs:
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TF_VAR_api_subdomain: ${{ vars.API_SUBDOMAIN }}
           TF_VAR_email_function_parameters: ${{ secrets.EMAIL_FUNCTION_PARAMETERS }}
-          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
