@@ -27,7 +27,7 @@ jobs:
   build:
     uses: ./.github/workflows/build-email-function.yml
     with:
-      git_ref: ${{ github.event.inputs.git_ref }}
+      git_ref: ${{ github.event.inputs.git_ref || 'develop' }}
 
   deploy:
     runs-on: ubuntu-22.04
@@ -41,11 +41,13 @@ jobs:
 
     needs: [build]
 
+    environment: email-function-${{ inputs.environment || 'test' }}
+
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
-          role-to-assume: arn:aws:iam::197170241226:role/github-actions
+          role-to-assume: ${{ vars.IAM_ROLE_ARN }}
           aws-region: eu-central-1
 
       - name: Retrieve email-function artifact

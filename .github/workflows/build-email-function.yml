@@ -32,7 +32,9 @@ jobs:
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
 
       - name: Build
-        run: bun run build --define:process.env.COMMIT_SHA=\\\"${{ github.sha }}\\\"
+        run: |
+          SHA=git log -1 '--format=format:%H'
+          bun run build --define:process.env.COMMIT_SHA=\\\"$SHA\\\"
         working-directory: bun-packages/packages/email-function
 
       - name: Store artifact
