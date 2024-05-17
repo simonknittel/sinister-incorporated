@@ -1,4 +1,4 @@
-name: app deployment
+name: Deploy email-function
 
 on:
   push:
