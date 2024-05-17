@@ -3,7 +3,7 @@ resource "aws_lambda_function" "main" {
   function_name    = var.function_name
   role             = aws_iam_role.main.arn
   handler          = "index.handler"
-  source_code_hash = data.archive_file.main.output_base64sha256
+  source_code_hash = archive_file.main.output_base64sha256
   runtime          = "nodejs20.x"
   timeout          = var.timeout
   memory_size      = 256
