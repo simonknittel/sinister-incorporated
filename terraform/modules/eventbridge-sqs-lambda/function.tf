@@ -21,12 +21,13 @@ resource "aws_lambda_function" "main" {
     "arn:aws:lambda:eu-central-1:187925254637:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:11" # https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html#ps-integration-lambda-extensions-add
   ]
 
-  # TODO
-  # lifecycle {
-  #   ignore_changes = [
-  #     source_code_hash # Changes to the function's source code are deployed using `.github/workflows/deploy-email-function.yml`
-  #   ]
-  # }
+  lifecycle {
+    # Changes to the function's source code are deployed using `.github/workflows/deploy-email-function.yml`
+    ignore_changes = [
+      filename,
+      source_code_hash
+    ]
+  }
 }
 
 resource "aws_lambda_provisioned_concurrency_config" "main" {
