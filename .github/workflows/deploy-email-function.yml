@@ -57,8 +57,8 @@ jobs:
           path: bun-packages/packages/email-function/dist
 
       - name: Prepare ZIP
-        run: zip --recurse-paths dist.zip dist
-        working-directory: bun-packages/packages/email-function/
+        run: zip ../dist.up .
+        working-directory: bun-packages/packages/email-function/dist/
 
       - name: Deploy
         run: aws lambda update-function-code --function-name email-function --zip-file fileb://dist.zip
