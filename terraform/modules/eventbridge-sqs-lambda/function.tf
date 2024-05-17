@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "main" {
-  filename         = "${path.module}/placeholder.zip"
+  filename         = "${path.module}/placeholder.zip" # cd placeholder && zip -r ../placeholder.zip .
   function_name    = var.function_name
   role             = aws_iam_role.main.arn
   handler          = "index.handler"
