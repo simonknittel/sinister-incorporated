@@ -33,7 +33,7 @@ jobs:
 
       - name: Build
         run: |
-          SHA=git log -1 '--format=format:%H'
+          SHA=$(git log -1 '--format=format:%H')
           bun run build --define:process.env.COMMIT_SHA=\\\"$SHA\\\"
         working-directory: bun-packages/packages/email-function
 
