@@ -9,7 +9,8 @@ import { UwuHero } from "./_components/UwuHero";
 
 export const metadata: Metadata = {
   title: "S.A.M. - Sinister Incorporated",
-  description: "",
+  description:
+    "Sinister Administration Module (S.A.M.) of the Star Citizen organization Sinister Incorporated",
 };
 
 type Props = Readonly<{
