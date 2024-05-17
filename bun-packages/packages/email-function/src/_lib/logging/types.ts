@@ -1,5 +1,5 @@
 export interface LogEntry {
-	timestamp: string
+	timestamp: string;
 	level: "info" | "warn" | "error";
 	message: string;
 	commitSha?: string;
