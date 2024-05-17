@@ -21,11 +21,11 @@ export default function manifest(): MetadataRoute.Manifest {
       },
       {
         name: "Spynet",
-        url: "/spynet",
+        url: "/app/spynet",
       },
       {
         name: "Flotte",
-        url: "/fleet",
+        url: "/app/fleet",
       },
     ],
     display: "standalone",
