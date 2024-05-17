@@ -8,6 +8,15 @@ on:
       - .github/workflows/deploy-email-function.yml
       - .github/workflows/build-email-function.yml
       - bun-packages/**
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "test"
+        type: choice
+        options:
+          - test
 
 jobs:
   build:
