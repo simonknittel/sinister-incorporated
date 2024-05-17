@@ -2,7 +2,7 @@ name: Renovate
 
 on:
   schedule:
-    - cron: "0,30 3,4 * * *" # Every day four chances for Renovate to create or rebase branches and create, rebase or merge PRs
+    - cron: "0,15,30,45 3,4 * * *" # Every day eight chances for Renovate to create or rebase branches and create, rebase or merge PRs
   workflow_dispatch: # Manually run the workflow
   push: # Run the workflow on changes to the configuration
     branches:
