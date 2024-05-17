@@ -1,3 +1,3 @@
-export const handler = () => {
+module.exports.handler = () => {
 	return false;
 }
