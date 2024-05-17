@@ -1,9 +1,9 @@
 export interface LogEntry {
-	timestamp: Date;
+	timestamp: string;
 	level: "info" | "warn" | "error";
 	message: string;
 	commitSha?: string;
-	[key: string]: unknown;
+	[key: string]: string | number | boolean | undefined;
 }
 
 export type LogOutput = (logEntry: LogEntry) => void;

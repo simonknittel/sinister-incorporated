@@ -7,9 +7,7 @@ on:
       - develop
     paths:
       - .github/workflows/terraform-plan.yml
-      - .github/workflows/build-email-function.yml
       - terraform/**
-      - bun-packages/**
       - cloudformation/**
   workflow_dispatch:
     inputs:
@@ -34,9 +32,6 @@ on:
         type: boolean
 
 jobs:
-  build_email_function:
-    uses: ./.github/workflows/build-email-function.yml
-
   plan:
     runs-on: ubuntu-22.04
 
@@ -47,8 +42,6 @@ jobs:
       id-token: write # Required for aws-actions/configure-aws-credentials
       contents: read # Required for aws-actions/configure-aws-credentials
       pull-requests: write # Required for actions/github-script
-
-    needs: [build_email_function]
 
     environment: terraform-${{ inputs.environment || 'test' }}
 
@@ -70,12 +63,6 @@ jobs:
           role-to-assume: ${{ vars.IAM_ROLE_ARN }}
           aws-region: eu-central-1
 
-      - name: Retrieve email-function artifact
-        uses: actions/download-artifact@v4.1.6
-        with:
-          name: email-function-dist
-          path: bun-packages/packages/email-function/dist
-
       - name: terraform init
         run: terraform init -backend-config=${{ inputs.environment || 'test' }}.s3.tfbackend
         working-directory: terraform
@@ -89,7 +76,6 @@ jobs:
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TF_VAR_api_subdomain: ${{ vars.API_SUBDOMAIN }}
           TF_VAR_email_function_parameters: ${{ secrets.EMAIL_FUNCTION_PARAMETERS }}
-          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
       - uses: actions/github-script@v7.0.1
         if: github.event_name == 'pull_request'

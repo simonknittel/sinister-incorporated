@@ -114,8 +114,7 @@
 ## 7. Set up Terraform
 
 1. Create and populate `test.s3.tfbackend`, `prod.s3.tfbackend`, `test.tfvars` and `prod.tfvars`
-2. `cd bun-packages/ && bun install --frozen-lockfile && cd packages/email-function/ && bun run build`
-3. Create Terraform resources
+2. Create Terraform resources
 
    1. `AWS_PROFILE=sinister-incorporated-test aws sso login`
    2. `AWS_PROFILE=sinister-incorporated-test terraform init -backend-config=test.s3.tfbackend`

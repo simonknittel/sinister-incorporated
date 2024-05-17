@@ -2,10 +2,6 @@ variable "function_name" {
   type = string
 }
 
-variable "source_dir" {
-  type = string
-}
-
 variable "reserved_concurrent_executions" {
   type    = number
   default = -1

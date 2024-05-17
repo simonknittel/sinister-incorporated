@@ -1,0 +1,47 @@
+name: Deploy email-function
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/deploy-email-function.yml
+      - .github/workflows/build-email-function.yml
+      - bun-packages/**
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-email-function.yml
+
+  deploy:
+    runs-on: ubuntu-22.04
+
+    # Related
+    # - https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    # - https://docs.github.com/en/rest/authentication/permissions-required-for-github-apps
+    permissions:
+      id-token: write # Required for aws-actions/configure-aws-credentials
+      contents: read # Required for aws-actions/configure-aws-credentials
+
+    needs: [build]
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: arn:aws:iam::197170241226:role/github-actions
+          aws-region: eu-central-1
+
+      - name: Retrieve email-function artifact
+        uses: actions/download-artifact@v4.1.6
+        with:
+          name: email-function-dist
+          path: bun-packages/packages/email-function/dist
+
+      - name: Prepare ZIP
+        run: zip --recurse-paths dist.zip dist
+        working-directory: bun-packages/packages/email-function/
+
+      - name: Deploy
+        run: aws lambda update-function-code --function-name email-function --zip-file fileb://dist.zip
+        working-directory: bun-packages/packages/email-function/

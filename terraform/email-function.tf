@@ -64,7 +64,6 @@ module "email_function" {
   source = "./modules/eventbridge-sqs-lambda"
 
   function_name                  = "email-function"
-  source_dir                     = "../bun-packages/packages/email-function/dist"
   reserved_concurrent_executions = 1
   account_id                     = data.aws_caller_identity.current.account_id
   timeout                        = 15

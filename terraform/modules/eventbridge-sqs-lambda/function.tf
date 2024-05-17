@@ -1,9 +1,9 @@
 resource "aws_lambda_function" "main" {
-  filename         = "${path.module}/dist.zip"
+  filename         = "${path.module}/placeholder.zip" # cd placeholder && zip -r ../placeholder.zip .
   function_name    = var.function_name
   role             = aws_iam_role.main.arn
-  handler          = "lambda.handler"
-  source_code_hash = data.archive_file.main.output_base64sha256
+  handler          = "index.handler"
+  source_code_hash = filebase64sha256("${path.module}/placeholder.zip")
   runtime          = "nodejs20.x"
   timeout          = var.timeout
   memory_size      = 256
@@ -13,12 +13,6 @@ resource "aws_lambda_function" "main" {
   # https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
   reserved_concurrent_executions = var.reserved_concurrent_executions
 
-  environment {
-    variables = {
-      COMMIT_SHA = terraform_data.commit_sha.output
-    }
-  }
-
   tracing_config {
     mode = "Active"
   }
@@ -26,6 +20,14 @@ resource "aws_lambda_function" "main" {
   layers = [
     "arn:aws:lambda:eu-central-1:187925254637:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:11" # https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html#ps-integration-lambda-extensions-add
   ]
+
+  lifecycle {
+    # Changes to the function's source code are deployed using `.github/workflows/deploy-email-function.yml`
+    ignore_changes = [
+      filename,
+      source_code_hash
+    ]
+  }
 }
 
 resource "aws_lambda_provisioned_concurrency_config" "main" {
