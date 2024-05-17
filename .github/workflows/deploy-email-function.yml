@@ -57,7 +57,7 @@ jobs:
           path: bun-packages/packages/email-function/dist
 
       - name: Prepare ZIP
-        run: zip ../dist.up .
+        run: zip ../dist.zip .
         working-directory: bun-packages/packages/email-function/dist/
 
       - name: Deploy
