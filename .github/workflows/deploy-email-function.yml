@@ -8,10 +8,26 @@ on:
       - .github/workflows/deploy-email-function.yml
       - .github/workflows/build-email-function.yml
       - bun-packages/**
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "test"
+        type: choice
+        options:
+          - test
+      git_ref:
+        description: "Git ref (SHA, tag, branch, ...) to deploy (if empty, defaults to the latest commit)"
+        type: string
+        default: "develop"
+        required: true
 
 jobs:
   build:
     uses: ./.github/workflows/build-email-function.yml
+    with:
+      git_ref: ${{ github.event.inputs.git_ref || 'develop' }}
 
   deploy:
     runs-on: ubuntu-22.04
@@ -25,11 +41,13 @@ jobs:
 
     needs: [build]
 
+    environment: email-function-${{ inputs.environment || 'test' }}
+
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
-          role-to-assume: arn:aws:iam::197170241226:role/github-actions
+          role-to-assume: ${{ vars.IAM_ROLE_ARN }}
           aws-region: eu-central-1
 
       - name: Retrieve email-function artifact
@@ -39,8 +57,8 @@ jobs:
           path: bun-packages/packages/email-function/dist
 
       - name: Prepare ZIP
-        run: zip --recurse-paths dist.zip dist
-        working-directory: bun-packages/packages/email-function/
+        run: zip -r ../dist.zip .
+        working-directory: bun-packages/packages/email-function/dist/
 
       - name: Deploy
         run: aws lambda update-function-code --function-name email-function --zip-file fileb://dist.zip

@@ -16,7 +16,7 @@ jobs:
     uses: ./.github/workflows/terraform-plan.yml
     with:
       environment: ${{ inputs.environment }}
-      workflow_call: true
+      store_plan: true
     secrets: inherit
 
   apply:

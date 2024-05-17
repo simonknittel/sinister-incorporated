@@ -24,10 +24,7 @@ on:
         required: true
         default: "test"
         type: string
-
-      # `github.event_name` is `workflow_dispatch` even for `workflow_call`.
-      # https://github.com/actions/runner/discussions/1884
-      workflow_call:
+      store_plan:
         required: false
         type: boolean
 
@@ -129,7 +126,7 @@ jobs:
 
       - name: Store artifact
         uses: actions/upload-artifact@v4.3.3
-        if: inputs.workflow_call
+        if: inputs.store_plan || false
         with:
           name: tfplan
           path: terraform/tfplan
