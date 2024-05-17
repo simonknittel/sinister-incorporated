@@ -37,7 +37,10 @@ resource "aws_lambda_provisioned_concurrency_config" "main" {
   qualifier                         = aws_lambda_function.main.version
 }
 
-data "archive_file" "main" {
+# The resource is marked as deprecated, however, we need to use this over the data source one since we
+# export the plan and reuse it later. This is not possible with the data source.
+# See https://github.com/hashicorp/terraform-provider-archive/issues/218
+resource "archive_file" "main" {
   source_dir       = "${path.module}/placeholder"
   output_path      = "${path.module}/dist.zip"
   type             = "zip"
