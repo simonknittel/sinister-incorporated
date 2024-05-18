@@ -6,29 +6,28 @@ import { prisma } from "../../../../../server/db";
 import { Actions } from "../../../../_components/Actions";
 import { DeleteManufacturerButton } from "./DeleteManufacturerButton";
 
-const getManufacturers = async () => {
-  return prisma.manufacturer.findMany({
-    select: {
-      id: true,
-      imageId: true,
-      name: true,
+const getManufacturers = () => {
+  return unstable_cache(
+    () =>
+      prisma.manufacturer.findMany({
+        select: {
+          id: true,
+          imageId: true,
+          name: true,
+        },
+        orderBy: {
+          name: "asc",
+        },
+      }),
+    ["manufacturer"],
+    {
+      tags: ["manufacturer"],
     },
-    orderBy: {
-      name: "asc",
-    },
-  });
+  )();
 };
 
-const getCachedManufacturers = unstable_cache(
-  getManufacturers,
-  ["manufacturer"],
-  {
-    tags: ["manufacturer"],
-  },
-);
-
 export const ManufacturersTile = async () => {
-  const rows = await getCachedManufacturers();
+  const rows = await getManufacturers();
 
   return (
     <section className="p-8 pb-4 bg-neutral-800/50  mt-4 rounded-2xl overflow-auto">
