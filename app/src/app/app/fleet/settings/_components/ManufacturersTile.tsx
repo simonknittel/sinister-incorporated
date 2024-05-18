@@ -19,9 +19,13 @@ const getManufacturers = async () => {
   });
 };
 
-const getCachedManufacturers = unstable_cache(getManufacturers, [], {
-  tags: ["manufacturer"],
-});
+const getCachedManufacturers = unstable_cache(
+  getManufacturers,
+  ["manufacturer"],
+  {
+    tags: ["manufacturer"],
+  },
+);
 
 export const ManufacturersTile = async () => {
   const rows = await getCachedManufacturers();
