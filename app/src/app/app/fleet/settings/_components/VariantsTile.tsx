@@ -26,7 +26,7 @@ const getVariantsBySeriesId = async (seriesId: Series["id"]) => {
 const getCachedVariantsBySeriesId = (seriesId: Variant["id"]) =>
   unstable_cache(
     async (variantId: Variant["id"]) => getVariantsBySeriesId(variantId),
-    [],
+    ["variant"],
     {
       tags: [`series:${seriesId}`],
     },

@@ -28,7 +28,7 @@ const getCachedSeriesByManufacturerId = (manufacturerId: Manufacturer["id"]) =>
   unstable_cache(
     async (manufacturerId: Manufacturer["id"]) =>
       getSeriesByManufacturerId(manufacturerId),
-    [],
+    ["series"],
     {
       tags: [`manufacturer:${manufacturerId}`],
     },
