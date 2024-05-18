@@ -1,6 +1,9 @@
-import type { MetadataRoute } from "next";
+import { type MetadataRoute } from "next";
+import screenshotDashboardMobileSrc from "../../../docs/screenshot-dashboard-mobile.png";
 import screenshotDashboardSrc from "../../../docs/screenshot-dashboard.png";
+import screenshotSpynetCitizenMobileSrc from "../../../docs/screenshot-spynet-citizen-mobile.png";
 import screenshotSpynetCitizenSrc from "../../../docs/screenshot-spynet-citizen.png";
+import screenshotSpynetMobileSrc from "../../../docs/screenshot-spynet-mobile.png";
 import faviconSrc from "../assets/favicon.svg";
 import { env } from "../env.mjs";
 
@@ -49,6 +52,24 @@ export default function manifest(): MetadataRoute.Manifest {
         form_factor: "wide",
         src: screenshotSpynetCitizenSrc.src,
         sizes: "1280x709",
+        type: "image/png",
+      },
+      {
+        form_factor: "narrow",
+        src: screenshotSpynetCitizenMobileSrc.src,
+        sizes: "577x1280",
+        type: "image/png",
+      },
+      {
+        form_factor: "narrow",
+        src: screenshotSpynetMobileSrc.src,
+        sizes: "577x1280",
+        type: "image/png",
+      },
+      {
+        form_factor: "narrow",
+        src: screenshotDashboardMobileSrc.src,
+        sizes: "577x1280",
         type: "image/png",
       },
     ],
