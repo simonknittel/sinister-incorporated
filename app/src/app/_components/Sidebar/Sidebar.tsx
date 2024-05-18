@@ -46,7 +46,6 @@ export const Sidebar = async () => {
                 <Link
                   href="/app"
                   className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                  prefetch={false}
                 >
                   <FaHome />
                   Dashboard
@@ -58,7 +57,6 @@ export const Sidebar = async () => {
                   <Link
                     href="/app/spynet"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                    prefetch={false}
                   >
                     <RiSpyFill />
                     Spynet
@@ -71,7 +69,6 @@ export const Sidebar = async () => {
                   <Link
                     href="/app/operations"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                    prefetch={false}
                   >
                     <RiSwordFill />
                     Operationen
@@ -84,7 +81,6 @@ export const Sidebar = async () => {
               <Link
                 href="/app/preview-channel"
                 className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                prefetch={false}
               >
                 <FaClock />
                 Preview Channel
@@ -97,7 +93,6 @@ export const Sidebar = async () => {
                   <Link
                     href="/app/fleet"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                    prefetch={false}
                   >
                     <MdWorkspaces />
                     Flotte
@@ -123,7 +118,6 @@ export const Sidebar = async () => {
                             //     true,
                             // },
                           )}
-                          prefetch={false}
                         >
                           <FaTable />
                           Citizen
@@ -134,7 +128,6 @@ export const Sidebar = async () => {
                         <Link
                           href="/app/spynet/notes"
                           className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                          prefetch={false}
                         >
                           <FaTable />
                           Notizen
@@ -145,7 +138,6 @@ export const Sidebar = async () => {
                         <Link
                           href="/app/spynet/other"
                           className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                          prefetch={false}
                         >
                           <FaTable />
                           Sonstige
@@ -177,7 +169,6 @@ export const Sidebar = async () => {
                       <Link
                         href="/app/settings"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                        prefetch={false}
                       >
                         <FaCog />
                         Einstellungen
@@ -190,7 +181,6 @@ export const Sidebar = async () => {
                       <Link
                         href="/app/roles"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                        prefetch={false}
                       >
                         <FaLock />
                         Rollen
@@ -206,7 +196,6 @@ export const Sidebar = async () => {
                       <Link
                         href="/app/fleet/settings/manufacturer"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                        prefetch={false}
                       >
                         <FaCog />
                         Schiffe
@@ -218,7 +207,6 @@ export const Sidebar = async () => {
                       <Link
                         href="/app/users"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 rounded"
-                        prefetch={false}
                       >
                         <FaUsers />
                         Benutzer

@@ -16,11 +16,11 @@ import Pagination from "../../_components/Pagination";
 import Filters from "./Filters";
 import Table from "./Table";
 
-interface Props {
+type Props = Readonly<{
   searchParams: URLSearchParams;
-}
+}>;
 
-const Tile = async ({ searchParams }: Readonly<Props>) => {
+export const Tile = async ({ searchParams }: Props) => {
   const authentication = await requireAuthentication();
 
   const currentPage = getCurrentPageFromSearchParams(searchParams);
@@ -151,5 +151,3 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
     </section>
   );
 };
-
-export default Tile;

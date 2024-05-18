@@ -58,7 +58,7 @@ export default async function Page({ searchParams }: Readonly<Props>) {
           <p>
             Um fortfahren zu können musst du deine E-Mail-Adresse (
             <i>{authentication.session.user.email}</i>) und die{" "}
-            <Link href="/privacy" className="underline" prefetch={false}>
+            <Link href="/privacy" className="underline">
               Datenschutzerklärung
             </Link>{" "}
             bestätigen.

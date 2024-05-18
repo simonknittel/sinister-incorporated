@@ -7,7 +7,7 @@ interface Props {
 
 export const Organization = ({ hit }: Readonly<Props>) => {
   return (
-    <Link href={`/app/spynet/organization/${hit.objectID}`} prefetch={false}>
+    <Link href={`/app/spynet/organization/${hit.objectID}`}>
       <span className="flex gap-2 items-baseline w-full">
         <p>{hit.names[0]}</p>
 

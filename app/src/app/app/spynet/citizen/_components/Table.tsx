@@ -86,7 +86,6 @@ const Table = ({
           <th>
             <Link
               href={`?${handleSearchParams.toString()}`}
-              prefetch={false}
               className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300"
             >
               Handle
@@ -110,7 +109,6 @@ const Table = ({
           <th>
             <Link
               href={`?${createdAtSearchParams.toString()}`}
-              prefetch={false}
               className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300 whitespace-nowrap"
             >
               Erstellt am
@@ -126,7 +124,6 @@ const Table = ({
             <th>
               <Link
                 href={`?${lastSeenAtSearchParams.toString()}`}
-                prefetch={false}
                 className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300 whitespace-nowrap"
               >
                 Zuletzt gesehen
@@ -250,7 +247,6 @@ const Table = ({
                   <Link
                     href={`/app/spynet/entity/${row.entity.id}`}
                     className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center text-sm whitespace-nowrap h-8"
-                    prefetch={false}
                   >
                     <FaExternalLinkAlt />
                     Vollständiger Eintrag

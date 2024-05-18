@@ -71,7 +71,6 @@ export default async function Page({ params }: Props) {
         <Link
           href="/app/spynet"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
-          prefetch={false}
         >
           Spynet
         </Link>

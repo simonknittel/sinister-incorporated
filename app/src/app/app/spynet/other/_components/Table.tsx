@@ -61,7 +61,6 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
           <th>
             <Link
               href={`?${confirmedAtSearchParams.toString()}`}
-              prefetch={false}
               className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300 whitespace-nowrap"
             >
               Bestätigt am
@@ -78,7 +77,6 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
           <th>
             <Link
               href={`?${createdAtSearchParams.toString()}`}
-              prefetch={false}
               className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300 whitespace-nowrap"
             >
               Eingereicht am
@@ -105,7 +103,6 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
                 <Link
                   href={`/app/spynet/entity/${row.entity.id}`}
                   className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center justify-between"
-                  prefetch={false}
                 >
                   <span className="overflow-hidden text-ellipsis">
                     {row.entity.handle ? (

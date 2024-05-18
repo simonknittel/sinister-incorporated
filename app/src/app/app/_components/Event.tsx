@@ -87,7 +87,6 @@ export const Event = async ({ className, event, index }: Props) => {
             <Link
               href={`/app/events/${event.id}`}
               className="flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-sinister-red-500 text-sinister-red-500 hover:border-sinister-red-300 active:border-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300 px-6 whitespace-nowrap"
-              prefetch={false}
             >
               Details
             </Link>
