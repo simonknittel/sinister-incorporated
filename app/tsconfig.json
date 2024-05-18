@@ -19,7 +19,8 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "target": "ESNext"
   },
   "include": [
     ".eslintrc.cjs",
