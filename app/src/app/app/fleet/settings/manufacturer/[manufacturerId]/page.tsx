@@ -8,6 +8,7 @@ import { ImageUpload } from "../../../../../_components/ImageUpload";
 import { SeriesTile } from "../../_components/SeriesTile";
 import { TileSkeleton } from "../../_components/TileSkeleton";
 import { getManufacturer } from "../_lib/getManufacturer";
+import { EditableName } from "./_components/EditableName";
 
 type Params = Readonly<{
   manufacturerId: string;
@@ -46,7 +47,6 @@ type Props = Readonly<{
 
 export default async function Page({ params }: Props) {
   const manufacturer = await getManufacturer(params.manufacturerId);
-
   if (!manufacturer) notFound();
 
   return (
@@ -72,7 +72,9 @@ export default async function Page({ params }: Props) {
 
           <dl className="mt-4">
             <dt className="text-neutral-500">Name</dt>
-            <dd>{manufacturer.name}</dd>
+            <dd>
+              <EditableName manufacturer={manufacturer} />
+            </dd>
           </dl>
         </div>
       </section>
