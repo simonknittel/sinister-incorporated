@@ -3,22 +3,20 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { authenticatePage } from "../../../../lib/auth/server";
 import nextjsSearchParamsToNativeSearchParams from "../../../../lib/nextjsSearchParamsToNativeSearchParams";
-import Tile from "./_components/Tile";
+import { Tile } from "./_components/Tile";
 import TileSkeleton from "./_components/TileSkeleton";
 
-export const revalidate = 60;
+export const revalidate = 0; // TODO: Revert to 60
 
 export const metadata: Metadata = {
   title: "Citizen - Spynet | S.A.M. - Sinister Incorporated",
 };
 
-interface Props {
+type Props = Readonly<{
   searchParams: { [key: string]: string | string[] | undefined };
-}
+}>;
 
-export default async function Page({
-  searchParams: _searchParams,
-}: Readonly<Props>) {
+export default async function Page({ searchParams: _searchParams }: Props) {
   const authentication = await authenticatePage("/app/spynet/citizen");
   authentication.authorizePage("citizen", "read");
 
@@ -30,7 +28,6 @@ export default async function Page({
         <Link
           href="/app/spynet/search"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
-          prefetch={false}
         >
           Spynet
         </Link>

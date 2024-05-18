@@ -5,9 +5,9 @@ type Props = Readonly<{
   className?: string;
   text: string;
   size?: "md" | "lg";
-}>
+}>;
 
-export const Hero = ({className, text, size = "lg" }: Props) => {
+export const Hero = ({ className, text, size = "lg" }: Props) => {
   return (
     <h1
       className={clsx(

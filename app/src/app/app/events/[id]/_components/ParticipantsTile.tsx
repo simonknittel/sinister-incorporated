@@ -85,7 +85,6 @@ export const ParticipantsTile = async ({ className, event }: Props) => {
               {resolvedUser.entity && (
                 <Link
                   href={`/app/spynet/entity/${resolvedUser.entity.id}`}
-                  prefetch={false}
                   className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
                   title="Spynet"
                 >

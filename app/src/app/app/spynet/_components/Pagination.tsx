@@ -24,7 +24,6 @@ const Pagination = ({
         <Link
           href={`?${prevSearchParams.toString()}`}
           className="rounded-l border border-sinister-red-500 hover:border-sinister-red-300 text-sinister-red-500 hover:text-sinister-red-300 flex items-center w-11 justify-center"
-          prefetch={false}
         >
           <FaChevronLeft />
         </Link>
@@ -42,7 +41,6 @@ const Pagination = ({
         <Link
           href={`?${nextSearchparams.toString()}`}
           className="rounded-r border border-sinister-red-500 hover:border-sinister-red-300 text-sinister-red-500 hover:text-sinister-red-300 flex items-center w-11 justify-center"
-          prefetch={false}
         >
           <FaChevronRight />
         </Link>

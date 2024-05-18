@@ -57,7 +57,6 @@ export const ProfileTile = async ({ className }: Props) => {
       {authentication.session.entityId && showLink && (
         <Link
           href={`/app/spynet/entity/${authentication.session.entityId}`}
-          prefetch={false}
           className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
         >
           Vollständiges Profil
