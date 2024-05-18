@@ -1,4 +1,5 @@
 import { VariantStatus } from "@prisma/client";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "../../../../lib/auth/server";
@@ -57,6 +58,13 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       data,
     });
 
+    /**
+     * Revalidate cache(s)
+     */
+    revalidateTag("variant");
+    revalidateTag(`variant:${updatedItem.id}`);
+    revalidateTag(`series:${updatedItem.seriesId}`);
+
     return NextResponse.json(updatedItem);
   } catch (error) {
     return errorHandler(error);
@@ -89,11 +97,18 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Delete
      */
-    await prisma.variant.delete({
+    const deletedItem = await prisma.variant.delete({
       where: {
         id: paramsData,
       },
     });
+
+    /**
+     * Revalidate cache(s)
+     */
+    revalidateTag("variant");
+    revalidateTag(`variant:${deletedItem.id}`);
+    revalidateTag(`series:${deletedItem.seriesId}`);
 
     return NextResponse.json({});
   } catch (error) {

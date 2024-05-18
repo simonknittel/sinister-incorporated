@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 import { env } from "../../../../../env.mjs";
@@ -5,8 +6,8 @@ import { prisma } from "../../../../../server/db";
 import { Actions } from "../../../../_components/Actions";
 import { DeleteManufacturerButton } from "./DeleteManufacturerButton";
 
-export const ManufacturersTile = async () => {
-  const rows = await prisma.manufacturer.findMany({
+const getManufacturers = async () => {
+  return prisma.manufacturer.findMany({
     select: {
       id: true,
       imageId: true,
@@ -16,6 +17,14 @@ export const ManufacturersTile = async () => {
       name: "asc",
     },
   });
+};
+
+const getCachedManufacturers = unstable_cache(getManufacturers, [], {
+  tags: ["manufacturer"],
+});
+
+export const ManufacturersTile = async () => {
+  const rows = await getCachedManufacturers();
 
   return (
     <section className="p-8 pb-4 bg-neutral-800/50  mt-4 rounded-2xl overflow-auto">

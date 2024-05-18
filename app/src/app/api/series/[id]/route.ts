@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "../../../../lib/auth/server";
@@ -53,6 +54,13 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       data,
     });
 
+    /**
+     * Revalidate cache(s)
+     */
+    revalidateTag("series");
+    revalidateTag(`series:${updatedItem.id}`);
+    revalidateTag(`manufacturer:${updatedItem.manufacturerId}`);
+
     return NextResponse.json(updatedItem);
   } catch (error) {
     return errorHandler(error);
@@ -85,11 +93,18 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Delete
      */
-    await prisma.series.delete({
+    const deletedItem = await prisma.series.delete({
       where: {
         id: paramsData,
       },
     });
+
+    /**
+     * Revalidate cache(s)
+     */
+    revalidateTag("series");
+    revalidateTag(`series:${deletedItem.id}`);
+    revalidateTag(`manufacturer:${deletedItem.manufacturerId}`);
 
     return NextResponse.json({});
   } catch (error) {
