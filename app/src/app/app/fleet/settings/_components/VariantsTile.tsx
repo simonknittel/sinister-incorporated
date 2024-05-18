@@ -1,9 +1,4 @@
-import {
-  VariantStatus,
-  type Manufacturer,
-  type Series,
-  type Variant,
-} from "@prisma/client";
+import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import clsx from "clsx";
 import { unstable_cache } from "next/cache";
 import { prisma } from "../../../../../server/db";
@@ -12,25 +7,23 @@ import { CreateVariantButton } from "./CreateVariantButton";
 import { DeleteVariantButton } from "./DeleteVariantButton";
 import { UpdateVariantButton } from "./UpdateVariantButton";
 
-const getVariantsBySeriesId = async (seriesId: Series["id"]) => {
-  return prisma.variant.findMany({
-    where: {
-      seriesId,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  });
-};
-
-const getCachedVariantsBySeriesId = (seriesId: Variant["id"]) =>
-  unstable_cache(
-    async (variantId: Variant["id"]) => getVariantsBySeriesId(variantId),
+const getVariantsBySeriesId = (seriesId: Series["id"]) => {
+  return unstable_cache(
+    (seriesId: Series["id"]) =>
+      prisma.variant.findMany({
+        where: {
+          seriesId,
+        },
+        orderBy: {
+          name: "asc",
+        },
+      }),
     ["variant"],
     {
       tags: [`series:${seriesId}`],
     },
   )(seriesId);
+};
 
 type Props = Readonly<{
   className?: string;
@@ -43,7 +36,7 @@ export const VariantsTile = async ({
   manufacturerId,
   seriesId,
 }: Props) => {
-  const variants = await getCachedVariantsBySeriesId(seriesId);
+  const variants = await getVariantsBySeriesId(seriesId);
 
   return (
     <section
