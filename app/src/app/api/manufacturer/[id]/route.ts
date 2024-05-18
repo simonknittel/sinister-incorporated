@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "../../../../lib/auth/server";
@@ -54,6 +55,12 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     });
 
     /**
+     * Revalidate cache(s)
+     */
+    revalidateTag("manufacturer");
+    revalidateTag(`manufacturer:${updatedItem.id}`);
+
+    /**
      * Respond with the result
      */
     return NextResponse.json(updatedItem);
@@ -91,11 +98,17 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Delete
      */
-    await prisma.manufacturer.delete({
+    const deletedItem = await prisma.manufacturer.delete({
       where: {
         id: paramsData,
       },
     });
+
+    /**
+     * Revalidate cache(s)
+     */
+    revalidateTag("manufacturer");
+    revalidateTag(`manufacturer:${deletedItem.id}`);
 
     return NextResponse.json({});
   } catch (error) {

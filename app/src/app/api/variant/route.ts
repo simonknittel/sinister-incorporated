@@ -1,4 +1,5 @@
 import { VariantStatus } from "@prisma/client";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "../../../lib/auth/server";
@@ -33,6 +34,13 @@ export async function POST(request: Request) {
     const createdItem = await prisma.variant.create({
       data,
     });
+
+    /**
+     * Revalidate cache(s)
+     */
+    revalidateTag("variant");
+    revalidateTag(`variant:${createdItem.id}`);
+    revalidateTag(`series:${createdItem.seriesId}`);
 
     return NextResponse.json(createdItem);
   } catch (error) {

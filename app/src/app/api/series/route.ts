@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticateApi } from "../../../lib/auth/server";
@@ -36,6 +37,12 @@ export async function POST(request: Request) {
         },
       },
     });
+
+    /**
+     * Revalidate cache(s)
+     */
+    revalidateTag(`series:${createdItem.id}`);
+    revalidateTag(`manufacturer:${createdItem.manufacturerId}`);
 
     return NextResponse.json(createdItem);
   } catch (error) {
