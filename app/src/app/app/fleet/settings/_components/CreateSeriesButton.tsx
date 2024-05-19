@@ -3,7 +3,7 @@
 import { type Manufacturer } from "@prisma/client";
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSpinner } from "react-icons/fa";
 import Button from "../../../../_components/Button";
 
 const CreateSeriesModal = dynamic(() =>
@@ -26,7 +26,7 @@ export const CreateSeriesButton = ({ className, manufacturerId }: Props) => {
         onClick={() => setIsOpen(true)}
         title="Serie anlegen"
       >
-        Anlegen <FaPlus />
+        Anlegen {isOpen ? <FaSpinner className="animate-spin" /> : <FaPlus />}
       </Button>
 
       {isOpen && (

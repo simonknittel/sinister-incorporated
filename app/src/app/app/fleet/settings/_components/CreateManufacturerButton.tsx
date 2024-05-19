@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSpinner } from "react-icons/fa";
 import Button from "../../../../_components/Button";
 
 const CreateManufacturerModal = dynamic(() =>
@@ -17,7 +17,8 @@ export const CreateManufacturereButton = () => {
   return (
     <>
       <Button variant="primary" onClick={() => setIsOpen(true)}>
-        Hersteller anlegen <FaPlus />
+        Hersteller anlegen{" "}
+        {isOpen ? <FaSpinner className="animate-spin" /> : <FaPlus />}
       </Button>
 
       {isOpen && (
