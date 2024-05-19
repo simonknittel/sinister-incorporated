@@ -1,6 +1,6 @@
 export type ServerActionResponse = Readonly<{
   status: number;
-  message?: string;
+  errorMessage?: string;
 }>;
 
 export type ServerAction<PayloadGeneric> = (

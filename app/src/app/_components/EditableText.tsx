@@ -57,9 +57,10 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
             inputRef.current?.focus();
           }, 1);
 
-          if ("message" in response) {
+          if ("errorMessage" in response) {
             toast.error(
-              response.message || "Beim Speichern ist ein Fehler aufgetreten.",
+              response.errorMessage ||
+                "Beim Speichern ist ein Fehler aufgetreten.",
             );
           } else {
             toast.error("Beim Speichern ist ein Fehler aufgetreten.");

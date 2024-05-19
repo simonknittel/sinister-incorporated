@@ -1,8 +1,8 @@
 import { type Variant } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useTransition } from "react";
 import { toast } from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
+import { updateVariant } from "../../../../../lib/serverActions/variant";
 import { api } from "../../../../../trpc/react";
 import Button from "../../../../_components/Button";
 import Modal from "../../../../_components/Modal";
@@ -13,8 +13,6 @@ type Props = Readonly<{
 }>;
 
 export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const _variant = api.variant.getById.useQuery(
     { id: variant.id },
     {
@@ -22,41 +20,50 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
       refetchOnReconnect: false,
     },
   );
+  const [isPending, startTransition] = useTransition();
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
+  const _action = (formData: FormData) => {
+    startTransition(async () => {
+      try {
+        const name = formData.get("name")?.toString();
+        if (!name) {
+          toast.error("Das Feld kann nicht leer sein.");
+          return;
+        }
 
-    setIsLoading(true);
+        const status = formData.get("status")?.toString();
+        if (!status) {
+          toast.error("Das Feld kann nicht leer sein.");
+          return;
+        }
 
-    try {
-      const response = await fetch(`/api/variant/${variant.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          name: event.target.name.value,
-          status: event.target.status.value,
-        }),
-      });
+        const response = await updateVariant({
+          id: variant.id,
+          name,
+          status,
+        });
 
-      if (response.ok) {
-        router.refresh();
-        toast.success("Erfolgreich gespeichert");
-        onRequestClose();
-      } else {
+        if (response.status === 200) {
+          toast.success("Erfolgreich gespeichert");
+          onRequestClose();
+        } else {
+          toast.error(
+            response.errorMessage ||
+              "Beim Speichern ist ein Fehler aufgetreten.",
+          );
+        }
+      } catch (error) {
         toast.error("Beim Speichern ist ein Fehler aufgetreten.");
+        console.error(error);
       }
-    } catch (error) {
-      toast.error("Beim Speichern ist ein Fehler aufgetreten.");
-      console.error(error);
-    }
-
-    setIsLoading(false);
+    });
   };
 
   return (
     <Modal isOpen={true} onRequestClose={onRequestClose} className="w-[480px]">
       <h2 className="text-xl font-bold">Variante bearbeiten</h2>
 
-      <form onSubmit={(e) => handleSubmit(e)}>
+      <form action={_action}>
         <label className="mt-6 block" htmlFor="name">
           Name
         </label>
@@ -66,6 +73,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
         ) : (
           <input
             id="name"
+            name="name"
             type="text"
             className="p-2 rounded bg-neutral-900 w-full mt-2"
             required
@@ -83,8 +91,10 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
         ) : (
           <select
             id="status"
+            name="status"
             className="p-2 rounded bg-neutral-900 w-full mt-2"
             defaultValue={_variant.data?.status}
+            required
           >
             <option value="FLIGHT_READY">Flight ready</option>
             <option value="NOT_FLIGHT_READY">Nicht flight ready</option>
@@ -94,8 +104,8 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
         <small className="text-neutral-500">optional</small>
 
         <div className="flex justify-end mt-8">
-          <Button type="submit" disabled={isLoading || _variant.isFetching}>
-            {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
+          <Button type="submit" disabled={isPending || _variant.isFetching}>
+            {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Speichern
           </Button>
         </div>

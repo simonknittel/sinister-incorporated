@@ -7,24 +7,19 @@ import { authenticateAction } from "../auth/server";
 import { serverActionErrorHandler } from "./serverActionErrorHandler";
 import { type ServerAction } from "./types";
 
-/**
- * Make sure this file matches `/src/app/api/manufacturer/[id]`.
- */
-
 const updatePayloadSchema = z.object({
   id: z.string().cuid2(),
   name: z.string().trim().min(1).optional(),
-  imageId: z.string().trim().min(1).max(255).optional(),
 });
 
-export const updateManufacturer: ServerAction<
+export const updateSeries: ServerAction<
   z.infer<typeof updatePayloadSchema>
 > = async (payload) => {
   try {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("updateManufacturer");
+    const authentication = await authenticateAction("updateSeries");
     authentication.authorizeAction("manufacturersSeriesAndVariants", "manage");
 
     /**
@@ -35,7 +30,7 @@ export const updateManufacturer: ServerAction<
     /**
      * Make sure the item exists
      */
-    const existingItem = await prisma.manufacturer.findUnique({
+    const existingItem = await prisma.series.findUnique({
       where: {
         id,
       },
@@ -45,7 +40,7 @@ export const updateManufacturer: ServerAction<
     /**
      * Update
      */
-    const updatedItem = await prisma.manufacturer.update({
+    const updatedItem = await prisma.series.update({
       where: {
         id,
       },
@@ -55,8 +50,9 @@ export const updateManufacturer: ServerAction<
     /**
      * Revalidate cache(s)
      */
-    revalidateTag("manufacturer");
-    revalidateTag(`manufacturer:${updatedItem.id}`);
+    revalidateTag("series");
+    revalidateTag(`series:${updatedItem.id}`);
+    revalidateTag(`manufacturer:${updatedItem.manufacturerId}`);
 
     /**
      * Respond with the result
@@ -71,7 +67,7 @@ export const updateManufacturer: ServerAction<
         "401": "Du musst angemeldet sein, um diese Aktion auszuführen",
         "403": "Du bist nicht berechtigt, diese Aktion auszuführen",
         "404":
-          "Beim Speichern ist ein Fehler aufgetreten. Der Hersteller konnte nicht gefunden werden.",
+          "Beim Speichern ist ein Fehler aufgetreten. Die Series konnte nicht gefunden werden.",
         "409": "Konflikt. Bitte aktualisiere die Seite und probiere es erneut.",
         "500": "Beim Speichern ist ein unerwarteter Fehler aufgetreten",
       },
@@ -83,14 +79,14 @@ const deletePayloadSchema = z.object({
   id: z.string().cuid2(),
 });
 
-export const deleteManufacturer: ServerAction<
+export const deleteSeries: ServerAction<
   z.infer<typeof deletePayloadSchema>
 > = async (payload) => {
   try {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("deleteManufacturer");
+    const authentication = await authenticateAction("deleteSeries");
     authentication.authorizeAction("manufacturersSeriesAndVariants", "manage");
 
     /**
@@ -101,7 +97,7 @@ export const deleteManufacturer: ServerAction<
     /**
      * Make sure the item exists
      */
-    const existingItem = await prisma.manufacturer.findUnique({
+    const existingItem = await prisma.series.findUnique({
       where: {
         id,
       },
@@ -111,7 +107,7 @@ export const deleteManufacturer: ServerAction<
     /**
      * Delete
      */
-    await prisma.manufacturer.delete({
+    const deletedItem = await prisma.series.delete({
       where: {
         id,
       },
@@ -120,8 +116,9 @@ export const deleteManufacturer: ServerAction<
     /**
      * Revalidate cache(s)
      */
-    revalidateTag("manufacturer");
-    revalidateTag(`manufacturer:${id}`);
+    revalidateTag("series");
+    revalidateTag(`series:${deletedItem.id}`);
+    revalidateTag(`manufacturer:${deletedItem.manufacturerId}`);
 
     /**
      * Respond with the result
@@ -136,7 +133,7 @@ export const deleteManufacturer: ServerAction<
         "401": "Du musst angemeldet sein, um diese Aktion auszuführen",
         "403": "Du bist nicht berechtigt, diese Aktion auszuführen",
         "404":
-          "Beim Löschen ist ein Fehler aufgetreten. Der Hersteller konnte nicht gefunden werden.",
+          "Beim Löschen ist ein Fehler aufgetreten. Die Series konnte nicht gefunden werden.",
         "500": "Beim Löschen ist ein unerwarteter Fehler aufgetreten",
       },
     });

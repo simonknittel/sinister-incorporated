@@ -30,7 +30,7 @@ export const DeleteManufacturerButton = ({ manufacturer }: Props) => {
           toast.success("Erfolgreich gelöscht");
         } else {
           toast.error(
-            response.message || "Beim Löschen ist ein Fehler aufgetreten.",
+            response.errorMessage || "Beim Löschen ist ein Fehler aufgetreten.",
           );
         }
       } catch (error) {
