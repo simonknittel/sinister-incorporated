@@ -2,10 +2,14 @@
 
 import { type Manufacturer, type Series } from "@prisma/client";
 import clsx from "clsx";
+import dynamic from "next/dynamic";
 import { useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSpinner } from "react-icons/fa";
 import Button from "../../../../_components/Button";
-import { CreateVariantModal } from "./CreateVariantModal";
+
+const CreateVariantModal = dynamic(() =>
+  import("./CreateVariantModal").then((mod) => mod.CreateVariantModal),
+);
 
 type Props = Readonly<{
   className?: string;
@@ -27,7 +31,7 @@ export const CreateVariantButton = ({
         onClick={() => setIsOpen(true)}
         title="Variante anlegen"
       >
-        Anlegen <FaPlus />
+        Anlegen {isOpen ? <FaSpinner className="animate-spin" /> : <FaPlus />}
       </Button>
 
       {isOpen && (

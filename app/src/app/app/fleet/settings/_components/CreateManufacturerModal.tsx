@@ -8,7 +8,6 @@ import Button from "../../../../_components/Button";
 import Modal from "../../../../_components/Modal";
 
 type Props = Readonly<{
-  isOpen: boolean;
   onRequestClose: () => void;
 }>;
 
@@ -16,7 +15,7 @@ interface FormValues {
   name: Manufacturer["name"];
 }
 
-export const CreateManufacturerModal = ({ isOpen, onRequestClose }: Props) => {
+export const CreateManufacturerModal = ({ onRequestClose }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -49,11 +48,7 @@ export const CreateManufacturerModal = ({ isOpen, onRequestClose }: Props) => {
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      className="w-[480px]"
-    >
+    <Modal isOpen={true} onRequestClose={onRequestClose} className="w-[480px]">
       <h2 className="text-xl font-bold">Hersteller anlegen</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>

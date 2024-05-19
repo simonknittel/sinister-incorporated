@@ -45,7 +45,6 @@ export const CreateVariantModal = ({
     setIsLoading(true);
 
     try {
-      console.log(seriesId, event.target.seriesId);
       const response = await fetch("/api/variant", {
         method: "POST",
         body: JSON.stringify({
