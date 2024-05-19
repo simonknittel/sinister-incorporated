@@ -7,8 +7,8 @@ import { log } from "../../../../../../lib/logging";
 import { ImageUpload } from "../../../../../_components/ImageUpload";
 import { SeriesTile } from "../../_components/SeriesTile";
 import { TileSkeleton } from "../../_components/TileSkeleton";
+import { EditableManufacturerName } from "../_components/EditableManufacturerName";
 import { getManufacturer } from "../_lib/getManufacturer";
-import { EditableManufacturerName } from "./_components/EditableManufacturerName";
 
 type Params = Readonly<{
   manufacturerId: string;

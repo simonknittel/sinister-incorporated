@@ -5,8 +5,8 @@ import { serializeError } from "serialize-error";
 import { log } from "../../../../../../../../lib/logging";
 import { TileSkeleton } from "../../../../_components/TileSkeleton";
 import { VariantsTile } from "../../../../_components/VariantsTile";
+import { EditableSeriesName } from "../../../_components/EditableSeriesName";
 import { getSeriesAndManufacturer } from "../../../_lib/getSeriesAndManufacturer";
-import { EditableSeriesName } from "./_components/EditableSeriesName";
 
 type Params = Readonly<{
   manufacturerId: string;

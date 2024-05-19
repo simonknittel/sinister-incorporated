@@ -1,7 +1,7 @@
 "use client";
 
 import { type Manufacturer } from "@prisma/client";
-import { EditableText } from "../../../../../../_components/EditableText";
+import { EditableText } from "../../../../../_components/EditableText";
 
 type Props = Readonly<{
   className?: string;

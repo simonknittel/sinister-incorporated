@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
@@ -16,6 +17,7 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
   const [value, setValue] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
   const outsideRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
 
   useOutsideClick(outsideRef, () => {
     setIsEditing(false);
@@ -40,6 +42,7 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
           toast.success("Erfolgreich gespeichert");
           setValue(newValue);
           setIsEditing(false);
+          router.refresh();
         } else {
           /**
            * `setTimeout()` is need here because `isPending` is used for the `disabled` attribute on
