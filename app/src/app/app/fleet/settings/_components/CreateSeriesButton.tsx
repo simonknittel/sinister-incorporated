@@ -1,10 +1,14 @@
 "use client";
 
 import { type Manufacturer } from "@prisma/client";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import Button from "../../../../_components/Button";
-import { CreateSeriesModal } from "./CreateSeriesModal";
+
+const CreateSeriesModal = dynamic(() =>
+  import("./CreateSeriesModal").then((mod) => mod.CreateSeriesModal),
+);
 
 type Props = Readonly<{
   className?: string;

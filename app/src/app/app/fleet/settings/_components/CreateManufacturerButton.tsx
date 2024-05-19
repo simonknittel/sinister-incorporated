@@ -1,9 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import Button from "../../../../_components/Button";
-import { CreateManufacturerModal } from "./CreateManufacturerModal";
+
+const CreateManufacturerModal = dynamic(() =>
+  import("./CreateManufacturerModal").then(
+    (mod) => mod.CreateManufacturerModal,
+  ),
+);
 
 export const CreateManufacturereButton = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,10 +20,9 @@ export const CreateManufacturereButton = () => {
         Hersteller anlegen <FaPlus />
       </Button>
 
-      <CreateManufacturerModal
-        isOpen={isOpen}
-        onRequestClose={() => setIsOpen(false)}
-      />
+      {isOpen && (
+        <CreateManufacturerModal onRequestClose={() => setIsOpen(false)} />
+      )}
     </>
   );
 };
