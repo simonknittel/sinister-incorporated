@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import apiErrorHandler from "../../../../lib/apiErrorHandler";
 import { authenticateApi } from "../../../../lib/auth/server";
 import { prisma } from "../../../../server/db";
-import errorHandler from "../../_lib/errorHandler";
 
 interface Params {
   id: string;
@@ -60,7 +60,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Respond with an error
      */
-    return errorHandler(error);
+    return apiErrorHandler(error);
   }
 }
 
@@ -93,6 +93,6 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Respond with an error
      */
-    return errorHandler(error);
+    return apiErrorHandler(error);
   }
 }

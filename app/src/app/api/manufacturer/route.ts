@@ -1,9 +1,9 @@
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import apiErrorHandler from "../../../lib/apiErrorHandler";
 import { authenticateApi } from "../../../lib/auth/server";
 import { prisma } from "../../../server/db";
-import errorHandler from "../_lib/errorHandler";
 
 const postBodySchema = z.object({
   name: z.string().trim().min(1),
@@ -40,6 +40,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(createdItem);
   } catch (error) {
-    return errorHandler(error);
+    return apiErrorHandler(error);
   }
 }

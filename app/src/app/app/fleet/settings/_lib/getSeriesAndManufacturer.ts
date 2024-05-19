@@ -1,8 +1,8 @@
 import { type Manufacturer, type Series } from "@prisma/client";
 import { cache } from "react";
-import { prisma } from "../../../../../../server/db";
+import { prisma } from "../../../../../server/db";
 
-export const getSeriesAndManufacturer = cache(
+export const dedupedGetSeriesAndManufacturerById = cache(
   async (seriesId: Series["id"], manufacturerId: Manufacturer["id"]) => {
     return Promise.all([
       prisma.series.findUnique({

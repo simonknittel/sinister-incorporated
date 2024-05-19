@@ -5,10 +5,10 @@ import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 import { log } from "../../../../../../lib/logging";
 import { ImageUpload } from "../../../../../_components/ImageUpload";
+import { EditableManufacturerName } from "../../_components/EditableManufacturerName";
 import { SeriesTile } from "../../_components/SeriesTile";
 import { TileSkeleton } from "../../_components/TileSkeleton";
-import { EditableManufacturerName } from "../_components/EditableManufacturerName";
-import { getManufacturer } from "../_lib/getManufacturer";
+import { cachedGetManufacturerById } from "../../_lib/getManufacturerById";
 
 type Params = Readonly<{
   manufacturerId: string;
@@ -20,8 +20,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   try {
-    const manufacturer = await getManufacturer(params.manufacturerId);
-
+    const manufacturer = await cachedGetManufacturerById(params.manufacturerId);
     if (!manufacturer) return {};
 
     return {
@@ -46,7 +45,7 @@ type Props = Readonly<{
 }>;
 
 export default async function Page({ params }: Props) {
-  const manufacturer = await getManufacturer(params.manufacturerId);
+  const manufacturer = await cachedGetManufacturerById(params.manufacturerId);
   if (!manufacturer) notFound();
 
   return (

@@ -1,6 +1,6 @@
 import { type NextRequest } from "next/server";
 import { z } from "zod";
-import errorHandler from "../../_lib/errorHandler";
+import apiErrorHandler from "../../../../lib/apiErrorHandler";
 
 const bodySchema = z.object({
   message: z.string(),
@@ -12,6 +12,6 @@ export const POST = async (request: NextRequest) => {
     const data = bodySchema.parse(body);
     throw new Error(data.message);
   } catch (error) {
-    return errorHandler(error);
+    return apiErrorHandler(error);
   }
 };

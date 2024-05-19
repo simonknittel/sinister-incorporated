@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import apiErrorHandler from "../../../lib/apiErrorHandler";
 import { authenticateApi } from "../../../lib/auth/server";
 import { prisma } from "../../../server/db";
-import errorHandler from "../_lib/errorHandler";
 
 const postBodySchema = z.object({
   title: z.string().trim().min(1).max(255),
@@ -38,6 +38,6 @@ export async function POST(request: Request) {
     /**
      * Respond with an error
      */
-    return errorHandler(error);
+    return apiErrorHandler(error);
   }
 }

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import apiErrorHandler from "../../../../../../../../lib/apiErrorHandler";
 import { authenticateApi } from "../../../../../../../../lib/auth/server";
 import getLatestNoteAttributes from "../../../../../../../../lib/getLatestNoteAttributes";
 import { prisma } from "../../../../../../../../server/db";
-import errorHandler from "../../../../../../_lib/errorHandler";
 import { updateAlgoliaWithGenericLogType } from "../_lib/updateAlgoliaWithGenericLogType";
 import { updateEntityCaches } from "../_lib/updateEntityCaches";
 
@@ -197,6 +197,6 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Respond with an error
      */
-    return errorHandler(error);
+    return apiErrorHandler(error);
   }
 }

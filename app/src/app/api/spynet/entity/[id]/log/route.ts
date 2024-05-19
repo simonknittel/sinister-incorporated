@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import apiErrorHandler from "../../../../../../lib/apiErrorHandler";
 import { authenticateApi } from "../../../../../../lib/auth/server";
 import { prisma } from "../../../../../../server/db";
-import errorHandler from "../../../../_lib/errorHandler";
 import { updateEntityRolesCache } from "./_lib/updateEntityRolesCache";
 
 interface Params {
@@ -172,6 +172,6 @@ export async function POST(request: Request, { params }: { params: Params }) {
     /**
      * Respond with an error
      */
-    return errorHandler(error);
+    return apiErrorHandler(error);
   }
 }
