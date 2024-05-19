@@ -1,5 +1,5 @@
 import { type Variant } from "@prisma/client";
-import { useTransition } from "react";
+import { useId, useTransition } from "react";
 import { toast } from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import { updateVariant } from "../../../../../lib/serverActions/variant";
@@ -21,6 +21,8 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
     },
   );
   const [isPending, startTransition] = useTransition();
+  const nameId = useId();
+  const statusId = useId();
 
   const _action = (formData: FormData) => {
     startTransition(async () => {
@@ -64,7 +66,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
       <h2 className="text-xl font-bold">Variante bearbeiten</h2>
 
       <form action={_action}>
-        <label className="mt-6 block" htmlFor="name">
+        <label className="mt-6 block" htmlFor={nameId}>
           Name
         </label>
 
@@ -72,7 +74,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
           <div className="rounded bg-neutral-900 mt-2 h-10 animate-pulse " />
         ) : (
           <input
-            id="name"
+            id={nameId}
             name="name"
             type="text"
             className="p-2 rounded bg-neutral-900 w-full mt-2"
@@ -82,7 +84,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
           />
         )}
 
-        <label className="mt-6 block" htmlFor="status">
+        <label className="mt-6 block" htmlFor={statusId}>
           Status
         </label>
 
@@ -90,7 +92,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
           <div className="rounded bg-neutral-900 mt-2 h-10 animate-pulse " />
         ) : (
           <select
-            id="status"
+            id={statusId}
             name="status"
             className="p-2 rounded bg-neutral-900 w-full mt-2"
             defaultValue={_variant.data?.status}
@@ -104,7 +106,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
         <small className="text-neutral-500">optional</small>
 
         <div className="flex justify-end mt-8">
-          <Button type="submit" disabled={isPending || _variant.isFetching}>
+          <Button disabled={isPending || _variant.isFetching}>
             {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Speichern
           </Button>

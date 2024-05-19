@@ -42,12 +42,7 @@ export const DeleteVariantButton = ({ variant }: Props) => {
 
   return (
     <form action={_action}>
-      <Button
-        variant="tertiary"
-        disabled={isPending}
-        title="Löschen"
-        type="submit"
-      >
+      <Button variant="tertiary" disabled={isPending}>
         {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
         Löschen
       </Button>

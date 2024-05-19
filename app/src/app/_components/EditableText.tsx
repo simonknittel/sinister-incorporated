@@ -103,7 +103,7 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
             ref={inputRef}
           />
 
-          <button type="submit" disabled={isPending} className="group">
+          <button disabled={isPending} className="group" title="Speichern">
             {isPending ? (
               <FaSpinner className="text-sinister-red-500 animate-spin" />
             ) : (

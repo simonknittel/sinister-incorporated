@@ -42,12 +42,7 @@ export const DeleteManufacturerButton = ({ manufacturer }: Props) => {
 
   return (
     <form action={_action}>
-      <Button
-        title="Löschen"
-        disabled={isPending}
-        variant="tertiary"
-        type="submit"
-      >
+      <Button disabled={isPending} variant="tertiary">
         {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
         Löschen
       </Button>
