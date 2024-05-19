@@ -6,7 +6,7 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import DeleteShip from "./DeleteShip";
-import EditShip from "./EditShip";
+import { EditableShipName } from "./EditableShipName";
 
 type Props = Readonly<{
   className?: string;
@@ -28,10 +28,14 @@ export const MyShipTile = ({ className, ship }: Props) => {
       )}
     >
       <div className="flex justify-between items-center">
-        <h3 className="font-bold p-4">{ship.name || ship.variant.name}</h3>
+        <h3 className="font-bold p-4">
+          <EditableShipName
+            shipId={ship.id}
+            name={ship.name || ship.variant.name}
+          />
+        </h3>
 
         <div className="pr-2">
-          <EditShip ship={ship} />
           <DeleteShip ship={ship} />
         </div>
       </div>

@@ -47,9 +47,15 @@ export const MyFleetTile = async ({ className }: Props) => {
     <section className={clsx(className, "flex flex-col gap-4")}>
       <h2 className="font-bold">Mein Schiffe</h2>
 
-      {myShips.map((ship) => (
-        <MyShipTile key={ship.id} ship={ship} className="w-full" />
-      ))}
+      {myShips
+        .toSorted((a, b) => {
+          return (a.name || a.variant.name).localeCompare(
+            b.name || b.variant.name,
+          );
+        })
+        .map((ship) => (
+          <MyShipTile key={ship.id} ship={ship} className="w-full" />
+        ))}
 
       <AssignShip data={allVariants} />
     </section>
