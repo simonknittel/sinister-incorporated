@@ -6,6 +6,7 @@ import { log } from "../../../../../../../../lib/logging";
 import { TileSkeleton } from "../../../../_components/TileSkeleton";
 import { VariantsTile } from "../../../../_components/VariantsTile";
 import { getSeriesAndManufacturer } from "../../../_lib/getSeriesAndManufacturer";
+import { EditableSeriesName } from "./_components/EditableSeriesName";
 
 type Params = Readonly<{
   manufacturerId: string;
@@ -61,7 +62,9 @@ export default async function Page({ params }: Props) {
 
         <dl>
           <dt className="text-neutral-500">Name</dt>
-          <dd>{series.name}</dd>
+          <dd>
+            <EditableSeriesName series={series} />
+          </dd>
         </dl>
       </section>
 

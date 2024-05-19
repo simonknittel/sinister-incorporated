@@ -7,7 +7,8 @@
     // this affects the `GET /my-path 200 in 100ms` logs from Next.js. This happens since
     // these are written using `process.stdout.write()` instead of `console.log()`.
     //
-    // The type `node` is less visibly pleasing in comparison to `node-terminal`.
+    // The type `node` is less visibly pleasing in comparison to `node-terminal`. E.g.
+    // colors are missing.
     {
       "name": "Next.js: debug server-side",
       "type": "node",

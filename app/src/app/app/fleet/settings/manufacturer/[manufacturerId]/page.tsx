@@ -8,7 +8,7 @@ import { ImageUpload } from "../../../../../_components/ImageUpload";
 import { SeriesTile } from "../../_components/SeriesTile";
 import { TileSkeleton } from "../../_components/TileSkeleton";
 import { getManufacturer } from "../_lib/getManufacturer";
-import { EditableName } from "./_components/EditableName";
+import { EditableManufacturerName } from "./_components/EditableManufacturerName";
 
 type Params = Readonly<{
   manufacturerId: string;
@@ -73,7 +73,7 @@ export default async function Page({ params }: Props) {
           <dl className="mt-4">
             <dt className="text-neutral-500">Name</dt>
             <dd>
-              <EditableName manufacturer={manufacturer} />
+              <EditableManufacturerName manufacturer={manufacturer} />
             </dd>
           </dl>
         </div>

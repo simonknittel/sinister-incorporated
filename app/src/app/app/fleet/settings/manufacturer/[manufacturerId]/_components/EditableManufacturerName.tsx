@@ -8,7 +8,10 @@ type Props = Readonly<{
   manufacturer: Pick<Manufacturer, "id" | "name">;
 }>;
 
-export const EditableName = ({ className, manufacturer }: Props) => {
+export const EditableManufacturerName = ({
+  className,
+  manufacturer,
+}: Props) => {
   const action = (newValue: string) => {
     return fetch(`/api/manufacturer/${manufacturer.id}`, {
       method: "PATCH",
