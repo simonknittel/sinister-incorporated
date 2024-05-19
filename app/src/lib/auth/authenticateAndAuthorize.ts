@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { authOptions } from "../../server/auth";
 import {
+  requireConfirmedEmailForAction,
   requireConfirmedEmailForApi,
   requireConfirmedEmailForPage,
 } from "../emailConfirmation";
@@ -100,6 +101,47 @@ export async function authenticateApi(
         log.info("Unauthorized request to API", {
           requestPath,
           requestMethod,
+          userId: authentication.session.user.id,
+          reason: "Insufficient permissions",
+        });
+
+        throw new Error("Unauthorized");
+      }
+
+      return result;
+    },
+  };
+}
+
+export async function authenticateAction(actionName?: string) {
+  const authentication = await authenticate();
+
+  if (!authentication) {
+    log.info("Unauthenticated request to action", {
+      actionName,
+      reason: "No session",
+    });
+
+    throw new Error("Unauthenticated");
+  }
+
+  await requireConfirmedEmailForAction(authentication.session);
+
+  if (!authentication.authorize("login", "manage"))
+    throw new Error("Unauthorized");
+
+  return {
+    ...authentication,
+    authorizeAction: (
+      resource: PermissionSet["resource"],
+      operation: PermissionSet["operation"],
+      attributes?: PermissionSet["attributes"],
+    ) => {
+      const result = authentication.authorize(resource, operation, attributes);
+
+      if (!result) {
+        log.info("Unauthorized request to action", {
+          actionName,
           userId: authentication.session.user.id,
           reason: "Insufficient permissions",
         });

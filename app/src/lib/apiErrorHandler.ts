@@ -2,9 +2,9 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";
 import { ZodError } from "zod";
-import { log } from "../../../lib/logging";
+import { log } from "./logging";
 
-export default function errorHandler(
+export default function apiErrorHandler(
   error: unknown,
   responseInit: ResponseInit = {},
 ) {
@@ -30,10 +30,10 @@ export default function errorHandler(
       },
       { status: 403, ...responseInit },
     );
-  } else if (error instanceof Error && error.message === "Not Found") {
+  } else if (error instanceof Error && error.message === "Not found") {
     return NextResponse.json(
       {
-        message: "Not Found",
+        message: "Not found",
       },
       { status: 404, ...responseInit },
     );

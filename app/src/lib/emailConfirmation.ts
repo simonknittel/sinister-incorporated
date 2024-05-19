@@ -84,6 +84,20 @@ export const requireConfirmedEmailForApi = async (session: Session) => {
   }
 };
 
+export const requireConfirmedEmailForAction = async (session: Session) => {
+  if (!(await requiresEmailConfirmation(session))) return;
+
+  if (!session.user.emailVerified) {
+    log.info("Unauthenticated request to action", {
+      // TODO: Add action name
+      userId: session.user.id,
+      reason: "Unconfirmed email",
+    });
+
+    throw new Error("Unauthorized");
+  }
+};
+
 export const requireConfirmedEmailForTrpc = async (session: Session) => {
   if (!(await requiresEmailConfirmation(session))) return;
 

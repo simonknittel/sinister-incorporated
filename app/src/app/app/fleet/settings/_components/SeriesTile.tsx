@@ -1,33 +1,10 @@
 import { type Manufacturer } from "@prisma/client";
 import clsx from "clsx";
-import { unstable_cache } from "next/cache";
 import Link from "next/link";
-import { prisma } from "../../../../../server/db";
 import { Actions } from "../../../../_components/Actions";
+import { cachedGetSeriesByManufacturerId } from "../_lib/getSeriesByManufacturerId";
 import { CreateSeriesButton } from "./CreateSeriesButton";
 import { DeleteSeriesButton } from "./DeleteSeriesButton";
-
-const getSeriesByManufacturerId = (manufacturerId: Manufacturer["id"]) => {
-  return unstable_cache(
-    (manufacturerId: Manufacturer["id"]) =>
-      prisma.series.findMany({
-        select: {
-          id: true,
-          name: true,
-        },
-        where: {
-          manufacturerId,
-        },
-        orderBy: {
-          name: "asc",
-        },
-      }),
-    ["series"],
-    {
-      tags: [`manufacturer:${manufacturerId}`],
-    },
-  )(manufacturerId);
-};
 
 type Props = Readonly<{
   className?: string;
@@ -35,7 +12,7 @@ type Props = Readonly<{
 }>;
 
 export const SeriesTile = async ({ className, manufacturerId }: Props) => {
-  const series = await getSeriesByManufacturerId(manufacturerId);
+  const series = await cachedGetSeriesByManufacturerId(manufacturerId);
 
   return (
     <section

@@ -1,10 +1,10 @@
 "use client";
 
 import { type Manufacturer } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
+import { deleteManufacturer } from "../../../../../lib/serverActions/manufacturer";
 import Button from "../../../../_components/Button";
 
 type Props = Readonly<{
@@ -12,49 +12,45 @@ type Props = Readonly<{
 }>;
 
 export const DeleteManufacturerButton = ({ manufacturer }: Props) => {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  const handleClick = async () => {
-    setIsLoading(true);
+  const _action = () => {
+    startTransition(async () => {
+      try {
+        const confirmation = window.confirm(
+          `Willst du "${manufacturer.name}" löschen?`,
+        );
+        if (!confirmation) return;
 
-    try {
-      const confirmation = window.confirm(
-        `Willst du "${manufacturer.name}" löschen?`,
-      );
+        const response = await deleteManufacturer({
+          id: manufacturer.id,
+        });
 
-      if (!confirmation) {
-        setIsLoading(false);
-        return;
-      }
-
-      const response = await fetch(`/api/manufacturer/${manufacturer.id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        router.refresh();
-        toast.success("Erfolgreich gelöscht");
-      } else {
+        if (response.status === 200) {
+          toast.success("Erfolgreich gelöscht");
+        } else {
+          toast.error(
+            response.message || "Beim Löschen ist ein Fehler aufgetreten.",
+          );
+        }
+      } catch (error) {
         toast.error("Beim Löschen ist ein Fehler aufgetreten.");
+        console.error(error);
       }
-    } catch (error) {
-      toast.error("Beim Löschen ist ein Fehler aufgetreten.");
-      console.error(error);
-    }
-
-    setIsLoading(false);
+    });
   };
 
   return (
-    <Button
-      title="Löschen"
-      onClick={() => void handleClick()}
-      disabled={isLoading}
-      variant="tertiary"
-      type="button"
-    >
-      {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />} Löschen
-    </Button>
+    <form action={_action}>
+      <Button
+        title="Löschen"
+        disabled={isPending}
+        variant="tertiary"
+        type="submit"
+      >
+        {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
+        Löschen
+      </Button>
+    </form>
   );
 };

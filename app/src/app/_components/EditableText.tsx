@@ -2,11 +2,12 @@ import clsx from "clsx";
 import { useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
+import { type ServerActionResponse } from "../../lib/serverActions/types";
 import { useOutsideClick } from "../../lib/useOutsideClick";
 
 type Props = Readonly<{
   className?: string;
-  action: (newValue: string) => Promise<Response>;
+  action: (newValue: string) => Promise<Response | ServerActionResponse>;
   initialValue: string;
 }>;
 
@@ -36,7 +37,13 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
 
         const response = await action(newValue);
 
-        if (response.ok) {
+        const isFetchResponse = response instanceof Response;
+        const isActionResponse = "status" in response;
+
+        if (
+          (isFetchResponse && response.ok) ||
+          (isActionResponse && response.status === 200)
+        ) {
           toast.success("Erfolgreich gespeichert");
           setValue(newValue);
           setIsEditing(false);
@@ -50,7 +57,13 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
             inputRef.current?.focus();
           }, 1);
 
-          toast.error("Beim Speichern ist ein Fehler aufgetreten.");
+          if ("message" in response) {
+            toast.error(
+              response.message || "Beim Speichern ist ein Fehler aufgetreten.",
+            );
+          } else {
+            toast.error("Beim Speichern ist ein Fehler aufgetreten.");
+          }
         }
       } catch (error) {
         /**

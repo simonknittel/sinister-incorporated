@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSeriesAndManufacturer } from "../../../../_lib/getSeriesAndManufacturer";
+import { dedupedGetSeriesAndManufacturerById } from "../../../../../_lib/getSeriesAndManufacturer";
 
 type Params = Readonly<{
   manufacturerId: string;
@@ -12,7 +12,7 @@ type Props = Readonly<{
 }>;
 
 export default async function Page({ params }: Props) {
-  const [series, manufacturer] = await getSeriesAndManufacturer(
+  const [series, manufacturer] = await dedupedGetSeriesAndManufacturerById(
     params.seriesId,
     params.manufacturerId,
   );

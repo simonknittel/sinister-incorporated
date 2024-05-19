@@ -3,9 +3,10 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 import { log } from "../../../../../../../../lib/logging";
+import { EditableSeriesName } from "../../../../_components/EditableSeriesName";
 import { TileSkeleton } from "../../../../_components/TileSkeleton";
 import { VariantsTile } from "../../../../_components/VariantsTile";
-import { getSeriesAndManufacturer } from "../../../_lib/getSeriesAndManufacturer";
+import { dedupedGetSeriesAndManufacturerById } from "../../../../_lib/getSeriesAndManufacturer";
 
 type Params = Readonly<{
   manufacturerId: string;
@@ -18,7 +19,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   try {
-    const [series] = await getSeriesAndManufacturer(
+    const [series] = await dedupedGetSeriesAndManufacturerById(
       params.seriesId,
       params.manufacturerId,
     );
@@ -47,7 +48,7 @@ type Props = Readonly<{
 }>;
 
 export default async function Page({ params }: Props) {
-  const [series, manufacturer] = await getSeriesAndManufacturer(
+  const [series, manufacturer] = await dedupedGetSeriesAndManufacturerById(
     params.seriesId,
     params.manufacturerId,
   );
@@ -61,7 +62,9 @@ export default async function Page({ params }: Props) {
 
         <dl>
           <dt className="text-neutral-500">Name</dt>
-          <dd>{series.name}</dd>
+          <dd>
+            <EditableSeriesName series={series} />
+          </dd>
         </dl>
       </section>
 

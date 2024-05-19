@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { saveObject } from "../../../../lib/algolia";
+import apiErrorHandler from "../../../../lib/apiErrorHandler";
 import { authenticateApi } from "../../../../lib/auth/server";
 import { log } from "../../../../lib/logging";
 import { scrapeOrganizationLogo } from "../../../../lib/scrapeOrganizationLogo";
 import { prisma } from "../../../../server/db";
-import errorHandler from "../../_lib/errorHandler";
 
 const postBodySchema = z.object({
   spectrumId: z.string().trim().min(1),
@@ -110,6 +110,6 @@ export async function POST(request: Request) {
     /**
      * Respond with an error
      */
-    return errorHandler(error);
+    return apiErrorHandler(error);
   }
 }

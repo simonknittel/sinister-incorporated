@@ -1,33 +1,12 @@
-import { unstable_cache } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 import { env } from "../../../../../env.mjs";
-import { prisma } from "../../../../../server/db";
 import { Actions } from "../../../../_components/Actions";
+import { cachedGetManufacturers } from "../_lib/getManufacturers";
 import { DeleteManufacturerButton } from "./DeleteManufacturerButton";
 
-const getManufacturers = () => {
-  return unstable_cache(
-    () =>
-      prisma.manufacturer.findMany({
-        select: {
-          id: true,
-          imageId: true,
-          name: true,
-        },
-        orderBy: {
-          name: "asc",
-        },
-      }),
-    ["manufacturer"],
-    {
-      tags: ["manufacturer"],
-    },
-  )();
-};
-
 export const ManufacturersTile = async () => {
-  const rows = await getManufacturers();
+  const rows = await cachedGetManufacturers();
 
   return (
     <section className="p-8 pb-4 bg-neutral-800/50  mt-4 rounded-2xl overflow-auto">

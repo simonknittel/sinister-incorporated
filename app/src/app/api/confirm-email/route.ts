@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { zfd } from "zod-form-data";
+import apiErrorHandler from "../../../lib/apiErrorHandler";
 import { authenticate } from "../../../lib/auth/server";
 import { log } from "../../../lib/logging";
 import { prisma } from "../../../server/db";
-import errorHandler from "../_lib/errorHandler";
 
 export const dynamic = "force-dynamic";
 
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    return errorHandler(error, {
+    return apiErrorHandler(error, {
       headers: {
         "Referrer-Policy": "no-referrer",
       },
