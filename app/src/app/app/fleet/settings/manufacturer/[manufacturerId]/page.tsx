@@ -64,6 +64,7 @@ export default async function Page({ params }: Props) {
             },
           )}
           imageClassName="w-full h-32"
+          pendingClassName="w-full h-32"
         />
 
         <div className="p-8 bg-neutral-800/50">
