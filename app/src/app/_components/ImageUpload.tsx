@@ -12,6 +12,7 @@ import useUpload from "../../lib/useUpload";
 type Props = Readonly<{
   className?: string;
   imageClassName?: string;
+  pendingClassName?: string;
   resourceType: string;
   resource: {
     id: string;
@@ -25,6 +26,7 @@ type Props = Readonly<{
 export const ImageUpload = ({
   className,
   imageClassName,
+  pendingClassName,
   resourceType,
   resource,
   width,
@@ -79,7 +81,11 @@ export const ImageUpload = ({
       )}
 
       {isPending && (
-        <FaSpinner className="animate-spin text-sinister-red-500" />
+        <div
+          className={clsx(pendingClassName, "flex items-center justify-center")}
+        >
+          <FaSpinner className="animate-spin text-sinister-red-500" />
+        </div>
       )}
 
       <input

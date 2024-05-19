@@ -106,6 +106,7 @@ const Update = ({ className, role }: Readonly<Props>) => {
               },
             )}
             imageClassName="size-32"
+            pendingClassName="size-32"
           />
 
           <div className="flex justify-end mt-8">
