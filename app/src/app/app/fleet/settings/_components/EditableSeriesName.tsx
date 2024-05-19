@@ -1,6 +1,7 @@
 "use client";
 
 import { type Series } from "@prisma/client";
+import { updateSeries } from "../../../../../lib/serverActions/series";
 import { EditableText } from "../../../../_components/EditableText";
 
 type Props = Readonly<{
@@ -10,11 +11,9 @@ type Props = Readonly<{
 
 export const EditableSeriesName = ({ className, series }: Props) => {
   const action = (newValue: string) => {
-    return fetch(`/api/series/${series.id}`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        name: newValue,
-      }),
+    return updateSeries({
+      id: series.id,
+      name: newValue,
     });
   };
 

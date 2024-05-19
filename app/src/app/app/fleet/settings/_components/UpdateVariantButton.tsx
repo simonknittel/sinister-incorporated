@@ -2,11 +2,15 @@
 
 import { type Variant } from "@prisma/client";
 import clsx from "clsx";
+import dynamic from "next/dynamic";
 import { useState } from "react";
-import { FaPen } from "react-icons/fa";
+import { FaPen, FaSpinner } from "react-icons/fa";
 import { useAction } from "../../../../_components/Actions";
 import Button from "../../../../_components/Button";
-import { UpdateVariantModal } from "./UpdateVariantModal";
+
+const UpdateVariantModal = dynamic(() =>
+  import("./UpdateVariantModal").then((mod) => mod.UpdateVariantModal),
+);
 
 type Props = Readonly<{
   className?: string;
@@ -19,12 +23,8 @@ export const UpdateVariantButton = ({ className, variant }: Props) => {
 
   return (
     <div className={clsx(className, "flex justify-center")}>
-      <Button
-        variant="tertiary"
-        onClick={() => setIsOpen(true)}
-        title="Variante bearbeiten"
-      >
-        <FaPen /> Bearbeiten
+      <Button variant="tertiary" onClick={() => setIsOpen(true)}>
+        {isOpen ? <FaSpinner className="animate-spin" /> : <FaPen />} Bearbeiten
       </Button>
 
       {isOpen && (

@@ -30,7 +30,7 @@ export const DeleteManufacturerButton = ({ manufacturer }: Props) => {
           toast.success("Erfolgreich gelöscht");
         } else {
           toast.error(
-            response.message || "Beim Löschen ist ein Fehler aufgetreten.",
+            response.errorMessage || "Beim Löschen ist ein Fehler aufgetreten.",
           );
         }
       } catch (error) {
@@ -42,12 +42,7 @@ export const DeleteManufacturerButton = ({ manufacturer }: Props) => {
 
   return (
     <form action={_action}>
-      <Button
-        title="Löschen"
-        disabled={isPending}
-        variant="tertiary"
-        type="submit"
-      >
+      <Button disabled={isPending} variant="tertiary">
         {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
         Löschen
       </Button>

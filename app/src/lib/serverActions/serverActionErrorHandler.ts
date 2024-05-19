@@ -4,28 +4,42 @@ import { ZodError } from "zod";
 import { log } from "../logging";
 import { type ServerActionResponse } from "./types";
 
-export default function serverActionErrorHandler(
+export const serverActionErrorHandler = (
   error: unknown,
-): ServerActionResponse {
-  if (error instanceof ZodError) {
+  options?: {
+    errorMessages?: {
+      400?: string;
+      401?: string;
+      403?: string;
+      404?: string;
+      409?: string;
+      500?: string;
+    };
+  },
+): ServerActionResponse => {
+  if (
+    error instanceof ZodError ||
+    (error instanceof Error &&
+      ["Bad request", "Unexpected end of JSON input"].includes(error.message))
+  ) {
     return {
       status: 400,
-      message: "Es wurde eine ungültige Anfrage gestellt.",
+      errorMessage: options?.errorMessages?.[400] || "Bad request",
     };
   } else if (error instanceof Error && error.message === "Unauthenticated") {
     return {
       status: 401,
-      message: "Zum Speichern musst du angemeldet sein.",
+      errorMessage: options?.errorMessages?.[401] || "Unauthenticated",
     };
   } else if (error instanceof Error && error.message === "Unauthorized") {
     return {
       status: 403,
-      message: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+      errorMessage: options?.errorMessages?.[403] || "Unauthorized",
     };
   } else if (error instanceof Error && error.message === "Not found") {
     return {
       status: 404,
-      message: "Der Eintrag konnte nicht gefunden werden.",
+      errorMessage: options?.errorMessages?.[404] || "Not found",
     };
   } else if (
     (error instanceof Error && error.message === "Duplicate") ||
@@ -33,15 +47,7 @@ export default function serverActionErrorHandler(
   ) {
     return {
       status: 409,
-      message: "Dieser Eintrag existiert bereits.",
-    };
-  } else if (
-    error instanceof Error &&
-    ["Bad request", "Unexpected end of JSON input"].includes(error.message)
-  ) {
-    return {
-      status: 400,
-      message: "Es wurde eine ungültige Anfrage gestellt.",
+      errorMessage: options?.errorMessages?.[409] || "Conflict",
     };
   }
 
@@ -51,6 +57,6 @@ export default function serverActionErrorHandler(
 
   return {
     status: 500,
-    message: "Beim Speichern ist ein unerwarteter Fehler aufgetreten.",
+    errorMessage: options?.errorMessages?.[500] || "Internal server error",
   };
-}
+};

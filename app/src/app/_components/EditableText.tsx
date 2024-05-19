@@ -57,9 +57,10 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
             inputRef.current?.focus();
           }, 1);
 
-          if ("message" in response) {
+          if ("errorMessage" in response) {
             toast.error(
-              response.message || "Beim Speichern ist ein Fehler aufgetreten.",
+              response.errorMessage ||
+                "Beim Speichern ist ein Fehler aufgetreten.",
             );
           } else {
             toast.error("Beim Speichern ist ein Fehler aufgetreten.");
@@ -102,7 +103,7 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
             ref={inputRef}
           />
 
-          <button type="submit" disabled={isPending} className="group">
+          <button disabled={isPending} className="group" title="Speichern">
             {isPending ? (
               <FaSpinner className="text-sinister-red-500 animate-spin" />
             ) : (

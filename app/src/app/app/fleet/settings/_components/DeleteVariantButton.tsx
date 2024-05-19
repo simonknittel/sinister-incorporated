@@ -1,10 +1,10 @@
 "use client";
 
 import { type Variant } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
+import { deleteVariant } from "../../../../../lib/serverActions/variant";
 import Button from "../../../../_components/Button";
 
 type Props = Readonly<{
@@ -12,48 +12,40 @@ type Props = Readonly<{
 }>;
 
 export const DeleteVariantButton = ({ variant }: Props) => {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  const handleClick = async () => {
-    setIsLoading(true);
+  const _action = () => {
+    startTransition(async () => {
+      try {
+        const confirmation = window.confirm(
+          `Willst du "${variant.name}" löschen?`,
+        );
+        if (!confirmation) return;
 
-    try {
-      const confirmation = window.confirm(
-        `Willst du "${variant.name}" löschen?`,
-      );
+        const response = await deleteVariant({
+          id: variant.id,
+        });
 
-      if (!confirmation) {
-        setIsLoading(false);
-        return;
-      }
-
-      const response = await fetch(`/api/variant/${variant.id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        router.refresh();
-        toast.success("Erfolgreich gelöscht");
-      } else {
+        if (response.status === 200) {
+          toast.success("Erfolgreich gelöscht");
+        } else {
+          toast.error(
+            response.errorMessage || "Beim Löschen ist ein Fehler aufgetreten.",
+          );
+        }
+      } catch (error) {
         toast.error("Beim Löschen ist ein Fehler aufgetreten.");
+        console.error(error);
       }
-    } catch (error) {
-      toast.error("Beim Löschen ist ein Fehler aufgetreten.");
-      console.error(error);
-    }
-
-    setIsLoading(false);
+    });
   };
 
   return (
-    <Button
-      title="Löschen"
-      disabled={isLoading}
-      onClick={() => void handleClick()}
-      variant="tertiary"
-    >
-      {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />} Löschen
-    </Button>
+    <form action={_action}>
+      <Button variant="tertiary" disabled={isPending}>
+        {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
+        Löschen
+      </Button>
+    </form>
   );
 };
