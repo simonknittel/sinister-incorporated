@@ -4,14 +4,17 @@ import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
 import { requireAuthentication } from "../../../lib/auth/server";
-import { getUnleashFlag } from "../../../lib/getUnleashFlag";
+import { dedupedGetUnleashFlag } from "../../../lib/getUnleashFlag";
+import { sleep } from "../../../lib/sleep";
 import { Chip } from "../Chip";
 import { CmdKLoader } from "../CmdK/CmdKLoader";
 import { Footer } from "../Footer";
 import { Account } from "./Account";
 import { RedBar } from "./RedBar";
 
-export const Sidebar = async () => {
+export const DesktopSidebar = async () => {
+  await sleep(2000, 2000);
+
   const authentication = await requireAuthentication();
 
   const showSpynet =
@@ -19,22 +22,23 @@ export const Sidebar = async () => {
     authentication.authorize("organization", "read");
 
   const showOperations =
-    (await getUnleashFlag("EnableOperations")) &&
+    (await dedupedGetUnleashFlag("EnableOperations")) &&
     authentication.authorize("operation", "manage");
 
-  const disableAlgolia = await getUnleashFlag("DisableAlgolia");
+  const disableAlgolia =
+    (await dedupedGetUnleashFlag("DisableAlgolia")) || false;
 
   return (
     <>
       {/* <GlobalAlert /> */}
 
-      <div className="bg-neutral-800/80 lg:bg-neutral-800/50 backdrop-blur lg:backdrop-blur-none shadow flex flex-col justify-between lg:rounded-2xl overflow-auto">
+      <div className="bg-neutral-800/50 flex flex-col justify-between rounded-2xl overflow-auto">
         <div>
           <Account />
 
           <CmdKLoader
             disableAlgolia={disableAlgolia}
-            className="hidden lg:block mt-4 mx-auto"
+            className="block mt-4 mx-auto"
           />
 
           <nav

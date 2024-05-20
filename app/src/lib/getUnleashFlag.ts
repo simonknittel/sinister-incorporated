@@ -4,7 +4,7 @@ import { serializeError } from "serialize-error";
 import { authenticate } from "./auth/server";
 import { log } from "./logging";
 
-export const getUnleashFlag = cache(
+export const dedupedGetUnleashFlag = cache(
   async (
     name:
       | "DisableAlgolia"

@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { authenticatePage } from "../../../lib/auth/server";
-import { getUnleashFlag } from "../../../lib/getUnleashFlag";
+import { dedupedGetUnleashFlag } from "../../../lib/getUnleashFlag";
 import { prisma } from "../../../server/db";
 import Note from "../../_components/Note";
 import CreateOperation from "./_components/CreateOperation";
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  if (!(await getUnleashFlag("EnableOperations"))) notFound();
+  if (!(await dedupedGetUnleashFlag("EnableOperations"))) notFound();
 
   const authentication = await authenticatePage("/app/operations");
   authentication.authorizePage("operation", "manage");
@@ -24,7 +24,7 @@ export default async function Page() {
   });
 
   return (
-    <main className="p-2 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8">
       <h1 className="text-xl font-bold">Operationen</h1>
 
       <Note

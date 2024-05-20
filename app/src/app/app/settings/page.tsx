@@ -37,7 +37,7 @@ export default async function Page() {
   }
 
   return (
-    <main className="p-2 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8">
       <h1 className="text-xl font-bold">Einstellungen</h1>
 
       {showNoteTypes && <NoteTypesTile className="mt-4" />}

@@ -9,7 +9,7 @@ interface Props {
 
 export default function Error({ error }: Readonly<Props>) {
   return (
-    <main className="p-2 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8">
       <Note
         message="Beim Laden der Events ist ein Fehler aufgetreten."
         error={error}

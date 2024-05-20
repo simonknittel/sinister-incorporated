@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { env } from "../env.mjs";
 import { prisma } from "../server/db";
-import { getUnleashFlag } from "./getUnleashFlag";
+import { dedupedGetUnleashFlag } from "./getUnleashFlag";
 import { log } from "./logging";
 import { sendEmailV2 } from "./sendEmail";
 
@@ -13,7 +13,7 @@ export const requestEmailConfirmation = async (
   userId: string,
   userEmail: string,
 ) => {
-  if (await getUnleashFlag("DisableConfirmationEmail")) return;
+  if (await dedupedGetUnleashFlag("DisableConfirmationEmail")) return;
 
   const emailConfirmationToken = createId();
 
@@ -45,7 +45,8 @@ export const requestEmailConfirmation = async (
 };
 
 export const requiresEmailConfirmation = async (session: Session) => {
-  if (await getUnleashFlag("DisableConfirmedEmailRequirement")) return false;
+  if (await dedupedGetUnleashFlag("DisableConfirmedEmailRequirement"))
+    return false;
 
   if (
     session.user.role === "admin" &&

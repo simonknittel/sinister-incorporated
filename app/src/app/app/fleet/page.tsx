@@ -18,7 +18,7 @@ export default async function Page() {
   const showMyFleetTile = authentication.authorize("ship", "manage");
 
   return (
-    <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">
+    <main className="p-2 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
         <Hero text="Flotte" />
       </div>
