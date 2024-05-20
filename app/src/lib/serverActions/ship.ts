@@ -1,7 +1,6 @@
 "use server";
 
-import { VariantStatus } from "@prisma/client";
-import { revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { prisma } from "../../server/db";
@@ -9,27 +8,18 @@ import { authenticateAction } from "../auth/server";
 import { serverActionErrorHandler } from "./serverActionErrorHandler";
 import { type ServerAction } from "./types";
 
-/**
- * Make sure this file matches `/src/app/api/variant/[id]`.
- */
-
 const updateSchema = zfd.formData({
   id: zfd.text(z.string().cuid2()),
-  name: zfd.text(z.string().trim().min(1).optional()),
-  status: zfd.text(
-    z
-      .enum([VariantStatus.FLIGHT_READY, VariantStatus.NOT_FLIGHT_READY])
-      .optional(),
-  ),
+  name: zfd.text(z.string().trim().optional()),
 });
 
-export const updateVariant: ServerAction = async (formData) => {
+export const updateShip: ServerAction = async (formData) => {
   try {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("updateVariant");
-    authentication.authorizeAction("manufacturersSeriesAndVariants", "manage");
+    const authentication = await authenticateAction("updateShip");
+    authentication.authorizeAction("ship", "manage");
 
     /**
      * Validate the request
@@ -39,9 +29,10 @@ export const updateVariant: ServerAction = async (formData) => {
     /**
      * Make sure the item exists
      */
-    const existingItem = await prisma.variant.findUnique({
+    const existingItem = await prisma.ship.findUnique({
       where: {
         id,
+        ownerId: authentication.session.user.id,
       },
     });
     if (!existingItem) throw new Error("Not found");
@@ -49,19 +40,13 @@ export const updateVariant: ServerAction = async (formData) => {
     /**
      * Update
      */
-    const updatedItem = await prisma.variant.update({
+    await prisma.ship.update({
       where: {
         id,
+        ownerId: authentication.session.user.id,
       },
       data,
     });
-
-    /**
-     * Revalidate cache(s)
-     */
-    revalidateTag("variant");
-    revalidateTag(`variant:${updatedItem.id}`);
-    revalidateTag(`series:${updatedItem.seriesId}`);
 
     /**
      * Respond with the result
@@ -76,7 +61,7 @@ export const updateVariant: ServerAction = async (formData) => {
         "401": "Du musst angemeldet sein, um diese Aktion auszuführen",
         "403": "Du bist nicht berechtigt, diese Aktion auszuführen",
         "404":
-          "Beim Speichern ist ein Fehler aufgetreten. Die Variante konnte nicht gefunden werden.",
+          "Beim Speichern ist ein Fehler aufgetreten. Das Schiff konnte nicht gefunden werden.",
         "409": "Konflikt. Bitte aktualisiere die Seite und probiere es erneut.",
         "500": "Beim Speichern ist ein unerwarteter Fehler aufgetreten",
       },
@@ -88,13 +73,13 @@ const deleteSchema = zfd.formData({
   id: zfd.text(z.string().cuid2()),
 });
 
-export const deleteVariant: ServerAction = async (formData) => {
+export const deleteShip: ServerAction = async (formData) => {
   try {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("deleteVariant");
-    authentication.authorizeAction("manufacturersSeriesAndVariants", "manage");
+    const authentication = await authenticateAction("deleteShip");
+    authentication.authorizeAction("ship", "manage");
 
     /**
      * Validate the request
@@ -104,9 +89,10 @@ export const deleteVariant: ServerAction = async (formData) => {
     /**
      * Make sure the item exists
      */
-    const existingItem = await prisma.variant.findUnique({
+    const existingItem = await prisma.ship.findUnique({
       where: {
         id,
+        ownerId: authentication.session.user.id,
       },
     });
     if (!existingItem) throw new Error("Not found");
@@ -114,18 +100,17 @@ export const deleteVariant: ServerAction = async (formData) => {
     /**
      * Delete
      */
-    const deletedItem = await prisma.variant.delete({
+    await prisma.ship.delete({
       where: {
         id,
+        ownerId: authentication.session.user.id,
       },
     });
 
     /**
      * Revalidate cache(s)
      */
-    revalidateTag("variant");
-    revalidateTag(`variant:${deletedItem.id}`);
-    revalidateTag(`series:${deletedItem.seriesId}`);
+    revalidatePath("/app/fleet");
 
     /**
      * Respond with the result
@@ -140,7 +125,7 @@ export const deleteVariant: ServerAction = async (formData) => {
         "401": "Du musst angemeldet sein, um diese Aktion auszuführen",
         "403": "Du bist nicht berechtigt, diese Aktion auszuführen",
         "404":
-          "Beim Löschen ist ein Fehler aufgetreten. Die Variante konnte nicht gefunden werden.",
+          "Beim Löschen ist ein Fehler aufgetreten. Das Schiff konnte nicht gefunden werden.",
         "500": "Beim Löschen ist ein unerwarteter Fehler aufgetreten",
       },
     });

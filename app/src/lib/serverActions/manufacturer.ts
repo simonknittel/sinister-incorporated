@@ -2,6 +2,7 @@
 
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
+import { zfd } from "zod-form-data";
 import { prisma } from "../../server/db";
 import { authenticateAction } from "../auth/server";
 import { serverActionErrorHandler } from "./serverActionErrorHandler";
@@ -11,15 +12,13 @@ import { type ServerAction } from "./types";
  * Make sure this file matches `/src/app/api/manufacturer/[id]`.
  */
 
-const updatePayloadSchema = z.object({
-  id: z.string().cuid2(),
-  name: z.string().trim().min(1).optional(),
-  imageId: z.string().trim().min(1).max(255).optional(),
+const updateSchema = zfd.formData({
+  id: zfd.text(z.string().cuid2()),
+  name: zfd.text(z.string().trim().min(1).optional()),
+  imageId: zfd.text(z.string().trim().min(1).max(255).optional()),
 });
 
-export const updateManufacturer: ServerAction<
-  z.infer<typeof updatePayloadSchema>
-> = async (payload) => {
+export const updateManufacturer: ServerAction = async (formData) => {
   try {
     /**
      * Authenticate and authorize the request
@@ -30,7 +29,7 @@ export const updateManufacturer: ServerAction<
     /**
      * Validate the request
      */
-    const { id, ...data } = updatePayloadSchema.parse(payload);
+    const { id, ...data } = updateSchema.parse(formData);
 
     /**
      * Make sure the item exists
@@ -79,13 +78,11 @@ export const updateManufacturer: ServerAction<
   }
 };
 
-const deletePayloadSchema = z.object({
-  id: z.string().cuid2(),
+const deleteSchema = zfd.formData({
+  id: zfd.text(z.string().cuid2()),
 });
 
-export const deleteManufacturer: ServerAction<
-  z.infer<typeof deletePayloadSchema>
-> = async (payload) => {
+export const deleteManufacturer: ServerAction = async (formData) => {
   try {
     /**
      * Authenticate and authorize the request
@@ -96,7 +93,7 @@ export const deleteManufacturer: ServerAction<
     /**
      * Validate the request
      */
-    const { id } = deletePayloadSchema.parse(payload);
+    const { id } = deleteSchema.parse(formData);
 
     /**
      * Make sure the item exists

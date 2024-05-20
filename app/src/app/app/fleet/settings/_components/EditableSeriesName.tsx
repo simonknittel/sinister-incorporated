@@ -10,11 +10,12 @@ type Props = Readonly<{
 }>;
 
 export const EditableSeriesName = ({ className, series }: Props) => {
-  const action = (newValue: string) => {
-    return updateSeries({
-      id: series.id,
-      name: newValue,
-    });
+  const action = (formData: FormData) => {
+    const _formData = new FormData();
+    _formData.set("id", series.id);
+    _formData.set("name", formData.get("value")?.toString() || "");
+
+    return updateSeries(_formData);
   };
 
   return (

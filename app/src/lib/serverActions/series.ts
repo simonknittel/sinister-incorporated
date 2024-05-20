@@ -2,19 +2,18 @@
 
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
+import { zfd } from "zod-form-data";
 import { prisma } from "../../server/db";
 import { authenticateAction } from "../auth/server";
 import { serverActionErrorHandler } from "./serverActionErrorHandler";
 import { type ServerAction } from "./types";
 
-const updatePayloadSchema = z.object({
-  id: z.string().cuid2(),
-  name: z.string().trim().min(1).optional(),
+const updateSchema = zfd.formData({
+  id: zfd.text(z.string().cuid2()),
+  name: zfd.text(z.string().trim().min(1).optional()),
 });
 
-export const updateSeries: ServerAction<
-  z.infer<typeof updatePayloadSchema>
-> = async (payload) => {
+export const updateSeries: ServerAction = async (formData) => {
   try {
     /**
      * Authenticate and authorize the request
@@ -25,7 +24,7 @@ export const updateSeries: ServerAction<
     /**
      * Validate the request
      */
-    const { id, ...data } = updatePayloadSchema.parse(payload);
+    const { id, ...data } = updateSchema.parse(formData);
 
     /**
      * Make sure the item exists
@@ -75,13 +74,11 @@ export const updateSeries: ServerAction<
   }
 };
 
-const deletePayloadSchema = z.object({
-  id: z.string().cuid2(),
+const deleteSchema = zfd.formData({
+  id: zfd.text(z.string().cuid2()),
 });
 
-export const deleteSeries: ServerAction<
-  z.infer<typeof deletePayloadSchema>
-> = async (payload) => {
+export const deleteSeries: ServerAction = async (formData) => {
   try {
     /**
      * Authenticate and authorize the request
@@ -92,7 +89,7 @@ export const deleteSeries: ServerAction<
     /**
      * Validate the request
      */
-    const { id } = deletePayloadSchema.parse(payload);
+    const { id } = deleteSchema.parse(formData);
 
     /**
      * Make sure the item exists

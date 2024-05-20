@@ -13,11 +13,12 @@ export const EditableManufacturerName = ({
   className,
   manufacturer,
 }: Props) => {
-  const action = (newValue: string) => {
-    return updateManufacturer({
-      id: manufacturer.id,
-      name: newValue,
-    });
+  const action = (formData: FormData) => {
+    const _formData = new FormData();
+    _formData.set("id", manufacturer.id);
+    _formData.set("name", formData.get("value")?.toString() || "");
+
+    return updateManufacturer(_formData);
   };
 
   return (
