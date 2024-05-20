@@ -5,7 +5,6 @@ import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
 import { requireAuthentication } from "../../../lib/auth/server";
 import { dedupedGetUnleashFlag } from "../../../lib/getUnleashFlag";
-import { sleep } from "../../../lib/sleep";
 import { Chip } from "../Chip";
 import { CmdKLoader } from "../CmdK/CmdKLoader";
 import { Footer } from "../Footer";
@@ -13,8 +12,6 @@ import { Account } from "./Account";
 import { RedBar } from "./RedBar";
 
 export const DesktopSidebar = async () => {
-  await sleep(2000, 2000);
-
   const authentication = await requireAuthentication();
 
   const showSpynet =
