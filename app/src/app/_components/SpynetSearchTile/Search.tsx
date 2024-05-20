@@ -49,7 +49,7 @@ const debounced = debouncePromise((items) => Promise.resolve(items), 300);
 
 const Search = () => {
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <Autocomplete
         openOnFocus={true}
         getSources={({ query }) => {
@@ -92,6 +92,7 @@ const Search = () => {
           clearButton:
             "hover:!text-sinister-red-500 focus:!text-sinister-red-500",
           loadingIndicator: "[&>svg]:!text-sinister-red-500",
+          detachedSearchButton: "!static",
         }}
         placeholder="Suche"
         // renderNoResults={() => "Kein Ergebnisse"} // TODO
