@@ -8,7 +8,7 @@ import { PreviewComments } from "../_components/PreviewComments";
 import QueryClientProviderContainer from "../_components/QueryClientProviderContainer";
 import SessionProviderContainer from "../_components/SessionProviderContainer";
 import { DesktopSidebarContainer } from "../_components/Sidebar/DesktopSidebarContainer";
-import { MobileActionBarContainer } from "../_components/Sidebar/MobileSidebarContainer";
+import { MobileActionBarContainer } from "../_components/Sidebar/MobileActionBarContainer";
 
 interface Props {
   children: ReactNode;
