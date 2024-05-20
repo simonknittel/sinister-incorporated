@@ -25,6 +25,7 @@ export const serverActionErrorHandler = (
     return {
       status: 400,
       errorMessage: options?.errorMessages?.[400] || "Bad request",
+      error: JSON.stringify(error),
     };
   } else if (error instanceof Error && error.message === "Unauthenticated") {
     return {

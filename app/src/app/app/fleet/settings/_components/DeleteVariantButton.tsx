@@ -14,7 +14,7 @@ type Props = Readonly<{
 export const DeleteVariantButton = ({ variant }: Props) => {
   const [isPending, startTransition] = useTransition();
 
-  const _action = () => {
+  const _action = (formData: FormData) => {
     startTransition(async () => {
       try {
         const confirmation = window.confirm(
@@ -22,9 +22,7 @@ export const DeleteVariantButton = ({ variant }: Props) => {
         );
         if (!confirmation) return;
 
-        const response = await deleteVariant({
-          id: variant.id,
-        });
+        const response = await deleteVariant(formData);
 
         if (response.status === 200) {
           toast.success("Erfolgreich gelöscht");
@@ -42,7 +40,8 @@ export const DeleteVariantButton = ({ variant }: Props) => {
 
   return (
     <form action={_action}>
-      <Button variant="tertiary" disabled={isPending}>
+      <input type="hidden" name="id" value={variant.id} />
+      <Button variant="tertiary" disabled={isPending} type="submit">
         {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
         Löschen
       </Button>

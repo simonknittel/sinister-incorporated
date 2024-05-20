@@ -27,23 +27,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
   const _action = (formData: FormData) => {
     startTransition(async () => {
       try {
-        const name = formData.get("name")?.toString();
-        if (!name) {
-          toast.error("Das Feld kann nicht leer sein.");
-          return;
-        }
-
-        const status = formData.get("status")?.toString();
-        if (!status) {
-          toast.error("Das Feld kann nicht leer sein.");
-          return;
-        }
-
-        const response = await updateVariant({
-          id: variant.id,
-          name,
-          status,
-        });
+        const response = await updateVariant(formData);
 
         if (response.status === 200) {
           toast.success("Erfolgreich gespeichert");
@@ -66,6 +50,8 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
       <h2 className="text-xl font-bold">Variante bearbeiten</h2>
 
       <form action={_action}>
+        <input type="hidden" name="id" value={variant.id} />
+
         <label className="mt-6 block" htmlFor={nameId}>
           Name
         </label>
@@ -95,7 +81,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
             id={statusId}
             name="status"
             className="p-2 rounded bg-neutral-900 w-full mt-2"
-            defaultValue={_variant.data?.status}
+            defaultValue={_variant.data?.status || "FLIGHT_READY"}
             required
           >
             <option value="FLIGHT_READY">Flight ready</option>
@@ -106,7 +92,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
         <small className="text-neutral-500">optional</small>
 
         <div className="flex justify-end mt-8">
-          <Button disabled={isPending || _variant.isFetching}>
+          <Button disabled={isPending || _variant.isFetching} type="submit">
             {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Speichern
           </Button>

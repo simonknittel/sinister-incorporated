@@ -1,6 +1,7 @@
 "use client";
 
 import { type Ship } from "@prisma/client";
+import { updateShip } from "../../../../lib/serverActions/ship";
 import { EditableText } from "../../../_components/EditableText";
 
 type Props = Readonly<{
@@ -10,13 +11,12 @@ type Props = Readonly<{
 }>;
 
 export const EditableShipName = ({ className, shipId, name }: Props) => {
-  const action = (newValue: string) => {
-    return fetch(`/api/ship/${shipId}`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        name: newValue,
-      }),
-    });
+  const action = (formData: FormData) => {
+    const _formData = new FormData();
+    _formData.set("id", shipId);
+    _formData.set("name", formData.get("value")?.toString() || "");
+
+    return updateShip(_formData);
   };
 
   return (

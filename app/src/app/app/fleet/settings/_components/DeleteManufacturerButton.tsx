@@ -14,7 +14,7 @@ type Props = Readonly<{
 export const DeleteManufacturerButton = ({ manufacturer }: Props) => {
   const [isPending, startTransition] = useTransition();
 
-  const _action = () => {
+  const _action = (formData: FormData) => {
     startTransition(async () => {
       try {
         const confirmation = window.confirm(
@@ -22,9 +22,7 @@ export const DeleteManufacturerButton = ({ manufacturer }: Props) => {
         );
         if (!confirmation) return;
 
-        const response = await deleteManufacturer({
-          id: manufacturer.id,
-        });
+        const response = await deleteManufacturer(formData);
 
         if (response.status === 200) {
           toast.success("Erfolgreich gelöscht");
@@ -42,7 +40,8 @@ export const DeleteManufacturerButton = ({ manufacturer }: Props) => {
 
   return (
     <form action={_action}>
-      <Button disabled={isPending} variant="tertiary">
+      <input type="hidden" name="id" value={manufacturer.id} />
+      <Button disabled={isPending} variant="tertiary" type="submit">
         {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
         Löschen
       </Button>

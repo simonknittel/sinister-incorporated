@@ -14,7 +14,7 @@ type Props = Readonly<{
 export const DeleteSeriesButton = ({ series }: Props) => {
   const [isPending, startTransition] = useTransition();
 
-  const _action = () => {
+  const _action = (formData: FormData) => {
     startTransition(async () => {
       try {
         const confirmation = window.confirm(
@@ -22,9 +22,7 @@ export const DeleteSeriesButton = ({ series }: Props) => {
         );
         if (!confirmation) return;
 
-        const response = await deleteSeries({
-          id: series.id,
-        });
+        const response = await deleteSeries(formData);
 
         if (response.status === 200) {
           toast.success("Erfolgreich gelöscht");
@@ -42,7 +40,8 @@ export const DeleteSeriesButton = ({ series }: Props) => {
 
   return (
     <form action={_action}>
-      <Button variant="tertiary" disabled={isPending}>
+      <input type="hidden" name="id" value={series.id} />
+      <Button variant="tertiary" disabled={isPending} type="submit">
         {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
         Löschen
       </Button>

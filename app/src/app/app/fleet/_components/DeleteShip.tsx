@@ -1,64 +1,54 @@
 "use client";
 
 import { type Ship, type Variant } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
+import { deleteShip } from "../../../../lib/serverActions/ship";
 
-interface Props {
+type Props = Readonly<{
   ship: Ship & {
     variant: Variant;
   };
-}
+}>;
 
-const DeleteShip = ({ ship }: Readonly<Props>) => {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+export const DeleteShip = ({ ship }: Props) => {
+  const [isPending, startTransition] = useTransition();
 
-  const handleClick = async () => {
-    setIsLoading(true);
+  const _action = (formData: FormData) => {
+    startTransition(async () => {
+      try {
+        const confirmation = window.confirm(
+          `Willst du "${ship.name}" löschen?`,
+        );
+        if (!confirmation) return;
 
-    try {
-      const confirmation = window.confirm(
-        `You are about to remove "${
-          ship.name || ship.variant.name
-        }". Do you want to continue?`,
-      );
+        const response = await deleteShip(formData);
 
-      if (!confirmation) {
-        setIsLoading(false);
-        return;
-      }
-
-      const response = await fetch(`/api/ship/${ship.id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        router.refresh();
-        toast.success("Erfolgreich gelöscht");
-      } else {
+        if (response.status === 200) {
+          toast.success("Erfolgreich gelöscht");
+        } else {
+          toast.error(
+            response.errorMessage || "Beim Löschen ist ein Fehler aufgetreten.",
+          );
+        }
+      } catch (error) {
         toast.error("Beim Löschen ist ein Fehler aufgetreten.");
+        console.error(error);
       }
-    } catch (error) {
-      toast.error("Beim Löschen ist ein Fehler aufgetreten.");
-      console.error(error);
-    }
-
-    setIsLoading(false);
+    });
   };
 
   return (
-    <button
-      onClick={() => void handleClick()}
-      disabled={isLoading}
-      className="px-2 py-2 text-neutral-500 hover:text-neutral-50"
-      type="button"
-    >
-      {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}
-    </button>
+    <form action={_action}>
+      <input type="hidden" name="id" value={ship.id} />
+      <button
+        disabled={isPending}
+        className="px-2 py-2 text-neutral-500 hover:text-neutral-50"
+        title="Löschen"
+      >
+        {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+      </button>
+    </form>
   );
 };
-
-export default DeleteShip;

@@ -5,7 +5,7 @@ import {
   type Variant,
 } from "@prisma/client";
 import clsx from "clsx";
-import DeleteShip from "./DeleteShip";
+import { DeleteShip } from "./DeleteShip";
 import { EditableShipName } from "./EditableShipName";
 
 type Props = Readonly<{
