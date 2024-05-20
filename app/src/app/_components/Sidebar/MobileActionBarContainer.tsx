@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { MobileActionBar } from "./MobileActionBar";
 
-export const MobileSidebarContainer = () => {
+export const MobileActionBarContainer = () => {
   return (
     <div className="lg:hidden">
       <Suspense

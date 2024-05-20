@@ -8,7 +8,7 @@ import { PreviewComments } from "../_components/PreviewComments";
 import QueryClientProviderContainer from "../_components/QueryClientProviderContainer";
 import SessionProviderContainer from "../_components/SessionProviderContainer";
 import { DesktopSidebarContainer } from "../_components/Sidebar/DesktopSidebarContainer";
-import { MobileSidebarContainer } from "../_components/Sidebar/MobileSidebarContainer";
+import { MobileActionBarContainer } from "../_components/Sidebar/MobileSidebarContainer";
 
 interface Props {
   children: ReactNode;
@@ -22,7 +22,7 @@ export default async function AppLayout({ children }: Readonly<Props>) {
       <QueryClientProviderContainer>
         <TRPCReactProvider>
           <div className="min-h-dvh bg-sinister-radial-gradient">
-            <MobileSidebarContainer />
+            <MobileActionBarContainer />
             <DesktopSidebarContainer />
 
             <div className="lg:ml-[26rem] min-h-dvh">{children}</div>

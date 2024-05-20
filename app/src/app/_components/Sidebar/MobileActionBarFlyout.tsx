@@ -28,14 +28,14 @@ export const MobileActionBarFlyout = ({ children }: Props) => {
       <button
         onClick={() => setIsVisible((value) => !value)}
         type="button"
-        className="flex flex-col items-center justify-center px-4 h-full"
+        className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
       >
         {isVisible ? <FaTimes /> : <FaBars />}
       </button>
 
       <div
         className={clsx(
-          "fixed left-0 top-0 bottom-0 w-96 z-10 flex flex-col bg-neutral-800/90 backdrop-blur shadow overflow-auto transition-transform",
+          "fixed left-0 top-0 bottom-0 w-96 max-w-[90dvw] z-20 flex flex-col bg-neutral-800/90 backdrop-blur shadow overflow-auto transition-transform",
           {
             "-translate-x-full": isVisible === false,
             "translate-x-0": isVisible === true,
@@ -45,6 +45,13 @@ export const MobileActionBarFlyout = ({ children }: Props) => {
       >
         {children}
       </div>
+
+      {isVisible && (
+        <div
+          className="fixed inset-0 z-10"
+          onClick={() => setIsVisible(false)}
+        />
+      )}
     </>
   );
 };

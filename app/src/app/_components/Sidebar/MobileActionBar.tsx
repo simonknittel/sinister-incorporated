@@ -35,10 +35,10 @@ export const MobileActionBar = async ({ className }: Props) => {
     >
       <nav className="h-full">
         <ul className="h-full flex gap-4 justify-center">
-          <li className="h-full">
+          <li className="h-full py-1">
             <Link
               href="/app"
-              className="flex flex-col items-center justify-center px-4 h-full"
+              className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
             >
               <FaHome className="text-xl" />
               <span className="text-xs">Dashboard</span>
@@ -46,10 +46,10 @@ export const MobileActionBar = async ({ className }: Props) => {
           </li>
 
           {showSpynet && (
-            <li className="h-full">
+            <li className="h-full py-1">
               <Link
                 href="/app/spynet"
-                className="flex flex-col items-center justify-center px-4 h-full"
+                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
               >
                 <RiSpyFill className="text-xl" />
                 <span className="text-xs">Spynet</span>
@@ -58,10 +58,10 @@ export const MobileActionBar = async ({ className }: Props) => {
           )}
 
           {showOperations && (
-            <li className="h-full">
+            <li className="h-full py-1">
               <Link
                 href="/app/operations"
-                className="flex flex-col gap-2 items-center justify-center p-4"
+                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
               >
                 <RiSwordFill className="text-xl" />
                 <span className="text-xs">Operationen</span>
@@ -72,10 +72,10 @@ export const MobileActionBar = async ({ className }: Props) => {
 
           {(authentication.authorize("orgFleet", "read") ||
             authentication.authorize("ship", "manage")) && (
-            <li className="h-full">
+            <li className="h-full py-1">
               <Link
                 href="/app/fleet"
-                className="flex flex-col items-center justify-center px-4 h-full"
+                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
               >
                 <MdWorkspaces className="text-xl" />
                 <span className="text-xs">Flotte</span>
@@ -83,7 +83,7 @@ export const MobileActionBar = async ({ className }: Props) => {
             </li>
           )}
 
-          <li className="h-full">
+          <li className="h-full py-1">
             <MobileActionBarFlyout>
               <Account />
 
