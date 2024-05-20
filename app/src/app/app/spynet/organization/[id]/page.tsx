@@ -66,7 +66,7 @@ export default async function Page({ params }: Props) {
   if (!organization) notFound();
 
   return (
-    <main className="p-2 lg:p-8 max-w-[1920px] mx-auto">
+    <main className="p-2 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/app/spynet"

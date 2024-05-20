@@ -30,7 +30,7 @@ export const MobileActionBar = async ({ className }: Props) => {
     <div
       className={clsx(
         className,
-        "fixed left-0 right-0 bottom-0 h-16 shadow bg-neutral-800",
+        "fixed z-40 left-0 right-0 bottom-0 h-16 shadow bg-neutral-800",
       )}
     >
       <nav className="h-full">
@@ -90,7 +90,10 @@ export const MobileActionBar = async ({ className }: Props) => {
               <div className="p-4 relative" data-red-bar-container>
                 <ul>
                   <li>
-                    <Link href="/app" className="flex gap-2 items-center p-4">
+                    <Link
+                      href="/app"
+                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                    >
                       <FaHome />
                       Dashboard
                     </Link>
@@ -100,7 +103,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                     <li>
                       <Link
                         href="/app/spynet"
-                        className="flex gap-2 items-center p-4"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
                       >
                         <RiSpyFill />
                         Spynet
@@ -112,7 +115,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                     <li>
                       <Link
                         href="/app/operations"
-                        className="flex gap-2 items-center p-4"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
                       >
                         <RiSwordFill />
                         Operationen
@@ -124,7 +127,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                   {/* <li>
               <Link
                 href="/app/preview-channel"
-                className="flex gap-2 items-center p-4"
+                className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
               >
                 <FaClock />
                 Preview Channel
@@ -136,7 +139,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                     <li>
                       <Link
                         href="/app/fleet"
-                        className="flex gap-2 items-center p-4"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
                       >
                         <MdWorkspaces />
                         Flotte
@@ -156,7 +159,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                             <Link
                               href="/app/spynet/citizen"
                               className={clsx(
-                                "flex gap-2 items-center p-4",
+                                "flex gap-2 items-center p-4 active:bg-neutral-700 rounded",
                                 // {
                                 //   "before:w-[2px] before:h-[2em] before:bg-sinister-red-500 before:absolute before:left-0 relative before:rounded bg-neutral-800":
                                 //     true,
@@ -171,7 +174,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                           <li>
                             <Link
                               href="/app/spynet/notes"
-                              className="flex gap-2 items-center p-4"
+                              className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
                             >
                               <FaTable />
                               Notizen
@@ -181,7 +184,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                           <li>
                             <Link
                               href="/app/spynet/other"
-                              className="flex gap-2 items-center p-4"
+                              className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
                             >
                               <FaTable />
                               Sonstige
@@ -215,7 +218,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/settings"
-                            className="flex gap-2 items-center p-4"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
                           >
                             <FaCog />
                             Einstellungen
@@ -227,7 +230,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/roles"
-                            className="flex gap-2 items-center p-4"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
                           >
                             <FaLock />
                             Rollen
@@ -242,7 +245,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/fleet/settings/manufacturer"
-                            className="flex gap-2 items-center p-4"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
                           >
                             <FaCog />
                             Schiffe
@@ -253,7 +256,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/users"
-                            className="flex gap-2 items-center p-4"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
                           >
                             <FaUsers />
                             Benutzer
