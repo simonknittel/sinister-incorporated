@@ -31,7 +31,7 @@ export default async function Page({ searchParams }: Props) {
   const showUwuHero = Object.hasOwn(searchParams, "uwu");
 
   return (
-    <main className="p-2 lg:p-8 max-w-[1920px] mx-auto">
+    <main className="p-2 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
         {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." />}
       </div>

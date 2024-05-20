@@ -23,7 +23,7 @@ export default async function Page({ searchParams: _searchParams }: Props) {
   const searchParams = nextjsSearchParamsToNativeSearchParams(_searchParams);
 
   return (
-    <main className="p-2 lg:p-8">
+    <main className="p-2 pb-20 lg:p-8">
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/app/spynet/search"

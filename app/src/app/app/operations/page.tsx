@@ -24,7 +24,7 @@ export default async function Page() {
   });
 
   return (
-    <main className="p-2 lg:p-8">
+    <main className="p-2 pb-20 lg:p-8">
       <h1 className="text-xl font-bold">Operationen</h1>
 
       <Note
