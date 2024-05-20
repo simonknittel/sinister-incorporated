@@ -2,16 +2,19 @@
 
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const RedBar = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const pathname = usePathname();
   const [style, setStyle] = useState({});
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const container = document.querySelector("[data-red-bar-container]");
+    if (!ref.current) return;
+
+    const container = ref.current.closest("[data-red-bar-container]");
     if (!container) return;
 
     const links = container.querySelectorAll(`a`);
@@ -43,6 +46,7 @@ export const RedBar = () => {
         },
       )}
       style={style}
+      ref={ref}
     />
   );
 };
