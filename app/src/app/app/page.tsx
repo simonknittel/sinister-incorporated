@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 import { Suspense } from "react";
 import { authenticatePage } from "../../lib/auth/server";
-import { getUnleashFlag } from "../../lib/getUnleashFlag";
+import { dedupedGetUnleashFlag } from "../../lib/getUnleashFlag";
 import { Hero } from "../_components/Hero";
 import { SpynetSearchTile } from "../_components/SpynetSearchTile/SpynetSearchTile";
 import { UwuHero } from "../_components/UwuHero";
@@ -24,14 +24,14 @@ export default async function Page({ searchParams }: Props) {
   const showCalendar = authentication.authorize("event", "read");
 
   const showSpynetSearchTile =
-    !(await getUnleashFlag("DisableAlgolia")) &&
+    !(await dedupedGetUnleashFlag("DisableAlgolia")) &&
     (authentication.authorize("citizen", "read") ||
       authentication.authorize("organization", "read"));
 
   const showUwuHero = Object.hasOwn(searchParams, "uwu");
 
   return (
-    <main className="p-2 lg:p-8 pt-20 max-w-[1920px] mx-auto">
+    <main className="p-2 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
         {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." />}
       </div>

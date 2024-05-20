@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
 import { authenticatePage } from "../../../../lib/auth/server";
-import { getUnleashFlag } from "../../../../lib/getUnleashFlag";
+import { dedupedGetUnleashFlag } from "../../../../lib/getUnleashFlag";
 import { log } from "../../../../lib/logging";
 import { prisma } from "../../../../server/db";
 import Avatar from "../../../_components/Avatar";
@@ -94,7 +94,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Readonly<Props>) {
-  if (!(await getUnleashFlag("EnableOperations"))) notFound();
+  if (!(await dedupedGetUnleashFlag("EnableOperations"))) notFound();
 
   const authentication = await authenticatePage("/app/operations/[id]");
   authentication.authorizePage("operation", "manage");
@@ -110,7 +110,7 @@ export default async function Page({ params }: Readonly<Props>) {
   );
 
   return (
-    <main className="p-2 lg:p-8 pt-20">
+    <main className="p-2 lg:p-8">
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/app/operations"

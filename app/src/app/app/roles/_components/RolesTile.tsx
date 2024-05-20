@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaTable } from "react-icons/fa";
 import { env } from "../../../../env.mjs";
-import { getUnleashFlag } from "../../../../lib/getUnleashFlag";
+import { dedupedGetUnleashFlag } from "../../../../lib/getUnleashFlag";
 import { isOpenAIEnabled } from "../../../../lib/isOpenAIEnabled";
 import { prisma } from "../../../../server/db";
 import { Actions } from "../../../_components/Actions";
@@ -32,7 +32,7 @@ export const RolesTile = async ({ className }: Props) => {
 
   const sortedRoles = roles.sort((a, b) => a.name.localeCompare(b.name));
 
-  const enableOperations = await getUnleashFlag("EnableOperations");
+  const enableOperations = await dedupedGetUnleashFlag("EnableOperations");
 
   return (
     <section
