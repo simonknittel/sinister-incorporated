@@ -69,7 +69,7 @@
     "@typescript-eslint/parser": "7.8.0",
     "@vitest/coverage-v8": "1.6.0",
     "autoprefixer": "10.4.19",
-    "csv": "6.3.8",
+    "csv": "6.3.9",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.3",
     "postcss": "8.4.38",
