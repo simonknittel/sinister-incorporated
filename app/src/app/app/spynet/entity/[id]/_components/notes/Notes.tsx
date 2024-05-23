@@ -43,7 +43,7 @@ export const Notes = async ({ className, entity }: Props) => {
     prisma.noteType.findMany(),
   ]);
 
-  const sortedNotes = notes.sort(
+  const sortedNotes = notes.toSorted(
     (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
   );
 

@@ -87,6 +87,10 @@ export const MobileActionBar = async ({ className }: Props) => {
             <MobileActionBarFlyout>
               <Account />
 
+              {/* <div className="flex justify-evenly items-center mt-4">
+                <InstallPWA />
+              </div> */}
+
               <div className="p-4 relative" data-red-bar-container>
                 <ul>
                   <li>

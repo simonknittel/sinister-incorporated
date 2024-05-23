@@ -30,7 +30,7 @@ export const RolesTile = async ({ className }: Props) => {
     prisma.classificationLevel.findMany(),
   ]);
 
-  const sortedRoles = roles.sort((a, b) => a.name.localeCompare(b.name));
+  const sortedRoles = roles.toSorted((a, b) => a.name.localeCompare(b.name));
 
   const enableOperations = await dedupedGetUnleashFlag("EnableOperations");
 

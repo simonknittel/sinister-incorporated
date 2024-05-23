@@ -19,13 +19,13 @@ export const CmdKLoader = ({ className, disableAlgolia }: Props) => {
       <button
         className={clsx(
           className,
-          "hidden lg:block text-neutral-600 text-center text-sm hover:text-neutral-400 group",
+          "hidden lg:block text-neutral-600 text-center text-sm hover:text-neutral-400 active:text-neutral-300 group",
         )}
         type="button"
         onClick={() => setOpen(true)}
       >
         Hotkey{" "}
-        <span className="px-2 py-1 rounded border border-neutral-800 group-hover:border-neutral-600">
+        <span className="px-2 py-1 rounded border border-neutral-800 group-hover:border-neutral-600 group-active:border-neutral-500">
           Strg + K
         </span>
       </button>

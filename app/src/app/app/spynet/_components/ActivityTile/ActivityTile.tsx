@@ -94,7 +94,7 @@ export const ActivityTile = async ({ className }: Props) => {
     ...(await mapOrganizationMembershipHistoryEntries(result[2])),
   ];
 
-  const sortedEntries = entries.sort(
+  const sortedEntries = entries.toSorted(
     (a, b) => b.date.getTime() - a.date.getTime(),
   );
 

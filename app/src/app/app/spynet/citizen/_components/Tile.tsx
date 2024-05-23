@@ -78,7 +78,7 @@ export const Tile = async ({ searchParams }: Props) => {
     return unknown && role;
   });
 
-  const sortedRows = filteredRows.sort((a, b) => {
+  const sortedRows = filteredRows.toSorted((a, b) => {
     switch (searchParams.get("sort")) {
       case "handle-asc":
         return sortAscWithAndNullLast(a.entity.handle, b.entity.handle);

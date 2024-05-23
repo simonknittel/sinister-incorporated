@@ -7,7 +7,7 @@ type Props = Readonly<{
 
 export default function Layout({ children, breadcrumbs }: Props) {
   return (
-    <div className="p-2 pb-20 lg:p-8">
+    <div className="p-4 pb-20 lg:p-8">
       <div className="mb-4">{breadcrumbs}</div>
 
       {children}

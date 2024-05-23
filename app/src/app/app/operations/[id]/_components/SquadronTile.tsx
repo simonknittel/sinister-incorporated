@@ -41,7 +41,7 @@ const SquadronTile = ({ className, unit }: Readonly<Props>) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
         {unit.childUnits
-          .sort((a, b) => a.title.localeCompare(b.title))
+          .toSorted((a, b) => a.title.localeCompare(b.title))
           .map((childUnit) => (
             <SquadronFlightTile key={childUnit.id} unit={childUnit} />
           ))}

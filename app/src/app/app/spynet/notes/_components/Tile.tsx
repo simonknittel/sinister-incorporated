@@ -147,7 +147,7 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
     return confirmation && noteType && classificationLevel;
   });
 
-  const sortedRows = filteredRows.sort((a, b) => {
+  const sortedRows = filteredRows.toSorted((a, b) => {
     switch (searchParams.get("sort")) {
       case "confirmed-at-asc":
         return sortAscWithAndNullLast(

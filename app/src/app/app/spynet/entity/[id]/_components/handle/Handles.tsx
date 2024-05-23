@@ -32,7 +32,7 @@ const Handles = ({ entity }: Readonly<Props>) => {
     .filter((log) => log.type === "handle")
     .filter((log) => {
       const confirmed = log.attributes
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        .toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .find((attribute) => attribute.key === "confirmed");
 
       if (confirmed && confirmed.value === "confirmed") return true;
@@ -40,7 +40,7 @@ const Handles = ({ entity }: Readonly<Props>) => {
 
       return authentication.authorize("handle", "confirm");
     })
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    .toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return (
     <>

@@ -33,10 +33,11 @@ export const DesktopSidebar = async () => {
         <div>
           <Account />
 
-          <CmdKLoader
-            disableAlgolia={disableAlgolia}
-            className="block mt-4 mx-auto"
-          />
+          <div className="flex justify-evenly items-center mt-4">
+            <CmdKLoader disableAlgolia={disableAlgolia} />
+
+            {/* <InstallPWA /> */}
+          </div>
 
           <nav
             className="p-4 border-neutral-800 relative"
