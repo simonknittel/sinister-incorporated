@@ -12,7 +12,7 @@ interface Props {
 const ClassificationLevelsTile = async ({ className }: Readonly<Props>) => {
   const classificationLevels = await prisma.classificationLevel.findMany();
 
-  const sortedClassificationLevels = classificationLevels.sort((a, b) =>
+  const sortedClassificationLevels = classificationLevels.toSorted((a, b) =>
     a.name.localeCompare(b.name),
   );
 

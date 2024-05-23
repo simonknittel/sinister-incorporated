@@ -12,7 +12,7 @@ interface Props {
 const NoteTypesTile = async ({ className }: Readonly<Props>) => {
   const noteTypes = await prisma.noteType.findMany();
 
-  const sortedNoteTypes = noteTypes.sort((a, b) =>
+  const sortedNoteTypes = noteTypes.toSorted((a, b) =>
     a.name.localeCompare(b.name),
   );
 

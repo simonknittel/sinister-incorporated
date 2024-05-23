@@ -62,7 +62,7 @@ const EntityLogTypeFilter = ({ entityLogTypes }: Readonly<Props>) => {
       onSubmit={handleSubmit(onSubmit)}
     >
       {Array.from(entityLogTypes)
-        .sort((a, b) => a[1].localeCompare(b[1]))
+        .toSorted((a, b) => a[1].localeCompare(b[1]))
         .map(([type, translation]) => (
           <div
             key={type}

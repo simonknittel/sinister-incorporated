@@ -100,7 +100,7 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Readonly<Props>) => {
 
   const users = allOperationMembers
     ?.filter((member) => member.status === "confirmed")
-    .sort((a, b) => a.user.name!.localeCompare(b.user.name!));
+    .toSorted((a, b) => a.user.name!.localeCompare(b.user.name!));
 
   const memberShips = allOperationMembers?.filter(
     (member) => member.status === "confirmed",
@@ -177,7 +177,7 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Readonly<Props>) => {
             {memberShips?.map((member) => (
               <optgroup key={member.userId} label={member.user.name!}>
                 {member.user.ships
-                  .sort((a, b) =>
+                  .toSorted((a, b) =>
                     (a.name || a.variant.name).localeCompare(
                       b.name || b.variant.name,
                     ),

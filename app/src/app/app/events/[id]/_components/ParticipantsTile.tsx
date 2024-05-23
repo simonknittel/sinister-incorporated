@@ -33,7 +33,7 @@ export const ParticipantsTile = async ({ className, event }: Props) => {
         discord: user,
       };
     })
-    .sort((a, b) => {
+    .toSorted((a, b) => {
       return (
         a.entity?.handle ||
         a.discord.member.nick ||

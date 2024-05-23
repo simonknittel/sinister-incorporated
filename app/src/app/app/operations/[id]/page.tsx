@@ -135,7 +135,7 @@ export default async function Page({ params }: Readonly<Props>) {
         <div>
           {operation.units
             .filter((unit) => unit.type === "squadron")
-            .sort((a, b) => a.title.localeCompare(b.title))
+            .toSorted((a, b) => a.title.localeCompare(b.title))
             .map((unit) => (
               <SquadronTile key={unit.id} unit={unit} className="mt-4" />
             ))}
@@ -162,7 +162,9 @@ export default async function Page({ params }: Readonly<Props>) {
 
                   <ul className="mt-2 flex flex-col gap-1">
                     {confirmedMembers
-                      .sort((a, b) => a.user.name!.localeCompare(b.user.name!))
+                      .toSorted((a, b) =>
+                        a.user.name!.localeCompare(b.user.name!),
+                      )
                       .map((member) => (
                         <li
                           className="flex gap-2 items-center"
@@ -193,7 +195,9 @@ export default async function Page({ params }: Readonly<Props>) {
 
                   <ul className="mt-2 flex flex-col gap-1">
                     {unconfirmedMembers
-                      .sort((a, b) => a.user.name!.localeCompare(b.user.name!))
+                      .toSorted((a, b) =>
+                        a.user.name!.localeCompare(b.user.name!),
+                      )
                       .map((member) => (
                         <li
                           className="flex gap-2 items-center"
