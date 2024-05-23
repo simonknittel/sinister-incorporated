@@ -24,7 +24,7 @@ export default async function Page() {
   );
 
   return (
-    <main className="p-2 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+    <main className="pb-20 p-8 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
         <Hero text="Spynet" />
       </div>

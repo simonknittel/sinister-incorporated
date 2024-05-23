@@ -54,7 +54,7 @@ export const Event = async ({ className, event, index }: Props) => {
           </div>
         )}
 
-        <div className="flex-1 flex flex-col gap-2 p-4 lg:p-8 3xl:overflow-hidden">
+        <div className="flex-1 flex flex-col gap-2 p-8 lg:p-8 3xl:overflow-hidden">
           <h2 className="font-bold text-xl 3xl:text-ellipsis 3xl:whitespace-nowrap 3xl:overflow-hidden">
             {event.name}
           </h2>
@@ -80,7 +80,7 @@ export const Event = async ({ className, event, index }: Props) => {
           </p>
         </div>
 
-        <div className="flex-initial flex flex-col gap-2 p-4 pt-0 lg:pl-8 lg:pr-8 lg:pb-8 3xl:pt-8">
+        <div className="flex-initial flex flex-col gap-2 p-8 pt-0 lg:pl-8 lg:pr-8 lg:pb-8 3xl:pt-8">
           <DiscordButton path={`events/${event.guild_id}/${event.id}`} />
 
           {authentication.authorize("eventFleet", "read") && (
