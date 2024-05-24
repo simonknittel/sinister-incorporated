@@ -42,7 +42,7 @@
     "lorem-ipsum": "2.0.8",
     "next": "14.2.3",
     "next-auth": "4.24.7",
-    "openai": "4.45.0",
+    "openai": "4.47.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hook-form": "7.51.4",
