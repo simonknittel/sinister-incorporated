@@ -30,7 +30,7 @@
     "@trpc/react-query": "11.0.0-rc.373",
     "@trpc/server": "11.0.0-rc.373",
     "@uidotdev/usehooks": "2.4.1",
-    "@unleash/nextjs": "1.4.2",
+    "@unleash/nextjs": "1.4.3",
     "@vercel/analytics": "1.2.2",
     "@vercel/speed-insights": "1.0.10",
     "@vercel/toolbar": "0.1.15",
