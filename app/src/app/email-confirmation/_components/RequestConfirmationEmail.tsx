@@ -6,19 +6,19 @@ import { useFormStatus } from "react-dom";
 import { FaEnvelope, FaSpinner } from "react-icons/fa";
 import Button from "../../_components/Button";
 
-interface Props {
+type Props = Readonly<{
   className?: string;
   children?: ReactNode;
-}
+}>;
 
 export const RequestConfirmationEmailButton = ({
   className,
   children,
-}: Readonly<Props>) => {
+}: Props) => {
   const { pending } = useFormStatus();
 
   return (
-    <Button className={clsx(className)} disabled={pending}>
+    <Button className={clsx(className)} disabled={pending} type="submit">
       {pending ? (
         <FaSpinner className="animate-spin flex-none" />
       ) : (
@@ -32,7 +32,7 @@ export const RequestConfirmationEmailButton = ({
 export const RequestConfirmationEmailLink = ({
   className,
   children,
-}: Readonly<Props>) => {
+}: Props) => {
   const { pending } = useFormStatus();
 
   return (
@@ -41,6 +41,7 @@ export const RequestConfirmationEmailLink = ({
         "opacity-50 cursor-not-allowed": pending,
       })}
       disabled={pending}
+      type="submit"
     >
       {children}
     </button>
