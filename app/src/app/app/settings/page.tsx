@@ -28,7 +28,7 @@ export default async function Page() {
   const showAnalytics = authentication.authorize("analytics", "manage");
 
   if (!showNoteTypes && !showClassificationLevels && !showAnalytics) {
-    log.info("Unauthorized request to page", {
+    await log.info("Unauthorized request to page", {
       userId: authentication.session.user.id,
       reason: "Insufficient permissions",
     });

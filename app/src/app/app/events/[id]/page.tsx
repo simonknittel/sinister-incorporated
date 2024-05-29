@@ -23,7 +23,7 @@ export async function generateMetadata({
       title: `${event.name} - Event | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
-    log.error(
+    await log.error(
       "Error while generating metadata for /(app)/events/[id]/fleet/page.tsx",
       {
         error: serializeError(error),

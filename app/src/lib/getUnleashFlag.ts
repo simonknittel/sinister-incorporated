@@ -32,7 +32,7 @@ export const dedupedGetUnleashFlag = cache(
 
       return flags.isEnabled(name);
     } catch (error) {
-      log.error("Error fetching feature flag", {
+      await log.error("Error fetching feature flag", {
         error: serializeError(error),
       });
     }

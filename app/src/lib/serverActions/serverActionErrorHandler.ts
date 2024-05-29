@@ -4,7 +4,7 @@ import { ZodError } from "zod";
 import { log } from "../logging";
 import { type ServerActionResponse } from "./types";
 
-export const serverActionErrorHandler = (
+export const serverActionErrorHandler = async (
   error: unknown,
   options?: {
     errorMessages?: {
@@ -16,7 +16,7 @@ export const serverActionErrorHandler = (
       500?: string;
     };
   },
-): ServerActionResponse => {
+): Promise<ServerActionResponse> => {
   if (
     error instanceof ZodError ||
     (error instanceof Error &&
@@ -52,7 +52,7 @@ export const serverActionErrorHandler = (
     };
   }
 
-  log.error("errorHandler", {
+  await log.error("errorHandler", {
     error: serializeError(error),
   });
 

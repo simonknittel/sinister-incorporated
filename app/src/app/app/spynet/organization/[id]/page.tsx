@@ -39,7 +39,7 @@ export async function generateMetadata({
       title: `${organization.name} - Spynet | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
-    log.error(
+    await log.error(
       "Error while generating metadata for /(app)/spynet/organization/[id]/page.tsx",
       {
         error: serializeError(error),

@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
      */
     const authentication = await authenticate();
     if (!authentication) {
-      log.info("Unauthenticated request to API", {
+      await log.info("Unauthenticated request to API", {
         requestPath: "/api/confirm-email",
         requestMethod: "GET",
         reason: "No session",

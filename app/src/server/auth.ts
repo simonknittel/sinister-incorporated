@@ -167,7 +167,7 @@ export const authOptions: NextAuthOptions = {
        * if we can update an existing user or not.
        */
 
-      log.info("Login attempt", {
+      await log.info("Login attempt", {
         accountProvider: account?.provider,
         accountProviderAccountId: account?.providerAccountId,
         profileEmail: profile?.email,
@@ -183,7 +183,7 @@ export const authOptions: NextAuthOptions = {
         const guildMember = await getGuildMember(account.access_token);
 
         if ("message" in guildMember) {
-          log.info("User not member of the Discord guild", {
+          await log.info("User not member of the Discord guild", {
             userId: user.id,
           });
           throw new Error(guildMember.message);
@@ -225,7 +225,7 @@ export const authOptions: NextAuthOptions = {
         const guildMember = await getGuildMember(account.access_token);
 
         if ("message" in guildMember) {
-          log.info("User not member of the Discord guild", {
+          await log.info("User not member of the Discord guild", {
             userId: user.id,
           });
           throw new Error(guildMember.message);
@@ -291,10 +291,13 @@ export const authOptions: NextAuthOptions = {
       try {
         await requestEmailConfirmation(createdUser.id, user.email);
       } catch (error) {
-        log.error("Failed to request email confirmation for created user", {
-          userId: createdUser.id,
-          error: serializeError(error),
-        });
+        await log.error(
+          "Failed to request email confirmation for created user",
+          {
+            userId: createdUser.id,
+            error: serializeError(error),
+          },
+        );
       }
 
       return createdUser;

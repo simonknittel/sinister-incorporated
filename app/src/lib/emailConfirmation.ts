@@ -61,7 +61,7 @@ export const requireConfirmedEmailForPage = async (session: Session) => {
   if (!(await requiresEmailConfirmation(session))) return;
 
   if (!session.user.emailVerified) {
-    log.info("Unauthenticated request to page", {
+    await log.info("Unauthenticated request to page", {
       // TODO: Add request path
       userId: session.user.id,
       reason: "Unconfirmed email",
@@ -75,7 +75,7 @@ export const requireConfirmedEmailForApi = async (session: Session) => {
   if (!(await requiresEmailConfirmation(session))) return;
 
   if (!session.user.emailVerified) {
-    log.info("Unauthenticated request to API", {
+    await log.info("Unauthenticated request to API", {
       // TODO: Add request path
       userId: session.user.id,
       reason: "Unconfirmed email",
@@ -89,7 +89,7 @@ export const requireConfirmedEmailForAction = async (session: Session) => {
   if (!(await requiresEmailConfirmation(session))) return;
 
   if (!session.user.emailVerified) {
-    log.info("Unauthenticated request to action", {
+    await log.info("Unauthenticated request to action", {
       // TODO: Add action name
       userId: session.user.id,
       reason: "Unconfirmed email",
@@ -103,7 +103,7 @@ export const requireConfirmedEmailForTrpc = async (session: Session) => {
   if (!(await requiresEmailConfirmation(session))) return;
 
   if (!session.user.emailVerified) {
-    log.info("Unauthenticated request to tRPC", {
+    await log.info("Unauthenticated request to tRPC", {
       userId: session.user.id,
       reason: "Unconfirmed email",
     });

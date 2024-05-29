@@ -4,7 +4,7 @@ import { logToConsole } from "./console";
 import { logToLoki } from "./loki";
 import { type LogEntry } from "./types";
 
-const info = (message: string, args: Record<string, unknown> = {}) => {
+const info = async (message: string, args: Record<string, unknown> = {}) => {
   const logEntry: LogEntry = {
     timestamp: new Date().toISOString(),
     level: "info",
@@ -16,11 +16,11 @@ const info = (message: string, args: Record<string, unknown> = {}) => {
   };
 
   logToConsole(logEntry);
-  logToAxiom(logEntry);
-  logToLoki(logEntry);
+  await logToAxiom(logEntry);
+  await logToLoki(logEntry);
 };
 
-const warn = (message: string, args: Record<string, unknown> = {}) => {
+const warn = async (message: string, args: Record<string, unknown> = {}) => {
   const logEntry: LogEntry = {
     timestamp: new Date().toISOString(),
     level: "warn",
@@ -32,11 +32,11 @@ const warn = (message: string, args: Record<string, unknown> = {}) => {
   };
 
   logToConsole(logEntry);
-  logToAxiom(logEntry);
-  logToLoki(logEntry);
+  await logToAxiom(logEntry);
+  await logToLoki(logEntry);
 };
 
-const error = (message: string, args: Record<string, unknown> = {}) => {
+const error = async (message: string, args: Record<string, unknown> = {}) => {
   const logEntry: LogEntry = {
     timestamp: new Date().toISOString(),
     level: "error",
@@ -48,8 +48,8 @@ const error = (message: string, args: Record<string, unknown> = {}) => {
   };
 
   logToConsole(logEntry);
-  logToAxiom(logEntry);
-  logToLoki(logEntry);
+  await logToAxiom(logEntry);
+  await logToLoki(logEntry);
 };
 
 export const log = {
