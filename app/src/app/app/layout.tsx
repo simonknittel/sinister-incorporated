@@ -4,7 +4,6 @@ import { authenticatePage } from "../../lib/auth/server";
 import { TRPCReactProvider } from "../../trpc/react";
 import { AdminEnabler } from "../_components/AdminEnabler";
 import ImpersonationBannerContainer from "../_components/ImpersonationBannerContainer";
-import { PreviewComments } from "../_components/PreviewComments";
 import QueryClientProviderContainer from "../_components/QueryClientProviderContainer";
 import SessionProviderContainer from "../_components/SessionProviderContainer";
 import { DesktopSidebarContainer } from "../_components/Sidebar/DesktopSidebarContainer";
@@ -37,10 +36,6 @@ export default async function AppLayout({ children }: Readonly<Props>) {
               enabled={cookies().get("enableAdmin")?.value === "enableAdmin"}
             />
           )}
-
-          <Suspense>
-            <PreviewComments />
-          </Suspense>
         </TRPCReactProvider>
       </QueryClientProviderContainer>
     </SessionProviderContainer>
