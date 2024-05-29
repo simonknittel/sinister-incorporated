@@ -33,7 +33,6 @@
     "@unleash/nextjs": "1.4.3",
     "@vercel/analytics": "1.2.2",
     "@vercel/speed-insights": "1.0.10",
-    "@vercel/toolbar": "0.1.15",
     "algoliasearch": "4.23.3",
     "change-case": "5.4.4",
     "clsx": "2.1.1",

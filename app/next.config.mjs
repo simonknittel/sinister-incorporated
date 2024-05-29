@@ -1,5 +1,3 @@
-import { withVercelToolbar } from "@vercel/toolbar/plugins/next";
-
 await import("./src/env.mjs");
 
 /** @type {import("next").NextConfig} */
@@ -81,4 +79,4 @@ const config = {
   },
 };
 
-export default withVercelToolbar()(config);
+export default config;
