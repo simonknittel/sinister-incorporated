@@ -1,3 +1,4 @@
+import { serializeError } from "serialize-error";
 import { env } from "../../env.mjs";
 import { logToConsole } from "./console";
 import { type LogOutput } from "./types";
@@ -54,7 +55,7 @@ export const logToLoki: LogOutput = (logEntry) => {
         timestamp: new Date().toISOString(),
         level: "error",
         message: "Error posting to Loki",
-        error: JSON.stringify(err, Object.getOwnPropertyNames(err)),
+        error: JSON.stringify(serializeError(err)),
         host: env.NEXTAUTH_URL,
         stack: new Error().stack,
         ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),

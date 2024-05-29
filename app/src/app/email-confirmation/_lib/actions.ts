@@ -10,8 +10,8 @@ export const requestEmailConfirmationAction = async () => {
   const authentication = await authenticate();
 
   if (!authentication) {
-    log.info("Unauthenticated request to Server Action", {
-      serverAction: "requestEmailConfirmationAction",
+    log.info("Unauthenticated request to action", {
+      actionName: "requestEmailConfirmationAction",
       reason: "No session",
     });
 
