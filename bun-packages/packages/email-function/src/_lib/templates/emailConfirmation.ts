@@ -28,8 +28,8 @@ export const emailConfirmation = async (
 		htmlRecipientVariables[htmlMessage.to] = htmlMessage.templateProps;
 	}
 
-	await mg.messages.create("mailgun.simonknittel.de", {
-		from: "Sinister Incorporated <no-reply@mailgun.simonknittel.de>",
+	await mg.messages.create("sam-mail.sinister-incorporated.de", {
+		from: "Sinister Incorporated <no-reply@sam-mail.sinister-incorporated.de>",
 		to: htmlMessages.map((message) => message.to),
 		subject: subject,
 		html: htmlEmail,
@@ -52,8 +52,8 @@ export const emailConfirmation = async (
 	// 	textRecipientVariables[textMessage.to] = textMessage.templateProps;
 	// }
 
-	// await mg.messages.create("mailgun.simonknittel.de", {
-	// 	from: "Sinister Incorporated <no-reply@mailgun.simonknittel.de>",
+	// await mg.messages.create("sam-mail.sinister-incorporated.de", {
+	// 	from: "Sinister Incorporated <no-reply@sam-mail.sinister-incorporated.de>",
 	// 	to: textMessages.map((message) => message.to),
 	// 	subject: subject,
 	// 	text: textEmail,
