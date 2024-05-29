@@ -45,7 +45,7 @@ export const aiRouter = createTRPCRouter({
       },
     });
 
-    log.info("Role name suggestions", {
+    await log.info("Role name suggestions", {
       messages,
       usage: chatCompletion.usage,
     });

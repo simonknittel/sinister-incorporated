@@ -8,4 +8,4 @@ export interface LogEntry {
   [key: string]: string | number | boolean | undefined;
 }
 
-export type LogOutput = (logEntry: LogEntry) => void;
+export type LogOutput = (logEntry: LogEntry) => void | Promise<void>;

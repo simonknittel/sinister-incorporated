@@ -10,7 +10,7 @@ export const requestEmailConfirmationAction = async () => {
   const authentication = await authenticate();
 
   if (!authentication) {
-    log.info("Unauthenticated request to action", {
+    await log.info("Unauthenticated request to action", {
       actionName: "requestEmailConfirmationAction",
       reason: "No session",
     });
@@ -26,7 +26,7 @@ export const requestEmailConfirmationAction = async () => {
       authentication.session.user.email!,
     );
   } catch (error) {
-    log.error("Error while requesting email confirmation", {
+    await log.error("Error while requesting email confirmation", {
       path: "/email-confirmation",
       error: serializeError(error),
     });

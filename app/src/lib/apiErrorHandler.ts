@@ -4,7 +4,7 @@ import { serializeError } from "serialize-error";
 import { ZodError } from "zod";
 import { log } from "./logging";
 
-export default function apiErrorHandler(
+export default async function apiErrorHandler(
   error: unknown,
   responseInit: ResponseInit = {},
 ) {
@@ -59,7 +59,7 @@ export default function apiErrorHandler(
     );
   }
 
-  log.error("errorHandler", {
+  await log.error("errorHandler", {
     error: serializeError(error),
   });
 

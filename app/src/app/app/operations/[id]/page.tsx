@@ -76,7 +76,7 @@ export async function generateMetadata({
       title: `${operation.title} - Operation | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
-    log.error(
+    await log.error(
       "Error while generating metadata for /(app)/operations/[id]/page.tsx",
       {
         error: serializeError(error),
