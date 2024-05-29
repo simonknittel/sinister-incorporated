@@ -1,4 +1,5 @@
 import { env } from "process";
+import { serializeError } from "serialize-error";
 import { logToConsole } from "./console";
 import { type LogOutput } from "./types";
 
@@ -39,7 +40,7 @@ export const logToAxiom: LogOutput = (logEntry) => {
         timestamp: new Date().toISOString(),
         level: "error",
         message: "Error posting to Axiom",
-        error: JSON.stringify(err, Object.getOwnPropertyNames(err)),
+        error: JSON.stringify(serializeError(err)),
         host: env.NEXTAUTH_URL!,
         stack: new Error().stack,
         ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
