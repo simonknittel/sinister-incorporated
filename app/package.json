@@ -61,7 +61,7 @@
     "@tailwindcss/typography": "0.5.13",
     "@types/eslint": "8.56.10",
     "@types/lodash": "4.17.4",
-    "@types/node": "20.14.1",
+    "@types/node": "20.14.2",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "@typescript-eslint/eslint-plugin": "7.12.0",
