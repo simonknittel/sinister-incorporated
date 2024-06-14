@@ -1,9 +1,7 @@
-version: "3.8"
-
 services:
   psql:
     image: postgres:15.6-alpine3.19
-    restart: on-failure
+    restart: no
     environment:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: db
