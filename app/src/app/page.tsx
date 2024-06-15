@@ -2,6 +2,7 @@ import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 import { authenticate } from "../lib/auth/server";
 import { authOptions } from "../server/auth";
+import { Footer } from "./_components/Footer";
 import { Hero } from "./_components/Hero";
 import LoginButtons from "./_components/LoginButtons";
 import Note from "./_components/Note";
@@ -26,8 +27,8 @@ export default async function Page({ searchParams }: Props) {
   const showUwuHero = Object.hasOwn(searchParams, "uwu");
 
   return (
-    <div className="min-h-dvh flex justify-center items-center bg-sinister-radial-gradient">
-      <main className="w-full max-w-md py-8 flex flex-col items-center gap-4">
+    <div className="min-h-dvh flex-col flex justify-center items-center bg-sinister-radial-gradient">
+      <main className="w-full max-w-md py-8 flex flex-col justify-center items-center gap-4 flex-1">
         {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." />}
 
         <div className="flex flex-col gap-2 rounded max-w-xs">
@@ -41,6 +42,8 @@ export default async function Page({ searchParams }: Props) {
           />
         )}
       </main>
+
+      <Footer className="p-4" />
     </div>
   );
 }
