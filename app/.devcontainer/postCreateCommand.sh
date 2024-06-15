@@ -3,7 +3,7 @@
 # Make the script fail on error (this is somewhat similar to chaining each commands using `&&` but for the whole file instead.)
 set -e
 
-# Make sure the node user can write to the node_modules folder which is mounted as named volume (see docker-compose.yml)
+# Make sure the node user can write to the node_modules directory which is mounted as named volume (see docker-compose.yml)
 sudo chown node:node node_modules
 
 npm ci

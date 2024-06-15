@@ -8,10 +8,11 @@
 ## Setup
 
 1. Configure environment variables: Duplicate `app/.env.example` to `app/.env` and fill in the blanks.
-2. Install required Node.js version: `nvm use`
-3. Install dependencies: `cd app && npm ci`
-4. Start up the database: `cd .. && docker compose up`
-5. Update the database's schema: `cd app && npx prisma migrate dev`
+2. Start up the database: `docker compose up`
+3. Open a second terminal and change to `app` directory: `cd app`
+2. Install required Node.js version: `nvm install`
+3. Install dependencies: `npm ci`
+5. Update the database's schema: `npx prisma migrate dev`
 6. Run the app: `npm run dev`
 7. Access the app at: <http://localhost:3000>
 
