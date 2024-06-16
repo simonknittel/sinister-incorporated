@@ -4,7 +4,7 @@
 
 FROM node:20.14.0-bookworm
 
-# Give the node user passwordless sudo. This is required to change the ownership of the node_modules folder (see devcontainer.json).
+# Give the node user passwordless sudo. This is required to change the ownership of the node_modules directory (see devcontainer.json).
 RUN apt-get update \
 	&& apt-get install --yes sudo \
 	&& echo "node ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/node
