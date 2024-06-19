@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Automatically install correct Node.js version after `git pull`
 NVMRC_REGEX="^app\/\.nvmrc$"
 NVMRC_MATCHES=("$(git diff --name-only HEAD@{1} HEAD | grep -E "$NVMRC_REGEX")")
