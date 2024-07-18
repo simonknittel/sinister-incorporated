@@ -1,5 +1,5 @@
 terraform {
-  required_version = "1.9.1"
+  required_version = "1.9.2"
 
   backend "s3" {}
 
@@ -16,7 +16,7 @@ terraform {
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "4.36.0"
+      version = "4.37.0"
     }
   }
 }
