@@ -7,6 +7,9 @@
   ],
   "packageRules": [
     {
+      "groupName": "Patch Tuesday",
+      "groupSlug": "patch-tuesday",
+      "matchPackagePatterns": ["*"],
       "matchUpdateTypes": [
         "minor",
         "patch",
