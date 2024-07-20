@@ -79,7 +79,7 @@
     "prisma": "5.16.2",
     "tailwindcss": "3.4.4",
     "typescript": "5.5.3",
-    "vercel": "34.3.1",
+    "vercel": "35.1.0",
     "vitest": "1.6.0"
   }
 }
