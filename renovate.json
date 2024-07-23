@@ -27,19 +27,16 @@
     },
     {
       "matchPackageNames": [
-        "@biomejs/biome"
-      ],
-      "automerge": false
-    },
-    {
-      "matchPackageNames": [
+        "@biomejs/biome",
         "postgres"
       ],
-      "enabled": false
+      "automerge": false
     }
   ],
   "configMigration": true,
   "ignorePaths": [
     "bun-packages/**"
-  ]
+  ],
+  "osvVulnerabilityAlerts": true,
+  "transitiveRemediation": true
 }
