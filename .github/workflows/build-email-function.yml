@@ -16,7 +16,7 @@ jobs:
         with:
           ref: ${{ inputs.git_ref }}
 
-      - uses: oven-sh/setup-bun@v1.2.2
+      - uses: oven-sh/setup-bun@v2.0.1
         with:
           bun-version: 1.1.8
 
