@@ -66,7 +66,7 @@
     "@types/react-dom": "18.3.0",
     "@typescript-eslint/eslint-plugin": "7.16.1",
     "@typescript-eslint/parser": "7.16.1",
-    "@vitest/coverage-v8": "1.6.0",
+    "@vitest/coverage-v8": "2.0.4",
     "autoprefixer": "10.4.19",
     "csv": "6.3.9",
     "eslint": "8.57.0",
@@ -80,6 +80,6 @@
     "tailwindcss": "3.4.6",
     "typescript": "5.5.3",
     "vercel": "35.1.0",
-    "vitest": "1.6.0"
+    "vitest": "2.0.4"
   }
 }
