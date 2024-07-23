@@ -14,14 +14,14 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4.1.3
+      - uses: actions/checkout@v4.1.7
 
       - name: Read .terraform-version
         id: terraform_version
         run: echo "value=$(cat .terraform-version)" >> $GITHUB_OUTPUT
         working-directory: terraform
 
-      - uses: hashicorp/setup-terraform@v3.0.0
+      - uses: hashicorp/setup-terraform@v3.1.1
         with:
           terraform_version: "${{ steps.terraform_version.outputs.value }}"
 
