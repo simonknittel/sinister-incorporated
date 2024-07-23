@@ -2,7 +2,7 @@ name: Renovate
 
 on:
   schedule:
-    - cron: "0,30 8 * * 2" # Two runs on Tuesday at 8am and 8:30am for Renovate to create or rebase branches and create, rebase or merge PRs
+    - cron: "0,30 6 * * 2" # Two runs on Tuesday for Renovate to create or rebase branches and create, rebase or merge PRs
   workflow_dispatch: # Manually run the workflow
   push: # Run the workflow on changes to the configuration
     branches:
