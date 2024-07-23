@@ -4,7 +4,7 @@ name: Merge production deployment
 
 on:
   schedule:
-    - cron: "0 8 * * *" # 8am
+    - cron: "0 8 * * 2" # 8am UTC on Tuesday
   workflow_dispatch:
 
 jobs:
