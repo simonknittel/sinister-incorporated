@@ -37,6 +37,5 @@
   "ignorePaths": [
     "bun-packages/**"
   ],
-  "osvVulnerabilityAlerts": true,
-  "transitiveRemediation": true
+  "osvVulnerabilityAlerts": true
 }
