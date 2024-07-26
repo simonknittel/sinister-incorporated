@@ -9,11 +9,6 @@
     {
       "groupName": "Patch Tuesday",
       "groupSlug": "patch-tuesday",
-      "matchPackagePatterns": ["*"],
-      "excludePackageNames": [
-        "@biomejs/biome",
-        "postgres"
-      ],
       "matchUpdateTypes": [
         "minor",
         "patch",
@@ -30,6 +25,11 @@
       "branchConcurrentLimit": 5,
       "schedule": [
         "before 7am on Tuesday"
+      ],
+      "matchPackageNames": [
+        "*",
+        "!@biomejs/biome",
+        "!postgres"
       ]
     }
   ],
