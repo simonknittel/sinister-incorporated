@@ -9,7 +9,6 @@
     {
       "groupName": "Patch Tuesday",
       "groupSlug": "patch-tuesday",
-      "matchPackagePatterns": ["*"],
       "matchUpdateTypes": [
         "minor",
         "patch",
@@ -23,23 +22,20 @@
       "automergeStrategy": "squash",
       "prHourlyLimit": 10,
       "prConcurrentLimit": 5,
-      "branchConcurrentLimit": 5
-    },
-    {
-      "matchPackageNames": [
-        "@biomejs/biome"
+      "branchConcurrentLimit": 5,
+      "schedule": [
+        "before 7am on Tuesday"
       ],
-      "automerge": false
-    },
-    {
       "matchPackageNames": [
-        "postgres"
-      ],
-      "enabled": false
+        "*",
+        "!@biomejs/biome",
+        "!postgres"
+      ]
     }
   ],
   "configMigration": true,
   "ignorePaths": [
     "bun-packages/**"
-  ]
+  ],
+  "osvVulnerabilityAlerts": true
 }
