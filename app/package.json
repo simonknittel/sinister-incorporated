@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "0.5.13",
-    "@types/eslint": "8.56.11",
+    "@types/eslint": "9.6.0",
     "@types/lodash": "4.17.7",
     "@types/node": "20.14.13",
     "@types/react": "18.3.3",
