@@ -50,7 +50,7 @@ jobs:
         run: echo "value=$(cat .terraform-version)" >> $GITHUB_OUTPUT
         working-directory: terraform
 
-      - uses: hashicorp/setup-terraform@v3.1.1
+      - uses: hashicorp/setup-terraform@v3.1.2
         with:
           terraform_version: "${{ steps.terraform_version.outputs.value }}"
 
