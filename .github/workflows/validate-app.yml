@@ -11,7 +11,7 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4.1.7
@@ -55,7 +55,7 @@ jobs:
           UNLEASH_SERVER_API_TOKEN: "foo"
 
   prettier:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4.1.7
@@ -81,7 +81,7 @@ jobs:
         continue-on-error: true
 
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4.1.7
