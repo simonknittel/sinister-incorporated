@@ -11,12 +11,12 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4.1.7
 
-      - uses: actions/setup-node@v4.0.3
+      - uses: actions/setup-node@v4.0.4
         with:
           node-version-file: "app/.nvmrc"
 
@@ -55,12 +55,12 @@ jobs:
           UNLEASH_SERVER_API_TOKEN: "foo"
 
   prettier:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4.1.7
 
-      - uses: actions/setup-node@v4.0.3
+      - uses: actions/setup-node@v4.0.4
         with:
           node-version-file: "app/.nvmrc"
 
@@ -81,12 +81,12 @@ jobs:
         continue-on-error: true
 
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4.1.7
 
-      - uses: actions/setup-node@v4.0.3
+      - uses: actions/setup-node@v4.0.4
         with:
           node-version-file: "app/.nvmrc"
 
