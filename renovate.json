@@ -1,28 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":semanticCommits",
-    ":dependencyDashboard"
-  ],
+  "extends": ["config:recommended", ":semanticCommits", ":dependencyDashboard"],
   "packageRules": [
     {
       "groupName": "Patch Tuesday",
       "groupSlug": "patch-tuesday",
-      "matchUpdateTypes": [
-        "minor",
-        "patch",
-        "pin",
-        "digest"
-      ],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true,
       "minimumReleaseAge": "7 days",
       "internalChecksFilter": "strict",
-      "platformAutomerge": false,
-      "automergeStrategy": "squash",
-      "prHourlyLimit": 10,
-      "prConcurrentLimit": 5,
-      "branchConcurrentLimit": 5,
       "schedule": [
         "before 7am on Tuesday"
       ],
@@ -35,8 +21,12 @@
   ],
   "configMigration": true,
   "osvVulnerabilityAlerts": true,
+  "prHourlyLimit": 10,
+  "prConcurrentLimit": 5,
+  "branchConcurrentLimit": 5,
+  "platformAutomerge": false,
+  "automergeStrategy": "squash",
   "ignorePaths": [
     "bun-packages/**"
-  ],
-  "rangeStrategy": "replace"
+  ]
 }
