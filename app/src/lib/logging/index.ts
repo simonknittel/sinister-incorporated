@@ -1,5 +1,4 @@
 import { env } from "../../env.mjs";
-import { logToAxiom } from "./axiom";
 import { logToConsole } from "./console";
 import { logToLoki } from "./loki";
 import { type LogEntry } from "./types";
@@ -16,7 +15,6 @@ const info = async (message: string, args: Record<string, unknown> = {}) => {
   };
 
   logToConsole(logEntry);
-  await logToAxiom(logEntry);
   await logToLoki(logEntry);
 };
 
@@ -32,7 +30,6 @@ const warn = async (message: string, args: Record<string, unknown> = {}) => {
   };
 
   logToConsole(logEntry);
-  await logToAxiom(logEntry);
   await logToLoki(logEntry);
 };
 
@@ -48,7 +45,6 @@ const error = async (message: string, args: Record<string, unknown> = {}) => {
   };
 
   logToConsole(logEntry);
-  await logToAxiom(logEntry);
   await logToLoki(logEntry);
 };
 
