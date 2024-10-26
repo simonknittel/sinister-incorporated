@@ -13,8 +13,7 @@
       "matchPackageNames": [
         "*",
         "!@biomejs/biome",
-        "!postgres",
-        "!cloudflare/cloudflare"
+        "!postgres"
       ]
     }
   ],
