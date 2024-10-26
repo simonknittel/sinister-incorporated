@@ -34,8 +34,9 @@
     }
   ],
   "configMigration": true,
+  "osvVulnerabilityAlerts": true,
   "ignorePaths": [
     "bun-packages/**"
   ],
-  "osvVulnerabilityAlerts": true
+  "rangeStrategy": "replace"
 }
