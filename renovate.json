@@ -9,19 +9,17 @@
       "automerge": true,
       "minimumReleaseAge": "7 days",
       "internalChecksFilter": "strict",
-      "schedule": [
-        "before 7am on Tuesday"
-      ],
+      "schedule": ["before 7am on Tuesday"],
       "matchPackageNames": [
         "*",
         "!@biomejs/biome",
         "!postgres",
-        "!cloudflare"
+        "!cloudflare/cloudflare"
       ]
     }
   ],
-  "configMigration": true,
   "osvVulnerabilityAlerts": true,
+  "configMigration": true,
   "prHourlyLimit": 10,
   "prConcurrentLimit": 5,
   "branchConcurrentLimit": 5,
