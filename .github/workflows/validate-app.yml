@@ -14,13 +14,13 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
 
-      - uses: actions/setup-node@v4.0.4
+      - uses: actions/setup-node@v4.1.0
         with:
           node-version-file: "app/.nvmrc"
 
-      - uses: actions/cache@v4.0.2
+      - uses: actions/cache@v4.1.2
         id: node-modules-cache
         with:
           path: app/node_modules
@@ -58,13 +58,13 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
 
-      - uses: actions/setup-node@v4.0.4
+      - uses: actions/setup-node@v4.1.0
         with:
           node-version-file: "app/.nvmrc"
 
-      - uses: actions/cache@v4.0.2
+      - uses: actions/cache@v4.1.2
         id: node-modules-cache
         with:
           path: app/node_modules
@@ -84,13 +84,13 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
 
-      - uses: actions/setup-node@v4.0.4
+      - uses: actions/setup-node@v4.1.0
         with:
           node-version-file: "app/.nvmrc"
 
-      - uses: actions/cache@v4.0.2
+      - uses: actions/cache@v4.1.2
         id: node-modules-cache
         with:
           path: app/node_modules

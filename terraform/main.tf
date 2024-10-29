@@ -1,12 +1,12 @@
 terraform {
-  required_version = "1.9.6"
+  required_version = "1.9.8"
 
   backend "s3" {}
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "5.67.0"
+      version = "5.73.0"
     }
 
     external = {
@@ -16,7 +16,7 @@ terraform {
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "4.42.0"
+      version = "4.44.0"
     }
   }
 }

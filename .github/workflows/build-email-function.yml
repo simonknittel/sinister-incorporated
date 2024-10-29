@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
         with:
           ref: ${{ inputs.git_ref }}
 
@@ -20,7 +20,7 @@ jobs:
         with:
           bun-version: 1.1.8
 
-      - uses: actions/cache@v4.0.2
+      - uses: actions/cache@v4.1.2
         id: node-modules-cache
         with:
           path: bun-packages/node_modules
@@ -38,7 +38,7 @@ jobs:
         working-directory: bun-packages/packages/email-function
 
       - name: Store artifact
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: email-function-dist
           path: bun-packages/packages/email-function/dist/
