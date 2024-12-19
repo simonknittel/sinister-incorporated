@@ -18,14 +18,7 @@
       "runtimeArgs": ["run", "dev"],
       "runtimeVersion": "22.12.0",
       "skipFiles": ["<node_internals>/**"],
-      "sourceMapPathOverrides": {
-        "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
-        "webpack://?:*/*": "${workspaceFolder}/*",
-        // Temporary Turbopack path
-        "/turbopack/[project]/*": "${workspaceFolder}/*",
-        // Eventual Turbopack path
-        "turbopack://[project]/*": "${workspaceFolder}/*"
-      }
+      "console": "integratedTerminal"
     }
   ]
 }
