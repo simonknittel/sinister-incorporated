@@ -2,7 +2,7 @@ name: Renovate
 
 on:
   schedule:
-    - cron: "0,30 6 * * *" # Every day twice in order to raise and merge PRs for security patches
+    - cron: "0 0,6,12,18 * * *"
   workflow_dispatch: # Manually run the workflow
   push: # Run the workflow on changes to the configuration
     branches:
@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Self-hosted Renovate
-        uses: renovatebot/github-action@v40.3.4
+        uses: renovatebot/github-action@v41.0.6
         with:
           configurationFile: .github/renovate-config.js
           token: ${{ secrets.RENOVATE_TOKEN }}
