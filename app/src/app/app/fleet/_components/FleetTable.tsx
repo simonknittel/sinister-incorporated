@@ -38,9 +38,9 @@ const columnHelper = createColumnHelper<Row>();
 
 const FleetTable = ({ ships }: Readonly<Props>) => {
   const [sorting, setSorting] = useState<SortingState>([
-    { id: "variant_series.manufacturer.name", desc: false },
-    { id: "variant_series.name", desc: false },
-    { id: "variant_name", desc: false },
+    { id: "variant.series.manufacturer.name", desc: false },
+    { id: "variant.series.name", desc: false },
+    { id: "variant.name", desc: false },
   ]);
 
   const columns = useMemo(() => {
