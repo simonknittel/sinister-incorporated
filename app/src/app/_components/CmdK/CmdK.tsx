@@ -1,10 +1,10 @@
+import { useAuthentication } from "@/auth/client";
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { FaCog, FaHome, FaLock, FaSearch, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
-import { useAuthentication } from "../../../lib/auth/client";
 import "./CmdK.css";
 import { SpynetSearchPage } from "./SpynetSearchPage";
 

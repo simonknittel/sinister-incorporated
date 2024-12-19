@@ -1,10 +1,10 @@
+import { authenticate } from "@/auth/server";
+import { log } from "@/logging";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { FaRegCheckCircle } from "react-icons/fa";
-import { authenticate } from "../../lib/auth/server";
 import { requireConfirmedEmailForPage } from "../../lib/emailConfirmation";
-import { log } from "../../lib/logging";
 import { AdminEnabler } from "../_components/AdminEnabler";
 import { Footer } from "../_components/Footer";
 
@@ -44,9 +44,7 @@ export default async function Page() {
       <Footer className="mt-4" />
 
       {authentication.session.user.role === "admin" && (
-        <AdminEnabler
-          enabled={cookies().get("enableAdmin")?.value === "enableAdmin"}
-        />
+        <AdminEnabler enabled={cookies().get("enable_admin")?.value === "1"} />
       )}
     </div>
   );

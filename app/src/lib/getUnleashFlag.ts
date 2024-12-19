@@ -1,8 +1,8 @@
+import { authenticate } from "@/auth/server";
+import { log } from "@/logging";
 import { evaluateFlags, flagsClient, getDefinitions } from "@unleash/nextjs";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
-import { authenticate } from "./auth/server";
-import { log } from "./logging";
 
 export const dedupedGetUnleashFlag = cache(
   async (

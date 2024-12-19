@@ -1,11 +1,11 @@
+import { prisma } from "@/db";
+import { log } from "@/logging";
 import { TRPCError } from "@trpc/server";
 import OpenAI from "openai";
 import { type ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import { env } from "process";
 import { z } from "zod";
 import { isOpenAIEnabled } from "../../../lib/isOpenAIEnabled";
-import { log } from "../../../lib/logging";
-import { prisma } from "../../db";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const aiRouter = createTRPCRouter({
@@ -38,7 +38,7 @@ export const aiRouter = createTRPCRouter({
 
     const chatCompletion = await openai.chat.completions.create({
       messages,
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       max_tokens: 1024,
       response_format: {
         type: "json_object",
@@ -69,8 +69,8 @@ export const aiRouter = createTRPCRouter({
 
       return {
         prompt: {
-          system: messages[0]!.content,
-          user: messages[1]!.content,
+          system: messages[0].content,
+          user: messages[1].content,
         },
         roleNames: response.roleNames,
       };

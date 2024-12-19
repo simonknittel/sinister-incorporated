@@ -1,3 +1,9 @@
+import type { PermissionSet } from "@/auth/common";
+import { getPermissionSetsByRoles } from "@/auth/server";
+import { prisma } from "@/db";
+import { env } from "@/env.mjs";
+import { requestEmailConfirmation } from "@/lib/emailConfirmation";
+import { log } from "@/logging";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import {
   getServerSession,
@@ -7,13 +13,7 @@ import {
 import DiscordProvider from "next-auth/providers/discord";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
-import { env } from "../env.mjs";
-import { type PermissionSet } from "../lib/auth/PermissionSet";
-import { getPermissionSetsByRoles } from "../lib/auth/server";
-import { requestEmailConfirmation } from "../lib/emailConfirmation";
-import { log } from "../lib/logging";
 import { type UserRole } from "../types";
-import { prisma } from "./db";
 
 const guildMemberResponseSchema = z.union([
   z.object({

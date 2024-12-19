@@ -1,7 +1,7 @@
+import { authenticatePage } from "@/auth/server";
 import { type Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { authenticatePage } from "../../../../lib/auth/server";
 import nextjsSearchParamsToNativeSearchParams from "../../../../lib/nextjsSearchParamsToNativeSearchParams";
 import Tile from "./_components/Tile";
 import { TileSkeleton } from "./_components/TileSkeleton";

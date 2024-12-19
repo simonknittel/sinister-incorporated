@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthentication } from "@/auth/client";
 import {
   type EntityLog,
   type EntityLogAttribute,
@@ -9,10 +10,9 @@ import clsx from "clsx";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import { useAuthentication } from "../../../../../../../lib/auth/client";
 import { type GenericEntityLogType } from "../../../../../../../types";
+import styles from "../../../../../../_components/ConfirmationGradient.module.css";
 import ConfirmLog from "../ConfirmLog";
-import styles from "../ConfirmationGradient.module.css";
 import DeleteLog from "../DeleteLog";
 
 interface Props {
@@ -36,8 +36,8 @@ export const HistoryEntry = ({ type, log }: Readonly<Props>) => {
         className={clsx({
           "absolute w-full h-20 border-t-2 border-x-2 bg-gradient-to-t from-neutral-800":
             !confirmed || confirmed?.value === "false-report",
-          [`${styles.blueBorder!} to-blue-500/10`]: !confirmed,
-          [`${styles.redBorder!} to-red-500/10`]:
+          [`${styles.blueBorder} to-blue-500/10`]: !confirmed,
+          [`${styles.redBorder} to-red-500/10`]:
             confirmed?.value === "false-report",
         })}
       />

@@ -1,5 +1,5 @@
+import { prisma } from "@/db";
 import { groupBy } from "lodash";
-import { prisma } from "../../../../server/db";
 import FleetTable from "./FleetTable";
 
 type Props = Readonly<{

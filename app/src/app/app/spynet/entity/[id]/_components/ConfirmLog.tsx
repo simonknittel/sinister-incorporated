@@ -8,12 +8,12 @@ import { FaCheck, FaSpinner, FaTimes } from "react-icons/fa";
 import { api } from "../../../../../../trpc/react";
 import Button from "../../../../../_components/Button";
 
-interface Props {
+type Props = Readonly<{
   log: EntityLog;
   compact?: boolean;
-}
+}>;
 
-const ConfirmLog = ({ log, compact }: Readonly<Props>) => {
+const ConfirmLog = ({ log, compact }: Props) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<string | false>(false);
   const utils = api.useUtils();

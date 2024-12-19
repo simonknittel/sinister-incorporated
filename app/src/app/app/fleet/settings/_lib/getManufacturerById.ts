@@ -1,6 +1,6 @@
+import { prisma } from "@/db";
 import { type Manufacturer } from "@prisma/client";
 import { unstable_cache } from "next/cache";
-import { prisma } from "../../../../../server/db";
 
 export const cachedGetManufacturerById = (
   manufacturerId: Manufacturer["id"],

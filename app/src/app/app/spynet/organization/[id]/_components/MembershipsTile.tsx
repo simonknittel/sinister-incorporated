@@ -1,8 +1,8 @@
+import { requireAuthentication } from "@/auth/server";
+import { prisma } from "@/db";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaExternalLinkAlt, FaUsers } from "react-icons/fa";
-import { requireAuthentication } from "../../../../../../lib/auth/server";
-import { prisma } from "../../../../../../server/db";
 import { DeleteOrganizationMembership } from "../../../_components/DeleteOrganizationMembership";
 import { CreateMembership } from "./CreateMembership";
 

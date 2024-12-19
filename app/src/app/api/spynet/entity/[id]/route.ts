@@ -1,15 +1,15 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { deleteObject } from "../../../../../lib/algolia";
 import apiErrorHandler from "../../../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../../../lib/auth/server";
-import { prisma } from "../../../../../server/db";
 
 interface Params {
   id: string;
 }
 
-const paramsSchema = z.string().cuid2();
+const paramsSchema = z.string().cuid();
 
 export async function DELETE(request: Request, { params }: { params: Params }) {
   try {

@@ -1,8 +1,8 @@
+import { log } from "@/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { serializeError } from "serialize-error";
-import { log } from "../../../../../../../../lib/logging";
 import { EditableSeriesName } from "../../../../_components/EditableSeriesName";
 import { TileSkeleton } from "../../../../_components/TileSkeleton";
 import { VariantsTile } from "../../../../_components/VariantsTile";

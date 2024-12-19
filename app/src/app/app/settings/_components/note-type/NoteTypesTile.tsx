@@ -1,5 +1,5 @@
+import { prisma } from "@/db";
 import clsx from "clsx";
-import { prisma } from "../../../../../server/db";
 import { Actions } from "../../../../_components/Actions";
 import Create from "./Create";
 import Delete from "./Delete";

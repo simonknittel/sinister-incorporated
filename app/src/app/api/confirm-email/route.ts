@@ -1,9 +1,9 @@
+import { authenticate } from "@/auth/server";
+import { prisma } from "@/db";
+import { log } from "@/logging";
 import { NextResponse, type NextRequest } from "next/server";
 import { zfd } from "zod-form-data";
 import apiErrorHandler from "../../../lib/apiErrorHandler";
-import { authenticate } from "../../../lib/auth/server";
-import { log } from "../../../lib/logging";
-import { prisma } from "../../../server/db";
 
 export const dynamic = "force-dynamic";
 

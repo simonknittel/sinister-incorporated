@@ -1,9 +1,9 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../../../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../../../../../lib/auth/server";
 import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
-import { prisma } from "../../../../../../../server/db";
 import { updateAlgoliaWithGenericLogType } from "./_lib/updateAlgoliaWithGenericLogType";
 import { updateEntityCaches } from "./_lib/updateEntityCaches";
 
@@ -13,13 +13,13 @@ interface Params {
 }
 
 const paramsSchema = z.object({
-  id: z.string().cuid2(),
-  logId: z.string().cuid2(),
+  id: z.string().cuid(),
+  logId: z.string().cuid(),
 });
 
 const patchBodySchema = z.object({
-  noteTypeId: z.string().trim().cuid2(),
-  classificationLevelId: z.string().trim().cuid2(),
+  noteTypeId: z.string().trim().cuid(),
+  classificationLevelId: z.string().trim().cuid(),
 });
 
 export async function PATCH(request: Request, { params }: { params: Params }) {

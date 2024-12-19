@@ -1,6 +1,6 @@
+import { authenticatePage } from "@/auth/server";
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { authenticatePage } from "../../../../../lib/auth/server";
 import { CreateManufacturereButton } from "../_components/CreateManufacturerButton";
 import { ManufacturersTile } from "../_components/ManufacturersTile";
 import { TileSkeleton } from "../_components/TileSkeleton";

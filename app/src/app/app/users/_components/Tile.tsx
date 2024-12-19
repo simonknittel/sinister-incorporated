@@ -1,4 +1,4 @@
-import { prisma } from "../../../../server/db";
+import { prisma } from "@/db";
 import Table from "./Table";
 
 const Tile = async () => {

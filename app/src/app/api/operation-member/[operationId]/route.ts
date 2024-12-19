@@ -1,14 +1,14 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../../lib/auth/server";
-import { prisma } from "../../../../server/db";
 
 interface Params {
   operationId: string;
 }
 
-const paramsSchema = z.string().cuid2();
+const paramsSchema = z.string().cuid();
 
 export async function GET(request: Request, { params }: { params: Params }) {
   try {
@@ -56,10 +56,10 @@ export async function GET(request: Request, { params }: { params: Params }) {
 
 const patchBodySchema = z.object({
   status: z.literal("confirmed").optional(),
-  operationUnitId: z.string().cuid2().optional(),
+  operationUnitId: z.string().cuid().optional(),
   title: z.string().trim().min(1).max(255).optional(),
-  userId: z.string().cuid2(),
-  shipId: z.string().cuid2().optional(),
+  userId: z.string().cuid(),
+  shipId: z.string().cuid().optional(),
 });
 
 export async function PATCH(request: Request, { params }: { params: Params }) {

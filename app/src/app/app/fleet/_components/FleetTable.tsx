@@ -38,23 +38,26 @@ const columnHelper = createColumnHelper<Row>();
 
 const FleetTable = ({ ships }: Readonly<Props>) => {
   const [sorting, setSorting] = useState<SortingState>([
-    { id: "variant_series.manufacturer.name", desc: false },
-    { id: "variant_series.name", desc: false },
-    { id: "variant_name", desc: false },
+    { id: "manufacturer", desc: false },
+    { id: "series", desc: false },
+    { id: "variant", desc: false },
   ]);
 
   const columns = useMemo(() => {
     return [
       columnHelper.accessor("variant.name", {
         header: "Variante",
+        id: "variant",
         cell: (row) => row.getValue(),
       }),
       columnHelper.accessor("variant.series.name", {
         header: "Serie",
+        id: "series",
         cell: (row) => row.getValue(),
       }),
       columnHelper.accessor("variant.series.manufacturer.name", {
         header: "Hersteller",
+        id: "manufacturer",
         cell: (row) => {
           const manufacturer = row.row.original.variant.series.manufacturer;
 

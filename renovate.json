@@ -1,19 +1,31 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":semanticCommits", ":dependencyDashboard"],
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":dependencyDashboard"
+  ],
   "packageRules": [
     {
       "groupName": "Patch Tuesday",
       "groupSlug": "patch-tuesday",
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
       "automerge": true,
       "minimumReleaseAge": "7 days",
       "internalChecksFilter": "strict",
-      "schedule": ["before 7am on Tuesday"],
+      "schedule": [
+        "before 7am on Tuesday"
+      ],
       "matchPackageNames": [
         "*",
-        "!@biomejs/biome",
-        "!postgres"
+        "!postgres",
+        "!eslint-plugin-react-compiler",
+        "!@biomejs/biome"
       ]
     }
   ],

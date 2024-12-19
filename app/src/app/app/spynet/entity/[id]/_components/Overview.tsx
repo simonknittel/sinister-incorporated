@@ -1,9 +1,9 @@
+import { requireAuthentication } from "@/auth/server";
 import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import { Suspense } from "react";
 import { FaDiscord, FaTeamspeak } from "react-icons/fa";
 import { RiTimeLine } from "react-icons/ri";
-import { requireAuthentication } from "../../../../../../lib/auth/server";
 import { RSIButton } from "../../../../../_components/RSIButton";
 import { LastSeenAt } from "../../../citizen/_components/LastSeenAt";
 import { OverviewSection } from "./generic-log-type/OverviewSection";

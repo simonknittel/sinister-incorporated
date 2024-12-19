@@ -1,11 +1,11 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../lib/auth/server";
-import { prisma } from "../../../server/db";
 
 const postBodySchema = z.object({
-  operationId: z.string().cuid2(),
+  operationId: z.string().cuid(),
   title: z.string().min(1).max(255),
   type: z.union([
     z.literal("squadron"),
@@ -14,7 +14,7 @@ const postBodySchema = z.object({
     z.literal("squad-fireteam"),
     z.literal("other"),
   ]),
-  parentUnitId: z.string().cuid2().optional(),
+  parentUnitId: z.string().cuid().optional(),
 });
 
 export async function POST(request: Request) {

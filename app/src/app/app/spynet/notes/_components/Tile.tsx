@@ -1,4 +1,5 @@
-import { requireAuthentication } from "../../../../../lib/auth/server";
+import { requireAuthentication } from "@/auth/server";
+import { prisma } from "@/db";
 import getAllClassificationLevels from "../../../../../lib/cached/getAllClassificationLevels";
 import getAllNoteTypes from "../../../../../lib/cached/getAllNoteTypes";
 import getLatestNoteAttributes from "../../../../../lib/getLatestNoteAttributes";
@@ -11,7 +12,6 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "../../../../../lib/sorting";
-import { prisma } from "../../../../../server/db";
 import Pagination from "../../_components/Pagination";
 import isAllowedToRead from "../../entity/[id]/_components/notes/lib/isAllowedToRead";
 import Filters from "./Filters";

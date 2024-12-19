@@ -1,8 +1,10 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
+import { updateActiveMembership } from "@/organizations/utils/updateActiveMembership";
+import { ConfirmationStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../../../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../../../../../lib/auth/server";
-import { prisma } from "../../../../../../../server/db";
 
 type Params = Readonly<{
   organizationId: string;
@@ -10,20 +12,20 @@ type Params = Readonly<{
 }>;
 
 const paramsSchema = z.object({
-  organizationId: z.string().cuid2(),
-  citizenId: z.string().cuid2(),
+  organizationId: z.string().cuid(),
+  citizenId: z.string().cuid(),
 });
 
 export async function DELETE(request: Request, { params }: { params: Params }) {
   try {
     /**
-     * Authenticate the request
+     * Authenticate and authorize the request
      */
     const authentication = await authenticateApi(
       "/api/spynet/organization/[organizationId]/membership/[citizenId]",
       "DELETE",
     );
-    authentication.authorizeApi("organizationMembership", "create");
+    authentication.authorizeApi("organizationMembership", "delete");
 
     /**
      * Validate the request
@@ -33,60 +35,56 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Do the thing
      */
-    const organizationMembership =
-      await prisma.activeOrganizationMembership.findUnique({
-        where: {
-          organizationId_citizenId: {
-            organizationId: paramsData.organizationId,
-            citizenId: paramsData.citizenId,
-          },
+    const membership = await prisma.activeOrganizationMembership.findUnique({
+      where: {
+        organizationId_citizenId: {
+          organizationId: paramsData.organizationId,
+          citizenId: paramsData.citizenId,
         },
-        select: {
-          visibility: true,
-        },
-      });
+      },
+    });
+    if (!membership) throw new Error("Not Found");
 
-    if (!organizationMembership) throw new Error("Not Found");
-
-    await prisma.$transaction([
-      prisma.activeOrganizationMembership.delete({
-        where: {
-          organizationId_citizenId: {
-            organizationId: paramsData.organizationId,
-            citizenId: paramsData.citizenId,
+    await prisma.organizationMembershipHistoryEntry.create({
+      data: {
+        organization: {
+          connect: {
+            id: paramsData.organizationId,
           },
         },
-      }),
-
-      prisma.organizationMembershipHistoryEntry.create({
-        data: {
-          organization: {
-            connect: {
-              id: paramsData.organizationId,
-            },
-          },
-          citizen: {
-            connect: {
-              id: paramsData.citizenId,
-            },
-          },
-          type: "LEFT",
-          visibility: organizationMembership.visibility,
-          createdBy: {
-            connect: {
-              /**
-               * We can use `!` here since at this point it's guaranteed that the user has an entity attached.
-               * This is because permissions are attached to the entity and above we check for permissions. If the
-               * user wouldn't have an entity, they also wouldn't have permissions and the request would have been
-               * rejected above.
-               * The only exception is with the `adminEnabled` cookie.
-               */
-              id: authentication.session.entityId!,
-            },
+        citizen: {
+          connect: {
+            id: paramsData.citizenId,
           },
         },
-      }),
-    ]);
+        type: "LEFT",
+        visibility: membership.visibility,
+        createdBy: {
+          connect: {
+            /**
+             * We can use `!` here since at this point it's guaranteed that the user has an entity attached.
+             * This is because permissions are attached to the entity and above we check for permissions. If the
+             * user wouldn't have an entity, they also wouldn't have permissions and the request would have been
+             * rejected above.
+             * The only exception is with the `adminEnabled` cookie.
+             */
+            id: authentication.session.entityId!,
+          },
+        },
+        confirmed: ConfirmationStatus.CONFIRMED,
+        confirmedAt: new Date(),
+        confirmedBy: {
+          connect: {
+            id: authentication.session.entityId!,
+          },
+        },
+      },
+    });
+
+    /**
+     * Update ActiveOrganizationMembership
+     */
+    await updateActiveMembership(membership.citizenId);
 
     /**
      * Respond

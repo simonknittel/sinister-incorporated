@@ -1,8 +1,8 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../lib/auth/server";
-import { prisma } from "../../../server/db";
 
 const postBodySchema = z.object({
   name: z.string().trim().min(1).max(255),

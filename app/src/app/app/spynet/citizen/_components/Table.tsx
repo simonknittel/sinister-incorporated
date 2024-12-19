@@ -104,7 +104,12 @@ const Table = ({
             <th className="whitespace-nowrap">TeamSpeak ID</th>
           )}
 
-          <th>Rollen und Zertifikate</th>
+          <th
+            className="overflow-hidden text-ellipsis whitespace-nowrap"
+            title="Rollen/Zertifikate"
+          >
+            Rollen/Zertifikate
+          </th>
 
           <th>
             <Link

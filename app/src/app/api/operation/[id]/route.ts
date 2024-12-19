@@ -1,14 +1,14 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../../lib/auth/server";
-import { prisma } from "../../../../server/db";
 
 interface Params {
   id: string;
 }
 
-const paramsSchema = z.string().cuid2();
+const paramsSchema = z.string().cuid();
 
 const patchBodySchema = z.object({
   title: z.string().trim(),

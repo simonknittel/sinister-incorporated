@@ -1,7 +1,7 @@
+import { log } from "@/logging";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { serializeError } from "serialize-error";
 import { ZodError } from "zod";
-import { log } from "../logging";
 import { type ServerActionResponse } from "./types";
 
 export const serverActionErrorHandler = async (

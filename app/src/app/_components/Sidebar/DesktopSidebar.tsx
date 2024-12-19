@@ -1,9 +1,9 @@
+import { requireAuthentication } from "@/auth/server";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
-import { requireAuthentication } from "../../../lib/auth/server";
 import { dedupedGetUnleashFlag } from "../../../lib/getUnleashFlag";
 import { Chip } from "../Chip";
 import { CmdKLoader } from "../CmdK/CmdKLoader";

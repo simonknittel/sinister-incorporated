@@ -73,10 +73,6 @@ const config = {
       fullUrl: true,
     },
   },
-
-  experimental: {
-    typedRoutes: true,
-  },
 };
 
 export default config;

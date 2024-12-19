@@ -1,26 +1,37 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
+import {
+  ConfirmationStatus,
+  OrganizationMembershipType,
+  OrganizationMembershipVisibility,
+} from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../../../../lib/auth/server";
-import { prisma } from "../../../../../../server/db";
 
 type Params = Readonly<{
   organizationId: string;
 }>;
 
-const paramsSchema = z.object({ organizationId: z.string().cuid2() });
+const paramsSchema = z.object({ organizationId: z.string().cuid() });
 
 const postBodySchema = z.object({
-  citizenId: z.string().cuid2(),
-  type: z.union([z.literal("MAIN"), z.literal("AFFILIATE")]),
-  redacted: z.union([z.literal("REDACTED"), z.literal(false)]),
-  confirmed: z.literal("CONFIRMED").optional(),
+  citizenId: z.string().cuid(),
+  type: z.enum([
+    OrganizationMembershipType.MAIN,
+    OrganizationMembershipType.AFFILIATE,
+  ]),
+  redacted: z.union([
+    z.literal(OrganizationMembershipVisibility.REDACTED),
+    z.literal(false),
+  ]),
+  confirmed: z.literal(ConfirmationStatus.CONFIRMED).optional(),
 });
 
 export async function POST(request: Request, { params }: { params: Params }) {
   try {
     /**
-     * Authenticate the request
+     * Authenticate and authorize the request
      */
     const authentication = await authenticateApi(
       "/api/spynet/organization/[organizationId]/membership",
@@ -39,7 +50,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
      * Do the thing
      */
     if (
-      data.confirmed === "CONFIRMED" &&
+      data.confirmed === ConfirmationStatus.CONFIRMED &&
       authentication.authorize("organizationMembership", "confirm")
     ) {
       await prisma.$transaction([
@@ -56,7 +67,8 @@ export async function POST(request: Request, { params }: { params: Params }) {
               },
             },
             type: data.type,
-            visibility: data.redacted || "PUBLIC",
+            visibility:
+              data.redacted || OrganizationMembershipVisibility.PUBLIC,
           },
         }),
 
@@ -73,7 +85,8 @@ export async function POST(request: Request, { params }: { params: Params }) {
               },
             },
             type: data.type,
-            visibility: data.redacted || "PUBLIC",
+            visibility:
+              data.redacted || OrganizationMembershipVisibility.PUBLIC,
             createdBy: {
               connect: {
                 /**
@@ -86,7 +99,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
                 id: authentication.session.entityId!,
               },
             },
-            confirmed: "CONFIRMED",
+            confirmed: ConfirmationStatus.CONFIRMED,
             confirmedAt: new Date(),
             confirmedBy: {
               connect: {
@@ -97,6 +110,11 @@ export async function POST(request: Request, { params }: { params: Params }) {
         }),
       ]);
     } else {
+      const visibility =
+        data.redacted === OrganizationMembershipVisibility.REDACTED
+          ? OrganizationMembershipVisibility.REDACTED
+          : OrganizationMembershipVisibility.PUBLIC;
+
       await prisma.organizationMembershipHistoryEntry.create({
         data: {
           organization: {
@@ -110,7 +128,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
             },
           },
           type: data.type,
-          visibility: data.redacted,
+          visibility,
           createdBy: {
             connect: {
               /**

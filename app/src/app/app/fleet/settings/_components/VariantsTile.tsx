@@ -1,7 +1,7 @@
+import { prisma } from "@/db";
 import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import clsx from "clsx";
 import { unstable_cache } from "next/cache";
-import { prisma } from "../../../../../server/db";
 import { Actions } from "../../../../_components/Actions";
 import { CreateVariantButton } from "./CreateVariantButton";
 import { DeleteVariantButton } from "./DeleteVariantButton";

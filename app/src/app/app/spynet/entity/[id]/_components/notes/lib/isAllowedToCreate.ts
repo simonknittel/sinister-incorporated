@@ -1,5 +1,5 @@
+import { type authenticate } from "@/auth/server";
 import { type ClassificationLevel, type NoteType } from "@prisma/client";
-import { type authenticate } from "../../../../../../../../lib/auth/server";
 
 export default function isAllowedToCreate(
   classificationLevelId: ClassificationLevel["id"],

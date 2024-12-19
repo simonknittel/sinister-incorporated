@@ -1,4 +1,4 @@
-import { requireAuthentication } from "../../../../../lib/auth/server";
+import { requireAuthentication } from "@/auth/server";
 import getVisibleRoles from "../../../../../lib/getVisibleRoles";
 import { Filter } from "../../_components/Filter";
 import RoleFilter from "./RoleFilter";

@@ -1,3 +1,4 @@
+import { prisma } from "@/db";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
@@ -5,7 +6,6 @@ import { FaTable } from "react-icons/fa";
 import { env } from "../../../../env.mjs";
 import { dedupedGetUnleashFlag } from "../../../../lib/getUnleashFlag";
 import { isOpenAIEnabled } from "../../../../lib/isOpenAIEnabled";
-import { prisma } from "../../../../server/db";
 import { Actions } from "../../../_components/Actions";
 import { Create } from "./Create";
 import Delete from "./Delete";

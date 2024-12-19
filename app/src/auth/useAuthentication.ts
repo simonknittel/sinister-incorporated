@@ -22,12 +22,12 @@ export const useAuthentication = () => {
   ) {
     if (!session) return false;
 
-    const enableAdmin =
+    const enable_admin =
       typeof document !== "undefined"
-        ? document.cookie.includes("enableAdmin=enableAdmin")
+        ? document.cookie.includes("enable_admin=1")
         : false;
 
-    if (session.user.role === "admin" && enableAdmin) return session;
+    if (session.user.role === "admin" && enable_admin) return session;
 
     const result = comparePermissionSets(
       {

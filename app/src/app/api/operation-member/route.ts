@@ -1,20 +1,20 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../lib/auth/server";
-import { prisma } from "../../../server/db";
 
 const postBodySchema = z.union([
   z.object({
-    operationId: z.string().cuid2(),
+    operationId: z.string().cuid(),
     status: z.literal("pending"),
   }),
   z.object({
-    operationId: z.string().cuid2(),
+    operationId: z.string().cuid(),
     status: z.literal("confirmed"),
-    operationUnitId: z.string().cuid2(),
+    operationUnitId: z.string().cuid(),
     title: z.string().min(1).max(255),
-    shipId: z.string().cuid2(),
+    shipId: z.string().cuid(),
   }),
 ]);
 

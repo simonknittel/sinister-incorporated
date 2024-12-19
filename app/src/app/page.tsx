@@ -1,6 +1,6 @@
+import { authenticate } from "@/auth/server";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
-import { authenticate } from "../lib/auth/server";
 import { authOptions } from "../server/auth";
 import { Footer } from "./_components/Footer";
 import { Hero } from "./_components/Hero";

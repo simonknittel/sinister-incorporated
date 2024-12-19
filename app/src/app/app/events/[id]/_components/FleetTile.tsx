@@ -1,9 +1,9 @@
+import { prisma } from "@/db";
 import clsx from "clsx";
 import { groupBy } from "lodash";
 import { MdWorkspaces } from "react-icons/md";
-import { type getEvent } from "../../../../../lib/discord/getEvent";
-import { getEventUsers } from "../../../../../lib/discord/getEventUsers";
-import { prisma } from "../../../../../server/db";
+import { type getEvent } from "../../../../../discord/getEvent";
+import { getEventUsers } from "../../../../../discord/getEventUsers";
 import FleetTable from "../../../fleet/_components/FleetTable";
 
 type Props = Readonly<{

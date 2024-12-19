@@ -1,6 +1,6 @@
+import { requireAuthentication } from "@/auth/server";
 import { type Entity } from "@prisma/client";
 import { cache } from "react";
-import { requireAuthentication } from "./auth/server";
 import getAllRoles from "./cached/getAllRoles";
 
 export const getAssignedAndVisibleRoles = cache(async (entity: Entity) => {

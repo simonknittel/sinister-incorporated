@@ -1,7 +1,7 @@
+import { requireAuthentication } from "@/auth/server";
+import { prisma } from "@/db";
 import clsx from "clsx";
 import Image from "next/image";
-import { requireAuthentication } from "../../../../../../lib/auth/server";
-import { prisma } from "../../../../../../server/db";
 import { RSIButton } from "../../../../../_components/RSIButton";
 
 type Props = Readonly<{

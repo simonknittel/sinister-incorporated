@@ -1,5 +1,5 @@
+import { prisma } from "@/db";
 import { cache } from "react";
-import { prisma } from "../../server/db";
 
 const getAllNoteTypes = cache(async () => {
   return prisma.noteType.findMany({

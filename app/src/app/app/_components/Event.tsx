@@ -1,7 +1,7 @@
+import { requireAuthentication } from "@/auth/server";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { requireAuthentication } from "../../../lib/auth/server";
 import { DiscordButton } from "../../_components/DiscordButton";
 import TimeAgoContainer from "../../_components/TimeAgoContainer";
 
@@ -29,7 +29,8 @@ export const Event = async ({ className, event, index }: Props) => {
   /**
    * Image size:
    * Discord recommends 800x320px.
-   * Our maximum height should be 160px. Therefore, we calculate the width based on the aspect ratio.
+   * Our maximum height should be 160px. Therefore, we calculate the width based
+   * on the aspect ratio.
    * 800 / 320 * 160 = 400
    */
 

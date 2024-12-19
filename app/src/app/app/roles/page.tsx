@@ -1,6 +1,6 @@
+import { authenticatePage } from "@/auth/server";
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { authenticatePage } from "../../../lib/auth/server";
 import { RolesTile } from "./_components/RolesTile";
 import RolesTileSkeleton from "./_components/RolesTileSkeleton";
 

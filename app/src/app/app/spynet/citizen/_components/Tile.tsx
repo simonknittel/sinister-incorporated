@@ -1,4 +1,5 @@
-import { requireAuthentication } from "../../../../../lib/auth/server";
+import { requireAuthentication } from "@/auth/server";
+import { prisma } from "@/db";
 import { getAssignableRoles } from "../../../../../lib/getAssignableRoles";
 import { getAssignedAndVisibleRoles } from "../../../../../lib/getAssignedAndVisibleRoles";
 import { getLastSeenAt } from "../../../../../lib/getLastSeenAt";
@@ -11,7 +12,6 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "../../../../../lib/sorting";
-import { prisma } from "../../../../../server/db";
 import Pagination from "../../_components/Pagination";
 import Filters from "./Filters";
 import Table from "./Table";

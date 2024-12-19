@@ -1,10 +1,10 @@
 "use server";
 
+import { authenticate } from "@/auth/server";
+import { log } from "@/logging";
 import { redirect } from "next/navigation";
 import { serializeError } from "serialize-error";
-import { authenticate } from "../../../lib/auth/server";
 import { requestEmailConfirmation } from "../../../lib/emailConfirmation";
-import { log } from "../../../lib/logging";
 
 export const requestEmailConfirmationAction = async () => {
   const authentication = await authenticate();

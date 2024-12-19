@@ -1,9 +1,9 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { saveObject } from "../../../../lib/algolia";
 import apiErrorHandler from "../../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../../lib/auth/server";
-import { prisma } from "../../../../server/db";
 
 const postBodySchema = z.object({
   type: z.literal("citizen"),

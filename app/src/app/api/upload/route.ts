@@ -1,11 +1,11 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { env } from "../../../env.mjs";
 import apiErrorHandler from "../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../lib/auth/server";
-import { prisma } from "../../../server/db";
 
 const postBodySchema = z.object({
   fileName: z.string().trim().min(1).max(255),

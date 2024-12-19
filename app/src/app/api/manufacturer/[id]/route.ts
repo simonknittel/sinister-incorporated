@@ -1,9 +1,9 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../../lib/auth/server";
-import { prisma } from "../../../../server/db";
 
 /**
  * Make sure this file matches `/src/lib/serverActions/manufacturer.ts`.
@@ -13,7 +13,7 @@ interface Params {
   id: string;
 }
 
-const paramsSchema = z.object({ id: z.string().cuid2() });
+const paramsSchema = z.object({ id: z.string().cuid() });
 
 const patchBodySchema = z.object({
   imageId: z.string().trim().min(1).max(255),

@@ -1,5 +1,5 @@
+import { authorize } from "@/auth/server";
 import { z } from "zod";
-import { authorize } from "../../../lib/auth/server";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const entityLogRouter = createTRPCRouter({

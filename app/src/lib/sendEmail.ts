@@ -1,13 +1,13 @@
+import { env } from "@/env.mjs";
+import { CustomError } from "@/logging/CustomError";
 import {
   EventBridgeClient,
   PutEventsCommand,
   type PutEventsCommandInput,
 } from "@aws-sdk/client-eventbridge";
 import { createId } from "@paralleldrive/cuid2";
-import https from "node:https";
+import { request } from "node:https";
 import { serializeError } from "serialize-error";
-import { env } from "../env.mjs";
-import { CustomError } from "./logging/CustomError";
 
 export const sendEmailV1 = async (
   template: "emailConfirmation",
@@ -20,7 +20,7 @@ export const sendEmailV1 = async (
     throw new Error("EMAIL_FUNCTION_ENDPOINT is not set");
 
   return new Promise<void>((resolve, reject) => {
-    const req = https.request(
+    const req = request(
       env.EMAIL_FUNCTION_ENDPOINT,
       {
         method: "POST",
