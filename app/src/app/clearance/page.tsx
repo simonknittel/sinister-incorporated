@@ -44,9 +44,7 @@ export default async function Page() {
       <Footer className="mt-4" />
 
       {authentication.session.user.role === "admin" && (
-        <AdminEnabler
-          enabled={cookies().get("enableAdmin")?.value === "enableAdmin"}
-        />
+        <AdminEnabler enabled={cookies().get("enable_admin")?.value === "1"} />
       )}
     </div>
   );

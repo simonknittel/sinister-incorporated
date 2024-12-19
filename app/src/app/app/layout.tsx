@@ -33,7 +33,7 @@ export default async function AppLayout({ children }: Readonly<Props>) {
 
           {authentication.session.user.role === "admin" && (
             <AdminEnabler
-              enabled={cookies().get("enableAdmin")?.value === "enableAdmin"}
+              enabled={cookies().get("enable_admin")?.value === "1"}
             />
           )}
         </TRPCReactProvider>

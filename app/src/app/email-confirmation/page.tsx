@@ -100,9 +100,7 @@ export default async function Page({ searchParams }: Readonly<Props>) {
       <PageRefresher />
 
       {authentication.session.user.role === "admin" && (
-        <AdminEnabler
-          enabled={cookies().get("enableAdmin")?.value === "enableAdmin"}
-        />
+        <AdminEnabler enabled={cookies().get("enable_admin")?.value === "1"} />
       )}
     </div>
   );

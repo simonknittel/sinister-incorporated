@@ -50,7 +50,7 @@ export const requiresEmailConfirmation = async (session: Session) => {
 
   if (
     session.user.role === "admin" &&
-    cookies().get("enableAdmin")?.value === "enableAdmin"
+    cookies().get("enable_admin")?.value === "1"
   )
     return false;
 
