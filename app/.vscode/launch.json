@@ -16,6 +16,7 @@
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
+      "runtimeVersion": "22.12.0",
       "skipFiles": ["<node_internals>/**"],
       "sourceMapPathOverrides": {
         "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
