@@ -29,7 +29,8 @@ export const Event = async ({ className, event, index }: Props) => {
   /**
    * Image size:
    * Discord recommends 800x320px.
-   * Our maximum height should be 160px. Therefore, we calculate the width based on the aspect ratio.
+   * Our maximum height should be 160px. Therefore, we calculate the width based
+   * on the aspect ratio.
    * 800 / 320 * 160 = 400
    */
 

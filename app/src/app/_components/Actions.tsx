@@ -60,7 +60,7 @@ const ActionContext = createContext<ActionContextInterface | undefined>(
 
 /**
  * Check for undefined since the defaultValue of the context is undefined. If
- * it's still undefined, the provider component is missing.
+ * it's still undefined, then the provider is missing.
  */
 export function useAction() {
   const context = useContext(ActionContext);

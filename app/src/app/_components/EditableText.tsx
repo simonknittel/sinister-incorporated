@@ -37,9 +37,10 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
           setIsEditing(false);
         } else {
           /**
-           * `setTimeout()` is need here because `isPending` is used for the `disabled` attribute on
-           * the input element and `isPending` only reverts to false once this transition finishes.
-           * This would lead to calling `focus()` too early.
+           * `setTimeout()` is need here because `isPending` is used for the
+           * `disabled` attribute on the input element and `isPending` only
+           * reverts to false once this transition finishes. This would lead to
+           * calling `focus()` too early.
            */
           setTimeout(() => {
             inputRef.current?.focus();
@@ -52,9 +53,10 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
         }
       } catch (error) {
         /**
-         * `setTimeout()` is need here because `isPending` is used for the `disabled` attribute on
-         * the input element and `isPending` only reverts to false once this transition finishes.
-         * This would lead to calling `focus()` too early.
+         * `setTimeout()` is need here because `isPending` is used for the
+         * `disabled` attribute on the input element and `isPending` only
+         * reverts to false once this transition finishes. This would lead to
+         * calling `focus()` too early.
          */
         setTimeout(() => {
           inputRef.current?.focus();
