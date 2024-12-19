@@ -38,7 +38,7 @@ export const aiRouter = createTRPCRouter({
 
     const chatCompletion = await openai.chat.completions.create({
       messages,
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       max_tokens: 1024,
       response_format: {
         type: "json_object",
