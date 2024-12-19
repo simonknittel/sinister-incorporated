@@ -1,6 +1,7 @@
 import { authenticateApi } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
+import { ConfirmationStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
             },
             attributeKey: "name",
             newValue: data.name,
-            confirmed: "CONFIRMED",
+            confirmed: ConfirmationStatus.CONFIRMED,
             confirmedAt: new Date(),
             confirmedBy: {
               connect: {

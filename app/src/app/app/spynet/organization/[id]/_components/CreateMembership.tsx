@@ -2,8 +2,9 @@
 
 import { useAuthentication } from "@/auth/client";
 import {
-  type OrganizationMembershipType,
-  type OrganizationMembershipVisibility,
+  ConfirmationStatus,
+  OrganizationMembershipType,
+  OrganizationMembershipVisibility,
 } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
@@ -32,7 +33,7 @@ export const CreateMembership = ({ className, organizationId }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>({
     defaultValues: {
-      type: "MAIN",
+      type: OrganizationMembershipType.MAIN,
     },
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +60,7 @@ export const CreateMembership = ({ className, organizationId }: Props) => {
             redacted: data.visibility || false,
             confirmed:
               e.nativeEvent.submitter.name === "confirmed"
-                ? "CONFIRMED"
+                ? ConfirmationStatus.CONFIRMED
                 : undefined,
           }),
         },
@@ -124,8 +125,10 @@ export const CreateMembership = ({ className, organizationId }: Props) => {
             id={typeInputId}
             {...register("type", { required: true })}
           >
-            <option value="MAIN">Main</option>
-            <option value="AFFILIATE">Affiliate</option>
+            <option value={OrganizationMembershipType.MAIN}>Main</option>
+            <option value={OrganizationMembershipType.AFFILIATE}>
+              Affiliate
+            </option>
           </select>
 
           <div className="mt-6 flex justify-between items-center">
@@ -134,7 +137,7 @@ export const CreateMembership = ({ className, organizationId }: Props) => {
             <YesNoCheckbox
               {...register("visibility")}
               id={visibilityInputId}
-              value="REDACTED"
+              value={OrganizationMembershipVisibility.REDACTED}
             />
           </div>
 

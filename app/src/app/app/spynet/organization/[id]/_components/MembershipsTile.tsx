@@ -1,5 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
+import { OrganizationMembershipVisibility } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaExternalLinkAlt, FaUsers } from "react-icons/fa";
@@ -32,7 +33,12 @@ export const MembershipsTile = async ({ className, id }: Props) => {
       where: {
         organizationId: id,
         visibility: {
-          in: alsoVisibilityRedacted ? ["PUBLIC", "REDACTED"] : ["PUBLIC"],
+          in: alsoVisibilityRedacted
+            ? [
+                OrganizationMembershipVisibility.PUBLIC,
+                OrganizationMembershipVisibility.REDACTED,
+              ]
+            : [OrganizationMembershipVisibility.PUBLIC],
         },
       },
       select: {

@@ -1,7 +1,7 @@
 import { authenticateApi } from "@/auth/server";
 import { prisma } from "@/db";
 import { updateActiveMembership } from "@/organizations/utils/updateActiveMembership";
-import { ConfirmationStatus } from "@prisma/client";
+import { ConfirmationStatus, OrganizationMembershipType } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../../../../../lib/apiErrorHandler";
@@ -57,7 +57,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
             id: paramsData.citizenId,
           },
         },
-        type: "LEFT",
+        type: OrganizationMembershipType.LEFT,
         visibility: membership.visibility,
         createdBy: {
           connect: {

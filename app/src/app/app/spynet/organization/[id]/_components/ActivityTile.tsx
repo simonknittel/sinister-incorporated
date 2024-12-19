@@ -2,6 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import {
   ConfirmationStatus,
+  OrganizationMembershipType,
   OrganizationMembershipVisibility,
 } from "@prisma/client";
 import clsx from "clsx";
@@ -116,7 +117,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
       }),
     ...organization.membershipHistoryEntries.map((entry) => {
       switch (entry.type) {
-        case "MAIN":
+        case OrganizationMembershipType.MAIN:
           return {
             key: entry.id,
             date: entry.createdAt,
@@ -135,7 +136,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
             ),
           };
 
-        case "AFFILIATE":
+        case OrganizationMembershipType.AFFILIATE:
           return {
             key: entry.id,
             date: entry.createdAt,
@@ -154,7 +155,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
             ),
           };
 
-        case "LEFT":
+        case OrganizationMembershipType.LEFT:
           return {
             key: entry.id,
             date: entry.createdAt,
