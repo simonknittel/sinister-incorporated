@@ -1,12 +1,12 @@
+import { prisma } from "@/db";
+import { log } from "@/logging";
 import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
 import { type Session } from "next-auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { env } from "../env.mjs";
-import { prisma } from "../server/db";
 import { dedupedGetUnleashFlag } from "./getUnleashFlag";
-import { log } from "./logging";
 import { sendEmailV2 } from "./sendEmail";
 
 export const requestEmailConfirmation = async (

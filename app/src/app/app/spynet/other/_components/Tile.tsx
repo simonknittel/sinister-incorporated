@@ -1,4 +1,5 @@
-import { requireAuthentication } from "../../../../../lib/auth/server";
+import { requireAuthentication } from "@/auth/server";
+import { prisma } from "@/db";
 import {
   PER_PAGE,
   getCurrentPageFromSearchParams,
@@ -8,7 +9,6 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "../../../../../lib/sorting";
-import { prisma } from "../../../../../server/db";
 import Pagination from "../../_components/Pagination";
 import Filters from "./Filters";
 import Table, { type Row } from "./Table";

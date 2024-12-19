@@ -1,5 +1,5 @@
+import { authenticate } from "@/auth/server";
 import { cache } from "react";
-import { authenticate } from "./auth/server";
 import getAllRoles from "./cached/getAllRoles";
 
 export const getAssignableRoles = cache(async () => {

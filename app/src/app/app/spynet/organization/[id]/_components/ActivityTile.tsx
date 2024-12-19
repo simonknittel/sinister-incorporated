@@ -1,9 +1,9 @@
+import { requireAuthentication } from "@/auth/server";
+import { prisma } from "@/db";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaListAlt } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import { requireAuthentication } from "../../../../../../lib/auth/server";
-import { prisma } from "../../../../../../server/db";
 
 type Props = Readonly<{
   className?: string;

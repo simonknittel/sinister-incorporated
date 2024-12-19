@@ -1,11 +1,11 @@
+import { authenticate } from "@/auth/server";
+import { log } from "@/logging";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { RiInformationLine } from "react-icons/ri";
-import { authenticate } from "../../lib/auth/server";
 import { requiresEmailConfirmation } from "../../lib/emailConfirmation";
-import { log } from "../../lib/logging";
 import { AdminEnabler } from "../_components/AdminEnabler";
 import { Footer } from "../_components/Footer";
 import { PageRefresher } from "./_components/PageRefresher";

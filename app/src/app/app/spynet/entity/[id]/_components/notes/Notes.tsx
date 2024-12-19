@@ -1,3 +1,5 @@
+import { requireAuthentication } from "@/auth/server";
+import { prisma } from "@/db";
 import {
   type Entity,
   type EntityLog,
@@ -6,9 +8,7 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import { FaListAlt } from "react-icons/fa";
-import { requireAuthentication } from "../../../../../../../lib/auth/server";
 import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
-import { prisma } from "../../../../../../../server/db";
 import Tab from "../../../../../../_components/tabs/Tab";
 import TabList from "../../../../../../_components/tabs/TabList";
 import { TabsProvider } from "../../../../../../_components/tabs/TabsContext";

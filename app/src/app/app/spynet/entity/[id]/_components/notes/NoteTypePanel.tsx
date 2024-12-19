@@ -1,10 +1,10 @@
+import { authenticate } from "@/auth/server";
 import {
   type Entity,
   type EntityLog,
   type EntityLogAttribute,
   type NoteType,
 } from "@prisma/client";
-import { authenticate } from "../../../../../../../lib/auth/server";
 import getAllClassificationLevels from "../../../../../../../lib/cached/getAllClassificationLevels";
 import TabPanel from "../../../../../../_components/tabs/TabPanel";
 import AddNote from "./AddNote";

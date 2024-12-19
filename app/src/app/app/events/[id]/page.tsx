@@ -1,8 +1,8 @@
+import { authenticatePage } from "@/auth/server";
+import { log } from "@/logging";
 import { type Metadata } from "next";
 import { serializeError } from "serialize-error";
-import { authenticatePage } from "../../../../lib/auth/server";
-import { getEvent } from "../../../../lib/discord/getEvent";
-import { log } from "../../../../lib/logging";
+import { getEvent } from "../../../../discord/getEvent";
 import { FleetTile } from "./_components/FleetTile";
 import { OverviewTile } from "./_components/OverviewTile";
 import { ParticipantsTile } from "./_components/ParticipantsTile";

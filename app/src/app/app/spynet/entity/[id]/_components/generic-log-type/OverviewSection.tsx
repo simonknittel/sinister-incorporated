@@ -1,7 +1,7 @@
+import { requireAuthentication } from "@/auth/server";
 import { type Entity } from "@prisma/client";
 import { camelCase } from "change-case";
 import { type ReactNode } from "react";
-import { requireAuthentication } from "../../../../../../../lib/auth/server";
 import { type GenericEntityLogType } from "../../../../../../../types";
 import { HistoryModal } from "./HistoryModal";
 

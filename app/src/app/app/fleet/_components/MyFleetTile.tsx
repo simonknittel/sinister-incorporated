@@ -1,6 +1,6 @@
+import { authenticate } from "@/auth/server";
+import { prisma } from "@/db";
 import clsx from "clsx";
-import { authenticate } from "../../../../lib/auth/server";
-import { prisma } from "../../../../server/db";
 import AssignShip from "./AssignShip";
 import { MyShipTile } from "./MyShipTile";
 

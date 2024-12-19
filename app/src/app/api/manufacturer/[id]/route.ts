@@ -1,9 +1,9 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../../lib/auth/server";
-import { prisma } from "../../../../server/db";
 
 /**
  * Make sure this file matches `/src/lib/serverActions/manufacturer.ts`.

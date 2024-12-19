@@ -1,5 +1,5 @@
+import { prisma } from "@/db";
 import { unstable_cache } from "next/cache";
-import { prisma } from "../../../../../server/db";
 
 export const cachedGetManufacturers = () => {
   return unstable_cache(

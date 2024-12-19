@@ -1,9 +1,9 @@
+import { log } from "@/logging";
 import clsx from "clsx";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { serializeError } from "serialize-error";
-import { log } from "../../../../../../lib/logging";
 import { ImageUpload } from "../../../../../_components/ImageUpload";
 import { EditableManufacturerName } from "../../_components/EditableManufacturerName";
 import { SeriesTile } from "../../_components/SeriesTile";

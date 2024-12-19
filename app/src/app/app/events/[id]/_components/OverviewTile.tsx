@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { type getEvent } from "../../../../../lib/discord/getEvent";
+import { type getEvent } from "../../../../../discord/getEvent";
 import { DiscordButton } from "../../../../_components/DiscordButton";
 
 const TimeAgoContainer = dynamic(

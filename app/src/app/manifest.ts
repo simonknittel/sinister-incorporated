@@ -1,10 +1,10 @@
 import { type MetadataRoute } from "next";
-import screenshotDashboardMobileSrc from "../../../docs/screenshot-dashboard-mobile.png";
-import screenshotDashboardSrc from "../../../docs/screenshot-dashboard.png";
-import screenshotSpynetCitizenMobileSrc from "../../../docs/screenshot-spynet-citizen-mobile.png";
-import screenshotSpynetCitizenSrc from "../../../docs/screenshot-spynet-citizen.png";
-import screenshotSpynetMobileSrc from "../../../docs/screenshot-spynet-mobile.png";
 import faviconSrc from "../assets/favicon.svg";
+import screenshotDashboardMobileSrc from "../assets/screenshots/screenshot-dashboard-mobile.png";
+import screenshotDashboardSrc from "../assets/screenshots/screenshot-dashboard.png";
+import screenshotSpynetCitizenMobileSrc from "../assets/screenshots/screenshot-spynet-citizen-mobile.png";
+import screenshotSpynetCitizenSrc from "../assets/screenshots/screenshot-spynet-citizen.png";
+import screenshotSpynetMobileSrc from "../assets/screenshots/screenshot-spynet-mobile.png";
 import { env } from "../env.mjs";
 
 export default function manifest(): MetadataRoute.Manifest {

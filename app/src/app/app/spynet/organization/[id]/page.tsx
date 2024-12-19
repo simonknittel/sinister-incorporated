@@ -1,11 +1,11 @@
+import { authenticatePage } from "@/auth/server";
+import { prisma } from "@/db";
+import { log } from "@/logging";
 import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { serializeError } from "serialize-error";
-import { authenticatePage } from "../../../../../lib/auth/server";
-import { log } from "../../../../../lib/logging";
-import { prisma } from "../../../../../server/db";
 import { SkeletonTile } from "../../../../_components/SkeletonTile";
 import { ActivityTile } from "./_components/ActivityTile";
 import { MembershipsTile } from "./_components/MembershipsTile";

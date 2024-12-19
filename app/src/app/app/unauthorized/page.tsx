@@ -1,5 +1,5 @@
+import { authenticatePage } from "@/auth/server";
 import { type Metadata } from "next";
-import { authenticatePage } from "../../../lib/auth/server";
 import { Footer } from "../../_components/Footer";
 import { Hero } from "../../_components/Hero";
 

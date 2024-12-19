@@ -1,5 +1,5 @@
+import { env } from "@/env.mjs";
 import { serializeError } from "serialize-error";
-import { env } from "../../env.mjs";
 import { logToConsole } from "./console";
 import { type LogOutput } from "./types";
 

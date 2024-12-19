@@ -1,8 +1,8 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import apiErrorHandler from "../../../../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../../../../lib/auth/server";
-import { prisma } from "../../../../../../server/db";
 
 type Params = Readonly<{
   organizationId: string;

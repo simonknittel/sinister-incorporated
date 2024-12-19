@@ -1,4 +1,4 @@
-import { requireAuthentication } from "../../../lib/auth/server";
+import { requireAuthentication } from "@/auth/server";
 import Avatar from "../Avatar";
 import LogoutButton from "../LogoutButton";
 

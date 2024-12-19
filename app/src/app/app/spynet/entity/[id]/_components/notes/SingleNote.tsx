@@ -1,3 +1,6 @@
+import { type PermissionSet } from "@/auth/PermissionSet";
+import { requireAuthentication } from "@/auth/server";
+import { prisma } from "@/db";
 import {
   type Entity,
   type EntityLog,
@@ -12,10 +15,7 @@ import { Suspense, type ReactNode } from "react";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import { type PermissionSet } from "../../../../../../../lib/auth/PermissionSet";
-import { requireAuthentication } from "../../../../../../../lib/auth/server";
 import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
-import { prisma } from "../../../../../../../server/db";
 import ConfirmLog from "../ConfirmLog";
 import styles from "../ConfirmationGradient.module.css";
 import DeleteLog from "../DeleteLog";

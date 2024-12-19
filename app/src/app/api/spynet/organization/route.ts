@@ -1,12 +1,12 @@
+import { authenticateApi } from "@/auth/server";
+import { prisma } from "@/db";
+import { log } from "@/logging";
 import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { saveObject } from "../../../../lib/algolia";
 import apiErrorHandler from "../../../../lib/apiErrorHandler";
-import { authenticateApi } from "../../../../lib/auth/server";
-import { log } from "../../../../lib/logging";
 import { scrapeOrganizationLogo } from "../../../../lib/scrapeOrganizationLogo";
-import { prisma } from "../../../../server/db";
 
 const postBodySchema = z.object({
   spectrumId: z.string().trim().min(1),

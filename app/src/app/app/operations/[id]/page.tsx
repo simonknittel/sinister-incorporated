@@ -1,12 +1,12 @@
+import { authenticatePage } from "@/auth/server";
+import { prisma } from "@/db";
+import { log } from "@/logging";
 import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
-import { authenticatePage } from "../../../../lib/auth/server";
 import { dedupedGetUnleashFlag } from "../../../../lib/getUnleashFlag";
-import { log } from "../../../../lib/logging";
-import { prisma } from "../../../../server/db";
 import Avatar from "../../../_components/Avatar";
 import ConfirmParticipation from "./_components/ConfirmParticipation";
 import CreateUnit from "./_components/CreateUnit";

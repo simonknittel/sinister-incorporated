@@ -1,11 +1,11 @@
 "use server";
 
+import { authenticateAction } from "@/auth/server";
+import { prisma } from "@/db";
 import { VariantStatus } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { prisma } from "../../server/db";
-import { authenticateAction } from "../auth/server";
 import { serverActionErrorHandler } from "./serverActionErrorHandler";
 import { type ServerAction } from "./types";
 

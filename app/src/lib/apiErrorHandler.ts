@@ -1,8 +1,8 @@
+import { log } from "@/logging";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";
 import { ZodError } from "zod";
-import { log } from "./logging";
 
 export default async function apiErrorHandler(
   error: unknown,

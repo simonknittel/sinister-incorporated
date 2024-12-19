@@ -1,3 +1,4 @@
+import { requireAuthentication } from "@/auth/server";
 import {
   type Entity,
   type Organization,
@@ -5,7 +6,6 @@ import {
 } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { requireAuthentication } from "../../../../../lib/auth/server";
 
 export const mapOrganizationMembershipHistoryEntries = async (
   entries: Array<

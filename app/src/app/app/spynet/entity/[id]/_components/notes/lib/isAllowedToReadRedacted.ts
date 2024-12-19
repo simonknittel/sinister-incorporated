@@ -1,5 +1,5 @@
+import { type requireAuthentication } from "@/auth/server";
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
-import { type requireAuthentication } from "../../../../../../../../lib/auth/server";
 import getLatestNoteAttributes from "../../../../../../../../lib/getLatestNoteAttributes";
 
 export default function isAllowedToReadRedacted(

@@ -1,14 +1,14 @@
-import { getServerSession, type Session } from "next-auth";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { cache } from "react";
-import { authOptions } from "../../server/auth";
 import {
   requireConfirmedEmailForAction,
   requireConfirmedEmailForApi,
   requireConfirmedEmailForPage,
-} from "../emailConfirmation";
-import { log } from "../logging";
+} from "@/lib/emailConfirmation";
+import { log } from "@/logging";
+import { authOptions } from "@/server/auth";
+import { getServerSession, type Session } from "next-auth";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { cache } from "react";
 import { type PermissionSet } from "./PermissionSet";
 import comparePermissionSets from "./comparePermissionSets";
 

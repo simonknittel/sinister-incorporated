@@ -1,4 +1,4 @@
-import { requireAuthentication } from "./auth/server";
+import { requireAuthentication } from "@/auth/server";
 import getAllRoles from "./cached/getAllRoles";
 
 export default async function getVisibleRoles() {

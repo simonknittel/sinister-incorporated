@@ -1,4 +1,4 @@
-import { prisma } from "../../../../../../../server/db";
+import { prisma } from "@/db";
 
 export const updateEntityRolesCache = async (entityId: string) => {
   const entity = await prisma.entity.findUnique({

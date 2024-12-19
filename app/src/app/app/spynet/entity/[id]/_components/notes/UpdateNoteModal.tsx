@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthentication } from "@/auth/client";
 import {
   type ClassificationLevel,
   type EntityLog,
@@ -11,7 +12,6 @@ import { useId, useState } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
-import { useAuthentication } from "../../../../../../../lib/auth/client";
 import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
 import Button from "../../../../../../_components/Button";
 import Modal from "../../../../../../_components/Modal";
