@@ -10,8 +10,8 @@ type Params = Readonly<{
 }>;
 
 const paramsSchema = z.object({
-  organizationId: z.string().cuid2(),
-  citizenId: z.string().cuid2(),
+  organizationId: z.string().cuid(),
+  citizenId: z.string().cuid(),
 });
 
 export async function DELETE(request: Request, { params }: { params: Params }) {

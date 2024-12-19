@@ -13,8 +13,8 @@ interface Params {
 }
 
 const paramsSchema = z.object({
-  id: z.string().cuid2(),
-  logId: z.string().cuid2(),
+  id: z.string().cuid(),
+  logId: z.string().cuid(),
 });
 
 const patchBodySchema = z.object({

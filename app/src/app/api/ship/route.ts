@@ -5,7 +5,7 @@ import { z } from "zod";
 import apiErrorHandler from "../../../lib/apiErrorHandler";
 
 const postBodySchema = z.object({
-  variantId: z.string().cuid2(),
+  variantId: z.string().cuid(),
   name: z.string().trim().max(255).optional(),
 });
 

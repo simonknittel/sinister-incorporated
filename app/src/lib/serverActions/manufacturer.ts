@@ -13,7 +13,7 @@ import { type ServerAction } from "./types";
  */
 
 const updateSchema = zfd.formData({
-  id: zfd.text(z.string().cuid2()),
+  id: zfd.text(z.string().cuid()),
   name: zfd.text(z.string().trim().min(1).optional()),
   imageId: zfd.text(z.string().trim().min(1).max(255).optional()),
 });
@@ -79,7 +79,7 @@ export const updateManufacturer: ServerAction = async (formData) => {
 };
 
 const deleteSchema = zfd.formData({
-  id: zfd.text(z.string().cuid2()),
+  id: zfd.text(z.string().cuid()),
 });
 
 export const deleteManufacturer: ServerAction = async (formData) => {

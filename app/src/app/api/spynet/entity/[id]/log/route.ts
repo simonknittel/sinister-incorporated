@@ -9,7 +9,7 @@ interface Params {
   id: string;
 }
 
-const paramsSchema = z.string().cuid2();
+const paramsSchema = z.string().cuid();
 
 const postBodySchema = z.union([
   z.object({
@@ -23,8 +23,8 @@ const postBodySchema = z.union([
   z.object({
     type: z.literal("note"),
     content: z.string().trim().min(1),
-    noteTypeId: z.string().trim().cuid2(),
-    classificationLevelId: z.string().trim().cuid2(),
+    noteTypeId: z.string().trim().cuid(),
+    classificationLevelId: z.string().trim().cuid(),
   }),
   z.object({
     type: z.literal("discord-id"),
@@ -40,11 +40,11 @@ const postBodySchema = z.union([
   }),
   z.object({
     type: z.literal("role-added"),
-    content: z.string().trim().cuid2(),
+    content: z.string().trim().cuid(),
   }),
   z.object({
     type: z.literal("role-removed"),
-    content: z.string().trim().cuid2(),
+    content: z.string().trim().cuid(),
   }),
 ]);
 

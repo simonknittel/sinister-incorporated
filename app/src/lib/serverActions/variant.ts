@@ -14,7 +14,7 @@ import { type ServerAction } from "./types";
  */
 
 const updateSchema = zfd.formData({
-  id: zfd.text(z.string().cuid2()),
+  id: zfd.text(z.string().cuid()),
   name: zfd.text(z.string().trim().min(1).optional()),
   status: zfd.text(
     z
@@ -85,7 +85,7 @@ export const updateVariant: ServerAction = async (formData) => {
 };
 
 const deleteSchema = zfd.formData({
-  id: zfd.text(z.string().cuid2()),
+  id: zfd.text(z.string().cuid()),
 });
 
 export const deleteVariant: ServerAction = async (formData) => {

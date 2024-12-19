@@ -5,7 +5,7 @@ import { z } from "zod";
 import apiErrorHandler from "../../../lib/apiErrorHandler";
 
 const postBodySchema = z.object({
-  operationId: z.string().cuid2(),
+  operationId: z.string().cuid(),
   title: z.string().min(1).max(255),
   type: z.union([
     z.literal("squadron"),
@@ -14,7 +14,7 @@ const postBodySchema = z.object({
     z.literal("squad-fireteam"),
     z.literal("other"),
   ]),
-  parentUnitId: z.string().cuid2().optional(),
+  parentUnitId: z.string().cuid().optional(),
 });
 
 export async function POST(request: Request) {

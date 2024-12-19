@@ -8,7 +8,7 @@ interface Params {
   id: string;
 }
 
-const paramsSchema = z.object({ id: z.string().cuid2() });
+const paramsSchema = z.object({ id: z.string().cuid() });
 
 const postBodySchema = z.array(
   z

@@ -6,15 +6,15 @@ import apiErrorHandler from "../../../lib/apiErrorHandler";
 
 const postBodySchema = z.union([
   z.object({
-    operationId: z.string().cuid2(),
+    operationId: z.string().cuid(),
     status: z.literal("pending"),
   }),
   z.object({
-    operationId: z.string().cuid2(),
+    operationId: z.string().cuid(),
     status: z.literal("confirmed"),
-    operationUnitId: z.string().cuid2(),
+    operationUnitId: z.string().cuid(),
     title: z.string().min(1).max(255),
-    shipId: z.string().cuid2(),
+    shipId: z.string().cuid(),
   }),
 ]);
 

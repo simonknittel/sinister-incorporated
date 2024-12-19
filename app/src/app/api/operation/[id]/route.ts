@@ -8,7 +8,7 @@ interface Params {
   id: string;
 }
 
-const paramsSchema = z.string().cuid2();
+const paramsSchema = z.string().cuid();
 
 const patchBodySchema = z.object({
   title: z.string().trim(),

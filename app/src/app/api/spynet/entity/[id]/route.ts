@@ -9,7 +9,7 @@ interface Params {
   id: string;
 }
 
-const paramsSchema = z.string().cuid2();
+const paramsSchema = z.string().cuid();
 
 export async function DELETE(request: Request, { params }: { params: Params }) {
   try {

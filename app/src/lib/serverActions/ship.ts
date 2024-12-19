@@ -9,7 +9,7 @@ import { serverActionErrorHandler } from "./serverActionErrorHandler";
 import { type ServerAction } from "./types";
 
 const updateSchema = zfd.formData({
-  id: zfd.text(z.string().cuid2()),
+  id: zfd.text(z.string().cuid()),
   name: zfd.text(z.string().trim().optional()),
 });
 
@@ -70,7 +70,7 @@ export const updateShip: ServerAction = async (formData) => {
 };
 
 const deleteSchema = zfd.formData({
-  id: zfd.text(z.string().cuid2()),
+  id: zfd.text(z.string().cuid()),
 });
 
 export const deleteShip: ServerAction = async (formData) => {

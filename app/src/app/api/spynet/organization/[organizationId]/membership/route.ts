@@ -8,10 +8,10 @@ type Params = Readonly<{
   organizationId: string;
 }>;
 
-const paramsSchema = z.object({ organizationId: z.string().cuid2() });
+const paramsSchema = z.object({ organizationId: z.string().cuid() });
 
 const postBodySchema = z.object({
-  citizenId: z.string().cuid2(),
+  citizenId: z.string().cuid(),
   type: z.union([z.literal("MAIN"), z.literal("AFFILIATE")]),
   redacted: z.union([z.literal("REDACTED"), z.literal(false)]),
   confirmed: z.literal("CONFIRMED").optional(),
