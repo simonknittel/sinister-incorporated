@@ -16,8 +16,8 @@ import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
+import styles from "../../../../../../_components/ConfirmationGradient.module.css";
 import ConfirmLog from "../ConfirmLog";
-import styles from "../ConfirmationGradient.module.css";
 import DeleteLog from "../DeleteLog";
 import ClassificationLevel from "./ClassificationLevel";
 import ClassificationLevelSkeleton from "./ClassificationLevelSkeleton";
@@ -159,8 +159,8 @@ export const SingleNote = async ({ note }: Props) => {
         className={clsx({
           "absolute w-full h-24 border-t-2 border-x-2 bg-gradient-to-t from-neutral-900/0":
             !confirmed || confirmed?.value === "false-report",
-          [`${styles.blueBorder!} to-blue-500/10`]: !confirmed,
-          [`${styles.redBorder!} to-red-500/10`]:
+          [`${styles.blueBorder} to-blue-500/10`]: !confirmed,
+          [`${styles.redBorder} to-red-500/10`]:
             confirmed?.value === "false-report",
         })}
       />

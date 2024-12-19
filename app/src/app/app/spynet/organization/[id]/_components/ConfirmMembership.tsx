@@ -1,42 +1,40 @@
 "use client";
 
-import { type EntityLog } from "@prisma/client";
+import {
+  ConfirmationStatus,
+  type OrganizationMembershipHistoryEntry,
+} from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaCheck, FaSpinner, FaTimes } from "react-icons/fa";
-import { api } from "../../../../../../trpc/react";
 import Button from "../../../../../_components/Button";
 
 type Props = Readonly<{
-  log: EntityLog;
+  entry: OrganizationMembershipHistoryEntry;
   compact?: boolean;
 }>;
 
-const ConfirmLog = ({ log, compact }: Props) => {
+export const ConfirmMembership = ({ entry, compact }: Props) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<string | false>(false);
-  const utils = api.useUtils();
 
   const handleConfirm = async (confirmed: string) => {
     setIsLoading(confirmed);
 
     try {
       const response = await fetch(
-        `/api/spynet/entity/${log.entityId}/log/${log.id}/confirm`,
+        `/api/spynet/organization/${entry.organizationId}/membership/${entry.citizenId}/confirm`,
         {
           method: "PATCH",
           body: JSON.stringify({
+            id: entry.id,
             confirmed,
           }),
         },
       );
 
       if (response.ok) {
-        await utils.entityLog.getHistory.invalidate({
-          entityId: log.entityId,
-          type: log.type,
-        });
         router.refresh();
         toast.success("Erfolgreich gespeichert");
       } else {
@@ -56,11 +54,11 @@ const ConfirmLog = ({ log, compact }: Props) => {
         <Button
           variant="tertiary"
           className="h-auto"
-          onClick={() => void handleConfirm("confirmed")}
-          disabled={isLoading === "confirmed"}
+          onClick={() => void handleConfirm(ConfirmationStatus.CONFIRMED)}
+          disabled={isLoading === ConfirmationStatus.CONFIRMED}
           title="Bestätigen"
         >
-          {isLoading === "confirmed" ? (
+          {isLoading === ConfirmationStatus.CONFIRMED ? (
             <FaSpinner className="animate-spin" />
           ) : (
             <FaCheck />
@@ -70,11 +68,11 @@ const ConfirmLog = ({ log, compact }: Props) => {
         <Button
           variant="tertiary"
           className="h-auto"
-          onClick={() => void handleConfirm("false-report")}
-          disabled={isLoading === "false-report"}
+          onClick={() => void handleConfirm(ConfirmationStatus.FALSE_REPORT)}
+          disabled={isLoading === ConfirmationStatus.FALSE_REPORT}
           title="Falschmeldung"
         >
-          {isLoading === "false-report" ? (
+          {isLoading === ConfirmationStatus.FALSE_REPORT ? (
             <FaSpinner className="animate-spin" />
           ) : (
             <FaTimes />
@@ -89,10 +87,10 @@ const ConfirmLog = ({ log, compact }: Props) => {
       <Button
         variant="tertiary"
         className="h-auto"
-        onClick={() => void handleConfirm("confirmed")}
-        disabled={isLoading === "confirmed"}
+        onClick={() => void handleConfirm(ConfirmationStatus.CONFIRMED)}
+        disabled={isLoading === ConfirmationStatus.CONFIRMED}
       >
-        {isLoading === "confirmed" ? (
+        {isLoading === ConfirmationStatus.CONFIRMED ? (
           <FaSpinner className="animate-spin" />
         ) : (
           <FaCheck />
@@ -103,10 +101,10 @@ const ConfirmLog = ({ log, compact }: Props) => {
       <Button
         variant="tertiary"
         className="h-auto"
-        onClick={() => void handleConfirm("false-report")}
-        disabled={isLoading === "false-report"}
+        onClick={() => void handleConfirm(ConfirmationStatus.FALSE_REPORT)}
+        disabled={isLoading === ConfirmationStatus.FALSE_REPORT}
       >
-        {isLoading === "false-report" ? (
+        {isLoading === ConfirmationStatus.FALSE_REPORT ? (
           <FaSpinner className="animate-spin" />
         ) : (
           <FaTimes />
@@ -116,5 +114,3 @@ const ConfirmLog = ({ log, compact }: Props) => {
     </>
   );
 };
-
-export default ConfirmLog;

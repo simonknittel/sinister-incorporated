@@ -1,5 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
+import { ConfirmationStatus } from "@prisma/client";
 import clsx from "clsx";
 import { TbCircleDot } from "react-icons/tb";
 import { mapOrganizationAttributeHistoryEntries } from "./mapOrganizationAttributeHistoryEntries";
@@ -11,12 +12,7 @@ type Props = Readonly<{
 }>;
 
 export const ActivityTile = async ({ className }: Props) => {
-  const authentication = await requireAuthentication();
-
-  const canConfirm = authentication.authorize(
-    "organizationMembership",
-    "confirm",
-  );
+  await requireAuthentication();
 
   const result = await prisma.$transaction([
     prisma.organization.findMany({
@@ -24,12 +20,6 @@ export const ActivityTile = async ({ className }: Props) => {
         createdAt: "desc",
       },
       take: 15,
-      select: {
-        id: true,
-        name: true,
-        createdAt: true,
-        logo: true,
-      },
     }),
 
     prisma.organizationAttributeHistoryEntry.findMany({
@@ -41,15 +31,10 @@ export const ActivityTile = async ({ className }: Props) => {
           createdAt: "desc",
         },
       ],
-      take: 15,
-      select: {
-        id: true,
-        organizationId: true,
-        attributeKey: true,
-        oldValue: true,
-        newValue: true,
-        createdAt: true,
+      where: {
+        confirmed: ConfirmationStatus.CONFIRMED,
       },
+      take: 15,
     }),
 
     prisma.organizationMembershipHistoryEntry.findMany({
@@ -62,28 +47,12 @@ export const ActivityTile = async ({ className }: Props) => {
         },
       ],
       where: {
-        confirmed: canConfirm ? undefined : "CONFIRMED",
+        confirmed: ConfirmationStatus.CONFIRMED,
       },
       take: 15,
-      select: {
-        id: true,
-        organization: {
-          select: {
-            id: true,
-            name: true,
-            logo: true,
-          },
-        },
-        citizen: {
-          select: {
-            id: true,
-            handle: true,
-          },
-        },
-        createdAt: true,
-        type: true,
-        visibility: true,
-        confirmed: true,
+      include: {
+        organization: true,
+        citizen: true,
       },
     }),
   ]);

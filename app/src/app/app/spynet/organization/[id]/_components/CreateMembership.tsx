@@ -105,7 +105,7 @@ export const CreateMembership = ({ className, organizationId }: Props) => {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <label className="mt-6 block" htmlFor={citizenIdInputId}>
-            Citizen
+            Citizen (Sinister ID)
           </label>
 
           <input
