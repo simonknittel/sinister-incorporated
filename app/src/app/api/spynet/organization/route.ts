@@ -1,3 +1,4 @@
+import { saveObject } from "@/algolia";
 import { authenticateApi } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
@@ -5,7 +6,6 @@ import { ConfirmationStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
-import { saveObject } from "../../../../lib/algolia";
 import apiErrorHandler from "../../../../lib/apiErrorHandler";
 import { scrapeOrganizationLogo } from "../../../../lib/scrapeOrganizationLogo";
 

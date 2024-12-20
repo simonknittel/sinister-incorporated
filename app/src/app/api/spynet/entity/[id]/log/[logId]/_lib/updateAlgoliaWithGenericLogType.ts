@@ -1,6 +1,6 @@
+import { updateObject } from "@/algolia";
 import { prisma } from "@/db";
 import { type EntityLog } from "@prisma/client";
-import { updateObject } from "../../../../../../../../lib/algolia";
 import { type EntityLogType } from "../../../../../../../../types";
 
 export async function updateAlgoliaWithGenericLogType(

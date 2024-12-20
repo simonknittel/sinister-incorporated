@@ -27,7 +27,7 @@ const Note = ({ className, message, type = "info", error }: Props) => {
         <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-1" />
       )}
       {type === "success" && (
-        <FaCheckSquare className="text-blue-500 grow-1 shrink-0 mt-1" />
+        <FaCheckSquare className="text-green-500 grow-1 shrink-0 mt-1" />
       )}
       {type === "error" && (
         <BsExclamationOctagonFill className="text-sinister-red-500 grow-1 shrink-0 mt-1" />

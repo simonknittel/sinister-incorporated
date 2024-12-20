@@ -1,8 +1,8 @@
+import { env } from "@/env.mjs";
 import { type Entity } from "@prisma/client";
 import algoliasearch from "algoliasearch";
-import { env } from "../env.mjs";
 
-function getIndex() {
+export function getIndex() {
   const client = algoliasearch(
     env.NEXT_PUBLIC_ALGOLIA_APP_ID,
     env.ALGOLIA_ADMIN_API_KEY,
