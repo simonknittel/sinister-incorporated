@@ -2,6 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
+import { IoDocuments } from "react-icons/io5";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
 import { dedupedGetUnleashFlag } from "../../../lib/getUnleashFlag";
@@ -25,6 +26,11 @@ export const MobileActionBar = async ({ className }: Props) => {
   const showOperations =
     (await dedupedGetUnleashFlag("EnableOperations")) &&
     authentication.authorize("operation", "manage");
+
+  const showDocuments = authentication.authorize(
+    "documentIntroductionCompendium",
+    "read",
+  );
 
   return (
     <div
@@ -147,6 +153,18 @@ export const MobileActionBar = async ({ className }: Props) => {
                       >
                         <MdWorkspaces />
                         Flotte
+                      </Link>
+                    </li>
+                  )}
+
+                  {showDocuments && (
+                    <li>
+                      <Link
+                        href="/app/documents"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                      >
+                        <IoDocuments />
+                        Dokumente
                       </Link>
                     </li>
                   )}
