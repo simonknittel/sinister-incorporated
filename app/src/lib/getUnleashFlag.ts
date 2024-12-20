@@ -11,7 +11,6 @@ export const dedupedGetUnleashFlag = cache(
       | "EnablePreviewComments"
       | "EnableCareBearShooter"
       | "DisableConfirmationEmail"
-      | "DisableConfirmedEmailRequirement"
       | "DisableRoleNameSuggestions"
       | "EnableOperations",
   ) => {

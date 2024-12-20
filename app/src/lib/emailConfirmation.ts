@@ -44,10 +44,7 @@ export const requestEmailConfirmation = async (
   ]);
 };
 
-export const requiresEmailConfirmation = async (session: Session) => {
-  if (await dedupedGetUnleashFlag("DisableConfirmedEmailRequirement"))
-    return false;
-
+export const requiresEmailConfirmation = (session: Session) => {
   if (
     session.user.role === "admin" &&
     cookies().get("enable_admin")?.value === "1"
@@ -58,7 +55,7 @@ export const requiresEmailConfirmation = async (session: Session) => {
 };
 
 export const requireConfirmedEmailForPage = async (session: Session) => {
-  if (!(await requiresEmailConfirmation(session))) return;
+  if (!requiresEmailConfirmation(session)) return;
 
   if (!session.user.emailVerified) {
     await log.info("Unauthenticated request to page", {
@@ -72,7 +69,7 @@ export const requireConfirmedEmailForPage = async (session: Session) => {
 };
 
 export const requireConfirmedEmailForApi = async (session: Session) => {
-  if (!(await requiresEmailConfirmation(session))) return;
+  if (!requiresEmailConfirmation(session)) return;
 
   if (!session.user.emailVerified) {
     await log.info("Unauthenticated request to API", {
@@ -86,7 +83,7 @@ export const requireConfirmedEmailForApi = async (session: Session) => {
 };
 
 export const requireConfirmedEmailForAction = async (session: Session) => {
-  if (!(await requiresEmailConfirmation(session))) return;
+  if (!requiresEmailConfirmation(session)) return;
 
   if (!session.user.emailVerified) {
     await log.info("Unauthenticated request to action", {
@@ -100,7 +97,7 @@ export const requireConfirmedEmailForAction = async (session: Session) => {
 };
 
 export const requireConfirmedEmailForTrpc = async (session: Session) => {
-  if (!(await requiresEmailConfirmation(session))) return;
+  if (!requiresEmailConfirmation(session)) return;
 
   if (!session.user.emailVerified) {
     await log.info("Unauthenticated request to tRPC", {
