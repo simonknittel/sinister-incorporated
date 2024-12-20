@@ -30,7 +30,7 @@ export const Filter = ({ name, children }: Props) => {
     <FilterContext.Provider value={value}>
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Trigger asChild>
-          <Button variant="secondary">
+          <Button variant="secondary" className="py-0 min-h-8 px-3">
             <FaChevronDown /> {name}
           </Button>
         </Popover.Trigger>
