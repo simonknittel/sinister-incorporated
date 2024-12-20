@@ -75,7 +75,6 @@ export const Suggestions = ({ className, onClick }: Props) => {
                   },
                 )}
                 disabled={suggestions.isFetching}
-                type="button"
                 onClick={() => onClick?.(roleName)}
               >
                 {roleName}
@@ -83,7 +82,6 @@ export const Suggestions = ({ className, onClick }: Props) => {
             ))}
 
             <Button
-              type="button"
               variant="tertiary"
               onClick={() => suggestions.refetch()}
               disabled={suggestions.isFetching}

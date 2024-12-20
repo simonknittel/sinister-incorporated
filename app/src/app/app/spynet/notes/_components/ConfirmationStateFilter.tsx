@@ -109,7 +109,7 @@ const ConfirmationStateFilter = ({ confirmationStates }: Readonly<Props>) => {
       )}
 
       <div className="flex justify-end w-full">
-        <Button variant="primary">
+        <Button type="submit" variant="primary">
           <FaSave /> Speichern
         </Button>
       </div>

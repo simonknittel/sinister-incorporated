@@ -61,7 +61,7 @@ export const NoteSection = ({
           </p>
         )}
 
-        <Button variant="tertiary" onClick={handleCreate} type="button">
+        <Button variant="tertiary" onClick={handleCreate}>
           <FaPlus /> Regel erstellen
         </Button>
       </div>
@@ -172,7 +172,7 @@ const Rule = ({
       </select>
 
       <div className="flex items-center justify-end">
-        <Button variant="tertiary" onClick={() => handleDelete()} type="button">
+        <Button variant="tertiary" onClick={() => handleDelete()}>
           <FaTrash /> Löschen
         </Button>
       </div>
