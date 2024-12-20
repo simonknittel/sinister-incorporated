@@ -65,14 +65,7 @@ async function main() {
   for (const row of rows) {
     const spectrumId = row[0];
 
-    const trimmedBeitritt = row[1].trim();
-    let beitritt = null;
-    if (trimmedBeitritt)
-      beitritt = dateParse(trimmedBeitritt, "dd.MM.yyyy", new Date());
-    const trimmedVerlassen = row[2].trim();
-    let verlassen = null;
-    if (trimmedVerlassen)
-      verlassen = dateParse(trimmedVerlassen, "dd.MM.yyyy", new Date());
+    const { beitritt, verlassen } = parseDates(row);
 
     const citizen = await prisma.entity.findFirst({
       where: {
@@ -320,6 +313,34 @@ export const updateActiveMembership = async (citizenId: Entity["id"]) => {
       })),
     }),
   ]);
+};
+
+const parseDates = (row: Row) => {
+  const trimmedBeitritt = row[1].trim();
+  let beitritt = null;
+  if (trimmedBeitritt) {
+    if (trimmedBeitritt.match(/\w{2}\.\w{2}\.\w{4}/)) {
+      beitritt = dateParse(trimmedBeitritt, "dd.MM.yyyy", new Date());
+    } else if (trimmedBeitritt.match(/\w{2}\.\w{2}\.\w{2}/)) {
+      beitritt = dateParse(trimmedBeitritt, "dd.MM.yy", new Date());
+    } else {
+      console.error(`Failed to parse date. spectrumId: ${row[0]}`);
+    }
+  }
+
+  const trimmedVerlassen = row[2].trim();
+  let verlassen = null;
+  if (trimmedVerlassen) {
+    if (trimmedVerlassen.match(/\w{2}\.\w{2}\.\w{4}/)) {
+      verlassen = dateParse(trimmedVerlassen, "dd.MM.yyyy", new Date());
+    } else if (trimmedVerlassen.match(/\w{2}\.\w{2}\.\w{2}/)) {
+      verlassen = dateParse(trimmedVerlassen, "dd.MM.yy", new Date());
+    } else {
+      console.error(`Failed to parse date. spectrumId: ${row[0]}`);
+    }
+  }
+
+  return { beitritt, verlassen };
 };
 
 void main().then(() => console.info("Finished."));
