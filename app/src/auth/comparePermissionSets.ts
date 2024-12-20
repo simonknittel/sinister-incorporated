@@ -41,6 +41,12 @@ export default function comparePermissionSets(
         ) {
           // When no attributes for this resource and operation are required, but we have some, it means that our given permissions are too specific. Therefore, we should return false.
           return false;
+        } else if (
+          requiredPermissionSet.attributes &&
+          !givenPermissionSet.attributes
+        ) {
+          // When attributes are required, but we don't have any, we should return false
+          return false;
         }
 
         // If we have the required operation and attributes, we can return true
