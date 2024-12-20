@@ -24,6 +24,7 @@ import TabList from "../../../_components/tabs/TabList";
 import { TabsProvider } from "../../../_components/tabs/TabsContext";
 import { usePermissionsContext } from "./PermissionsContext";
 import { CitizenTab } from "./tabs/CitizenTab";
+import { DocumentsTab } from "./tabs/DocumentsTab";
 import EventsTab from "./tabs/EventsTab";
 import FleetTab from "./tabs/FleetTab";
 import { OrganizationsTab } from "./tabs/OrganizationsTab";
@@ -97,6 +98,10 @@ export const Permissions = ({
                 <FaCalendarDay /> Events
               </Tab>
 
+              <Tab id="documents">
+                <FaCog /> Dokumente
+              </Tab>
+
               <Tab id="other">
                 <FaCog /> Sonstiges
               </Tab>
@@ -109,6 +114,7 @@ export const Permissions = ({
             <OrganizationsTab />
             <FleetTab />
             <EventsTab enableOperations={enableOperations} />
+            <DocumentsTab />
             <OtherTab roles={allRoles} />
           </TabsProvider>
 
