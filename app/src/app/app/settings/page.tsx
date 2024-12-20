@@ -3,6 +3,7 @@ import { log } from "@/logging";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
+import { Algolia } from "./_components/Algolia";
 import ClassificationLevelsTile from "./_components/classification-level/ClassificationLevelsTile";
 import NoteTypesTile from "./_components/note-type/NoteTypesTile";
 
@@ -27,7 +28,14 @@ export default async function Page() {
 
   const showAnalytics = authentication.authorize("analytics", "manage");
 
-  if (!showNoteTypes && !showClassificationLevels && !showAnalytics) {
+  const showAlgolia = authentication.authorize("algolia", "manage");
+
+  if (
+    !showNoteTypes &&
+    !showClassificationLevels &&
+    !showAnalytics &&
+    !showAlgolia
+  ) {
     await log.info("Unauthorized request to page", {
       userId: authentication.session.user.id,
       reason: "Insufficient permissions",
@@ -47,7 +55,7 @@ export default async function Page() {
       )}
 
       {showAnalytics && (
-        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50 ">
+        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50">
           <h2 className="font-bold text-xl">Disable analytics</h2>
 
           <p className="mt-4 mb-4">
@@ -57,6 +65,8 @@ export default async function Page() {
           <AnalyticsCheckbox />
         </section>
       )}
+
+      {showAlgolia && <Algolia />}
     </main>
   );
 }

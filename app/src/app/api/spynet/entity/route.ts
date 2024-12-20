@@ -1,8 +1,8 @@
+import { saveObject } from "@/algolia";
 import { authenticateApi } from "@/auth/server";
 import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { saveObject } from "../../../../lib/algolia";
 import apiErrorHandler from "../../../../lib/apiErrorHandler";
 
 const postBodySchema = z.object({

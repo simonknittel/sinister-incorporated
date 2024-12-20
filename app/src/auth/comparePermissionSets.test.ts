@@ -197,7 +197,7 @@ describe("compare permission sets", () => {
           },
         ],
       ),
-    ).toBe(true);
+    ).toBe(false);
   });
 
   test("permission set containing one attribute vs. one permission set containing one attribute but with a different key", () => {

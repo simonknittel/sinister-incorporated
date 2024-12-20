@@ -1,5 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import {
+  OrganizationMembershipType,
+  OrganizationMembershipVisibility,
   type Entity,
   type Organization,
   type OrganizationMembershipHistoryEntry,
@@ -35,13 +37,17 @@ export const mapOrganizationMembershipHistoryEntries = async (
 
   return entries
     .filter((entry) =>
-      (alsoVisibilityRedacted ? ["PUBLIC", "REDACTED"] : ["PUBLIC"]).includes(
-        entry.visibility,
-      ),
+      (alsoVisibilityRedacted
+        ? [
+            OrganizationMembershipVisibility.PUBLIC,
+            OrganizationMembershipVisibility.REDACTED,
+          ]
+        : [OrganizationMembershipVisibility.PUBLIC]
+      ).includes(entry.visibility),
     )
     .map((entry) => {
       switch (entry.type) {
-        case "MAIN":
+        case OrganizationMembershipType.MAIN:
           return {
             key: entry.id,
             date: entry.createdAt,
@@ -76,7 +82,7 @@ export const mapOrganizationMembershipHistoryEntries = async (
             ),
           };
 
-        case "AFFILIATE":
+        case OrganizationMembershipType.AFFILIATE:
           return {
             key: entry.id,
             date: entry.createdAt,
@@ -101,7 +107,7 @@ export const mapOrganizationMembershipHistoryEntries = async (
             ),
           };
 
-        case "LEFT":
+        case OrganizationMembershipType.LEFT:
           return {
             key: entry.id,
             date: entry.createdAt,

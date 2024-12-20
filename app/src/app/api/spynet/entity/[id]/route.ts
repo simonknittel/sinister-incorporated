@@ -1,8 +1,8 @@
+import { deleteObject } from "@/algolia";
 import { authenticateApi } from "@/auth/server";
 import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { deleteObject } from "../../../../../lib/algolia";
 import apiErrorHandler from "../../../../../lib/apiErrorHandler";
 
 interface Params {

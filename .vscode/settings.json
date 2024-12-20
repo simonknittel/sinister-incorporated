@@ -1,10 +1,12 @@
 {
 	"cSpell.words": [
 		"biomejs",
+		"dbname",
 		"hashicorp",
 		"oidc",
 		"OIDC",
 		"postgres",
+		"postgresql",
 		"prisma",
 		"tfbackend",
 		"tfvars"
