@@ -67,43 +67,47 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
 
       {activeOrganizationMemberships.length > 0 ? (
         <ul className="flex gap-2 flex-wrap mt-4">
-          {activeOrganizationMemberships.map((membership) => (
-            <li
-              key={membership.organization.id}
-              className="rounded bg-neutral-700/50 flex overflow-hidden"
-            >
-              <Link
-                href={`/app/spynet/organization/${membership.organization.id}`}
-                className="inline-flex"
+          {activeOrganizationMemberships
+            .sort((a, b) =>
+              a.organization.name.localeCompare(b.organization.name),
+            )
+            .map((membership) => (
+              <li
+                key={membership.organization.id}
+                className="rounded bg-neutral-700/50 flex overflow-hidden"
               >
-                {membership.organization.logo && (
-                  <span className="bg-black align-bottom flex w-[32px] items-center justify-center">
-                    <Image
-                      src={`https://robertsspaceindustries.com${membership.organization.logo}`}
-                      alt=""
-                      width={24}
-                      height={24}
-                    />
+                <Link
+                  href={`/app/spynet/organization/${membership.organization.id}`}
+                  className="inline-flex"
+                >
+                  {membership.organization.logo && (
+                    <span className="bg-black align-bottom flex w-[32px] items-center justify-center">
+                      <Image
+                        src={`https://robertsspaceindustries.com${membership.organization.logo}`}
+                        alt=""
+                        width={24}
+                        height={24}
+                      />
+                    </span>
+                  )}
+
+                  <span className="inline-flex gap-2 px-2 py-1 items-center">
+                    {membership.organization.name}
+                    <FaExternalLinkAlt className="text-sinister-red-500 hover:text-sinister-red-300 text-xs" />
                   </span>
+                </Link>
+
+                {showDeleteButton && (
+                  <div className="border-l border-neutral-700 flex items-center">
+                    <DeleteOrganizationMembership
+                      className="p-2"
+                      organizationId={membership.organization.id}
+                      citizenId={id}
+                    />
+                  </div>
                 )}
-
-                <span className="inline-flex gap-2 px-2 py-1 items-center">
-                  {membership.organization.name}
-                  <FaExternalLinkAlt className="text-sinister-red-500 hover:text-sinister-red-300 text-xs" />
-                </span>
-              </Link>
-
-              {showDeleteButton && (
-                <div className="border-l border-neutral-700 flex items-center">
-                  <DeleteOrganizationMembership
-                    className="p-2"
-                    organizationId={membership.organization.id}
-                    citizenId={id}
-                  />
-                </div>
-              )}
-            </li>
-          ))}
+              </li>
+            ))}
         </ul>
       ) : (
         <p className="mt-4 text-neutral-500">Keine Organisationen</p>
