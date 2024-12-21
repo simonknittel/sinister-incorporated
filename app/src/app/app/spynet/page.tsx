@@ -26,7 +26,7 @@ export default async function Page() {
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
-        <Hero text="Spynet" />
+        <Hero text="Spynet" withGlitch />
       </div>
 
       <div className="flex flex-col xl:flex-row-reverse gap-8 mt-8">
