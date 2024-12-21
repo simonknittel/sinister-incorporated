@@ -40,8 +40,18 @@ export const Roles = async ({ className, entity }: Props) => {
         <p className="text-neutral-500 italic mt-4">Keine Rollen</p>
       )}
 
-      {(authentication.authorize("otherRole", "assign") ||
-        authentication.authorize("otherRole", "dismiss")) && (
+      {(authentication.authorize("otherRole", "assign", [
+        {
+          key: "roleId",
+          value: "*",
+        },
+      ]) ||
+        authentication.authorize("otherRole", "dismiss", [
+          {
+            key: "roleId",
+            value: "*",
+          },
+        ])) && (
         <div className="flex gap-4 mt-2">
           <AddRoles
             entity={entity}

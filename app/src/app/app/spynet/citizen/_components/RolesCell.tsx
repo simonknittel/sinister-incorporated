@@ -16,8 +16,18 @@ export const RolesCell = async ({
   const authentication = await requireAuthentication();
 
   const showUpdateRolesButton =
-    authentication.authorize("otherRole", "assign") ||
-    authentication.authorize("otherRole", "dismiss");
+    authentication.authorize("otherRole", "assign", [
+      {
+        key: "roleId",
+        value: "*",
+      },
+    ]) ||
+    authentication.authorize("otherRole", "dismiss", [
+      {
+        key: "roleId",
+        value: "*",
+      },
+    ]);
 
   const roles = await getAssignedAndVisibleRoles(entity);
 
