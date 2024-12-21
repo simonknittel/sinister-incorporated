@@ -29,7 +29,7 @@ export default async function Page({ searchParams }: Props) {
   return (
     <div className="min-h-dvh flex-col flex justify-center items-center bg-sinister-radial-gradient">
       <main className="w-full max-w-md py-8 flex flex-col justify-center items-center gap-4 flex-1">
-        {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." />}
+        {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." withGlitch />}
 
         <div className="flex flex-col gap-2 rounded max-w-xs">
           <LoginButtons activeProviders={activeProviders} />

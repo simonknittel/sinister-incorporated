@@ -33,7 +33,7 @@ export default async function Page({ searchParams }: Props) {
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
-        {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." />}
+        {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." withGlitch />}
       </div>
 
       <div className="mt-8 flex gap-8 flex-col xl:flex-row justify-center max-w-[400px] mx-auto xl:max-w-none">

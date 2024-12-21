@@ -240,9 +240,9 @@ export const DesktopSidebar = async () => {
             <RedBar />
           </nav>
         </div>
-
-        <Footer className="px-8 pb-4 pt-0" />
       </div>
+
+      <Footer className="px-8 py-4" />
     </>
   );
 };
