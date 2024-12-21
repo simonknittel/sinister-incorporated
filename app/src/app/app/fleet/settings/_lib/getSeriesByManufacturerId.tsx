@@ -15,6 +15,9 @@ export const getSeriesByManufacturerIdCached = (
             select: {
               name: true,
             },
+            orderBy: {
+              name: "asc",
+            },
           },
         },
         where: {
