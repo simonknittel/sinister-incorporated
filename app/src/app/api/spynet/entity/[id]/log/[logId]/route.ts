@@ -75,6 +75,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       });
     }
 
+    // @ts-expect-error The authorization types need to get overhauled
     authentication.authorizeApi("note", "update", authorizationAttributes);
     authentication.authorizeApi("note", "create", [
       {
@@ -175,6 +176,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
           });
         }
 
+        // @ts-expect-error The authorization types need to get overhauled
         authentication.authorizeApi("note", "delete", authorizationAttributes);
         break;
 
@@ -247,25 +249,13 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
      */
     switch (entityLog.type) {
       case "handle":
-        await updateAlgoliaWithGenericLogType(
-          entityLog.type,
-          "handles",
-          entityLog,
-        );
+        await updateAlgoliaWithGenericLogType(entityLog, "handles");
         break;
       case "citizen-id":
-        await updateAlgoliaWithGenericLogType(
-          entityLog.type,
-          "citizenIds",
-          entityLog,
-        );
+        await updateAlgoliaWithGenericLogType(entityLog, "citizenIds");
         break;
       case "community-moniker":
-        await updateAlgoliaWithGenericLogType(
-          entityLog.type,
-          "communityMonikers",
-          entityLog,
-        );
+        await updateAlgoliaWithGenericLogType(entityLog, "communityMonikers");
         break;
 
       default:

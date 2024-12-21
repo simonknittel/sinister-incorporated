@@ -19,7 +19,6 @@ interface FormValues {
   organizationId: string;
   type: OrganizationMembershipType;
   visibility: OrganizationMembershipVisibility;
-  confirmed?: "CONFIRMED";
 }
 
 type Props = Readonly<{

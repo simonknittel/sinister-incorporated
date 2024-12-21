@@ -36,8 +36,14 @@ export const AddNote = ({
   const contentInputId = useId();
   const classificationLevelSelectId = useId();
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data, e) => {
     setIsLoading(true);
+
+    if (
+      !(e?.nativeEvent instanceof SubmitEvent) ||
+      !(e.nativeEvent.submitter instanceof HTMLButtonElement)
+    )
+      return;
 
     try {
       const response = await fetch(`/api/spynet/entity/${entityId}/log`, {
@@ -47,6 +53,10 @@ export const AddNote = ({
           content: data.content,
           noteTypeId,
           classificationLevelId: data.classificationLevelId,
+          confirmed:
+            e.nativeEvent.submitter.name === "confirmed"
+              ? "confirmed"
+              : undefined,
         }),
       });
 
@@ -66,7 +76,11 @@ export const AddNote = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex justify-end mb-1">
+        <Formatting />
+      </div>
+
       <textarea
         className="p-2 rounded-l bg-neutral-800 w-full"
         id={contentInputId}
@@ -100,13 +114,25 @@ export const AddNote = ({
           />
         )}
 
-        <div className="flex gap-4 justify-end col-start-3">
-          <Formatting />
+        <div className="flex gap-4 items-center justify-end col-start-3">
+          <Button
+            type="submit"
+            disabled={isLoading}
+            title="Speichern"
+            variant="tertiary"
+            name="confirmed"
+            className="whitespace-nowrap text-left hidden sm:inline-flex"
+          >
+            {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
+            Speichern und
+            <br />
+            bestätigen
+          </Button>
 
           <Button
             type="submit"
             disabled={isLoading}
-            title="Hinzufügen"
+            title="Speichern"
             variant="secondary"
           >
             {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
