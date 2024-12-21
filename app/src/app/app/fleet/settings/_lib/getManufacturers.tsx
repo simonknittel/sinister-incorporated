@@ -14,6 +14,9 @@ export const getManufacturersCached = () => {
               id: true,
               name: true,
             },
+            orderBy: {
+              name: "asc",
+            },
           },
         },
         orderBy: {
