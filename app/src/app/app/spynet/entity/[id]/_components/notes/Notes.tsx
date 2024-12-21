@@ -121,7 +121,7 @@ export const Notes = async ({ className, entity }: Props) => {
         <FaListAlt /> Notizen
       </h2>
 
-      <TabsProvider initialActiveTab={filteredNoteTypes[0]!.id}>
+      <TabsProvider initialActiveTab={filteredNoteTypes[0].id}>
         <TabList>
           {filteredNoteTypes.map((noteType) => (
             <Tab key={noteType.id} id={noteType.id}>

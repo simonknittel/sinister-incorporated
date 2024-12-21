@@ -1,16 +1,14 @@
 import { updateObject } from "@/algolia";
 import { prisma } from "@/db";
 import { type EntityLog } from "@prisma/client";
-import { type EntityLogType } from "../../../../../../../../types";
 
 export async function updateAlgoliaWithGenericLogType(
-  type: EntityLogType,
-  algoliaKey: string,
   log: EntityLog,
+  algoliaKey: string,
 ) {
   const logs = await prisma.entityLog.findMany({
     where: {
-      type,
+      type: log.type,
       entityId: log.entityId,
       attributes: {
         some: {

@@ -1,4 +1,5 @@
 import { authenticateApi } from "@/auth/server";
+import { confirmLog } from "@/citizen/utils/confirmLog";
 import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -15,36 +16,44 @@ const postBodySchema = z.union([
   z.object({
     type: z.literal("handle"),
     content: z.string().trim().min(1).max(255),
+    confirmed: z.literal("confirmed").optional(),
   }),
   z.object({
     type: z.literal("teamspeak-id"),
     content: z.string().trim().min(1).max(255),
+    confirmed: z.literal("confirmed").optional(),
   }),
   z.object({
     type: z.literal("note"),
     content: z.string().trim().min(1),
     noteTypeId: z.string().trim().cuid(),
     classificationLevelId: z.string().trim().cuid(),
+    confirmed: z.literal("confirmed").optional(),
   }),
   z.object({
     type: z.literal("discord-id"),
     content: z.string().trim().min(1).max(255),
+    confirmed: z.literal("confirmed").optional(),
   }),
   z.object({
     type: z.literal("citizen-id"),
     content: z.string().trim().min(1).max(255),
+    confirmed: z.literal("confirmed").optional(),
   }),
   z.object({
     type: z.literal("community-moniker"),
     content: z.string().trim().min(1).max(255),
+    confirmed: z.literal("confirmed").optional(),
   }),
   z.object({
     type: z.literal("role-added"),
     content: z.string().trim().cuid(),
+    confirmed: z.literal("confirmed").optional(),
   }),
   z.object({
     type: z.literal("role-removed"),
     content: z.string().trim().cuid(),
+    confirmed: z.literal("confirmed").optional(),
   }),
 ]);
 
@@ -159,7 +168,12 @@ export async function POST(request: Request, { params }: { params: Params }) {
               }
             : undefined,
       },
+      include: {
+        attributes: true,
+      },
     });
+
+    if (data.confirmed) await confirmLog(item, "confirmed");
 
     if (["role-added", "role-removed"].includes(data.type))
       await updateEntityRolesCache(entity.id);
