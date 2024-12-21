@@ -2,7 +2,7 @@ import { type Manufacturer } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
 import { Actions } from "../../../../_components/Actions";
-import { cachedGetSeriesByManufacturerId } from "../_lib/getSeriesByManufacturerId";
+import { getSeriesByManufacturerIdCached } from "../_lib/getSeriesByManufacturerId";
 import { CreateSeriesButton } from "./CreateSeriesButton";
 import { DeleteSeriesButton } from "./DeleteSeriesButton";
 
@@ -11,8 +11,10 @@ type Props = Readonly<{
   manufacturerId: Manufacturer["id"];
 }>;
 
+const GRID_COLS = "grid-cols-[128px_1fr_44px]";
+
 export const SeriesTile = async ({ className, manufacturerId }: Props) => {
-  const series = await cachedGetSeriesByManufacturerId(manufacturerId);
+  const series = await getSeriesByManufacturerIdCached(manufacturerId);
 
   return (
     <section
@@ -29,8 +31,15 @@ export const SeriesTile = async ({ className, manufacturerId }: Props) => {
 
       <table className="w-full min-w-[320px]">
         <thead>
-          <tr className="grid items-center gap-4 text-left text-neutral-500 grid-cols-[150px_1fr_44px]">
+          <tr
+            className={clsx(
+              "grid items-center gap-4 text-left text-neutral-500",
+              GRID_COLS,
+            )}
+          >
             <th>Name</th>
+
+            <th>Varianten</th>
           </tr>
         </thead>
 
@@ -39,7 +48,10 @@ export const SeriesTile = async ({ className, manufacturerId }: Props) => {
             return (
               <tr
                 key={row.id}
-                className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2 grid-cols-[1fr_44px]"
+                className={clsx(
+                  "grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2",
+                  GRID_COLS,
+                )}
               >
                 <td
                   className="overflow-hidden text-ellipsis whitespace-nowrap"
@@ -51,6 +63,10 @@ export const SeriesTile = async ({ className, manufacturerId }: Props) => {
                   >
                     {row.name}
                   </Link>
+                </td>
+
+                <td className="line-clamp-2">
+                  {row.variants.map((variant) => variant.name).join(", ")}
                 </td>
 
                 <td>
