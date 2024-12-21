@@ -12,23 +12,24 @@ import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import Button from "../../../../../../_components/Button";
 import { Select } from "../../../../../../_components/Select";
+import { Formatting } from "./Formatting";
 
-interface Props {
+type Props = Readonly<{
   entityId: Entity["id"];
   noteTypeId: NoteType["id"];
   classificationLevels: ClassificationLevel[];
-}
+}>;
 
 interface FormValues {
   content: string;
   classificationLevelId: ClassificationLevel["id"];
 }
 
-const AddNote = ({
+export const AddNote = ({
   entityId,
   noteTypeId,
   classificationLevels,
-}: Readonly<Props>) => {
+}: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
@@ -99,7 +100,9 @@ const AddNote = ({
           />
         )}
 
-        <div className="flex justify-end col-start-3">
+        <div className="flex gap-4 justify-end col-start-3">
+          <Formatting />
+
           <Button
             type="submit"
             disabled={isLoading}
@@ -114,5 +117,3 @@ const AddNote = ({
     </form>
   );
 };
-
-export default AddNote;
