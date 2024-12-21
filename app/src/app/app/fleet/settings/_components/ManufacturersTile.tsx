@@ -1,21 +1,31 @@
+import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { env } from "../../../../../env.mjs";
 import { Actions } from "../../../../_components/Actions";
-import { cachedGetManufacturers } from "../_lib/getManufacturers";
+import { getManufacturersCached } from "../_lib/getManufacturers";
 import { DeleteManufacturerButton } from "./DeleteManufacturerButton";
 
+const GRID_COLS = "grid-cols-[48px_192px_1fr_44px]";
+
 export const ManufacturersTile = async () => {
-  const rows = await cachedGetManufacturers();
+  const rows = await getManufacturersCached();
 
   return (
     <section className="p-8 pb-4 bg-neutral-800/50  mt-4 rounded-2xl overflow-auto">
       <table className="w-full min-w-[320px]">
         <thead>
-          <tr className="grid items-center gap-4 text-left text-neutral-500 grid-cols-[48px_1fr_44px]">
+          <tr
+            className={clsx(
+              "grid items-center gap-4 text-left text-neutral-500",
+              GRID_COLS,
+            )}
+          >
             <th>Logo</th>
 
             <th>Name</th>
+
+            <th>Serien</th>
           </tr>
         </thead>
 
@@ -24,7 +34,10 @@ export const ManufacturersTile = async () => {
             return (
               <tr
                 key={row.id}
-                className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2 grid-cols-[48px_1fr_44px]"
+                className={clsx(
+                  "grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2",
+                  GRID_COLS,
+                )}
               >
                 <td>
                   {row.imageId && (
@@ -44,10 +57,25 @@ export const ManufacturersTile = async () => {
                 >
                   <Link
                     href={`/app/fleet/settings/manufacturer/${row.id}`}
-                    className="text-sinister-red-500 hover:text-sinister-red-300"
+                    className="text-sinister-red-500 hover:underline"
                   >
                     {row.name}
                   </Link>
+                </td>
+
+                <td className="line-clamp-2">
+                  {row.series.map((series, index) => (
+                    <>
+                      {index > 0 && ", "}
+                      <Link
+                        key={series.id}
+                        href={`/app/fleet/settings/manufacturer/${row.id}/series/${series.id}`}
+                        className="text-sinister-red-500 hover:underline"
+                      >
+                        {series.name}
+                      </Link>
+                    </>
+                  ))}
                 </td>
 
                 <td>

@@ -17,8 +17,7 @@ export const CreateManufacturereButton = () => {
   return (
     <>
       <Button variant="primary" onClick={() => setIsOpen(true)}>
-        Hersteller anlegen{" "}
-        {isOpen ? <FaSpinner className="animate-spin" /> : <FaPlus />}
+        Neu {isOpen ? <FaSpinner className="animate-spin" /> : <FaPlus />}
       </Button>
 
       {isOpen && (

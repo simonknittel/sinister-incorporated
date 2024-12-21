@@ -2,7 +2,7 @@ import { prisma } from "@/db";
 import { type Manufacturer } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 
-export const cachedGetSeriesByManufacturerId = (
+export const getSeriesByManufacturerIdCached = (
   manufacturerId: Manufacturer["id"],
 ) => {
   return unstable_cache(
@@ -11,6 +11,11 @@ export const cachedGetSeriesByManufacturerId = (
         select: {
           id: true,
           name: true,
+          variants: {
+            select: {
+              name: true,
+            },
+          },
         },
         where: {
           manufacturerId,
