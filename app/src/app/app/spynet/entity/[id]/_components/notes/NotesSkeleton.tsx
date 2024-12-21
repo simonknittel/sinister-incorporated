@@ -10,7 +10,7 @@ export const NotesSkeleton = ({ className }: Props) => {
     <section
       className={clsx(
         className,
-        "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 col-span-2 animate-pulse min-h-[22.5rem]",
+        "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 col-span-2 animate-pulse min-h-[22.5rem] w-full",
       )}
     >
       <h2 className="font-bold flex gap-2 items-center">

@@ -118,7 +118,7 @@ export default async function Page({ params }: Props) {
           </div>
         </div>
 
-        <Suspense fallback={<NotesSkeleton />}>
+        <Suspense fallback={<NotesSkeleton className="flex-1 self-start" />}>
           <Notes entity={entity} className="flex-1 self-start" />
         </Suspense>
       </div>

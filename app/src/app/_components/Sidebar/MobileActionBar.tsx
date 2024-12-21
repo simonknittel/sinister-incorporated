@@ -40,7 +40,7 @@ export const MobileActionBar = async ({ className }: Props) => {
       )}
     >
       <nav className="h-full">
-        <ul className="h-full flex gap-4 justify-center">
+        <ul className="h-full flex gap-4 justify-evenly">
           <li className="h-full py-1">
             <Link
               href="/app"
@@ -85,6 +85,18 @@ export const MobileActionBar = async ({ className }: Props) => {
               >
                 <MdWorkspaces className="text-xl" />
                 <span className="text-xs">Flotte</span>
+              </Link>
+            </li>
+          )}
+
+          {showDocuments && (
+            <li className="h-full py-1">
+              <Link
+                href="/app/documents"
+                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
+              >
+                <IoDocuments className="text-xl" />
+                <span className="text-xs">Dokumente</span>
               </Link>
             </li>
           )}
