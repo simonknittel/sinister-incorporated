@@ -1,4 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
+import styles from "@/common/components/ConfirmationGradient.module.css";
 import { prisma } from "@/db";
 import {
   ConfirmationStatus,
@@ -10,7 +11,6 @@ import Link from "next/link";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle, FaListAlt } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import styles from "../../../../../_components/ConfirmationGradient.module.css";
 import { ConfirmMembership } from "./ConfirmMembership";
 
 type Props = Readonly<{

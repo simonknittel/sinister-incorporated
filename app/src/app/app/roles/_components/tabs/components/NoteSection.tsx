@@ -1,9 +1,9 @@
+import Button from "@/common/components/Button";
+import YesNoCheckbox from "@/common/components/YesNoCheckbox";
 import { type ClassificationLevel, type NoteType } from "@prisma/client";
 import clsx from "clsx";
 import { useState } from "react";
 import { FaPlus, FaTrash } from "react-icons/fa";
-import Button from "../../../../../_components/Button";
-import YesNoCheckbox from "../../../../../_components/YesNoCheckbox";
 import { usePermissionsContext } from "../../PermissionsContext";
 
 type Props = Readonly<{

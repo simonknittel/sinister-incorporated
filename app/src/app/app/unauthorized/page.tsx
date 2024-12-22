@@ -1,7 +1,7 @@
 import { authenticatePage } from "@/auth/server";
+import { Footer } from "@/common/components/Footer";
+import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
-import { Footer } from "../../_components/Footer";
-import { Hero } from "../../_components/Hero";
 
 export const metadata: Metadata = {
   title: "Unauthorized | S.A.M. - Sinister Incorporated",

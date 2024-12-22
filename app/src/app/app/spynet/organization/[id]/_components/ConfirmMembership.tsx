@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/common/components/Button";
 import {
   ConfirmationStatus,
   type OrganizationMembershipHistoryEntry,
@@ -8,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaCheck, FaSpinner, FaTimes } from "react-icons/fa";
-import Button from "../../../../../_components/Button";
 
 type Props = Readonly<{
   entry: OrganizationMembershipHistoryEntry;

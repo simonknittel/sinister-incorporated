@@ -1,4 +1,5 @@
 import { authenticatePage } from "@/auth/server";
+import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { type Metadata } from "next";
@@ -6,7 +7,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { serializeError } from "serialize-error";
-import { SkeletonTile } from "../../../../_components/SkeletonTile";
 import DeleteEntity from "./_components/DeleteEntity";
 import { OrganizationMembershipsTile } from "./_components/OrganizationMembershipsTile";
 import { Overview } from "./_components/Overview";
@@ -41,7 +41,7 @@ export async function generateMetadata({
       title: `${entity.handle || entity.id} - Spynet | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
-    await log.error(
+    void log.error(
       "Error while generating metadata for /(app)/spynet/entity/[id]/page.tsx",
       {
         error: serializeError(error),

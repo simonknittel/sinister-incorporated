@@ -1,10 +1,10 @@
 "use client";
 
+import Button from "@/common/components/Button";
 import clsx from "clsx";
 import { type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { FaEnvelope, FaSpinner } from "react-icons/fa";
-import Button from "../../_components/Button";
 
 type Props = Readonly<{
   className?: string;

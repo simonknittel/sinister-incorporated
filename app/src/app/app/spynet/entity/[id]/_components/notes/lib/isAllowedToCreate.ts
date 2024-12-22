@@ -21,6 +21,7 @@ export default function isAllowedToCreate(
   }
 
   return (
+    // @ts-expect-error The authorization types need to get overhauled
     authentication && authentication.authorize("note", "create", attributes)
   );
 }

@@ -1,12 +1,12 @@
 "use client";
 
+import Button from "@/common/components/Button";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
 import { FiRefreshCcw } from "react-icons/fi";
 import { RiBardFill } from "react-icons/ri";
 import { api } from "../../../../trpc/react";
-import Button from "../../../_components/Button";
 
 type Props = Readonly<{
   className?: string;

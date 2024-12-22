@@ -1,11 +1,11 @@
 "use client";
 
+import Button from "@/common/components/Button";
 import { type Operation } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaPlus, FaSpinner } from "react-icons/fa";
-import Button from "../../../../_components/Button";
 
 interface Props {
   operation: Operation;

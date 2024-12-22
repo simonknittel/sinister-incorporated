@@ -1,0 +1,109 @@
+import { prisma } from "@/db";
+import { env } from "@/env.mjs";
+import { log } from "@/logging";
+import { createId } from "@paralleldrive/cuid2";
+import { TRPCError } from "@trpc/server";
+import { type Session } from "next-auth";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { dedupedGetUnleashFlag } from "./getUnleashFlag";
+import { sendEmailV2 } from "./sendEmail";
+
+export const requestEmailConfirmation = async (
+  userId: string,
+  userEmail: string,
+) => {
+  if (await dedupedGetUnleashFlag("DisableConfirmationEmail")) return;
+
+  const emailConfirmationToken = createId();
+
+  await prisma.emailConfirmationToken.deleteMany({
+    where: {
+      userId,
+    },
+  });
+
+  await prisma.emailConfirmationToken.create({
+    data: {
+      userId,
+      token: emailConfirmationToken,
+      email: userEmail,
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
+    },
+  });
+
+  await sendEmailV2("emailConfirmation", [
+    {
+      to: userEmail,
+      templateProps: {
+        baseUrl: env.BASE_URL,
+        host: env.HOST,
+        token: emailConfirmationToken,
+      },
+    },
+  ]);
+};
+
+export const requiresEmailConfirmation = (session: Session) => {
+  if (
+    session.user.role === "admin" &&
+    cookies().get("enable_admin")?.value === "1"
+  )
+    return false;
+
+  return true;
+};
+
+export const requireConfirmedEmailForPage = (session: Session) => {
+  if (!requiresEmailConfirmation(session)) return;
+
+  if (!session.user.emailVerified) {
+    void log.info("Unauthenticated request to page", {
+      // TODO: Add request path
+      userId: session.user.id,
+      reason: "Unconfirmed email",
+    });
+
+    redirect("/email-confirmation");
+  }
+};
+
+export const requireConfirmedEmailForApi = (session: Session) => {
+  if (!requiresEmailConfirmation(session)) return;
+
+  if (!session.user.emailVerified) {
+    void log.info("Unauthenticated request to API", {
+      // TODO: Add request path
+      userId: session.user.id,
+      reason: "Unconfirmed email",
+    });
+
+    throw new Error("Unauthorized");
+  }
+};
+
+export const requireConfirmedEmailForAction = (session: Session) => {
+  if (!requiresEmailConfirmation(session)) return;
+
+  if (!session.user.emailVerified) {
+    void log.info("Unauthenticated request to action", {
+      // TODO: Add action name
+      userId: session.user.id,
+      reason: "Unconfirmed email",
+    });
+
+    throw new Error("Unauthorized");
+  }
+};
+
+export const requireConfirmedEmailForTrpc = (session: Session) => {
+  if (!requiresEmailConfirmation(session)) return;
+
+  if (!session.user.emailVerified) {
+    void log.info("Unauthenticated request to tRPC", {
+      userId: session.user.id,
+      reason: "Unconfirmed email",
+    });
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+};

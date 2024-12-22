@@ -1,16 +1,16 @@
 "use server";
 
 import { authenticate } from "@/auth/server";
+import { requestEmailConfirmation } from "@/common/utils/emailConfirmation";
 import { log } from "@/logging";
 import { redirect } from "next/navigation";
 import { serializeError } from "serialize-error";
-import { requestEmailConfirmation } from "../../../lib/emailConfirmation";
 
 export const requestEmailConfirmationAction = async () => {
   const authentication = await authenticate();
 
   if (!authentication) {
-    await log.info("Unauthenticated request to action", {
+    void log.info("Unauthenticated request to action", {
       actionName: "requestEmailConfirmationAction",
       reason: "No session",
     });
@@ -26,7 +26,7 @@ export const requestEmailConfirmationAction = async () => {
       authentication.session.user.email!,
     );
   } catch (error) {
-    await log.error("Error while requesting email confirmation", {
+    void log.error("Error while requesting email confirmation", {
       path: "/email-confirmation",
       error: serializeError(error),
     });

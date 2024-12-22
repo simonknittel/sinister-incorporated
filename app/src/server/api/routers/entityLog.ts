@@ -45,12 +45,7 @@ export const entityLogRouter = createTRPCRouter({
 
         if (confirmed && confirmed.value === "confirmed") return true;
 
-        return authorize(ctx.session, [
-          {
-            resource: input.type,
-            operation: "confirm",
-          },
-        ]);
+        return authorize(ctx.session, input.type, "confirm");
       });
 
       return filteredLogs;

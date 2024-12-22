@@ -1,9 +1,9 @@
 import { authenticate } from "@/auth/server";
+import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { NextResponse, type NextRequest } from "next/server";
 import { zfd } from "zod-form-data";
-import apiErrorHandler from "../../../lib/apiErrorHandler";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
      */
     const authentication = await authenticate();
     if (!authentication) {
-      await log.info("Unauthenticated request to API", {
+      void log.info("Unauthenticated request to API", {
         requestPath: "/api/confirm-email",
         requestMethod: "GET",
         reason: "No session",

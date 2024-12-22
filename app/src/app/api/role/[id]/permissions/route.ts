@@ -1,8 +1,8 @@
 import { authenticateApi } from "@/auth/server";
+import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import apiErrorHandler from "../../../../../lib/apiErrorHandler";
 
 interface Params {
   id: string;

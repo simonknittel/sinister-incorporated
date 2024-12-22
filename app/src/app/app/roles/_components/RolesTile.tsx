@@ -1,12 +1,12 @@
+import { Actions } from "@/common/components/Actions";
+import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { isOpenAIEnabled } from "@/common/utils/isOpenAIEnabled";
 import { prisma } from "@/db";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { FaTable } from "react-icons/fa";
 import { env } from "../../../../env.mjs";
-import { dedupedGetUnleashFlag } from "../../../../lib/getUnleashFlag";
-import { isOpenAIEnabled } from "../../../../lib/isOpenAIEnabled";
-import { Actions } from "../../../_components/Actions";
 import { Create } from "./Create";
 import Delete from "./Delete";
 import { Permissions } from "./Permissions";
@@ -76,7 +76,7 @@ export const RolesTile = async ({ className }: Props) => {
                   noteTypes={noteTypes}
                   classificationLevels={classificationLevels}
                   allRoles={roles}
-                  enableOperations={enableOperations}
+                  enableOperations={Boolean(enableOperations)}
                 />
               </PermissionsProvider>
 

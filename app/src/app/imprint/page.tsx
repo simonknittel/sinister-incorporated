@@ -1,6 +1,6 @@
+import { Footer } from "@/common/components/Footer";
+import { Wip } from "@/common/components/Wip";
 import { type Metadata } from "next";
-import { Footer } from "../_components/Footer";
-import { Wip } from "../_components/Wip";
 
 export const metadata: Metadata = {
   title: "Impressum | S.A.M. - Sinister Incorporated",

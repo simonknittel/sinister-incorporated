@@ -1,5 +1,9 @@
 "use client";
 
+import { useAction } from "@/common/components/Actions";
+import Button from "@/common/components/Button";
+import { ImageUpload } from "@/common/components/ImageUpload";
+import Modal from "@/common/components/Modal";
 import { type Role } from "@prisma/client";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
@@ -7,10 +11,6 @@ import { useId, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
-import { useAction } from "../../../_components/Actions";
-import Button from "../../../_components/Button";
-import { ImageUpload } from "../../../_components/ImageUpload";
-import Modal from "../../../_components/Modal";
 
 interface FormValues {
   name: string;

@@ -1,13 +1,13 @@
 import { saveObject } from "@/algolia";
 import { authenticateApi } from "@/auth/server";
+import apiErrorHandler from "@/common/utils/apiErrorHandler";
+import { scrapeOrganizationLogo } from "@/common/utils/scrapeOrganizationLogo";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { ConfirmationStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
-import apiErrorHandler from "../../../../lib/apiErrorHandler";
-import { scrapeOrganizationLogo } from "../../../../lib/scrapeOrganizationLogo";
 
 const postBodySchema = z.object({
   spectrumId: z.string().trim().min(1),
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     try {
       logo = await scrapeOrganizationLogo(data.spectrumId);
     } catch (error) {
-      await log.error("Failed to scrape organization logo", {
+      void log.error("Failed to scrape organization logo", {
         spectrumId: data.spectrumId,
         error: serializeError(error),
       });

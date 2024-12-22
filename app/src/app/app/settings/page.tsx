@@ -36,7 +36,7 @@ export default async function Page() {
     !showAnalytics &&
     !showAlgolia
   ) {
-    await log.info("Unauthorized request to page", {
+    void log.info("Unauthorized request to page", {
       userId: authentication.session.user.id,
       reason: "Insufficient permissions",
     });

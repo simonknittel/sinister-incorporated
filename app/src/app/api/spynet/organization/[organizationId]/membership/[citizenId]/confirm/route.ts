@@ -1,10 +1,10 @@
 import { authenticateApi } from "@/auth/server";
+import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { updateActiveMembership } from "@/organizations/utils/updateActiveMembership";
 import { ConfirmationStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import apiErrorHandler from "../../../../../../../../lib/apiErrorHandler";
 
 const bodySchema = z.object({
   id: z.string().cuid(),

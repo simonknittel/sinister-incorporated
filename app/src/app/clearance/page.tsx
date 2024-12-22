@@ -1,12 +1,12 @@
 import { authenticate } from "@/auth/server";
+import { AdminEnabler } from "@/common/components/AdminEnabler";
+import { Footer } from "@/common/components/Footer";
+import { requireConfirmedEmailForPage } from "@/common/utils/emailConfirmation";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { FaRegCheckCircle } from "react-icons/fa";
-import { requireConfirmedEmailForPage } from "../../lib/emailConfirmation";
-import { AdminEnabler } from "../_components/AdminEnabler";
-import { Footer } from "../_components/Footer";
 
 export const metadata: Metadata = {
   title: "Freigabe | S.A.M. - Sinister Incorporated",
@@ -16,7 +16,7 @@ export default async function Page() {
   const authentication = await authenticate();
 
   if (!authentication) {
-    await log.info("Unauthenticated request to page", {
+    void log.info("Unauthenticated request to page", {
       requestPath: "/clearance",
       reason: "No session",
     });
@@ -24,7 +24,7 @@ export default async function Page() {
     redirect("/");
   }
 
-  await requireConfirmedEmailForPage(authentication.session);
+  requireConfirmedEmailForPage(authentication.session);
 
   if (authentication.authorize("login", "manage")) redirect("/app");
 

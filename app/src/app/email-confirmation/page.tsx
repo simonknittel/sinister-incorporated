@@ -1,13 +1,13 @@
 import { authenticate } from "@/auth/server";
+import { AdminEnabler } from "@/common/components/AdminEnabler";
+import { Footer } from "@/common/components/Footer";
+import { requiresEmailConfirmation } from "@/common/utils/emailConfirmation";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { RiInformationLine } from "react-icons/ri";
-import { requiresEmailConfirmation } from "../../lib/emailConfirmation";
-import { AdminEnabler } from "../_components/AdminEnabler";
-import { Footer } from "../_components/Footer";
 import { PageRefresher } from "./_components/PageRefresher";
 import {
   RequestConfirmationEmailButton,
@@ -28,7 +28,7 @@ export default async function Page({ searchParams }: Readonly<Props>) {
   const authentication = await authenticate();
 
   if (!authentication) {
-    await log.info("Unauthenticated request to page", {
+    void log.info("Unauthenticated request to page", {
       requestPath: "/email-confirmation",
       reason: "No session",
     });
@@ -36,7 +36,7 @@ export default async function Page({ searchParams }: Readonly<Props>) {
     redirect("/");
   }
 
-  if ((await requiresEmailConfirmation(authentication.session)) === false)
+  if (requiresEmailConfirmation(authentication.session) === false)
     redirect("/clearance");
 
   if (authentication.session.user.emailVerified) redirect("/clearance");

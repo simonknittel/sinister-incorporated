@@ -1,6 +1,6 @@
+import { Actions } from "@/common/components/Actions";
 import { prisma } from "@/db";
 import clsx from "clsx";
-import { Actions } from "../../../../_components/Actions";
 import Create from "./Create";
 import Delete from "./Delete";
 import Update from "./Update";

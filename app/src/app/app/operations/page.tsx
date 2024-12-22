@@ -1,9 +1,9 @@
 import { authenticatePage } from "@/auth/server";
+import Note from "@/common/components/Note";
+import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { prisma } from "@/db";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { dedupedGetUnleashFlag } from "../../../lib/getUnleashFlag";
-import Note from "../../_components/Note";
 import CreateOperation from "./_components/CreateOperation";
 import OperationTile from "./_components/OperationTile";
 

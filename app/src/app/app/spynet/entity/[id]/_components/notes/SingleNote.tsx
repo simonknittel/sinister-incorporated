@@ -1,5 +1,7 @@
 import { type PermissionSet } from "@/auth/PermissionSet";
 import { requireAuthentication } from "@/auth/server";
+import styles from "@/common/components/ConfirmationGradient.module.css";
+import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import { prisma } from "@/db";
 import {
   type Entity,
@@ -15,8 +17,6 @@ import { Suspense, type ReactNode } from "react";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
-import styles from "../../../../../../_components/ConfirmationGradient.module.css";
 import ConfirmLog from "../ConfirmLog";
 import DeleteLog from "../DeleteLog";
 import ClassificationLevel from "./ClassificationLevel";

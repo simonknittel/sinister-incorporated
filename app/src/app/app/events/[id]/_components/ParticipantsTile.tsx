@@ -1,10 +1,10 @@
 import { prisma } from "@/db";
+import { type getEvent } from "@/discord/getEvent";
+import { getEventUsers } from "@/discord/getEventUsers";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { FaExternalLinkAlt, FaUsers } from "react-icons/fa";
-import { type getEvent } from "../../../../../discord/getEvent";
-import { getEventUsers } from "../../../../../discord/getEventUsers";
 
 type Props = Readonly<{
   className?: string;

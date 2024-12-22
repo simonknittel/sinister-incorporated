@@ -1,6 +1,6 @@
 "use client";
 
-import TabPanel from "../../../../_components/tabs/TabPanel";
+import TabPanel from "@/common/components/tabs/TabPanel";
 import { OrganizationMembershipSection } from "./components/OrganizationMembershipSection";
 import { OrganizationSection } from "./components/OrganizationSection";
 

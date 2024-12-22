@@ -1,6 +1,10 @@
 "use client";
 
 import { useAuthentication } from "@/auth/client";
+import Button from "@/common/components/Button";
+import Modal from "@/common/components/Modal";
+import { Select } from "@/common/components/Select";
+import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import {
   type ClassificationLevel,
   type EntityLog,
@@ -12,10 +16,6 @@ import { useId, useState } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
-import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
-import Button from "../../../../../../_components/Button";
-import Modal from "../../../../../../_components/Modal";
-import { Select } from "../../../../../../_components/Select";
 
 interface Props {
   className?: string;
@@ -72,6 +72,7 @@ const UpdateNoteModal = ({
 
       return (
         authentication &&
+        // @ts-expect-error The authorization types need to get overhauled
         authentication.authorize("note", "create", authorizationAttributes)
       );
     },

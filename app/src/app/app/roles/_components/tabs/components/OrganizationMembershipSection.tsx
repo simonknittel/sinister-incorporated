@@ -1,8 +1,8 @@
+import Button from "@/common/components/Button";
+import YesNoCheckbox from "@/common/components/YesNoCheckbox";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
-import Button from "../../../../../_components/Button";
-import YesNoCheckbox from "../../../../../_components/YesNoCheckbox";
 import { usePermissionsContext } from "../../PermissionsContext";
 
 type Props = Readonly<{

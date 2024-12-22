@@ -1,6 +1,6 @@
+import { dedupedGetSeriesAndManufacturerById } from "@/fleet/utils/getSeriesAndManufacturer";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { dedupedGetSeriesAndManufacturerById } from "../../../../../_lib/getSeriesAndManufacturer";
 
 type Params = Readonly<{
   manufacturerId: string;

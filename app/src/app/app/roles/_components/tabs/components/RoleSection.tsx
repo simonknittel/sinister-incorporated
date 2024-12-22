@@ -1,8 +1,8 @@
+import Button from "@/common/components/Button";
 import { type Role } from "@prisma/client";
 import clsx from "clsx";
 import { useState } from "react";
 import { FaPlus, FaTrash } from "react-icons/fa";
-import Button from "../../../../../_components/Button";
 import { usePermissionsContext } from "../../PermissionsContext";
 
 type Props = Readonly<{

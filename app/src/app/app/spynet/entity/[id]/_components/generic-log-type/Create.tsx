@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/common/components/Button";
 import { type Entity } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
@@ -8,7 +9,6 @@ import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import { api } from "../../../../../../../trpc/react";
 import { type GenericEntityLogType } from "../../../../../../../types";
-import Button from "../../../../../../_components/Button";
 
 interface Props {
   type: GenericEntityLogType;

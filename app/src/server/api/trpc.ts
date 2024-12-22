@@ -6,12 +6,12 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
+import { requireConfirmedEmailForTrpc } from "@/common/utils/emailConfirmation";
 import { prisma } from "@/db";
 import { getServerAuthSession } from "@/server/auth";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { requireConfirmedEmailForTrpc } from "../../lib/emailConfirmation";
 
 /**
  * 1. CONTEXT

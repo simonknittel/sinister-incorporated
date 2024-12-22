@@ -1,6 +1,6 @@
 "use client";
 
-import Note from "../../_components/Note";
+import Note from "@/common/components/Note";
 
 interface Props {
   error: Error;

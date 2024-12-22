@@ -1,12 +1,12 @@
 import { authenticate } from "@/auth/server";
+import { Footer } from "@/common/components/Footer";
+import { Hero } from "@/common/components/Hero";
+import LoginButtons from "@/common/components/LoginButtons";
+import Note from "@/common/components/Note";
+import { UwuHero } from "@/common/components/UwuHero";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 import { authOptions } from "../server/auth";
-import { Footer } from "./_components/Footer";
-import { Hero } from "./_components/Hero";
-import LoginButtons from "./_components/LoginButtons";
-import Note from "./_components/Note";
-import { UwuHero } from "./_components/UwuHero";
 
 export const metadata: Metadata = {
   title: "S.A.M. - Sinister Incorporated",

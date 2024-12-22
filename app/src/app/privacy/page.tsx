@@ -1,7 +1,7 @@
+import { Footer } from "@/common/components/Footer";
+import { RichText } from "@/common/components/RichText";
 import { type Metadata } from "next";
 import Link from "next/link";
-import { Footer } from "../_components/Footer";
-import { RichText } from "../_components/RichText";
 
 export const metadata: Metadata = {
   title: "Datenschutzerklärung | S.A.M. - Sinister Incorporated",

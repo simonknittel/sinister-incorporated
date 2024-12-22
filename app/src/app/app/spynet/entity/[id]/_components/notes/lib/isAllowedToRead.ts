@@ -1,6 +1,6 @@
 import { type requireAuthentication } from "@/auth/server";
+import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
-import getLatestNoteAttributes from "../../../../../../../../lib/getLatestNoteAttributes";
 
 export default function isAllowedToRead(
   note: EntityLog & {
@@ -34,5 +34,6 @@ export default function isAllowedToRead(
     });
   }
 
+  // @ts-expect-error The authorization types need to get overhauled
   return authentication.authorize("note", "read", attributes);
 }

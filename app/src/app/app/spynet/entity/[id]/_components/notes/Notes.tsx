@@ -1,4 +1,8 @@
 import { requireAuthentication } from "@/auth/server";
+import Tab from "@/common/components/tabs/Tab";
+import TabList from "@/common/components/tabs/TabList";
+import { TabsProvider } from "@/common/components/tabs/TabsContext";
+import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import { prisma } from "@/db";
 import {
   type Entity,
@@ -8,10 +12,6 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import { FaListAlt } from "react-icons/fa";
-import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
-import Tab from "../../../../../../_components/tabs/Tab";
-import TabList from "../../../../../../_components/tabs/TabList";
-import { TabsProvider } from "../../../../../../_components/tabs/TabsContext";
 import { NoteTypePanel } from "./NoteTypePanel";
 import isAllowedToRead from "./lib/isAllowedToRead";
 import isAllowedToReadRedacted from "./lib/isAllowedToReadRedacted";

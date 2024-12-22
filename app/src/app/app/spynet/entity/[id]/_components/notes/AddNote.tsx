@@ -1,5 +1,7 @@
 "use client";
 
+import Button from "@/common/components/Button";
+import { Select } from "@/common/components/Select";
 import {
   type ClassificationLevel,
   type Entity,
@@ -10,8 +12,6 @@ import { useId, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
-import Button from "../../../../../../_components/Button";
-import { Select } from "../../../../../../_components/Select";
 import { Formatting } from "./Formatting";
 
 type Props = Readonly<{

@@ -1,8 +1,8 @@
 import type { PermissionSet } from "@/auth/common";
 import { getPermissionSetsByRoles } from "@/auth/server";
+import { requestEmailConfirmation } from "@/common/utils/emailConfirmation";
 import { prisma } from "@/db";
 import { env } from "@/env.mjs";
-import { requestEmailConfirmation } from "@/lib/emailConfirmation";
 import { log } from "@/logging";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import {
@@ -167,7 +167,7 @@ export const authOptions: NextAuthOptions = {
        * if we can update an existing user or not.
        */
 
-      await log.info("Login attempt", {
+      void log.info("Login attempt", {
         accountProvider: account?.provider,
         accountProviderAccountId: account?.providerAccountId,
         profileEmail: profile?.email,
@@ -183,7 +183,7 @@ export const authOptions: NextAuthOptions = {
         const guildMember = await getGuildMember(account.access_token);
 
         if ("message" in guildMember) {
-          await log.info("User not member of the Discord guild", {
+          void log.info("User not member of the Discord guild", {
             userId: user.id,
           });
           throw new Error(guildMember.message);
@@ -225,7 +225,7 @@ export const authOptions: NextAuthOptions = {
         const guildMember = await getGuildMember(account.access_token);
 
         if ("message" in guildMember) {
-          await log.info("User not member of the Discord guild", {
+          void log.info("User not member of the Discord guild", {
             userId: user.id,
           });
           throw new Error(guildMember.message);
@@ -291,7 +291,7 @@ export const authOptions: NextAuthOptions = {
       try {
         await requestEmailConfirmation(createdUser.id, user.email);
       } catch (error) {
-        await log.error(
+        void log.error(
           "Failed to request email confirmation for created user",
           {
             userId: createdUser.id,

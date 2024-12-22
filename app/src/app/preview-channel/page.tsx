@@ -1,10 +1,10 @@
+import { TileSkeleton } from "@/common/components/preview-channel/TileSkeleton";
+import { schedule } from "@/common/components/preview-channel/_lib/schedule";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
-import { TileSkeleton } from "../_components/preview-channel/TileSkeleton";
-import { schedule } from "../_components/preview-channel/_lib/schedule";
 
 const CurrentStatus = dynamic(
-  () => import("../_components/preview-channel/CurrentStatus"),
+  () => import("@/common/components/preview-channel/CurrentStatus"),
   {
     ssr: false,
     loading: () => <TileSkeleton className="mt-4" />,
@@ -12,7 +12,7 @@ const CurrentStatus = dynamic(
 );
 
 const FullSchedule = dynamic(
-  () => import("../_components/preview-channel/FullSchedule"),
+  () => import("@/common/components/preview-channel/FullSchedule"),
   {
     ssr: false,
     loading: () => <TileSkeleton className="mt-4" />,

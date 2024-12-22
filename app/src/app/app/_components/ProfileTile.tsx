@@ -1,11 +1,11 @@
 import { authenticate } from "@/auth/server";
+import Avatar from "@/common/components/Avatar";
+import { getAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
 import { prisma } from "@/db";
 import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import { getAssignedAndVisibleRoles } from "../../../lib/getAssignedAndVisibleRoles";
-import Avatar from "../../_components/Avatar";
 import SingleRole from "./SingleRole";
 
 type Props = Readonly<{
@@ -28,8 +28,7 @@ export const ProfileTile = async ({ className }: Props) => {
     },
   });
 
-  let roles: Awaited<ReturnType<typeof getAssignedAndVisibleRoles>>;
-  if (entity) roles = await getAssignedAndVisibleRoles(entity);
+  const roles = entity ? await getAssignedAndVisibleRoles(entity) : [];
 
   const showLink =
     authentication.authorize("citizen", "read") ||
@@ -46,7 +45,7 @@ export const ProfileTile = async ({ className }: Props) => {
 
       <h2 className="font-bold">{name}</h2>
 
-      {roles && roles.length > 0 ? (
+      {roles.length > 0 ? (
         <div className="flex gap-2 flex-wrap justify-center">
           {roles.map((role) => (
             <SingleRole key={role.id} role={role} />
