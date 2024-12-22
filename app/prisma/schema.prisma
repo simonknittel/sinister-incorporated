@@ -36,8 +36,23 @@ model Variant {
     series   Series         @relation(fields: [seriesId], references: [id], onDelete: Cascade)
     ships    Ship[]
     status   VariantStatus?
+    tags     VariantTags[]
 
     @@unique([name, seriesId])
+}
+
+model VariantTags {
+    id       String    @id @default(cuid())
+    key      String
+    value    String
+    variants Variant[]
+
+    createdAt   DateTime @default(now())
+    createdById String
+    createdBy   User     @relation("createdBy", fields: [createdById], references: [id])
+    updatedAt   DateTime @updatedAt
+    updatedById String?
+    updatedBy   User?    @relation("updatedBy", fields: [updatedById], references: [id])
 }
 
 enum VariantStatus {
@@ -256,6 +271,8 @@ model User {
     lastSeenAt                 DateTime?
     uploads                    Upload[]
     emailConfirmationTokens    EmailConfirmationToken[]
+    createdVariantTags         VariantTags[]            @relation("createdBy")
+    updatedVariantTags         VariantTags[]            @relation("updatedBy")
 }
 
 model VerificationToken {

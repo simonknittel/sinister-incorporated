@@ -8,7 +8,6 @@ import {
   type EntityLog,
   type EntityLogAttribute,
   type Organization,
-  type User,
 } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
@@ -19,14 +18,13 @@ import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import ConfirmLog from "../ConfirmLog";
 import DeleteLog from "../DeleteLog";
-import ClassificationLevel from "./ClassificationLevel";
+import { ClassificationLevel } from "./ClassificationLevel";
 import ClassificationLevelSkeleton from "./ClassificationLevelSkeleton";
 import UpdateNote from "./UpdateNote";
 
 type Props = Readonly<{
   note: EntityLog & {
-    attributes: (EntityLogAttribute & { createdBy: User })[];
-    submittedBy: User;
+    attributes: EntityLogAttribute[];
   };
 }>;
 
@@ -36,6 +34,7 @@ export const SingleNote = async ({ note }: Props) => {
   const { noteTypeId, classificationLevelId, confirmed } =
     getLatestNoteAttributes(note);
 
+  // @ts-expect-error The authorization types need to get overhauled
   const authorizationAttributes: PermissionSet["attributes"] = [
     ...(noteTypeId ? [{ key: "noteTypeId", value: noteTypeId.value }] : []),
     ...(classificationLevelId
@@ -49,7 +48,7 @@ export const SingleNote = async ({ note }: Props) => {
   let content: ReactNode = note.content;
   const matches = note.content?.match(/@citizen:(\d+)|@org:([a-zA-Z]+)/g);
   if (matches) {
-    const uniqueCitizenSpectrumIds = new Set<Entity["spectrumId"]>(
+    const uniqueCitizenSpectrumIds = new Set<string>(
       matches
         .filter((match) => match.startsWith("@citizen:"))
         .map((match) => match.slice(9)),
