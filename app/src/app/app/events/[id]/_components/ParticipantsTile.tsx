@@ -1,6 +1,6 @@
 import { prisma } from "@/db";
 import { type getEvent } from "@/discord/getEvent";
-import { getEventUsers } from "@/discord/getEventUsers";
+import { getEventUsersDeduped } from "@/discord/getEventUsers";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,7 +12,7 @@ type Props = Readonly<{
 }>;
 
 export const ParticipantsTile = async ({ className, event }: Props) => {
-  const users = await getEventUsers(event.id);
+  const users = await getEventUsersDeduped(event.id);
 
   const entities = await prisma.entity.findMany({
     where: {

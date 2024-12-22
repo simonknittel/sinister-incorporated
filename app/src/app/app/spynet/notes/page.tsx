@@ -1,5 +1,5 @@
 import { authenticatePage } from "@/auth/server";
-import nextjsSearchParamsToNativeSearchParams from "@/common/utils/nextjsSearchParamsToNativeSearchParams";
+import searchParamsNextjsToURLSearchParams from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { type Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -20,7 +20,7 @@ export default async function Page({ searchParams: _searchParams }: Props) {
   const authentication = await authenticatePage("/app/spynet/notes");
   authentication.authorizePage("citizen", "read");
 
-  const searchParams = nextjsSearchParamsToNativeSearchParams(_searchParams);
+  const searchParams = searchParamsNextjsToURLSearchParams(_searchParams);
 
   return (
     <main className="p-4 pb-20 lg:p-8">

@@ -1,4 +1,6 @@
 import { authenticatePage } from "@/auth/server";
+import type { NextjsSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
+import searchParamsNextjsToURLSearchParams from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { getEvent } from "@/discord/getEvent";
 import { log } from "@/logging";
 import { type Metadata } from "next";
@@ -38,15 +40,17 @@ export async function generateMetadata({
 
 type Props = Readonly<{
   params: Params;
+  searchParams: NextjsSearchParams;
 }>;
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params, searchParams }: Props) {
   const authentication = await authenticatePage("/app/events/[id]");
   authentication.authorizePage("event", "read");
-
   const showFleetTile = authentication.authorize("orgFleet", "read");
 
   const { date, data: event } = await getEvent(params.id);
+
+  const urlSearchParams = searchParamsNextjsToURLSearchParams(searchParams);
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
@@ -58,7 +62,9 @@ export default async function Page({ params }: Props) {
       <div className="flex gap-8 flex-col-reverse 2xl:flex-row 2xl:items-start">
         <div className="flex flex-col gap-4 2xl:flex-1">
           <ParticipantsTile event={event} />
-          {showFleetTile && <FleetTile event={event} />}
+          {showFleetTile && (
+            <FleetTile event={event} urlSearchParams={urlSearchParams} />
+          )}
         </div>
 
         <OverviewTile

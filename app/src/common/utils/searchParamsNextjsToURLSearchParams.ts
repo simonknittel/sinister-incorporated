@@ -1,6 +1,8 @@
-export default function nextjsSearchParamsToNativeSearchParams(nextjsSearchParams: {
-  [key: string]: string | string[] | undefined;
-}): URLSearchParams {
+export type NextjsSearchParams = Record<string, string | string[] | undefined>;
+
+export default function searchParamsNextjsToURLSearchParams(
+  nextjsSearchParams: NextjsSearchParams,
+): URLSearchParams {
   const nativeSearchParams = new URLSearchParams();
 
   for (const [key, value] of Object.entries(nextjsSearchParams)) {

@@ -4,7 +4,7 @@ import { Filter } from "../../_components/Filter";
 import RoleFilter from "./RoleFilter";
 import { UnknownsFilter } from "./UnknownsFilter";
 
-const Filters = async () => {
+export const Filters = async () => {
   const authentication = await requireAuthentication();
 
   const visibleRoles = await getVisibleRoles();
@@ -28,5 +28,3 @@ const Filters = async () => {
     </div>
   );
 };
-
-export default Filters;
