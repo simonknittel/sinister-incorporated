@@ -115,7 +115,7 @@ export const AddNote = ({
         )}
 
         <div className="flex gap-4 items-center justify-end col-start-3">
-          <Button
+          {/* <Button
             type="submit"
             disabled={isLoading}
             title="Speichern"
@@ -127,7 +127,7 @@ export const AddNote = ({
             Speichern und
             <br />
             bestätigen
-          </Button>
+          </Button> */}
 
           <Button
             type="submit"

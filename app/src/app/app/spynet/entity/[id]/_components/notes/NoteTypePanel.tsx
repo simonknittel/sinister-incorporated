@@ -1,4 +1,4 @@
-import { authenticate } from "@/auth/server";
+import { requireAuthentication } from "@/auth/server";
 import TabPanel from "@/common/components/tabs/TabPanel";
 import getAllClassificationLevels from "@/common/utils/cached/getAllClassificationLevels";
 import {
@@ -25,7 +25,7 @@ type Props = Readonly<{
 
 export const NoteTypePanel = async ({ noteType, notes, entityId }: Props) => {
   const [authentication, allClassificationLevels] = await Promise.all([
-    authenticate(),
+    requireAuthentication(),
     getAllClassificationLevels(),
   ]);
 
@@ -34,14 +34,12 @@ export const NoteTypePanel = async ({ noteType, notes, entityId }: Props) => {
       isAllowedToCreate(classificationLevel.id, authentication, noteType.id),
   );
 
-  const showAddNote =
-    authentication &&
-    authentication.authorize("note", "create", [
-      {
-        key: "noteTypeId",
-        value: noteType.id,
-      },
-    ]);
+  const showAddNote = authentication.authorize("note", "create", [
+    {
+      key: "noteTypeId",
+      value: noteType.id,
+    },
+  ]);
 
   return (
     <TabPanel id={noteType.id}>
