@@ -1,7 +1,9 @@
 import { prisma } from "@/db";
 import { type getEvent } from "@/discord/getEvent";
-import { getEventUsers } from "@/discord/getEventUsers";
-import FleetTable from "@/fleet/components/FleetTable";
+import { getEventUsersDeduped } from "@/discord/getEventUsers";
+import { Filters } from "@/fleet/components/Filters";
+import { FleetTable } from "@/fleet/components/FleetTable";
+import { VariantStatus } from "@prisma/client";
 import clsx from "clsx";
 import { groupBy } from "lodash";
 import { MdWorkspaces } from "react-icons/md";
@@ -9,11 +11,15 @@ import { MdWorkspaces } from "react-icons/md";
 type Props = Readonly<{
   className?: string;
   event: Awaited<ReturnType<typeof getEvent>>["data"];
+  urlSearchParams: URLSearchParams;
 }>;
 
-export const FleetTile = async ({ className, event }: Props) => {
-  const users = await getEventUsers(event.id);
-
+export const FleetTile = async ({
+  className,
+  event,
+  urlSearchParams,
+}: Props) => {
+  const users = await getEventUsersDeduped(event.id);
   const userIds = users.map((user) => user.user.id);
 
   const orgShips = await prisma.ship.findMany({
@@ -26,6 +32,12 @@ export const FleetTile = async ({ className, event }: Props) => {
             },
           },
         },
+      },
+      variant: {
+        status:
+          urlSearchParams.get("flight_ready") === "true"
+            ? VariantStatus.FLIGHT_READY
+            : undefined,
       },
     },
     include: {
@@ -66,7 +78,10 @@ export const FleetTile = async ({ className, event }: Props) => {
       </h2>
 
       {countedOrgShips.length > 0 ? (
-        <FleetTable ships={countedOrgShips} />
+        <>
+          <Filters />
+          <FleetTable ships={countedOrgShips} className="mt-8" />
+        </>
       ) : (
         <p>Keine Teilnehmer oder Teilnehmer ohne Schiffe.</p>
       )}

@@ -14,6 +14,7 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
+import clsx from "clsx";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { FaSortAlphaDown, FaSortAlphaUpAlt } from "react-icons/fa";
@@ -28,15 +29,16 @@ interface OrgShip {
   count: number;
 }
 
-interface Props {
+type Props = Readonly<{
+  className?: string;
   ships: OrgShip[];
-}
+}>;
 
 type Row = OrgShip;
 
 const columnHelper = createColumnHelper<Row>();
 
-const FleetTable = ({ ships }: Readonly<Props>) => {
+export const FleetTable = ({ className, ships }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "manufacturer", desc: false },
     { id: "variant", desc: false },
@@ -103,7 +105,7 @@ const FleetTable = ({ ships }: Readonly<Props>) => {
   });
 
   return (
-    <table className="w-full min-w-[512px]">
+    <table className={clsx("w-full min-w-[512px]", className)}>
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
@@ -157,5 +159,3 @@ const FleetTable = ({ ships }: Readonly<Props>) => {
     </table>
   );
 };
-
-export default FleetTable;

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { env } from "../env.mjs";
 import { checkResponseForError } from "./checkResponseForError";
 
-export const getEventUsers = cache(async (id: string) => {
+export const getEventUsersDeduped = cache(async (id: string) => {
   // https://discord.com/developers/docs/resources/guild-scheduled-event#get-guild-scheduled-event-users
   const response = await fetch(
     `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}/users?with_member=true`,
@@ -18,14 +18,14 @@ export const getEventUsers = cache(async (id: string) => {
   );
 
   const body: unknown = await response.json();
-  const data = responseSchema.parse(body);
+  const data = schema.parse(body);
 
   checkResponseForError(data);
 
   return data;
 });
 
-const responseSchema = z.union([
+const schema = z.union([
   z.array(
     z.object({
       user: z.object({
