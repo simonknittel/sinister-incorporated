@@ -1,12 +1,12 @@
 import { authenticate } from "@/auth/server";
+import TabPanel from "@/common/components/tabs/TabPanel";
+import getAllClassificationLevels from "@/common/utils/cached/getAllClassificationLevels";
 import {
   type Entity,
   type EntityLog,
   type EntityLogAttribute,
   type NoteType,
 } from "@prisma/client";
-import getAllClassificationLevels from "../../../../../../../lib/cached/getAllClassificationLevels";
-import TabPanel from "../../../../../../_components/tabs/TabPanel";
 import { AddNote } from "./AddNote";
 import { SingleNote } from "./SingleNote";
 import SingleNoteRedacted from "./SingleNoteRedacted";

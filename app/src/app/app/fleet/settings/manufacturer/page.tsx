@@ -1,9 +1,9 @@
 import { authenticatePage } from "@/auth/server";
+import { CreateManufacturereButton } from "@/fleet/components/CreateManufacturerButton";
+import { ManufacturersTile } from "@/fleet/components/ManufacturersTile";
+import { TileSkeleton } from "@/fleet/components/TileSkeleton";
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { CreateManufacturereButton } from "../_components/CreateManufacturerButton";
-import { ManufacturersTile } from "../_components/ManufacturersTile";
-import { TileSkeleton } from "../_components/TileSkeleton";
 
 export const metadata: Metadata = {
   title: "Hersteller - Schiffe | S.A.M. - Sinister Incorporated",

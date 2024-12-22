@@ -1,9 +1,9 @@
 import { requireAuthentication } from "@/auth/server";
+import { DiscordButton } from "@/common/components/DiscordButton";
+import TimeAgoContainer from "@/common/components/TimeAgoContainer";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { DiscordButton } from "../../_components/DiscordButton";
-import TimeAgoContainer from "../../_components/TimeAgoContainer";
 
 type Props = Readonly<{
   className?: string;

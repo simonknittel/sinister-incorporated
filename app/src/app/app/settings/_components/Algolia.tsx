@@ -1,8 +1,8 @@
 "use client";
 
 import { updateIndices } from "@/algolia/actions/updateIndices";
-import Button from "@/app/_components/Button";
-import Note from "@/app/_components/Note";
+import Button from "@/common/components/Button";
+import Note from "@/common/components/Note";
 import clsx from "clsx";
 import { useFormState, useFormStatus } from "react-dom";
 import { FaSpinner } from "react-icons/fa";

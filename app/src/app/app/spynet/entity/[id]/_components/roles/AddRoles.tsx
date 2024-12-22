@@ -1,14 +1,14 @@
 "use client";
 
+import Button from "@/common/components/Button";
+import Modal from "@/common/components/Modal";
+import { env } from "@/env.mjs";
 import { type Entity, type Role } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaPen } from "react-icons/fa";
-import { env } from "../../../../../../../env.mjs";
-import Button from "../../../../../../_components/Button";
-import Modal from "../../../../../../_components/Modal";
 import RoleCheckbox from "./RoleCheckbox";
 
 interface Props {

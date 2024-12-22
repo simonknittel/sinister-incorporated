@@ -1,4 +1,6 @@
 import { authenticatePage } from "@/auth/server";
+import Avatar from "@/common/components/Avatar";
+import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { type Metadata } from "next";
@@ -6,8 +8,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
-import { dedupedGetUnleashFlag } from "../../../../lib/getUnleashFlag";
-import Avatar from "../../../_components/Avatar";
 import ConfirmParticipation from "./_components/ConfirmParticipation";
 import CreateUnit from "./_components/CreateUnit";
 import DeleteOperation from "./_components/DeleteOperation";
@@ -76,7 +76,7 @@ export async function generateMetadata({
       title: `${operation.title} - Operation | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
-    await log.error(
+    void log.error(
       "Error while generating metadata for /(app)/operations/[id]/page.tsx",
       {
         error: serializeError(error),

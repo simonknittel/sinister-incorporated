@@ -63,7 +63,7 @@ export const updateIndices = async () => {
       success: "Successfully updated Algolia indices",
     };
   } catch (error) {
-    await log.error("Failed to update Algolia indices", {
+    void log.error("Failed to update Algolia indices", {
       error: serializeError(error),
     });
 

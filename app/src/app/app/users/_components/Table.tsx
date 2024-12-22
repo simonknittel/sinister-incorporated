@@ -1,5 +1,6 @@
 "use client";
 
+import Avatar from "@/common/components/Avatar";
 import { type Entity, type User } from "@prisma/client";
 import {
   createColumnHelper,
@@ -16,7 +17,6 @@ import {
   FaSortAlphaDown,
   FaSortAlphaUpAlt,
 } from "react-icons/fa";
-import Avatar from "../../../_components/Avatar";
 
 interface Props {
   users: {

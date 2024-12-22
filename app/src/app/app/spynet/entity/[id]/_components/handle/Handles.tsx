@@ -1,6 +1,8 @@
 "use client";
 
 import { useAuthentication } from "@/auth/client";
+import Button from "@/common/components/Button";
+import Modal from "@/common/components/Modal";
 import {
   type Entity,
   type EntityLog,
@@ -9,8 +11,6 @@ import {
 } from "@prisma/client";
 import { useState } from "react";
 import { FaHistory } from "react-icons/fa";
-import Button from "../../../../../../_components/Button";
-import Modal from "../../../../../../_components/Modal";
 import Create from "./Create";
 import SingleHandle from "./SingleHandle";
 

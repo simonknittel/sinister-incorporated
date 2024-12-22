@@ -1,8 +1,8 @@
 import { authenticatePage } from "@/auth/server";
+import { getEvent } from "@/discord/getEvent";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { serializeError } from "serialize-error";
-import { getEvent } from "../../../../discord/getEvent";
 import { FleetTile } from "./_components/FleetTile";
 import { OverviewTile } from "./_components/OverviewTile";
 import { ParticipantsTile } from "./_components/ParticipantsTile";
@@ -23,7 +23,7 @@ export async function generateMetadata({
       title: `${event.name} - Event | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
-    await log.error(
+    void log.error(
       "Error while generating metadata for /(app)/events/[id]/fleet/page.tsx",
       {
         error: serializeError(error),

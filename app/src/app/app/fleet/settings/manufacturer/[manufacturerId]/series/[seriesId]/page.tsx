@@ -1,12 +1,12 @@
+import { EditableSeriesName } from "@/fleet/components/EditableSeriesName";
+import { TileSkeleton } from "@/fleet/components/TileSkeleton";
+import { VariantsTile } from "@/fleet/components/VariantsTile";
+import { dedupedGetSeriesAndManufacturerById } from "@/fleet/utils/getSeriesAndManufacturer";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { serializeError } from "serialize-error";
-import { EditableSeriesName } from "../../../../_components/EditableSeriesName";
-import { TileSkeleton } from "../../../../_components/TileSkeleton";
-import { VariantsTile } from "../../../../_components/VariantsTile";
-import { dedupedGetSeriesAndManufacturerById } from "../../../../_lib/getSeriesAndManufacturer";
 
 type Params = Readonly<{
   manufacturerId: string;
@@ -30,7 +30,7 @@ export async function generateMetadata({
       title: `${series.name} - Schiffe | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
-    await log.error(
+    void log.error(
       "Error while generating metadata for /(app)/spynet/entity/[id]/page.tsx",
       {
         error: serializeError(error),

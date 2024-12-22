@@ -1,11 +1,12 @@
+import { isOpenAIEnabled } from "@/common/utils/isOpenAIEnabled";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { TRPCError } from "@trpc/server";
 import OpenAI from "openai";
 import { type ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import { env } from "process";
+import { serializeError } from "serialize-error";
 import { z } from "zod";
-import { isOpenAIEnabled } from "../../../lib/isOpenAIEnabled";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const aiRouter = createTRPCRouter({
@@ -45,7 +46,7 @@ export const aiRouter = createTRPCRouter({
       },
     });
 
-    await log.info("Role name suggestions", {
+    void log.info("Role name suggestions", {
       messages,
       usage: chatCompletion.usage,
     });
@@ -75,6 +76,10 @@ export const aiRouter = createTRPCRouter({
         roleNames: response.roleNames,
       };
     } catch (error) {
+      void log.error("Failed to parse role names", {
+        error: serializeError(error),
+      });
+
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "Failed to generate role names",

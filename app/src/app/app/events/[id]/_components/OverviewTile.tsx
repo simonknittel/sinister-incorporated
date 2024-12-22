@@ -1,11 +1,11 @@
+import { DiscordButton } from "@/common/components/DiscordButton";
+import { type getEvent } from "@/discord/getEvent";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { type getEvent } from "../../../../../discord/getEvent";
-import { DiscordButton } from "../../../../_components/DiscordButton";
 
 const TimeAgoContainer = dynamic(
-  () => import("../../../../_components/TimeAgoContainer"),
+  () => import("@/common/components/TimeAgoContainer"),
   {
     ssr: false,
     loading: () => (

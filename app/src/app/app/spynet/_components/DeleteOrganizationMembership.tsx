@@ -1,12 +1,12 @@
 "use client";
 
+import Button from "@/common/components/Button";
 import { type Entity, type Organization } from "@prisma/client";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
-import Button from "../../../_components/Button";
 
 type Props = Readonly<{
   className?: string;

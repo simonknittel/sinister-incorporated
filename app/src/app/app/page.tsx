@@ -1,10 +1,10 @@
 import { authenticatePage } from "@/auth/server";
+import { Hero } from "@/common/components/Hero";
+import { SpynetSearchTile } from "@/common/components/SpynetSearchTile/SpynetSearchTile";
+import { UwuHero } from "@/common/components/UwuHero";
+import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { dedupedGetUnleashFlag } from "../../lib/getUnleashFlag";
-import { Hero } from "../_components/Hero";
-import { SpynetSearchTile } from "../_components/SpynetSearchTile/SpynetSearchTile";
-import { UwuHero } from "../_components/UwuHero";
 import { CalendarTile } from "./_components/CalendarTile";
 import { ProfileTile } from "./_components/ProfileTile";
 import { QuotesTile } from "./_components/QuotesTile";

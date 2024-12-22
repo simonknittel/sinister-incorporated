@@ -1,11 +1,11 @@
 "use client";
 
+import Button from "@/common/components/Button";
+import YesNoCheckbox from "@/common/components/YesNoCheckbox";
+import type { EntityLogType } from "@/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { FaSave } from "react-icons/fa";
-import { type EntityLogType } from "../../../../../types";
-import Button from "../../../../_components/Button";
-import YesNoCheckbox from "../../../../_components/YesNoCheckbox";
 import { useFilter } from "../../_components/Filter";
 
 interface FormValues {

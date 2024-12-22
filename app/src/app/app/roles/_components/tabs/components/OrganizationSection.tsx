@@ -1,5 +1,5 @@
+import YesNoCheckbox from "@/common/components/YesNoCheckbox";
 import clsx from "clsx";
-import YesNoCheckbox from "../../../../../_components/YesNoCheckbox";
 import { usePermissionsContext } from "../../PermissionsContext";
 
 type Props = Readonly<{

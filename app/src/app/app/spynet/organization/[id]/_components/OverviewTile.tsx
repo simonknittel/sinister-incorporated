@@ -1,8 +1,8 @@
 import { requireAuthentication } from "@/auth/server";
+import { RSIButton } from "@/common/components/RSIButton";
 import { prisma } from "@/db";
 import clsx from "clsx";
 import Image from "next/image";
-import { RSIButton } from "../../../../../_components/RSIButton";
 
 type Props = Readonly<{
   className?: string;

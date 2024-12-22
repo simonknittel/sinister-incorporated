@@ -1,10 +1,10 @@
 import { prisma } from "@/db";
+import { type getEvent } from "@/discord/getEvent";
+import { getEventUsers } from "@/discord/getEventUsers";
+import FleetTable from "@/fleet/components/FleetTable";
 import clsx from "clsx";
 import { groupBy } from "lodash";
 import { MdWorkspaces } from "react-icons/md";
-import { type getEvent } from "../../../../../discord/getEvent";
-import { getEventUsers } from "../../../../../discord/getEventUsers";
-import FleetTable from "../../../fleet/_components/FleetTable";
 
 type Props = Readonly<{
   className?: string;
@@ -43,7 +43,7 @@ export const FleetTile = async ({ className, event }: Props) => {
 
   const groupedOrgShips = groupBy(orgShips, (ship) => ship.variant.id);
   const countedOrgShips = Object.values(groupedOrgShips).map((ships) => {
-    const ship = ships[0]!;
+    const ship = ships[0];
 
     return {
       ...ship,

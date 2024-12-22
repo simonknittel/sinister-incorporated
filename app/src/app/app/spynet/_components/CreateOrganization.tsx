@@ -1,12 +1,12 @@
 "use client";
 
+import Button from "@/common/components/Button";
+import Modal from "@/common/components/Modal";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPlus, FaSave, FaSpinner } from "react-icons/fa";
-import Button from "../../../_components/Button";
-import Modal from "../../../_components/Modal";
 
 interface FormValues {
   spectrumId: string;

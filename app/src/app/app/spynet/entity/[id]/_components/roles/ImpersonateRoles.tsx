@@ -1,9 +1,9 @@
 "use client";
 
+import Button from "@/common/components/Button";
 import { type Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { RiSpyFill } from "react-icons/ri";
-import Button from "../../../../../../_components/Button";
 
 interface Props {
   roles: Role[];

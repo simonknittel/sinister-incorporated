@@ -1,5 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
-import getVisibleRoles from "../../../../../lib/getVisibleRoles";
+import getVisibleRoles from "@/common/utils/getVisibleRoles";
 import { Filter } from "../../_components/Filter";
 import RoleFilter from "./RoleFilter";
 import { UnknownsFilter } from "./UnknownsFilter";

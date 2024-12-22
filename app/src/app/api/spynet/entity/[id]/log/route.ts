@@ -1,9 +1,9 @@
 import { authenticateApi } from "@/auth/server";
 import { confirmLog } from "@/citizen/utils/confirmLog";
+import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import apiErrorHandler from "../../../../../../lib/apiErrorHandler";
 import { updateEntityRolesCache } from "./_lib/updateEntityRolesCache";
 
 interface Params {

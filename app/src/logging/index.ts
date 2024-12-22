@@ -14,8 +14,7 @@ const info = async (message: string, args: Record<string, unknown> = {}) => {
     ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
   };
 
-  logToConsole(logEntry);
-  await logToLoki(logEntry);
+  await Promise.all([logToConsole(logEntry), logToLoki(logEntry)]);
 };
 
 const warn = async (message: string, args: Record<string, unknown> = {}) => {
@@ -29,8 +28,7 @@ const warn = async (message: string, args: Record<string, unknown> = {}) => {
     ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
   };
 
-  logToConsole(logEntry);
-  await logToLoki(logEntry);
+  await Promise.all([logToConsole(logEntry), logToLoki(logEntry)]);
 };
 
 const error = async (message: string, args: Record<string, unknown> = {}) => {
@@ -44,8 +42,7 @@ const error = async (message: string, args: Record<string, unknown> = {}) => {
     ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
   };
 
-  logToConsole(logEntry);
-  await logToLoki(logEntry);
+  await Promise.all([logToConsole(logEntry), logToLoki(logEntry)]);
 };
 
 export const log = {

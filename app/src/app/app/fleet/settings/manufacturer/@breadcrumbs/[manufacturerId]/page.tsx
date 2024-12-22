@@ -1,5 +1,5 @@
+import { cachedGetManufacturerById } from "@/fleet/utils/getManufacturerById";
 import { notFound } from "next/navigation";
-import { cachedGetManufacturerById } from "../../../_lib/getManufacturerById";
 
 type Params = Readonly<{
   manufacturerId: string;

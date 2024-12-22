@@ -1,10 +1,10 @@
 import { authenticatePage } from "@/auth/server";
+import { Hero } from "@/common/components/Hero";
+import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SpynetSearchTile } from "@/common/components/SpynetSearchTile/SpynetSearchTile";
+import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { dedupedGetUnleashFlag } from "../../../lib/getUnleashFlag";
-import { Hero } from "../../_components/Hero";
-import { SkeletonTile } from "../../_components/SkeletonTile";
-import { SpynetSearchTile } from "../../_components/SpynetSearchTile/SpynetSearchTile";
 import { ActivityTile } from "./_components/ActivityTile/ActivityTile";
 import { CreateCitizen } from "./_components/CreateCitizen";
 import { CreateOrganization } from "./_components/CreateOrganization";

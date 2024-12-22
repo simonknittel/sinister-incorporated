@@ -1,8 +1,8 @@
 "use client";
 
+import TabPanel from "@/common/components/tabs/TabPanel";
+import YesNoCheckbox from "@/common/components/YesNoCheckbox";
 import { type Role } from "@prisma/client";
-import YesNoCheckbox from "../../../../_components/YesNoCheckbox";
-import TabPanel from "../../../../_components/tabs/TabPanel";
 import { usePermissionsContext } from "../PermissionsContext";
 import { RoleSection } from "./components/RoleSection";
 

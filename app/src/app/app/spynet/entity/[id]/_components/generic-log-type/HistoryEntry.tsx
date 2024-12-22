@@ -1,6 +1,8 @@
 "use client";
 
 import { useAuthentication } from "@/auth/client";
+import styles from "@/common/components/ConfirmationGradient.module.css";
+import type { GenericEntityLogType } from "@/types";
 import {
   type EntityLog,
   type EntityLogAttribute,
@@ -10,8 +12,6 @@ import clsx from "clsx";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
-import { type GenericEntityLogType } from "../../../../../../../types";
-import styles from "../../../../../../_components/ConfirmationGradient.module.css";
 import ConfirmLog from "../ConfirmLog";
 import DeleteLog from "../DeleteLog";
 

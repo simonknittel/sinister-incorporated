@@ -1,13 +1,13 @@
+import ToasterContainer from "@/common/components/ToasterContainer";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { type ReactNode } from "react";
 import { env } from "../env.mjs";
 import "../styles/globals.css";
-import ToasterContainer from "./_components/ToasterContainer";
 
 const AnalyticsContainer = dynamic(
-  () => import("./_components/AnalyticsContainer"),
+  () => import("@/common/components/AnalyticsContainer"),
   { ssr: false },
 );
 

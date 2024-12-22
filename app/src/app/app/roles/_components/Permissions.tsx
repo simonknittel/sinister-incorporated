@@ -1,5 +1,10 @@
 "use client";
 
+import Button from "@/common/components/Button";
+import Modal from "@/common/components/Modal";
+import Tab from "@/common/components/tabs/Tab";
+import TabList from "@/common/components/tabs/TabList";
+import { TabsProvider } from "@/common/components/tabs/TabsContext";
 import {
   type ClassificationLevel,
   type NoteType,
@@ -17,11 +22,6 @@ import {
 } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
-import Button from "../../../_components/Button";
-import Modal from "../../../_components/Modal";
-import Tab from "../../../_components/tabs/Tab";
-import TabList from "../../../_components/tabs/TabList";
-import { TabsProvider } from "../../../_components/tabs/TabsContext";
 import { usePermissionsContext } from "./PermissionsContext";
 import { CitizenTab } from "./tabs/CitizenTab";
 import { DocumentsTab } from "./tabs/DocumentsTab";

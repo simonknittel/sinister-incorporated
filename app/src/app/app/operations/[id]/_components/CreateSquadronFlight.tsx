@@ -1,9 +1,9 @@
 "use client";
 
+import Button from "@/common/components/Button";
 import { type OperationUnit } from "@prisma/client";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import Button from "../../../../_components/Button";
 import CreateSquadronFlightModal from "./CreateSquadronFlightModal";
 
 interface Props {

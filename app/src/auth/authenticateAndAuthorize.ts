@@ -2,7 +2,7 @@ import {
   requireConfirmedEmailForAction,
   requireConfirmedEmailForApi,
   requireConfirmedEmailForPage,
-} from "@/lib/emailConfirmation";
+} from "@/common/utils/emailConfirmation";
 import { log } from "@/logging";
 import { authOptions } from "@/server/auth";
 import { getServerSession, type Session } from "next-auth";
@@ -31,7 +31,7 @@ export async function authenticatePage(requestPath?: string) {
   const authentication = await authenticate();
 
   if (!authentication) {
-    log.info("Unauthenticated request to page", {
+    void log.info("Unauthenticated request to page", {
       requestPath,
       reason: "No session",
     });
@@ -39,7 +39,7 @@ export async function authenticatePage(requestPath?: string) {
     redirect("/");
   }
 
-  await requireConfirmedEmailForPage(authentication.session);
+  requireConfirmedEmailForPage(authentication.session);
 
   if (!authentication.authorize("login", "manage")) redirect("/clearance");
 
@@ -53,7 +53,7 @@ export async function authenticatePage(requestPath?: string) {
       const result = authentication.authorize(resource, operation, attributes);
 
       if (!result) {
-        log.info("Unauthorized request to page", {
+        void log.info("Unauthorized request to page", {
           requestPath,
           userId: authentication.session.user.id,
           reason: "Insufficient permissions",
@@ -74,7 +74,7 @@ export async function authenticateApi(
   const authentication = await authenticate();
 
   if (!authentication) {
-    log.info("Unauthenticated request to API", {
+    void log.info("Unauthenticated request to API", {
       requestPath,
       requestMethod,
       reason: "No session",
@@ -83,7 +83,7 @@ export async function authenticateApi(
     throw new Error("Unauthenticated");
   }
 
-  await requireConfirmedEmailForApi(authentication.session);
+  requireConfirmedEmailForApi(authentication.session);
 
   if (!authentication.authorize("login", "manage"))
     throw new Error("Unauthorized");
@@ -98,7 +98,7 @@ export async function authenticateApi(
       const result = authentication.authorize(resource, operation, attributes);
 
       if (!result) {
-        log.info("Unauthorized request to API", {
+        void log.info("Unauthorized request to API", {
           requestPath,
           requestMethod,
           userId: authentication.session.user.id,
@@ -117,7 +117,7 @@ export async function authenticateAction(actionName?: string) {
   const authentication = await authenticate();
 
   if (!authentication) {
-    log.info("Unauthenticated request to action", {
+    void log.info("Unauthenticated request to action", {
       actionName,
       reason: "No session",
     });
@@ -125,7 +125,7 @@ export async function authenticateAction(actionName?: string) {
     throw new Error("Unauthenticated");
   }
 
-  await requireConfirmedEmailForAction(authentication.session);
+  requireConfirmedEmailForAction(authentication.session);
 
   if (!authentication.authorize("login", "manage"))
     throw new Error("Unauthorized");
@@ -140,7 +140,7 @@ export async function authenticateAction(actionName?: string) {
       const result = authentication.authorize(resource, operation, attributes);
 
       if (!result) {
-        log.info("Unauthorized request to action", {
+        void log.info("Unauthorized request to action", {
           actionName,
           userId: authentication.session.user.id,
           reason: "Insufficient permissions",

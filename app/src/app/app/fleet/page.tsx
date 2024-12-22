@@ -1,10 +1,10 @@
 import { authenticatePage } from "@/auth/server";
+import { Hero } from "@/common/components/Hero";
+import { MyFleetTile } from "@/fleet/components/MyFleetTile";
+import { OrgFleetTile } from "@/fleet/components/OrgFleetTile";
+import { TileSkeleton } from "@/fleet/components/TileSkeleton";
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { Hero } from "../../_components/Hero";
-import { MyFleetTile } from "./_components/MyFleetTile";
-import { OrgFleetTile } from "./_components/OrgFleetTile";
-import { TileSkeleton } from "./_components/TileSkeleton";
 
 export const metadata: Metadata = {
   title: "Flotte | S.A.M. - Sinister Incorporated",

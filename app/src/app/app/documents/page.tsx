@@ -1,8 +1,8 @@
 import { authenticatePage } from "@/auth/server";
+import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Hero } from "../../_components/Hero";
 import introductionCompendium from "./_assets/introduction_compendium.png";
 
 export const metadata: Metadata = {

@@ -1,11 +1,11 @@
+import getAllClassificationLevels from "@/common/utils/cached/getAllClassificationLevels";
+import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import {
   type EntityLog,
   type EntityLogAttribute,
   type User,
 } from "@prisma/client";
 import clsx from "clsx";
-import getAllClassificationLevels from "../../../../../../../lib/cached/getAllClassificationLevels";
-import getLatestNoteAttributes from "../../../../../../../lib/getLatestNoteAttributes";
 
 interface Props {
   className?: string;

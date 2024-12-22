@@ -1,10 +1,10 @@
 import { authenticateApi } from "@/auth/server";
+import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { VariantStatus } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import apiErrorHandler from "../../../lib/apiErrorHandler";
 
 const postBodySchema = z.object({
   name: z.string().trim().min(1),

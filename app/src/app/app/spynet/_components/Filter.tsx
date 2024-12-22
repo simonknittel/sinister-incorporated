@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/common/components/Button";
 import * as Popover from "@radix-ui/react-popover";
 import {
   createContext,
@@ -9,7 +10,6 @@ import {
   type ReactNode,
 } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import Button from "../../../_components/Button";
 
 type Props = Readonly<{
   name: string;

@@ -1,13 +1,13 @@
 import { authenticatePage } from "@/auth/server";
+import { AdminEnabler } from "@/common/components/AdminEnabler";
+import ImpersonationBannerContainer from "@/common/components/ImpersonationBannerContainer";
+import QueryClientProviderContainer from "@/common/components/QueryClientProviderContainer";
+import SessionProviderContainer from "@/common/components/SessionProviderContainer";
+import { DesktopSidebarContainer } from "@/common/components/Sidebar/DesktopSidebarContainer";
+import { MobileActionBarContainer } from "@/common/components/Sidebar/MobileActionBarContainer";
+import { TRPCReactProvider } from "@/trpc/react";
 import { cookies } from "next/headers";
 import { Suspense, type ReactNode } from "react";
-import { TRPCReactProvider } from "../../trpc/react";
-import { AdminEnabler } from "../_components/AdminEnabler";
-import ImpersonationBannerContainer from "../_components/ImpersonationBannerContainer";
-import QueryClientProviderContainer from "../_components/QueryClientProviderContainer";
-import SessionProviderContainer from "../_components/SessionProviderContainer";
-import { DesktopSidebarContainer } from "../_components/Sidebar/DesktopSidebarContainer";
-import { MobileActionBarContainer } from "../_components/Sidebar/MobileActionBarContainer";
 
 interface Props {
   children: ReactNode;

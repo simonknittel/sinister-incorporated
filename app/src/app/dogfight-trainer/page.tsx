@@ -1,8 +1,8 @@
+import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { type Metadata } from "next";
 import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { dedupedGetUnleashFlag } from "../../lib/getUnleashFlag";
 
 const Game = dynamic(() => import("./_components/Game/Game"), {
   ssr: false,
