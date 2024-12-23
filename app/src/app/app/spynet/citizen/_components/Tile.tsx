@@ -109,20 +109,15 @@ export const Tile = async ({ searchParams }: Props) => {
         );
     }
   });
-
   const limitedRows = limitRows(sortedRows, currentPage);
-
   const assignableRoles = await getAssignableRoles();
 
   const showLastSeenAtColumn = authentication.authorize("lastSeen", "read");
-
   const showTeamspeakIdAtColumn = authentication.authorize(
     "teamspeak-id",
     "read",
   );
-
   const showDiscordIdAtColumn = authentication.authorize("discord-id", "read");
-
   const showDeleteEntityButton = authentication.authorize("citizen", "delete");
 
   return (

@@ -8,7 +8,7 @@ import {
   type User,
 } from "@prisma/client";
 import Link from "next/link";
-import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
+import { FaSortDown, FaSortUp } from "react-icons/fa";
 import { type EntityLogConfirmationState } from "../../../../../types";
 import ConfirmationState from "./ConfirmationState";
 import DeleteLog from "./DeleteLog";
@@ -53,8 +53,8 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
   return (
     <table className="w-full min-w-[2000px]">
       <thead>
-        <tr className="grid items-center gap-4 text-left text-neutral-500 grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px]">
-          <th>Citizen</th>
+        <tr className="grid items-center gap-4 text-left text-neutral-500 grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px] -mx-2">
+          <th className="px-2">Citizen</th>
 
           <th>Inhalt</th>
 
@@ -103,26 +103,26 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
           return (
             <tr
               key={row.entityLog.id}
-              className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2 grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px]"
+              className="grid items-center gap-4 h-14 rounded -mx-2 first:mt-2 grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr_44px]"
             >
               <td>
                 <Link
                   href={`/app/spynet/entity/${row.entity.id}`}
-                  className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center justify-between overflow-hidden"
+                  className="text-sinister-red-500 hover:bg-neutral-800 block rounded px-2 h-full"
                 >
-                  <span className="overflow-hidden text-ellipsis">
-                    {row.entity.handle ? (
-                      <span title={row.entity.handle}>{row.entity.handle}</span>
-                    ) : (
-                      <span
-                        title="Unbekannt"
-                        className="text-neutral-500 italic"
-                      >
-                        Unbekannt
-                      </span>
-                    )}
+                  <span className="flex items-center h-14">
+                    <span className="overflow-hidden text-ellipsis">
+                      {row.entity.handle ? (
+                        <span title={row.entity.handle}>
+                          {row.entity.handle}
+                        </span>
+                      ) : (
+                        <span className="text-neutral-500 italic">
+                          Unbekannt
+                        </span>
+                      )}
+                    </span>
                   </span>
-                  <FaExternalLinkAlt />
                 </Link>
               </td>
 
