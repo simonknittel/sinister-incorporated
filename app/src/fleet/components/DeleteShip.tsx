@@ -4,7 +4,7 @@ import { type Ship, type Variant } from "@prisma/client";
 import { useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
-import { deleteShip } from "../actions/ship";
+import { deleteShipAction } from "../actions/deleteShipAction";
 
 type Props = Readonly<{
   ship: Ship & {
@@ -15,7 +15,7 @@ type Props = Readonly<{
 export const DeleteShip = ({ ship }: Props) => {
   const [isPending, startTransition] = useTransition();
 
-  const _action = (formData: FormData) => {
+  const formAction = (formData: FormData) => {
     startTransition(async () => {
       try {
         const confirmation = window.confirm(
@@ -23,7 +23,7 @@ export const DeleteShip = ({ ship }: Props) => {
         );
         if (!confirmation) return;
 
-        const response = await deleteShip(formData);
+        const response = await deleteShipAction(formData);
 
         if (response.status === 200) {
           toast.success("Erfolgreich gelöscht");
@@ -40,7 +40,7 @@ export const DeleteShip = ({ ship }: Props) => {
   };
 
   return (
-    <form action={_action}>
+    <form action={formAction}>
       <input type="hidden" name="id" value={ship.id} />
       <button
         disabled={isPending}
