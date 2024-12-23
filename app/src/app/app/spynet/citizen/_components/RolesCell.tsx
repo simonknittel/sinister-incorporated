@@ -1,18 +1,21 @@
 import { requireAuthentication } from "@/auth/server";
 import { getAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
 import { type Entity, type Role } from "@prisma/client";
+import clsx from "clsx";
 import AddRoles from "../../entity/[id]/_components/roles/AddRoles";
 import SingleRole from "../../entity/[id]/_components/roles/SingleRole";
 
-interface Props {
+type Props = Readonly<{
+  className?: string;
   entity: Entity;
   assignableRoles: Role[];
-}
+}>;
 
 export const RolesCell = async ({
+  className,
   entity,
   assignableRoles,
-}: Readonly<Props>) => {
+}: Props) => {
   const authentication = await requireAuthentication();
 
   const showUpdateRolesButton =
@@ -34,16 +37,16 @@ export const RolesCell = async ({
   return (
     <>
       {roles.length > 0 ? (
-        <div className="flex gap-2">
+        <div className={clsx("flex gap-2", className)}>
           {roles.map((role) => (
             <SingleRole key={role.id} role={role} />
           ))}
         </div>
       ) : (
-        <p className="text-neutral-500 italic">Keine</p>
+        <p className="text-neutral-500 italic">-</p>
       )}
 
-      {showUpdateRolesButton && (
+      {showUpdateRolesButton && assignableRoles.length > 0 && (
         <AddRoles
           entity={entity}
           allRoles={assignableRoles}
