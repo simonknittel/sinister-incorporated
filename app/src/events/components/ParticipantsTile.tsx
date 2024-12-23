@@ -4,7 +4,7 @@ import { getEventUsersDeduped } from "@/discord/getEventUsers";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { FaExternalLinkAlt, FaUsers } from "react-icons/fa";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 type Props = Readonly<{
   className?: string;
@@ -54,13 +54,10 @@ export const ParticipantsTile = async ({ className, event }: Props) => {
         "rounded-2xl bg-neutral-800/50 p-4 lg:p-8 overflow-auto",
       )}
     >
-      <h2 className="font-bold flex gap-2 items-center">
-        <FaUsers />
-        Teilnehmer ({event.user_count})
-      </h2>
+      <h2 className="sr-only">Teilnehmer ({event.user_count})</h2>
 
       {resolvedUsers.length > 0 ? (
-        <div className="flex gap-2 flex-wrap mt-4">
+        <div className="flex gap-2 flex-wrap">
           {resolvedUsers.map((resolvedUser) => (
             <div
               key={resolvedUser.discord.user.id}

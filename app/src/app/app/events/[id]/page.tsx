@@ -1,13 +1,19 @@
 import { authenticatePage } from "@/auth/server";
+import Tab from "@/common/components/tabs/Tab";
+import TabList from "@/common/components/tabs/TabList";
+import TabPanel from "@/common/components/tabs/TabPanel";
+import { TabsProvider } from "@/common/components/tabs/TabsContext";
 import type { NextjsSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import searchParamsNextjsToURLSearchParams from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { getEvent } from "@/discord/getEvent";
+import { FleetTile } from "@/events/components/FleetTile";
+import { OverviewTile } from "@/events/components/OverviewTile";
+import { ParticipantsTile } from "@/events/components/ParticipantsTile";
 import { log } from "@/logging";
 import { type Metadata } from "next";
+import { FaUsers } from "react-icons/fa";
+import { MdWorkspaces } from "react-icons/md";
 import { serializeError } from "serialize-error";
-import { FleetTile } from "./_components/FleetTile";
-import { OverviewTile } from "./_components/OverviewTile";
-import { ParticipantsTile } from "./_components/ParticipantsTile";
 
 interface Params {
   id: string;
@@ -60,11 +66,32 @@ export default async function Page({ params, searchParams }: Props) {
       </div>
 
       <div className="flex gap-8 flex-col-reverse 2xl:flex-row 2xl:items-start">
-        <div className="flex flex-col gap-4 2xl:flex-1">
-          <ParticipantsTile event={event} />
-          {showFleetTile && (
-            <FleetTile event={event} urlSearchParams={urlSearchParams} />
-          )}
+        <div className="2xl:flex-1">
+          <TabsProvider initialActiveTab="participants">
+            <TabList>
+              <Tab id="participants">
+                <FaUsers />
+                Teilnehmer ({event.user_count})
+              </Tab>
+
+              {showFleetTile && (
+                <Tab id="fleet">
+                  <MdWorkspaces />
+                  Flotte
+                </Tab>
+              )}
+            </TabList>
+
+            <TabPanel id="participants">
+              <ParticipantsTile event={event} />
+            </TabPanel>
+
+            {showFleetTile && (
+              <TabPanel id="fleet">
+                <FleetTile event={event} urlSearchParams={urlSearchParams} />
+              </TabPanel>
+            )}
+          </TabsProvider>
         </div>
 
         <OverviewTile
