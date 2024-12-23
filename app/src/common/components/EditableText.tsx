@@ -26,7 +26,7 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
     setIsEditing(true);
   };
 
-  const _action = (formData: FormData) => {
+  const formAction = (formData: FormData) => {
     startTransition(async () => {
       try {
         const response = await action(formData);
@@ -72,7 +72,7 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
     <span className={clsx(className)}>
       {isEditing ? (
         <form
-          action={_action}
+          action={formAction}
           className="flex gap-2 items-center -mx-1"
           ref={outsideRef}
         >

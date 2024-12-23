@@ -30,6 +30,7 @@ export const MyShipTile = ({ className, ship }: Props) => {
       <div className="flex justify-between items-center">
         <h3 className="font-bold p-4">
           <EditableShipName
+            key={ship.id} // I don't know why this is necessary. However, it fixes the issue of the name not updating when creating/deleting two ships in a row.
             shipId={ship.id}
             name={ship.name || ship.variant.name}
           />
