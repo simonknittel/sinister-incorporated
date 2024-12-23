@@ -107,7 +107,7 @@ export const AssignShip = ({ className, data = [] }: Props) => {
           </select>
 
           <label className="mt-4 block" htmlFor={inputId}>
-            Name
+            Schiffsname
           </label>
           <input
             name="name"
