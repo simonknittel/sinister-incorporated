@@ -17,12 +17,6 @@ export const requestEmailConfirmation = async (
 
   const emailConfirmationToken = createId();
 
-  await prisma.emailConfirmationToken.deleteMany({
-    where: {
-      userId,
-    },
-  });
-
   await prisma.emailConfirmationToken.create({
     data: {
       userId,
