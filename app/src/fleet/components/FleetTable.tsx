@@ -38,6 +38,8 @@ type Row = OrgShip;
 
 const columnHelper = createColumnHelper<Row>();
 
+const GRID_COLS = "grid-cols-[104px_1fr_128px_56px]";
+
 export const FleetTable = ({ className, ships }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "manufacturer", desc: false },
@@ -46,11 +48,6 @@ export const FleetTable = ({ className, ships }: Props) => {
 
   const columns = useMemo(() => {
     return [
-      columnHelper.accessor("variant.name", {
-        header: "Variante",
-        id: "variant",
-        cell: (row) => row.getValue(),
-      }),
       columnHelper.accessor("variant.series.manufacturer.name", {
         header: "Hersteller",
         id: "manufacturer",
@@ -58,7 +55,7 @@ export const FleetTable = ({ className, ships }: Props) => {
           const manufacturer = row.row.original.variant.series.manufacturer;
 
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex justify-center items-center gap-2">
               {manufacturer.imageId && (
                 <Image
                   src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.imageId}`}
@@ -66,13 +63,17 @@ export const FleetTable = ({ className, ships }: Props) => {
                   width={48}
                   height={48}
                   className="w-[48px] h-[48px] object-contain object-center"
+                  title={row.getValue()}
                 />
               )}
-
-              {row.getValue()}
             </div>
           );
         },
+      }),
+      columnHelper.accessor("variant.name", {
+        header: "Variante",
+        id: "variant",
+        cell: (row) => row.getValue(),
       }),
       columnHelper.accessor("variant.status", {
         header: "Status",
@@ -110,10 +111,10 @@ export const FleetTable = ({ className, ships }: Props) => {
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             key={headerGroup.id}
-            className="grid grid-cols-[2fr_2fr_2fr_1fr] items-center gap-4"
+            className={clsx("grid items-center gap-4", GRID_COLS)}
           >
             {headerGroup.headers.map((header) => (
-              <th key={header.id} className="text-left text-neutral-500">
+              <th key={header.id} className="text-left text-neutral-500 p-0">
                 {header.isPlaceholder ? null : (
                   <div
                     {...{
@@ -143,7 +144,10 @@ export const FleetTable = ({ className, ships }: Props) => {
         {table.getRowModel().rows.map((row) => (
           <tr
             key={row.id}
-            className="grid grid-cols-[2fr_2fr_2fr_1fr] items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
+            className={clsx(
+              "grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2",
+              GRID_COLS,
+            )}
           >
             {row.getVisibleCells().map((cell) => (
               <td
