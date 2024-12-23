@@ -28,7 +28,7 @@ export const OverviewSection = async ({
 
       <dd className="flex gap-4 items-center">
         <span className="whitespace-nowrap overflow-hidden text-ellipsis">
-          {entity[camelCase(type)] || <span className="italic">Unbekannt</span>}
+          {entity[camelCase(type)] || <span className="italic">-</span>}
         </span>
 
         <HistoryModal type={type} entity={entity} />

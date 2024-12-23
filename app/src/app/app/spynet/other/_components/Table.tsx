@@ -111,9 +111,7 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
                           {row.entity.handle}
                         </span>
                       ) : (
-                        <span className="text-neutral-500 italic">
-                          Unbekannt
-                        </span>
+                        <span className="text-neutral-500 italic">-</span>
                       )}
                     </span>
                   </span>
