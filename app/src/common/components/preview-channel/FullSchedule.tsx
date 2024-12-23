@@ -30,18 +30,22 @@ const FullSchedule = ({ schedule }: Readonly<Props>) => {
               day: "2-digit",
               month: "2-digit",
               year: "numeric",
+              timeZone: "Europe/Berlin",
             })}{" "}
             {time.start.toLocaleTimeString(undefined, {
               timeStyle: "short",
+              timeZone: "Europe/Berlin",
             })}{" "}
             -{" "}
             {time.end.toLocaleDateString(undefined, {
               day: "2-digit",
               month: "2-digit",
               year: "numeric",
+              timeZone: "Europe/Berlin",
             })}{" "}
             {time.end.toLocaleTimeString(undefined, {
               timeStyle: "short",
+              timeZone: "Europe/Berlin",
             })}{" "}
             (region: {time.region})
           </li>

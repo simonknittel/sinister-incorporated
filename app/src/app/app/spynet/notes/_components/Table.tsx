@@ -160,12 +160,14 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",
+                  timeZone: "Europe/Berlin",
                 })}
               >
                 {row.confirmedAt?.toLocaleDateString("de-DE", {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",
+                  timeZone: "Europe/Berlin",
                 })}
               </td>
 
@@ -182,12 +184,14 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",
+                  timeZone: "Europe/Berlin",
                 })}
               >
                 {row.entityLog.createdAt?.toLocaleDateString("de-DE", {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",
+                  timeZone: "Europe/Berlin",
                 })}
               </td>
 

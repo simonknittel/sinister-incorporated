@@ -28,7 +28,6 @@ export const CalendarTile = async ({ className }: Props) => {
       )}
     >
       <h2 className="font-bold text-xl self-start">Kalender</h2>
-      {/* <Hero text="Kalender" size="md" /> */}
 
       {events
         .toSorted(
