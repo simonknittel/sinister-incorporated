@@ -40,7 +40,7 @@ export const MyShipTile = ({ className, ship }: Props) => {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row lg:justify-between gap-4 p-4">
+      <div className="flex flex-col lg:flex-row lg:justify-between gap-4 px-4 pb-4">
         <div className="flex flex-col gap-2">
           <p>
             <span className="text-neutral-500">Variante:</span>{" "}

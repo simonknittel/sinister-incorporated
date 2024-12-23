@@ -1,7 +1,7 @@
 import { authenticate } from "@/auth/server";
 import { prisma } from "@/db";
 import clsx from "clsx";
-import AssignShip from "./AssignShip";
+import { AssignShip } from "./AssignShip";
 import { MyShipTile } from "./MyShipTile";
 
 type Props = Readonly<{
@@ -44,7 +44,7 @@ export const MyFleetTile = async ({ className }: Props) => {
   ]);
 
   return (
-    <section className={clsx(className, "flex flex-col gap-4")}>
+    <section className={clsx("flex flex-col gap-4", className)}>
       <h2 className="font-bold">Mein Schiffe</h2>
 
       {myShips
