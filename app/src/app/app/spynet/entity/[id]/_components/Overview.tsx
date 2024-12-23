@@ -27,9 +27,7 @@ export const Overview = async ({ className, entity }: Props) => {
         <dd>{entity.id}</dd>
 
         <dt className="text-neutral-500 mt-4">Spectrum ID</dt>
-        <dd>
-          {entity.spectrumId || <span className="italic">Unbekannt</span>}
-        </dd>
+        <dd>{entity.spectrumId || <span className="italic">-</span>}</dd>
 
         <OverviewSection type="citizen-id" name="Citizen ID" entity={entity} />
 

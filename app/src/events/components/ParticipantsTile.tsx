@@ -133,7 +133,7 @@ export const ParticipantsTile = async ({ className, event }: Props) => {
                                 </span>
                               ) : (
                                 <span className="text-neutral-500 italic">
-                                  Unbekannt
+                                  -
                                 </span>
                               )}
                             </span>

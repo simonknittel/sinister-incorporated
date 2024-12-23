@@ -159,7 +159,7 @@ export const Table = ({
                   {row.entity.handle ? (
                     <span title={row.entity.handle}>{row.entity.handle}</span>
                   ) : (
-                    <span className="text-neutral-500 italic">Unbekannt</span>
+                    <span className="text-neutral-500 italic">-</span>
                   )}
                 </span>
                 <HistoryModal
@@ -184,7 +184,7 @@ export const Table = ({
                         {row.entity.discordId}
                       </span>
                     ) : (
-                      <span className="text-neutral-500 italic">Unbekannt</span>
+                      <span className="text-neutral-500 italic">-</span>
                     )}
                   </span>
                   <HistoryModal
@@ -203,7 +203,7 @@ export const Table = ({
                         {row.entity.teamspeakId}
                       </span>
                     ) : (
-                      <span className="text-neutral-500 italic">Unbekannt</span>
+                      <span className="text-neutral-500 italic">-</span>
                     )}
                   </span>
                   <HistoryModal

@@ -66,7 +66,7 @@ const Table = ({ users }: Readonly<Props>) => {
         header: "Handle",
         cell: (props) =>
           props.getValue() || (
-            <span className="italic text-neutral-500">Unbekannt</span>
+            <span className="italic text-neutral-500">-</span>
           ),
       }),
       columnHelper.accessor("entity", {
