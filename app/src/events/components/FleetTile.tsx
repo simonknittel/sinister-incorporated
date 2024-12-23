@@ -6,7 +6,6 @@ import { FleetTable } from "@/fleet/components/FleetTable";
 import { VariantStatus } from "@prisma/client";
 import clsx from "clsx";
 import { groupBy } from "lodash";
-import { MdWorkspaces } from "react-icons/md";
 
 type Props = Readonly<{
   className?: string;
@@ -73,9 +72,7 @@ export const FleetTile = async ({
         gridArea: "fleet",
       }}
     >
-      <h2 className="font-bold mb-4 flex gap-2 items-center">
-        <MdWorkspaces /> Flotte
-      </h2>
+      <h2 className="sr-only">Flotte</h2>
 
       {countedOrgShips.length > 0 ? (
         <>

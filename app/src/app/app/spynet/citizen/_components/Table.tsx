@@ -12,7 +12,7 @@ type Row = {
   entity: Entity;
 };
 
-interface Props {
+type Props = Readonly<{
   rows: Row[];
   assignableRoles: Role[];
   showDiscordIdColumn?: boolean;
@@ -20,9 +20,9 @@ interface Props {
   showLastSeenAtColumn?: boolean;
   showDeleteEntityButton?: boolean;
   searchParams: URLSearchParams;
-}
+}>;
 
-const Table = ({
+export const Table = ({
   rows,
   assignableRoles,
   showDiscordIdColumn = false,
@@ -30,7 +30,7 @@ const Table = ({
   showLastSeenAtColumn = false,
   showDeleteEntityButton = false,
   searchParams,
-}: Readonly<Props>) => {
+}: Props) => {
   const handleSearchParams = new URLSearchParams(searchParams);
   if (searchParams.get("sort") === "handle-asc") {
     handleSearchParams.set("sort", "handle-desc");
@@ -269,5 +269,3 @@ const Table = ({
     </table>
   );
 };
-
-export default Table;

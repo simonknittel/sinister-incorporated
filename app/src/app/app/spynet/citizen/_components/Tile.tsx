@@ -14,7 +14,7 @@ import {
 import { prisma } from "@/db";
 import Pagination from "../../_components/Pagination";
 import { Filters } from "./Filters";
-import Table from "./Table";
+import { Table } from "./Table";
 
 type Props = Readonly<{
   searchParams: URLSearchParams;

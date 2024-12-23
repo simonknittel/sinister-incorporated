@@ -22,26 +22,26 @@ export const getEventUsersDeduped = cache(async (id: string) => {
 
   checkResponseForError(data);
 
-  return data;
+  return data as z.infer<typeof successSchema>;
 });
 
-const schema = z.union([
-  z.array(
-    z.object({
-      user: z.object({
-        id: z.string(),
-        username: z.string(),
-        global_name: z.string().optional().nullable(),
-        avatar: z.string().optional().nullable(),
-      }),
-      member: z.object({
-        nick: z.string().optional().nullable(),
-        avatar: z.string().optional().nullable(),
-      }),
-    }),
-  ),
-
+const successSchema = z.array(
   z.object({
-    message: z.string(),
+    user: z.object({
+      id: z.string(),
+      username: z.string(),
+      global_name: z.string().optional().nullable(),
+      avatar: z.string().optional().nullable(),
+    }),
+    member: z.object({
+      nick: z.string().optional().nullable(),
+      avatar: z.string().optional().nullable(),
+    }),
   }),
-]);
+);
+
+const errorSchema = z.object({
+  message: z.string(),
+});
+
+const schema = z.union([successSchema, errorSchema]);

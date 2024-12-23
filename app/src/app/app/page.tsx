@@ -22,12 +22,10 @@ export default async function Page({ searchParams }: Props) {
   const authentication = await authenticatePage("/app");
 
   const showCalendar = authentication.authorize("event", "read");
-
   const showSpynetSearchTile =
     !(await dedupedGetUnleashFlag("DisableAlgolia")) &&
     (authentication.authorize("citizen", "read") ||
       authentication.authorize("organization", "read"));
-
   const showUwuHero = Object.hasOwn(searchParams, "uwu");
 
   return (

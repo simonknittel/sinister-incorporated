@@ -22,22 +22,25 @@ export const getEvent = cache(async (id: string) => {
 
   checkResponseForError(data);
 
-  return { date: response.headers.get("Date"), data };
+  return {
+    date: response.headers.get("Date"),
+    data: data as z.infer<typeof successSchema>,
+  };
 });
 
-const responseSchema = z.union([
-  z.object({
-    id: z.string(),
-    guild_id: z.string(),
-    name: z.string(),
-    image: z.string().optional().nullable(),
-    scheduled_start_time: z.coerce.date(),
-    scheduled_end_time: z.coerce.date(),
-    user_count: z.number(),
-    description: z.string().optional(),
-  }),
+const successSchema = z.object({
+  id: z.string(),
+  guild_id: z.string(),
+  name: z.string(),
+  image: z.string().optional().nullable(),
+  scheduled_start_time: z.coerce.date(),
+  scheduled_end_time: z.coerce.date(),
+  user_count: z.number(),
+  description: z.string().optional(),
+});
 
-  z.object({
-    message: z.string(),
-  }),
-]);
+const errorSchema = z.object({
+  message: z.string(),
+});
+
+const responseSchema = z.union([successSchema, errorSchema]);
