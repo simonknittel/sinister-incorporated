@@ -19,7 +19,7 @@ export const DeleteShip = ({ ship }: Props) => {
     startTransition(async () => {
       try {
         const confirmation = window.confirm(
-          `Willst du "${ship.name}" löschen?`,
+          `Willst du "${ship.name || ship.variant.name}" löschen?`,
         );
         if (!confirmation) return;
 
