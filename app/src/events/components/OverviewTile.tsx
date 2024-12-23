@@ -61,11 +61,13 @@ export const OverviewTile = ({ className, event, date }: Props) => {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
+                timeZone: "Europe/Berlin",
               })}{" "}
               -{" "}
               {event.scheduled_start_time.toLocaleTimeString("de-DE", {
                 hour: "2-digit",
                 minute: "2-digit",
+                timeZone: "Europe/Berlin",
               })}
             </dd>
 
@@ -76,11 +78,13 @@ export const OverviewTile = ({ className, event, date }: Props) => {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
+                timeZone: "Europe/Berlin",
               })}{" "}
               -{" "}
               {event.scheduled_end_time.toLocaleTimeString("de-DE", {
                 hour: "2-digit",
                 minute: "2-digit",
+                timeZone: "Europe/Berlin",
               })}
             </dd>
           </dl>

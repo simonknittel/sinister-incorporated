@@ -146,6 +146,7 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",
+                  timeZone: "Europe/Berlin",
                 })}
               </td>
 
@@ -161,6 +162,7 @@ const Table = ({ rows, searchParams }: Readonly<Props>) => {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",
+                  timeZone: "Europe/Berlin",
                 })}
               </td>
 
