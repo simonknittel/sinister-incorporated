@@ -52,6 +52,7 @@ export const updateSeries: ServerAction = async (formData) => {
     revalidateTag("series");
     revalidateTag(`series:${updatedItem.id}`);
     revalidateTag(`manufacturer:${updatedItem.manufacturerId}`);
+    revalidateTag(`manufacturer`);
 
     /**
      * Respond with the result
@@ -116,6 +117,7 @@ export const deleteSeries: ServerAction = async (formData) => {
     revalidateTag("series");
     revalidateTag(`series:${deletedItem.id}`);
     revalidateTag(`manufacturer:${deletedItem.manufacturerId}`);
+    revalidateTag(`manufacturer`);
 
     /**
      * Respond with the result

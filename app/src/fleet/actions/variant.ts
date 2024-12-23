@@ -126,6 +126,7 @@ export const deleteVariant: ServerAction = async (formData) => {
     revalidateTag("variant");
     revalidateTag(`variant:${deletedItem.id}`);
     revalidateTag(`series:${deletedItem.seriesId}`);
+    revalidateTag(`manufacturer`);
 
     /**
      * Respond with the result
