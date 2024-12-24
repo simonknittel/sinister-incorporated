@@ -11,7 +11,7 @@ export default function apiErrorHandler(
   if (error instanceof ZodError) {
     return NextResponse.json(
       {
-        message: "Invalid request params or body",
+        message: "Bad Request",
         errors: error.errors,
       },
       { status: 400, ...responseInit },
@@ -33,7 +33,7 @@ export default function apiErrorHandler(
   } else if (error instanceof Error && error.message === "Not found") {
     return NextResponse.json(
       {
-        message: "Not found",
+        message: "Not Found",
       },
       { status: 404, ...responseInit },
     );
@@ -53,7 +53,7 @@ export default function apiErrorHandler(
   ) {
     return NextResponse.json(
       {
-        message: "Bad request",
+        message: "Bad Request",
       },
       { status: 400, ...responseInit },
     );
@@ -65,7 +65,7 @@ export default function apiErrorHandler(
 
   return NextResponse.json(
     {
-      message: "Internal server error",
+      message: "Internal Server Error",
     },
     { status: 500, ...responseInit },
   );

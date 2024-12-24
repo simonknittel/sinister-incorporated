@@ -3,49 +3,31 @@ import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { NextResponse, type NextRequest } from "next/server";
-import { zfd } from "zod-form-data";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
-const paramsSchema = zfd.formData({
-  token: zfd.text(),
+const schema = z.object({
+  token: z.string().cuid2(),
 });
 
 export async function GET(request: NextRequest) {
   try {
     /**
-     * Authenticate and authorize the request
+     * Validate the request
      */
-    const authentication = await authenticate();
-    if (!authentication) {
-      void log.info("Unauthenticated request to API", {
-        requestPath: "/api/confirm-email",
-        requestMethod: "GET",
-        reason: "No session",
-      });
+    const paramsData = schema.parse({
+      token: request.nextUrl.searchParams.get("token")
+    });
 
-      throw new Error("Unauthenticated");
-    }
-
-    /**
-     * Validate the request body
-     */
-    const paramsData = paramsSchema.parse(request.nextUrl.searchParams);
-
-    /**
-     * Do the thing
-     */
     const result = await prisma.emailConfirmationToken.findUnique({
       where: {
-        userId: authentication.session.user.id,
-        email: authentication.session.user.email!,
         token: paramsData.token,
         expires: {
           gt: new Date(),
         },
       },
     });
-
     if (!result)
       return NextResponse.redirect(
         new URL("/email-confirmation", request.url),
@@ -56,15 +38,19 @@ export async function GET(request: NextRequest) {
         },
       );
 
+    /**
+     * Confirm the email address
+     */
     await prisma.$transaction([
       prisma.emailConfirmationToken.deleteMany({
         where: {
-          userId: authentication.session.user.id,
+          userId: result.userId,
         },
       }),
+      
       prisma.user.update({
         where: {
-          id: authentication.session.user.id,
+          id: result.userId,
         },
         data: {
           emailVerified: new Date(),
