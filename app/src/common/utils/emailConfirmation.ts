@@ -52,7 +52,7 @@ export const requireConfirmedEmailForPage = (session: Session) => {
   if (!requiresEmailConfirmation(session)) return;
 
   if (!session.user.emailVerified) {
-    void log.info("Unauthenticated request to page", {
+    void log.info("Forbidden request to page", {
       // TODO: Add request path
       userId: session.user.id,
       reason: "Unconfirmed email",
@@ -66,13 +66,13 @@ export const requireConfirmedEmailForApi = (session: Session) => {
   if (!requiresEmailConfirmation(session)) return;
 
   if (!session.user.emailVerified) {
-    void log.info("Unauthenticated request to API", {
+    void log.info("Forbidden request to API", {
       // TODO: Add request path
       userId: session.user.id,
       reason: "Unconfirmed email",
     });
 
-    throw new Error("Unauthorized");
+    throw new Error("Forbidden");
   }
 };
 
@@ -80,13 +80,13 @@ export const requireConfirmedEmailForAction = (session: Session) => {
   if (!requiresEmailConfirmation(session)) return;
 
   if (!session.user.emailVerified) {
-    void log.info("Unauthenticated request to action", {
+    void log.info("Forbidden request to action", {
       // TODO: Add action name
       userId: session.user.id,
       reason: "Unconfirmed email",
     });
 
-    throw new Error("Unauthorized");
+    throw new Error("Forbidden");
   }
 };
 
@@ -94,10 +94,10 @@ export const requireConfirmedEmailForTrpc = (session: Session) => {
   if (!requiresEmailConfirmation(session)) return;
 
   if (!session.user.emailVerified) {
-    void log.info("Unauthenticated request to tRPC", {
+    void log.info("Forbidden request to tRPC", {
       userId: session.user.id,
       reason: "Unconfirmed email",
     });
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: "FORBIDDEN" });
   }
 };
