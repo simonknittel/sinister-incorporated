@@ -16,7 +16,7 @@ type Props = Readonly<{
 export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();
   if (!authentication.authorize("organizationMembership", "read"))
-    throw new Error("Unauthorized");
+    throw new Error("Forbidden");
 
   const alsoVisibilityRedacted = authentication.authorize(
     "organizationMembership",

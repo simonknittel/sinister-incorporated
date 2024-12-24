@@ -8,14 +8,13 @@ import { serializeError } from "serialize-error";
 
 export const requestEmailConfirmationAction = async () => {
   const authentication = await authenticate();
-
   if (!authentication) {
-    void log.info("Unauthenticated request to action", {
+    void log.info("Unauthorized request to action", {
       actionName: "requestEmailConfirmationAction",
       reason: "No session",
     });
 
-    throw new Error("Unauthenticated");
+    throw new Error("Unauthorized");
   }
 
   if (authentication.session.user.emailVerified) redirect("/clearance");

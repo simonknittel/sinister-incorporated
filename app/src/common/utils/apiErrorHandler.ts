@@ -16,14 +16,14 @@ export default function apiErrorHandler(
       },
       { status: 400, ...responseInit },
     );
-  } else if (error instanceof Error && error.message === "Unauthenticated") {
+  } else if (error instanceof Error && error.message === "Unauthorized") {
     return NextResponse.json(
       {
         message: "Unauthorized",
       },
       { status: 401, ...responseInit },
     );
-  } else if (error instanceof Error && error.message === "Unauthorized") {
+  } else if (error instanceof Error && error.message === "Forbidden") {
     return NextResponse.json(
       {
         message: "Forbidden",

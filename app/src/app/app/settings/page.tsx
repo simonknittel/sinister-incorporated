@@ -20,14 +20,11 @@ export default async function Page() {
   const authentication = await authenticatePage("/app/settings");
 
   const showNoteTypes = authentication.authorize("noteType", "manage");
-
   const showClassificationLevels = authentication.authorize(
     "classificationLevel",
     "manage",
   );
-
   const showAnalytics = authentication.authorize("analytics", "manage");
-
   const showAlgolia = authentication.authorize("algolia", "manage");
 
   if (
@@ -36,7 +33,7 @@ export default async function Page() {
     !showAnalytics &&
     !showAlgolia
   ) {
-    void log.info("Unauthorized request to page", {
+    void log.info("Forbidden request to page", {
       userId: authentication.session.user.id,
       reason: "Insufficient permissions",
     });

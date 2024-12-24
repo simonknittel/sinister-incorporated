@@ -14,7 +14,6 @@ import comparePermissionSets from "./comparePermissionSets";
 
 export const authenticate = cache(async () => {
   const session = await getServerSession(authOptions);
-
   if (!session) return false;
 
   return {
@@ -31,7 +30,7 @@ export async function authenticatePage(requestPath?: string) {
   const authentication = await authenticate();
 
   if (!authentication) {
-    void log.info("Unauthenticated request to page", {
+    void log.info("Unauthorized request to page", {
       requestPath,
       reason: "No session",
     });
@@ -53,13 +52,13 @@ export async function authenticatePage(requestPath?: string) {
       const result = authentication.authorize(resource, operation, attributes);
 
       if (!result) {
-        void log.info("Unauthorized request to page", {
+        void log.info("Forbidden request to page", {
           requestPath,
           userId: authentication.session.user.id,
           reason: "Insufficient permissions",
         });
 
-        redirect("/app/unauthorized");
+        redirect("/app/forbidden");
       }
 
       return result;
@@ -74,19 +73,19 @@ export async function authenticateApi(
   const authentication = await authenticate();
 
   if (!authentication) {
-    void log.info("Unauthenticated request to API", {
+    void log.info("Unauthorized request to API", {
       requestPath,
       requestMethod,
       reason: "No session",
     });
 
-    throw new Error("Unauthenticated");
+    throw new Error("Unauthorized");
   }
 
   requireConfirmedEmailForApi(authentication.session);
 
   if (!authentication.authorize("login", "manage"))
-    throw new Error("Unauthorized");
+    throw new Error("Forbidden");
 
   return {
     ...authentication,
@@ -98,14 +97,14 @@ export async function authenticateApi(
       const result = authentication.authorize(resource, operation, attributes);
 
       if (!result) {
-        void log.info("Unauthorized request to API", {
+        void log.info("Forbidden request to API", {
           requestPath,
           requestMethod,
           userId: authentication.session.user.id,
           reason: "Insufficient permissions",
         });
 
-        throw new Error("Unauthorized");
+        throw new Error("Forbidden");
       }
 
       return result;
@@ -117,18 +116,18 @@ export async function authenticateAction(actionName?: string) {
   const authentication = await authenticate();
 
   if (!authentication) {
-    void log.info("Unauthenticated request to action", {
+    void log.info("Unauthorized request to action", {
       actionName,
       reason: "No session",
     });
 
-    throw new Error("Unauthenticated");
+    throw new Error("Unauthorized");
   }
 
   requireConfirmedEmailForAction(authentication.session);
 
   if (!authentication.authorize("login", "manage"))
-    throw new Error("Unauthorized");
+    throw new Error("Forbidden");
 
   return {
     ...authentication,
@@ -146,7 +145,7 @@ export async function authenticateAction(actionName?: string) {
           reason: "Insufficient permissions",
         });
 
-        throw new Error("Unauthorized");
+        throw new Error("Forbidden");
       }
 
       return result;
@@ -156,11 +155,7 @@ export async function authenticateAction(actionName?: string) {
 
 export const requireAuthentication = cache(async () => {
   const authentication = await authenticate();
-
-  if (!authentication) {
-    throw new Error("Unauthenticated");
-  }
-
+  if (!authentication) throw new Error("Unauthorized");
   return authentication;
 });
 

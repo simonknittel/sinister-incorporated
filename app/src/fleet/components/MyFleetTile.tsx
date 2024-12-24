@@ -1,4 +1,4 @@
-import { authenticate } from "@/auth/server";
+import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import clsx from "clsx";
 import { AssignShip } from "./AssignShip";
@@ -9,10 +9,8 @@ type Props = Readonly<{
 }>;
 
 export const MyFleetTile = async ({ className }: Props) => {
-  const authentication = await authenticate();
-
-  if (!authentication || !authentication.authorize("ship", "manage"))
-    throw new Error("Unauthenticated");
+  const authentication = await requireAuthentication();
+  if (!authentication.authorize("ship", "manage")) throw new Error("Forbidden");
 
   const [myShips, allVariants] = await prisma.$transaction([
     prisma.ship.findMany({

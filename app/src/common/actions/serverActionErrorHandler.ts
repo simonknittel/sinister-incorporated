@@ -27,15 +27,15 @@ export const serverActionErrorHandler = (
       errorMessage: options?.errorMessages?.[400] || "Bad request",
       error: JSON.stringify(error),
     };
-  } else if (error instanceof Error && error.message === "Unauthenticated") {
-    return {
-      status: 401,
-      errorMessage: options?.errorMessages?.[401] || "Unauthenticated",
-    };
   } else if (error instanceof Error && error.message === "Unauthorized") {
     return {
+      status: 401,
+      errorMessage: options?.errorMessages?.[401] || "Unauthorized",
+    };
+  } else if (error instanceof Error && error.message === "Forbidden") {
+    return {
       status: 403,
-      errorMessage: options?.errorMessages?.[403] || "Unauthorized",
+      errorMessage: options?.errorMessages?.[403] || "Forbidden",
     };
   } else if (error instanceof Error && error.message === "Not found") {
     return {
