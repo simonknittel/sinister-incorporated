@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const sessionCookie = request.cookies.get("next-auth.session-token");
+  const sessionCookie =
+    request.cookies.get("next-auth.session-token") ||
+    request.cookies.get("__Secure-next-auth.session-token");
 
   // Early return. Make sure to use `authenticatePage()` on individual pages in order to fully authenticate the user.
   if (pathname.startsWith("/app") && !sessionCookie) {
