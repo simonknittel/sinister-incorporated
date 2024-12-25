@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuthentication } from "@/auth/client";
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
 import YesNoCheckbox from "@/common/components/YesNoCheckbox";
@@ -24,13 +23,14 @@ interface FormValues {
 type Props = Readonly<{
   className?: string;
   citizenId: string;
+  showConfirmButton?: boolean;
 }>;
 
 export const CreateOrganizationMembership = ({
   className,
   citizenId,
+  showConfirmButton = false,
 }: Props) => {
-  const authentication = useAuthentication();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<FormValues>({
@@ -83,10 +83,6 @@ export const CreateOrganizationMembership = ({
 
     setIsLoading(false);
   };
-
-  const showCreateAndConfirmButton =
-    authentication &&
-    authentication.authorize("organizationMembership", "confirm");
 
   return (
     <>
@@ -149,7 +145,7 @@ export const CreateOrganizationMembership = ({
               Speichern
             </Button>
 
-            {showCreateAndConfirmButton && (
+            {showConfirmButton && (
               <Button
                 type="submit"
                 disabled={isLoading}

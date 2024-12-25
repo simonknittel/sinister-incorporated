@@ -17,7 +17,7 @@ export default async function AppLayout({ children }: Readonly<Props>) {
   const authentication = await authenticatePage();
 
   return (
-    <SessionProviderContainer session={authentication.session}>
+    (<SessionProviderContainer session={authentication.session}>
       <QueryClientProviderContainer>
         <TRPCReactProvider>
           <div className="min-h-dvh bg-sinister-radial-gradient">
@@ -33,11 +33,11 @@ export default async function AppLayout({ children }: Readonly<Props>) {
 
           {authentication.session.user.role === "admin" && (
             <AdminEnabler
-              enabled={cookies().get("enable_admin")?.value === "1"}
+              enabled={(await cookies()).get("enable_admin")?.value === "1"}
             />
           )}
         </TRPCReactProvider>
       </QueryClientProviderContainer>
-    </SessionProviderContainer>
+    </SessionProviderContainer>)
   );
 }

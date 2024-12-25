@@ -1,7 +1,7 @@
-await import("./src/env.mjs");
+import type { NextConfig } from "next";
+import { env } from "./src/env";
 
-/** @type {import("next").NextConfig} */
-const config = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   typescript: {
@@ -22,7 +22,7 @@ const config = {
       },
       {
         protocol: "https",
-        hostname: process.env.NEXT_PUBLIC_R2_PUBLIC_URL,
+        hostname: env.NEXT_PUBLIC_R2_PUBLIC_URL,
       },
       {
         protocol: "https",
@@ -36,6 +36,7 @@ const config = {
 
   poweredByHeader: false,
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   headers: async () => [
     {
       source: "/:path*",
@@ -74,5 +75,4 @@ const config = {
     },
   },
 };
-
-export default config;
+export default nextConfig;

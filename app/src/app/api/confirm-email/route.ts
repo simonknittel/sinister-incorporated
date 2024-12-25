@@ -1,7 +1,5 @@
-import { authenticate } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
-import { log } from "@/logging";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -17,7 +15,7 @@ export async function GET(request: NextRequest) {
      * Validate the request
      */
     const paramsData = schema.parse({
-      token: request.nextUrl.searchParams.get("token")
+      token: request.nextUrl.searchParams.get("token"),
     });
 
     const result = await prisma.emailConfirmationToken.findUnique({
@@ -47,7 +45,7 @@ export async function GET(request: NextRequest) {
           userId: result.userId,
         },
       }),
-      
+
       prisma.user.update({
         where: {
           id: result.userId,

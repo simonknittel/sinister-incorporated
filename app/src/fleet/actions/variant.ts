@@ -7,20 +7,17 @@ import { prisma } from "@/db";
 import { VariantStatus } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
-import { zfd } from "zod-form-data";
 
 /**
  * Make sure this file matches `/src/app/api/variant/[id]`.
  */
 
-const updateSchema = zfd.formData({
-  id: zfd.text(z.string().cuid()),
-  name: zfd.text(z.string().trim().min(1).optional()),
-  status: zfd.text(
-    z
-      .enum([VariantStatus.FLIGHT_READY, VariantStatus.NOT_FLIGHT_READY])
-      .optional(),
-  ),
+const updateSchema = z.object({
+  id: z.string().cuid(),
+  name: z.string().trim().min(1).optional(),
+  status: z
+    .enum([VariantStatus.FLIGHT_READY, VariantStatus.NOT_FLIGHT_READY])
+    .optional(),
 });
 
 export const updateVariant: ServerAction = async (formData) => {
@@ -29,12 +26,19 @@ export const updateVariant: ServerAction = async (formData) => {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("updateVariant");
-    authentication.authorizeAction("manufacturersSeriesAndVariants", "manage");
+    await authentication.authorizeAction(
+      "manufacturersSeriesAndVariants",
+      "manage",
+    );
 
     /**
      * Validate the request
      */
-    const { id, ...data } = updateSchema.parse(formData);
+    const { id, ...data } = updateSchema.parse({
+      id: formData.get("id"),
+      name: formData.get("name"),
+      status: formData.get("status"),
+    });
 
     /**
      * Make sure the item exists
@@ -84,22 +88,27 @@ export const updateVariant: ServerAction = async (formData) => {
   }
 };
 
-const deleteSchema = zfd.formData({
-  id: zfd.text(z.string().cuid()),
+const deleteSchema = z.object({
+  id: z.string().cuid(),
 });
 
-export const deleteVariant: ServerAction = async (formData) => {
+export const deleteVariantAction: ServerAction = async (formData) => {
   try {
     /**
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("deleteVariant");
-    authentication.authorizeAction("manufacturersSeriesAndVariants", "manage");
+    await authentication.authorizeAction(
+      "manufacturersSeriesAndVariants",
+      "manage",
+    );
 
     /**
      * Validate the request
      */
-    const { id } = deleteSchema.parse(formData);
+    const { id } = deleteSchema.parse({
+      id: formData.get("id"),
+    });
 
     /**
      * Make sure the item exists

@@ -1,8 +1,8 @@
 import { Actions } from "@/common/components/Actions";
+import { env } from "@/env";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { env } from "../../env.mjs";
 import { getManufacturersCached } from "../utils/getManufacturers";
 import { DeleteManufacturerButton } from "./DeleteManufacturerButton";
 

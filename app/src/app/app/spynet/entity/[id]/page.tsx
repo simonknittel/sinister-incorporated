@@ -24,17 +24,17 @@ const getEntity = cache(async (id: string) => {
   });
 });
 
-type Params = Readonly<{
-  id: string;
-}>;
+type Params = Promise<
+  Readonly<{
+    id: string;
+  }>
+>;
 
-export async function generateMetadata({
-  params,
-}: {
+export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
-    const entity = await getEntity(params.id);
+    const entity = await getEntity((await props.params).id);
     if (!entity) return {};
 
     return {
@@ -58,14 +58,15 @@ type Props = Readonly<{
   params: Params;
 }>;
 
-export default async function Page({ params }: Props) {
+export default async function Page(props: Props) {
   const authentication = await authenticatePage("/app/spynet/entity/[id]");
-  authentication.authorizePage("citizen", "read");
+  await authentication.authorizePage("citizen", "read");
 
-  const entity = await getEntity(params.id);
+  const entity = await getEntity((await props.params).id);
   if (!entity) notFound();
 
-  const showOrganizationMembershipsTile = authentication.authorize(
+  const showDelete = await authentication.authorize("citizen", "delete");
+  const showOrganizationMembershipsTile = await authentication.authorize(
     "organizationMembership",
     "read",
   );
@@ -92,9 +93,7 @@ export default async function Page({ params }: Props) {
           {entity.handle || entity.id}
         </h1>
 
-        {authentication.authorize("citizen", "delete") && (
-          <DeleteEntity entity={entity} />
-        )}
+        {showDelete && <DeleteEntity entity={entity} />}
       </div>
 
       <div className="mt-4 flex flex-col 3xl:flex-row-reverse gap-8">

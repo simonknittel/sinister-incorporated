@@ -31,8 +31,8 @@ export const ProfileTile = async ({ className }: Props) => {
   const roles = entity ? await getAssignedAndVisibleRoles(entity) : [];
 
   const showLink =
-    authentication.authorize("citizen", "read") ||
-    authentication.authorize("organization", "read");
+    (await authentication.authorize("citizen", "read")) ||
+    (await authentication.authorize("organization", "read"));
 
   return (
     <section

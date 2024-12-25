@@ -21,10 +21,9 @@ export const mapOrganizationMembershipHistoryEntries = async (
   >,
 ) => {
   const authentication = await requireAuthentication();
+  if (!(await authentication.authorize("organization", "read"))) return [];
 
-  if (!authentication.authorize("organization", "read")) return [];
-
-  const alsoVisibilityRedacted = authentication.authorize(
+  const alsoVisibilityRedacted = await authentication.authorize(
     "organizationMembership",
     "read",
     [

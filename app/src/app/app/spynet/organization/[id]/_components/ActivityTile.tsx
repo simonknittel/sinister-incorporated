@@ -20,10 +20,10 @@ type Props = Readonly<{
 
 export const ActivityTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();
-  if (!authentication.authorize("organization", "read"))
+  if (!(await authentication.authorize("organization", "read")))
     throw new Error("Forbidden");
 
-  const alsoVisibilityRedacted = authentication.authorize(
+  const alsoVisibilityRedacted = await authentication.authorize(
     "organizationMembership",
     "read",
     [
@@ -34,7 +34,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
     ],
   );
 
-  const canConfirm = authentication.authorize(
+  const canConfirm = await authentication.authorize(
     "organizationMembership",
     "confirm",
   );

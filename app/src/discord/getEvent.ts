@@ -1,6 +1,6 @@
+import { env } from "@/env";
 import { cache } from "react";
 import { z } from "zod";
-import { env } from "../env.mjs";
 import { checkResponseForError } from "./checkResponseForError";
 
 export const getEvent = cache(async (id: string) => {

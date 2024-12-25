@@ -14,7 +14,7 @@ export async function POST(request: Request) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi("/api/note-type", "POST");
-    authentication.authorizeApi("noteType", "manage");
+    await authentication.authorizeApi("noteType", "manage");
 
     /**
      * Validate the request body

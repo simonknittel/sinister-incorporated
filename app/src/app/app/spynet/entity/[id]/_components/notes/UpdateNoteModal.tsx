@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuthentication } from "@/auth/client";
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
 import { Select } from "@/common/components/Select";
@@ -13,35 +12,35 @@ import {
 } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
-import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
 
-interface Props {
+type Props = Readonly<{
   className?: string;
   note: EntityLog & {
     attributes: EntityLogAttribute[];
   };
   noteTypes: NoteType[];
   classificationLevels: ClassificationLevel[];
-}
+}>;
 
 interface FormValues {
   noteTypeId: string;
   classificationLevelId: string;
 }
 
-const UpdateNoteModal = ({
+export const UpdateNoteModal = ({
   className,
   note,
   noteTypes = [],
   classificationLevels = [],
-}: Readonly<Props>) => {
+}: Props) => {
   const { noteTypeId, classificationLevelId } = getLatestNoteAttributes(note);
 
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const { register, handleSubmit, control } = useForm<FormValues>({
+  const { register, handleSubmit } = useForm<FormValues>({
     defaultValues: {
       noteTypeId: noteTypeId?.value,
       classificationLevelId: classificationLevelId?.value,
@@ -50,33 +49,6 @@ const UpdateNoteModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const noteTypeSelectId = useId();
   const classificationLevelSelectId = useId();
-  const authentication = useAuthentication();
-
-  const selectedNoteTypeId = useWatch<FormValues>({
-    control,
-    name: "noteTypeId",
-  });
-
-  const filteredClassificationLevels = classificationLevels.filter(
-    (classificationLevel) => {
-      const authorizationAttributes = [
-        {
-          key: "noteTypeId",
-          value: selectedNoteTypeId,
-        },
-        {
-          key: "classificationLevelId",
-          value: classificationLevel.id,
-        },
-      ];
-
-      return (
-        authentication &&
-        // @ts-expect-error The authorization types need to get overhauled
-        authentication.authorize("note", "create", authorizationAttributes)
-      );
-    },
-  );
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
@@ -152,7 +124,7 @@ const UpdateNoteModal = ({
             id={classificationLevelSelectId}
             {...register("classificationLevelId")}
           >
-            {filteredClassificationLevels.map((classificationLevel) => (
+            {classificationLevels.map((classificationLevel) => (
               <option
                 key={classificationLevel.id}
                 value={classificationLevel.id}
@@ -173,5 +145,3 @@ const UpdateNoteModal = ({
     </>
   );
 };
-
-export default UpdateNoteModal;

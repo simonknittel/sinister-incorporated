@@ -6,16 +6,15 @@ import type { ServerAction } from "@/common/actions/types";
 import { prisma } from "@/db";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
-import { zfd } from "zod-form-data";
 
 /**
  * Make sure this file matches `/src/app/api/manufacturer/[id]`.
  */
 
-const updateSchema = zfd.formData({
-  id: zfd.text(z.string().cuid()),
-  name: zfd.text(z.string().trim().min(1).optional()),
-  imageId: zfd.text(z.string().trim().min(1).max(255).optional()),
+const updateSchema = z.object({
+  id: z.string().cuid(),
+  name: z.string().trim().min(1).optional(),
+  imageId: z.string().trim().min(1).max(255).optional(),
 });
 
 export const updateManufacturer: ServerAction = async (formData) => {
@@ -24,12 +23,19 @@ export const updateManufacturer: ServerAction = async (formData) => {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("updateManufacturer");
-    authentication.authorizeAction("manufacturersSeriesAndVariants", "manage");
+    await authentication.authorizeAction(
+      "manufacturersSeriesAndVariants",
+      "manage",
+    );
 
     /**
      * Validate the request
      */
-    const { id, ...data } = updateSchema.parse(formData);
+    const { id, ...data } = updateSchema.parse({
+      id: formData.get("id"),
+      name: formData.get("name"),
+      imageId: formData.get("imageId"),
+    });
 
     /**
      * Make sure the item exists
@@ -78,22 +84,27 @@ export const updateManufacturer: ServerAction = async (formData) => {
   }
 };
 
-const deleteSchema = zfd.formData({
-  id: zfd.text(z.string().cuid()),
+const deleteSchema = z.object({
+  id: z.string().cuid(),
 });
 
-export const deleteManufacturer: ServerAction = async (formData) => {
+export const deleteManufacturerAction: ServerAction = async (formData) => {
   try {
     /**
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("deleteManufacturer");
-    authentication.authorizeAction("manufacturersSeriesAndVariants", "manage");
+    await authentication.authorizeAction(
+      "manufacturersSeriesAndVariants",
+      "manage",
+    );
 
     /**
      * Validate the request
      */
-    const { id } = deleteSchema.parse(formData);
+    const { id } = deleteSchema.parse({
+      id: formData.get("id"),
+    });
 
     /**
      * Make sure the item exists

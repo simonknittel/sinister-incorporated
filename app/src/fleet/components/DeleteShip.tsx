@@ -11,7 +11,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/common/components/AlertDialog";
-import Button from "@/common/components/Button";
 import { type Ship, type Variant } from "@prisma/client";
 import { useId, useTransition } from "react";
 import toast from "react-hot-toast";
@@ -51,6 +50,7 @@ export const DeleteShip = ({ className, ship }: Props) => {
   return (
     <form action={formAction} id={id} className={className}>
       <input type="hidden" name="id" value={ship.id} />
+
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <button
@@ -71,12 +71,10 @@ export const DeleteShip = ({ className, ship }: Props) => {
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel asChild>
-              <Button variant="secondary">Abbrechen</Button>
-            </AlertDialogCancel>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
 
-            <AlertDialogAction type="submit" form={id} asChild>
-              <Button variant="primary">Löschen</Button>
+            <AlertDialogAction type="submit" form={id}>
+              Löschen
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

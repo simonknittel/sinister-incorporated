@@ -6,6 +6,11 @@ import { UnknownsFilter } from "./UnknownsFilter";
 
 export const Filters = async () => {
   const authentication = await requireAuthentication();
+  const showDiscordId = await authentication.authorize("discord-id", "read");
+  const showTeamspeakId = await authentication.authorize(
+    "teamspeak-id",
+    "read",
+  );
 
   const visibleRoles = await getVisibleRoles();
 
@@ -15,8 +20,8 @@ export const Filters = async () => {
 
       <Filter name="Unbekannt">
         <UnknownsFilter
-          showDiscordId={authentication.authorize("discord-id", "read")}
-          showTeamspeakId={authentication.authorize("teamspeak-id", "read")}
+          showDiscordId={showDiscordId}
+          showTeamspeakId={showTeamspeakId}
         />
       </Filter>
 

@@ -9,9 +9,9 @@ import { z } from "zod";
  * Make sure this file matches `/src/lib/serverActions/manufacturer.ts`.
  */
 
-interface Params {
+type Params = Promise<{
   id: string;
-}
+}>;
 
 const paramsSchema = z.object({ id: z.string().cuid() });
 
@@ -19,7 +19,7 @@ const patchBodySchema = z.object({
   imageId: z.string().trim().min(1).max(255),
 });
 
-export async function PATCH(request: Request, { params }: { params: Params }) {
+export async function PATCH(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate and authorize the request
@@ -28,12 +28,15 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       "/api/manufacturer/[id]",
       "PATCH",
     );
-    authentication.authorizeApi("manufacturersSeriesAndVariants", "manage");
+    await authentication.authorizeApi(
+      "manufacturersSeriesAndVariants",
+      "manage",
+    );
 
     /**
      * Validate the request params and body
      */
-    const paramsData = paramsSchema.parse(params);
+    const paramsData = paramsSchema.parse(await props.params);
     const body: unknown = await request.json();
     const data = patchBodySchema.parse(body);
 

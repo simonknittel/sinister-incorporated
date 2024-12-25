@@ -8,7 +8,7 @@ export const getOrgFleet = async ({
   onlyFlightReady?: boolean;
 }) => {
   const authentication = await requireAuthentication();
-  if (!authentication.authorize("orgFleet", "read"))
+  if (!(await authentication.authorize("orgFleet", "read")))
     throw new Error("Forbidden");
 
   return prisma.ship.findMany({

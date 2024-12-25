@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev --turbo",
+    "dev": "next dev --turbopack",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
@@ -43,11 +43,11 @@
     "date-fns": "4.1.0",
     "lodash": "4.17.21",
     "lorem-ipsum": "2.0.8",
-    "next": "14.2.20",
+    "next": "15.1.2",
     "next-auth": "4.24.11",
     "openai": "4.77.0",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "react-hook-form": "7.54.1",
     "react-hot-toast": "2.4.1",
     "react-hotkeys-hook": "4.6.1",
@@ -57,24 +57,24 @@
     "server-only": "0.0.1",
     "sharp": "0.33.5",
     "superjson": "2.2.2",
-    "swr": "2.2.5",
-    "zod": "3.24.1",
-    "zod-form-data": "2.0.4"
+    "swr": "2.3.0",
+    "zod": "3.24.1"
   },
   "devDependencies": {
     "@tailwindcss/typography": "0.5.15",
     "@types/eslint": "8.56.12",
     "@types/lodash": "4.17.13",
     "@types/node": "22.10.2",
-    "@types/react": "18.3.12",
-    "@types/react-dom": "18.3.1",
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2",
+    "@types/react-timeago": "4.1.7",
     "@typescript-eslint/eslint-plugin": "8.18.1",
     "@typescript-eslint/parser": "8.18.1",
     "@vitest/coverage-v8": "2.1.8",
     "autoprefixer": "10.4.20",
     "csv": "6.3.11",
     "eslint": "8.57.1",
-    "eslint-config-next": "14.2.20",
+    "eslint-config-next": "15.1.2",
     "eslint-plugin-react-compiler": "latest",
     "postcss": "8.4.49",
     "prettier": "3.4.2",
@@ -85,5 +85,9 @@
     "typescript": "5.7.2",
     "vercel": "39.2.2",
     "vitest": "2.1.8"
+  },
+  "overrides": {
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2"
   }
 }

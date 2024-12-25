@@ -1,15 +1,18 @@
-export type NextjsSearchParams = Record<string, string | string[] | undefined>;
+export type NextjsSearchParams = Promise<
+  Record<string, string | string[] | undefined>
+>;
 
-export default function searchParamsNextjsToURLSearchParams(
+export const searchParamsNextjsToURLSearchParams = async (
   nextjsSearchParams: NextjsSearchParams,
-): URLSearchParams {
-  const nativeSearchParams = new URLSearchParams();
+): Promise<URLSearchParams> => {
+  const awaitedNextjsSearchParams = await nextjsSearchParams;
+  const urlSearchParams = new URLSearchParams();
 
-  for (const [key, value] of Object.entries(nextjsSearchParams)) {
+  for (const [key, value] of Object.entries(awaitedNextjsSearchParams)) {
     const v = typeof value === "string" ? value : value?.[0];
     if (!v) continue;
-    nativeSearchParams.set(key, v);
+    urlSearchParams.set(key, v);
   }
 
-  return nativeSearchParams;
-}
+  return urlSearchParams;
+};

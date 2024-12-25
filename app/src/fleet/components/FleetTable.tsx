@@ -1,5 +1,6 @@
 "use client";
 
+import { env } from "@/env";
 import {
   VariantStatus,
   type Manufacturer,
@@ -18,7 +19,6 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { FaSortAlphaDown, FaSortAlphaUpAlt } from "react-icons/fa";
-import { env } from "../../env.mjs";
 
 interface OrgShip {
   variant: Variant & {

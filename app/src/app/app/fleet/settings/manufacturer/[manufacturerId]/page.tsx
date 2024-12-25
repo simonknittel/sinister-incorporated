@@ -10,17 +10,19 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 
-type Params = Readonly<{
-  manufacturerId: string;
-}>;
+type Params = Promise<
+  Readonly<{
+    manufacturerId: string;
+  }>
+>;
 
-export async function generateMetadata({
-  params,
-}: {
+export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
-    const manufacturer = await cachedGetManufacturerById(params.manufacturerId);
+    const manufacturer = await cachedGetManufacturerById(
+      (await props.params).manufacturerId,
+    );
     if (!manufacturer) return {};
 
     return {
@@ -44,8 +46,10 @@ type Props = Readonly<{
   params: Params;
 }>;
 
-export default async function Page({ params }: Props) {
-  const manufacturer = await cachedGetManufacturerById(params.manufacturerId);
+export default async function Page(props: Props) {
+  const manufacturer = await cachedGetManufacturerById(
+    (await props.params).manufacturerId,
+  );
   if (!manufacturer) notFound();
 
   return (
@@ -81,7 +85,7 @@ export default async function Page({ params }: Props) {
 
       <Suspense fallback={<TileSkeleton className="w-full flex-1" />}>
         <SeriesTile
-          manufacturerId={params.manufacturerId}
+          manufacturerId={manufacturer.id}
           className="w-full flex-1"
         />
       </Suspense>

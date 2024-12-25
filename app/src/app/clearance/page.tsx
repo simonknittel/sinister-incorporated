@@ -24,9 +24,9 @@ export default async function Page() {
     redirect("/");
   }
 
-  requireConfirmedEmailForPage(authentication.session);
+  await requireConfirmedEmailForPage(authentication.session);
 
-  if (authentication.authorize("login", "manage")) redirect("/app");
+  if (await authentication.authorize("login", "manage")) redirect("/app");
 
   return (
     <div className="min-h-dvh flex justify-center items-center flex-col py-8 bg-sinister-radial-gradient">
@@ -40,11 +40,11 @@ export default async function Page() {
           <p>Die Leitung muss deinen Account freischalten.</p>
         </div>
       </main>
-
       <Footer className="mt-4" />
-
       {authentication.session.user.role === "admin" && (
-        <AdminEnabler enabled={cookies().get("enable_admin")?.value === "1"} />
+        <AdminEnabler
+          enabled={(await cookies()).get("enable_admin")?.value === "1"}
+        />
       )}
     </div>
   );

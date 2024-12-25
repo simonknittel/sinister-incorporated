@@ -1,8 +1,6 @@
 "use client";
 
-import { useAuthentication } from "@/auth/client";
 import styles from "@/common/components/ConfirmationGradient.module.css";
-import type { GenericEntityLogType } from "@/types";
 import {
   type EntityLog,
   type EntityLogAttribute,
@@ -16,16 +14,19 @@ import ConfirmLog from "../ConfirmLog";
 import DeleteLog from "../DeleteLog";
 
 interface Props {
-  type: GenericEntityLogType;
   log: EntityLog & {
     attributes: (EntityLogAttribute & { createdBy: User })[];
     submittedBy: User;
   };
+  showDelete?: boolean;
+  showConfirm?: boolean;
 }
 
-export const HistoryEntry = ({ type, log }: Readonly<Props>) => {
-  const authentication = useAuthentication();
-
+export const HistoryEntry = ({
+  log,
+  showDelete = false,
+  showConfirm = false,
+}: Readonly<Props>) => {
   const confirmed = log.attributes.find(
     (attribute) => attribute.key === "confirmed",
   );
@@ -48,9 +49,7 @@ export const HistoryEntry = ({ type, log }: Readonly<Props>) => {
           <div className="flex gap-4">
             <p className="font-bold">Unbestätigt</p>
 
-            {authentication && authentication.authorize(type, "confirm") && (
-              <ConfirmLog log={log} />
-            )}
+            {showConfirm && <ConfirmLog log={log} />}
           </div>
         </div>
       )}
@@ -98,9 +97,7 @@ export const HistoryEntry = ({ type, log }: Readonly<Props>) => {
 
             <span className="text-neutral-500">&bull;</span>
 
-            {authentication && authentication.authorize(type, "delete") && (
-              <DeleteLog log={log} />
-            )}
+            {showDelete && <DeleteLog log={log} />}
           </div>
 
           <p>{log.content}</p>

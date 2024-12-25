@@ -9,9 +9,32 @@ const CmdK = dynamic(() => import("./CmdK"), { ssr: false });
 type Props = Readonly<{
   className?: string;
   disableAlgolia: boolean;
+  showCitizenRead: boolean;
+  showOrganizationRead: boolean;
+  showOrgFleetRead: boolean;
+  showShipManage: boolean;
+  showUserRead: boolean;
+  showRoleManage: boolean;
+  showClassificationLevelManage: boolean;
+  showNoteTypeManage: boolean;
+  showAnalyticsManage: boolean;
+  showManufacturersSeriesAndVariantsManage: boolean;
 }>;
 
-export const CmdKLoader = ({ className, disableAlgolia }: Props) => {
+export const CmdKLoader = ({
+  className,
+  disableAlgolia,
+  showCitizenRead,
+  showOrganizationRead,
+  showOrgFleetRead,
+  showShipManage,
+  showUserRead,
+  showRoleManage,
+  showClassificationLevelManage,
+  showNoteTypeManage,
+  showAnalyticsManage,
+  showManufacturersSeriesAndVariantsManage,
+}: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -31,7 +54,23 @@ export const CmdKLoader = ({ className, disableAlgolia }: Props) => {
       </button>
 
       <Suspense>
-        <CmdK open={open} setOpen={setOpen} disableAlgolia={disableAlgolia} />
+        <CmdK
+          open={open}
+          setOpen={setOpen}
+          disableAlgolia={disableAlgolia}
+          showCitizenRead={showCitizenRead}
+          showOrganizationRead={showOrganizationRead}
+          showOrgFleetRead={showOrgFleetRead}
+          showShipManage={showShipManage}
+          showUserRead={showUserRead}
+          showRoleManage={showRoleManage}
+          showClassificationLevelManage={showClassificationLevelManage}
+          showNoteTypeManage={showNoteTypeManage}
+          showAnalyticsManage={showAnalyticsManage}
+          showManufacturersSeriesAndVariantsManage={
+            showManufacturersSeriesAndVariantsManage
+          }
+        />
       </Suspense>
     </>
   );

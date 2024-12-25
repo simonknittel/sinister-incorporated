@@ -1,7 +1,9 @@
 import { authenticatePage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
-import type { NextjsSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
-import searchParamsNextjsToURLSearchParams from "@/common/utils/searchParamsNextjsToURLSearchParams";
+import {
+  searchParamsNextjsToURLSearchParams,
+  type NextjsSearchParams,
+} from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { MyFleetTile } from "@/fleet/components/MyFleetTile";
 import { OrgFleetTile } from "@/fleet/components/OrgFleetTile";
 import { TileSkeleton } from "@/fleet/components/TileSkeleton";
@@ -18,10 +20,11 @@ type Props = Readonly<{
 
 export default async function Page({ searchParams }: Props) {
   const authentication = await authenticatePage("/app/fleet");
-  const showOrgFleetTile = authentication.authorize("orgFleet", "read");
-  const showMyFleetTile = authentication.authorize("ship", "manage");
+  const showOrgFleetTile = await authentication.authorize("orgFleet", "read");
+  const showMyFleetTile = await authentication.authorize("ship", "manage");
 
-  const urlSearchParams = searchParamsNextjsToURLSearchParams(searchParams);
+  const urlSearchParams =
+    await searchParamsNextjsToURLSearchParams(searchParams);
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">

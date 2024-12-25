@@ -1,4 +1,4 @@
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { CustomError } from "@/logging/CustomError";
 import {
   EventBridgeClient,

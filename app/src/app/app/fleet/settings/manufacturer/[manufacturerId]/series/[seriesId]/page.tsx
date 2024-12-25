@@ -8,17 +8,18 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 
-type Params = Readonly<{
-  manufacturerId: string;
-  seriesId: string;
-}>;
+type Params = Promise<
+  Readonly<{
+    manufacturerId: string;
+    seriesId: string;
+  }>
+>;
 
-export async function generateMetadata({
-  params,
-}: {
+export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
+    const params = await props.params;
     const [series] = await dedupedGetSeriesAndManufacturerById(
       params.seriesId,
       params.manufacturerId,
@@ -47,7 +48,8 @@ type Props = Readonly<{
   params: Params;
 }>;
 
-export default async function Page({ params }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
   const [series, manufacturer] = await dedupedGetSeriesAndManufacturerById(
     params.seriesId,
     params.manufacturerId,
@@ -70,8 +72,8 @@ export default async function Page({ params }: Props) {
 
       <Suspense fallback={<TileSkeleton className="w-full flex-1" />}>
         <VariantsTile
-          manufacturerId={params.manufacturerId}
-          seriesId={params.seriesId}
+          manufacturerId={series.id}
+          seriesId={manufacturer.id}
           className="w-full flex-1"
         />
       </Suspense>

@@ -12,7 +12,7 @@ import { FaSortDown, FaSortUp } from "react-icons/fa";
 import { type EntityLogConfirmationState } from "../../../../../types";
 import ConfirmationState from "./ConfirmationState";
 import DeleteLog from "./DeleteLog";
-import UpdateNote from "./UpdateNote";
+import { UpdateNote } from "./UpdateNote";
 
 export type Row = {
   entity: Entity;

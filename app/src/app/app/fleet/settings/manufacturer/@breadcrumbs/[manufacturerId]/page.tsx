@@ -1,16 +1,20 @@
 import { cachedGetManufacturerById } from "@/fleet/utils/getManufacturerById";
 import { notFound } from "next/navigation";
 
-type Params = Readonly<{
-  manufacturerId: string;
-}>;
+type Params = Promise<
+  Readonly<{
+    manufacturerId: string;
+  }>
+>;
 
 type Props = Readonly<{
   params: Params;
 }>;
 
-export default async function Page({ params }: Props) {
-  const manufacturer = await cachedGetManufacturerById(params.manufacturerId);
+export default async function Page(props: Props) {
+  const manufacturer = await cachedGetManufacturerById(
+    (await props.params).manufacturerId,
+  );
   if (!manufacturer) notFound();
 
   return (

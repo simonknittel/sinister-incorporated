@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import ImpersonationBanner from "./ImpersonationBanner";
 
 async function getImpersonatedRoles() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const impersonate = cookieStore.get("impersonate");
 
   if (!impersonate) return null;

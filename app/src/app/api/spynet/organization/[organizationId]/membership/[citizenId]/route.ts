@@ -6,7 +6,7 @@ import { ConfirmationStatus, OrganizationMembershipType } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-type Params = Readonly<{
+type Params = Promise<{
   organizationId: string;
   citizenId: string;
 }>;
@@ -16,7 +16,7 @@ const paramsSchema = z.object({
   citizenId: z.string().cuid(),
 });
 
-export async function DELETE(request: Request, { params }: { params: Params }) {
+export async function DELETE(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate and authorize the request
@@ -25,12 +25,12 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       "/api/spynet/organization/[organizationId]/membership/[citizenId]",
       "DELETE",
     );
-    authentication.authorizeApi("organizationMembership", "delete");
+    await authentication.authorizeApi("organizationMembership", "delete");
 
     /**
      * Validate the request
      */
-    const paramsData = paramsSchema.parse(params);
+    const paramsData = paramsSchema.parse(await props.params);
 
     /**
      * Do the thing

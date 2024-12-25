@@ -18,7 +18,10 @@ export const OverviewSection = async ({
   name,
   entity,
 }: Readonly<Props>) => {
-  await requireAuthentication();
+  const authentication = await requireAuthentication();
+  const showCreate = await authentication.authorize(type, "create");
+  const showDelete = await authentication.authorize(type, "delete");
+  const showConfirm = await authentication.authorize(type, "confirm");
 
   return (
     <>
@@ -28,10 +31,17 @@ export const OverviewSection = async ({
 
       <dd className="flex gap-4 items-center">
         <span className="whitespace-nowrap overflow-hidden text-ellipsis">
+          {/* @ts-expect-error Don't know how to improve this */}
           {entity[camelCase(type)] || <span className="italic">-</span>}
         </span>
 
-        <HistoryModal type={type} entity={entity} />
+        <HistoryModal
+          type={type}
+          entity={entity}
+          showCreate={showCreate}
+          showDelete={showDelete}
+          showConfirm={showConfirm}
+        />
       </dd>
     </>
   );

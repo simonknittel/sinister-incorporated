@@ -4,13 +4,13 @@ import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-interface Params {
+type Params = Promise<{
   operationId: string;
-}
+}>;
 
 const paramsSchema = z.string().cuid();
 
-export async function GET(request: Request, { params }: { params: Params }) {
+export async function GET(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate the request
@@ -20,7 +20,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = paramsSchema.parse(params.operationId);
+    const paramsData = paramsSchema.parse((await props.params).operationId);
 
     /**
      * Get
@@ -62,7 +62,7 @@ const patchBodySchema = z.object({
   shipId: z.string().cuid().optional(),
 });
 
-export async function PATCH(request: Request, { params }: { params: Params }) {
+export async function PATCH(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate the request
@@ -72,7 +72,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = paramsSchema.parse(params.operationId);
+    const paramsData = paramsSchema.parse((await props.params).operationId);
 
     /**
      * Validate the request body
@@ -118,7 +118,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: Params }) {
+export async function DELETE(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate the request
@@ -131,7 +131,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = paramsSchema.parse(params.operationId);
+    const paramsData = paramsSchema.parse((await props.params).operationId);
 
     /**
      * Delete

@@ -1,8 +1,8 @@
 "use client";
 
+import { env } from "@/env";
 import Script from "next/script";
 import { useRef } from "react";
-import { env } from "../../../../env.mjs";
 
 // @refresh reset
 

@@ -1,16 +1,11 @@
 import { authenticatePage } from "@/auth/server";
 import { log } from "@/logging";
 import { type Metadata } from "next";
-import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import { Algolia } from "./_components/Algolia";
+import { AnalyticsCheckboxLoader } from "./_components/AnalyticsCheckboxLoader";
 import ClassificationLevelsTile from "./_components/classification-level/ClassificationLevelsTile";
 import NoteTypesTile from "./_components/note-type/NoteTypesTile";
-
-const AnalyticsCheckbox = dynamic(
-  () => import("./_components/AnalyticsCheckbox"),
-  { ssr: false },
-);
 
 export const metadata: Metadata = {
   title: "Einstellungen | S.A.M. - Sinister Incorporated",
@@ -19,13 +14,13 @@ export const metadata: Metadata = {
 export default async function Page() {
   const authentication = await authenticatePage("/app/settings");
 
-  const showNoteTypes = authentication.authorize("noteType", "manage");
-  const showClassificationLevels = authentication.authorize(
+  const showNoteTypes = await authentication.authorize("noteType", "manage");
+  const showClassificationLevels = await authentication.authorize(
     "classificationLevel",
     "manage",
   );
-  const showAnalytics = authentication.authorize("analytics", "manage");
-  const showAlgolia = authentication.authorize("algolia", "manage");
+  const showAnalytics = await authentication.authorize("analytics", "manage");
+  const showAlgolia = await authentication.authorize("algolia", "manage");
 
   if (
     !showNoteTypes &&
@@ -59,7 +54,7 @@ export default async function Page() {
             Disables Vercel Analytics for this browser.
           </p>
 
-          <AnalyticsCheckbox />
+          <AnalyticsCheckboxLoader />
         </section>
       )}
 

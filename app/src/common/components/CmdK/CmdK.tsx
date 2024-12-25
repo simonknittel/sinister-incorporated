@@ -12,9 +12,33 @@ type Props = Readonly<{
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   disableAlgolia: boolean;
+  showCitizenRead: boolean;
+  showOrganizationRead: boolean;
+  showOrgFleetRead: boolean;
+  showShipManage: boolean;
+  showUserRead: boolean;
+  showRoleManage: boolean;
+  showClassificationLevelManage: boolean;
+  showNoteTypeManage: boolean;
+  showAnalyticsManage: boolean;
+  showManufacturersSeriesAndVariantsManage: boolean;
 }>;
 
-export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
+export const CmdK = ({
+  open,
+  setOpen,
+  disableAlgolia,
+  showCitizenRead,
+  showOrganizationRead,
+  showOrgFleetRead,
+  showShipManage,
+  showUserRead,
+  showRoleManage,
+  showClassificationLevelManage,
+  showNoteTypeManage,
+  showAnalyticsManage,
+  showManufacturersSeriesAndVariantsManage,
+}: Props) => {
   const authentication = useAuthentication();
   const [search, setSearch] = useState("");
   const router = useRouter();
@@ -36,9 +60,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
 
   const page = pages[pages.length - 1];
 
-  const showSpynet =
-    authentication.authorize("citizen", "read") ||
-    authentication.authorize("organization", "read");
+  const showSpynet = showCitizenRead || showOrganizationRead;
 
   return (
     <Command.Dialog
@@ -76,8 +98,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
               </Command.Item>
             </Command.Group>
 
-            {(authentication.authorize("orgFleet", "read") ||
-              authentication.authorize("ship", "manage")) && (
+            {(showOrgFleetRead || showShipManage) && (
               <Command.Group heading="Flotte">
                 <Command.Item
                   keywords={["Flotte", "Fleet", "Schiffe", "Ships", "Overview"]}
@@ -138,19 +159,16 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
               </Command.Group>
             )}
 
-            {(authentication.authorize("user", "read") ||
-              authentication.authorize("role", "manage") ||
-              authentication.authorize("classificationLevel", "manage") ||
-              authentication.authorize("noteType", "manage") ||
-              authentication.authorize("analytics", "manage") ||
-              authentication.authorize(
-                "manufacturersSeriesAndVariants",
-                "manage",
-              )) && (
+            {(showUserRead ||
+              showRoleManage ||
+              showClassificationLevelManage ||
+              showNoteTypeManage ||
+              showAnalyticsManage ||
+              showManufacturersSeriesAndVariantsManage) && (
               <Command.Group heading="Admin">
-                {(authentication.authorize("noteType", "manage") ||
-                  authentication.authorize("classificationLevel", "manage") ||
-                  authentication.authorize("analytics", "manage")) && (
+                {(showNoteTypeManage ||
+                  showClassificationLevelManage ||
+                  showAnalyticsManage) && (
                   <Command.Item
                     keywords={["Admin", "Settings"]}
                     onSelect={() => {
@@ -164,7 +182,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   </Command.Item>
                 )}
 
-                {authentication.authorize("role", "manage") && (
+                {showRoleManage && (
                   <Command.Item
                     keywords={["Admin", "Berechtigungen"]}
                     onSelect={() => {
@@ -178,10 +196,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   </Command.Item>
                 )}
 
-                {authentication.authorize(
-                  "manufacturersSeriesAndVariants",
-                  "manage",
-                ) && (
+                {showManufacturersSeriesAndVariantsManage && (
                   <Command.Item
                     keywords={["Admin", "Ships"]}
                     onSelect={() => {
@@ -195,7 +210,7 @@ export const CmdK = ({ open, setOpen, disableAlgolia }: Props) => {
                   </Command.Item>
                 )}
 
-                {authentication.authorize("user", "read") && (
+                {showUserRead && (
                   <Command.Item
                     keywords={["Admin", "Users"]}
                     onSelect={() => {

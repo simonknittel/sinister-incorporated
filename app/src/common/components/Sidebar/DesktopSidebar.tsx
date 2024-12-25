@@ -14,19 +14,39 @@ import { RedBar } from "./RedBar";
 
 export const DesktopSidebar = async () => {
   const authentication = await requireAuthentication();
-
   const showSpynet =
-    authentication.authorize("citizen", "read") ||
-    authentication.authorize("organization", "read");
-
+    (await authentication.authorize("citizen", "read")) ||
+    (await authentication.authorize("organization", "read"));
   const showOperations =
     (await dedupedGetUnleashFlag("EnableOperations")) &&
-    authentication.authorize("operation", "manage");
-
-  const showDocuments = authentication.authorize(
+    (await authentication.authorize("operation", "manage"));
+  const showDocuments = await authentication.authorize(
     "documentIntroductionCompendium",
     "read",
   );
+  const showShipManage = await authentication.authorize("ship", "manage");
+  const showOrgFleetRead = await authentication.authorize("orgFleet", "read");
+  const showCitizenRead = await authentication.authorize("citizen", "read");
+  const showUserRead = await authentication.authorize("user", "read");
+  const showOrganizationRead = await authentication.authorize(
+    "organization",
+    "read",
+  );
+  const showRoleManage = await authentication.authorize("role", "manage");
+  const showClassificationLevelManage = await authentication.authorize(
+    "classificationLevel",
+    "manage",
+  );
+  const showNoteTypeManage = await authentication.authorize(
+    "noteType",
+    "manage",
+  );
+  const showAnalyticsManage = await authentication.authorize(
+    "analytics",
+    "manage",
+  );
+  const showManufacturersSeriesAndVariantsManage =
+    await authentication.authorize("manufacturersSeriesAndVariants", "manage");
 
   const disableAlgolia =
     (await dedupedGetUnleashFlag("DisableAlgolia")) || false;
@@ -40,7 +60,21 @@ export const DesktopSidebar = async () => {
           <Account />
 
           <div className="flex justify-evenly items-center mt-4">
-            <CmdKLoader disableAlgolia={disableAlgolia} />
+            <CmdKLoader
+              disableAlgolia={disableAlgolia}
+              showCitizenRead={showCitizenRead}
+              showOrganizationRead={showOrganizationRead}
+              showOrgFleetRead={showOrgFleetRead}
+              showShipManage={showShipManage}
+              showUserRead={showUserRead}
+              showRoleManage={showRoleManage}
+              showClassificationLevelManage={showClassificationLevelManage}
+              showNoteTypeManage={showNoteTypeManage}
+              showAnalyticsManage={showAnalyticsManage}
+              showManufacturersSeriesAndVariantsManage={
+                showManufacturersSeriesAndVariantsManage
+              }
+            />
 
             {/* <InstallPWA /> */}
           </div>
@@ -95,8 +129,7 @@ export const DesktopSidebar = async () => {
               </Link>
             </li> */}
 
-              {(authentication.authorize("orgFleet", "read") ||
-                authentication.authorize("ship", "manage")) && (
+              {(showOrgFleetRead || showShipManage) && (
                 <li>
                   <Link
                     href="/app/fleet"
@@ -121,12 +154,12 @@ export const DesktopSidebar = async () => {
               )}
             </ul>
 
-            {authentication.authorize("citizen", "read") && (
+            {showCitizenRead && (
               <div className="mt-4">
                 <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
 
                 <ul>
-                  {authentication.authorize("citizen", "read") && (
+                  {showCitizenRead && (
                     <>
                       <li>
                         <Link
@@ -169,22 +202,19 @@ export const DesktopSidebar = async () => {
               </div>
             )}
 
-            {(authentication.authorize("user", "read") ||
-              authentication.authorize("role", "manage") ||
-              authentication.authorize("classificationLevel", "manage") ||
-              authentication.authorize("noteType", "manage") ||
-              authentication.authorize("analytics", "manage") ||
-              authentication.authorize(
-                "manufacturersSeriesAndVariants",
-                "manage",
-              )) && (
+            {(showUserRead ||
+              showRoleManage ||
+              showClassificationLevelManage ||
+              showNoteTypeManage ||
+              showAnalyticsManage ||
+              showManufacturersSeriesAndVariantsManage) && (
               <div className="mt-4">
                 <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
                 <ul>
-                  {(authentication.authorize("noteType", "manage") ||
-                    authentication.authorize("classificationLevel", "manage") ||
-                    authentication.authorize("analytics", "manage")) && (
+                  {(showNoteTypeManage ||
+                    showClassificationLevelManage ||
+                    showAnalyticsManage) && (
                     <li>
                       <Link
                         href="/app/settings"
@@ -196,7 +226,7 @@ export const DesktopSidebar = async () => {
                     </li>
                   )}
 
-                  {authentication.authorize("role", "manage") && (
+                  {showRoleManage && (
                     <li>
                       <Link
                         href="/app/roles"
@@ -208,10 +238,7 @@ export const DesktopSidebar = async () => {
                     </li>
                   )}
 
-                  {authentication.authorize(
-                    "manufacturersSeriesAndVariants",
-                    "manage",
-                  ) && (
+                  {showManufacturersSeriesAndVariantsManage && (
                     <li>
                       <Link
                         href="/app/fleet/settings/manufacturer"
@@ -222,7 +249,7 @@ export const DesktopSidebar = async () => {
                       </Link>
                     </li>
                   )}
-                  {authentication.authorize("user", "read") && (
+                  {showUserRead && (
                     <li>
                       <Link
                         href="/app/users"

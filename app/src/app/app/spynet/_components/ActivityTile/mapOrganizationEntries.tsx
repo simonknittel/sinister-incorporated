@@ -7,8 +7,7 @@ export const mapOrganizationEntries = async (
   entries: Array<Pick<Organization, "id" | "createdAt" | "name" | "logo">>,
 ) => {
   const authentication = await requireAuthentication();
-
-  if (!authentication.authorize("organization", "read")) return [];
+  if (!(await authentication.authorize("organization", "read"))) return [];
 
   return entries.map((entry) => ({
     key: `${entry.id}-${entry.createdAt.getTime()}`,

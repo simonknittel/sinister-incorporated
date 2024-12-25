@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       "/api/classification-level",
       "POST",
     );
-    authentication.authorizeApi("classificationLevel", "manage");
+    await authentication.authorizeApi("classificationLevel", "manage");
 
     /**
      * Validate the request body

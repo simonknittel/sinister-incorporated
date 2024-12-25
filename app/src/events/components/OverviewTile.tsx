@@ -1,18 +1,8 @@
 import { DiscordButton } from "@/common/components/DiscordButton";
+import { TimeAgoLoader } from "@/common/components/TimeAgoLoader";
 import { type getEvent } from "@/discord/getEvent";
 import clsx from "clsx";
-import dynamic from "next/dynamic";
 import Image from "next/image";
-
-const TimeAgoContainer = dynamic(
-  () => import("@/common/components/TimeAgoContainer"),
-  {
-    ssr: false,
-    loading: () => (
-      <span className="block h-[1em] w-[7em] animate-pulse rounded bg-neutral-500" />
-    ),
-  },
-);
 
 type Props = Readonly<{
   className?: string;
@@ -99,7 +89,7 @@ export const OverviewTile = ({ className, event, date }: Props) => {
       {date && (
         <p className="text-neutral-500 mt-4 flex items-center gap-2 pl-4 lg:pl-8">
           Letzte Aktualisierung:
-          <TimeAgoContainer date={date} />
+          <TimeAgoLoader date={date} />
         </p>
       )}
     </section>

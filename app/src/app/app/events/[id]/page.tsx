@@ -3,8 +3,10 @@ import Tab from "@/common/components/tabs/Tab";
 import TabList from "@/common/components/tabs/TabList";
 import TabPanel from "@/common/components/tabs/TabPanel";
 import { TabsProvider } from "@/common/components/tabs/TabsContext";
-import type { NextjsSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
-import searchParamsNextjsToURLSearchParams from "@/common/utils/searchParamsNextjsToURLSearchParams";
+import {
+  searchParamsNextjsToURLSearchParams,
+  type NextjsSearchParams,
+} from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { getEvent } from "@/discord/getEvent";
 import { FleetTile } from "@/events/components/FleetTile";
 import { OverviewTile } from "@/events/components/OverviewTile";
@@ -15,17 +17,15 @@ import { FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { serializeError } from "serialize-error";
 
-interface Params {
+type Params = Promise<{
   id: string;
-}
+}>;
 
-export async function generateMetadata({
-  params,
-}: {
+export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
-    const { data: event } = await getEvent(params.id);
+    const { data: event } = await getEvent((await props.params).id);
 
     return {
       title: `${event.name} - Event | S.A.M. - Sinister Incorporated`,
@@ -51,12 +51,13 @@ type Props = Readonly<{
 
 export default async function Page({ params, searchParams }: Props) {
   const authentication = await authenticatePage("/app/events/[id]");
-  authentication.authorizePage("event", "read");
-  const showFleetTile = authentication.authorize("orgFleet", "read");
+  await authentication.authorizePage("event", "read");
+  const showFleetTile = await authentication.authorize("orgFleet", "read");
 
-  const { date, data: event } = await getEvent(params.id);
+  const { date, data: event } = await getEvent((await params).id);
 
-  const urlSearchParams = searchParamsNextjsToURLSearchParams(searchParams);
+  const urlSearchParams =
+    await searchParamsNextjsToURLSearchParams(searchParams);
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">

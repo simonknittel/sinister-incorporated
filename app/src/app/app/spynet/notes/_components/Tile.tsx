@@ -1,5 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
-import getAllClassificationLevels from "@/common/utils/cached/getAllClassificationLevels";
+import { getAllClassificationLevelsDeduped } from "@/common/utils/cached/getAllClassificationLevels";
 import getAllNoteTypes from "@/common/utils/cached/getAllNoteTypes";
 import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import {
@@ -48,7 +48,7 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
     }),
 
     getAllNoteTypes(),
-    getAllClassificationLevels(),
+    getAllClassificationLevelsDeduped(),
   ]);
 
   const rows = entityLogs
@@ -86,9 +86,18 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
       };
     });
 
-  const authenticatedRows = rows.filter((row) => {
-    return isAllowedToRead(row.entityLog, authentication);
-  });
+  const authenticatedRows = (
+    await Promise.all(
+      rows.map(async (row) => {
+        return {
+          row,
+          include: await isAllowedToRead(row.entityLog, authentication),
+        };
+      }),
+    )
+  )
+    .filter(({ include }) => include)
+    .map(({ row }) => row);
 
   const filters = searchParams.get("filters")?.split(",");
   const filteredRows = authenticatedRows.filter((row) => {

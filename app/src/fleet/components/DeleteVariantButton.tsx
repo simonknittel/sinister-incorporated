@@ -1,28 +1,36 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/common/components/AlertDialog";
 import Button from "@/common/components/Button";
 import { type Variant } from "@prisma/client";
-import { useTransition } from "react";
+import { useId, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
-import { deleteVariant } from "../actions/variant";
+import { deleteVariantAction } from "../actions/variant";
 
 type Props = Readonly<{
+  className?: string;
   variant: Pick<Variant, "id" | "name">;
 }>;
 
-export const DeleteVariantButton = ({ variant }: Props) => {
+export const DeleteVariantButton = ({ className, variant }: Props) => {
   const [isPending, startTransition] = useTransition();
+  const id = useId();
 
-  const _action = (formData: FormData) => {
+  const formAction = (formData: FormData) => {
     startTransition(async () => {
       try {
-        const confirmation = window.confirm(
-          `Willst du "${variant.name}" löschen?`,
-        );
-        if (!confirmation) return;
-
-        const response = await deleteVariant(formData);
+        const response = await deleteVariantAction(formData);
 
         if (response.status === 200) {
           toast.success("Erfolgreich gelöscht");
@@ -39,12 +47,34 @@ export const DeleteVariantButton = ({ variant }: Props) => {
   };
 
   return (
-    <form action={_action}>
+    <form action={formAction} id={id} className={className}>
       <input type="hidden" name="id" value={variant.id} />
-      <Button variant="tertiary" disabled={isPending} type="submit">
-        {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
-        Löschen
-      </Button>
+
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="tertiary" disabled={isPending}>
+            {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
+            Löschen
+          </Button>
+        </AlertDialogTrigger>
+
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Schiff löschen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Willst du &quot;{variant.name}&quot; löschen?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+
+            <AlertDialogAction type="submit" form={id}>
+              Löschen
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </form>
   );
 };

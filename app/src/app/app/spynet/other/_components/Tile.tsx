@@ -63,9 +63,18 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
     };
   });
 
-  const authenticatedRows = rows.filter((row) => {
-    return isAllowedToRead(row.entityLog, authentication);
-  });
+  const authenticatedRows = (
+    await Promise.all(
+      rows.map(async (row) => {
+        return {
+          row,
+          canRead: await isAllowedToRead(row.entityLog, authentication),
+        };
+      }),
+    )
+  )
+    .filter((rowWithAuthCheck) => rowWithAuthCheck.canRead)
+    .map((rowWithAuthCheck) => rowWithAuthCheck.row);
 
   const filters = searchParams.get("filters")?.split(",");
   const filteredRows = authenticatedRows.filter((row) => {

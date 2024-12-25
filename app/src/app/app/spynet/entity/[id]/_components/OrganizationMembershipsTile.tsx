@@ -15,10 +15,10 @@ type Props = Readonly<{
 
 export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();
-  if (!authentication.authorize("organizationMembership", "read"))
+  if (!(await authentication.authorize("organizationMembership", "read")))
     throw new Error("Forbidden");
 
-  const alsoVisibilityRedacted = authentication.authorize(
+  const alsoVisibilityRedacted = await authentication.authorize(
     "organizationMembership",
     "read",
     [
@@ -47,14 +47,19 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
       },
     });
 
-  const showDeleteButton = authentication.authorize(
+  const showDeleteButton = await authentication.authorize(
     "organizationMembership",
     "delete",
   );
 
-  const showCreateButton = authentication.authorize(
+  const showCreateButton = await authentication.authorize(
     "organizationMembership",
     "create",
+  );
+
+  const showConfirmButton = await authentication.authorize(
+    "organizationMembership",
+    "confirm",
   );
 
   return (
@@ -114,7 +119,11 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
       )}
 
       {showCreateButton && (
-        <CreateOrganizationMembership className="mt-2" citizenId={id} />
+        <CreateOrganizationMembership
+          className="mt-2"
+          citizenId={id}
+          showConfirmButton={showConfirmButton}
+        />
       )}
     </section>
   );

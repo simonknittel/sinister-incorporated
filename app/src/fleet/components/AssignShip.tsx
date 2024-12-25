@@ -33,7 +33,6 @@ export const AssignShip = ({ className, data = [] }: Props) => {
           toast.success(response.success);
           setIsOpen(false);
         } else {
-          // @ts-expect-error Don't know why this is an issue
           toast.error(response.error);
         }
       } catch (error) {
