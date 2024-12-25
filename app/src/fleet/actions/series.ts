@@ -79,7 +79,7 @@ const deleteSchema = zfd.formData({
   id: zfd.text(z.string().cuid()),
 });
 
-export const deleteSeries: ServerAction = async (formData) => {
+export const deleteSeriesAction: ServerAction = async (formData) => {
   try {
     /**
      * Authenticate and authorize the request

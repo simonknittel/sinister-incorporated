@@ -100,7 +100,7 @@ export const AlertDialogDescription = ({
   ...props
 }: AlertDialogDescriptionProps) => (
   <AlertDialogPrimitive.Description
-    className={clsx("text-sm text-muted-foreground", className)}
+    className={clsx("text-sm", className)}
     {...props}
   />
 );
@@ -113,7 +113,13 @@ export const AlertDialogAction = ({
   className,
   ...props
 }: AlertDialogActionProps) => (
-  <AlertDialogPrimitive.Action className={clsx(className)} {...props} />
+  <AlertDialogPrimitive.Action
+    className={clsx(
+      "flex items-center justify-center rounded uppercase gap-4 min-h-11 py-2 text-base font-bold bg-sinister-red-500 text-neutral-50 enabled:hover:bg-sinister-red-300 enabled:active:bg-sinister-red-300 px-6",
+      className,
+    )}
+    {...props}
+  />
 );
 
 type AlertDialogCancelProps = ComponentProps<
@@ -125,7 +131,10 @@ export const AlertDialogCancel = ({
   ...props
 }: AlertDialogCancelProps) => (
   <AlertDialogPrimitive.Cancel
-    className={clsx("mt-2 sm:mt-0", className)}
+    className={clsx(
+      "flex items-center justify-center rounded uppercase gap-4 min-h-11 py-2 border text-base border-sinister-red-500 text-sinister-red-500 enabled:hover:border-sinister-red-300 enabled:active:border-sinister-red-300 enabled:hover:text-sinister-red-300 enabled:active:text-sinister-red-300 px-6 mt-2 sm:mt-0",
+      className,
+    )}
     {...props}
   />
 );
