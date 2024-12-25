@@ -10,7 +10,7 @@ type Props = Readonly<{
 
 export const OrgFleetTile = async ({ className, urlSearchParams }: Props) => {
   const fleet = await getOrgFleet({
-    onlyFlightReady: urlSearchParams.get("onlyFlightReady") === "true",
+    onlyFlightReady: urlSearchParams.get("flight_ready") === "true",
   });
 
   const groupedFleet = groupBy(fleet, (ship) => ship.variant.id);
