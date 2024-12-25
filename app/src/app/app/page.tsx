@@ -3,6 +3,10 @@ import { Hero } from "@/common/components/Hero";
 import { SpynetSearchTile } from "@/common/components/SpynetSearchTile/SpynetSearchTile";
 import { UwuHero } from "@/common/components/UwuHero";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
+import {
+  searchParamsNextjsToURLSearchParams,
+  type NextjsSearchParams,
+} from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { type Metadata } from "next";
 import { Suspense } from "react";
 import { CalendarTile } from "./_components/CalendarTile";
@@ -15,18 +19,21 @@ export const metadata: Metadata = {
 };
 
 type Props = Readonly<{
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: NextjsSearchParams;
 }>;
 
 export default async function Page({ searchParams }: Props) {
   const authentication = await authenticatePage("/app");
 
-  const showCalendar = authentication.authorize("event", "read");
+  const showCalendar = await authentication.authorize("event", "read");
   const showSpynetSearchTile =
     !(await dedupedGetUnleashFlag("DisableAlgolia")) &&
-    (authentication.authorize("citizen", "read") ||
-      authentication.authorize("organization", "read"));
-  const showUwuHero = Object.hasOwn(searchParams, "uwu");
+    ((await authentication.authorize("citizen", "read")) ||
+      (await authentication.authorize("organization", "read")));
+
+  const urlSearchParams =
+    await searchParamsNextjsToURLSearchParams(searchParams);
+  const showUwuHero = urlSearchParams.has("uwu");
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">

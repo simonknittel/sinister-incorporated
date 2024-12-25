@@ -41,7 +41,7 @@ type Props = Readonly<{
 export const QuotesTile = ({ className }: Props) => {
   unstable_noStore();
 
-  const quote = quotes[Math.floor(Math.random() * quotes.length)]!;
+  const quote = quotes[Math.floor(Math.random() * quotes.length)];
 
   return (
     <div className="flex justify-center">

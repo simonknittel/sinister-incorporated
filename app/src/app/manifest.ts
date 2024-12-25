@@ -1,4 +1,4 @@
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { type MetadataRoute } from "next";
 import faviconSrc from "../assets/favicon.svg";
 import screenshotDashboardMobileSrc from "../assets/screenshots/screenshot-dashboard-mobile.png";

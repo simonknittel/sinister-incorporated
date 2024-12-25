@@ -13,18 +13,18 @@ const Tile = async () => {
 
   const enrichedUsers = users.map((user) => {
     const entity = entities.find(
-      (entity) => entity.discordId === user.accounts[0]!.providerAccountId,
+      (entity) => entity.discordId === user.accounts[0].providerAccountId,
     );
 
     if (!entity)
       return {
         user,
-        discordId: user.accounts[0]!.providerAccountId,
+        discordId: user.accounts[0].providerAccountId,
       };
 
     return {
       user,
-      discordId: user.accounts[0]!.providerAccountId,
+      discordId: user.accounts[0].providerAccountId,
       entity,
     };
   });

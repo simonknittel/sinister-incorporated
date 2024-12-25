@@ -2,16 +2,19 @@ import { dedupedGetSeriesAndManufacturerById } from "@/fleet/utils/getSeriesAndM
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-type Params = Readonly<{
-  manufacturerId: string;
-  seriesId: string;
-}>;
+type Params = Promise<
+  Readonly<{
+    manufacturerId: string;
+    seriesId: string;
+  }>
+>;
 
 type Props = Readonly<{
   params: Params;
 }>;
 
-export default async function Page({ params }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
   const [series, manufacturer] = await dedupedGetSeriesAndManufacturerById(
     params.seriesId,
     params.manufacturerId,

@@ -2,7 +2,7 @@
 
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { type Entity, type Role } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";

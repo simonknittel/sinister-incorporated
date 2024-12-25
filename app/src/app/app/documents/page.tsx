@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const authentication = await authenticatePage("/app/documents");
-  authentication.authorizePage("documentIntroductionCompendium", "read");
+  await authentication.authorizePage("documentIntroductionCompendium", "read");
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">

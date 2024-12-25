@@ -99,7 +99,7 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  requireConfirmedEmailForTrpc(ctx.session);
+  await requireConfirmedEmailForTrpc(ctx.session);
 
   return next({
     ctx: {

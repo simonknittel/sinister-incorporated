@@ -2,7 +2,7 @@
 
 import Button from "@/common/components/Button";
 import YesNoCheckbox from "@/common/components/YesNoCheckbox";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { type Role } from "@prisma/client";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

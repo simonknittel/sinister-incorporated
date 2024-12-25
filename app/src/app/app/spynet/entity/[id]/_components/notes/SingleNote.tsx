@@ -20,7 +20,7 @@ import ConfirmLog from "../ConfirmLog";
 import DeleteLog from "../DeleteLog";
 import { ClassificationLevel } from "./ClassificationLevel";
 import ClassificationLevelSkeleton from "./ClassificationLevelSkeleton";
-import UpdateNote from "./UpdateNote";
+import { UpdateNote } from "./UpdateNote";
 
 type Props = Readonly<{
   note: EntityLog & {
@@ -152,6 +152,22 @@ export const SingleNote = async ({ note }: Props) => {
       });
   }
 
+  const showConfirm = await authentication.authorize(
+    "note",
+    "confirm",
+    authorizationAttributes,
+  );
+  const showUpdate = await authentication.authorize(
+    "note",
+    "update",
+    authorizationAttributes,
+  );
+  const showDelete = await authentication.authorize(
+    "note",
+    "delete",
+    authorizationAttributes,
+  );
+
   return (
     <article className="mt-4 lg:mt-8 relative rounded overflow-hidden">
       <div
@@ -170,11 +186,7 @@ export const SingleNote = async ({ note }: Props) => {
           <div className="flex gap-2 lg:gap-4 flex-wrap">
             <p className="font-bold text-sm">Unbestätigt</p>
 
-            {authentication.authorize(
-              "note",
-              "confirm",
-              authorizationAttributes,
-            ) && <ConfirmLog log={note} />}
+            {showConfirm && <ConfirmLog log={note} />}
           </div>
         </div>
       )}
@@ -226,21 +238,13 @@ export const SingleNote = async ({ note }: Props) => {
               </>
             )} */}
 
-            {authentication.authorize(
-              "note",
-              "update",
-              authorizationAttributes,
-            ) && (
+            {showUpdate && (
               <Suspense>
                 <UpdateNote note={note} />
               </Suspense>
             )}
 
-            {authentication.authorize(
-              "note",
-              "delete",
-              authorizationAttributes,
-            ) && (
+            {showDelete && (
               <>
                 <span>&bull;</span>
                 <DeleteLog log={note} />

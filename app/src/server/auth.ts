@@ -2,7 +2,7 @@ import type { PermissionSet } from "@/auth/common";
 import { getPermissionSetsByRoles } from "@/auth/server";
 import { requestEmailConfirmation } from "@/common/utils/emailConfirmation";
 import { prisma } from "@/db";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { log } from "@/logging";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import {

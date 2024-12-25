@@ -13,7 +13,10 @@ export default async function Page() {
   const authentication = await authenticatePage(
     "/app/fleet/settings/manufacturers",
   );
-  authentication.authorizePage("manufacturersSeriesAndVariants", "manage");
+  await authentication.authorizePage(
+    "manufacturersSeriesAndVariants",
+    "manage",
+  );
 
   return (
     <main>

@@ -6,11 +6,10 @@ import { type ServerAction } from "@/common/actions/types";
 import { prisma } from "@/db";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
-import { zfd } from "zod-form-data";
 
-const updateSchema = zfd.formData({
-  id: zfd.text(z.string().cuid()),
-  name: zfd.text(z.string().trim().min(1).optional()),
+const updateSchema = z.object({
+  id: z.string().cuid(),
+  name: z.string().trim().min(1).optional(),
 });
 
 export const updateSeries: ServerAction = async (formData) => {
@@ -19,12 +18,18 @@ export const updateSeries: ServerAction = async (formData) => {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("updateSeries");
-    authentication.authorizeAction("manufacturersSeriesAndVariants", "manage");
+    await authentication.authorizeAction(
+      "manufacturersSeriesAndVariants",
+      "manage",
+    );
 
     /**
      * Validate the request
      */
-    const { id, ...data } = updateSchema.parse(formData);
+    const { id, ...data } = updateSchema.parse({
+      id: formData.get("id"),
+      name: formData.get("name"),
+    });
 
     /**
      * Make sure the item exists
@@ -75,8 +80,8 @@ export const updateSeries: ServerAction = async (formData) => {
   }
 };
 
-const deleteSchema = zfd.formData({
-  id: zfd.text(z.string().cuid()),
+const deleteSchema = z.object({
+  id: z.string().cuid(),
 });
 
 export const deleteSeriesAction: ServerAction = async (formData) => {
@@ -85,12 +90,17 @@ export const deleteSeriesAction: ServerAction = async (formData) => {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("deleteSeries");
-    authentication.authorizeAction("manufacturersSeriesAndVariants", "manage");
+    await authentication.authorizeAction(
+      "manufacturersSeriesAndVariants",
+      "manage",
+    );
 
     /**
      * Validate the request
      */
-    const { id } = deleteSchema.parse(formData);
+    const { id } = deleteSchema.parse({
+      id: formData.get("id"),
+    });
 
     /**
      * Make sure the item exists

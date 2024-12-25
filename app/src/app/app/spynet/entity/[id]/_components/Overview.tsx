@@ -15,6 +15,12 @@ type Props = Readonly<{
 
 export const Overview = async ({ className, entity }: Props) => {
   const authentication = await requireAuthentication();
+  const showDiscordId = await authentication.authorize("discord-id", "read");
+  const showTeamspeakId = await authentication.authorize(
+    "teamspeak-id",
+    "read",
+  );
+  const showLastSeen = await authentication.authorize("lastSeen", "read");
 
   return (
     <section
@@ -39,7 +45,7 @@ export const Overview = async ({ className, entity }: Props) => {
           entity={entity}
         />
 
-        {authentication.authorize("discord-id", "read") && (
+        {showDiscordId && (
           <OverviewSection
             type="discord-id"
             icon={<FaDiscord />}
@@ -48,7 +54,7 @@ export const Overview = async ({ className, entity }: Props) => {
           />
         )}
 
-        {authentication.authorize("teamspeak-id", "read") && (
+        {showTeamspeakId && (
           <OverviewSection
             type="teamspeak-id"
             icon={<FaTeamspeak />}
@@ -57,7 +63,7 @@ export const Overview = async ({ className, entity }: Props) => {
           />
         )}
 
-        {authentication.authorize("lastSeen", "read") && (
+        {showLastSeen && (
           <>
             <dt className="text-neutral-500 mt-4 flex gap-2 items-center">
               <RiTimeLine />

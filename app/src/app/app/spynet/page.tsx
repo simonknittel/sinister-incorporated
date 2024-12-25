@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 export default async function Page() {
   const authentication = await authenticatePage("/app/spynet");
 
-  const showCreateCitizen = authentication.authorize("citizen", "create");
+  const showCreateCitizen = await authentication.authorize("citizen", "create");
 
-  const showCreateOrganization = authentication.authorize(
+  const showCreateOrganization = await authentication.authorize(
     "organization",
     "create",
   );

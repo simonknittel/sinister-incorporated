@@ -1,6 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import TabPanel from "@/common/components/tabs/TabPanel";
-import getAllClassificationLevels from "@/common/utils/cached/getAllClassificationLevels";
+import { getCreatableClassificationLevelsDeduped } from "@/common/utils/cached/getAllClassificationLevels";
 import {
   type Entity,
   type EntityLog,
@@ -10,7 +10,6 @@ import {
 import { AddNote } from "./AddNote";
 import { SingleNote } from "./SingleNote";
 import SingleNoteRedacted from "./SingleNoteRedacted";
-import isAllowedToCreate from "./lib/isAllowedToCreate";
 
 type Props = Readonly<{
   noteType: NoteType;
@@ -24,17 +23,12 @@ type Props = Readonly<{
 }>;
 
 export const NoteTypePanel = async ({ noteType, notes, entityId }: Props) => {
-  const [authentication, allClassificationLevels] = await Promise.all([
+  const [authentication, classificationLevels] = await Promise.all([
     requireAuthentication(),
-    getAllClassificationLevels(),
+    getCreatableClassificationLevelsDeduped(noteType.id),
   ]);
 
-  const filteredClassificationLevels = allClassificationLevels.filter(
-    (classificationLevel) =>
-      isAllowedToCreate(classificationLevel.id, authentication, noteType.id),
-  );
-
-  const showAddNote = authentication.authorize("note", "create", [
+  const showAddNote = await authentication.authorize("note", "create", [
     {
       key: "noteTypeId",
       value: noteType.id,
@@ -47,7 +41,7 @@ export const NoteTypePanel = async ({ noteType, notes, entityId }: Props) => {
         <AddNote
           entityId={entityId}
           noteTypeId={noteType.id}
-          classificationLevels={filteredClassificationLevels}
+          classificationLevels={classificationLevels}
         />
       )}
 

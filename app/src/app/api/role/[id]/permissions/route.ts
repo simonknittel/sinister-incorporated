@@ -4,9 +4,9 @@ import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-interface Params {
+type Params = Promise<{
   id: string;
-}
+}>;
 
 const paramsSchema = z.object({ id: z.string().cuid() });
 
@@ -18,7 +18,7 @@ const postBodySchema = z.array(
     .regex(/^[\w\-]+;[\w\-]+(?:;[\w\-]+=[\w\-\*]+)*$/),
 );
 
-export async function POST(request: Request, { params }: { params: Params }) {
+export async function POST(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate and authorize the request
@@ -27,12 +27,12 @@ export async function POST(request: Request, { params }: { params: Params }) {
       "/role/[id]/permissions",
       "POST",
     );
-    authentication.authorizeApi("role", "manage");
+    await authentication.authorizeApi("role", "manage");
 
     /**
      * Validate the request params and body
      */
-    const paramsData = paramsSchema.parse(params);
+    const paramsData = paramsSchema.parse(await props.params);
     const body: unknown = await request.json();
     const data = postBodySchema.parse(body);
 

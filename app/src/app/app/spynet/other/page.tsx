@@ -1,5 +1,8 @@
 import { authenticatePage } from "@/auth/server";
-import searchParamsNextjsToURLSearchParams from "@/common/utils/searchParamsNextjsToURLSearchParams";
+import {
+  searchParamsNextjsToURLSearchParams,
+  type NextjsSearchParams,
+} from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { type Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -13,14 +16,15 @@ export const metadata: Metadata = {
 };
 
 type Props = Readonly<{
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: NextjsSearchParams;
 }>;
 
-export default async function Page({ searchParams: _searchParams }: Props) {
+export default async function Page({ searchParams }: Props) {
   const authentication = await authenticatePage("/app/spynet/other");
-  authentication.authorizePage("citizen", "read");
+  await authentication.authorizePage("citizen", "read");
 
-  const searchParams = searchParamsNextjsToURLSearchParams(_searchParams);
+  const urlSearchParams =
+    await searchParamsNextjsToURLSearchParams(searchParams);
 
   return (
     <main className="p-4 pb-20 lg:p-8">
@@ -38,7 +42,7 @@ export default async function Page({ searchParams: _searchParams }: Props) {
       </div>
 
       <Suspense fallback={<TileSkeleton />}>
-        <Tile searchParams={searchParams} />
+        <Tile searchParams={urlSearchParams} />
       </Suspense>
     </main>
   );

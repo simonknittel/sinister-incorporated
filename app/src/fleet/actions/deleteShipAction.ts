@@ -6,10 +6,9 @@ import { type ServerAction } from "@/common/actions/types";
 import { prisma } from "@/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { zfd } from "zod-form-data";
 
-const schema = zfd.formData({
-  id: zfd.text(z.string().cuid()),
+const schema = z.object({
+  id: z.string().cuid(),
 });
 
 export const deleteShipAction: ServerAction = async (formData) => {
@@ -18,12 +17,14 @@ export const deleteShipAction: ServerAction = async (formData) => {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("deleteShipAction");
-    authentication.authorizeAction("ship", "manage");
+    await authentication.authorizeAction("ship", "manage");
 
     /**
      * Validate the request
      */
-    const { id } = schema.parse(formData);
+    const { id } = schema.parse({
+      id: formData.get("id"),
+    });
 
     /**
      * Make sure the item exists

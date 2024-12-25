@@ -20,14 +20,14 @@ export const MobileActionBar = async ({ className }: Props) => {
   const authentication = await requireAuthentication();
 
   const showSpynet =
-    authentication.authorize("citizen", "read") ||
-    authentication.authorize("organization", "read");
+    (await authentication.authorize("citizen", "read")) ||
+    (await authentication.authorize("organization", "read"));
 
   const showOperations =
     (await dedupedGetUnleashFlag("EnableOperations")) &&
-    authentication.authorize("operation", "manage");
+    (await authentication.authorize("operation", "manage"));
 
-  const showDocuments = authentication.authorize(
+  const showDocuments = await authentication.authorize(
     "documentIntroductionCompendium",
     "read",
   );
@@ -76,8 +76,8 @@ export const MobileActionBar = async ({ className }: Props) => {
             </li>
           )}
 
-          {(authentication.authorize("orgFleet", "read") ||
-            authentication.authorize("ship", "manage")) && (
+          {((await authentication.authorize("orgFleet", "read")) ||
+            (await authentication.authorize("ship", "manage"))) && (
             <li className="h-full py-1">
               <Link
                 href="/app/fleet"
@@ -156,8 +156,8 @@ export const MobileActionBar = async ({ className }: Props) => {
               </Link>
             </li> */}
 
-                  {(authentication.authorize("orgFleet", "read") ||
-                    authentication.authorize("ship", "manage")) && (
+                  {((await authentication.authorize("orgFleet", "read")) ||
+                    (await authentication.authorize("ship", "manage"))) && (
                     <li>
                       <Link
                         href="/app/fleet"
@@ -182,12 +182,12 @@ export const MobileActionBar = async ({ className }: Props) => {
                   )}
                 </ul>
 
-                {authentication.authorize("citizen", "read") && (
+                {(await authentication.authorize("citizen", "read")) && (
                   <div className="mt-4">
                     <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
 
                     <ul>
-                      {authentication.authorize("citizen", "read") && (
+                      {(await authentication.authorize("citizen", "read")) && (
                         <>
                           <li>
                             <Link
@@ -230,25 +230,34 @@ export const MobileActionBar = async ({ className }: Props) => {
                   </div>
                 )}
 
-                {(authentication.authorize("user", "read") ||
-                  authentication.authorize("role", "manage") ||
-                  authentication.authorize("classificationLevel", "manage") ||
-                  authentication.authorize("noteType", "manage") ||
-                  authentication.authorize("analytics", "manage") ||
-                  authentication.authorize(
+                {((await authentication.authorize("user", "read")) ||
+                  (await authentication.authorize("role", "manage")) ||
+                  (await authentication.authorize(
+                    "classificationLevel",
+                    "manage",
+                  )) ||
+                  (await authentication.authorize("noteType", "manage")) ||
+                  (await authentication.authorize("analytics", "manage")) ||
+                  (await authentication.authorize(
                     "manufacturersSeriesAndVariants",
                     "manage",
-                  )) && (
+                  ))) && (
                   <div className="mt-4">
                     <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
                     <ul>
-                      {(authentication.authorize("noteType", "manage") ||
-                        authentication.authorize(
+                      {((await authentication.authorize(
+                        "noteType",
+                        "manage",
+                      )) ||
+                        (await authentication.authorize(
                           "classificationLevel",
                           "manage",
-                        ) ||
-                        authentication.authorize("analytics", "manage")) && (
+                        )) ||
+                        (await authentication.authorize(
+                          "analytics",
+                          "manage",
+                        ))) && (
                         <li>
                           <Link
                             href="/app/settings"
@@ -260,7 +269,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         </li>
                       )}
 
-                      {authentication.authorize("role", "manage") && (
+                      {(await authentication.authorize("role", "manage")) && (
                         <li>
                           <Link
                             href="/app/roles"
@@ -272,10 +281,10 @@ export const MobileActionBar = async ({ className }: Props) => {
                         </li>
                       )}
 
-                      {authentication.authorize(
+                      {(await authentication.authorize(
                         "manufacturersSeriesAndVariants",
                         "manage",
-                      ) && (
+                      )) && (
                         <li>
                           <Link
                             href="/app/fleet/settings/manufacturer"
@@ -286,7 +295,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                           </Link>
                         </li>
                       )}
-                      {authentication.authorize("user", "read") && (
+                      {(await authentication.authorize("user", "read")) && (
                         <li>
                           <Link
                             href="/app/users"

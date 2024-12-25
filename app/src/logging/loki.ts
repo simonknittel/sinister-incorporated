@@ -1,4 +1,4 @@
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { serializeError } from "serialize-error";
 import { logToConsole } from "./console";
 import { type LogOutput } from "./types";
@@ -40,7 +40,7 @@ export const logToLoki: LogOutput = async (logEntry) => {
 
     if (res.ok) return;
 
-    logToConsole({
+    void logToConsole({
       timestamp: new Date().toISOString(),
       level: "error",
       message: "Error posting to Loki",
@@ -51,7 +51,7 @@ export const logToLoki: LogOutput = async (logEntry) => {
       ...(env.COMMIT_SHA && { commitSha: env.COMMIT_SHA }),
     });
   } catch (error) {
-    logToConsole({
+    void logToConsole({
       timestamp: new Date().toISOString(),
       level: "error",
       message: "Error posting to Loki",

@@ -1,6 +1,6 @@
 "use client";
 
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import clsx from "clsx";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

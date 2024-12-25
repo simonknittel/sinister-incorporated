@@ -22,17 +22,17 @@ const getOrganization = cache(async (id: string) => {
   });
 });
 
-type Params = Readonly<{
-  id: string;
-}>;
+type Params = Promise<
+  Readonly<{
+    id: string;
+  }>
+>;
 
-export async function generateMetadata({
-  params,
-}: {
+export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
-    const organization = await getOrganization(params.id);
+    const organization = await getOrganization((await props.params).id);
     if (!organization) return {};
 
     return {
@@ -56,11 +56,13 @@ type Props = Readonly<{
   params: Params;
 }>;
 
-export default async function Page({ params }: Props) {
+export default async function Page(props: Props) {
   const authentication = await authenticatePage(
     "/app/spynet/organization/[id]",
   );
-  authentication.authorizePage("organization", "read");
+  await authentication.authorizePage("organization", "read");
+
+  const params = await props.params;
 
   const organization = await getOrganization(params.id);
   if (!organization) notFound();

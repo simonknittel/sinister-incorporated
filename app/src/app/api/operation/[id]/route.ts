@@ -4,9 +4,9 @@ import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-interface Params {
+type Params = Promise<{
   id: string;
-}
+}>;
 
 const paramsSchema = z.string().cuid();
 
@@ -14,7 +14,7 @@ const patchBodySchema = z.object({
   title: z.string().trim(),
 });
 
-export async function PATCH(request: Request, { params }: { params: Params }) {
+export async function PATCH(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate the request
@@ -24,7 +24,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = paramsSchema.parse(params.id);
+    const paramsData = paramsSchema.parse((await props.params).id);
 
     /**
      * Validate the request body
@@ -47,7 +47,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
      */
     const updatedItem = await prisma.operation.updateMany({
       where: {
-        id: params.id,
+        id: (await props.params).id,
       },
       data: {
         title: data.title,
@@ -66,7 +66,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: Params }) {
+export async function DELETE(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate the request
@@ -76,7 +76,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = paramsSchema.parse(params.id);
+    const paramsData = paramsSchema.parse((await props.params).id);
 
     /**
      * Delete

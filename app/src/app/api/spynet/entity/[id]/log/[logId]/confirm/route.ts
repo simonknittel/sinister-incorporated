@@ -5,10 +5,10 @@ import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-interface Params {
+type Params = Promise<{
   id: string;
   logId: string;
-}
+}>;
 
 const paramsSchema = z.object({
   id: z.string().cuid(),
@@ -19,7 +19,7 @@ const patchBodySchema = z.object({
   confirmed: z.enum(["confirmed", "false-report"]),
 });
 
-export async function PATCH(request: Request, { params }: { params: Params }) {
+export async function PATCH(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate the request
@@ -32,7 +32,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request
      */
-    const paramsData = paramsSchema.parse(params);
+    const paramsData = paramsSchema.parse(await props.params);
     const body: unknown = await request.json();
     const data = patchBodySchema.parse(body);
     const entityLog = await prisma.entityLog.findFirst({

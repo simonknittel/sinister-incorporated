@@ -1,9 +1,9 @@
+import { env } from "@/env";
 import { Command } from "cmdk";
 import { debounce } from "lodash";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
-import { env } from "../../../env.mjs";
 import { Hero } from "../Hero";
 import { type Hit } from "../SpynetSearchTile/Search";
 import { SpynetSearchResultEntry } from "./SpynetSearchResultEntry";

@@ -14,7 +14,7 @@ export async function POST(request: Request) {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateApi("/api/role", "POST");
-    authentication.authorizeApi("role", "manage");
+    await authentication.authorizeApi("role", "manage");
 
     /**
      * Validate the request body

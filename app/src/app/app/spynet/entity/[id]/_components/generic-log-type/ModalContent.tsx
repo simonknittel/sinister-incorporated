@@ -1,9 +1,9 @@
 "use client";
 
-import { useAuthentication } from "@/auth/client";
+import { api } from "@/trpc/react";
+import type { GenericEntityLogType } from "@/types";
 import { type Entity } from "@prisma/client";
-import { api } from "../../../../../../../trpc/react";
-import { type GenericEntityLogType } from "../../../../../../../types";
+import type { ComponentProps } from "react";
 import { Create } from "./Create";
 import { HistoryEntry } from "./HistoryEntry";
 import { HistoryEntrySkelton } from "./HistoryEntrySkeleton";
@@ -11,11 +11,18 @@ import { HistoryEntrySkelton } from "./HistoryEntrySkeleton";
 interface Props {
   type: GenericEntityLogType;
   entity: Entity;
+  showCreate?: boolean;
+  showDelete: ComponentProps<typeof HistoryEntry>["showDelete"];
+  showConfirm: ComponentProps<typeof HistoryEntry>["showConfirm"];
 }
 
-export const ModalContent = ({ type, entity }: Readonly<Props>) => {
-  const authentication = useAuthentication();
-
+export const ModalContent = ({
+  type,
+  entity,
+  showCreate = false,
+  showDelete,
+  showConfirm,
+}: Readonly<Props>) => {
   const history = api.entityLog.getHistory.useQuery({
     type,
     entityId: entity.id,
@@ -28,7 +35,12 @@ export const ModalContent = ({ type, entity }: Readonly<Props>) => {
     entries = (
       <ul className="mt-8 flex flex-col gap-4">
         {history.data.map((log) => (
-          <HistoryEntry key={log.id} type={type} log={log} />
+          <HistoryEntry
+            key={log.id}
+            log={log}
+            showDelete={showDelete}
+            showConfirm={showConfirm}
+          />
         ))}
       </ul>
     );
@@ -42,9 +54,7 @@ export const ModalContent = ({ type, entity }: Readonly<Props>) => {
     <>
       <h2 className="text-xl font-bold">History</h2>
 
-      {authentication && authentication.authorize(type, "create") && (
-        <Create type={type} entity={entity} />
-      )}
+      {showCreate && <Create type={type} entity={entity} />}
 
       {entries}
     </>

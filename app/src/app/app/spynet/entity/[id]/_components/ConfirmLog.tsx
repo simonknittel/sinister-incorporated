@@ -35,6 +35,7 @@ const ConfirmLog = ({ log, compact }: Props) => {
       if (response.ok) {
         await utils.entityLog.getHistory.invalidate({
           entityId: log.entityId,
+          // @ts-expect-error Don't know how to improve this
           type: log.type,
         });
         router.refresh();

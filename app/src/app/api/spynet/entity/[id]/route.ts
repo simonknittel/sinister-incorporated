@@ -5,13 +5,13 @@ import { prisma } from "@/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-interface Params {
+type Params = Promise<{
   id: string;
-}
+}>;
 
 const paramsSchema = z.string().cuid();
 
-export async function DELETE(request: Request, { params }: { params: Params }) {
+export async function DELETE(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate and authorize the request
@@ -20,12 +20,12 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       "/api/spynet/entity/[id]",
       "DELETE",
     );
-    authentication.authorizeApi("citizen", "delete");
+    await authentication.authorizeApi("citizen", "delete");
 
     /**
      * Validate the request params
      */
-    const paramsData = paramsSchema.parse(params.id);
+    const paramsData = paramsSchema.parse((await props.params).id);
 
     /**
      * Delete

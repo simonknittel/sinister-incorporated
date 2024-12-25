@@ -18,7 +18,7 @@ export const createShipAction = async (formData: FormData) => {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("createShipAction");
-    authentication.authorizeAction("ship", "manage");
+    await authentication.authorizeAction("ship", "manage");
 
     /**
      * Validate the request

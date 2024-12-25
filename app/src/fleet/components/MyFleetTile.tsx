@@ -10,7 +10,8 @@ type Props = Readonly<{
 
 export const MyFleetTile = async ({ className }: Props) => {
   const authentication = await requireAuthentication();
-  if (!authentication.authorize("ship", "manage")) throw new Error("Forbidden");
+  if (!(await authentication.authorize("ship", "manage")))
+    throw new Error("Forbidden");
 
   const [myShips, allVariants] = await prisma.$transaction([
     prisma.ship.findMany({

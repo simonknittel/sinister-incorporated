@@ -23,7 +23,7 @@ export async function PATCH(request: Request) {
       "/api/spynet/organization/[organizationId]/membership/[citizenId]/confirm",
       "PATCH",
     );
-    authentication.authorizeApi("organizationMembership", "confirm");
+    await authentication.authorizeApi("organizationMembership", "confirm");
 
     /**
      * Validate the request

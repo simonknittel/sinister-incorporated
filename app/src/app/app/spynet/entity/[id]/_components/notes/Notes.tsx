@@ -59,14 +59,12 @@ export const Notes = async ({ className, entity }: Props) => {
   > = {};
 
   for (const note of sortedNotes) {
-    if (!authentication) continue;
-
     const latestNoteAttributes = getLatestNoteAttributes(note);
 
     if (!latestNoteAttributes.noteTypeId) continue;
 
-    if (!isAllowedToRead(note, authentication)) {
-      if (!isAllowedToReadRedacted(note, authentication)) continue;
+    if (!(await isAllowedToRead(note, authentication))) {
+      if (!(await isAllowedToReadRedacted(note, authentication))) continue;
 
       if (!tabs[latestNoteAttributes.noteTypeId.value])
         tabs[latestNoteAttributes.noteTypeId.value] = [];
@@ -85,28 +83,36 @@ export const Notes = async ({ className, entity }: Props) => {
     tabs[latestNoteAttributes.noteTypeId.value].push(note);
   }
 
-  const filteredNoteTypes = allNoteTypes.filter((noteType) => {
-    return (
-      authentication.authorize("note", "read", [
-        {
-          key: "noteTypeId",
-          value: noteType.id,
-        },
-      ]) ||
-      authentication.authorize("note", "readRedacted", [
-        {
-          key: "noteTypeId",
-          value: noteType.id,
-        },
-      ]) ||
-      authentication.authorize("note", "create", [
-        {
-          key: "noteTypeId",
-          value: noteType.id,
-        },
-      ])
-    );
-  });
+  const filteredNoteTypes = (
+    await Promise.all(
+      allNoteTypes.map(async (noteType) => {
+        return {
+          noteType,
+          include:
+            (await authentication.authorize("note", "read", [
+              {
+                key: "noteTypeId",
+                value: noteType.id,
+              },
+            ])) ||
+            (await authentication.authorize("note", "readRedacted", [
+              {
+                key: "noteTypeId",
+                value: noteType.id,
+              },
+            ])) ||
+            (await authentication.authorize("note", "create", [
+              {
+                key: "noteTypeId",
+                value: noteType.id,
+              },
+            ])),
+        };
+      }),
+    )
+  )
+    .filter(({ include }) => include)
+    .map(({ noteType }) => noteType);
 
   if (filteredNoteTypes.length <= 0) return null;
 

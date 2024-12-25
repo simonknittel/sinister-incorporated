@@ -4,11 +4,10 @@ import { serverActionErrorHandler } from "@/common/actions/serverActionErrorHand
 import type { ServerAction } from "@/common/actions/types";
 import { prisma } from "@/db";
 import { z } from "zod";
-import { zfd } from "zod-form-data";
 
-const schema = zfd.formData({
-  id: zfd.text(z.string().cuid()),
-  name: zfd.text(z.string().trim().optional()),
+const schema = z.object({
+  id: z.string().cuid(),
+  name: z.string().trim().optional(),
 });
 
 export const updateShipAction: ServerAction = async (formData) => {
@@ -17,12 +16,15 @@ export const updateShipAction: ServerAction = async (formData) => {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("updateShipAction");
-    authentication.authorizeAction("ship", "manage");
+    await authentication.authorizeAction("ship", "manage");
 
     /**
      * Validate the request
      */
-    const { id, ...data } = schema.parse(formData);
+    const { id, ...data } = schema.parse({
+      id: formData.get("id"),
+      name: formData.get("name"),
+    });
 
     /**
      * Make sure the item exists

@@ -1,4 +1,4 @@
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { logToConsole } from "./console";
 import { logToLoki } from "./loki";
 import { type LogEntry } from "./types";

@@ -38,18 +38,23 @@ export async function authenticatePage(requestPath?: string) {
     redirect("/");
   }
 
-  requireConfirmedEmailForPage(authentication.session);
+  await requireConfirmedEmailForPage(authentication.session);
 
-  if (!authentication.authorize("login", "manage")) redirect("/clearance");
+  if (!(await authentication.authorize("login", "manage")))
+    redirect("/clearance");
 
   return {
     ...authentication,
-    authorizePage: (
+    authorizePage: async (
       resource: PermissionSet["resource"],
       operation: PermissionSet["operation"],
       attributes?: PermissionSet["attributes"],
     ) => {
-      const result = authentication.authorize(resource, operation, attributes);
+      const result = await authentication.authorize(
+        resource,
+        operation,
+        attributes,
+      );
 
       if (!result) {
         void log.info("Forbidden request to page", {
@@ -82,19 +87,23 @@ export async function authenticateApi(
     throw new Error("Unauthorized");
   }
 
-  requireConfirmedEmailForApi(authentication.session);
+  await requireConfirmedEmailForApi(authentication.session);
 
-  if (!authentication.authorize("login", "manage"))
+  if (!(await authentication.authorize("login", "manage")))
     throw new Error("Forbidden");
 
   return {
     ...authentication,
-    authorizeApi: (
+    authorizeApi: async (
       resource: PermissionSet["resource"],
       operation: PermissionSet["operation"],
       attributes?: PermissionSet["attributes"],
     ) => {
-      const result = authentication.authorize(resource, operation, attributes);
+      const result = await authentication.authorize(
+        resource,
+        operation,
+        attributes,
+      );
 
       if (!result) {
         void log.info("Forbidden request to API", {
@@ -124,19 +133,23 @@ export async function authenticateAction(actionName?: string) {
     throw new Error("Unauthorized");
   }
 
-  requireConfirmedEmailForAction(authentication.session);
+  await requireConfirmedEmailForAction(authentication.session);
 
-  if (!authentication.authorize("login", "manage"))
+  if (!(await authentication.authorize("login", "manage")))
     throw new Error("Forbidden");
 
   return {
     ...authentication,
-    authorizeAction: (
+    authorizeAction: async (
       resource: PermissionSet["resource"],
       operation: PermissionSet["operation"],
       attributes?: PermissionSet["attributes"],
     ) => {
-      const result = authentication.authorize(resource, operation, attributes);
+      const result = await authentication.authorize(
+        resource,
+        operation,
+        attributes,
+      );
 
       if (!result) {
         void log.info("Unauthorized request to action", {
@@ -159,7 +172,7 @@ export const requireAuthentication = cache(async () => {
   return authentication;
 });
 
-export function authorize(
+export async function authorize(
   session: Session,
   resource: PermissionSet["resource"],
   operation: PermissionSet["operation"],
@@ -167,7 +180,7 @@ export function authorize(
 ) {
   if (
     session.user.role === "admin" &&
-    cookies().get("enable_admin")?.value === "1"
+    (await cookies()).get("enable_admin")?.value === "1"
   ) {
     return operation !== "negate";
   }

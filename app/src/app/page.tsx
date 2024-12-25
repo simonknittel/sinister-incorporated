@@ -4,6 +4,10 @@ import { Hero } from "@/common/components/Hero";
 import LoginButtons from "@/common/components/LoginButtons";
 import Note from "@/common/components/Note";
 import { UwuHero } from "@/common/components/UwuHero";
+import {
+  searchParamsNextjsToURLSearchParams,
+  type NextjsSearchParams,
+} from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 import { authOptions } from "../server/auth";
@@ -15,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 type Props = Readonly<{
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: NextjsSearchParams;
 }>;
 
 export default async function Page({ searchParams }: Props) {
@@ -24,7 +28,9 @@ export default async function Page({ searchParams }: Props) {
 
   const activeProviders = authOptions.providers.map((provider) => provider.id);
 
-  const showUwuHero = Object.hasOwn(searchParams, "uwu");
+  const urlSearchParams =
+    await searchParamsNextjsToURLSearchParams(searchParams);
+  const showUwuHero = urlSearchParams.has("uwu");
 
   return (
     <div className="min-h-dvh flex-col flex justify-center items-center bg-sinister-radial-gradient">
@@ -35,7 +41,7 @@ export default async function Page({ searchParams }: Props) {
           <LoginButtons activeProviders={activeProviders} />
         </div>
 
-        {searchParams.error && (
+        {urlSearchParams.has("error") && (
           <Note
             className="max-w-xs lg:!p-4"
             message="Beim Anmelden ist ein Fehler aufgetreten."

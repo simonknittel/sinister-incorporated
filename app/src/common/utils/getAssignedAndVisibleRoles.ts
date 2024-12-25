@@ -16,14 +16,23 @@ export const getAssignedAndVisibleRoles = cache(async (entity: Entity) => {
     .map((roleId) => allRoles.find((role) => role.id === roleId)!)
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const assignedAndVisibleRoles = assignedRoles.filter((role) => {
-    return authentication.authorize("otherRole", "read", [
-      {
-        key: "roleId",
-        value: role.id,
-      },
-    ]);
-  });
+  const assignedAndVisibleRoles = (
+    await Promise.all(
+      assignedRoles.map(async (role) => {
+        return {
+          role,
+          include: await authentication.authorize("otherRole", "read", [
+            {
+              key: "roleId",
+              value: role.id,
+            },
+          ]),
+        };
+      }),
+    )
+  )
+    .filter(({ include }) => include)
+    .map(({ role }) => role);
 
   return assignedAndVisibleRoles;
 });

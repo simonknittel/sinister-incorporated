@@ -7,10 +7,10 @@ import { z } from "zod";
 import { updateAlgoliaWithGenericLogType } from "./_lib/updateAlgoliaWithGenericLogType";
 import { updateEntityCaches } from "./_lib/updateEntityCaches";
 
-interface Params {
+type Params = Promise<{
   id: string;
   logId: string;
-}
+}>;
 
 const paramsSchema = z.object({
   id: z.string().cuid(),
@@ -22,7 +22,7 @@ const patchBodySchema = z.object({
   classificationLevelId: z.string().trim().cuid(),
 });
 
-export async function PATCH(request: Request, { params }: { params: Params }) {
+export async function PATCH(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate the request
@@ -35,7 +35,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params and body
      */
-    const paramsData = paramsSchema.parse(params);
+    const paramsData = paramsSchema.parse(await props.params);
     const body: unknown = await request.json();
     const data = patchBodySchema.parse(body);
 
@@ -75,9 +75,13 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
       });
     }
 
-    // @ts-expect-error The authorization types need to get overhauled
-    authentication.authorizeApi("note", "update", authorizationAttributes);
-    authentication.authorizeApi("note", "create", [
+    await authentication.authorizeApi(
+      "note",
+      "update",
+      // @ts-expect-error The authorization types need to get overhauled
+      authorizationAttributes,
+    );
+    await authentication.authorizeApi("note", "create", [
       {
         key: "noteTypeId",
         value: data.noteTypeId,
@@ -117,7 +121,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: Params }) {
+export async function DELETE(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate and authorize the request
@@ -130,7 +134,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = paramsSchema.parse(params);
+    const paramsData = paramsSchema.parse(await props.params);
 
     /**
      * Do the thing
@@ -153,7 +157,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       case "discord-id":
       case "citizen-id":
       case "community-moniker":
-        authentication.authorizeApi(entityLog.type, "delete");
+        await authentication.authorizeApi(entityLog.type, "delete");
         break;
 
       case "note":
@@ -176,8 +180,12 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
           });
         }
 
-        // @ts-expect-error The authorization types need to get overhauled
-        authentication.authorizeApi("note", "delete", authorizationAttributes);
+        await authentication.authorizeApi(
+          "note",
+          "delete",
+          // @ts-expect-error The authorization types need to get overhauled
+          authorizationAttributes,
+        );
         break;
 
       default:

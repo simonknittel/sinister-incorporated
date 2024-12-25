@@ -1,18 +1,21 @@
-import getAllClassificationLevels from "@/common/utils/cached/getAllClassificationLevels";
+import { getCreatableClassificationLevelsDeduped } from "@/common/utils/cached/getAllClassificationLevels";
 import getAllNoteTypes from "@/common/utils/cached/getAllNoteTypes";
+import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
-import UpdateNoteModal from "./UpdateNoteModal";
+import { UpdateNoteModal } from "./UpdateNoteModal";
 
-interface Props {
+type Props = Readonly<{
   note: EntityLog & {
     attributes: EntityLogAttribute[];
   };
-}
+}>;
 
-const UpdateNote = async ({ note }: Readonly<Props>) => {
-  const [allNoteTypes, allClassificationLevels] = await Promise.all([
+export const UpdateNote = async ({ note }: Props) => {
+  const { noteTypeId } = getLatestNoteAttributes(note);
+
+  const [allNoteTypes, classificationLevels] = await Promise.all([
     getAllNoteTypes(),
-    getAllClassificationLevels(),
+    getCreatableClassificationLevelsDeduped(noteTypeId!.value),
   ]);
 
   return (
@@ -22,10 +25,8 @@ const UpdateNote = async ({ note }: Readonly<Props>) => {
         className="h-auto self-center"
         note={note}
         noteTypes={allNoteTypes}
-        classificationLevels={allClassificationLevels}
+        classificationLevels={classificationLevels}
       />
     </>
   );
 };
-
-export default UpdateNote;

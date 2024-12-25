@@ -9,7 +9,7 @@ import {
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-type Params = Readonly<{
+type Params = Promise<{
   organizationId: string;
 }>;
 
@@ -28,7 +28,7 @@ const postBodySchema = z.object({
   confirmed: z.literal(ConfirmationStatus.CONFIRMED).optional(),
 });
 
-export async function POST(request: Request, { params }: { params: Params }) {
+export async function POST(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate and authorize the request
@@ -37,12 +37,12 @@ export async function POST(request: Request, { params }: { params: Params }) {
       "/api/spynet/organization/[organizationId]/membership",
       "POST",
     );
-    authentication.authorizeApi("organizationMembership", "create");
+    await authentication.authorizeApi("organizationMembership", "create");
 
     /**
      * Validate the request
      */
-    const paramsData = paramsSchema.parse(params);
+    const paramsData = paramsSchema.parse(await props.params);
     const body: unknown = await request.json();
     const data = postBodySchema.parse(body);
 
@@ -51,7 +51,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
      */
     if (
       data.confirmed === ConfirmationStatus.CONFIRMED &&
-      authentication.authorize("organizationMembership", "confirm")
+      (await authentication.authorize("organizationMembership", "confirm"))
     ) {
       await prisma.$transaction([
         prisma.activeOrganizationMembership.create({

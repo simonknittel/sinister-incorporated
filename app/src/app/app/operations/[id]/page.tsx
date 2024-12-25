@@ -59,17 +59,15 @@ const getOperation = cache(async (id: string) => {
   });
 });
 
-interface Params {
+type Params = Promise<{
   id: string;
-}
+}>;
 
-export async function generateMetadata({
-  params,
-}: {
+export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
-    const operation = await getOperation(params.id);
+    const operation = await getOperation((await props.params).id);
     if (!operation) return {};
 
     return {
@@ -93,13 +91,13 @@ interface Props {
   params: Params;
 }
 
-export default async function Page({ params }: Readonly<Props>) {
+export default async function Page(props: Readonly<Props>) {
   if (!(await dedupedGetUnleashFlag("EnableOperations"))) notFound();
 
   const authentication = await authenticatePage("/app/operations/[id]");
-  authentication.authorizePage("operation", "manage");
+  await authentication.authorizePage("operation", "manage");
 
-  const operation = await getOperation(params.id);
+  const operation = await getOperation((await props.params).id);
   if (!operation) notFound();
 
   const confirmedMembers = operation.members.filter(

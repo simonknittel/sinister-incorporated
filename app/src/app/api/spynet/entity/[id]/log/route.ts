@@ -6,9 +6,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { updateEntityRolesCache } from "./_lib/updateEntityRolesCache";
 
-interface Params {
+type Params = Promise<{
   id: string;
-}
+}>;
 
 const paramsSchema = z.string().cuid();
 
@@ -57,7 +57,7 @@ const postBodySchema = z.union([
   }),
 ]);
 
-export async function POST(request: Request, { params }: { params: Params }) {
+export async function POST(request: Request, props: { params: Params }) {
   try {
     /**
      * Authenticate the request
@@ -70,7 +70,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
     /**
      * Validate the request
      */
-    const paramsData = paramsSchema.parse(params.id);
+    const paramsData = paramsSchema.parse((await props.params).id);
     const body: unknown = await request.json();
     const data = postBodySchema.parse(body);
 
@@ -79,13 +79,13 @@ export async function POST(request: Request, { params }: { params: Params }) {
      */
     switch (data.type) {
       case "handle":
-        authentication.authorizeApi("handle", "create");
+        await authentication.authorizeApi("handle", "create");
         break;
       case "teamspeak-id":
-        authentication.authorizeApi("teamspeak-id", "create");
+        await authentication.authorizeApi("teamspeak-id", "create");
         break;
       case "note":
-        authentication.authorizeApi("note", "create", [
+        await authentication.authorizeApi("note", "create", [
           {
             key: "noteTypeId",
             value: data.noteTypeId,
@@ -97,16 +97,16 @@ export async function POST(request: Request, { params }: { params: Params }) {
         ]);
         break;
       case "discord-id":
-        authentication.authorizeApi("discord-id", "create");
+        await authentication.authorizeApi("discord-id", "create");
         break;
       case "citizen-id":
-        authentication.authorizeApi("citizen-id", "create");
+        await authentication.authorizeApi("citizen-id", "create");
         break;
       case "community-moniker":
-        authentication.authorizeApi("community-moniker", "create");
+        await authentication.authorizeApi("community-moniker", "create");
         break;
       case "role-added":
-        authentication.authorizeApi("otherRole", "assign", [
+        await authentication.authorizeApi("otherRole", "assign", [
           {
             key: "roleId",
             value: data.content,
@@ -114,7 +114,7 @@ export async function POST(request: Request, { params }: { params: Params }) {
         ]);
         break;
       case "role-removed":
-        authentication.authorizeApi("otherRole", "dismiss", [
+        await authentication.authorizeApi("otherRole", "dismiss", [
           {
             key: "roleId",
             value: data.content,

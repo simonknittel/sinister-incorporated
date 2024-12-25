@@ -1,14 +1,17 @@
 import { type requireAuthentication } from "@/auth/server";
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
 
-export default function isAllowedToRead(
+export default async function isAllowedToRead(
   entityLog: EntityLog & {
     attributes: EntityLogAttribute[];
   },
   authentication: Awaited<ReturnType<typeof requireAuthentication>>,
 ) {
   if (["discord-id", "teamspeak-id"].includes(entityLog.type)) {
-    const allowedToRead = authentication.authorize(entityLog.type, "read");
+    const allowedToRead = await authentication.authorize(
+      entityLog.type,
+      "read",
+    );
 
     if (!allowedToRead) return false;
   }

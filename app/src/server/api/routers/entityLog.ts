@@ -38,15 +38,27 @@ export const entityLogRouter = createTRPCRouter({
         },
       });
 
-      const filteredLogs = allLogs.filter((log) => {
-        const confirmed = log.attributes.find(
-          (attribute) => attribute.key === "confirmed",
-        );
+      const filteredLogs = (
+        await Promise.all(
+          allLogs.map(async (log) => {
+            const confirmed = log.attributes.find(
+              (attribute) => attribute.key === "confirmed",
+            );
 
-        if (confirmed && confirmed.value === "confirmed") return true;
+            const include =
+              confirmed && confirmed.value === "confirmed"
+                ? true
+                : await authorize(ctx.session, input.type, "confirm");
 
-        return authorize(ctx.session, input.type, "confirm");
-      });
+            return {
+              log,
+              include,
+            };
+          }),
+        )
+      )
+        .filter(({ include }) => include)
+        .map(({ log }) => log);
 
       return filteredLogs;
     }),

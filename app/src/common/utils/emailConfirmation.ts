@@ -1,5 +1,5 @@
 import { prisma } from "@/db";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 import { log } from "@/logging";
 import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
@@ -38,18 +38,18 @@ export const requestEmailConfirmation = async (
   ]);
 };
 
-export const requiresEmailConfirmation = (session: Session) => {
+export const requiresEmailConfirmation = async (session: Session) => {
   if (
     session.user.role === "admin" &&
-    cookies().get("enable_admin")?.value === "1"
+    (await cookies()).get("enable_admin")?.value === "1"
   )
     return false;
 
   return true;
 };
 
-export const requireConfirmedEmailForPage = (session: Session) => {
-  if (!requiresEmailConfirmation(session)) return;
+export const requireConfirmedEmailForPage = async (session: Session) => {
+  if (!(await requiresEmailConfirmation(session))) return;
 
   if (!session.user.emailVerified) {
     void log.info("Forbidden request to page", {
@@ -62,8 +62,8 @@ export const requireConfirmedEmailForPage = (session: Session) => {
   }
 };
 
-export const requireConfirmedEmailForApi = (session: Session) => {
-  if (!requiresEmailConfirmation(session)) return;
+export const requireConfirmedEmailForApi = async (session: Session) => {
+  if (!(await requiresEmailConfirmation(session))) return;
 
   if (!session.user.emailVerified) {
     void log.info("Forbidden request to API", {
@@ -76,8 +76,8 @@ export const requireConfirmedEmailForApi = (session: Session) => {
   }
 };
 
-export const requireConfirmedEmailForAction = (session: Session) => {
-  if (!requiresEmailConfirmation(session)) return;
+export const requireConfirmedEmailForAction = async (session: Session) => {
+  if (!(await requiresEmailConfirmation(session))) return;
 
   if (!session.user.emailVerified) {
     void log.info("Forbidden request to action", {
@@ -90,8 +90,8 @@ export const requireConfirmedEmailForAction = (session: Session) => {
   }
 };
 
-export const requireConfirmedEmailForTrpc = (session: Session) => {
-  if (!requiresEmailConfirmation(session)) return;
+export const requireConfirmedEmailForTrpc = async (session: Session) => {
+  if (!(await requiresEmailConfirmation(session))) return;
 
   if (!session.user.emailVerified) {
     void log.info("Forbidden request to tRPC", {

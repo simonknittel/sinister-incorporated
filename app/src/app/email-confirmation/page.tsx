@@ -2,6 +2,7 @@ import { authenticate } from "@/auth/server";
 import { AdminEnabler } from "@/common/components/AdminEnabler";
 import { Footer } from "@/common/components/Footer";
 import { requiresEmailConfirmation } from "@/common/utils/emailConfirmation";
+import type { NextjsSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
@@ -21,10 +22,11 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: NextjsSearchParams;
 }
 
-export default async function Page({ searchParams }: Readonly<Props>) {
+export default async function Page(props: Readonly<Props>) {
+  const searchParams = await props.searchParams;
   const authentication = await authenticate();
 
   if (!authentication) {
@@ -36,7 +38,7 @@ export default async function Page({ searchParams }: Readonly<Props>) {
     redirect("/");
   }
 
-  if (requiresEmailConfirmation(authentication.session) === false)
+  if ((await requiresEmailConfirmation(authentication.session)) === false)
     redirect("/clearance");
 
   if (authentication.session.user.emailVerified) redirect("/clearance");
@@ -94,13 +96,12 @@ export default async function Page({ searchParams }: Readonly<Props>) {
           </form>
         </div>
       </main>
-
       <Footer className="mt-4" />
-
       <PageRefresher />
-
       {authentication.session.user.role === "admin" && (
-        <AdminEnabler enabled={cookies().get("enable_admin")?.value === "1"} />
+        <AdminEnabler
+          enabled={(await cookies()).get("enable_admin")?.value === "1"}
+        />
       )}
     </div>
   );

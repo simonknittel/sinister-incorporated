@@ -1,17 +1,7 @@
+import { TimeAgoLoader } from "@/common/components/TimeAgoLoader";
 import { getEvents } from "@/discord/getEvents";
 import clsx from "clsx";
-import dynamic from "next/dynamic";
 import { Event } from "./Event";
-
-const TimeAgoContainer = dynamic(
-  () => import("@/common/components/TimeAgoContainer"),
-  {
-    ssr: false,
-    loading: () => (
-      <span className="block h-[1em] w-[7em] animate-pulse rounded bg-neutral-500" />
-    ),
-  },
-);
 
 type Props = Readonly<{
   className?: string;
@@ -47,7 +37,7 @@ export const CalendarTile = async ({ className }: Props) => {
       {date && (
         <p className="text-neutral-500 flex items-center gap-2 w-full">
           Letzte Aktualisierung:
-          <TimeAgoContainer date={date} />
+          <TimeAgoLoader date={date} />
         </p>
       )}
     </section>

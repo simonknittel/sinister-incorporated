@@ -1,4 +1,4 @@
-import getAllClassificationLevels from "@/common/utils/cached/getAllClassificationLevels";
+import { getAllClassificationLevelsDeduped } from "@/common/utils/cached/getAllClassificationLevels";
 import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
 import clsx from "clsx";
@@ -11,7 +11,7 @@ type Props = Readonly<{
 }>;
 
 export const ClassificationLevel = async ({ className, note }: Props) => {
-  const allClassificationLevels = await getAllClassificationLevels();
+  const allClassificationLevels = await getAllClassificationLevelsDeduped();
   const { classificationLevelId } = getLatestNoteAttributes(note);
 
   return (
