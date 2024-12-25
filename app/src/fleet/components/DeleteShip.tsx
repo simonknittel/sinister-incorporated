@@ -1,28 +1,37 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/common/components/AlertDialog";
+import Button from "@/common/components/Button";
 import { type Ship, type Variant } from "@prisma/client";
-import { useTransition } from "react";
+import { useId, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteShipAction } from "../actions/deleteShipAction";
 
 type Props = Readonly<{
+  className?: string;
   ship: Ship & {
     variant: Variant;
   };
 }>;
 
-export const DeleteShip = ({ ship }: Props) => {
+export const DeleteShip = ({ className, ship }: Props) => {
   const [isPending, startTransition] = useTransition();
+  const id = useId();
 
   const formAction = (formData: FormData) => {
     startTransition(async () => {
       try {
-        const confirmation = window.confirm(
-          `Willst du "${ship.name || ship.variant.name}" löschen?`,
-        );
-        if (!confirmation) return;
-
         const response = await deleteShipAction(formData);
 
         if (response.status === 200) {
@@ -40,15 +49,38 @@ export const DeleteShip = ({ ship }: Props) => {
   };
 
   return (
-    <form action={formAction}>
+    <form action={formAction} id={id} className={className}>
       <input type="hidden" name="id" value={ship.id} />
-      <button
-        disabled={isPending}
-        className="px-2 py-2 text-neutral-500 hover:text-neutral-50"
-        title="Löschen"
-      >
-        {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}
-      </button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <button
+            disabled={isPending}
+            className="px-2 py-2 text-neutral-500 hover:text-neutral-50"
+            title="Löschen"
+          >
+            {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+          </button>
+        </AlertDialogTrigger>
+
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Schiff löschen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Willst du &quot;{ship.name || ship.variant.name}&quot; löschen?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel asChild>
+              <Button variant="secondary">Abbrechen</Button>
+            </AlertDialogCancel>
+
+            <AlertDialogAction type="submit" form={id} asChild>
+              <Button variant="primary">Löschen</Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </form>
   );
 };
