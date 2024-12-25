@@ -46,6 +46,7 @@ export async function POST(request: Request) {
      */
     revalidateTag(`series:${createdItem.id}`);
     revalidateTag(`manufacturer:${createdItem.manufacturerId}`);
+    revalidateTag(`manufacturer`);
 
     return NextResponse.json(createdItem);
   } catch (error) {

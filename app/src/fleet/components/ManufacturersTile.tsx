@@ -65,7 +65,7 @@ export const ManufacturersTile = async () => {
 
                 <td className="line-clamp-2">
                   {row.series.map((series, index) => (
-                    <>
+                    <span key={series.id}>
                       {index > 0 && ", "}
                       <Link
                         key={series.id}
@@ -74,7 +74,7 @@ export const ManufacturersTile = async () => {
                       >
                         {series.name}
                       </Link>
-                    </>
+                    </span>
                   ))}
                 </td>
 
