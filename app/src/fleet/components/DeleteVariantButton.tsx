@@ -72,7 +72,14 @@ export const DeleteVariantButton = ({ className, variant }: Props) => {
           <AlertDialogFooter>
             <AlertDialogCancel>Abbrechen</AlertDialogCancel>
 
-            <AlertDialogAction type="submit" form={id}>
+            <AlertDialogAction
+              type="submit"
+              form={id}
+              onClick={() => {
+                // TODO: This shouldn't be necessary. I'm very confused why this doesn't work without it.
+                document.getElementById(id)?.requestSubmit();
+              }}
+            >
               Löschen
             </AlertDialogAction>
           </AlertDialogFooter>
