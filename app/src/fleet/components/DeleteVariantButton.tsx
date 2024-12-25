@@ -13,6 +13,7 @@ import {
 } from "@/common/components/AlertDialog";
 import Button from "@/common/components/Button";
 import { type Variant } from "@prisma/client";
+import { unstable_rethrow } from "next/navigation";
 import { useId, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
@@ -38,8 +39,10 @@ export const DeleteVariantButton = ({ className, variant }: Props) => {
           toast.error(
             response.errorMessage || "Beim Löschen ist ein Fehler aufgetreten.",
           );
+          console.error(response);
         }
       } catch (error) {
+        unstable_rethrow(error);
         toast.error("Beim Löschen ist ein Fehler aufgetreten.");
         console.error(error);
       }

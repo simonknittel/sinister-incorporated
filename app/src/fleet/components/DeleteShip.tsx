@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/common/components/AlertDialog";
 import { type Ship, type Variant } from "@prisma/client";
+import { unstable_rethrow } from "next/navigation";
 import { useId, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
@@ -39,8 +40,10 @@ export const DeleteShip = ({ className, ship }: Props) => {
           toast.error(
             response.errorMessage || "Beim Löschen ist ein Fehler aufgetreten.",
           );
+          console.error(response);
         }
       } catch (error) {
+        unstable_rethrow(error);
         toast.error("Beim Löschen ist ein Fehler aufgetreten.");
         console.error(error);
       }
