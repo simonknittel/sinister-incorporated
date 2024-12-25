@@ -8,8 +8,6 @@ export function middleware(request: NextRequest) {
   // Early return. Make sure to use `authenticatePage()` on individual pages in order to fully authenticate the user.
   if (pathname.startsWith("/app") && !sessionCookie) {
     return NextResponse.redirect(new URL(`/`, request.url));
-  } else if (pathname === "/" && sessionCookie) {
-    return NextResponse.redirect(new URL(`/app`, request.url));
   }
 
   return NextResponse.next();
