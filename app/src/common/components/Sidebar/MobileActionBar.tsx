@@ -26,10 +26,11 @@ export const MobileActionBar = async ({ className }: Props) => {
   const showOperations =
     (await dedupedGetUnleashFlag("EnableOperations")) &&
     (await authentication.authorize("operation", "manage"));
-  const showDocuments = await authentication.authorize(
-    "documentIntroductionCompendium",
-    "read",
-  );
+  const showDocuments =
+    (await authentication.authorize(
+      "documentIntroductionCompendium",
+      "read",
+    )) || (await authentication.authorize("documentAllianceManifest", "read"));
   const showCareerRead = await authentication.authorize("career", "read");
 
   return (

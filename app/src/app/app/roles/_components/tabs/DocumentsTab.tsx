@@ -24,6 +24,15 @@ export const DocumentsTab = () => {
 
         <YesNoCheckbox {...register("documentIntroductionCompendium;read")} />
       </div>
+
+      <div className="py-2 flex justify-between items-center mt-2">
+        <div>
+          <h4 className="font-bold">Alliance Manifest</h4>
+          {/* <p></p> */}
+        </div>
+
+        <YesNoCheckbox {...register("documentAllianceManifest;read")} />
+      </div>
     </TabPanel>
   );
 };
