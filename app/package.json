@@ -36,6 +36,7 @@
     "@unleash/nextjs": "1.5.0",
     "@vercel/analytics": "1.4.1",
     "@vercel/speed-insights": "1.1.0",
+    "@xyflow/react": "12.3.6",
     "algoliasearch": "4.24.0",
     "change-case": "5.4.4",
     "clsx": "2.1.1",

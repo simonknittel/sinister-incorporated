@@ -6,6 +6,7 @@ import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
 import { IoDocuments } from "react-icons/io5";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
+import { TbMilitaryRank } from "react-icons/tb";
 import { Chip } from "../Chip";
 import { CmdKLoader } from "../CmdK/CmdKLoader";
 import { Footer } from "../Footer";
@@ -47,6 +48,7 @@ export const DesktopSidebar = async () => {
   );
   const showManufacturersSeriesAndVariantsManage =
     await authentication.authorize("manufacturersSeriesAndVariants", "manage");
+  const showCareerRead = await authentication.authorize("career", "read");
 
   const disableAlgolia =
     (await dedupedGetUnleashFlag("DisableAlgolia")) || false;
@@ -149,6 +151,19 @@ export const DesktopSidebar = async () => {
                   >
                     <IoDocuments />
                     Dokumente
+                  </Link>
+                </li>
+              )}
+
+              {showCareerRead && (
+                <li>
+                  <Link
+                    href="/app/career"
+                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
+                  >
+                    <TbMilitaryRank />
+                    Karriere
+                    <Chip title="Proof of Concept">PoC</Chip>
                   </Link>
                 </li>
               )}

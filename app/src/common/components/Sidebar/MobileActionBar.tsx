@@ -6,6 +6,7 @@ import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
 import { IoDocuments } from "react-icons/io5";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
+import { TbMilitaryRank } from "react-icons/tb";
 import { Chip } from "../Chip";
 import { Footer } from "../Footer";
 import { Account } from "./Account";
@@ -22,15 +23,14 @@ export const MobileActionBar = async ({ className }: Props) => {
   const showSpynet =
     (await authentication.authorize("citizen", "read")) ||
     (await authentication.authorize("organization", "read"));
-
   const showOperations =
     (await dedupedGetUnleashFlag("EnableOperations")) &&
     (await authentication.authorize("operation", "manage"));
-
   const showDocuments = await authentication.authorize(
     "documentIntroductionCompendium",
     "read",
   );
+  const showCareerRead = await authentication.authorize("career", "read");
 
   return (
     <div
@@ -40,7 +40,7 @@ export const MobileActionBar = async ({ className }: Props) => {
       )}
     >
       <nav className="h-full">
-        <ul className="h-full flex gap-4 justify-evenly">
+        <ul className="h-full flex justify-evenly">
           <li className="h-full py-1">
             <Link
               href="/app"
@@ -97,6 +97,18 @@ export const MobileActionBar = async ({ className }: Props) => {
               >
                 <IoDocuments className="text-xl" />
                 <span className="text-xs">Dokumente</span>
+              </Link>
+            </li>
+          )}
+
+          {showCareerRead && (
+            <li className="h-full py-1">
+              <Link
+                href="/app/documents"
+                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
+              >
+                <TbMilitaryRank className="text-xl" />
+                <span className="text-xs">Karriere</span>
               </Link>
             </li>
           )}
@@ -177,6 +189,19 @@ export const MobileActionBar = async ({ className }: Props) => {
                       >
                         <IoDocuments />
                         Dokumente
+                      </Link>
+                    </li>
+                  )}
+
+                  {showCareerRead && (
+                    <li>
+                      <Link
+                        href="/app/documents"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                      >
+                        <TbMilitaryRank />
+                        Karriere
+                        <Chip title="Proof of Concept">PoC</Chip>
                       </Link>
                     </li>
                   )}
