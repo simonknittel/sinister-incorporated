@@ -3,6 +3,8 @@ import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import allianceManifest from "./_assets/alliance_manifest.png";
 import introductionCompendium from "./_assets/introduction_compendium.png";
 
 export const metadata: Metadata = {
@@ -11,7 +13,14 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const authentication = await authenticatePage("/app/documents");
-  await authentication.authorizePage("documentIntroductionCompendium", "read");
+  if (
+    !(await authentication.authorize(
+      "documentIntroductionCompendium",
+      "read",
+    )) &&
+    !(await authentication.authorize("documentAllianceManifest", "read"))
+  )
+    redirect("/app/forbidden");
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
@@ -20,17 +29,39 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-8 items-center mt-8">
-        <Link
-          href="https://downloads.sinister-incorporated.de/introduction.pdf"
-          className="block"
-        >
-          <Image
-            src={introductionCompendium}
-            alt="Einführungskompendium"
-            width={720}
-            height={405}
-          />
-        </Link>
+        {(await authentication.authorize(
+          "documentIntroductionCompendium",
+          "read",
+        )) && (
+          <Link
+            href="https://downloads.sinister-incorporated.de/introduction.pdf"
+            className="block"
+          >
+            <Image
+              src={introductionCompendium}
+              alt="Einführungskompendium"
+              width={720}
+              height={405}
+            />
+          </Link>
+        )}
+
+        {(await authentication.authorize(
+          "documentAllianceManifest",
+          "read",
+        )) && (
+          <Link
+            href="https://downloads.sinister-incorporated.de/alliance.pdf"
+            className="block"
+          >
+            <Image
+              src={allianceManifest}
+              alt="Alliance Manifest"
+              width={720}
+              height={405}
+            />
+          </Link>
+        )}
       </div>
     </main>
   );

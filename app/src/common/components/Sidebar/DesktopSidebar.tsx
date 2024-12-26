@@ -21,10 +21,11 @@ export const DesktopSidebar = async () => {
   const showOperations =
     (await dedupedGetUnleashFlag("EnableOperations")) &&
     (await authentication.authorize("operation", "manage"));
-  const showDocuments = await authentication.authorize(
-    "documentIntroductionCompendium",
-    "read",
-  );
+  const showDocuments =
+    (await authentication.authorize(
+      "documentIntroductionCompendium",
+      "read",
+    )) || (await authentication.authorize("documentAllianceManifest", "read"));
   const showShipManage = await authentication.authorize("ship", "manage");
   const showOrgFleetRead = await authentication.authorize("orgFleet", "read");
   const showCitizenRead = await authentication.authorize("citizen", "read");
