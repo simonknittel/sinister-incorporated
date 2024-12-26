@@ -27,11 +27,12 @@
     "psdb",
     "psql",
     "rgba",
+    "S1NISTER",
     "Strg",
     "trpc",
     "uidotdev",
     "vercel",
-    "S1NISTER"
+    "xyflow"
   ],
   "dotenv.enableAutocloaking": false,
   "typescript.tsdk": "node_modules/typescript/lib",

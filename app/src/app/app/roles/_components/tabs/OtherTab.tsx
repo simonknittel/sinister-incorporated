@@ -4,6 +4,7 @@ import TabPanel from "@/common/components/tabs/TabPanel";
 import YesNoCheckbox from "@/common/components/YesNoCheckbox";
 import { type Role } from "@prisma/client";
 import { usePermissionsContext } from "../PermissionsContext";
+import { CareerSection } from "./components/CareerSection";
 import { RoleSection } from "./components/RoleSection";
 
 interface Props {
@@ -41,6 +42,8 @@ const OtherTab = ({ roles }: Readonly<Props>) => {
 
         <YesNoCheckbox {...register("role;manage")} />
       </div>
+
+      <CareerSection className="mt-2" />
 
       <RoleSection roles={roles} className="mt-4" />
     </TabPanel>
