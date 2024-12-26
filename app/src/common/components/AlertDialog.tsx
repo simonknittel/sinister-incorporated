@@ -110,7 +110,7 @@ type AlertDialogActionProps = ComponentProps<
 >;
 
 export const AlertDialogAction = (props: AlertDialogActionProps) => {
-  const { className, form, disabled, ...rest } = props;
+  const { className, type, form, disabled, ...rest } = props;
 
   return (
     <AlertDialogPrimitive.Action
@@ -119,17 +119,22 @@ export const AlertDialogAction = (props: AlertDialogActionProps) => {
         {
           "enabled:hover:bg-sinister-red-300 enabled:active:bg-sinister-red-300":
             !disabled,
-          "opacity-50 cursor-not-allowed": disabled,
+          "opacity-50 cursor-not-allowed pointer-events-none": disabled,
         },
         className,
       )}
-      onClick={() => {
-        if (!form) return;
-        // TODO: This shouldn't be necessary. I'm very confused why this doesn't work without it.
-        (
-          document.getElementById(form) as HTMLFormElement | null
-        )?.requestSubmit();
-      }}
+      onClick={
+        !disabled
+          ? () => {
+              if (type !== "submit" || !form) return;
+              // TODO: This shouldn't be necessary. I'm very confused why this doesn't work without it.
+              (
+                document.getElementById(form) as HTMLFormElement | null
+              )?.requestSubmit();
+            }
+          : undefined
+      }
+      type={type}
       {...rest}
     />
   );
