@@ -4,7 +4,7 @@ import { authenticateAction } from "@/auth/server";
 import { serverActionErrorHandler } from "@/common/actions/serverActionErrorHandler";
 import { type ServerAction } from "@/common/actions/types";
 import { prisma } from "@/db";
-import { revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const updateSchema = z.object({
@@ -54,10 +54,10 @@ export const updateSeries: ServerAction = async (formData) => {
     /**
      * Revalidate cache(s)
      */
-    revalidateTag("series");
-    revalidateTag(`series:${updatedItem.id}`);
-    revalidateTag(`manufacturer:${updatedItem.manufacturerId}`);
-    revalidateTag(`manufacturer`);
+    revalidatePath(`/app/fleet/settings`);
+    revalidatePath(
+      `/app/fleet/settings/manufacturers/${updatedItem.manufacturerId}`,
+    );
 
     /**
      * Respond with the result
@@ -115,7 +115,7 @@ export const deleteSeriesAction: ServerAction = async (formData) => {
     /**
      * Delete
      */
-    const deletedItem = await prisma.series.delete({
+    const deletedSeries = await prisma.series.delete({
       where: {
         id,
       },
@@ -124,10 +124,10 @@ export const deleteSeriesAction: ServerAction = async (formData) => {
     /**
      * Revalidate cache(s)
      */
-    revalidateTag("series");
-    revalidateTag(`series:${deletedItem.id}`);
-    revalidateTag(`manufacturer:${deletedItem.manufacturerId}`);
-    revalidateTag(`manufacturer`);
+    revalidatePath(`/app/fleet/settings`);
+    revalidatePath(
+      `/app/fleet/settings/manufacturers/${deletedSeries.manufacturerId}`,
+    );
 
     /**
      * Respond with the result

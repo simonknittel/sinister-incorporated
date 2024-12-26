@@ -5,7 +5,7 @@ import Button from "@/common/components/Button";
 import { type Variant } from "@prisma/client";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { FaPen, FaSpinner } from "react-icons/fa";
 
 const UpdateVariantModal = dynamic(() =>
@@ -28,13 +28,20 @@ export const UpdateVariantButton = ({ className, variant }: Props) => {
       </Button>
 
       {isOpen && (
-        <UpdateVariantModal
-          onRequestClose={() => {
-            setIsOpen(false);
-            action.setIsOpen(false);
-          }}
-          variant={variant}
-        />
+        /**
+         * The `dynamic()` triggers the closest `Suspense` to show the fallback. This
+         * leads to much bigger parts of the page or even the whole page showing the
+         * fallback instead of only the button.
+         */
+        <Suspense>
+          <UpdateVariantModal
+            onRequestClose={() => {
+              setIsOpen(false);
+              action.setIsOpen(false);
+            }}
+            variant={variant}
+          />
+        </Suspense>
       )}
     </div>
   );

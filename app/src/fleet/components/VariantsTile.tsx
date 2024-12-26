@@ -2,27 +2,19 @@ import { Actions } from "@/common/components/Actions";
 import { prisma } from "@/db";
 import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import clsx from "clsx";
-import { unstable_cache } from "next/cache";
 import { CreateVariantButton } from "./CreateVariantButton";
 import { DeleteVariantButton } from "./DeleteVariantButton";
 import { UpdateVariantButton } from "./UpdateVariantButton";
 
 const getVariantsBySeriesId = (seriesId: Series["id"]) => {
-  return unstable_cache(
-    (seriesId: Series["id"]) =>
-      prisma.variant.findMany({
-        where: {
-          seriesId,
-        },
-        orderBy: {
-          name: "asc",
-        },
-      }),
-    ["variant"],
-    {
-      tags: [`series:${seriesId}`],
+  return prisma.variant.findMany({
+    where: {
+      seriesId,
     },
-  )(seriesId);
+    orderBy: {
+      name: "asc",
+    },
+  });
 };
 
 type Props = Readonly<{

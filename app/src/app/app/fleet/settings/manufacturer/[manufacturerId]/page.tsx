@@ -2,7 +2,7 @@ import { ImageUpload } from "@/common/components/ImageUpload";
 import { EditableManufacturerName } from "@/fleet/components/EditableManufacturerName";
 import { SeriesTile } from "@/fleet/components/SeriesTile";
 import { TileSkeleton } from "@/fleet/components/TileSkeleton";
-import { cachedGetManufacturerById } from "@/fleet/utils/getManufacturerById";
+import { getManufacturerById } from "@/fleet/utils/getManufacturerById";
 import { log } from "@/logging";
 import clsx from "clsx";
 import { type Metadata } from "next";
@@ -20,7 +20,7 @@ export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
-    const manufacturer = await cachedGetManufacturerById(
+    const manufacturer = await getManufacturerById(
       (await props.params).manufacturerId,
     );
     if (!manufacturer) return {};
@@ -47,7 +47,7 @@ type Props = Readonly<{
 }>;
 
 export default async function Page(props: Props) {
-  const manufacturer = await cachedGetManufacturerById(
+  const manufacturer = await getManufacturerById(
     (await props.params).manufacturerId,
   );
   if (!manufacturer) notFound();

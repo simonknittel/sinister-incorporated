@@ -1,4 +1,4 @@
-import { cachedGetManufacturerById } from "@/fleet/utils/getManufacturerById";
+import { getManufacturerById } from "@/fleet/utils/getManufacturerById";
 import { notFound } from "next/navigation";
 
 type Params = Promise<
@@ -12,7 +12,7 @@ type Props = Readonly<{
 }>;
 
 export default async function Page(props: Props) {
-  const manufacturer = await cachedGetManufacturerById(
+  const manufacturer = await getManufacturerById(
     (await props.params).manufacturerId,
   );
   if (!manufacturer) notFound();

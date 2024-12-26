@@ -17,7 +17,7 @@ import { unstable_rethrow } from "next/navigation";
 import { useId, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
-import { deleteManufacturerAction } from "../actions/manufacturer";
+import { deleteManufacturerAction } from "../actions/deleteManufacturer";
 
 type Props = Readonly<{
   className?: string;
@@ -75,14 +75,7 @@ export const DeleteManufacturerButton = ({
           <AlertDialogFooter>
             <AlertDialogCancel>Abbrechen</AlertDialogCancel>
 
-            <AlertDialogAction
-              type="submit"
-              form={id}
-              onClick={() => {
-                // TODO: This shouldn't be necessary. I'm very confused why this doesn't work without it.
-                document.getElementById(id)?.requestSubmit();
-              }}
-            >
+            <AlertDialogAction type="submit" form={id}>
               Löschen
             </AlertDialogAction>
           </AlertDialogFooter>

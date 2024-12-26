@@ -109,18 +109,26 @@ type AlertDialogActionProps = ComponentProps<
   typeof AlertDialogPrimitive.Action
 >;
 
-export const AlertDialogAction = ({
-  className,
-  ...props
-}: AlertDialogActionProps) => (
-  <AlertDialogPrimitive.Action
-    className={clsx(
-      "flex items-center justify-center rounded uppercase gap-4 min-h-11 py-2 text-base font-bold bg-sinister-red-500 text-neutral-50 enabled:hover:bg-sinister-red-300 enabled:active:bg-sinister-red-300 px-6",
-      className,
-    )}
-    {...props}
-  />
-);
+export const AlertDialogAction = (props: AlertDialogActionProps) => {
+  const { className, form, ...rest } = props;
+
+  return (
+    <AlertDialogPrimitive.Action
+      className={clsx(
+        "flex items-center justify-center rounded uppercase gap-4 min-h-11 py-2 text-base font-bold bg-sinister-red-500 text-neutral-50 enabled:hover:bg-sinister-red-300 enabled:active:bg-sinister-red-300 px-6",
+        className,
+      )}
+      onClick={() => {
+        if (!form) return;
+        // TODO: This shouldn't be necessary. I'm very confused why this doesn't work without it.
+        (
+          document.getElementById(form) as HTMLFormElement | null
+        )?.requestSubmit();
+      }}
+      {...rest}
+    />
+  );
+};
 
 type AlertDialogCancelProps = ComponentProps<
   typeof AlertDialogPrimitive.Cancel

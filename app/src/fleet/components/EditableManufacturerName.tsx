@@ -2,7 +2,7 @@
 
 import { EditableText } from "@/common/components/EditableText";
 import { type Manufacturer } from "@prisma/client";
-import { updateManufacturer } from "../actions/manufacturer";
+import { updateManufacturerAction } from "../actions/updateManufacturer";
 
 type Props = Readonly<{
   className?: string;
@@ -18,7 +18,7 @@ export const EditableManufacturerName = ({
     _formData.set("id", manufacturer.id);
     _formData.set("name", formData.get("value")?.toString() || "");
 
-    return updateManufacturer(_formData);
+    return updateManufacturerAction(_formData);
   };
 
   return (

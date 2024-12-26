@@ -14,7 +14,6 @@ export const manufacturerRouter = createTRPCRouter({
           id: input.id,
         },
       });
-
       return manufacturer;
     }),
 

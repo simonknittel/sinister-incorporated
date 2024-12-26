@@ -1,7 +1,6 @@
 import { authenticateApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
-import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -34,12 +33,6 @@ export async function POST(request: Request) {
         name: data.name,
       },
     });
-
-    /**
-     * Revalidate cache(s)
-     */
-    revalidateTag("manufacturer");
-    revalidateTag(`manufacturer:${createdItem.id}`);
 
     return NextResponse.json(createdItem);
   } catch (error) {

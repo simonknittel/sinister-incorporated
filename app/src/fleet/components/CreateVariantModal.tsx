@@ -2,10 +2,11 @@ import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
 import { api } from "@/trpc/react";
 import { type Manufacturer, type Series } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { unstable_rethrow } from "next/navigation";
+import { useId, useTransition } from "react";
 import { toast } from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
+import { createVariant } from "../actions/createVariant";
 
 type Props = Readonly<{
   onRequestClose: () => void;
@@ -18,8 +19,9 @@ export const CreateVariantModal = ({
   manufacturerId,
   seriesId,
 }: Props) => {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const nameField = useId();
+
   const manufacturer = api.manufacturer.getById.useQuery(
     {
       id: manufacturerId,
@@ -39,86 +41,67 @@ export const CreateVariantModal = ({
     },
   );
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
+  const formAction = (formData: FormData) => {
+    console.log("formData", Array.from(formData.entries()));
 
-    setIsLoading(true);
+    startTransition(async () => {
+      try {
+        const response = await createVariant(formData);
 
-    try {
-      const response = await fetch("/api/variant", {
-        method: "POST",
-        body: JSON.stringify({
-          seriesId: event.target.seriesId.value,
-          name: event.target.name.value,
-          status: event.target.status.value,
-        }),
-      });
-
-      if (response.ok) {
-        router.refresh();
-        toast.success("Erfolgreich gespeichert");
-        onRequestClose();
-      } else {
-        toast.error("Beim Speichern ist ein Fehler aufgetreten.");
+        if (response.success) {
+          toast.success(response.success);
+          onRequestClose();
+        } else {
+          toast.error(response.error);
+          console.error(response.error);
+        }
+      } catch (error) {
+        unstable_rethrow(error);
+        toast.error(
+          "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+        );
+        console.error(error);
       }
-    } catch (error) {
-      toast.error("Beim Speichern ist ein Fehler aufgetreten.");
-      console.error(error);
-    }
-
-    setIsLoading(false);
+    });
   };
 
   return (
     <Modal isOpen={true} onRequestClose={onRequestClose} className="w-[480px]">
       <h2 className="text-xl font-bold">Variante anlegen</h2>
 
-      <form onSubmit={(e) => handleSubmit(e)}>
-        <label className="mt-6 block" htmlFor="manufacturerId">
-          Hersteller
-        </label>
+      <form action={formAction}>
+        <label className="mt-6 block">Hersteller</label>
 
         {manufacturer.isFetching ? (
           <div className="rounded bg-neutral-900 mt-2 animate-pulse h-10" />
         ) : (
-          <select
-            autoFocus={!Boolean(manufacturerId)}
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
-            defaultValue={manufacturerId}
-            disabled={Boolean(manufacturerId)}
-            id="manufacturerId"
-            name="manufacturerId"
-          >
-            <option value={manufacturerId}>
+          <>
+            <p className="p-2 rounded bg-neutral-900 w-full mt-2 opacity-50">
               {manufacturer.data?.name || "???"}
-            </option>
-          </select>
+            </p>
+            <input
+              type="hidden"
+              defaultValue={manufacturerId}
+              name="manufacturerId"
+            />
+          </>
         )}
 
-        <label className="block mt-4" htmlFor="seriesId">
-          Serie
-        </label>
+        <label className="block mt-4">Serie</label>
 
         {series.isFetching ? (
           <div className="rounded bg-neutral-900 mt-2 animate-pulse h-10" />
         ) : (
-          <select
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
-            defaultValue={seriesId}
-            disabled={Boolean(seriesId)}
-            id="seriesId"
-            name="seriesId"
-            required
-          >
-            {series.data?.map((singleSeries) => (
-              <option key={singleSeries.id} value={singleSeries.id}>
-                {singleSeries.name}
-              </option>
-            ))}
-          </select>
+          <>
+            <p className="p-2 rounded bg-neutral-900 w-full mt-2 opacity-50">
+              {series.data?.find((series) => series.id === seriesId)?.name ||
+                "???"}
+            </p>
+            <input type="hidden" defaultValue={seriesId} name="seriesId" />
+          </>
         )}
 
-        <label className="mt-6 block" htmlFor="name">
+        <label className="mt-6 block" htmlFor={nameField}>
           Name
         </label>
 
@@ -126,13 +109,13 @@ export const CreateVariantModal = ({
           <div className="rounded bg-neutral-900 mt-2 animate-pulse h-10" />
         ) : (
           <input
-            autoFocus={Boolean(manufacturerId)}
+            autoFocus
             className="p-2 rounded bg-neutral-900 w-full mt-2"
             defaultValue={
               series.data?.find((singleSeries) => singleSeries.id === seriesId)
                 ?.name || ""
             }
-            id="name"
+            id={nameField}
             name="name"
             required
             type="text"
@@ -157,9 +140,9 @@ export const CreateVariantModal = ({
         <div className="flex justify-end mt-8">
           <Button
             type="submit"
-            disabled={isLoading || manufacturer.isFetching || series.isFetching}
+            disabled={isPending || manufacturer.isFetching || series.isFetching}
           >
-            {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
+            {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Speichern
           </Button>
         </div>

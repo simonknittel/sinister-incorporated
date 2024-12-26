@@ -1,13 +1,8 @@
 import { authenticateApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
-import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-
-/**
- * Make sure this file matches `/src/lib/serverActions/manufacturer.ts`.
- */
 
 type Params = Promise<{
   id: string;
@@ -55,16 +50,10 @@ export async function PATCH(request: Request, props: { params: Params }) {
      */
     const updatedItem = await prisma.manufacturer.update({
       where: {
-        id: paramsData.id,
+        id: existingItem.id,
       },
       data,
     });
-
-    /**
-     * Revalidate cache(s)
-     */
-    revalidateTag("manufacturer");
-    revalidateTag(`manufacturer:${updatedItem.id}`);
 
     /**
      * Respond with the result

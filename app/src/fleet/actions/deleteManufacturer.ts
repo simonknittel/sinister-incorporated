@@ -1,52 +1,57 @@
 "use server";
+
 import { authenticateAction } from "@/auth/server";
 import { serverActionErrorHandler } from "@/common/actions/serverActionErrorHandler";
 import type { ServerAction } from "@/common/actions/types";
 import { prisma } from "@/db";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const schema = z.object({
   id: z.string().cuid(),
-  name: z.string().trim(),
 });
 
-export const updateShipAction: ServerAction = async (formData) => {
+export const deleteManufacturerAction: ServerAction = async (formData) => {
   try {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("updateShipAction");
-    await authentication.authorizeAction("ship", "manage");
+    const authentication = await authenticateAction("deleteManufacturerAction");
+    await authentication.authorizeAction(
+      "manufacturersSeriesAndVariants",
+      "manage",
+    );
 
     /**
      * Validate the request
      */
-    const { id, ...data } = schema.parse({
+    const { id } = schema.parse({
       id: formData.get("id"),
-      name: formData.get("name"),
     });
 
     /**
      * Make sure the item exists
      */
-    const existingItem = await prisma.ship.findUnique({
+    const existingItem = await prisma.manufacturer.findUnique({
       where: {
         id,
-        ownerId: authentication.session.user.id,
       },
     });
     if (!existingItem) throw new Error("Not found");
 
     /**
-     * Update
+     * Delete
      */
-    await prisma.ship.update({
+    await prisma.manufacturer.delete({
       where: {
         id,
-        ownerId: authentication.session.user.id,
       },
-      data,
     });
+
+    /**
+     * Revalidate cache(s)
+     */
+    revalidatePath(`/app/fleet/settings`);
 
     /**
      * Respond with the result
@@ -61,9 +66,8 @@ export const updateShipAction: ServerAction = async (formData) => {
         "401": "Du musst angemeldet sein, um diese Aktion auszuführen",
         "403": "Du bist nicht berechtigt, diese Aktion auszuführen",
         "404":
-          "Beim Speichern ist ein Fehler aufgetreten. Das Schiff konnte nicht gefunden werden.",
-        "409": "Konflikt. Bitte aktualisiere die Seite und probiere es erneut.",
-        "500": "Beim Speichern ist ein unerwarteter Fehler aufgetreten",
+          "Beim Löschen ist ein Fehler aufgetreten. Der Hersteller konnte nicht gefunden werden.",
+        "500": "Beim Löschen ist ein unerwarteter Fehler aufgetreten",
       },
     });
   }

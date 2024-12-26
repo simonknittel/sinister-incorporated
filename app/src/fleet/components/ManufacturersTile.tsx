@@ -3,13 +3,13 @@ import { env } from "@/env";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { getManufacturersCached } from "../utils/getManufacturers";
+import { getManufacturers } from "../utils/getManufacturers";
 import { DeleteManufacturerButton } from "./DeleteManufacturerButton";
 
 const GRID_COLS = "grid-cols-[48px_192px_1fr_44px]";
 
 export const ManufacturersTile = async () => {
-  const rows = await getManufacturersCached();
+  const rows = await getManufacturers();
 
   return (
     <section className="p-8 pb-4 bg-neutral-800/50  mt-4 rounded-2xl overflow-auto">

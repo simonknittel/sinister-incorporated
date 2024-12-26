@@ -5,12 +5,8 @@ import { serverActionErrorHandler } from "@/common/actions/serverActionErrorHand
 import { type ServerAction } from "@/common/actions/types";
 import { prisma } from "@/db";
 import { VariantStatus } from "@prisma/client";
-import { revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
-
-/**
- * Make sure this file matches `/src/app/api/variant/[id]`.
- */
 
 const updateSchema = z.object({
   id: z.string().cuid(),
@@ -58,14 +54,20 @@ export const updateVariant: ServerAction = async (formData) => {
         id,
       },
       data,
+      include: {
+        series: true,
+      },
     });
 
     /**
      * Revalidate cache(s)
      */
-    revalidateTag("variant");
-    revalidateTag(`variant:${updatedItem.id}`);
-    revalidateTag(`series:${updatedItem.seriesId}`);
+    revalidatePath(
+      `/app/fleet/settings/manufacturers/${updatedItem.series.manufacturerId}`,
+    );
+    revalidatePath(
+      `/app/fleet/settings/manufacturers/${updatedItem.series.manufacturerId}/series/${updatedItem.seriesId}`,
+    );
 
     /**
      * Respond with the result
@@ -127,15 +129,20 @@ export const deleteVariantAction: ServerAction = async (formData) => {
       where: {
         id,
       },
+      include: {
+        series: true,
+      },
     });
 
     /**
      * Revalidate cache(s)
      */
-    revalidateTag("variant");
-    revalidateTag(`variant:${deletedItem.id}`);
-    revalidateTag(`series:${deletedItem.seriesId}`);
-    revalidateTag(`manufacturer`);
+    revalidatePath(
+      `/app/fleet/settings/manufacturers/${deletedItem.series.manufacturerId}`,
+    );
+    revalidatePath(
+      `/app/fleet/settings/manufacturers/${deletedItem.series.manufacturerId}/series/${deletedItem.seriesId}`,
+    );
 
     /**
      * Respond with the result
