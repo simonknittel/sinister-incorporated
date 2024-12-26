@@ -1,21 +1,10 @@
 import { Actions } from "@/common/components/Actions";
-import { prisma } from "@/db";
 import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import clsx from "clsx";
+import { getVariantsBySeriesId } from "../utils/getVariantsBySeriesId";
 import { CreateVariantButton } from "./CreateVariantButton";
 import { DeleteVariantButton } from "./DeleteVariantButton";
 import { UpdateVariantButton } from "./UpdateVariantButton";
-
-const getVariantsBySeriesId = (seriesId: Series["id"]) => {
-  return prisma.variant.findMany({
-    where: {
-      seriesId,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  });
-};
 
 type Props = Readonly<{
   className?: string;
@@ -91,7 +80,10 @@ export const VariantsTile = async ({
                 <td>
                   <Actions>
                     <UpdateVariantButton variant={row} />
-                    <DeleteVariantButton variant={row} />
+                    <DeleteVariantButton
+                      variant={row}
+                      shipCount={row._count.ships}
+                    />
                   </Actions>
                 </td>
               </tr>
