@@ -2,7 +2,7 @@ import { Actions } from "@/common/components/Actions";
 import { type Manufacturer } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
-import { getSeriesByManufacturerIdCached } from "../utils/getSeriesByManufacturerId";
+import { getSeriesByManufacturerId } from "../utils/getSeriesByManufacturerId";
 import { CreateSeriesButton } from "./CreateSeriesButton";
 import { DeleteSeriesButton } from "./DeleteSeriesButton";
 
@@ -14,7 +14,7 @@ type Props = Readonly<{
 const GRID_COLS = "grid-cols-[128px_1fr_44px]";
 
 export const SeriesTile = async ({ className, manufacturerId }: Props) => {
-  const series = await getSeriesByManufacturerIdCached(manufacturerId);
+  const series = await getSeriesByManufacturerId(manufacturerId);
 
   return (
     <section

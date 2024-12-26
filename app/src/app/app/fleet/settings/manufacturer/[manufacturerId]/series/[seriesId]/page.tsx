@@ -72,8 +72,8 @@ export default async function Page(props: Props) {
 
       <Suspense fallback={<TileSkeleton className="w-full flex-1" />}>
         <VariantsTile
-          manufacturerId={series.id}
-          seriesId={manufacturer.id}
+          manufacturerId={manufacturer.id}
+          seriesId={series.id}
           className="w-full flex-1"
         />
       </Suspense>

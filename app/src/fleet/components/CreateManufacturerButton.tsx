@@ -2,7 +2,7 @@
 
 import Button from "@/common/components/Button";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { FaPlus, FaSpinner } from "react-icons/fa";
 
 const CreateManufacturerModal = dynamic(() =>
@@ -21,7 +21,14 @@ export const CreateManufacturereButton = () => {
       </Button>
 
       {isOpen && (
-        <CreateManufacturerModal onRequestClose={() => setIsOpen(false)} />
+        /**
+         * The `dynamic()` triggers the closest `Suspense` to show the fallback. This
+         * leads to much bigger parts of the page or even the whole page showing the
+         * fallback instead of only the button.
+         */
+        <Suspense>
+          <CreateManufacturerModal onRequestClose={() => setIsOpen(false)} />
+        </Suspense>
       )}
     </>
   );

@@ -2,6 +2,7 @@ import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
 import { api } from "@/trpc/react";
 import { type Variant } from "@prisma/client";
+import { unstable_rethrow } from "next/navigation";
 import { useId, useTransition } from "react";
 import { toast } from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
@@ -39,6 +40,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
           );
         }
       } catch (error) {
+        unstable_rethrow(error);
         toast.error("Beim Speichern ist ein Fehler aufgetreten.");
         console.error(error);
       }

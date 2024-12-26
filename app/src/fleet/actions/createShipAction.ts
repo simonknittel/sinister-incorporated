@@ -25,7 +25,7 @@ export const createShipAction = async (formData: FormData) => {
      */
     const result = schema.safeParse({
       variantId: formData.get("variantId"),
-      name: formData.get("name"),
+      name: formData.has("name") ? formData.get("name") : undefined,
     });
     if (!result.success) {
       return {
