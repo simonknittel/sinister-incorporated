@@ -42,8 +42,6 @@ export const CreateVariantModal = ({
   );
 
   const formAction = (formData: FormData) => {
-    console.log("formData", Array.from(formData.entries()));
-
     startTransition(async () => {
       try {
         const response = await createVariant(formData);

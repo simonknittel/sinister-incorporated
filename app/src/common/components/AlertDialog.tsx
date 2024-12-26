@@ -110,12 +110,17 @@ type AlertDialogActionProps = ComponentProps<
 >;
 
 export const AlertDialogAction = (props: AlertDialogActionProps) => {
-  const { className, form, ...rest } = props;
+  const { className, form, disabled, ...rest } = props;
 
   return (
     <AlertDialogPrimitive.Action
       className={clsx(
-        "flex items-center justify-center rounded uppercase gap-4 min-h-11 py-2 text-base font-bold bg-sinister-red-500 text-neutral-50 enabled:hover:bg-sinister-red-300 enabled:active:bg-sinister-red-300 px-6",
+        "flex items-center justify-center rounded uppercase gap-4 min-h-11 py-2 text-base font-bold bg-sinister-red-500 text-neutral-50 px-6",
+        {
+          "enabled:hover:bg-sinister-red-300 enabled:active:bg-sinister-red-300":
+            !disabled,
+          "opacity-50 cursor-not-allowed": disabled,
+        },
         className,
       )}
       onClick={() => {

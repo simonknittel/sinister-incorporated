@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/common/components/AlertDialog";
 import Button from "@/common/components/Button";
+import Note from "@/common/components/Note";
 import { type Variant } from "@prisma/client";
 import { unstable_rethrow } from "next/navigation";
 import { useId, useTransition } from "react";
@@ -22,9 +23,14 @@ import { deleteVariantAction } from "../actions/variant";
 type Props = Readonly<{
   className?: string;
   variant: Pick<Variant, "id" | "name">;
+  shipCount: number;
 }>;
 
-export const DeleteVariantButton = ({ className, variant }: Props) => {
+export const DeleteVariantButton = ({
+  className,
+  variant,
+  shipCount,
+}: Props) => {
   const [isPending, startTransition] = useTransition();
   const id = useId();
 
@@ -67,12 +73,26 @@ export const DeleteVariantButton = ({ className, variant }: Props) => {
             <AlertDialogDescription>
               Willst du &quot;{variant.name}&quot; löschen?
             </AlertDialogDescription>
+
+            {shipCount > 0 && (
+              <Note
+                type="error"
+                message={
+                  <p>
+                    Diese Variante kann nicht gelöscht werden. Sie wird von{" "}
+                    {shipCount} Schiffen verwendet. Kontaktiere <em>ind3x</em>{" "}
+                    um sie mit einer anderen zu kombinieren/ersetzen oder zu
+                    löschen.
+                  </p>
+                }
+              />
+            )}
           </AlertDialogHeader>
 
           <AlertDialogFooter>
             <AlertDialogCancel>Abbrechen</AlertDialogCancel>
 
-            <AlertDialogAction type="submit" form={id}>
+            <AlertDialogAction type="submit" form={id} disabled={shipCount > 0}>
               Löschen
             </AlertDialogAction>
           </AlertDialogFooter>
