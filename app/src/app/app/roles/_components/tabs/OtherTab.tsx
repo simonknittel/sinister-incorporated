@@ -39,6 +39,12 @@ const OtherTab = ({ roles }: Readonly<Props>) => {
       </div>
 
       <div className="py-2 flex justify-between items-center">
+        <h4 className="font-bold">Datenschutzerklärung bestätigen</h4>
+
+        <YesNoCheckbox {...register("user;manage")} />
+      </div>
+
+      <div className="py-2 flex justify-between items-center">
         <h4 className="font-bold">Rollen inkl. Berechtigungen verwalten</h4>
 
         <YesNoCheckbox {...register("role;manage")} />
