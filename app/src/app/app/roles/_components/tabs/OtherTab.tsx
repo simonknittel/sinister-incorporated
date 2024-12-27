@@ -6,6 +6,7 @@ import { type Role } from "@prisma/client";
 import { usePermissionsContext } from "../PermissionsContext";
 import { CareerSection } from "./components/CareerSection";
 import { RoleSection } from "./components/RoleSection";
+import { SpynetSection } from "./components/SpynetSection";
 
 interface Props {
   roles: Role[];
@@ -38,12 +39,20 @@ const OtherTab = ({ roles }: Readonly<Props>) => {
       </div>
 
       <div className="py-2 flex justify-between items-center">
+        <h4 className="font-bold">Datenschutzerklärung bestätigen</h4>
+
+        <YesNoCheckbox {...register("user;manage")} />
+      </div>
+
+      <div className="py-2 flex justify-between items-center">
         <h4 className="font-bold">Rollen inkl. Berechtigungen verwalten</h4>
 
         <YesNoCheckbox {...register("role;manage")} />
       </div>
 
       <CareerSection className="mt-2" />
+
+      <SpynetSection className="mt-2" />
 
       <RoleSection roles={roles} className="mt-4" />
     </TabPanel>

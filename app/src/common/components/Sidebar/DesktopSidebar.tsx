@@ -50,6 +50,13 @@ export const DesktopSidebar = async () => {
   const showManufacturersSeriesAndVariantsManage =
     await authentication.authorize("manufacturersSeriesAndVariants", "manage");
   const showCareerRead = await authentication.authorize("career", "read");
+  const showSpynetCitizen =
+    showCitizenRead &&
+    (await authentication.authorize("spynetCitizen", "read"));
+  const showSpynetNotes =
+    showCitizenRead && (await authentication.authorize("spynetNotes", "read"));
+  const showSpynetOther =
+    showCitizenRead && (await authentication.authorize("spynetOther", "read"));
 
   const disableAlgolia =
     (await dedupedGetUnleashFlag("DisableAlgolia")) || false;
@@ -170,49 +177,51 @@ export const DesktopSidebar = async () => {
               )}
             </ul>
 
-            {showCitizenRead && (
+            {(showSpynetCitizen || showSpynetNotes || showSpynetOther) && (
               <div className="mt-4">
                 <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
 
                 <ul>
-                  {showCitizenRead && (
-                    <>
-                      <li>
-                        <Link
-                          href="/app/spynet/citizen"
-                          className={clsx(
-                            "flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded",
-                            // {
-                            //   "before:w-[2px] before:h-[2em] before:bg-sinister-red-500 before:absolute before:left-0 relative before:rounded bg-neutral-800":
-                            //     true,
-                            // },
-                          )}
-                        >
-                          <FaTable />
-                          Citizen
-                        </Link>
-                      </li>
+                  {showSpynetCitizen && (
+                    <li>
+                      <Link
+                        href="/app/spynet/citizen"
+                        className={clsx(
+                          "flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded",
+                          // {
+                          //   "before:w-[2px] before:h-[2em] before:bg-sinister-red-500 before:absolute before:left-0 relative before:rounded bg-neutral-800":
+                          //     true,
+                          // },
+                        )}
+                      >
+                        <FaTable />
+                        Citizen
+                      </Link>
+                    </li>
+                  )}
 
-                      <li>
-                        <Link
-                          href="/app/spynet/notes"
-                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                        >
-                          <FaTable />
-                          Notizen
-                        </Link>
-                      </li>
+                  {showSpynetNotes && (
+                    <li>
+                      <Link
+                        href="/app/spynet/notes"
+                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
+                      >
+                        <FaTable />
+                        Notizen
+                      </Link>
+                    </li>
+                  )}
 
-                      <li>
-                        <Link
-                          href="/app/spynet/other"
-                          className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                        >
-                          <FaTable />
-                          Sonstige
-                        </Link>
-                      </li>
-                    </>
+                  {showSpynetOther && (
+                    <li>
+                      <Link
+                        href="/app/spynet/other"
+                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
+                      >
+                        <FaTable />
+                        Sonstige
+                      </Link>
+                    </li>
                   )}
                 </ul>
               </div>

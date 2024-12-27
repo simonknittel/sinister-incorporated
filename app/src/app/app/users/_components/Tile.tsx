@@ -1,5 +1,5 @@
 import { prisma } from "@/db";
-import Table from "./Table";
+import { Table } from "./Table";
 
 const Tile = async () => {
   const [users, entities] = await Promise.all([
@@ -30,7 +30,7 @@ const Tile = async () => {
   });
 
   return (
-    <section className="p-4 lg:p-8 bg-neutral-800/50 rounded-2xl max-w-4xl mt-4">
+    <section className="p-4 lg:p-8 bg-neutral-800/50 rounded-2xl mt-4">
       <Table users={enrichedUsers} />
     </section>
   );

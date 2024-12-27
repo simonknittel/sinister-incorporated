@@ -1,6 +1,7 @@
 "use client";
 
 import Avatar from "@/common/components/Avatar";
+import { VerifyEmailButton } from "@/users/components/VerifyEmailButton";
 import { type Entity, type User } from "@prisma/client";
 import {
   createColumnHelper,
@@ -18,13 +19,13 @@ import {
   FaSortAlphaUpAlt,
 } from "react-icons/fa";
 
-interface Props {
+type Props = Readonly<{
   users: {
     user: User;
     discordId: string;
     entity?: Entity;
   }[];
-}
+}>;
 
 type Row = {
   user: User;
@@ -34,7 +35,7 @@ type Row = {
 
 const columnHelper = createColumnHelper<Row>();
 
-const Table = ({ users }: Readonly<Props>) => {
+export const Table = ({ users }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "user_name", desc: false },
   ]);
@@ -53,21 +54,50 @@ const Table = ({ users }: Readonly<Props>) => {
                 className="grow-1 shrink-0"
               />
 
-              {props.getValue()}
+              <span className="text-ellipsis overflow-hidden">
+                {props.getValue()}
+              </span>
             </div>
           );
         },
       }),
       columnHelper.accessor("user.id", {
-        header: "Login ID",
-        cell: (props) => props.getValue(),
+        header: "User ID",
+        cell: (props) => {
+          return (
+            <span className="text-ellipsis block overflow-hidden">
+              {props.getValue()}
+            </span>
+          );
+        },
+      }),
+      columnHelper.accessor("user.emailVerified", {
+        header: "Datenschutzerklärung",
+        cell: (props) => {
+          if (!props.getValue())
+            return <VerifyEmailButton userId={props.row.original.user.id} />;
+
+          return (
+            <span>
+              {props.getValue()?.toLocaleDateString("de-DE", {
+                timeZone: "Europe/Berlin",
+                dateStyle: "medium",
+              })}
+            </span>
+          );
+        },
       }),
       columnHelper.accessor("user.name", {
         header: "Handle",
-        cell: (props) =>
-          props.getValue() || (
-            <span className="italic text-neutral-500">-</span>
-          ),
+        cell: (props) => {
+          if (!props.getValue())
+            return <span className="italic text-neutral-500">-</span>;
+          return (
+            <span className="block text-ellipsis overflow-hidden">
+              {props.getValue()}
+            </span>
+          );
+        },
       }),
       columnHelper.accessor("entity", {
         header: "",
@@ -107,15 +137,18 @@ const Table = ({ users }: Readonly<Props>) => {
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             key={headerGroup.id}
-            className="grid grid-cols-[1fr_1fr_1fr_24px] sm:grid-cols-[1fr_1fr_1fr_128px] items-center gap-4"
+            className="grid grid-cols-[1fr_1fr_minmax(80px,1fr)_1fr_24px] sm:grid-cols-[1fr_1fr_minmax(80px,1fr)_1fr_128px] items-center gap-4"
           >
             {headerGroup.headers.map((header) => (
-              <th key={header.id} className="text-left text-neutral-400">
+              <th
+                key={header.id}
+                className="text-left text-neutral-400 overflow-hidden"
+              >
                 {header.isPlaceholder ? null : (
                   <div
                     {...{
                       className: header.column.getCanSort()
-                        ? "cursor-pointer select-none flex items-center gap-2 hover:text-neutral-50"
+                        ? "cursor-pointer select-none flex items-center gap-2 hover:text-neutral-50 overflow-hidden text-ellipsis whitespace-nowrap"
                         : "",
                       onClick: header.column.getToggleSortingHandler(),
                     }}
@@ -140,10 +173,10 @@ const Table = ({ users }: Readonly<Props>) => {
         {table.getRowModel().rows.map((row) => (
           <tr
             key={row.id}
-            className="grid grid-cols-[1fr_1fr_1fr_24px] sm:grid-cols-[1fr_1fr_1fr_128px] items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
+            className="grid grid-cols-[1fr_1fr_minmax(80px,1fr)_1fr_24px] sm:grid-cols-[1fr_1fr_minmax(80px,1fr)_1fr_128px] items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
           >
             {row.getVisibleCells().map((cell) => (
-              <td key={cell.id} className="overflow-hidden text-ellipsis">
+              <td key={cell.id} className="overflow-hidden">
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}
@@ -153,5 +186,3 @@ const Table = ({ users }: Readonly<Props>) => {
     </table>
   );
 };
-
-export default Table;
