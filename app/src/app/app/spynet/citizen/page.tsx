@@ -21,7 +21,10 @@ type Props = Readonly<{
 
 export default async function Page({ searchParams }: Props) {
   const authentication = await authenticatePage("/app/spynet/citizen");
-  await authentication.authorizePage("citizen", "read");
+  await Promise.all([
+    authentication.authorizePage("citizen", "read"),
+    authentication.authorizePage("spynetCitizen", "read"),
+  ]);
 
   const urlSearchParams =
     await searchParamsNextjsToURLSearchParams(searchParams);

@@ -6,6 +6,7 @@ import { type Role } from "@prisma/client";
 import { usePermissionsContext } from "../PermissionsContext";
 import { CareerSection } from "./components/CareerSection";
 import { RoleSection } from "./components/RoleSection";
+import { SpynetSection } from "./components/SpynetSection";
 
 interface Props {
   roles: Role[];
@@ -44,6 +45,8 @@ const OtherTab = ({ roles }: Readonly<Props>) => {
       </div>
 
       <CareerSection className="mt-2" />
+
+      <SpynetSection className="mt-2" />
 
       <RoleSection roles={roles} className="mt-4" />
     </TabPanel>

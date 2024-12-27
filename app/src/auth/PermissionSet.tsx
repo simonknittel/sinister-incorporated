@@ -25,6 +25,9 @@ export type PermissionSet = {
     | "documentIntroductionCompendium"
     | "documentAllianceManifest"
     | "algolia"
+    | "spynetCitizen"
+    | "spynetNotes"
+    | "spynetOther"
     | "career";
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   operation:
