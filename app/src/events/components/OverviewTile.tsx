@@ -2,6 +2,7 @@ import { DiscordButton } from "@/common/components/DiscordButton";
 import { TimeAgoLoader } from "@/common/components/TimeAgoLoader";
 import { type getEvent } from "@/discord/getEvent";
 import clsx from "clsx";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import Image from "next/image";
 
 type Props = Readonly<{
@@ -11,8 +12,6 @@ type Props = Readonly<{
 }>;
 
 export const OverviewTile = ({ className, event, date }: Props) => {
-  const descriptionParts = event.description?.split("\n") || [];
-
   return (
     <section
       className={clsx(className)}
@@ -36,12 +35,11 @@ export const OverviewTile = ({ className, event, date }: Props) => {
         <div className="p-4 lg:p-8">
           <h2 className="font-bold">{event.name}</h2>
 
-          {descriptionParts.length > 0 &&
-            descriptionParts.map((part, index) => (
-              <p key={index} className="mt-2">
-                {part}
-              </p>
-            ))}
+          {event.description && (
+            <div className="mt-4 prose prose-invert">
+              <MDXRemote source={event.description} />
+            </div>
+          )}
 
           <dl className="mt-4">
             <dt className="text-neutral-500">Start</dt>
