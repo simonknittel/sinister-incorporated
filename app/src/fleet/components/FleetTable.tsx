@@ -38,42 +38,45 @@ type Row = OrgShip;
 
 const columnHelper = createColumnHelper<Row>();
 
-const GRID_COLS = "grid-cols-[104px_1fr_128px_56px]";
+const GRID_COLS = "grid-cols-[1fr_128px_56px]";
 
 export const FleetTable = ({ className, ships }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
-    { id: "manufacturer", desc: false },
     { id: "variant", desc: false },
   ]);
 
   const columns = useMemo(() => {
     return [
-      columnHelper.accessor("variant.series.manufacturer.name", {
-        header: "Hersteller",
-        id: "manufacturer",
+      columnHelper.accessor("variant.name", {
+        header: "Schiff",
+        id: "variant",
         cell: (row) => {
           const manufacturer = row.row.original.variant.series.manufacturer;
 
           return (
-            <div className="flex justify-center items-center gap-2">
-              {manufacturer.imageId && (
+            <div className="flex items-center gap-2">
+              {manufacturer.imageId ? (
                 <Image
                   src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.imageId}`}
                   alt={`Logo of ${manufacturer.name}`}
                   width={48}
                   height={48}
-                  className="w-[48px] h-[48px] object-contain object-center"
-                  title={row.getValue()}
+                  className="flex-none size-[48px] object-contain object-center"
+                  title={`Logo of ${manufacturer.name}`}
                 />
+              ) : (
+                <div className="flex-none size-[48px]"></div>
               )}
+
+              <div
+                className="whitespace-nowrap text-ellipsis overflow-hidden"
+                title={row.getValue()}
+              >
+                {row.getValue()}
+              </div>
             </div>
           );
         },
-      }),
-      columnHelper.accessor("variant.name", {
-        header: "Variante",
-        id: "variant",
-        cell: (row) => row.getValue(),
       }),
       columnHelper.accessor("variant.status", {
         header: "Status",
@@ -106,7 +109,7 @@ export const FleetTable = ({ className, ships }: Props) => {
   });
 
   return (
-    <table className={clsx("w-full min-w-[512px]", className)}>
+    <table className={clsx("w-full min-w-[480px]", className)}>
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
@@ -150,10 +153,7 @@ export const FleetTable = ({ className, ships }: Props) => {
             )}
           >
             {row.getVisibleCells().map((cell) => (
-              <td
-                key={cell.id}
-                className="overflow-hidden text-ellipsis whitespace-nowrap"
-              >
+              <td key={cell.id} className="overflow-hidden">
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}
