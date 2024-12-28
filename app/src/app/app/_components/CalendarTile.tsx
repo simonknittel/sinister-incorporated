@@ -17,7 +17,7 @@ export const CalendarTile = async ({ className }: Props) => {
         "flex flex-col gap-4 items-center 3xl:overflow-hidden",
       )}
     >
-      <h2 className="font-bold text-xl self-start">Kalender</h2>
+      <h2 className="font-bold text-xl self-start">Discord-Events</h2>
 
       {events
         .toSorted(
