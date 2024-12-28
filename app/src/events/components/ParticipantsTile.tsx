@@ -50,14 +50,44 @@ export const ParticipantsTile = async ({ className, event }: Props) => {
       );
     });
 
+  const discordCreator = resolvedUsers.find(
+    (user) => user.discord.user.id === event.creator_id,
+  )!;
+  const discordParticipants = resolvedUsers.filter(
+    (user) => user.discord.user.id !== event.creator_id,
+  );
+  const spynetCitizen = resolvedUsers.filter((user) => Boolean(user.entity));
+
   return (
     <div className={clsx("flex flex-col gap-4", className)}>
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
-        <h2 className="font-bold mb-4">Discord-Anmeldungen</h2>
+        <h2 className="font-bold mb-4">
+          Discord-Anmeldungen ({resolvedUsers.length})
+        </h2>
 
-        {resolvedUsers.length > 0 ? (
+        <h3 className="mb-2">Organisator</h3>
+        <div className="inline-flex gap-2 rounded bg-neutral-800 p-1 pr-2 items-center">
+          <div className="rounded overflow-hidden">
+            <Image
+              src={`https://cdn.discordapp.com/avatars/${discordCreator.discord.user.id}/${discordCreator.discord.member.avatar || discordCreator.discord.user.avatar}.png`}
+              alt=""
+              width={32}
+              height={32}
+            />
+          </div>
+
+          <span>
+            {discordCreator.entity?.handle ||
+              discordCreator.discord.member.nick ||
+              discordCreator.discord.user.global_name ||
+              discordCreator.discord.user.username}
+          </span>
+        </div>
+
+        <h3 className="mt-4 mb-2">Teilnehmer</h3>
+        {discordParticipants.length > 0 ? (
           <div className="flex gap-2 flex-wrap">
-            {resolvedUsers.map((user) => (
+            {discordParticipants.map((user) => (
               <div
                 key={user.discord.user.id}
                 className="flex gap-2 rounded bg-neutral-800 p-1 pr-2 items-center"
@@ -86,9 +116,9 @@ export const ParticipantsTile = async ({ className, event }: Props) => {
       </section>
 
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 overflow-auto">
-        <h2 className="font-bold mb-4">Spynet</h2>
+        <h2 className="font-bold mb-4">Spynet ({spynetCitizen.length})</h2>
 
-        {resolvedUsers.filter((user) => Boolean(user.entity)).length > 0 ? (
+        {spynetCitizen.length > 0 ? (
           <table>
             <thead>
               <tr

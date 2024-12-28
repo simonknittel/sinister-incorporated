@@ -37,6 +37,7 @@ const successSchema = z.object({
   scheduled_end_time: z.coerce.date(),
   user_count: z.number(),
   description: z.string().optional(),
+  creator_id: z.string(),
 });
 
 const errorSchema = z.object({
