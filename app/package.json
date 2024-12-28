@@ -46,6 +46,7 @@
     "lorem-ipsum": "2.0.8",
     "next": "15.1.2",
     "next-auth": "4.24.11",
+    "next-mdx-remote": "5.0.0",
     "openai": "4.77.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
