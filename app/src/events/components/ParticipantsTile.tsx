@@ -220,7 +220,7 @@ const DiscordUser = ({
       <div className="rounded overflow-hidden">
         <Image
           src={`https://cdn.discordapp.com/avatars/${discord.user.id}/${discord.member.avatar || discord.user.avatar}.png`}
-          alt={`Discord-Avatar von ${name}`}
+          alt=""
           width={32}
           height={32}
         />
