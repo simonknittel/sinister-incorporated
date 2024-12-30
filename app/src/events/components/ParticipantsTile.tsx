@@ -87,6 +87,9 @@ export const ParticipantsTile = async ({ className, event }: Props) => {
                 key={user.discord.user.id}
                 discord={user.discord}
                 citizen={user.entity}
+                isCurrentUser={
+                  user.entity?.id === authentication.session.entityId
+                }
               />
             ))}
           </div>
