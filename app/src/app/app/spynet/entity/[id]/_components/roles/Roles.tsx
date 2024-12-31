@@ -1,11 +1,11 @@
 import { requireAuthentication } from "@/auth/server";
+import { SingleRole } from "@/common/components/SingleRole";
 import { getAssignableRoles } from "@/common/utils/getAssignableRoles";
 import { getAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
 import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import { FaLock } from "react-icons/fa";
 import AddRoles from "./AddRoles";
-import SingleRole from "./SingleRole";
 
 type Props = Readonly<{
   className?: string;

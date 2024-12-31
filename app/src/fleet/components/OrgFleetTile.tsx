@@ -30,7 +30,7 @@ export const OrgFleetTile = async ({ className, urlSearchParams }: Props) => {
       <div className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 mt-4 overflow-x-auto">
         <Filters />
 
-        <FleetTable ships={countedFleet} className="mt-8" />
+        <FleetTable fleet={countedFleet} className="mt-8" />
       </div>
     </section>
   );

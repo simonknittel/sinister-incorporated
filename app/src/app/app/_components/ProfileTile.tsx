@@ -1,12 +1,12 @@
 import { authenticate } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
+import { SingleRole } from "@/common/components/SingleRole";
 import { getAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
 import { prisma } from "@/db";
 import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import SingleRole from "./SingleRole";
 
 type Props = Readonly<{
   className?: string;

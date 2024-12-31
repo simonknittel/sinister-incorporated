@@ -8,12 +8,13 @@ import {
   type NextjsSearchParams,
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { getEvent } from "@/discord/getEvent";
-import { FleetTile } from "@/events/components/FleetTile";
+import { FleetTab } from "@/events/components/FleetTab";
+import { OverviewTab } from "@/events/components/OverviewTab";
 import { OverviewTile } from "@/events/components/OverviewTile";
-import { ParticipantsTile } from "@/events/components/ParticipantsTile";
+import { ParticipantsTab } from "@/events/components/ParticipantsTab";
 import { log } from "@/logging";
 import { type Metadata } from "next";
-import { FaUsers } from "react-icons/fa";
+import { FaHome, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { serializeError } from "serialize-error";
 
@@ -68,8 +69,13 @@ export default async function Page({ params, searchParams }: Props) {
 
       <div className="flex gap-8 flex-col-reverse 2xl:flex-row 2xl:items-start">
         <div className="2xl:flex-1">
-          <TabsProvider initialActiveTab="participants">
+          <TabsProvider initialActiveTab="overview">
             <TabList>
+              <Tab id="overview">
+                <FaHome />
+                Übersicht
+              </Tab>
+
               <Tab id="participants">
                 <FaUsers />
                 Teilnehmer ({event.user_count})
@@ -83,13 +89,17 @@ export default async function Page({ params, searchParams }: Props) {
               )}
             </TabList>
 
+            <TabPanel id="overview">
+              <OverviewTab event={event} />
+            </TabPanel>
+
             <TabPanel id="participants">
-              <ParticipantsTile event={event} />
+              <ParticipantsTab event={event} />
             </TabPanel>
 
             {showFleetTile && (
               <TabPanel id="fleet">
-                <FleetTile event={event} urlSearchParams={urlSearchParams} />
+                <FleetTab event={event} urlSearchParams={urlSearchParams} />
               </TabPanel>
             )}
           </TabsProvider>
