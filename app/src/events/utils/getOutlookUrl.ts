@@ -1,19 +1,22 @@
 import type { getEvent } from "@/discord/getEvent";
-import { format } from "date-fns/format";
-import { de } from "date-fns/locale/de";
+import { formatInTimeZone } from "date-fns-tz";
 
 export const getOutlookUrl = (
   event: Awaited<ReturnType<typeof getEvent>>["data"],
 ) => {
   const subject = encodeURIComponent(event.name);
 
-  const start = format(event.scheduled_start_time, "yyyy-MM-dd'T'HH:mm:ss", {
-    locale: de,
-  });
+  const start = formatInTimeZone(
+    event.scheduled_start_time,
+    "Europe/Berlin",
+    "yyyy-MM-dd'T'HH:mm:ss",
+  );
 
-  const end = format(event.scheduled_end_time, "yyyy-MM-dd'T'HH:mm:ss", {
-    locale: de,
-  });
+  const end = formatInTimeZone(
+    event.scheduled_end_time,
+    "Europe/Berlin",
+    "yyyy-MM-dd'T'HH:mm:ss",
+  );
 
   const description = event.description
     ? `&body=${encodeURIComponent(event.description)}`
