@@ -2,7 +2,7 @@
 
 import { EditableText } from "@/common/components/EditableText";
 import { type Series } from "@prisma/client";
-import { updateSeries } from "../actions/series";
+import { updateSeries } from "../actions/updateSeries";
 
 type Props = Readonly<{
   className?: string;

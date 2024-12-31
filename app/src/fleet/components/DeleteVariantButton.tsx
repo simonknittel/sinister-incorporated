@@ -18,7 +18,7 @@ import { unstable_rethrow } from "next/navigation";
 import { useId, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
-import { deleteVariantAction } from "../actions/variant";
+import { deleteVariant } from "../actions/deleteVariant";
 
 type Props = Readonly<{
   className?: string;
@@ -37,7 +37,7 @@ export const DeleteVariantButton = ({
   const formAction = (formData: FormData) => {
     startTransition(async () => {
       try {
-        const response = await deleteVariantAction(formData);
+        const response = await deleteVariant(formData);
 
         if (response.status === 200) {
           toast.success("Erfolgreich gelöscht");

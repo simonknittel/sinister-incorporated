@@ -6,7 +6,7 @@ import { unstable_rethrow } from "next/navigation";
 import { useId, useTransition } from "react";
 import { toast } from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
-import { updateVariant } from "../actions/variant";
+import { updateVariant } from "../actions/updateVariant";
 
 type Props = Readonly<{
   onRequestClose: () => void;
