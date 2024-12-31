@@ -12,6 +12,8 @@ type Props = Readonly<{
   seriesId: Series["id"];
 }>;
 
+const GRID_COLS = "grid-cols-[1fr_2fr_128px_44px]";
+
 export const VariantsTile = async ({
   className,
   manufacturerId,
@@ -37,8 +39,15 @@ export const VariantsTile = async ({
 
       <table className="w-full min-w-[320px]">
         <thead>
-          <tr className="grid items-center gap-4 text-left text-neutral-500 grid-cols-[1fr_1fr_44px]">
+          <tr
+            className={clsx(
+              "grid items-center gap-4 text-left text-neutral-500",
+              GRID_COLS,
+            )}
+          >
             <th>Name</th>
+
+            <th>Tags</th>
 
             <th>Status</th>
           </tr>
@@ -49,13 +58,33 @@ export const VariantsTile = async ({
             return (
               <tr
                 key={row.id}
-                className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2 grid-cols-[1fr_1fr_44px]"
+                className={clsx(
+                  "grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2",
+                  GRID_COLS,
+                )}
               >
                 <td
                   className="overflow-hidden text-ellipsis whitespace-nowrap"
                   title={row.name}
                 >
                   {row.name}
+                </td>
+
+                <td className="overflow-hidden flex gap-1">
+                  {row.tags.map((tag) => (
+                    <span
+                      key={tag.id}
+                      className="rounded bg-neutral-700/50 px-2 py-1 flex flex-col overflow-hidden"
+                      title={`${tag.key}: ${tag.value}`}
+                    >
+                      <span className="text-xs text-neutral-500 overflow-hidden text-ellipsis whitespace-nowrap">
+                        {tag.key}
+                      </span>
+                      <span className="overflow-hidden whitespace-nowrap text-ellipsis">
+                        {tag.value}
+                      </span>
+                    </span>
+                  ))}
                 </td>
 
                 <td

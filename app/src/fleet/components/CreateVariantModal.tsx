@@ -1,11 +1,12 @@
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
 import { api } from "@/trpc/react";
+import { createId } from "@paralleldrive/cuid2";
 import { type Manufacturer, type Series } from "@prisma/client";
 import { unstable_rethrow } from "next/navigation";
-import { useId, useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 import { toast } from "react-hot-toast";
-import { FaSave, FaSpinner } from "react-icons/fa";
+import { FaPlus, FaSave, FaSpinner, FaTrash } from "react-icons/fa";
 import { createVariant } from "../actions/createVariant";
 
 type Props = Readonly<{
@@ -21,6 +22,9 @@ export const CreateVariantModal = ({
 }: Props) => {
   const [isPending, startTransition] = useTransition();
   const nameField = useId();
+  const [tags, setTags] = useState<
+    { id: string; key: string; value: string }[]
+  >([]);
 
   const manufacturer = api.manufacturer.getById.useQuery(
     {
@@ -69,7 +73,6 @@ export const CreateVariantModal = ({
 
       <form action={formAction}>
         <label className="mt-6 block">Hersteller</label>
-
         {manufacturer.isFetching ? (
           <div className="rounded bg-neutral-900 mt-2 animate-pulse h-10" />
         ) : (
@@ -86,7 +89,6 @@ export const CreateVariantModal = ({
         )}
 
         <label className="block mt-4">Serie</label>
-
         {series.isFetching ? (
           <div className="rounded bg-neutral-900 mt-2 animate-pulse h-10" />
         ) : (
@@ -102,7 +104,6 @@ export const CreateVariantModal = ({
         <label className="mt-6 block" htmlFor={nameField}>
           Name
         </label>
-
         {series.isFetching ? (
           <div className="rounded bg-neutral-900 mt-2 animate-pulse h-10" />
         ) : (
@@ -123,7 +124,6 @@ export const CreateVariantModal = ({
         <label className="mt-6 block" htmlFor="status">
           Status
         </label>
-
         <select
           id="status"
           className="p-2 rounded bg-neutral-900 w-full mt-2"
@@ -132,8 +132,56 @@ export const CreateVariantModal = ({
           <option value="FLIGHT_READY">Flight ready</option>
           <option value="NOT_FLIGHT_READY">Nicht flight ready</option>
         </select>
-
         <small className="text-neutral-500">optional</small>
+
+        <p className="mt-6">
+          Tags <small className="text-neutral-500">optional</small>
+        </p>
+        <div className="flex flex-col gap-2 mt-2">
+          {tags.map((tag) => (
+            <div key={tag.id} className="flex gap-1 items-stretch">
+              <input
+                type="text"
+                className="p-2 rounded bg-neutral-900 flex-1 min-w-0"
+                name="tagKeys[]"
+                placeholder="Key"
+                required
+                defaultValue={tag.key}
+              />
+              <input
+                type="text"
+                className="p-2 rounded bg-neutral-900 flex-1 min-w-0"
+                name="tagValues[]"
+                placeholder="Value"
+                required
+                defaultValue={tag.value}
+              />
+              <Button
+                onClick={() =>
+                  setTags((prev) => prev.filter(({ id }) => id !== tag.id))
+                }
+                type="button"
+                variant="tertiary"
+                title="Löschen"
+                iconOnly
+                className="h-auto flex-none w-6"
+              >
+                <FaTrash />
+              </Button>
+            </div>
+          ))}
+        </div>
+        <Button
+          onClick={() =>
+            setTags((prev) => [...prev, { id: createId(), key: "", value: "" }])
+          }
+          type="button"
+          variant="tertiary"
+          className="mx-auto"
+        >
+          <FaPlus />
+          Hinzufügen
+        </Button>
 
         <div className="flex justify-end mt-8">
           <Button

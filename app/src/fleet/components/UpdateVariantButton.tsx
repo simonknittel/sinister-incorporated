@@ -2,7 +2,7 @@
 
 import { useAction } from "@/common/components/Actions";
 import Button from "@/common/components/Button";
-import { type Variant } from "@prisma/client";
+import { type Variant, type VariantTag } from "@prisma/client";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { Suspense, useState } from "react";
@@ -14,7 +14,7 @@ const UpdateVariantModal = dynamic(() =>
 
 type Props = Readonly<{
   className?: string;
-  variant: Pick<Variant, "id">;
+  variant: Pick<Variant & { tags: VariantTag[] }, "id" | "tags">;
 }>;
 
 export const UpdateVariantButton = ({ className, variant }: Props) => {

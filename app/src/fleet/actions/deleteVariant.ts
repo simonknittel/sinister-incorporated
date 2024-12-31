@@ -60,6 +60,7 @@ export const deleteVariant: ServerAction = async (formData) => {
     revalidatePath(
       `/app/fleet/settings/manufacturers/${deletedItem.series.manufacturerId}/series/${deletedItem.seriesId}`,
     );
+    revalidatePath("/app/fleet");
 
     /**
      * Respond with the result

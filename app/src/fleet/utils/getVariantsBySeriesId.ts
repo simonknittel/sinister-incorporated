@@ -12,6 +12,7 @@ export const getVariantsBySeriesId = (seriesId: Series["id"]) => {
           ships: true,
         },
       },
+      tags: true,
     },
     orderBy: {
       name: "asc",

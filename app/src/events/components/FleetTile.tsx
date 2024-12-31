@@ -47,6 +47,7 @@ export const FleetTile = async ({
               manufacturer: true,
             },
           },
+          tags: true,
         },
       },
     },

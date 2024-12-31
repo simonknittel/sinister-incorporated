@@ -7,6 +7,7 @@ import { VariantStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
+import { createAndReturnTags } from "../utils/createAndReturnTags";
 
 const schema = z.object({
   seriesId: z.string(),
@@ -14,6 +15,8 @@ const schema = z.object({
   status: z
     .enum([VariantStatus.FLIGHT_READY, VariantStatus.NOT_FLIGHT_READY])
     .optional(),
+  tagKeys: z.array(z.string().trim().min(1)).optional(),
+  tagValues: z.array(z.string().trim().min(1)).optional(),
 });
 
 export const createVariant = async (formData: FormData) => {
@@ -34,6 +37,12 @@ export const createVariant = async (formData: FormData) => {
       seriesId: formData.get("seriesId"),
       name: formData.get("name"),
       status: formData.has("status") ? formData.get("status") : undefined,
+      tagKeys: formData.has("tagKeys[]")
+        ? formData.getAll("tagKeys[]")
+        : undefined,
+      tagValues: formData.has("tagValues[]")
+        ? formData.getAll("tagValues[]")
+        : undefined,
     });
     if (!result.success) {
       return {
@@ -42,10 +51,25 @@ export const createVariant = async (formData: FormData) => {
     }
 
     /**
-     * Assign the ship to the user
+     * Create variant
      */
-    const createdItem = await prisma.variant.create({
-      data: result.data,
+    const tagsToConnect = await createAndReturnTags(
+      result.data.tagKeys,
+      result.data.tagValues,
+    );
+
+    const createdVariant = await prisma.variant.create({
+      data: {
+        seriesId: result.data.seriesId,
+        name: result.data.name,
+        status: result.data.status,
+        ...(tagsToConnect &&
+          tagsToConnect.length > 0 && {
+            tags: {
+              connect: tagsToConnect.map((tagId) => ({ id: tagId })),
+            },
+          }),
+      },
       include: {
         series: true,
       },
@@ -55,11 +79,12 @@ export const createVariant = async (formData: FormData) => {
      * Revalidate cache(s)
      */
     revalidatePath(
-      `/app/fleet/settings/manufacturers/${createdItem.series.manufacturerId}`,
+      `/app/fleet/settings/manufacturers/${createdVariant.series.manufacturerId}`,
     );
     revalidatePath(
-      `/app/fleet/settings/manufacturers/${createdItem.series.manufacturerId}/series/${createdItem.seriesId}`,
+      `/app/fleet/settings/manufacturers/${createdVariant.series.manufacturerId}/series/${createdVariant.seriesId}`,
     );
+    revalidatePath("/app/fleet");
 
     /**
      * Respond with the result

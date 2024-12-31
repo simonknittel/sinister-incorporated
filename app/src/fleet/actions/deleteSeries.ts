@@ -55,6 +55,7 @@ export const deleteSeries: ServerAction = async (formData) => {
     revalidatePath(
       `/app/fleet/settings/manufacturers/${deletedSeries.manufacturerId}`,
     );
+    revalidatePath("/app/fleet");
 
     /**
      * Respond with the result

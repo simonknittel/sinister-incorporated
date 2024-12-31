@@ -6,6 +6,7 @@ import {
   type Manufacturer,
   type Series,
   type Variant,
+  type VariantTag,
 } from "@prisma/client";
 import {
   createColumnHelper,
@@ -25,6 +26,7 @@ interface OrgShip {
     series: Series & {
       manufacturer: Manufacturer;
     };
+    tags: VariantTag[];
   };
   count: number;
 }
@@ -38,7 +40,7 @@ type Row = OrgShip;
 
 const columnHelper = createColumnHelper<Row>();
 
-const GRID_COLS = "grid-cols-[1fr_128px_56px]";
+const GRID_COLS = "grid-cols-[1fr_1fr_128px_56px]";
 
 export const FleetTable = ({ className, ships }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
@@ -77,6 +79,30 @@ export const FleetTable = ({ className, ships }: Props) => {
             </div>
           );
         },
+      }),
+      columnHelper.accessor("variant.tags", {
+        header: "Tags",
+        cell: (row) => {
+          return (
+            <div className="overflow-hidden flex gap-1">
+              {row.row.original.variant.tags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className="rounded bg-neutral-700/50 px-2 py-1 flex flex-col overflow-hidden"
+                  title={`${tag.key}: ${tag.value}`}
+                >
+                  <span className="text-xs text-neutral-500 overflow-hidden text-ellipsis whitespace-nowrap">
+                    {tag.key}
+                  </span>
+                  <span className="overflow-hidden whitespace-nowrap text-ellipsis">
+                    {tag.value}
+                  </span>
+                </span>
+              ))}
+            </div>
+          );
+        },
+        enableSorting: false,
       }),
       columnHelper.accessor("variant.status", {
         header: "Status",

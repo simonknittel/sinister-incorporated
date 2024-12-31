@@ -7,6 +7,7 @@ import { prisma } from "@/db";
 import { VariantStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { createAndReturnTags } from "../utils/createAndReturnTags";
 
 const schema = z.object({
   id: z.string().cuid(),
@@ -14,6 +15,8 @@ const schema = z.object({
   status: z
     .enum([VariantStatus.FLIGHT_READY, VariantStatus.NOT_FLIGHT_READY])
     .optional(),
+  tagKeys: z.array(z.string().trim().min(1)).optional(),
+  tagValues: z.array(z.string().trim().min(1)).optional(),
 });
 
 export const updateVariant: ServerAction = async (formData) => {
@@ -34,6 +37,12 @@ export const updateVariant: ServerAction = async (formData) => {
       id: formData.get("id"),
       name: formData.get("name"),
       status: formData.get("status"),
+      tagKeys: formData.has("tagKeys[]")
+        ? formData.getAll("tagKeys[]")
+        : undefined,
+      tagValues: formData.has("tagValues[]")
+        ? formData.getAll("tagValues[]")
+        : undefined,
     });
 
     /**
@@ -47,13 +56,24 @@ export const updateVariant: ServerAction = async (formData) => {
     if (!existingItem) throw new Error("Not found");
 
     /**
-     * Update
+     * Update variant
      */
+    const tagsToConnect = await createAndReturnTags(
+      data.tagKeys,
+      data.tagValues,
+    );
+
     const updatedItem = await prisma.variant.update({
       where: {
         id,
       },
-      data,
+      data: {
+        name: data.name,
+        status: data.status,
+        tags: {
+          set: tagsToConnect.map((tagId) => ({ id: tagId })),
+        },
+      },
       include: {
         series: true,
       },
@@ -68,6 +88,7 @@ export const updateVariant: ServerAction = async (formData) => {
     revalidatePath(
       `/app/fleet/settings/manufacturers/${updatedItem.series.manufacturerId}/series/${updatedItem.seriesId}`,
     );
+    revalidatePath("/app/fleet");
 
     /**
      * Respond with the result
