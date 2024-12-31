@@ -24,7 +24,7 @@ const Button = (props: Props) => {
       className={clsx(
         {
           "flex items-center justify-center rounded uppercase": true,
-          "gap-4": ["primary", "secondary"].includes(variant || ""),
+          "gap-2": ["primary", "secondary"].includes(variant || ""),
           "min-h-11 py-2 text-base font-bold": variant === "primary",
           "min-h-11 py-2 border text-base": variant === "secondary",
           "h-8 gap-2 text-xs": variant === "tertiary",

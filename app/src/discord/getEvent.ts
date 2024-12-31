@@ -38,6 +38,9 @@ const successSchema = z.object({
   user_count: z.number(),
   description: z.string().optional(),
   creator_id: z.string(),
+  entity_metadata: z.object({
+    location: z.string().optional(),
+  }),
 });
 
 const errorSchema = z.object({
