@@ -4,6 +4,7 @@ import { type getEvent } from "@/discord/getEvent";
 import clsx from "clsx";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Image from "next/image";
+import { DownloadEventButton } from "./DownloadEventButton";
 
 type Props = Readonly<{
   className?: string;
@@ -77,10 +78,11 @@ export const OverviewTile = ({ className, event, date }: Props) => {
             </dd>
           </dl>
 
-          <DiscordButton
-            path={`events/${event.guild_id}/${event.id}`}
-            className="mt-4"
-          />
+          <div className="flex flex-col gap-2 mt-4">
+            <DownloadEventButton event={event} />
+
+            <DiscordButton path={`events/${event.guild_id}/${event.id}`} />
+          </div>
         </div>
       </div>
 
