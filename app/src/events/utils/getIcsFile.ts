@@ -1,14 +1,22 @@
 import type { getEvent } from "@/discord/getEvent";
-import { format } from "date-fns/format";
+import { formatInTimeZone } from "date-fns-tz";
 import { createEvent, type DateTime } from "ics";
 
 export const getIcsFile = (
   event: Awaited<ReturnType<typeof getEvent>>["data"],
 ) => {
-  const start = format(event.scheduled_start_time, "yyyy-MM-dd-HH-mm")
+  const start = formatInTimeZone(
+    event.scheduled_start_time,
+    "Europe/Berlin",
+    "yyyy-MM-dd-HH-mm",
+  )
     .split("-")
     .map(Number) as DateTime;
-  const end = format(event.scheduled_end_time, "yyyy-MM-dd-HH-mm")
+  const end = formatInTimeZone(
+    event.scheduled_end_time,
+    "Europe/Berlin",
+    "yyyy-MM-dd-HH-mm",
+  )
     .split("-")
     .map(Number) as DateTime;
 
