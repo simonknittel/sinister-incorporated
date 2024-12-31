@@ -85,20 +85,22 @@ export const FleetTable = ({ className, ships }: Props) => {
         cell: (row) => {
           return (
             <div className="overflow-hidden flex gap-1">
-              {row.row.original.variant.tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="rounded bg-neutral-700/50 px-2 py-1 flex flex-col overflow-hidden"
-                  title={`${tag.key}: ${tag.value}`}
-                >
-                  <span className="text-xs text-neutral-500 overflow-hidden text-ellipsis whitespace-nowrap">
-                    {tag.key}
+              {row.row.original.variant.tags
+                .toSorted((a, b) => a.key.localeCompare(b.key))
+                .map((tag) => (
+                  <span
+                    key={tag.id}
+                    className="rounded bg-neutral-700/50 px-2 py-1 flex flex-col overflow-hidden"
+                    title={`${tag.key}: ${tag.value}`}
+                  >
+                    <span className="text-xs text-neutral-500 overflow-hidden text-ellipsis whitespace-nowrap">
+                      {tag.key}
+                    </span>
+                    <span className="overflow-hidden whitespace-nowrap text-ellipsis">
+                      {tag.value}
+                    </span>
                   </span>
-                  <span className="overflow-hidden whitespace-nowrap text-ellipsis">
-                    {tag.value}
-                  </span>
-                </span>
-              ))}
+                ))}
             </div>
           );
         },
