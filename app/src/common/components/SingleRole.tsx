@@ -3,12 +3,12 @@ import { type Role } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 
-interface Props {
+type Props = Readonly<{
   className?: string;
   role: Role;
-}
+}>;
 
-const SingleRole = ({ className, role }: Readonly<Props>) => {
+export const SingleRole = ({ className, role }: Props) => {
   return (
     <span
       className={clsx(
@@ -32,5 +32,3 @@ const SingleRole = ({ className, role }: Readonly<Props>) => {
     </span>
   );
 };
-
-export default SingleRole;

@@ -1,13 +1,13 @@
 import { RolesCell } from "@/app/app/spynet/citizen/_components/RolesCell";
 import { requireAuthentication } from "@/auth/server";
-import { prisma } from "@/db";
 import { type getEvent } from "@/discord/getEvent";
-import { getEventUsersDeduped } from "@/discord/getEventUsers";
+import { type getEventUsersDeduped } from "@/discord/getEventUsers";
 import type { Entity } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
+import { getParticipants } from "../utils/getParticipants";
 
 type Props = Readonly<{
   className?: string;
@@ -16,52 +16,11 @@ type Props = Readonly<{
 
 const GRID_COLS = "grid-cols-[160px,1fr]";
 
-export const ParticipantsTile = async ({ className, event }: Props) => {
-  const [authentication, discordEventUsers] = await Promise.all([
-    requireAuthentication(),
-    getEventUsersDeduped(event.id),
-  ]);
+export const ParticipantsTab = async ({ className, event }: Props) => {
+  const authentication = await requireAuthentication();
 
-  const citizenEntities = await prisma.entity.findMany({
-    where: {
-      discordId: {
-        in: discordEventUsers.map((user) => user.user.id),
-      },
-    },
-  });
-
-  const resolvedUsers = discordEventUsers
-    .map((user) => {
-      const entity = citizenEntities.find(
-        (entity) => entity.discordId === user.user.id,
-      );
-
-      return {
-        entity,
-        discord: user,
-      };
-    })
-    .toSorted((a, b) => {
-      return (
-        a.entity?.handle ||
-        a.discord.member.nick ||
-        a.discord.user.global_name ||
-        a.discord.user.username
-      ).localeCompare(
-        b.entity?.handle ||
-          b.discord.member.nick ||
-          b.discord.user.global_name ||
-          b.discord.user.username,
-      );
-    });
-
-  const discordCreator = resolvedUsers.find(
-    (user) => user.discord.user.id === event.creator_id,
-  )!;
-  const discordParticipants = resolvedUsers.filter(
-    (user) => user.discord.user.id !== event.creator_id,
-  );
-  const spynetCitizen = resolvedUsers.filter((user) => Boolean(user.entity));
+  const { resolvedUsers, discordCreator, discordParticipants, spynetCitizen } =
+    await getParticipants(event);
 
   return (
     <div className={clsx("flex flex-col gap-4", className)}>

@@ -1,5 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
-import getAllRoles from "./cached/getAllRoles";
+import { getAllRoles } from "./cached/getAllRoles";
 
 export default async function getVisibleRoles() {
   const authentication = await requireAuthentication();

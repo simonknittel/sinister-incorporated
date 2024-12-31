@@ -1,6 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { cache } from "react";
-import getAllRoles from "./cached/getAllRoles";
+import { getAllRoles } from "./cached/getAllRoles";
 
 export const getAssignableRoles = cache(async () => {
   const [authentication, allRoles] = await Promise.all([

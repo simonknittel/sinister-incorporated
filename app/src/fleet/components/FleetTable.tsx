@@ -1,13 +1,8 @@
 "use client";
 
 import { env } from "@/env";
-import {
-  VariantStatus,
-  type Manufacturer,
-  type Series,
-  type Variant,
-  type VariantTag,
-} from "@prisma/client";
+import type { getEventFleet } from "@/events/utils/getEventFleet";
+import { VariantStatus } from "@prisma/client";
 import {
   createColumnHelper,
   flexRender,
@@ -20,29 +15,20 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { FaSortAlphaDown, FaSortAlphaUpAlt } from "react-icons/fa";
-
-interface OrgShip {
-  variant: Variant & {
-    series: Series & {
-      manufacturer: Manufacturer;
-    };
-    tags: VariantTag[];
-  };
-  count: number;
-}
+import { VariantTagBadge } from "./VariantTagBadge";
 
 type Props = Readonly<{
   className?: string;
-  ships: OrgShip[];
+  fleet: Awaited<ReturnType<typeof getEventFleet>>;
 }>;
 
-type Row = OrgShip;
+type Row = Props["fleet"][number];
 
 const columnHelper = createColumnHelper<Row>();
 
 const GRID_COLS = "grid-cols-[1fr_1fr_128px_56px]";
 
-export const FleetTable = ({ className, ships }: Props) => {
+export const FleetTable = ({ className, fleet }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "variant", desc: false },
   ]);
@@ -88,18 +74,7 @@ export const FleetTable = ({ className, ships }: Props) => {
               {row.row.original.variant.tags
                 .toSorted((a, b) => a.key.localeCompare(b.key))
                 .map((tag) => (
-                  <span
-                    key={tag.id}
-                    className="rounded bg-neutral-700/50 px-2 py-1 flex flex-col overflow-hidden"
-                    title={`${tag.key}: ${tag.value}`}
-                  >
-                    <span className="text-xs text-neutral-500 overflow-hidden text-ellipsis whitespace-nowrap">
-                      {tag.key}
-                    </span>
-                    <span className="overflow-hidden whitespace-nowrap text-ellipsis">
-                      {tag.value}
-                    </span>
-                  </span>
+                  <VariantTagBadge key={tag.id} tag={tag} />
                 ))}
             </div>
           );
@@ -126,7 +101,7 @@ export const FleetTable = ({ className, ships }: Props) => {
   }, []);
 
   const table = useReactTable({
-    data: ships,
+    data: fleet,
     columns,
     state: {
       sorting,
