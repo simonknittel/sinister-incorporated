@@ -3,8 +3,10 @@ import type { getEvent } from "@/discord/getEvent";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import Link from "next/link";
+import { FaDownload, FaExternalLinkAlt } from "react-icons/fa";
 import { LuCalendarArrowDown } from "react-icons/lu";
 import { getGoogleCalendarUrl } from "../utils/getGoogleCalendarUrl";
+import { getIcsFile } from "../utils/getIcsFile";
 import { getOutlookUrl } from "../utils/getOutlookUrl";
 
 type Props = Readonly<{
@@ -15,6 +17,7 @@ type Props = Readonly<{
 export const DownloadEventButton = ({ className, event }: Props) => {
   const googleCalendarUrl = getGoogleCalendarUrl(event);
   const microsoftOutlookUrl = getOutlookUrl(event);
+  const icsFile = getIcsFile(event);
 
   return (
     <DropdownMenu.Root>
@@ -34,8 +37,9 @@ export const DownloadEventButton = ({ className, event }: Props) => {
           <DropdownMenu.Item asChild>
             <Link
               href={googleCalendarUrl}
-              className="text-sinister-red-500 hover:underline block px-3 py-1"
+              className="text-sinister-red-500 hover:underline px-3 py-1 flex gap-2 items-center"
             >
+              <FaExternalLinkAlt className="text-xs" />
               Google Calender
             </Link>
           </DropdownMenu.Item>
@@ -43,21 +47,22 @@ export const DownloadEventButton = ({ className, event }: Props) => {
           <DropdownMenu.Item asChild>
             <Link
               href={microsoftOutlookUrl}
-              className="text-sinister-red-500 hover:underline block px-3 py-1"
+              className="text-sinister-red-500 hover:underline px-3 py-1 flex gap-2 items-center"
             >
+              <FaExternalLinkAlt className="text-xs" />
               Microsoft Outlook
             </Link>
           </DropdownMenu.Item>
 
-          {/* TODO: Implement ics file generation and download */}
-          {/* <DropdownMenu.Item asChild>
+          <DropdownMenu.Item asChild>
             <Link
-              href=""
-              className="text-sinister-red-500 hover:underline block px-3 py-1"
+              href={icsFile}
+              className="text-sinister-red-500 hover:underline px-3 py-1 flex gap-2 items-center"
             >
-              Als ICS-Datei herunterladen
+              <FaDownload className="text-xs" />
+              ICS-Datei herunterladen
             </Link>
-          </DropdownMenu.Item> */}
+          </DropdownMenu.Item>
 
           <DropdownMenu.Arrow className="fill-neutral-800" />
         </DropdownMenu.Content>
