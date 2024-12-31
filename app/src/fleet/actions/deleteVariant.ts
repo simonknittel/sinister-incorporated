@@ -2,23 +2,21 @@
 
 import { authenticateAction } from "@/auth/server";
 import { serverActionErrorHandler } from "@/common/actions/serverActionErrorHandler";
-import type { ServerAction } from "@/common/actions/types";
+import { type ServerAction } from "@/common/actions/types";
 import { prisma } from "@/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const schema = z.object({
   id: z.string().cuid(),
-  name: z.string().trim().min(1).optional(),
-  imageId: z.string().trim().min(1).max(255).optional(),
 });
 
-export const updateManufacturerAction: ServerAction = async (formData) => {
+export const deleteVariant: ServerAction = async (formData) => {
   try {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("updateManufacturerAction");
+    const authentication = await authenticateAction("deleteVariant");
     await authentication.authorizeAction(
       "manufacturersSeriesAndVariants",
       "manage",
@@ -27,16 +25,14 @@ export const updateManufacturerAction: ServerAction = async (formData) => {
     /**
      * Validate the request
      */
-    const { id, ...data } = schema.parse({
+    const { id } = schema.parse({
       id: formData.get("id"),
-      name: formData.has("name") ? formData.get("name") : undefined,
-      imageId: formData.has("imageId") ? formData.get("imageId") : undefined,
     });
 
     /**
      * Make sure the item exists
      */
-    const existingItem = await prisma.manufacturer.findUnique({
+    const existingItem = await prisma.variant.findUnique({
       where: {
         id,
       },
@@ -44,19 +40,26 @@ export const updateManufacturerAction: ServerAction = async (formData) => {
     if (!existingItem) throw new Error("Not found");
 
     /**
-     * Update
+     * Delete
      */
-    await prisma.manufacturer.update({
+    const deletedItem = await prisma.variant.delete({
       where: {
         id,
       },
-      data,
+      include: {
+        series: true,
+      },
     });
 
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/fleet/settings`);
+    revalidatePath(
+      `/app/fleet/settings/manufacturers/${deletedItem.series.manufacturerId}`,
+    );
+    revalidatePath(
+      `/app/fleet/settings/manufacturers/${deletedItem.series.manufacturerId}/series/${deletedItem.seriesId}`,
+    );
     revalidatePath("/app/fleet");
 
     /**
@@ -66,16 +69,14 @@ export const updateManufacturerAction: ServerAction = async (formData) => {
       status: 200,
     };
   } catch (error) {
-    console.log(error);
     return serverActionErrorHandler(error, {
       errorMessages: {
         "400": "Ungültige Anfrage",
         "401": "Du musst angemeldet sein, um diese Aktion auszuführen",
         "403": "Du bist nicht berechtigt, diese Aktion auszuführen",
         "404":
-          "Beim Speichern ist ein Fehler aufgetreten. Der Hersteller konnte nicht gefunden werden.",
-        "409": "Konflikt. Bitte aktualisiere die Seite und probiere es erneut.",
-        "500": "Beim Speichern ist ein unerwarteter Fehler aufgetreten",
+          "Beim Löschen ist ein Fehler aufgetreten. Die Variante konnte nicht gefunden werden.",
+        "500": "Beim Löschen ist ein unerwarteter Fehler aufgetreten",
       },
     });
   }

@@ -1,16 +1,17 @@
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
 import { api } from "@/trpc/react";
-import { type Variant } from "@prisma/client";
+import { createId } from "@paralleldrive/cuid2";
+import { type Variant, type VariantTag } from "@prisma/client";
 import { unstable_rethrow } from "next/navigation";
-import { useId, useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 import { toast } from "react-hot-toast";
-import { FaSave, FaSpinner } from "react-icons/fa";
-import { updateVariant } from "../actions/variant";
+import { FaPlus, FaSave, FaSpinner, FaTrash } from "react-icons/fa";
+import { updateVariant } from "../actions/updateVariant";
 
 type Props = Readonly<{
   onRequestClose: () => void;
-  variant: Pick<Variant, "id">;
+  variant: Pick<Variant & { tags: VariantTag[] }, "id" | "tags">;
 }>;
 
 export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
@@ -24,6 +25,15 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
   const [isPending, startTransition] = useTransition();
   const nameId = useId();
   const statusId = useId();
+  const [tags, setTags] = useState<
+    { id: string; key: string; value: string }[]
+  >(
+    variant.tags.map((tag) => ({
+      id: tag.id,
+      key: tag.key,
+      value: tag.value,
+    })),
+  );
 
   const _action = (formData: FormData) => {
     startTransition(async () => {
@@ -57,7 +67,6 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
         <label className="mt-6 block" htmlFor={nameId}>
           Name
         </label>
-
         {_variant.isFetching ? (
           <div className="rounded bg-neutral-900 mt-2 h-10 animate-pulse " />
         ) : (
@@ -75,7 +84,6 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
         <label className="mt-6 block" htmlFor={statusId}>
           Status
         </label>
-
         {_variant.isFetching ? (
           <div className="rounded bg-neutral-900 mt-2 h-10 animate-pulse " />
         ) : (
@@ -90,8 +98,56 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
             <option value="NOT_FLIGHT_READY">Nicht flight ready</option>
           </select>
         )}
-
         <small className="text-neutral-500">optional</small>
+
+        <p className="mt-6">
+          Tags <small className="text-neutral-500">optional</small>
+        </p>
+        <div className="flex flex-col gap-2 mt-2">
+          {tags.map((tag) => (
+            <div key={tag.id} className="flex gap-1 items-stretch">
+              <input
+                type="text"
+                className="p-2 rounded bg-neutral-900 flex-1 min-w-0"
+                name="tagKeys[]"
+                placeholder="Key"
+                required
+                defaultValue={tag.key}
+              />
+              <input
+                type="text"
+                className="p-2 rounded bg-neutral-900 flex-1 min-w-0"
+                name="tagValues[]"
+                placeholder="Value"
+                required
+                defaultValue={tag.value}
+              />
+              <Button
+                onClick={() =>
+                  setTags((prev) => prev.filter(({ id }) => id !== tag.id))
+                }
+                type="button"
+                variant="tertiary"
+                title="Löschen"
+                iconOnly
+                className="h-auto flex-none w-6"
+              >
+                <FaTrash />
+              </Button>
+            </div>
+          ))}
+        </div>
+        <Button
+          onClick={() =>
+            setTags((prev) => [...prev, { id: createId(), key: "", value: "" }])
+          }
+          type="button"
+          variant="tertiary"
+          className="mx-auto"
+        >
+          <FaPlus />
+          Hinzufügen
+        </Button>
 
         <div className="flex justify-end mt-8">
           <Button disabled={isPending || _variant.isFetching} type="submit">

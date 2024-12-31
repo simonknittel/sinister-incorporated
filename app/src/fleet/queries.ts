@@ -25,6 +25,7 @@ export const getOrgFleet = async ({
               manufacturer: true,
             },
           },
+          tags: true,
         },
       },
     },

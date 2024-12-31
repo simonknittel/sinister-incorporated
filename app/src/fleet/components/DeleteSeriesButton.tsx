@@ -17,7 +17,7 @@ import { unstable_rethrow } from "next/navigation";
 import { useId, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
-import { deleteSeriesAction } from "../actions/series";
+import { deleteSeries } from "../actions/deleteSeries";
 
 type Props = Readonly<{
   className?: string;
@@ -31,7 +31,7 @@ export const DeleteSeriesButton = ({ className, series }: Props) => {
   const formAction = (formData: FormData) => {
     startTransition(async () => {
       try {
-        const response = await deleteSeriesAction(formData);
+        const response = await deleteSeries(formData);
 
         if (response.status === 200) {
           toast.success("Erfolgreich gelöscht");

@@ -52,6 +52,7 @@ export const deleteManufacturerAction: ServerAction = async (formData) => {
      * Revalidate cache(s)
      */
     revalidatePath(`/app/fleet/settings`);
+    revalidatePath("/app/fleet");
 
     /**
      * Respond with the result
