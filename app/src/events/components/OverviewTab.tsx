@@ -56,7 +56,7 @@ const FleetSummary = async ({ className, event }: FleetSummaryProps) => {
     <section
       className={clsx("rounded-2xl bg-neutral-800/50 p-4 lg:p-8", className)}
     >
-      <h2 className="font-bold mb-4">Schiffe</h2>
+      <h2 className="font-bold mb-4">Flotte der Teilnehmer</h2>
 
       <div className="flex gap-2 flex-wrap">
         {Array.from(countedTags.values())
@@ -113,7 +113,7 @@ const ParticipantsSummary = async ({
     <section
       className={clsx("rounded-2xl bg-neutral-800/50 p-4 lg:p-8", className)}
     >
-      <h2 className="font-bold mb-4">Rollen/Zertifikate</h2>
+      <h2 className="font-bold mb-4">Rollen/Zertifikate der Teilnehmer</h2>
 
       <div className="flex gap-2 flex-wrap">
         {Array.from(countedRoles.values())
