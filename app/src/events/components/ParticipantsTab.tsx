@@ -1,12 +1,13 @@
 import { RolesCell } from "@/app/app/spynet/citizen/_components/RolesCell";
 import { requireAuthentication } from "@/auth/server";
 import { type getEvent } from "@/discord/getEvent";
-import { type getEventUsersDeduped } from "@/discord/getEventUsers";
+import type { memberSchema, userSchema } from "@/discord/schemas";
 import type { Entity } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
+import type { z } from "zod";
 import { getParticipants } from "../utils/getParticipants";
 
 type Props = Readonly<{
@@ -26,7 +27,7 @@ export const ParticipantsTab = async ({ className, event }: Props) => {
     <div className={clsx("flex flex-col gap-4", className)}>
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
         <h2 className="font-bold mb-4">
-          Discord-Anmeldungen ({resolvedUsers.length})
+          Discord-Anmeldungen ({event.user_count})
         </h2>
 
         <h3 className="mb-2">Organisator</h3>
@@ -150,7 +151,10 @@ export const ParticipantsTab = async ({ className, event }: Props) => {
 };
 
 type DiscordUserProps = Readonly<{
-  discord: Awaited<ReturnType<typeof getEventUsersDeduped>>[number];
+  discord: {
+    user: z.infer<typeof userSchema>;
+    member?: z.infer<typeof memberSchema>;
+  };
   citizen?: Entity;
   isCurrentUser?: boolean;
 }>;
@@ -162,7 +166,7 @@ const DiscordUser = ({
 }: DiscordUserProps) => {
   const name =
     citizen?.handle ||
-    discord.member.nick ||
+    discord.member?.nick ||
     discord.user.global_name ||
     discord.user.username;
 
@@ -178,7 +182,7 @@ const DiscordUser = ({
     >
       <div className="rounded overflow-hidden">
         <Image
-          src={`https://cdn.discordapp.com/avatars/${discord.user.id}/${discord.member.avatar || discord.user.avatar}.png`}
+          src={`https://cdn.discordapp.com/avatars/${discord.user.id}/${discord.member?.avatar || discord.user.avatar}.png`}
           alt=""
           width={32}
           height={32}
