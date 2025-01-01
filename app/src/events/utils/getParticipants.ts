@@ -1,11 +1,23 @@
 import { prisma } from "@/db";
 import type { getEvent } from "@/discord/getEvent";
 import { getEventUsersDeduped } from "@/discord/getEventUsers";
+import { type memberSchema, type userSchema } from "@/discord/schemas";
 import { cache } from "react";
+import type { z } from "zod";
 
 export const getParticipants = cache(
   async (event: Awaited<ReturnType<typeof getEvent>>["data"]) => {
-    const discordEventUsers = await getEventUsersDeduped(event.id);
+    const discordEventUsers: {
+      user: z.infer<typeof userSchema>;
+      member?: z.infer<typeof memberSchema>;
+    }[] = await getEventUsersDeduped(event.id);
+
+    if (
+      discordEventUsers.some((user) => user.user.id === event.creator_id) ===
+      false
+    ) {
+      discordEventUsers.push({ user: event.creator });
+    }
 
     const citizenEntities = await prisma.entity.findMany({
       where: {
@@ -29,12 +41,12 @@ export const getParticipants = cache(
       .toSorted((a, b) => {
         return (
           a.entity?.handle ||
-          a.discord.member.nick ||
+          a.discord.member?.nick ||
           a.discord.user.global_name ||
           a.discord.user.username
         ).localeCompare(
           b.entity?.handle ||
-            b.discord.member.nick ||
+            b.discord.member?.nick ||
             b.discord.user.global_name ||
             b.discord.user.username,
         );

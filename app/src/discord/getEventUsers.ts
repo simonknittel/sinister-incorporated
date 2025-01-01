@@ -2,6 +2,7 @@ import { env } from "@/env";
 import { cache } from "react";
 import { z } from "zod";
 import { checkResponseForError } from "./checkResponseForError";
+import { memberSchema, userSchema } from "./schemas";
 
 export const getEventUsersDeduped = cache(async (id: string) => {
   // https://discord.com/developers/docs/resources/guild-scheduled-event#get-guild-scheduled-event-users
@@ -27,16 +28,8 @@ export const getEventUsersDeduped = cache(async (id: string) => {
 
 const successSchema = z.array(
   z.object({
-    user: z.object({
-      id: z.string(),
-      username: z.string(),
-      global_name: z.string().optional().nullable(),
-      avatar: z.string().optional().nullable(),
-    }),
-    member: z.object({
-      nick: z.string().optional().nullable(),
-      avatar: z.string().optional().nullable(),
-    }),
+    user: userSchema,
+    member: memberSchema,
   }),
 );
 

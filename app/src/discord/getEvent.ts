@@ -2,6 +2,7 @@ import { env } from "@/env";
 import { cache } from "react";
 import { z } from "zod";
 import { checkResponseForError } from "./checkResponseForError";
+import { userSchema } from "./schemas";
 
 export const getEvent = cache(async (id: string) => {
   // https://discord.com/developers/docs/resources/guild-scheduled-event#get-guild-scheduled-event
@@ -38,6 +39,7 @@ const successSchema = z.object({
   user_count: z.number(),
   description: z.string().optional(),
   creator_id: z.string(),
+  creator: userSchema,
   entity_metadata: z.object({
     location: z.string().optional(),
   }),
