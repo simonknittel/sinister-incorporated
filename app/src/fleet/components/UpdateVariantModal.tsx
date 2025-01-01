@@ -111,7 +111,6 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
                 className="p-2 rounded bg-neutral-900 flex-1 min-w-0"
                 name="tagKeys[]"
                 placeholder="Key"
-                required
                 defaultValue={tag.key}
               />
               <input
@@ -119,7 +118,6 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
                 className="p-2 rounded bg-neutral-900 flex-1 min-w-0"
                 name="tagValues[]"
                 placeholder="Value"
-                required
                 defaultValue={tag.value}
               />
               <Button
