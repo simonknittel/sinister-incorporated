@@ -66,7 +66,7 @@ export const updateManufacturerAction: ServerAction = async (formData) => {
       status: 200,
     };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return serverActionErrorHandler(error, {
       errorMessages: {
         "400": "Ungültige Anfrage",
