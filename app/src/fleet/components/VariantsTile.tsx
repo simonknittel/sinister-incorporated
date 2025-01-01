@@ -1,6 +1,8 @@
 import { Actions } from "@/common/components/Actions";
 import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import clsx from "clsx";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { FaRegCircleXmark } from "react-icons/fa6";
 import { getVariantsBySeriesId } from "../utils/getVariantsBySeriesId";
 import { CreateVariantButton } from "./CreateVariantButton";
 import { DeleteVariantButton } from "./DeleteVariantButton";
@@ -13,7 +15,7 @@ type Props = Readonly<{
   seriesId: Series["id"];
 }>;
 
-const GRID_COLS = "grid-cols-[1fr_2fr_128px_44px]";
+const GRID_COLS = "grid-cols-[256px_1fr_56px_44px]";
 
 export const VariantsTile = async ({
   className,
@@ -90,11 +92,12 @@ export const VariantsTile = async ({
                   }
                 >
                   {row.status === VariantStatus.FLIGHT_READY ? (
-                    "Flight ready"
+                    <FaRegCheckCircle title="Flight ready" />
                   ) : row.status === VariantStatus.NOT_FLIGHT_READY ? (
-                    <span className="text-sinister-red-500">
-                      Nicht flight ready
-                    </span>
+                    <FaRegCircleXmark
+                      title="Nicht flight ready"
+                      className="text-sinister-red-500"
+                    />
                   ) : null}
                 </td>
 

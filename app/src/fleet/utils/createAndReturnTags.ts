@@ -35,7 +35,6 @@ export const createAndReturnTags = async (
             existingTag.value === givenTag.value!,
         ),
     );
-    console.log(existingTags, nonExistingTags);
 
     const createdTags = await prisma.variantTag.createManyAndReturn({
       data: nonExistingTags.map((nonExistingTag) => ({

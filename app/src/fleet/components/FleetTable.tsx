@@ -1,6 +1,5 @@
 "use client";
 
-import { env } from "@/env";
 import type { getEventFleet } from "@/events/utils/getEventFleet";
 import { VariantStatus } from "@prisma/client";
 import {
@@ -12,10 +11,15 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import Image from "next/image";
 import { useMemo, useState } from "react";
-import { FaSortAlphaDown, FaSortAlphaUpAlt } from "react-icons/fa";
+import {
+  FaRegCheckCircle,
+  FaSortAlphaDown,
+  FaSortAlphaUpAlt,
+} from "react-icons/fa";
+import { FaRegCircleXmark } from "react-icons/fa6";
 import { VariantTagBadge } from "./VariantTagBadge";
+import { VariantWithLogo } from "./VariantWithLogo";
 
 type Props = Readonly<{
   className?: string;
@@ -26,7 +30,7 @@ type Row = Props["fleet"][number];
 
 const columnHelper = createColumnHelper<Row>();
 
-const GRID_COLS = "grid-cols-[1fr_1fr_128px_56px]";
+const GRID_COLS = "grid-cols-[256px_1fr_56px_56px]";
 
 export const FleetTable = ({ className, fleet }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
@@ -42,27 +46,10 @@ export const FleetTable = ({ className, fleet }: Props) => {
           const manufacturer = row.row.original.variant.series.manufacturer;
 
           return (
-            <div className="flex items-center gap-2">
-              {manufacturer.imageId ? (
-                <Image
-                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.imageId}`}
-                  alt={`Logo of ${manufacturer.name}`}
-                  width={48}
-                  height={48}
-                  className="flex-none size-[48px] object-contain object-center"
-                  title={`Logo of ${manufacturer.name}`}
-                />
-              ) : (
-                <div className="flex-none size-[48px]"></div>
-              )}
-
-              <div
-                className="whitespace-nowrap text-ellipsis overflow-hidden"
-                title={row.getValue()}
-              >
-                {row.getValue()}
-              </div>
-            </div>
+            <VariantWithLogo
+              variant={row.row.original.variant}
+              manufacturer={manufacturer}
+            />
           );
         },
       }),
@@ -70,7 +57,7 @@ export const FleetTable = ({ className, fleet }: Props) => {
         header: "Tags",
         cell: (row) => {
           return (
-            <div className="overflow-hidden flex gap-1">
+            <div className="overflow-hidden flex flex-wrap gap-1">
               {row.row.original.variant.tags
                 .toSorted((a, b) => a.key.localeCompare(b.key))
                 .map((tag) => (
@@ -85,10 +72,13 @@ export const FleetTable = ({ className, fleet }: Props) => {
         header: "Status",
         cell: (row) => {
           if (row.getValue() === VariantStatus.FLIGHT_READY)
-            return "Flight ready";
+            return <FaRegCheckCircle title="Flight ready" />;
           if (row.getValue() === VariantStatus.NOT_FLIGHT_READY)
             return (
-              <span className="text-sinister-red-500">Nicht flight ready</span>
+              <FaRegCircleXmark
+                title="Nicht flight ready"
+                className="text-sinister-red-500"
+              />
             );
           return null;
         },
@@ -112,7 +102,7 @@ export const FleetTable = ({ className, fleet }: Props) => {
   });
 
   return (
-    <table className={clsx("w-full min-w-[480px]", className)}>
+    <table className={clsx("w-full min-w-[560px]", className)}>
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
@@ -151,7 +141,7 @@ export const FleetTable = ({ className, fleet }: Props) => {
           <tr
             key={row.id}
             className={clsx(
-              "grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2",
+              "grid items-center gap-4 px-2 py-1 rounded -mx-2 first:mt-2",
               GRID_COLS,
             )}
           >
