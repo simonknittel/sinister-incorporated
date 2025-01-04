@@ -21,7 +21,7 @@ export default async function Page() {
       <Note
         message={
           <p>
-            Dies ist ein Proof on Concept. Es sind noch nicht alle Funktionen
+            Dies ist ein Proof of Concept. Es sind noch nicht alle Funktionen
             implementiert und es kann zu Fehlern kommen.
           </p>
         }
