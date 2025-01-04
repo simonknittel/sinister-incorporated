@@ -71,7 +71,6 @@ export const ActivityTile = async ({ className }: Props) => {
 
   return (
     <section className={clsx(className)}>
-      <h2 className="font-bold text-xl self-start">Aktivität</h2>
       <small className="text-neutral-500 italic">
         Aktuell werden hier nur Änderungen an Organisationen aufgelistet.
         Änderungen an Citizens folgen später.

@@ -1,11 +1,8 @@
 import { authenticatePage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
-import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { SpynetSearchTile } from "@/common/components/SpynetSearchTile/SpynetSearchTile";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { type Metadata } from "next";
-import { Suspense } from "react";
-import { ActivityTile } from "./_components/ActivityTile/ActivityTile";
 import { CreateCitizen } from "./_components/CreateCitizen";
 import { CreateOrganization } from "./_components/CreateOrganization";
 
@@ -17,7 +14,6 @@ export default async function Page() {
   const authentication = await authenticatePage("/app/spynet");
 
   const showCreateCitizen = await authentication.authorize("citizen", "create");
-
   const showCreateOrganization = await authentication.authorize(
     "organization",
     "create",
@@ -29,26 +25,18 @@ export default async function Page() {
         <Hero text="Spynet" withGlitch />
       </div>
 
-      <div className="flex flex-col xl:flex-row-reverse gap-8 mt-8">
-        <div className="flex flex-col gap-4 xl:w-[400px]">
-          <h2 className="font-bold text-xl self-start">Suche</h2>
+      <div className="max-w-[400px] mx-auto mt-8">
+        {!(await dedupedGetUnleashFlag("DisableAlgolia")) && (
+          <SpynetSearchTile />
+        )}
 
-          {!(await dedupedGetUnleashFlag("DisableAlgolia")) && (
-            <SpynetSearchTile />
-          )}
+        {(showCreateCitizen || showCreateOrganization) && (
+          <div className="flex gap-4 justify-center mt-4">
+            {showCreateCitizen && <CreateCitizen />}
 
-          {(showCreateCitizen || showCreateOrganization) && (
-            <div className="flex gap-4 justify-center">
-              {showCreateCitizen && <CreateCitizen />}
-
-              {showCreateOrganization && <CreateOrganization />}
-            </div>
-          )}
-        </div>
-
-        <Suspense fallback={<SkeletonTile className="flex-1" />}>
-          <ActivityTile className="flex-1" />
-        </Suspense>
+            {showCreateOrganization && <CreateOrganization />}
+          </div>
+        )}
       </div>
     </main>
   );
