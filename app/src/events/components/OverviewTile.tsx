@@ -34,7 +34,7 @@ export const OverviewTile = ({ className, event, date }: Props) => {
         )}
 
         <div className="p-4 lg:p-8">
-          <h2 className="font-bold">{event.name}</h2>
+          <h1 className="font-bold">{event.name}</h1>
 
           {event.description && (
             <div className="mt-4 prose prose-invert">

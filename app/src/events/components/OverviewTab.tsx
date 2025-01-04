@@ -7,10 +7,11 @@ import type { Role, VariantTag } from "@prisma/client";
 import clsx from "clsx";
 import { getEventFleet } from "../utils/getEventFleet";
 import { getParticipants } from "../utils/getParticipants";
+import { OverviewTile } from "./OverviewTile";
 
 type Props = Readonly<{
   className?: string;
-  event: Awaited<ReturnType<typeof getEvent>>["data"];
+  event: Awaited<ReturnType<typeof getEvent>>;
 }>;
 
 export const OverviewTab = async ({ className, event }: Props) => {
@@ -18,10 +19,18 @@ export const OverviewTab = async ({ className, event }: Props) => {
   const showFleetSummary = await authentication.authorize("orgFleet", "read");
 
   return (
-    <div className={clsx("flex flex-col gap-4", className)}>
-      {showFleetSummary && <FleetSummary event={event} />}
+    <div className="flex flex-col items-center 2xl:flex-row 2xl:items-start gap-4">
+      <OverviewTile
+        event={event.data}
+        date={event.date}
+        className="w-[480px] flex-none"
+      />
 
-      <ParticipantsSummary event={event} />
+      <div className={clsx("flex-1 w-full flex flex-col gap-4", className)}>
+        {showFleetSummary && <FleetSummary event={event.data} />}
+
+        <ParticipantsSummary event={event.data} />
+      </div>
     </div>
   );
 };

@@ -6,7 +6,6 @@ import { TabsProvider } from "@/common/components/tabs/TabsContext";
 import { getEvent } from "@/discord/getEvent";
 import { FleetTab } from "@/events/components/FleetTab";
 import { OverviewTab } from "@/events/components/OverviewTab";
-import { OverviewTile } from "@/events/components/OverviewTile";
 import { ParticipantsTab } from "@/events/components/ParticipantsTab";
 import { log } from "@/logging";
 import { type Metadata } from "next";
@@ -50,59 +49,49 @@ export default async function Page({ params }: Props) {
   await authentication.authorizePage("event", "read");
   const showFleetTile = await authentication.authorize("orgFleet", "read");
 
-  const { date, data: event } = await getEvent((await params).id);
+  const event = await getEvent((await params).id);
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl mb-4">
         <span className="text-neutral-500">Event /</span>
-        <h1>{event.name}</h1>
+        <p>{event.data.name}</p>
       </div>
 
-      <div className="flex gap-8 flex-col-reverse 2xl:flex-row 2xl:items-start">
-        <div className="2xl:flex-1">
-          <TabsProvider initialActiveTab="overview">
-            <TabList>
-              <Tab id="overview">
-                <FaHome />
-                Übersicht
-              </Tab>
+      <TabsProvider initialActiveTab="overview">
+        <TabList>
+          <Tab id="overview">
+            <FaHome />
+            Übersicht
+          </Tab>
 
-              <Tab id="participants">
-                <FaUsers />
-                Teilnehmer ({event.user_count})
-              </Tab>
+          <Tab id="participants">
+            <FaUsers />
+            Teilnehmer ({event.data.user_count})
+          </Tab>
 
-              {showFleetTile && (
-                <Tab id="fleet">
-                  <MdWorkspaces />
-                  Flotte
-                </Tab>
-              )}
-            </TabList>
+          {showFleetTile && (
+            <Tab id="fleet">
+              <MdWorkspaces />
+              Flotte
+            </Tab>
+          )}
+        </TabList>
 
-            <TabPanel id="overview">
-              <OverviewTab event={event} />
-            </TabPanel>
+        <TabPanel id="overview">
+          <OverviewTab event={event} />
+        </TabPanel>
 
-            <TabPanel id="participants">
-              <ParticipantsTab event={event} />
-            </TabPanel>
+        <TabPanel id="participants">
+          <ParticipantsTab event={event.data} />
+        </TabPanel>
 
-            {showFleetTile && (
-              <TabPanel id="fleet">
-                <FleetTab event={event} />
-              </TabPanel>
-            )}
-          </TabsProvider>
-        </div>
-
-        <OverviewTile
-          event={event}
-          date={date}
-          className="w-full max-w-[480px] self-center 2xl:self-start 2xl:flex-none"
-        />
-      </div>
+        {showFleetTile && (
+          <TabPanel id="fleet">
+            <FleetTab event={event.data} />
+          </TabPanel>
+        )}
+      </TabsProvider>
     </main>
   );
 }
