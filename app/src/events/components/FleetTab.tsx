@@ -14,8 +14,8 @@ export const FleetTab = async ({ className, event }: Props) => {
   return (
     <section
       className={clsx(
-        className,
         "rounded-2xl bg-neutral-800/50 p-4 lg:p-8 overflow-auto",
+        className,
       )}
       style={{
         gridArea: "fleet",

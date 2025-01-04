@@ -19,14 +19,19 @@ export const OverviewTab = async ({ className, event }: Props) => {
   const showFleetSummary = await authentication.authorize("orgFleet", "read");
 
   return (
-    <div className="flex flex-col items-center 2xl:flex-row 2xl:items-start gap-4">
+    <div
+      className={clsx(
+        "flex flex-col items-center 2xl:flex-row 2xl:items-start gap-4",
+        className,
+      )}
+    >
       <OverviewTile
         event={event.data}
         date={event.date}
         className="w-[480px] flex-none"
       />
 
-      <div className={clsx("flex-1 w-full flex flex-col gap-4", className)}>
+      <div className="flex-1 w-full flex flex-col gap-4">
         {showFleetSummary && <FleetSummary event={event.data} />}
 
         <ParticipantsSummary event={event.data} />

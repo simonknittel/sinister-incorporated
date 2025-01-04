@@ -1,6 +1,6 @@
 import { authenticatePage } from "@/auth/server";
 import { getEvent } from "@/discord/getEvent";
-import { OverviewTab } from "@/events/components/OverviewTab";
+import { ParticipantsTab } from "@/events/components/ParticipantsTab";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import Link from "next/link";
@@ -19,7 +19,7 @@ export async function generateMetadata(props: {
     const { data: event } = await getEvent((await props.params).id);
 
     return {
-      title: `${event.name} - Event | S.A.M. - Sinister Incorporated`,
+      title: `Teilnehmer - ${event.name} - Event | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
     void log.error(
@@ -56,7 +56,7 @@ export default async function Page({ params }: Props) {
       <div className="flex flex-wrap mt-4">
         <Link
           href={`/app/events/${event.data.id}`}
-          className="first:rounded-l border-[1px] border-sinister-red-500 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase bg-sinister-red-500 text-white"
+          className="first:rounded-l border-[1px] border-sinister-red-500 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"
         >
           <FaHome />
           Übersicht
@@ -64,7 +64,7 @@ export default async function Page({ params }: Props) {
 
         <Link
           href={`/app/events/${event.data.id}/participants`}
-          className="first:rounded-l border-[1px] border-sinister-red-500 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"
+          className="first:rounded-l border-[1px] border-sinister-red-500 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase bg-sinister-red-500 text-white"
         >
           <FaUsers />
           Teilnehmer ({event.data.user_count})
@@ -81,7 +81,7 @@ export default async function Page({ params }: Props) {
         )}
       </div>
 
-      <OverviewTab event={event} className="mt-4" />
+      <ParticipantsTab event={event.data} className="mt-4" />
     </main>
   );
 }
