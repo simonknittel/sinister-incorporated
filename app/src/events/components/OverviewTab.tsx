@@ -7,10 +7,11 @@ import type { Role, VariantTag } from "@prisma/client";
 import clsx from "clsx";
 import { getEventFleet } from "../utils/getEventFleet";
 import { getParticipants } from "../utils/getParticipants";
+import { OverviewTile } from "./OverviewTile";
 
 type Props = Readonly<{
   className?: string;
-  event: Awaited<ReturnType<typeof getEvent>>["data"];
+  event: Awaited<ReturnType<typeof getEvent>>;
 }>;
 
 export const OverviewTab = async ({ className, event }: Props) => {
@@ -18,10 +19,23 @@ export const OverviewTab = async ({ className, event }: Props) => {
   const showFleetSummary = await authentication.authorize("orgFleet", "read");
 
   return (
-    <div className={clsx("flex flex-col gap-4", className)}>
-      {showFleetSummary && <FleetSummary event={event} />}
+    <div
+      className={clsx(
+        "flex flex-col items-center 2xl:flex-row 2xl:items-start gap-4",
+        className,
+      )}
+    >
+      <OverviewTile
+        event={event.data}
+        date={event.date}
+        className="w-[480px] flex-none"
+      />
 
-      <ParticipantsSummary event={event} />
+      <div className="flex-1 w-full flex flex-col gap-4">
+        {showFleetSummary && <FleetSummary event={event.data} />}
+
+        <ParticipantsSummary event={event.data} />
+      </div>
     </div>
   );
 };
@@ -32,7 +46,7 @@ type FleetSummaryProps = Readonly<{
 }>;
 
 const FleetSummary = async ({ className, event }: FleetSummaryProps) => {
-  const eventFleet = await getEventFleet(event, true);
+  const eventFleet = await getEventFleet(event);
 
   const countedTags = new Map<string, { tag: VariantTag; count: number }>();
 
@@ -56,7 +70,10 @@ const FleetSummary = async ({ className, event }: FleetSummaryProps) => {
     <section
       className={clsx("rounded-2xl bg-neutral-800/50 p-4 lg:p-8", className)}
     >
-      <h2 className="font-bold mb-4">Flotte der Teilnehmer</h2>
+      <h2 className="font-bold">Flotte der Teilnehmer</h2>
+      <p className="mb-4 text-neutral-500 text-sm">
+        Summe aller Tags. Nur flight ready.
+      </p>
 
       <div className="flex gap-2 flex-wrap">
         {Array.from(countedTags.values())
@@ -113,7 +130,10 @@ const ParticipantsSummary = async ({
     <section
       className={clsx("rounded-2xl bg-neutral-800/50 p-4 lg:p-8", className)}
     >
-      <h2 className="font-bold mb-4">Rollen/Zertifikate der Teilnehmer</h2>
+      <h2 className="font-bold">Rollen/Zertifikate der Teilnehmer</h2>
+      <p className="mb-4 text-neutral-500 text-sm">
+        Summe aller Rollen/Zertifikate
+      </p>
 
       <div className="flex gap-2 flex-wrap">
         {Array.from(countedRoles.values())

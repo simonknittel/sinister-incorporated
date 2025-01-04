@@ -6,10 +6,7 @@ import { groupBy } from "lodash";
 import { cache } from "react";
 
 export const getEventFleet = cache(
-  async (
-    event: Awaited<ReturnType<typeof getEvent>>["data"],
-    onlyFlightReady = false,
-  ) => {
+  async (event: Awaited<ReturnType<typeof getEvent>>["data"]) => {
     const users = await getEventUsersDeduped(event.id);
     const userIds = users.map((user) => user.user.id);
 
@@ -25,7 +22,7 @@ export const getEventFleet = cache(
           },
         },
         variant: {
-          status: onlyFlightReady ? VariantStatus.FLIGHT_READY : undefined,
+          status: VariantStatus.FLIGHT_READY,
         },
       },
       include: {

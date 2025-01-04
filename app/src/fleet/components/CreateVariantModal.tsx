@@ -146,6 +146,7 @@ export const CreateVariantModal = ({
                 name="tagKeys[]"
                 placeholder="Key"
                 defaultValue={tag.key}
+                autoFocus={Boolean(!tag.key)}
               />
               <input
                 type="text"
