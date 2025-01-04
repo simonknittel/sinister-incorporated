@@ -25,6 +25,7 @@ export type PermissionSet = {
     | "documentIntroductionCompendium"
     | "documentAllianceManifest"
     | "algolia"
+    | "spynetActivity"
     | "spynetCitizen"
     | "spynetNotes"
     | "spynetOther"

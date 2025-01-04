@@ -1,11 +1,11 @@
 import { requireAuthentication } from "@/auth/server";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
-import clsx from "clsx";
 import Link from "next/link";
 import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
 import { IoDocuments } from "react-icons/io5";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
+import { RxActivityLog } from "react-icons/rx";
 import { TbMilitaryRank } from "react-icons/tb";
 import { Chip } from "../Chip";
 import { CmdKLoader } from "../CmdK/CmdKLoader";
@@ -50,6 +50,10 @@ export const DesktopSidebar = async () => {
   const showManufacturersSeriesAndVariantsManage =
     await authentication.authorize("manufacturersSeriesAndVariants", "manage");
   const showCareerRead = await authentication.authorize("career", "read");
+  const showSpynetActivity = await authentication.authorize(
+    "spynetActivity",
+    "read",
+  );
   const showSpynetCitizen =
     showCitizenRead &&
     (await authentication.authorize("spynetCitizen", "read"));
@@ -57,6 +61,11 @@ export const DesktopSidebar = async () => {
     showCitizenRead && (await authentication.authorize("spynetNotes", "read"));
   const showSpynetOther =
     showCitizenRead && (await authentication.authorize("spynetOther", "read"));
+  const showSpynetAdmin =
+    showSpynetActivity ||
+    showSpynetCitizen ||
+    showSpynetNotes ||
+    showSpynetOther;
 
   const disableAlgolia =
     (await dedupedGetUnleashFlag("DisableAlgolia")) || false;
@@ -177,22 +186,28 @@ export const DesktopSidebar = async () => {
               )}
             </ul>
 
-            {(showSpynetCitizen || showSpynetNotes || showSpynetOther) && (
+            {showSpynetAdmin && (
               <div className="mt-4">
                 <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
 
                 <ul>
+                  {showSpynetActivity && (
+                    <li>
+                      <Link
+                        href="/app/spynet/activity"
+                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
+                      >
+                        <RxActivityLog />
+                        Aktivität
+                      </Link>
+                    </li>
+                  )}
+
                   {showSpynetCitizen && (
                     <li>
                       <Link
                         href="/app/spynet/citizen"
-                        className={clsx(
-                          "flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded",
-                          // {
-                          //   "before:w-[2px] before:h-[2em] before:bg-sinister-red-500 before:absolute before:left-0 relative before:rounded bg-neutral-800":
-                          //     true,
-                          // },
-                        )}
+                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                       >
                         <FaTable />
                         Citizen

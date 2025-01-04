@@ -63,18 +63,14 @@ export const Event = async ({ className, event, index }: Props) => {
 
           <p>
             <span className="text-neutral-500">Start:</span>{" "}
-            {event.scheduled_start_time.toLocaleDateString("de-DE", {
+            {event.scheduled_start_time.toLocaleString("de-DE", {
+              timeZone: "Europe/Berlin",
               weekday: "short",
               year: "numeric",
               month: "long",
               day: "numeric",
-              timeZone: "Europe/Berlin",
-            })}{" "}
-            -{" "}
-            {event.scheduled_start_time.toLocaleTimeString("de-DE", {
               hour: "2-digit",
               minute: "2-digit",
-              timeZone: "Europe/Berlin",
             })}
           </p>
 
