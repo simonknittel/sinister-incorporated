@@ -32,7 +32,7 @@ type FleetSummaryProps = Readonly<{
 }>;
 
 const FleetSummary = async ({ className, event }: FleetSummaryProps) => {
-  const eventFleet = await getEventFleet(event, true);
+  const eventFleet = await getEventFleet(event);
 
   const countedTags = new Map<string, { tag: VariantTag; count: number }>();
 
@@ -56,7 +56,10 @@ const FleetSummary = async ({ className, event }: FleetSummaryProps) => {
     <section
       className={clsx("rounded-2xl bg-neutral-800/50 p-4 lg:p-8", className)}
     >
-      <h2 className="font-bold mb-4">Flotte der Teilnehmer</h2>
+      <h2 className="font-bold">Flotte der Teilnehmer</h2>
+      <p className="mb-4 text-neutral-500 text-sm">
+        Summe aller Tags. Nur flight ready.
+      </p>
 
       <div className="flex gap-2 flex-wrap">
         {Array.from(countedTags.values())
@@ -113,7 +116,10 @@ const ParticipantsSummary = async ({
     <section
       className={clsx("rounded-2xl bg-neutral-800/50 p-4 lg:p-8", className)}
     >
-      <h2 className="font-bold mb-4">Rollen/Zertifikate der Teilnehmer</h2>
+      <h2 className="font-bold">Rollen/Zertifikate der Teilnehmer</h2>
+      <p className="mb-4 text-neutral-500 text-sm">
+        Summe aller Rollen/Zertifikate
+      </p>
 
       <div className="flex gap-2 flex-wrap">
         {Array.from(countedRoles.values())

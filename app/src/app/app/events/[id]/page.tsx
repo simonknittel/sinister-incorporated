@@ -3,10 +3,6 @@ import Tab from "@/common/components/tabs/Tab";
 import TabList from "@/common/components/tabs/TabList";
 import TabPanel from "@/common/components/tabs/TabPanel";
 import { TabsProvider } from "@/common/components/tabs/TabsContext";
-import {
-  searchParamsNextjsToURLSearchParams,
-  type NextjsSearchParams,
-} from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { getEvent } from "@/discord/getEvent";
 import { FleetTab } from "@/events/components/FleetTab";
 import { OverviewTab } from "@/events/components/OverviewTab";
@@ -47,18 +43,14 @@ export async function generateMetadata(props: {
 
 type Props = Readonly<{
   params: Params;
-  searchParams: NextjsSearchParams;
 }>;
 
-export default async function Page({ params, searchParams }: Props) {
+export default async function Page({ params }: Props) {
   const authentication = await authenticatePage("/app/events/[id]");
   await authentication.authorizePage("event", "read");
   const showFleetTile = await authentication.authorize("orgFleet", "read");
 
   const { date, data: event } = await getEvent((await params).id);
-
-  const urlSearchParams =
-    await searchParamsNextjsToURLSearchParams(searchParams);
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
@@ -99,7 +91,7 @@ export default async function Page({ params, searchParams }: Props) {
 
             {showFleetTile && (
               <TabPanel id="fleet">
-                <FleetTab event={event} urlSearchParams={urlSearchParams} />
+                <FleetTab event={event} />
               </TabPanel>
             )}
           </TabsProvider>

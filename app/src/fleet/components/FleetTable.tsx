@@ -1,7 +1,12 @@
 "use client";
 
-import type { getEventFleet } from "@/events/utils/getEventFleet";
-import { VariantStatus } from "@prisma/client";
+import {
+  VariantStatus,
+  type Manufacturer,
+  type Series,
+  type Variant,
+  type VariantTag,
+} from "@prisma/client";
 import {
   createColumnHelper,
   flexRender,
@@ -23,7 +28,15 @@ import { VariantWithLogo } from "./VariantWithLogo";
 
 type Props = Readonly<{
   className?: string;
-  fleet: Awaited<ReturnType<typeof getEventFleet>>;
+  fleet: Array<{
+    variant: Variant & {
+      series: Series & {
+        manufacturer: Manufacturer;
+      };
+      tags: VariantTag[];
+    };
+    count: number;
+  }>;
 }>;
 
 type Row = Props["fleet"][number];
