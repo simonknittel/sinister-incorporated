@@ -12,6 +12,7 @@ import {
   sortDescAndNullLast,
 } from "@/common/utils/sorting";
 import { prisma } from "@/db";
+import type { EntityLogConfirmationState } from "@/types";
 import Pagination from "../../_components/Pagination";
 import isAllowedToRead from "../../entity/[id]/_components/notes/lib/isAllowedToRead";
 import Filters from "./Filters";
@@ -79,7 +80,7 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
           (classificationLevel) =>
             classificationLevel.id === classificationLevelId!.value,
         )!,
-        confirmationState: confirmed?.value,
+        confirmationState: confirmed?.value as EntityLogConfirmationState,
         confirmedAt: confirmed?.createdAt,
         confirmedBy: confirmed?.createdBy,
         entityLog,

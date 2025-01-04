@@ -9,8 +9,11 @@ import {
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
+  type User,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import DiscordProvider, {
+  type DiscordProfile,
+} from "next-auth/providers/discord";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { type UserRole } from "../types";
@@ -46,10 +49,10 @@ async function getGuildMember(access_token: string) {
 }
 
 function getAvatar(
-  profile,
+  profile: DiscordProfile,
   guildMember: z.infer<typeof guildMemberResponseSchema>,
 ) {
-  if (guildMember.avatar) {
+  if ("avatar" in guildMember && guildMember.avatar) {
     const format = guildMember.avatar.startsWith("a_") ? "gif" : "png";
     return `https://cdn.discordapp.com/avatars/${profile.id}/${guildMember.avatar}.${format}`;
   } else if (profile.avatar) {
@@ -158,6 +161,8 @@ export const authOptions: NextAuthOptions = {
     },
 
     async signIn({ user, account, profile }) {
+      if (!profile) throw new Error("Missing profile");
+
       /**
        * Update account and user on login
        *
@@ -170,7 +175,7 @@ export const authOptions: NextAuthOptions = {
       void log.info("Login attempt", {
         accountProvider: account?.provider,
         accountProviderAccountId: account?.providerAccountId,
-        profileEmail: profile?.email,
+        profileEmail: profile.email,
       });
 
       const existingUser = await prisma.user.findUnique({
@@ -221,7 +226,6 @@ export const authOptions: NextAuthOptions = {
         ]);
       } else {
         // New user
-
         const guildMember = await getGuildMember(account.access_token);
 
         if ("message" in guildMember) {
@@ -242,7 +246,7 @@ export const authOptions: NextAuthOptions = {
           await prisma.entityLog.findFirst({
             where: {
               type: "discord-id",
-              content: profile!.id,
+              content: profile.id,
               attributes: {
                 some: {
                   key: "confirmed",
@@ -285,7 +289,7 @@ export const authOptions: NextAuthOptions = {
 
   adapter: {
     ...adapter,
-    createUser: async (user) => {
+    createUser: async (user: User) => {
       const createdUser = await adapter.createUser!(user);
 
       try {

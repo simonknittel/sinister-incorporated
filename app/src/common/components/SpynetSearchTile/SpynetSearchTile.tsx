@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import Search from "./Search";
+import { Search } from "./Search";
 
 type Props = Readonly<{
   className?: string;

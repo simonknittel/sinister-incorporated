@@ -12,7 +12,7 @@ type Props = Readonly<{
 }>;
 
 export const InstallPWA = ({ className }: Props) => {
-  const installPrompt = useRef(null);
+  const installPrompt = useRef<Event | null>(null);
 
   useEffect(() => {
     window.addEventListener("beforeinstallprompt", (e) => {

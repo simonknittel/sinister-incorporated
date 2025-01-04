@@ -1,6 +1,4 @@
-import type { EntityLogType } from "@/types";
-
-export const entityLogTypeTranslations: Record<EntityLogType, string> = {
+export const entityLogTypeTranslations: Record<string, string> = {
   handle: "Handle",
   "discord-id": "Discord ID",
   "teamspeak-id": "Teamspeak ID",

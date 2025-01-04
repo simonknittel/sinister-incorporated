@@ -49,7 +49,7 @@ const SquadronFlightPosition = ({
 
       <p
         className="text-neutral-500 text-sm whitespace-nowrap text-ellipsis overflow-hidden"
-        title={member.user.name}
+        title={member.user.name || member.userId}
       >
         {member.user.name}
       </p>
