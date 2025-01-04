@@ -112,6 +112,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
                 name="tagKeys[]"
                 placeholder="Key"
                 defaultValue={tag.key}
+                autoFocus={Boolean(!tag.key)}
               />
               <input
                 type="text"
