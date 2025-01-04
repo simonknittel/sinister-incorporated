@@ -210,7 +210,9 @@ export const ActivityTile = async ({ className, id }: Props) => {
                   <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-[2px]" />
                   <div className="flex gap-2 lg:gap-4 flex-wrap">
                     <p className="font-bold text-sm">Unbestätigt</p>
-                    <ConfirmMembership entry={entry.originalEntry} />
+                    {"originalEntry" in entry && (
+                      <ConfirmMembership entry={entry.originalEntry} />
+                    )}
                   </div>
                 </div>
               )}

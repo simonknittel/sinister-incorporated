@@ -1,20 +1,21 @@
 "use client";
 
-import { type BuiltInProviderType } from "next-auth/providers";
-import { signIn, type LiteralUnion } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { RiLoginCircleLine } from "react-icons/ri";
 import Button from "./Button";
 
-interface Props {
-  activeProviders: LiteralUnion<BuiltInProviderType>[];
-}
+type Props = Readonly<{
+  activeProviders: string[];
+}>;
 
-const LoginButtons = ({ activeProviders }: Readonly<Props>) => {
-  const [isLoggingIn, setIsLoggingIn] = useState<string | null>(null);
+export const LoginButtons = ({ activeProviders }: Props) => {
+  const [isLoggingIn, setIsLoggingIn] = useState<
+    (typeof activeProviders)[number] | null
+  >(null);
 
-  const handleClick = async (provider: LiteralUnion<BuiltInProviderType>) => {
+  const handleClick = async (provider: (typeof activeProviders)[number]) => {
     setIsLoggingIn(provider);
     await signIn(provider);
   };
@@ -40,5 +41,3 @@ const LoginButtons = ({ activeProviders }: Readonly<Props>) => {
     </>
   );
 };
-
-export default LoginButtons;

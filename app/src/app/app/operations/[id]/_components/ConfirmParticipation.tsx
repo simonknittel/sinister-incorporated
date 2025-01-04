@@ -33,10 +33,9 @@ const ConfirmParticipation = ({ operation }: Readonly<Props>) => {
       if (response.ok) {
         router.refresh();
         toast.success("Erfolgreich bestätigt");
-        await queryClient.invalidateQueries([
-          "operation-members",
-          operation.id,
-        ]);
+        await queryClient.invalidateQueries({
+          queryKey: ["operation-members", operation.id],
+        });
       } else {
         toast.error("Beim Bestätigen ist ein Fehler aufgetreten.");
       }

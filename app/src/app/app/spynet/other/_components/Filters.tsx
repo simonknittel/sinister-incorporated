@@ -2,14 +2,14 @@ import { entityLogTypeTranslations } from "@/common/utils/entityLogTypeTranslati
 import type { EntityLogType } from "@/types";
 import { Filter } from "../../_components/Filter";
 import ConfirmationStateFilter from "./ConfirmationStateFilter";
-import EntityLogTypeFilter from "./EntityLogTypeFilter";
+import { EntityLogTypeFilter } from "./EntityLogTypeFilter";
 import { type Row } from "./Table";
 
-interface Props {
+type Props = Readonly<{
   rows: Row[];
-}
+}>;
 
-const Filters = ({ rows }: Readonly<Props>) => {
+export const Filters = ({ rows }: Props) => {
   const confirmationStates = new Set<string>();
   const entityLogTypes = new Map<EntityLogType, string>();
 
@@ -22,7 +22,7 @@ const Filters = ({ rows }: Readonly<Props>) => {
 
     if (row.entityLog.type) {
       entityLogTypes.set(
-        row.entityLog.type,
+        row.entityLog.type as EntityLogType,
         entityLogTypeTranslations[row.entityLog.type],
       );
     }
@@ -41,11 +41,9 @@ const Filters = ({ rows }: Readonly<Props>) => {
 
       {entityLogTypes.size > 0 && (
         <Filter name="Merkmal">
-          <EntityLogTypeFilter entityLogTypes={Array.from(entityLogTypes)} />
+          <EntityLogTypeFilter entityLogTypes={entityLogTypes} />
         </Filter>
       )}
     </div>
   );
 };
-
-export default Filters;

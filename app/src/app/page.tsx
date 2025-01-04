@@ -1,7 +1,7 @@
 import { authenticate } from "@/auth/server";
 import { Footer } from "@/common/components/Footer";
 import { Hero } from "@/common/components/Hero";
-import LoginButtons from "@/common/components/LoginButtons";
+import { LoginButtons } from "@/common/components/LoginButtons";
 import Note from "@/common/components/Note";
 import { UwuHero } from "@/common/components/UwuHero";
 import {

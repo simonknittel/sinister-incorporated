@@ -3,12 +3,17 @@
 import { autocomplete } from "@algolia/autocomplete-js";
 import "@algolia/autocomplete-theme-classic";
 import { createElement, Fragment, useEffect, useRef } from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, type Root } from "react-dom/client";
 
-const Autocomplete = (props) => {
-  const containerRef = useRef(null);
-  const panelRootRef = useRef(null);
-  const rootRef = useRef(null);
+type Props = Parameters<typeof autocomplete>[0];
+
+export const Autocomplete = (props: Props) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const panelRootRef = useRef<Root | null>(null);
+  const rootRef = useRef<HTMLElement | null>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { container, renderer, render, ...rest } = props;
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -28,15 +33,13 @@ const Autocomplete = (props) => {
 
         panelRootRef.current.render(children);
       },
-      ...props,
+      ...rest,
     });
 
     return () => {
       search.destroy();
     };
-  }, [props]);
+  }, [rest]);
 
   return <div ref={containerRef} className="w-full" />;
 };
-
-export default Autocomplete;

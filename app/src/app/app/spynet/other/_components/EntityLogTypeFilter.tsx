@@ -12,11 +12,11 @@ interface FormValues {
   values: string[];
 }
 
-interface Props {
+type Props = Readonly<{
   entityLogTypes: Map<EntityLogType, string>;
-}
+}>;
 
-const EntityLogTypeFilter = ({ entityLogTypes }: Readonly<Props>) => {
+export const EntityLogTypeFilter = ({ entityLogTypes }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -88,5 +88,3 @@ const EntityLogTypeFilter = ({ entityLogTypes }: Readonly<Props>) => {
     </form>
   );
 };
-
-export default EntityLogTypeFilter;

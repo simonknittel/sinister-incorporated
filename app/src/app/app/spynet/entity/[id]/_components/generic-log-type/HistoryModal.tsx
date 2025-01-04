@@ -4,7 +4,7 @@ import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
 import type { GenericEntityLogType } from "@/types";
 import { type Entity } from "@prisma/client";
-import { useState, type ComponentProps } from "react";
+import { useState } from "react";
 import { FaHistory } from "react-icons/fa";
 import { ModalContent } from "./ModalContent";
 
@@ -12,9 +12,9 @@ interface Props {
   type: GenericEntityLogType;
   entity: Entity;
   iconOnly?: boolean;
-  showCreate: ComponentProps<typeof ModalContent>["showCreate"];
-  showDelete: ComponentProps<typeof ModalContent>["showDelete"];
-  showConfirm: ComponentProps<typeof ModalContent>["showConfirm"];
+  showCreate?: boolean;
+  showDelete?: boolean;
+  showConfirm?: boolean;
 }
 
 export const HistoryModal = ({

@@ -3,7 +3,6 @@
 import { api } from "@/trpc/react";
 import type { GenericEntityLogType } from "@/types";
 import { type Entity } from "@prisma/client";
-import type { ComponentProps } from "react";
 import { Create } from "./Create";
 import { HistoryEntry } from "./HistoryEntry";
 import { HistoryEntrySkelton } from "./HistoryEntrySkeleton";
@@ -12,14 +11,14 @@ interface Props {
   type: GenericEntityLogType;
   entity: Entity;
   showCreate?: boolean;
-  showDelete: ComponentProps<typeof HistoryEntry>["showDelete"];
-  showConfirm: ComponentProps<typeof HistoryEntry>["showConfirm"];
+  showDelete?: boolean;
+  showConfirm?: boolean;
 }
 
 export const ModalContent = ({
   type,
   entity,
-  showCreate = false,
+  showCreate,
   showDelete,
   showConfirm,
 }: Readonly<Props>) => {

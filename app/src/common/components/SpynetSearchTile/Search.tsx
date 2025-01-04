@@ -3,7 +3,7 @@
 import { env } from "@/env";
 import { getAlgoliaResults } from "@algolia/autocomplete-js";
 import algoliasearch from "algoliasearch";
-import Autocomplete from "./Autocomplete";
+import { Autocomplete } from "./Autocomplete";
 import { Citizen } from "./Citizen";
 import { Organization } from "./Organization";
 
@@ -31,7 +31,7 @@ const searchClient = algoliasearch(
   env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY,
 );
 
-function debouncePromise(fn, time) {
+function debouncePromise(fn, time: number) {
   let timerId: NodeJS.Timeout | undefined = undefined;
 
   return function debounced(...args) {
@@ -47,7 +47,7 @@ function debouncePromise(fn, time) {
 
 const debounced = debouncePromise((items) => Promise.resolve(items), 300);
 
-const Search = () => {
+export const Search = () => {
   return (
     <div className="w-full">
       <Autocomplete
@@ -100,5 +100,3 @@ const Search = () => {
     </div>
   );
 };
-
-export default Search;
