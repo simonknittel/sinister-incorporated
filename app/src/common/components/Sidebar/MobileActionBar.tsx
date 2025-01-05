@@ -134,7 +134,7 @@ export const MobileActionBar = async ({ className }: Props) => {
           {showCareer && (
             <li className="h-full py-1">
               <Link
-                href="/app/documents"
+                href="/app/career"
                 className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
               >
                 <TbMilitaryRank className="text-xl" />
@@ -226,7 +226,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                   {showCareer && (
                     <li>
                       <Link
-                        href="/app/documents"
+                        href="/app/career"
                         className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
                       >
                         <TbMilitaryRank />
