@@ -1,14 +1,14 @@
 "use client";
 
 import Button from "@/common/components/Button";
-import YesNoCheckbox from "@/common/components/YesNoCheckbox";
+import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import { env } from "@/env";
+import { useFilter } from "@/spynet/components/Filter";
 import { type Role } from "@prisma/client";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { FaSave } from "react-icons/fa";
-import { useFilter } from "../../_components/Filter";
 
 interface FormValues {
   values: string[];

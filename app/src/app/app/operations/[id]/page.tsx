@@ -1,63 +1,19 @@
 import { authenticatePage } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { prisma } from "@/db";
 import { log } from "@/logging";
+import ConfirmParticipation from "@/operations/components/ConfirmParticipation";
+import CreateUnit from "@/operations/components/CreateUnit";
+import DeleteOperation from "@/operations/components/DeleteOperation";
+import EditOperation from "@/operations/components/EditOperation";
+import JoinOperation from "@/operations/components/JoinOperation";
+import RemoveParticipation from "@/operations/components/RemoveParticipation";
+import SquadronTile from "@/operations/components/SquadronTile";
+import { getOperation } from "@/operations/queries";
 import { type Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cache } from "react";
 import { serializeError } from "serialize-error";
-import ConfirmParticipation from "./_components/ConfirmParticipation";
-import CreateUnit from "./_components/CreateUnit";
-import DeleteOperation from "./_components/DeleteOperation";
-import EditOperation from "./_components/EditOperation";
-import JoinOperation from "./_components/JoinOperation";
-import RemoveParticipation from "./_components/RemoveParticipation";
-import SquadronTile from "./_components/SquadronTile";
-
-const getOperation = cache(async (id: string) => {
-  return prisma.operation.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      members: {
-        include: {
-          user: true,
-        },
-      },
-      units: {
-        include: {
-          members: {
-            include: {
-              user: true,
-              ship: {
-                include: {
-                  variant: true,
-                },
-              },
-            },
-          },
-          childUnits: {
-            include: {
-              members: {
-                include: {
-                  user: true,
-                  ship: {
-                    include: {
-                      variant: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-});
 
 type Params = Promise<{
   id: string;

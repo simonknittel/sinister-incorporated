@@ -1,11 +1,11 @@
 "use client";
 
 import Button from "@/common/components/Button";
-import YesNoCheckbox from "@/common/components/YesNoCheckbox";
+import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
+import { useFilter } from "@/spynet/components/Filter";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { FaSave } from "react-icons/fa";
-import { useFilter } from "../../_components/Filter";
 
 interface FormValues {
   values: string[];

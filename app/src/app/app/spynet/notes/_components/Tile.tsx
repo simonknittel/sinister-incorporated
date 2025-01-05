@@ -12,17 +12,19 @@ import {
   sortDescAndNullLast,
 } from "@/common/utils/sorting";
 import { prisma } from "@/db";
+import Pagination from "@/spynet/components/Pagination";
 import type { EntityLogConfirmationState } from "@/types";
-import Pagination from "../../_components/Pagination";
+import clsx from "clsx";
 import isAllowedToRead from "../../entity/[id]/_components/notes/lib/isAllowedToRead";
 import Filters from "./Filters";
 import Table, { type Row } from "./Table";
 
-interface Props {
+type Props = Readonly<{
+  className?: string;
   searchParams: URLSearchParams;
-}
+}>;
 
-const Tile = async ({ searchParams }: Readonly<Props>) => {
+const Tile = async ({ className, searchParams }: Props) => {
   const authentication = await requireAuthentication();
 
   const currentPage = getCurrentPageFromSearchParams(searchParams);
@@ -187,7 +189,12 @@ const Tile = async ({ searchParams }: Readonly<Props>) => {
   const limitedRows = limitRows(sortedRows, currentPage);
 
   return (
-    <section className="p-8 pb-10 bg-neutral-800/50  mt-4 rounded-2xl overflow-auto">
+    <section
+      className={clsx(
+        "p-8 pb-10 bg-neutral-800/50 rounded-2xl overflow-auto",
+        className,
+      )}
+    >
       <div className="mb-8">
         <Filters rows={authenticatedRows} />
       </div>

@@ -1,4 +1,5 @@
 import { authenticatePage } from "@/auth/server";
+import { SkeletonTile } from "@/common/components/SkeletonTile";
 import {
   searchParamsNextjsToURLSearchParams,
   type NextjsSearchParams,
@@ -7,7 +8,6 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import Tile from "./_components/Tile";
-import TileSkeleton from "./_components/TileSkeleton";
 
 export const revalidate = 0; // TODO: Revert to 60
 
@@ -44,8 +44,8 @@ export default async function Page({ searchParams }: Props) {
         <h1>Sonstige</h1>
       </div>
 
-      <Suspense fallback={<TileSkeleton />}>
-        <Tile searchParams={urlSearchParams} />
+      <Suspense fallback={<SkeletonTile className="mt-4" />}>
+        <Tile searchParams={urlSearchParams} className="mt-4" />
       </Suspense>
     </main>
   );

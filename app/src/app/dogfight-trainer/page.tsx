@@ -1,8 +1,8 @@
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { GameLoader } from "@/dogfight-trainer/components/GameLoader";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { GameLoader } from "./_components/Game/GameLoader";
 
 export const metadata: Metadata = {
   title: "Dogfight Trainer | S.A.M. - Sinister Incorporated",

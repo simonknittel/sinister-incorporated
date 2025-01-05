@@ -1,6 +1,6 @@
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
-import { type Hit } from "../SpynetSearchTile/Search";
+import { type Hit } from "../../../spynet/components/SpynetSearchTile/Search";
 
 type Props = Readonly<{
   hit: Hit;

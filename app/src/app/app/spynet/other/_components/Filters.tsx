@@ -1,6 +1,6 @@
 import { entityLogTypeTranslations } from "@/common/utils/entityLogTypeTranslations";
+import { Filter } from "@/spynet/components/Filter";
 import type { EntityLogType } from "@/types";
-import { Filter } from "../../_components/Filter";
 import ConfirmationStateFilter from "./ConfirmationStateFilter";
 import { EntityLogTypeFilter } from "./EntityLogTypeFilter";
 import { type Row } from "./Table";

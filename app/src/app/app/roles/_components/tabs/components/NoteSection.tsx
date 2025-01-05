@@ -1,5 +1,5 @@
 import Button from "@/common/components/Button";
-import YesNoCheckbox from "@/common/components/YesNoCheckbox";
+import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import { type ClassificationLevel, type NoteType } from "@prisma/client";
 import clsx from "clsx";
 import { useState } from "react";

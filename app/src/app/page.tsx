@@ -10,7 +10,7 @@ import {
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
-import { authOptions } from "../server/auth";
+import { authOptions } from "../auth/server/auth";
 
 export const metadata: Metadata = {
   title: "S.A.M. - Sinister Incorporated",

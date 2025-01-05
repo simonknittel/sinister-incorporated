@@ -1,5 +1,5 @@
 import Button from "@/common/components/Button";
-import YesNoCheckbox from "@/common/components/YesNoCheckbox";
+import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";

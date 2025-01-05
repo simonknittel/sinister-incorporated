@@ -1,7 +1,7 @@
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
-import { RadioGroup } from "@/common/components/RadioGroup";
-import { Select } from "@/common/components/Select";
+import { RadioGroup } from "@/common/components/form/RadioGroup";
+import { Select } from "@/common/components/form/Select";
 import type { Role } from "@prisma/client";
 import clsx from "clsx";
 import { useId, useState, type FormEventHandler } from "react";

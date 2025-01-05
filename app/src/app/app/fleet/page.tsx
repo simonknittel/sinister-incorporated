@@ -1,12 +1,12 @@
 import { authenticatePage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
+import { SkeletonTile } from "@/common/components/SkeletonTile";
 import {
   searchParamsNextjsToURLSearchParams,
   type NextjsSearchParams,
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { MyFleetTile } from "@/fleet/components/MyFleetTile";
 import { OrgFleetTile } from "@/fleet/components/OrgFleetTile";
-import { TileSkeleton } from "@/fleet/components/TileSkeleton";
 import { type Metadata } from "next";
 import { Suspense } from "react";
 
@@ -34,7 +34,7 @@ export default async function Page({ searchParams }: Props) {
 
       <div className="flex flex-col-reverse xl:flex-row gap-8 items-start mt-8">
         {showOrgFleetTile && (
-          <Suspense fallback={<TileSkeleton className="w-full 2xl:flex-1" />}>
+          <Suspense fallback={<SkeletonTile className="w-full 2xl:flex-1" />}>
             <OrgFleetTile
               urlSearchParams={urlSearchParams}
               className="w-full 2xl:flex-1"
@@ -44,7 +44,7 @@ export default async function Page({ searchParams }: Props) {
 
         {showMyFleetTile && (
           <Suspense
-            fallback={<TileSkeleton className="w-full 2xl:w-[480px]" />}
+            fallback={<SkeletonTile className="w-full 2xl:w-[480px]" />}
           >
             <MyFleetTile className="w-full 2xl:w-[480px]" />
           </Suspense>

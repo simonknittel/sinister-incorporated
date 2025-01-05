@@ -1,9 +1,9 @@
 import { authenticatePage } from "@/auth/server";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { ActivityTile } from "@/spynet/components/ActivityTile/ActivityTile";
 import { type Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { ActivityTile } from "../_components/ActivityTile/ActivityTile";
 
 export const metadata: Metadata = {
   title: "Aktivität - Spynet | S.A.M. - Sinister Incorporated",

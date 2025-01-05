@@ -1,18 +1,18 @@
 import { authenticatePage } from "@/auth/server";
+import { ProfileTile } from "@/citizen/components/ProfileTile";
 import { Hero } from "@/common/components/Hero";
-import { SpynetSearchTile } from "@/common/components/SpynetSearchTile/SpynetSearchTile";
 import { UwuHero } from "@/common/components/UwuHero";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import {
   searchParamsNextjsToURLSearchParams,
   type NextjsSearchParams,
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
+import { QuotesTile } from "@/dashboard/components/QuotesTile";
+import { TileSkeleton } from "@/dashboard/components/TileSkeleton";
+import { CalendarTile } from "@/discord/components/CalendarTile";
+import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { CalendarTile } from "./_components/CalendarTile";
-import { ProfileTile } from "./_components/ProfileTile";
-import { QuotesTile } from "./_components/QuotesTile";
-import { TileSkeleton } from "./_components/TileSkeleton";
 
 export const metadata: Metadata = {
   title: "Dashboard | S.A.M. - Sinister Incorporated",

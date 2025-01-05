@@ -12,15 +12,17 @@ import {
   sortDescAndNullLast,
 } from "@/common/utils/sorting";
 import { prisma } from "@/db";
-import Pagination from "../../_components/Pagination";
+import Pagination from "@/spynet/components/Pagination";
+import clsx from "clsx";
 import { Filters } from "./Filters";
 import { Table } from "./Table";
 
 type Props = Readonly<{
+  className?: string;
   searchParams: URLSearchParams;
 }>;
 
-export const Tile = async ({ searchParams }: Props) => {
+export const Tile = async ({ className, searchParams }: Props) => {
   const authentication = await requireAuthentication();
 
   const currentPage = getCurrentPageFromSearchParams(searchParams);
@@ -130,7 +132,12 @@ export const Tile = async ({ searchParams }: Props) => {
   );
 
   return (
-    <section className="p-8 pb-10 bg-neutral-800/50  mt-4 rounded-2xl overflow-auto">
+    <section
+      className={clsx(
+        "p-8 pb-10 bg-neutral-800/50 rounded-2xl overflow-auto",
+        className,
+      )}
+    >
       <div className="mb-8">
         <Filters />
       </div>

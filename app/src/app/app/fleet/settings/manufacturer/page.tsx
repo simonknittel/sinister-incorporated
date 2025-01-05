@@ -1,7 +1,7 @@
 import { authenticatePage } from "@/auth/server";
+import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { CreateManufacturereButton } from "@/fleet/components/CreateManufacturerButton";
 import { ManufacturersTile } from "@/fleet/components/ManufacturersTile";
-import { TileSkeleton } from "@/fleet/components/TileSkeleton";
 import { type Metadata } from "next";
 import { Suspense } from "react";
 
@@ -24,7 +24,7 @@ export default async function Page() {
         <CreateManufacturereButton />
       </div>
 
-      <Suspense fallback={<TileSkeleton />}>
+      <Suspense fallback={<SkeletonTile />}>
         <ManufacturersTile />
       </Suspense>
     </main>

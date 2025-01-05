@@ -1,11 +1,11 @@
 import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
+import { DeleteOrganizationMembership } from "@/spynet/components/DeleteOrganizationMembership";
 import { OrganizationMembershipVisibility } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { FaExternalLinkAlt, FaSitemap } from "react-icons/fa";
-import { DeleteOrganizationMembership } from "../../../_components/DeleteOrganizationMembership";
 import { CreateOrganizationMembership } from "./CreateOrganizationMembership";
 
 type Props = Readonly<{

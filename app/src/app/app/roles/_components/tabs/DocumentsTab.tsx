@@ -1,8 +1,8 @@
 "use client";
 
+import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import Note from "@/common/components/Note";
 import TabPanel from "@/common/components/tabs/TabPanel";
-import YesNoCheckbox from "@/common/components/YesNoCheckbox";
 import { usePermissionsContext } from "../PermissionsContext";
 
 export const DocumentsTab = () => {

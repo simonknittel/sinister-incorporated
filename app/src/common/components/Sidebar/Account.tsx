@@ -1,6 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import Avatar from "../Avatar";
-import LogoutButton from "../LogoutButton";
+import { LogoutButton } from "../LogoutButton";
 
 export const Account = async () => {
   const authentication = await requireAuthentication();
