@@ -74,5 +74,15 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  redirects: async () => [
+    {
+      source: "/app/career",
+      destination: "/app/career/security",
+      permanent: false,
+    },
+  ],
 };
+
 export default nextConfig;

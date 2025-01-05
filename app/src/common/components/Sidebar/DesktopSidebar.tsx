@@ -49,7 +49,19 @@ export const DesktopSidebar = async () => {
   );
   const showManufacturersSeriesAndVariantsManage =
     await authentication.authorize("manufacturersSeriesAndVariants", "manage");
-  const showCareerRead = await authentication.authorize("career", "read");
+  const showCareer =
+    (await authentication.authorize("career", "read", [
+      {
+        key: "flowId",
+        value: "security",
+      },
+    ])) ||
+    (await authentication.authorize("career", "read", [
+      {
+        key: "flowId",
+        value: "economic",
+      },
+    ]));
   const showSpynetActivity = await authentication.authorize(
     "spynetActivity",
     "read",
@@ -172,7 +184,7 @@ export const DesktopSidebar = async () => {
                 </li>
               )}
 
-              {showCareerRead && (
+              {showCareer && (
                 <li>
                   <Link
                     href="/app/career"

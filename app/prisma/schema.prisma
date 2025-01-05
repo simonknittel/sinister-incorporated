@@ -198,6 +198,7 @@ model Role {
     imageId           String?
     image             Upload?            @relation(fields: [imageId], references: [id], onDelete: SetNull)
     permissionStrings PermissionString[]
+    flowNodes         FlowNode[]         @relation("flowNodes")
 }
 
 model PermissionString {
@@ -396,4 +397,44 @@ model OrganizationMembershipHistoryEntry {
 enum ConfirmationStatus {
     CONFIRMED
     FALSE_REPORT
+}
+
+//
+// Flows
+//
+
+model Flow {
+    id    String     @id
+    name  String
+    nodes FlowNode[]
+    edges FlowEdge[]
+}
+
+model FlowNode {
+    id          String       @id @default(cuid())
+    flowId      String
+    flow        Flow         @relation(fields: [flowId], references: [id], onDelete: Cascade)
+    positionX   Float
+    positionY   Float
+    width       Float
+    height      Float
+    sourceNodes FlowEdge[]   @relation("sourceNodes")
+    targetNodes FlowEdge[]   @relation("targetNodes")
+    type        FlowNodeType
+    roleId      String?
+    role        Role?        @relation("flowNodes", fields: [roleId], references: [id], onDelete: SetNull)
+}
+
+enum FlowNodeType {
+    ROLE
+}
+
+model FlowEdge {
+    id           String   @id @default(cuid())
+    flowId       String
+    flow         Flow     @relation(fields: [flowId], references: [id], onDelete: Cascade)
+    sourceNodeId String
+    sourceNode   FlowNode @relation("sourceNodes", fields: [sourceNodeId], references: [id], onDelete: Cascade)
+    targetNodeId String
+    targetNode   FlowNode @relation("targetNodes", fields: [targetNodeId], references: [id], onDelete: Cascade)
 }

@@ -32,19 +32,30 @@ export const MobileActionBar = async ({ className }: Props) => {
       "documentIntroductionCompendium",
       "read",
     )) || (await authentication.authorize("documentAllianceManifest", "read"));
-  const showCareerRead = await authentication.authorize("career", "read");
-  const showCitizenRead = await authentication.authorize("citizen", "read");
+  const showCareer =
+    (await authentication.authorize("career", "read", [
+      {
+        key: "flowId",
+        value: "security",
+      },
+    ])) ||
+    (await authentication.authorize("career", "read", [
+      {
+        key: "flowId",
+        value: "economic",
+      },
+    ]));
+  const hasCitizenRead = await authentication.authorize("citizen", "read");
   const showSpynetActivity = await authentication.authorize(
     "spynetActivity",
     "read",
   );
   const showSpynetCitizen =
-    showCitizenRead &&
-    (await authentication.authorize("spynetCitizen", "read"));
+    hasCitizenRead && (await authentication.authorize("spynetCitizen", "read"));
   const showSpynetNotes =
-    showCitizenRead && (await authentication.authorize("spynetNotes", "read"));
+    hasCitizenRead && (await authentication.authorize("spynetNotes", "read"));
   const showSpynetOther =
-    showCitizenRead && (await authentication.authorize("spynetOther", "read"));
+    hasCitizenRead && (await authentication.authorize("spynetOther", "read"));
   const showSpynetAdmin =
     showSpynetActivity ||
     showSpynetCitizen ||
@@ -120,7 +131,7 @@ export const MobileActionBar = async ({ className }: Props) => {
             </li>
           )}
 
-          {showCareerRead && (
+          {showCareer && (
             <li className="h-full py-1">
               <Link
                 href="/app/documents"
@@ -212,7 +223,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                     </li>
                   )}
 
-                  {showCareerRead && (
+                  {showCareer && (
                     <li>
                       <Link
                         href="/app/documents"
