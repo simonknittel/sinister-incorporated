@@ -7,12 +7,14 @@ import {
   NodeResizer,
   NodeToolbar,
   Position,
+  useNodeId,
+  useReactFlow,
   type Node,
   type NodeProps,
 } from "@xyflow/react";
 import clsx from "clsx";
 import Image from "next/image";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { FaTrash } from "react-icons/fa6";
 import { IoMdResize } from "react-icons/io";
 
@@ -27,7 +29,14 @@ export type RoleNode = Node<
 >;
 
 export const RoleNode = (props: NodeProps<RoleNode>) => {
+  const nodeId = useNodeId();
+  const { setNodes, setEdges } = useReactFlow();
   const [isResizing, setIsResizing] = useState(true);
+
+  const onDelete = useCallback(() => {
+    setNodes((nodes) => nodes.filter((node) => node.id !== nodeId));
+    setEdges((edges) => edges.filter((edge) => edge.source !== nodeId));
+  }, [nodeId, setNodes, setEdges]);
 
   return (
     <>
@@ -39,6 +48,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
       >
         <button
           title="Größe ändern"
+          type="button"
           onClick={() => setIsResizing((value) => !value)}
           className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
         >
@@ -46,6 +56,8 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         </button>
 
         <button
+          onClick={onDelete}
+          type="button"
           title="Löschen"
           className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
         >
