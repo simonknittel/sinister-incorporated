@@ -53,6 +53,7 @@ export type PermissionSetAttribute = {
     | "classificationLevelId"
     | "alsoUnconfirmed"
     | "roleId"
-    | "alsoVisibilityRedacted";
+    | "alsoVisibilityRedacted"
+    | "flowId";
   value: string | boolean;
 };

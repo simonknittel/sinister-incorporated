@@ -1,108 +1,253 @@
-import certificateBootsOnTheGround from "@/career/assets/certificate-boots-on-the-ground.png";
-import certificateDogfight from "@/career/assets/certificate-dogfight.png";
-import certificateVehicles from "@/career/assets/certificate-vehicles.png";
-import checkByFpsBlue from "@/career/assets/check-by-fps-blue.png";
-import element from "@/career/assets/element.png";
-import fpsGreen from "@/career/assets/fps-green.png";
-import fpsRed from "@/career/assets/fps-red.png";
-import { Background, BackgroundVariant, ReactFlow } from "@xyflow/react";
+"use client";
+
+import { env } from "@/env";
+import { createId } from "@paralleldrive/cuid2";
+import {
+  FlowNodeType,
+  type FlowEdge,
+  type FlowNode,
+  type Flow as FlowPrisma,
+  type Role,
+} from "@prisma/client";
+import {
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
+  Background,
+  BackgroundVariant,
+  ControlButton,
+  Controls,
+  ReactFlow,
+  type Edge,
+  type Node,
+  type OnConnect,
+  type OnEdgesChange,
+  type OnNodesChange,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { type ComponentProps } from "react";
-import { ImageNode } from "./ImageNode";
+import { unstable_rethrow } from "next/navigation";
+import {
+  useCallback,
+  useState,
+  useTransition,
+  type FormEventHandler,
+  type MouseEventHandler,
+} from "react";
+import toast from "react-hot-toast";
+import { FaSave, FaSpinner } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa6";
+import { z } from "zod";
+import { updateFlow } from "../actions/updateFlow";
+import { CreateNodeModal } from "./CreateNodeModal";
+import { RoleNode } from "./RoleNode";
+
+const nodeTypes = { role: RoleNode };
+
+const schema = z.discriminatedUnion("nodeType", [
+  z.object({
+    nodeType: z.literal("role"),
+    roleId: z.string(),
+  }),
+  z.object({
+    nodeType: z.literal("image"),
+    src: z.string(),
+  }),
+]);
 
 type Props = Readonly<{
   className?: string;
+  flow: FlowPrisma & {
+    nodes: FlowNode[];
+    edges: FlowEdge[];
+  };
+  roles: Role[];
 }>;
 
-const initialNodes: ComponentProps<typeof ReactFlow>["nodes"] = [
-  {
-    id: "element",
-    type: "image",
-    position: { x: 150, y: 0 },
-    data: { label: "Element", src: element, unlocked: true },
-  },
-  {
-    id: "certificate-boots-on-the-ground",
-    type: "image",
-    position: { x: 0, y: 100 },
-    data: {
-      label: "Certificate Boots on the Ground",
-      src: certificateBootsOnTheGround,
-      unlocked: true,
+export const Flow = ({ className, flow, roles }: Props) => {
+  const initialNodes = flow.nodes.map((node) => {
+    let type: keyof typeof nodeTypes;
+    switch (node.type) {
+      case FlowNodeType.ROLE:
+        type = "role";
+        break;
+      default:
+        throw new Error("Invalid node type");
+    }
+
+    const role = roles.find((role) => role.id === node.roleId);
+    if (!role) throw new Error("Role not found");
+
+    return {
+      id: node.id,
+      type,
+      position: {
+        x: node.positionX,
+        y: node.positionY,
+      },
+      data: {
+        id: role.id,
+        name: role.name,
+        imageId: role.imageId,
+      },
+      measured: {
+        width: node.width,
+        height: node.height,
+      },
+    };
+  });
+
+  const initialEdges = flow.edges.map((edge) => ({
+    id: edge.id,
+    type: "step",
+    source: edge.sourceNodeId,
+    target: edge.targetNodeId,
+  }));
+
+  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [isCreateNodeModalOpen, setIsCreateNodeModalOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const onNodesChange: OnNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [],
+  );
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [],
+  );
+  const onConnect: OnConnect = useCallback(
+    (params) => setEdges((eds) => addEdge(params, eds)),
+    [],
+  );
+
+  const onCreate: FormEventHandler<HTMLFormElement> = useCallback(
+    (event) => {
+      event.preventDefault();
+      setIsCreateNodeModalOpen(false);
+
+      const formData = new FormData(event.currentTarget);
+      const result = schema.safeParse({
+        nodeType: formData.get("nodeType"),
+        roleId: formData.get("roleId"),
+        src: formData.get("src"),
+      });
+
+      if (!result.success) {
+        toast.error(
+          "Beim Hinzufügen ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
+        );
+        console.error(result.error);
+        return;
+      }
+
+      if (result.data.nodeType === "role") {
+        // @ts-expect-error Don't know how to fix this
+        const role = roles.find((role) => role.id === result.data.roleId);
+        if (!role) {
+          toast.error(
+            "Beim Hinzufügen ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
+          );
+          return;
+        }
+
+        setNodes((nds) => {
+          return applyNodeChanges(
+            [
+              {
+                type: "add",
+                item: {
+                  id: createId(),
+                  type: "role",
+                  position: {
+                    x: 0,
+                    y: 0,
+                  },
+                  data: {
+                    id: role.id,
+                    name: role.name,
+                    imageId: role.imageId,
+                    src: `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.imageId}`,
+                  },
+                },
+              },
+            ],
+            nds,
+          );
+        });
+      }
     },
-  },
-  {
-    id: "certificate-dogfight",
-    type: "image",
-    position: { x: 300, y: 100 },
-    data: { label: "Certificate Dogfight", src: certificateDogfight },
-  },
-  {
-    id: "certificate-vehicles",
-    type: "image",
-    position: { x: 0, y: 400 },
-    data: { label: "Certificate Vehicles", src: certificateVehicles },
-  },
-  {
-    id: "fps-green",
-    type: "image",
-    position: { x: 0, y: 200 },
-    data: { label: "FPS - Green", src: fpsGreen, unlocked: true },
-  },
-  {
-    id: "check-by-fps-blue",
-    type: "image",
-    position: { x: 0, y: 500 },
-    data: { label: "Prüfung durch FPS - Blue", src: checkByFpsBlue },
-  },
-  {
-    id: "fps-red",
-    type: "image",
-    position: { x: 0, y: 600 },
-    data: { label: "FPS - Red", src: fpsRed },
-  },
-];
+    [roles],
+  );
 
-const initialEdges: ComponentProps<typeof ReactFlow>["edges"] = [
-  {
-    id: "element_certificate-boots-on-the-ground",
-    source: "element",
-    target: "certificate-boots-on-the-ground",
-  },
-  { id: "element-dogfight", source: "element", target: "certificate-dogfight" },
-  {
-    id: "certificate-boots-on-the-ground_fps-green",
-    source: "certificate-boots-on-the-ground",
-    target: "fps-green",
-  },
-  {
-    id: "fps-green_certificate-vehicles",
-    source: "fps-green",
-    target: "certificate-vehicles",
-  },
-  {
-    id: "certificate-vehicles_check-by-fps-blue",
-    source: "certificate-vehicles",
-    target: "check-by-fps-blue",
-  },
-  {
-    id: "check-by-fps-blue_fps-red",
-    source: "check-by-fps-blue",
-    target: "fps-red",
-  },
-];
+  const onSave: MouseEventHandler<HTMLButtonElement> = useCallback(() => {
+    startTransition(async () => {
+      try {
+        console.log(edges);
+        const formData = new FormData();
+        formData.append("flowId", flow.id);
+        formData.append("nodes", JSON.stringify(nodes));
+        formData.append("edges", JSON.stringify(edges));
 
-const nodeTypes = { image: ImageNode };
+        const result = await updateFlow(formData);
 
-export const Flow = ({ className }: Props) => {
+        if (result.error) {
+          toast.error(result.error);
+          console.error(result.error);
+          return;
+        }
+
+        toast.success(result.success);
+      } catch (error) {
+        unstable_rethrow(error);
+        toast.error(
+          "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+        );
+        console.error(error);
+      }
+    });
+  }, [flow.id, nodes, edges]);
+
+  // TODO: Map over nodes and add unlocked property
+
   return (
-    <ReactFlow
-      nodes={initialNodes}
-      edges={initialEdges}
-      nodeTypes={nodeTypes}
-      className={className}
-    >
-      <Background color="#444" variant={BackgroundVariant.Dots} />
-    </ReactFlow>
+    <>
+      <ReactFlow
+        nodeTypes={nodeTypes}
+        nodes={nodes}
+        onNodesChange={onNodesChange}
+        edges={edges}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        fitView
+        className={className}
+        defaultEdgeOptions={{
+          type: "step",
+        }}
+      >
+        <Background color="#444" variant={BackgroundVariant.Dots} />
+
+        <Controls position="top-left">
+          <ControlButton
+            onClick={() => setIsCreateNodeModalOpen(true)}
+            title="Element hinzufügen"
+          >
+            <FaPlus />
+          </ControlButton>
+
+          <ControlButton onClick={onSave} title="Speichern">
+            {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
+          </ControlButton>
+        </Controls>
+      </ReactFlow>
+
+      {isCreateNodeModalOpen && (
+        <CreateNodeModal
+          onRequestClose={() => setIsCreateNodeModalOpen(false)}
+          onSubmit={onCreate}
+          roles={roles}
+        />
+      )}
+    </>
   );
 };

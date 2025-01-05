@@ -1,38 +1,26 @@
-import { authenticate } from "@/auth/server";
+import { requireAuthentication } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
 import { SingleRole } from "@/common/components/SingleRole";
-import { getAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
-import { prisma } from "@/db";
-import { type Entity } from "@prisma/client";
+import { getMyAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
 type Props = Readonly<{
   className?: string;
-  entity?: Entity;
 }>;
 
 export const ProfileTile = async ({ className }: Props) => {
-  const authentication = await authenticate();
-  if (!authentication) return null;
+  const authentication = await requireAuthentication();
 
   const name =
     authentication.session.user.name || authentication.session.discordId;
-
-  const image = authentication ? authentication.session.user.image : undefined;
-
-  const entity = await prisma.entity.findUnique({
-    where: {
-      discordId: authentication.session.discordId,
-    },
-  });
-
-  const roles = entity ? await getAssignedAndVisibleRoles(entity) : [];
+  const image = authentication.session.user.image;
+  const roles = await getMyAssignedAndVisibleRoles();
 
   const showLink =
-    (await authentication.authorize("citizen", "read")) ||
-    (await authentication.authorize("organization", "read"));
+    authentication.session.entityId &&
+    (await authentication.authorize("citizen", "read"));
 
   return (
     <section
@@ -53,7 +41,7 @@ export const ProfileTile = async ({ className }: Props) => {
         </div>
       ) : null}
 
-      {authentication.session.entityId && showLink && (
+      {showLink && (
         <Link
           href={`/app/spynet/entity/${authentication.session.entityId}`}
           className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"

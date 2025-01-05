@@ -9,7 +9,7 @@ export const SkeletonTile = ({ className }: Props) => {
     <section
       className={clsx(
         className,
-        "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col animate-pulse min-h-[22.5rem]",
+        "bg-neutral-800/50 rounded-2xl animate-pulse min-h-[22.5rem]",
       )}
     />
   );
