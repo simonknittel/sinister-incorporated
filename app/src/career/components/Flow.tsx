@@ -89,10 +89,8 @@ export const Flow = ({ className, flow, roles }: Props) => {
         name: role.name,
         imageId: role.imageId,
       },
-      measured: {
-        width: node.width,
-        height: node.height,
-      },
+      width: node.width,
+      height: node.height,
     };
   });
 

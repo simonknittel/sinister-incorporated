@@ -53,7 +53,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         </button>
       </NodeToolbar>
 
-      {isResizing && <NodeResizer minWidth={100} minHeight={30} />}
+      {isResizing && <NodeResizer minWidth={100} minHeight={100} />}
 
       <div
         className={clsx("bg-neutral-800 rounded h-full p-4", {
@@ -64,8 +64,8 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
           src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.imageId}`}
           alt={props.data.name}
           title={props.data.name}
-          width={200}
-          height={200}
+          width={100}
+          height={100}
           className="object-contain object-center w-full h-full"
         />
       </div>
