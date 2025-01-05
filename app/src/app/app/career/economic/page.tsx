@@ -24,7 +24,7 @@ export default async function Page() {
   ]);
 
   const flows = await getMyReadableFlows();
-  const flow = flows.find((flow) => flow.id === "security");
+  const flow = flows.find((flow) => flow.id === "economic");
   if (!flow) notFound();
 
   const roles = await prisma.role.findMany();
