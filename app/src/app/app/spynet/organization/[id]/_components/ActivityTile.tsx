@@ -1,5 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import styles from "@/common/components/ConfirmationGradient.module.css";
+import { Link } from "@/common/components/Link";
 import { prisma } from "@/db";
 import {
   ConfirmationStatus,
@@ -7,7 +8,6 @@ import {
   OrganizationMembershipVisibility,
 } from "@prisma/client";
 import clsx from "clsx";
-import Link from "next/link";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle, FaListAlt } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";

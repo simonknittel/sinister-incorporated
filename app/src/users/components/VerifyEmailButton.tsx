@@ -11,8 +11,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/common/components/AlertDialog";
+import { Link } from "@/common/components/Link";
 import { type User } from "@prisma/client";
-import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
 import { useId, useTransition } from "react";
 import toast from "react-hot-toast";

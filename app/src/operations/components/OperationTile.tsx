@@ -1,6 +1,6 @@
+import { Link } from "@/common/components/Link";
 import { type Operation, type OperationMember } from "@prisma/client";
 import clsx from "clsx";
-import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
 
 interface Props {

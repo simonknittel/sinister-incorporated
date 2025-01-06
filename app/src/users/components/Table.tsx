@@ -1,6 +1,7 @@
 "use client";
 
 import Avatar from "@/common/components/Avatar";
+import { Link } from "@/common/components/Link";
 import { VerifyEmailButton } from "@/users/components/VerifyEmailButton";
 import { type Entity, type User } from "@prisma/client";
 import {
@@ -11,7 +12,6 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   FaExternalLinkAlt,

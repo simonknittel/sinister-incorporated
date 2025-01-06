@@ -1,5 +1,6 @@
 import { authenticatePage } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
+import { Link } from "@/common/components/Link";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { log } from "@/logging";
 import ConfirmParticipation from "@/operations/components/ConfirmParticipation";
@@ -11,7 +12,6 @@ import RemoveParticipation from "@/operations/components/RemoveParticipation";
 import SquadronTile from "@/operations/components/SquadronTile";
 import { getOperation } from "@/operations/queries";
 import { type Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";
 

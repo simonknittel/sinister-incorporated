@@ -2,12 +2,12 @@ import { requestEmailConfirmationAction } from "@/auth/actions/requestEmailConfi
 import { AdminEnabler } from "@/auth/components/AdminEnabler";
 import { authenticate } from "@/auth/server";
 import { Footer } from "@/common/components/Footer";
+import { Link } from "@/common/components/Link";
 import { requiresEmailConfirmation } from "@/common/utils/emailConfirmation";
 import type { NextjsSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { RiInformationLine } from "react-icons/ri";
 import { PageRefresher } from "./_components/PageRefresher";

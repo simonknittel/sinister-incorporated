@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/common/components/Link";
 import { type OrganizationHit } from "./Search";
 
 interface Props {

@@ -1,10 +1,10 @@
 import { authenticatePage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
+import { Link } from "@/common/components/Link";
 import allianceManifest from "@/documents/assets/alliance_manifest.png";
 import introductionCompendium from "@/documents/assets/introduction_compendium.png";
 import { type Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {

@@ -1,8 +1,8 @@
 import { authenticatePage } from "@/auth/server";
+import { Link } from "@/common/components/Link";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { ActivityTile } from "@/spynet/components/ActivityTile/ActivityTile";
 import { type Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {

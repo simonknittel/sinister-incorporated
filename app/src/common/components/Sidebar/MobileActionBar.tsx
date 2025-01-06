@@ -1,7 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import clsx from "clsx";
-import Link from "next/link";
 import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
 import { IoDocuments } from "react-icons/io5";
 import { MdWorkspaces } from "react-icons/md";
@@ -10,6 +9,7 @@ import { RxActivityLog } from "react-icons/rx";
 import { TbMilitaryRank } from "react-icons/tb";
 import { Chip } from "../Chip";
 import { Footer } from "../Footer";
+import { Link } from "../Link";
 import { Account } from "./Account";
 import { MobileActionBarFlyout } from "./MobileActionBarFlyout";
 import { RedBar } from "./RedBar";

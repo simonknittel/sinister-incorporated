@@ -1,9 +1,9 @@
 import { authenticatePage } from "@/auth/server";
+import { Link } from "@/common/components/Link";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { type Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { serializeError } from "serialize-error";

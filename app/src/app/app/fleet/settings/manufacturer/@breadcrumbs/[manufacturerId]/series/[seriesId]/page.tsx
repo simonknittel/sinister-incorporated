@@ -1,5 +1,5 @@
+import { Link } from "@/common/components/Link";
 import { dedupedGetSeriesAndManufacturerById } from "@/fleet/utils/getSeriesAndManufacturer";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type Params = Promise<

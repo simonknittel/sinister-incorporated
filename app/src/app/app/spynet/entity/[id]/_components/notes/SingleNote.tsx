@@ -1,6 +1,7 @@
 import { type PermissionSet } from "@/auth/PermissionSet";
 import { requireAuthentication } from "@/auth/server";
 import styles from "@/common/components/ConfirmationGradient.module.css";
+import { Link } from "@/common/components/Link";
 import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import { prisma } from "@/db";
 import {
@@ -11,7 +12,6 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
-import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle } from "react-icons/fa";

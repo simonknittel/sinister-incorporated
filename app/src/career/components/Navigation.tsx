@@ -1,8 +1,8 @@
 "use client";
 
+import { Link } from "@/common/components/Link";
 import type { Flow } from "@prisma/client";
 import clsx from "clsx";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 type Props = Readonly<{

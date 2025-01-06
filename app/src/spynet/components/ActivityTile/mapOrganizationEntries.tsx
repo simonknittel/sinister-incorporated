@@ -1,7 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
+import { Link } from "@/common/components/Link";
 import { type Organization } from "@prisma/client";
 import Image from "next/image";
-import Link from "next/link";
 
 export const mapOrganizationEntries = async (
   entries: Array<Pick<Organization, "id" | "createdAt" | "name" | "logo">>,
