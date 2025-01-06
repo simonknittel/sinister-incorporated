@@ -10,15 +10,17 @@ export const Link = (props: Props) => {
   const { prefetch, href, onMouseEnter, ...rest } = props;
   const router = useRouter();
 
+  const _prefetch = prefetch === undefined ? false : prefetch;
+  const _onMouseEnter =
+    prefetch === undefined && onMouseEnter === undefined
+      ? () => router.prefetch(typeof href === "string" ? href : href.href)
+      : onMouseEnter;
+
   return (
     <NextLink
       href={href}
-      prefetch={prefetch === undefined ? false : prefetch}
-      onMouseEnter={
-        prefetch === undefined && onMouseEnter === undefined
-          ? () => router.prefetch(typeof href === "string" ? href : href.href)
-          : onMouseEnter
-      }
+      prefetch={_prefetch}
+      onMouseEnter={_onMouseEnter}
       {...rest}
     />
   );

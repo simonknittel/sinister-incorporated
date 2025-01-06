@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/common/components/Link";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 interface Props {

@@ -1,11 +1,11 @@
 import { authenticatePage } from "@/auth/server";
+import { Link } from "@/common/components/Link";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import {
   searchParamsNextjsToURLSearchParams,
   type NextjsSearchParams,
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { type Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import { Tile } from "./_components/Tile";
 

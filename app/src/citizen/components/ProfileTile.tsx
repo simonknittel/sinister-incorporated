@@ -1,9 +1,9 @@
 import { requireAuthentication } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
+import { Link } from "@/common/components/Link";
 import { SingleRole } from "@/common/components/SingleRole";
 import { getMyAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
 import clsx from "clsx";
-import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
 type Props = Readonly<{

@@ -1,8 +1,8 @@
 import Button from "@/common/components/Button";
+import { Link } from "@/common/components/Link";
 import type { getEvent } from "@/discord/utils/getEvent";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
-import Link from "next/link";
 import { FaDownload, FaExternalLinkAlt } from "react-icons/fa";
 import { LuCalendarArrowDown } from "react-icons/lu";
 import { getGoogleCalendarUrl } from "../utils/getGoogleCalendarUrl";

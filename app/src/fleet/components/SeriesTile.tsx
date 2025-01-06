@@ -1,7 +1,7 @@
 import { Actions } from "@/common/components/Actions";
+import { Link } from "@/common/components/Link";
 import { type Manufacturer } from "@prisma/client";
 import clsx from "clsx";
-import Link from "next/link";
 import { getSeriesByManufacturerId } from "../utils/getSeriesByManufacturerId";
 import { CreateSeriesButton } from "./CreateSeriesButton";
 import { DeleteSeriesButton } from "./DeleteSeriesButton";

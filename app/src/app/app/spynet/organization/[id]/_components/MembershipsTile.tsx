@@ -1,9 +1,9 @@
 import { requireAuthentication } from "@/auth/server";
+import { Link } from "@/common/components/Link";
 import { prisma } from "@/db";
 import { DeleteOrganizationMembership } from "@/spynet/components/DeleteOrganizationMembership";
 import { OrganizationMembershipVisibility } from "@prisma/client";
 import clsx from "clsx";
-import Link from "next/link";
 import { FaExternalLinkAlt, FaUsers } from "react-icons/fa";
 import { CreateMembership } from "./CreateMembership";
 

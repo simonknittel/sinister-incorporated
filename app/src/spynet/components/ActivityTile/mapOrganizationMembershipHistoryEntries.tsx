@@ -1,4 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
+import { Link } from "@/common/components/Link";
 import {
   OrganizationMembershipType,
   OrganizationMembershipVisibility,
@@ -7,7 +8,6 @@ import {
   type OrganizationMembershipHistoryEntry,
 } from "@prisma/client";
 import Image from "next/image";
-import Link from "next/link";
 
 export const mapOrganizationMembershipHistoryEntries = async (
   entries: Array<

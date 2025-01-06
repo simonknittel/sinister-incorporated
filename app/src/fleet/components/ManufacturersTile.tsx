@@ -1,8 +1,8 @@
 import { Actions } from "@/common/components/Actions";
+import { Link } from "@/common/components/Link";
 import { env } from "@/env";
 import clsx from "clsx";
 import Image from "next/image";
-import Link from "next/link";
 import { getManufacturers } from "../utils/getManufacturers";
 import { DeleteManufacturerButton } from "./DeleteManufacturerButton";
 

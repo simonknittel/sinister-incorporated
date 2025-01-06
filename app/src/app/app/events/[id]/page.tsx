@@ -1,9 +1,9 @@
 import { authenticatePage } from "@/auth/server";
+import { Link } from "@/common/components/Link";
 import { getEvent } from "@/discord/utils/getEvent";
 import { OverviewTab } from "@/events/components/OverviewTab";
 import { log } from "@/logging";
 import { type Metadata } from "next";
-import Link from "next/link";
 import { FaHome, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { serializeError } from "serialize-error";

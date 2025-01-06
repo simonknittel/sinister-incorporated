@@ -1,7 +1,7 @@
 "use client";
 
+import { Link } from "@/common/components/Link";
 import clsx from "clsx";
-import Link from "next/link";
 import { getNow } from "../utils/getNow";
 import type { Schedule } from "../utils/schedule";
 import { useSchedule } from "../utils/useSchedule";

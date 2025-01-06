@@ -1,11 +1,11 @@
 import { Actions } from "@/common/components/Actions";
+import { Link } from "@/common/components/Link";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { isOpenAIEnabled } from "@/common/utils/isOpenAIEnabled";
 import { prisma } from "@/db";
 import { env } from "@/env";
 import clsx from "clsx";
 import Image from "next/image";
-import Link from "next/link";
 import { FaTable } from "react-icons/fa";
 import { Create } from "./Create";
 import Delete from "./Delete";

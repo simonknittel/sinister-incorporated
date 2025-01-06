@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/common/components/Link";
 import { type CitizenHit } from "./Search";
 
 type Props = Readonly<{

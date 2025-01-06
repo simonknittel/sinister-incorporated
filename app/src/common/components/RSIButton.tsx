@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { Link } from "./Link";
 
 type Props = Readonly<{
   className?: string;
