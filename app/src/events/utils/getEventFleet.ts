@@ -1,6 +1,6 @@
 import { prisma } from "@/db";
-import type { getEvent } from "@/discord/getEvent";
-import { getEventUsersDeduped } from "@/discord/getEventUsers";
+import type { getEvent } from "@/discord/utils/getEvent";
+import { getEventUsersDeduped } from "@/discord/utils/getEventUsers";
 import { VariantStatus } from "@prisma/client";
 import { groupBy } from "lodash";
 import { cache } from "react";

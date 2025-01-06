@@ -1,7 +1,7 @@
 import { prisma } from "@/db";
-import type { getEvent } from "@/discord/getEvent";
-import { getEventUsersDeduped } from "@/discord/getEventUsers";
-import { type memberSchema, type userSchema } from "@/discord/schemas";
+import type { getEvent } from "@/discord/utils/getEvent";
+import { getEventUsersDeduped } from "@/discord/utils/getEventUsers";
+import { type memberSchema, type userSchema } from "@/discord/utils/schemas";
 import { cache } from "react";
 import type { z } from "zod";
 

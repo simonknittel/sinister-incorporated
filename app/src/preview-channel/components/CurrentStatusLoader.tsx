@@ -5,7 +5,7 @@ import type { Schedule } from "../utils/schedule";
 import { TileSkeleton } from "./TileSkeleton";
 
 const CurrentStatus = dynamic(
-  () => import("@/common/components/preview-channel/CurrentStatus"),
+  () => import("@/preview-channel/components/CurrentStatus"),
   {
     ssr: false,
     loading: () => <TileSkeleton className="mt-4" />,

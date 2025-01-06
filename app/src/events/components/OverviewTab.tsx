@@ -1,7 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import { SingleRole } from "@/common/components/SingleRole";
 import { getAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
-import type { getEvent } from "@/discord/getEvent";
+import type { getEvent } from "@/discord/utils/getEvent";
 import { VariantTagBadge } from "@/fleet/components/VariantTagBadge";
 import type { Role, VariantTag } from "@prisma/client";
 import clsx from "clsx";

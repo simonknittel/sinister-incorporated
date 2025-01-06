@@ -1,5 +1,5 @@
 import Button from "@/common/components/Button";
-import type { getEvent } from "@/discord/getEvent";
+import type { getEvent } from "@/discord/utils/getEvent";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import Link from "next/link";

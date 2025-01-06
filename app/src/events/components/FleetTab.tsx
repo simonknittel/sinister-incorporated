@@ -1,4 +1,4 @@
-import { type getEvent } from "@/discord/getEvent";
+import { type getEvent } from "@/discord/utils/getEvent";
 import { FleetTable } from "@/fleet/components/FleetTable";
 import clsx from "clsx";
 import { getEventFleet } from "../utils/getEventFleet";
