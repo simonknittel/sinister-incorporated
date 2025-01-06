@@ -195,8 +195,10 @@ model ClassificationLevel {
 model Role {
     id                String             @id @default(cuid())
     name              String             @unique
-    imageId           String?
-    image             Upload?            @relation(fields: [imageId], references: [id], onDelete: SetNull)
+    iconId            String?            @map("imageId")
+    icon              Upload?            @relation(name: "icon", fields: [iconId], references: [id], onDelete: SetNull)
+    thumbnailId       String?            @map("thumbnailId")
+    thumbnail         Upload?            @relation(name: "thumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
     permissionStrings PermissionString[]
     flowNodes         FlowNode[]         @relation("flowNodes")
 }
@@ -213,14 +215,15 @@ model PermissionString {
 //
 
 model Upload {
-    id            String         @id @default(cuid())
-    fileName      String
-    mimeType      String
-    createdAt     DateTime       @default(now())
-    createdById   String
-    createdBy     User           @relation(fields: [createdById], references: [id], onDelete: Cascade)
-    roles         Role[]
-    manufacturers Manufacturer[]
+    id             String         @id @default(cuid())
+    fileName       String
+    mimeType       String
+    createdAt      DateTime       @default(now())
+    createdById    String
+    createdBy      User           @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    roleIcons      Role[]         @relation("icon")
+    roleThumbnails Role[]         @relation("thumbnail")
+    manufacturers  Manufacturer[]
 }
 
 //

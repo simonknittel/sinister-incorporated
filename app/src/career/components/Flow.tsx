@@ -87,7 +87,7 @@ export const Flow = ({ className, flow, roles }: Props) => {
       data: {
         id: role.id,
         name: role.name,
-        imageId: role.imageId,
+        iconId: role.iconId,
       },
       width: node.width,
       height: node.height,
@@ -164,8 +164,8 @@ export const Flow = ({ className, flow, roles }: Props) => {
                   data: {
                     id: role.id,
                     name: role.name,
-                    imageId: role.imageId,
-                    src: `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.imageId}`,
+                    iconId: role.iconId,
+                    src: `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`,
                   },
                 },
               },

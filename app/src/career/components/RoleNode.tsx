@@ -22,7 +22,7 @@ export type RoleNode = Node<
   {
     id: Role["id"];
     name: Role["name"];
-    imageId: Role["imageId"];
+    iconId: Role["iconId"];
     unlocked: boolean;
   },
   "role"
@@ -73,7 +73,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         })}
       >
         <Image
-          src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.imageId}`}
+          src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.iconId}`}
           alt={props.data.name}
           title={props.data.name}
           width={100}
