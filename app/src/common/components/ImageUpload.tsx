@@ -14,11 +14,9 @@ type Props = Readonly<{
   imageClassName?: string;
   pendingClassName?: string;
   resourceType: string;
-  resource: {
-    id: string;
-    name: string;
-    imageId?: string | null;
-  };
+  resourceId: string;
+  resourceAttribute: string;
+  imageId?: string | null;
   width: number;
   height: number;
 }>;
@@ -28,7 +26,9 @@ export const ImageUpload = ({
   imageClassName,
   pendingClassName,
   resourceType,
-  resource,
+  resourceId,
+  resourceAttribute,
+  imageId,
   width,
   height,
 }: Props) => {
@@ -39,9 +39,12 @@ export const ImageUpload = ({
   useEffect(() => {
     if (!upload) return;
 
-    fetch(`/api/${resourceType}/${resource.id}`, {
+    fetch(`/api/upload/assign`, {
       method: "PATCH",
       body: JSON.stringify({
+        resourceType,
+        resourceId,
+        resourceAttribute,
         imageId: upload,
       }),
     })
@@ -70,10 +73,10 @@ export const ImageUpload = ({
 
   return (
     <div className={clsx(className, "relative")}>
-      {resource.imageId && !isPending && (
+      {imageId && !isPending && (
         <Image
-          src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${resource.imageId}`}
-          alt={`Logo of ${resource.name}`}
+          src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${imageId}`}
+          alt=""
           width={width}
           height={height}
           className={clsx(imageClassName, "object-contain object-center")}

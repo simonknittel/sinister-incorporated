@@ -57,7 +57,9 @@ export default async function Page(props: Props) {
       <section className="rounded-2xl overflow-hidden w-full xl:w-[400px]">
         <ImageUpload
           resourceType="manufacturer"
-          resource={manufacturer}
+          resourceId={manufacturer.id}
+          resourceAttribute="imageId"
+          imageId={manufacturer.imageId}
           width={400}
           height={128}
           className={clsx(

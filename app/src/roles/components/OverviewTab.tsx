@@ -73,23 +73,57 @@ export const OverviewTab = ({ className, role }: Props) => {
       >
         <h2 className="font-bold">Bilder</h2>
 
-        <label className="mt-4 block font-bold">Icon</label>
+        <div className="flex flex-col md:flex-row gap-4 mt-4">
+          <div>
+            <label className="block font-bold">Icon (nur 1:1)</label>
 
-        <ImageUpload
-          resourceType="role"
-          resource={role}
-          width={128}
-          height={128}
-          className={clsx(
-            "mt-2 size-32 border border-neutral-700 hover:border-neutral-500 text-neutral-500 hover:text-neutral-300 transition-colors group rounded",
-            {
-              "after:content-['Bild_hochladen'] flex items-center justify-center":
-                !role.imageId,
-            },
-          )}
-          imageClassName="size-32"
-          pendingClassName="size-32"
-        />
+            <ImageUpload
+              resourceType="role"
+              resourceId={role.id}
+              resourceAttribute="iconId"
+              imageId={role.iconId}
+              width={128}
+              height={128}
+              className={clsx(
+                "mt-2 size-32 border border-neutral-700 hover:border-neutral-500 text-neutral-500 hover:text-neutral-300 transition-colors group rounded",
+                {
+                  "after:content-['Bild_hochladen'] flex items-center justify-center":
+                    !role.iconId,
+                },
+              )}
+              imageClassName="size-32"
+              pendingClassName="size-32"
+            />
+
+            <p className="mt-1 text-sm text-neutral-500">nur 1:1</p>
+          </div>
+
+          <div>
+            <label className="block font-bold">Thumbnail</label>
+
+            <ImageUpload
+              resourceType="role"
+              resourceId={role.id}
+              resourceAttribute="thumbnailId"
+              imageId={role.thumbnailId}
+              width={228}
+              height={128}
+              className={clsx(
+                "mt-2 w-[228px] h-32 border border-neutral-700 hover:border-neutral-500 text-neutral-500 hover:text-neutral-300 transition-colors group rounded",
+                {
+                  "after:content-['Bild_hochladen'] flex items-center justify-center":
+                    !role.thumbnailId,
+                },
+              )}
+              imageClassName="w-[228px] h-32"
+              pendingClassName="w-[228px] h-32"
+            />
+
+            <p className="mt-1 text-sm text-neutral-500">
+              beliebiges Seitenverhältnis
+            </p>
+          </div>
+        </div>
       </section>
 
       <section

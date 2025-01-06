@@ -55,10 +55,10 @@ const AddRoles = ({
         {allRoles.map((role) => (
           <div key={role.id} className="py-2 flex justify-between items-center">
             <span className="flex gap-2 items-center">
-              {role.imageId && (
+              {role.iconId && (
                 <div className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
                   <Image
-                    src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.imageId}`}
+                    src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
                     alt=""
                     width={24}
                     height={24}

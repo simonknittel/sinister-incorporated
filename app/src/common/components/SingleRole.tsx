@@ -16,10 +16,10 @@ export const SingleRole = ({ className, role }: Props) => {
         "px-2 py-1 rounded bg-neutral-700/50 flex gap-2 items-center whitespace-nowrap",
       )}
     >
-      {role.imageId && (
+      {role.iconId && (
         <div className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
           <Image
-            src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.imageId}`}
+            src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
             alt=""
             width={24}
             height={24}

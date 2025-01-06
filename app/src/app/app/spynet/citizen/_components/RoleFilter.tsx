@@ -69,10 +69,10 @@ const RoleFilter = ({ roles }: Readonly<Props>) => {
           className="flex justify-between items-center w-full gap-4"
         >
           <label className="flex gap-2 items-center whitespace-nowrap">
-            {role.imageId && (
+            {role.iconId && (
               <div className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
                 <Image
-                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.imageId}`}
+                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
                   alt=""
                   width={24}
                   height={24}
