@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useId, type ComponentProps, type ReactNode } from "react";
-import YesNoCheckbox from "./YesNoCheckbox";
+import YesNoCheckbox from "./form/YesNoCheckbox";
 
 type Props = Readonly<{
   className?: string;

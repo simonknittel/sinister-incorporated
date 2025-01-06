@@ -6,7 +6,7 @@ type Props = Readonly<{
 
 export const SkeletonTile = ({ className }: Props) => {
   return (
-    <section
+    <div
       className={clsx(
         className,
         "bg-neutral-800/50 rounded-2xl animate-pulse min-h-[22.5rem]",

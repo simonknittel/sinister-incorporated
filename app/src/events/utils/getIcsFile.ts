@@ -1,4 +1,4 @@
-import type { getEvent } from "@/discord/getEvent";
+import type { getEvent } from "@/discord/utils/getEvent";
 import { format } from "date-fns";
 import { createEvent, type DateTime } from "ics";
 

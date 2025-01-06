@@ -2,7 +2,7 @@
 
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
-import { Select } from "@/common/components/Select";
+import { Select } from "@/common/components/form/Select";
 import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import {
   type ClassificationLevel,

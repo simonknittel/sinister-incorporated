@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
-import { Select } from "@/common/components/Select";
+import { Select } from "@/common/components/form/Select";
 import {
   type ClassificationLevel,
   type Entity,

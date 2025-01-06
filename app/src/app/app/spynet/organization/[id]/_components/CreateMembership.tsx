@@ -2,7 +2,7 @@
 
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
-import YesNoCheckbox from "@/common/components/YesNoCheckbox";
+import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import {
   ConfirmationStatus,
   OrganizationMembershipType,

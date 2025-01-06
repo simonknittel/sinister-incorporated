@@ -2,10 +2,10 @@ import { authenticatePage } from "@/auth/server";
 import Note from "@/common/components/Note";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { prisma } from "@/db";
+import { CreateOperation } from "@/operations/components/CreateOperation";
+import OperationTile from "@/operations/components/OperationTile";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import CreateOperation from "./_components/CreateOperation";
-import OperationTile from "./_components/OperationTile";
 
 export const metadata: Metadata = {
   title: "Operationen | S.A.M. - Sinister Incorporated",

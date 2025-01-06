@@ -4,8 +4,8 @@ import { debounce } from "lodash";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
+import { type Hit } from "../../../spynet/components/SpynetSearchTile/Search";
 import { Hero } from "../Hero";
-import { type Hit } from "../SpynetSearchTile/Search";
 import { SpynetSearchResultEntry } from "./SpynetSearchResultEntry";
 
 const fetcher = async (key: string) => {

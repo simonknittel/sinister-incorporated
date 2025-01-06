@@ -1,5 +1,5 @@
+import { AdminEnabler } from "@/auth/components/AdminEnabler";
 import { authenticate } from "@/auth/server";
-import { AdminEnabler } from "@/common/components/AdminEnabler";
 import { Footer } from "@/common/components/Footer";
 import { requireConfirmedEmailForPage } from "@/common/utils/emailConfirmation";
 import { log } from "@/logging";
@@ -28,6 +28,8 @@ export default async function Page() {
 
   if (await authentication.authorize("login", "manage")) redirect("/app");
 
+  const showAdminEnabler = authentication.session.user.role === "admin";
+
   return (
     <div className="min-h-dvh flex justify-center items-center flex-col py-8 bg-sinister-radial-gradient">
       <main className="w-full max-w-lg">
@@ -40,8 +42,10 @@ export default async function Page() {
           <p>Die Leitung muss deinen Account freischalten.</p>
         </div>
       </main>
+
       <Footer className="mt-4" />
-      {authentication.session.user.role === "admin" && (
+
+      {showAdminEnabler && (
         <AdminEnabler
           enabled={(await cookies()).get("enable_admin")?.value === "1"}
         />

@@ -1,4 +1,5 @@
 import { Actions } from "@/common/components/Actions";
+import { Link } from "@/common/components/Link";
 import {
   type ClassificationLevel,
   type Entity,
@@ -7,7 +8,6 @@ import {
   type NoteType,
   type User,
 } from "@prisma/client";
-import Link from "next/link";
 import { FaSortDown, FaSortUp } from "react-icons/fa";
 import { type EntityLogConfirmationState } from "../../../../../types";
 import ConfirmationState from "./ConfirmationState";

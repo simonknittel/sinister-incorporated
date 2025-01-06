@@ -1,6 +1,6 @@
 "use client";
 
-import { EditableText } from "@/common/components/EditableText";
+import { EditableText } from "@/common/components/form/EditableText";
 import { type Manufacturer } from "@prisma/client";
 import { updateManufacturerAction } from "../actions/updateManufacturer";
 

@@ -1,4 +1,4 @@
-import { useAuthentication } from "@/auth/client";
+import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";

@@ -6,7 +6,7 @@ import { FaSpinner } from "react-icons/fa";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import Button from "./Button";
 
-const LogoutButton = () => {
+export const LogoutButton = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleClick = async () => {
@@ -32,5 +32,3 @@ const LogoutButton = () => {
     </Button>
   );
 };
-
-export default LogoutButton;

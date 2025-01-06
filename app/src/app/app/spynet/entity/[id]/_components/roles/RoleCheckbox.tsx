@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuthentication } from "@/auth/client";
-import YesNoCheckbox from "@/common/components/YesNoCheckbox";
+import { useAuthentication } from "@/auth/hooks/useAuthentication";
+import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import { type Entity, type Role } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";

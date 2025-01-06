@@ -1,5 +1,6 @@
+import { requestEmailConfirmationAction } from "@/auth/actions/requestEmailConfirmationAction";
+import { AdminEnabler } from "@/auth/components/AdminEnabler";
 import { authenticate } from "@/auth/server";
-import { AdminEnabler } from "@/common/components/AdminEnabler";
 import { Footer } from "@/common/components/Footer";
 import { requiresEmailConfirmation } from "@/common/utils/emailConfirmation";
 import type { NextjsSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
@@ -14,7 +15,6 @@ import {
   RequestConfirmationEmailButton,
   RequestConfirmationEmailLink,
 } from "./_components/RequestConfirmationEmail";
-import { requestEmailConfirmationAction } from "./_lib/actions";
 
 export const metadata: Metadata = {
   title:

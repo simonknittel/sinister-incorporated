@@ -1,5 +1,5 @@
 import { authenticatePage } from "@/auth/server";
-import { getEvent } from "@/discord/getEvent";
+import { getEvent } from "@/discord/utils/getEvent";
 import { OverviewTab } from "@/events/components/OverviewTab";
 import { log } from "@/logging";
 import { type Metadata } from "next";

@@ -1,4 +1,4 @@
-import YesNoCheckbox from "@/common/components/YesNoCheckbox";
+import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import clsx from "clsx";
 import { usePermissionsContext } from "../../PermissionsContext";
 

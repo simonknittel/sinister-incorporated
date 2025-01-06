@@ -1,5 +1,5 @@
+import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { EditableSeriesName } from "@/fleet/components/EditableSeriesName";
-import { TileSkeleton } from "@/fleet/components/TileSkeleton";
 import { VariantsTile } from "@/fleet/components/VariantsTile";
 import { dedupedGetSeriesAndManufacturerById } from "@/fleet/utils/getSeriesAndManufacturer";
 import { log } from "@/logging";
@@ -70,7 +70,7 @@ export default async function Page(props: Props) {
         </dl>
       </section>
 
-      <Suspense fallback={<TileSkeleton className="w-full flex-1" />}>
+      <Suspense fallback={<SkeletonTile className="w-full flex-1" />}>
         <VariantsTile
           manufacturerId={manufacturer.id}
           seriesId={series.id}

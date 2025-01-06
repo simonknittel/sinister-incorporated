@@ -1,4 +1,5 @@
 import { Actions } from "@/common/components/Actions";
+import { Link } from "@/common/components/Link";
 import { entityLogTypeTranslations } from "@/common/utils/entityLogTypeTranslations";
 import type { EntityLogConfirmationState } from "@/types";
 import {
@@ -7,7 +8,6 @@ import {
   type EntityLogAttribute,
   type User,
 } from "@prisma/client";
-import Link from "next/link";
 import { FaSortDown, FaSortUp } from "react-icons/fa";
 import ConfirmationState from "./ConfirmationState";
 import DeleteLog from "./DeleteLog";

@@ -1,4 +1,4 @@
-import type { getEvent } from "@/discord/getEvent";
+import type { getEvent } from "@/discord/utils/getEvent";
 import { formatISO } from "date-fns/formatISO";
 
 export const getGoogleCalendarUrl = (

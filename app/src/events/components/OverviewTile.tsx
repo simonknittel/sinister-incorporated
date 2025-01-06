@@ -1,6 +1,6 @@
 import { DiscordButton } from "@/common/components/DiscordButton";
 import { TimeAgoLoader } from "@/common/components/TimeAgoLoader";
-import { type getEvent } from "@/discord/getEvent";
+import { type getEvent } from "@/discord/utils/getEvent";
 import clsx from "clsx";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Image from "next/image";

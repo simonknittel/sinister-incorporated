@@ -1,11 +1,11 @@
 import { RolesCell } from "@/app/app/spynet/citizen/_components/RolesCell";
 import { requireAuthentication } from "@/auth/server";
-import { type getEvent } from "@/discord/getEvent";
-import type { memberSchema, userSchema } from "@/discord/schemas";
+import { Link } from "@/common/components/Link";
+import { type getEvent } from "@/discord/utils/getEvent";
+import type { memberSchema, userSchema } from "@/discord/utils/schemas";
 import type { Entity } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
-import Link from "next/link";
 import { Suspense } from "react";
 import type { z } from "zod";
 import { getParticipants } from "../utils/getParticipants";

@@ -1,10 +1,10 @@
 import { authenticatePage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
-import { SpynetSearchTile } from "@/common/components/SpynetSearchTile/SpynetSearchTile";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { CreateCitizen } from "@/spynet/components/CreateCitizen";
+import { CreateOrganization } from "@/spynet/components/CreateOrganization";
+import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
 import { type Metadata } from "next";
-import { CreateCitizen } from "./_components/CreateCitizen";
-import { CreateOrganization } from "./_components/CreateOrganization";
 
 export const metadata: Metadata = {
   title: "Spynet | S.A.M. - Sinister Incorporated",

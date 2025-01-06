@@ -1,7 +1,7 @@
 import { ImageUpload } from "@/common/components/ImageUpload";
+import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { EditableManufacturerName } from "@/fleet/components/EditableManufacturerName";
 import { SeriesTile } from "@/fleet/components/SeriesTile";
-import { TileSkeleton } from "@/fleet/components/TileSkeleton";
 import { getManufacturerById } from "@/fleet/utils/getManufacturerById";
 import { log } from "@/logging";
 import clsx from "clsx";
@@ -83,7 +83,7 @@ export default async function Page(props: Props) {
         </div>
       </section>
 
-      <Suspense fallback={<TileSkeleton className="w-full flex-1" />}>
+      <Suspense fallback={<SkeletonTile className="w-full flex-1" />}>
         <SeriesTile
           manufacturerId={manufacturer.id}
           className="w-full flex-1"

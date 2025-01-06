@@ -1,4 +1,4 @@
-import type { getEvent } from "@/discord/getEvent";
+import type { getEvent } from "@/discord/utils/getEvent";
 import { formatInTimeZone } from "date-fns-tz";
 
 export const getOutlookUrl = (
