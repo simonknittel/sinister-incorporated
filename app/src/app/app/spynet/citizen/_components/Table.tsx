@@ -1,6 +1,6 @@
 import { Actions } from "@/common/components/Actions";
+import { Link } from "@/common/components/Link";
 import { type Entity, type Role } from "@prisma/client";
-import Link from "next/link";
 import { Suspense } from "react";
 import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
 import { HistoryModal } from "../../entity/[id]/_components/generic-log-type/HistoryModal";
