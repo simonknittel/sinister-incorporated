@@ -14,18 +14,6 @@ type Props = Readonly<{
 
 export const Roles = async ({ className, entity }: Props) => {
   const authentication = await requireAuthentication();
-  const showAssign = await authentication.authorize("otherRole", "assign", [
-    {
-      key: "roleId",
-      value: "*",
-    },
-  ]);
-  const showDismiss = await authentication.authorize("otherRole", "dismiss", [
-    {
-      key: "roleId",
-      value: "*",
-    },
-  ]);
 
   const assignedAndVisibleRoles = await getAssignedAndVisibleRoles(entity);
   const assignedAndVisibleRoleIds = assignedAndVisibleRoles.map(
@@ -33,6 +21,28 @@ export const Roles = async ({ className, entity }: Props) => {
   );
 
   const assignableRoles = await getAssignableRoles();
+
+  let showAddRoles = false;
+  for (const role of assignableRoles) {
+    if (
+      !(await authentication.authorize("otherRole", "assign", [
+        {
+          key: "roleId",
+          value: role.id,
+        },
+      ])) &&
+      !(await authentication.authorize("otherRole", "dismiss", [
+        {
+          key: "roleId",
+          value: role.id,
+        },
+      ]))
+    )
+      continue;
+
+    showAddRoles = true;
+    break;
+  }
 
   return (
     <section
@@ -52,7 +62,7 @@ export const Roles = async ({ className, entity }: Props) => {
         <p className="text-neutral-500 italic mt-4">Keine Rollen</p>
       )}
 
-      {(showAssign || showDismiss) && (
+      {showAddRoles && (
         <div className="flex gap-4 mt-2">
           <AddRoles
             entity={entity}
