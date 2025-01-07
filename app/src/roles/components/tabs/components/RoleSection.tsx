@@ -23,8 +23,8 @@ export const RoleSection = ({ className, roles }: Props) => {
     setRules((rules) => [...rules, `otherRole`]);
   };
 
-  const handleDelete = (indexToRemove: number) => {
-    setRules((rules) => rules.filter((rule, index) => index !== indexToRemove));
+  const handleDelete = (ruleToRemove: string) => {
+    setRules((rules) => rules.filter((rule) => rule !== ruleToRemove));
   };
 
   return (
@@ -37,13 +37,13 @@ export const RoleSection = ({ className, roles }: Props) => {
           <span>Aktion</span>
         </div>
 
-        {rules && rules.length > 0 ? (
-          rules.map((rule, index) => (
+        {rules.length > 0 ? (
+          rules.map((rule) => (
             <Rule
-              key={index}
+              key={rule}
               ruleString={rule}
               roles={roles}
-              handleDelete={() => handleDelete(index)}
+              handleDelete={() => handleDelete(rule)}
             />
           ))
         ) : (
