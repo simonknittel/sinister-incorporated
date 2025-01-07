@@ -30,16 +30,6 @@ export const deleteVariant: ServerAction = async (formData) => {
     });
 
     /**
-     * Make sure the item exists
-     */
-    const existingItem = await prisma.variant.findUnique({
-      where: {
-        id,
-      },
-    });
-    if (!existingItem) throw new Error("Not found");
-
-    /**
      * Delete
      */
     const deletedItem = await prisma.variant.delete({

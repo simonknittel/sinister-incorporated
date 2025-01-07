@@ -3,7 +3,7 @@ import { Link } from "@/common/components/Link";
 import { env } from "@/env";
 import clsx from "clsx";
 import Image from "next/image";
-import { getManufacturers } from "../utils/getManufacturers";
+import { getManufacturers } from "../queries";
 import { DeleteManufacturerButton } from "./DeleteManufacturerButton";
 
 const GRID_COLS = "grid-cols-[48px_192px_1fr_44px]";

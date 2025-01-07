@@ -11,7 +11,7 @@ type Props = Readonly<{
 }>;
 
 export const RolesTile = async ({ className }: Props) => {
-  const roles = await getRoles();
+  const roles = await getRoles(true);
 
   return (
     <section

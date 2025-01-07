@@ -1,9 +1,9 @@
 import { authenticatePage } from "@/auth/server";
 import Note from "@/common/components/Note";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { prisma } from "@/db";
 import { CreateOperation } from "@/operations/components/CreateOperation";
 import OperationTile from "@/operations/components/OperationTile";
+import { getOperations } from "@/operations/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -17,11 +17,7 @@ export default async function Page() {
   const authentication = await authenticatePage("/app/operations");
   await authentication.authorizePage("operation", "manage");
 
-  const operations = await prisma.operation.findMany({
-    include: {
-      members: true,
-    },
-  });
+  const operations = await getOperations();
 
   return (
     <main className="p-4 pb-20 lg:p-8">

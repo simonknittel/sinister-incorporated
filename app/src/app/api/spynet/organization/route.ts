@@ -4,6 +4,7 @@ import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { scrapeOrganizationLogo } from "@/common/utils/scrapeOrganizationLogo";
 import { prisma } from "@/db";
 import { log } from "@/logging";
+import { getOrganizationBySpectrumId } from "@/organizations/queries";
 import { ConfirmationStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";
@@ -34,11 +35,9 @@ export async function POST(request: Request) {
     /**
      * Do the thing
      */
-    const existingOrganization = await prisma.organization.findFirst({
-      where: {
-        spectrumId: data.spectrumId,
-      },
-    });
+    const existingOrganization = await getOrganizationBySpectrumId(
+      data.spectrumId,
+    );
     if (existingOrganization) throw new Error("Duplicate");
 
     let logo: string | undefined;

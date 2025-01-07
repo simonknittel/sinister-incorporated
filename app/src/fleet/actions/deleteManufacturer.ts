@@ -30,16 +30,6 @@ export const deleteManufacturerAction: ServerAction = async (formData) => {
     });
 
     /**
-     * Make sure the item exists
-     */
-    const existingItem = await prisma.manufacturer.findUnique({
-      where: {
-        id,
-      },
-    });
-    if (!existingItem) throw new Error("Not found");
-
-    /**
      * Delete
      */
     await prisma.manufacturer.delete({

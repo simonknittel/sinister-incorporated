@@ -1,5 +1,5 @@
-import { getAllClassificationLevelsDeduped } from "@/common/utils/cached/getAllClassificationLevels";
 import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
+import { getAllClassificationLevels } from "@/spynet/queries";
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
 import clsx from "clsx";
 
@@ -11,7 +11,7 @@ type Props = Readonly<{
 }>;
 
 export const ClassificationLevel = async ({ className, note }: Props) => {
-  const allClassificationLevels = await getAllClassificationLevelsDeduped();
+  const allClassificationLevels = await getAllClassificationLevels();
   const { classificationLevelId } = getLatestNoteAttributes(note);
 
   return (

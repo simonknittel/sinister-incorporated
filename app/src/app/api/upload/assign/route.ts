@@ -37,48 +37,40 @@ export async function PATCH(request: Request) {
     const data = bodySchema.parse(body);
 
     /**
-     * Make sure the item exists.
+     * Assign the image to the resource
      */
     if (data.resourceType === "manufacturer") {
+      /**
+       * Authenticate and authorize the request
+       */
       await authentication.authorizeApi(
         "manufacturersSeriesAndVariants",
         "manage",
       );
-
-      const existingItem = await prisma.manufacturer.findUnique({
-        where: {
-          id: data.resourceId,
-        },
-      });
-      if (!existingItem) throw new Error("Not found");
 
       /**
        * Update
        */
       await prisma.manufacturer.update({
         where: {
-          id: existingItem.id,
+          id: data.resourceId,
         },
         data: {
           [data.resourceAttribute]: data.imageId,
         },
       });
     } else if (data.resourceType === "role") {
+      /**
+       * Authenticate and authorize the request
+       */
       await authentication.authorizeApi("role", "manage");
-
-      const existingItem = await prisma.role.findUnique({
-        where: {
-          id: data.resourceId,
-        },
-      });
-      if (!existingItem) throw new Error("Not found");
 
       /**
        * Update
        */
       await prisma.role.update({
         where: {
-          id: existingItem.id,
+          id: data.resourceId,
         },
         data: {
           [data.resourceAttribute]: data.imageId,

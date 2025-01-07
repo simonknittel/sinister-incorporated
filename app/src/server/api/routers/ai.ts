@@ -1,6 +1,6 @@
 import { isOpenAIEnabled } from "@/common/utils/isOpenAIEnabled";
-import { prisma } from "@/db";
 import { log } from "@/logging";
+import { getRoles } from "@/roles/queries";
 import { TRPCError } from "@trpc/server";
 import OpenAI from "openai";
 import { type ChatCompletionMessageParam } from "openai/resources/index.mjs";
@@ -17,11 +17,7 @@ export const aiRouter = createTRPCRouter({
         message: "Generation is disabled",
       });
 
-    const existingRoles = await prisma.role.findMany({
-      select: {
-        name: true,
-      },
-    });
+    const existingRoles = await getRoles();
     const existingRoleNames = existingRoles.map((role) => role.name);
 
     const openai = new OpenAI({

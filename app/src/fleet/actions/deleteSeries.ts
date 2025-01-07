@@ -30,16 +30,6 @@ export const deleteSeries: ServerAction = async (formData) => {
     });
 
     /**
-     * Make sure the item exists
-     */
-    const existingItem = await prisma.series.findUnique({
-      where: {
-        id,
-      },
-    });
-    if (!existingItem) throw new Error("Not found");
-
-    /**
      * Delete
      */
     const deletedSeries = await prisma.series.delete({

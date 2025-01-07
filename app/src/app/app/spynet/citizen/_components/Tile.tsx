@@ -1,4 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
+import { getCitizen } from "@/citizen/queries";
 import { getAssignableRoles } from "@/common/utils/getAssignableRoles";
 import { getAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
 import { getLastSeenAt } from "@/common/utils/getLastSeenAt";
@@ -11,7 +12,6 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "@/common/utils/sorting";
-import { prisma } from "@/db";
 import Pagination from "@/spynet/components/Pagination";
 import clsx from "clsx";
 import { Filters } from "./Filters";
@@ -27,7 +27,7 @@ export const Tile = async ({ className, searchParams }: Props) => {
 
   const currentPage = getCurrentPageFromSearchParams(searchParams);
 
-  const entities = await prisma.entity.findMany();
+  const entities = await getCitizen();
 
   const filters = searchParams.get("filters")?.split(",");
 

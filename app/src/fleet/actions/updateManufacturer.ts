@@ -34,16 +34,6 @@ export const updateManufacturerAction: ServerAction = async (formData) => {
     });
 
     /**
-     * Make sure the item exists
-     */
-    const existingItem = await prisma.manufacturer.findUnique({
-      where: {
-        id,
-      },
-    });
-    if (!existingItem) throw new Error("Not found");
-
-    /**
      * Update
      */
     await prisma.manufacturer.update({
@@ -66,7 +56,6 @@ export const updateManufacturerAction: ServerAction = async (formData) => {
       status: 200,
     };
   } catch (error) {
-    console.error(error);
     return serverActionErrorHandler(error, {
       errorMessages: {
         "400": "Ungültige Anfrage",

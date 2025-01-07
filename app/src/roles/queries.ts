@@ -13,13 +13,13 @@ export const getRoleById = cache(async (id: Role["id"]) => {
   });
 });
 
-export const getRoles = cache(async () => {
+export const getRoles = cache(async (withPermissionStrings = false) => {
   return prisma.role.findMany({
     orderBy: {
       name: "asc",
     },
     include: {
-      permissionStrings: true,
+      permissionStrings: withPermissionStrings,
     },
   });
 });

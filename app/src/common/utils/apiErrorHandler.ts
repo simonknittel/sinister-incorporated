@@ -30,7 +30,10 @@ export default function apiErrorHandler(
       },
       { status: 403, ...responseInit },
     );
-  } else if (error instanceof Error && error.message === "Not found") {
+  } else if (
+    (error instanceof Error && error.message === "Not found") ||
+    (error instanceof PrismaClientKnownRequestError && error.code === "P2001")
+  ) {
     return NextResponse.json(
       {
         message: "Not Found",

@@ -1,5 +1,5 @@
 import { Actions } from "@/common/components/Actions";
-import { prisma } from "@/db";
+import { getAllClassificationLevels } from "@/spynet/queries";
 import clsx from "clsx";
 import Create from "./Create";
 import Delete from "./Delete";
@@ -10,7 +10,7 @@ interface Props {
 }
 
 const ClassificationLevelsTile = async ({ className }: Readonly<Props>) => {
-  const classificationLevels = await prisma.classificationLevel.findMany();
+  const classificationLevels = await getAllClassificationLevels();
 
   const sortedClassificationLevels = classificationLevels.toSorted((a, b) =>
     a.name.localeCompare(b.name),

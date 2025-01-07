@@ -3,7 +3,7 @@ import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import clsx from "clsx";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { FaRegCircleXmark } from "react-icons/fa6";
-import { getVariantsBySeriesId } from "../utils/getVariantsBySeriesId";
+import { getVariantsBySeriesId } from "../queries";
 import { CreateVariantButton } from "./CreateVariantButton";
 import { DeleteVariantButton } from "./DeleteVariantButton";
 import { UpdateVariantButton } from "./UpdateVariantButton";

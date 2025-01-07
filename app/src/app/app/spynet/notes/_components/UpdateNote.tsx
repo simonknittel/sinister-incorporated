@@ -1,6 +1,6 @@
-import { getCreatableClassificationLevelsDeduped } from "@/common/utils/cached/getAllClassificationLevels";
-import getAllNoteTypes from "@/common/utils/cached/getAllNoteTypes";
 import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
+import { getAllNoteTypes } from "@/spynet/queries";
+import { getCreatableClassificationLevelsDeduped } from "@/spynet/utils/getAllClassificationLevels";
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
 import { UpdateNoteModal } from "../../entity/[id]/_components/notes/UpdateNoteModal";
 

@@ -1,6 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { RSIButton } from "@/common/components/RSIButton";
-import { prisma } from "@/db";
+import { getOrganizationById } from "@/organizations/queries";
 import clsx from "clsx";
 import Image from "next/image";
 
@@ -14,17 +14,7 @@ export const OverviewTile = async ({ className, id }: Props) => {
   if (!(await authentication.authorize("organization", "read")))
     throw new Error("Forbidden");
 
-  const organization = await prisma.organization.findUnique({
-    where: {
-      id,
-    },
-    select: {
-      id: true,
-      spectrumId: true,
-      name: true,
-      logo: true,
-    },
-  });
+  const organization = await getOrganizationById(id);
   if (!organization) throw new Error("Organization not found");
 
   return (

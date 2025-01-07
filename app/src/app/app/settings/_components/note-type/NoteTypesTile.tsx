@@ -1,5 +1,5 @@
 import { Actions } from "@/common/components/Actions";
-import { prisma } from "@/db";
+import { getAllNoteTypes } from "@/spynet/queries";
 import clsx from "clsx";
 import Create from "./Create";
 import Delete from "./Delete";
@@ -10,7 +10,7 @@ interface Props {
 }
 
 const NoteTypesTile = async ({ className }: Readonly<Props>) => {
-  const noteTypes = await prisma.noteType.findMany();
+  const noteTypes = await getAllNoteTypes();
 
   const sortedNoteTypes = noteTypes.toSorted((a, b) =>
     a.name.localeCompare(b.name),
