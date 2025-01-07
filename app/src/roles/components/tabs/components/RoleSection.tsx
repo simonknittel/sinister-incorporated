@@ -98,11 +98,13 @@ const Rule = ({ ruleString, roles, handleDelete }: RuleProps) => {
         <option disabled hidden value=""></option>
         <option value="*">Alle</option>
 
-        {roles.map((role) => (
-          <option key={role.id} value={role.id}>
-            {role.name}
-          </option>
-        ))}
+        {roles
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((role) => (
+            <option key={role.id} value={role.id}>
+              {role.name}
+            </option>
+          ))}
       </select>
 
       <select

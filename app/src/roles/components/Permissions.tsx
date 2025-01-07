@@ -16,7 +16,6 @@ import { FaCalendarDay, FaCog, FaSave, FaSpinner } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
 import { updateRolePermissions } from "../actions/updateRolePermissions";
-import { usePermissionsContext } from "./PermissionsContext";
 import { CitizenTab } from "./tabs/CitizenTab";
 import { DocumentsTab } from "./tabs/DocumentsTab";
 import EventsTab from "./tabs/EventsTab";
@@ -39,14 +38,15 @@ export const Permissions = ({
   allRoles,
   enableOperations,
 }: Props) => {
-  const { permissionStrings } = usePermissionsContext();
   const [state, formAction, isPending] = useActionState(
     updateRolePermissions,
     null,
   );
 
   return (
-    <>
+    <form action={formAction}>
+      <input type="hidden" name="id" value={role.id} />
+
       <TabsProvider initialActiveTab="citizen">
         <TabList>
           <Tab id="citizen">
@@ -85,30 +85,20 @@ export const Permissions = ({
         <OtherTab roles={allRoles} />
       </TabsProvider>
 
-      <form action={formAction}>
-        <input type="hidden" name="id" value={role.id} />
+      <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
+        {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
+        Speichern
+      </Button>
 
-        <input
-          type="hidden"
-          name="permissionStrings"
-          value={JSON.stringify(permissionStrings)}
+      {state && (
+        <Note
+          type={state.success ? "success" : "error"}
+          message={state.success ? state.success : state.error}
+          className={clsx("mt-4", {
+            "animate-pulse": isPending,
+          })}
         />
-
-        <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
-          {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
-          Speichern
-        </Button>
-
-        {state && (
-          <Note
-            type={state.success ? "success" : "error"}
-            message={state.success ? state.success : state.error}
-            className={clsx("mt-4", {
-              "animate-pulse": isPending,
-            })}
-          />
-        )}
-      </form>
-    </>
+      )}
+    </form>
   );
 };

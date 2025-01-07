@@ -34,9 +34,9 @@ export const updateRolePermissions = async (
      */
     const result = schema.safeParse({
       id: formData.get("id"),
-      permissionStrings: JSON.parse(
-        formData.get("permissionStrings") as string,
-      ) as unknown,
+      permissionStrings: Array.from(formData.keys()).filter(
+        (key) => key !== "id" && !key.startsWith("$ACTION"),
+      ),
     });
     if (!result.success) {
       void log.warn("Bad Request", { error: serializeError(result.error) });
