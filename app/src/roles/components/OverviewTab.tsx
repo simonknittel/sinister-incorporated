@@ -75,7 +75,7 @@ export const OverviewTab = ({ className, role }: Props) => {
 
         <div className="flex flex-col md:flex-row gap-4 mt-4">
           <div>
-            <label className="block font-bold">Icon (nur 1:1)</label>
+            <label className="block font-bold">Icon</label>
 
             <ImageUpload
               resourceType="role"
