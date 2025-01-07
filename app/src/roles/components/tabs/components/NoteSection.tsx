@@ -29,8 +29,8 @@ export const NoteSection = ({
     setRules((rules) => [...rules, `note`]);
   };
 
-  const handleDelete = (indexToRemove: number) => {
-    setRules((rules) => rules.filter((rule, index) => index !== indexToRemove));
+  const handleDelete = (ruleToRemove: string) => {
+    setRules((rules) => rules.filter((rule) => rule !== ruleToRemove));
   };
 
   return (
@@ -46,13 +46,13 @@ export const NoteSection = ({
         </div>
 
         {rules.length > 0 ? (
-          rules.map((rule, index) => (
+          rules.map((rule) => (
             <Rule
-              key={index}
+              key={rule}
               ruleString={rule}
               noteTypes={noteTypes}
               classificationLevels={classificationLevels}
-              handleDelete={() => handleDelete(index)}
+              handleDelete={() => handleDelete(rule)}
             />
           ))
         ) : (
