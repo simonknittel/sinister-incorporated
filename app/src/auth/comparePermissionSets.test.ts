@@ -28,6 +28,19 @@ describe("compare permission sets", () => {
     ).toBe(false);
   });
 
+  test("permission set containing no attributes vs. one permission set which", () => {
+    expect(
+      comparePermissionSets({ resource: "login", operation: "manage" }, [
+        { resource: "otherRole", operation: "assign" },
+        {
+          resource: "otherRole",
+          operation: "assign",
+          attributes: [{ key: "roleId", value: "abc" }],
+        },
+      ]),
+    ).toBe(false);
+  });
+
   test("permission set containing one attribute vs. one permission set which is matching", () => {
     expect(
       comparePermissionSets(
