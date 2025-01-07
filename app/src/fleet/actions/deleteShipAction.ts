@@ -27,17 +27,6 @@ export const deleteShipAction: ServerAction = async (formData) => {
     });
 
     /**
-     * Make sure the item exists
-     */
-    const existingItem = await prisma.ship.findUnique({
-      where: {
-        id,
-        ownerId: authentication.session.user.id,
-      },
-    });
-    if (!existingItem) throw new Error("Not found");
-
-    /**
      * Delete
      */
     await prisma.ship.delete({

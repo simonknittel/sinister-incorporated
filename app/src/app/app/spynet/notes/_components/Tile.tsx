@@ -1,6 +1,4 @@
 import { requireAuthentication } from "@/auth/server";
-import { getAllClassificationLevelsDeduped } from "@/common/utils/cached/getAllClassificationLevels";
-import getAllNoteTypes from "@/common/utils/cached/getAllNoteTypes";
 import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import {
   getCurrentPageFromSearchParams,
@@ -13,6 +11,7 @@ import {
 } from "@/common/utils/sorting";
 import { prisma } from "@/db";
 import Pagination from "@/spynet/components/Pagination";
+import { getAllClassificationLevels, getAllNoteTypes } from "@/spynet/queries";
 import type { EntityLogConfirmationState } from "@/types";
 import clsx from "clsx";
 import isAllowedToRead from "../../entity/[id]/_components/notes/lib/isAllowedToRead";
@@ -51,7 +50,7 @@ const Tile = async ({ className, searchParams }: Props) => {
     }),
 
     getAllNoteTypes(),
-    getAllClassificationLevelsDeduped(),
+    getAllClassificationLevels(),
   ]);
 
   const rows = entityLogs

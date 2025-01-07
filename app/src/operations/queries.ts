@@ -44,3 +44,11 @@ export const getOperation = cache(async (id: Operation["id"]) => {
     },
   });
 });
+
+export const getOperations = cache(async () => {
+  return prisma.operation.findMany({
+    include: {
+      members: true,
+    },
+  });
+});

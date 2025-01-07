@@ -32,16 +32,6 @@ export const updateSeries: ServerAction = async (formData) => {
     });
 
     /**
-     * Make sure the item exists
-     */
-    const existingItem = await prisma.series.findUnique({
-      where: {
-        id,
-      },
-    });
-    if (!existingItem) throw new Error("Not found");
-
-    /**
      * Update
      */
     const updatedItem = await prisma.series.update({

@@ -1,6 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import TabPanel from "@/common/components/tabs/TabPanel";
-import { getCreatableClassificationLevelsDeduped } from "@/common/utils/cached/getAllClassificationLevels";
+import { getCreatableClassificationLevelsDeduped } from "@/spynet/utils/getAllClassificationLevels";
 import {
   type Entity,
   type EntityLog,

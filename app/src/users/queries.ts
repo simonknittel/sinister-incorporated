@@ -1,4 +1,5 @@
 import { prisma } from "@/db";
+import type { User } from "@prisma/client";
 
 export const getUsersWithEntities = async () => {
   const [users, entities] = await Promise.all([
@@ -30,4 +31,12 @@ export const getUsersWithEntities = async () => {
   });
 
   return enrichedUsers;
+};
+
+export const getUserById = async (id: User["id"]) => {
+  return prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
 };

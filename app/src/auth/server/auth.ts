@@ -4,6 +4,7 @@ import { requestEmailConfirmation } from "@/common/utils/emailConfirmation";
 import { prisma } from "@/db";
 import { env } from "@/env";
 import { log } from "@/logging";
+import { getUserById } from "@/users/queries";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import {
   getServerSession,
@@ -178,11 +179,7 @@ export const authOptions: NextAuthOptions = {
         profileEmail: profile.email,
       });
 
-      const existingUser = await prisma.user.findUnique({
-        where: {
-          id: user.id,
-        },
-      });
+      const existingUser = await getUserById(user.id);
 
       if (existingUser) {
         const guildMember = await getGuildMember(account.access_token);

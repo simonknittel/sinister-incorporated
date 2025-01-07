@@ -1,10 +1,10 @@
 import { authenticatePage } from "@/auth/server";
 import { Link } from "@/common/components/Link";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { prisma } from "@/db";
 import { log } from "@/logging";
 import { PermissionsTab } from "@/roles/components/PermissionsTab";
-import { getRoleById } from "@/roles/queries";
+import { getRoleById, getRoles } from "@/roles/queries";
+import { getAllClassificationLevels, getAllNoteTypes } from "@/spynet/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FaHome, FaLock, FaUsers } from "react-icons/fa";
@@ -48,19 +48,11 @@ export default async function Page({ params }: Props) {
   const role = await getRoleById((await params).id);
   if (!role) notFound();
 
-  const [allRoles, noteTypes, classificationLevels] = await prisma.$transaction(
-    [
-      prisma.role.findMany({
-        include: {
-          permissionStrings: true,
-        },
-      }),
-
-      prisma.noteType.findMany(),
-
-      prisma.classificationLevel.findMany(),
-    ],
-  );
+  const [allRoles, noteTypes, classificationLevels] = await Promise.all([
+    getRoles(true),
+    getAllNoteTypes(),
+    getAllClassificationLevels(),
+  ]);
 
   const enableOperations = Boolean(
     await dedupedGetUnleashFlag("EnableOperations"),

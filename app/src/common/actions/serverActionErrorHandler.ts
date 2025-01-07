@@ -37,7 +37,10 @@ export const serverActionErrorHandler = (
       status: 403,
       errorMessage: options?.errorMessages?.[403] || "Forbidden",
     };
-  } else if (error instanceof Error && error.message === "Not found") {
+  } else if (
+    (error instanceof Error && error.message === "Not found") ||
+    (error instanceof PrismaClientKnownRequestError && error.code === "P2001")
+  ) {
     return {
       status: 404,
       errorMessage: options?.errorMessages?.[404] || "Not found",

@@ -1,7 +1,7 @@
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { EditableSeriesName } from "@/fleet/components/EditableSeriesName";
 import { VariantsTile } from "@/fleet/components/VariantsTile";
-import { dedupedGetSeriesAndManufacturerById } from "@/fleet/utils/getSeriesAndManufacturer";
+import { dedupedGetSeriesAndManufacturerById } from "@/fleet/queries";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";

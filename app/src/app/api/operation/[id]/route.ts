@@ -8,7 +8,7 @@ type Params = Promise<{
   id: string;
 }>;
 
-const paramsSchema = z.string().cuid();
+const paramsSchema = z.object({ id: z.string().cuid() });
 
 const patchBodySchema = z.object({
   title: z.string().trim(),
@@ -24,7 +24,7 @@ export async function PATCH(request: Request, props: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = paramsSchema.parse((await props.params).id);
+    const params = paramsSchema.parse(await props.params);
 
     /**
      * Validate the request body
@@ -33,21 +33,11 @@ export async function PATCH(request: Request, props: { params: Params }) {
     const data = patchBodySchema.parse(body);
 
     /**
-     * Make sure the item exists.
-     */
-    const item = await prisma.operation.findUnique({
-      where: {
-        id: paramsData,
-      },
-    });
-    if (!item) throw new Error("Not found");
-
-    /**
      * Update
      */
     const updatedItem = await prisma.operation.updateMany({
       where: {
-        id: (await props.params).id,
+        id: params.id,
       },
       data: {
         title: data.title,
@@ -76,14 +66,14 @@ export async function DELETE(request: Request, props: { params: Params }) {
     /**
      * Validate the request params
      */
-    const paramsData = paramsSchema.parse((await props.params).id);
+    const params = paramsSchema.parse(await props.params);
 
     /**
      * Delete
      */
     await prisma.operation.delete({
       where: {
-        id: paramsData,
+        id: params.id,
       },
     });
 

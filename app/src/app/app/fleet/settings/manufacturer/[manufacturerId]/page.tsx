@@ -2,7 +2,7 @@ import { ImageUpload } from "@/common/components/ImageUpload";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { EditableManufacturerName } from "@/fleet/components/EditableManufacturerName";
 import { SeriesTile } from "@/fleet/components/SeriesTile";
-import { getManufacturerById } from "@/fleet/utils/getManufacturerById";
+import { getManufacturerById } from "@/fleet/queries";
 import { log } from "@/logging";
 import clsx from "clsx";
 import { type Metadata } from "next";

@@ -1,8 +1,8 @@
 import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
+import { getRoles } from "@/roles/queries";
 import { type Entity } from "@prisma/client";
 import { cache } from "react";
-import { getAllRoles } from "./cached/getAllRoles";
 
 export const getMyAssignedAndVisibleRoles = cache(async () => {
   const authentication = await requireAuthentication();
@@ -21,7 +21,7 @@ export const getMyAssignedAndVisibleRoles = cache(async () => {
 export const getAssignedAndVisibleRoles = cache(async (entity: Entity) => {
   const authentication = await requireAuthentication();
 
-  const allRoles = await getAllRoles();
+  const allRoles = await getRoles();
   const allRoleIds = allRoles.map((role) => role.id);
 
   const assignedRoleIds = entity.roles?.split(",") ?? [];

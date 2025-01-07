@@ -5,7 +5,7 @@ import { getMyReadableFlows } from "@/career/queries";
 import { Hero } from "@/common/components/Hero";
 import Note from "@/common/components/Note";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
-import { prisma } from "@/db";
+import { getRoles } from "@/roles/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -27,7 +27,7 @@ export default async function Page() {
   const flow = flows.find((flow) => flow.id === "economic");
   if (!flow) notFound();
 
-  const roles = await prisma.role.findMany();
+  const roles = await getRoles();
 
   return (
     <main className="p-4 pb-20 lg:p-8">

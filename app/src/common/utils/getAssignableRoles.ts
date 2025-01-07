@@ -1,11 +1,11 @@
 import { requireAuthentication } from "@/auth/server";
+import { getRoles } from "@/roles/queries";
 import { cache } from "react";
-import { getAllRoles } from "./cached/getAllRoles";
 
 export const getAssignableRoles = cache(async () => {
   const [authentication, allRoles] = await Promise.all([
     requireAuthentication(),
-    getAllRoles(),
+    getRoles(),
   ]);
 
   const assignableRoles = (

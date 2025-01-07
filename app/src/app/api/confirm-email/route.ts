@@ -1,3 +1,4 @@
+import { getEmailConfirmationToken } from "@/auth/queries";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { NextResponse, type NextRequest } from "next/server";
@@ -18,14 +19,7 @@ export async function GET(request: NextRequest) {
       token: request.nextUrl.searchParams.get("token"),
     });
 
-    const result = await prisma.emailConfirmationToken.findUnique({
-      where: {
-        token: paramsData.token,
-        expires: {
-          gt: new Date(),
-        },
-      },
-    });
+    const result = await getEmailConfirmationToken(paramsData.token);
     if (!result)
       return NextResponse.redirect(
         new URL("/email-confirmation", request.url),
