@@ -7,8 +7,12 @@ export const getMyReadableFlows = cache(async () => {
 
   const allFlows = await prisma.flow.findMany({
     include: {
-      nodes: true,
-      edges: true,
+      nodes: {
+        include: {
+          sources: true,
+          targets: true,
+        },
+      },
     },
   });
 

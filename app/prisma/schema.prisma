@@ -410,22 +410,29 @@ model Flow {
     id    String     @id
     name  String
     nodes FlowNode[]
-    edges FlowEdge[]
 }
 
 model FlowNode {
-    id          String       @id @default(cuid())
-    flowId      String
-    flow        Flow         @relation(fields: [flowId], references: [id], onDelete: Cascade)
-    positionX   Float
-    positionY   Float
-    width       Float
-    height      Float
-    sourceNodes FlowEdge[]   @relation("sourceNodes")
-    targetNodes FlowEdge[]   @relation("targetNodes")
-    type        FlowNodeType
-    roleId      String?
-    role        Role?        @relation("flowNodes", fields: [roleId], references: [id], onDelete: SetNull)
+    id                     String             @id @default(cuid())
+    flowId                 String
+    flow                   Flow               @relation(fields: [flowId], references: [id], onDelete: Cascade)
+    positionX              Float
+    positionY              Float
+    width                  Float
+    height                 Float
+    sources                FlowEdge[]         @relation("sources")
+    targets                FlowEdge[]         @relation("targets")
+    type                   FlowNodeType
+    roleId                 String?
+    role                   Role?              @relation("flowNodes", fields: [roleId], references: [id], onDelete: SetNull)
+    roleImage              FlowNodeRoleImage?
+    backgroundColor        String?
+    backgroundTransparency Float?
+}
+
+enum FlowNodeRoleImage {
+    ICON
+    THUMBNAIL
 }
 
 enum FlowNodeType {
@@ -434,10 +441,11 @@ enum FlowNodeType {
 
 model FlowEdge {
     id           String   @id @default(cuid())
-    flowId       String
-    flow         Flow     @relation(fields: [flowId], references: [id], onDelete: Cascade)
-    sourceNodeId String
-    sourceNode   FlowNode @relation("sourceNodes", fields: [sourceNodeId], references: [id], onDelete: Cascade)
-    targetNodeId String
-    targetNode   FlowNode @relation("targetNodes", fields: [targetNodeId], references: [id], onDelete: Cascade)
+    type         String
+    sourceId     String
+    source       FlowNode @relation("sources", fields: [sourceId], references: [id], onDelete: Cascade)
+    sourceHandle String
+    targetId     String
+    target       FlowNode @relation("targets", fields: [targetId], references: [id], onDelete: Cascade)
+    targetHandle String
 }

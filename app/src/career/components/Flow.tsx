@@ -1,9 +1,8 @@
 "use client";
 
-import { env } from "@/env";
 import { createId } from "@paralleldrive/cuid2";
 import {
-  FlowNodeType,
+  FlowNodeRoleImage,
   type FlowEdge,
   type FlowNode,
   type Flow as FlowPrisma,
@@ -38,68 +37,38 @@ import { FaSave, FaSpinner } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
 import { z } from "zod";
 import { updateFlow } from "../actions/updateFlow";
+import { getInitialNodesAndEdges } from "../utils/getInitialNodesAndEdges";
+import { nodeTypes } from "../utils/nodeTypes";
 import { CreateNodeModal } from "./CreateNodeModal";
-import { RoleNode } from "./RoleNode";
-
-const nodeTypes = { role: RoleNode };
 
 const schema = z.discriminatedUnion("nodeType", [
   z.object({
     nodeType: z.literal("role"),
     roleId: z.string(),
+    roleImage: z.nativeEnum(FlowNodeRoleImage),
+    backgroundColor: z.string(),
+    backgroundTransparency: z.coerce.number().min(0).max(1),
   }),
   z.object({
     nodeType: z.literal("image"),
-    src: z.string(),
+    backgroundColor: z.string(),
+    backgroundTransparency: z.coerce.number().min(0).max(1),
   }),
 ]);
 
 type Props = Readonly<{
   className?: string;
   flow: FlowPrisma & {
-    nodes: FlowNode[];
-    edges: FlowEdge[];
+    nodes: (FlowNode & {
+      sources: FlowEdge[];
+      targets: FlowEdge[];
+    })[];
   };
   roles: Role[];
 }>;
 
 export const Flow = ({ className, flow, roles }: Props) => {
-  const initialNodes = flow.nodes.map((node) => {
-    let type: keyof typeof nodeTypes;
-    switch (node.type) {
-      case FlowNodeType.ROLE:
-        type = "role";
-        break;
-      default:
-        throw new Error("Invalid node type");
-    }
-
-    const role = roles.find((role) => role.id === node.roleId);
-    if (!role) throw new Error("Role not found");
-
-    return {
-      id: node.id,
-      type,
-      position: {
-        x: node.positionX,
-        y: node.positionY,
-      },
-      data: {
-        id: role.id,
-        name: role.name,
-        iconId: role.iconId,
-      },
-      width: node.width,
-      height: node.height,
-    };
-  });
-
-  const initialEdges = flow.edges.map((edge) => ({
-    id: edge.id,
-    type: "step",
-    source: edge.sourceNodeId,
-    target: edge.targetNodeId,
-  }));
+  const { initialNodes, initialEdges } = getInitialNodesAndEdges(flow, roles);
 
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
@@ -128,7 +97,9 @@ export const Flow = ({ className, flow, roles }: Props) => {
       const result = schema.safeParse({
         nodeType: formData.get("nodeType"),
         roleId: formData.get("roleId"),
-        src: formData.get("src"),
+        roleImage: formData.get("roleImage"),
+        backgroundColor: formData.get("backgroundColor"),
+        backgroundTransparency: formData.get("backgroundTransparency"),
       });
 
       if (!result.success) {
@@ -150,6 +121,10 @@ export const Flow = ({ className, flow, roles }: Props) => {
         }
 
         setNodes((nds) => {
+          // I don't know why this is required here if we are already checking this some lines above
+          if (result.data.nodeType !== "role")
+            throw new Error("Invalid node type");
+
           return applyNodeChanges(
             [
               {
@@ -161,11 +136,13 @@ export const Flow = ({ className, flow, roles }: Props) => {
                     x: 0,
                     y: 0,
                   },
+                  width: 100,
+                  height: 100,
                   data: {
-                    id: role.id,
-                    name: role.name,
-                    iconId: role.iconId,
-                    src: `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`,
+                    role,
+                    roleImage: result.data.roleImage,
+                    backgroundColor: result.data.backgroundColor,
+                    backgroundTransparency: result.data.backgroundTransparency,
                   },
                 },
               },
@@ -173,6 +150,8 @@ export const Flow = ({ className, flow, roles }: Props) => {
             nds,
           );
         });
+      } else if (result.data.nodeType === "image") {
+        // TODO: image
       }
     },
     [roles],
@@ -181,7 +160,7 @@ export const Flow = ({ className, flow, roles }: Props) => {
   const onSave: MouseEventHandler<HTMLButtonElement> = useCallback(() => {
     startTransition(async () => {
       try {
-        console.log(edges);
+        console.log(nodes);
         const formData = new FormData();
         formData.append("flowId", flow.id);
         formData.append("nodes", JSON.stringify(nodes));
@@ -220,8 +199,9 @@ export const Flow = ({ className, flow, roles }: Props) => {
         fitView
         className={className}
         defaultEdgeOptions={{
-          type: "step",
+          type: "smoothstep",
         }}
+        snapToGrid
       >
         <Background color="#444" variant={BackgroundVariant.Dots} />
 
