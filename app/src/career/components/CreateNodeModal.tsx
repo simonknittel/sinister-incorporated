@@ -2,7 +2,7 @@ import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
 import { RadioGroup } from "@/common/components/form/RadioGroup";
 import { Select } from "@/common/components/form/Select";
-import type { Role } from "@prisma/client";
+import { FlowNodeRoleImage, type Role } from "@prisma/client";
 import clsx from "clsx";
 import { useId, useState, type FormEventHandler } from "react";
 
@@ -20,7 +20,12 @@ export const CreateNodeModal = ({
   roles,
 }: Props) => {
   const [nodeType, setNodeType] = useState("role");
+  const [roleImage, setRoleImage] = useState<keyof typeof FlowNodeRoleImage>(
+    FlowNodeRoleImage.ICON,
+  );
   const roleInputId = useId();
+  const backgroundColorInputId = useId();
+  const backgroundTransparencyInputId = useId();
 
   return (
     <Modal
@@ -61,8 +66,53 @@ export const CreateNodeModal = ({
                 </option>
               ))}
             </Select>
+
+            <p className="mt-6">Bild</p>
+            <RadioGroup
+              name="roleImage"
+              items={[
+                {
+                  value: FlowNodeRoleImage.ICON,
+                  label: "Icon",
+                },
+                {
+                  value: FlowNodeRoleImage.THUMBNAIL,
+                  label: "Thumbnail",
+                },
+              ]}
+              value={roleImage}
+              // @ts-expect-error Don't know how to fix this
+              onChange={setRoleImage}
+              className="mt-2"
+            />
           </>
         )}
+
+        <label htmlFor={backgroundColorInputId} className="mt-6 block">
+          Hintergrundfarbe
+        </label>
+        <div className="flex gap-4 items-center mt-2">
+          <input
+            type="color"
+            name="backgroundColor"
+            id={backgroundColorInputId}
+            defaultValue="#262626"
+          />
+
+          <div className="flex gap-1 items-baseline">
+            <Select
+              name="backgroundTransparency"
+              id={backgroundTransparencyInputId}
+              defaultValue="1"
+            >
+              <option value="0">0%</option>
+              <option value="0.25">25%</option>
+              <option value="0.5">50%</option>
+              <option value="0.75">75%</option>
+              <option value="1">100%</option>
+            </Select>
+          </div>
+        </div>
 
         <div className="flex justify-end mt-8">
           <Button type="submit">Hinzufügen</Button>

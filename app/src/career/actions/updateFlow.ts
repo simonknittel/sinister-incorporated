@@ -3,7 +3,7 @@
 import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
-import { FlowNodeType } from "@prisma/client";
+import { FlowNodeRoleImage, FlowNodeType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
@@ -18,7 +18,12 @@ const nodesSchema = z.array(
         y: z.number(),
       }),
       data: z.object({
-        id: z.string().cuid(),
+        role: z.object({
+          id: z.string().cuid(),
+        }),
+        roleImage: z.nativeEnum(FlowNodeRoleImage),
+        backgroundColor: z.string().optional(),
+        backgroundTransparency: z.number().min(0).max(1).optional(),
       }),
       measured: z.object({
         width: z.number(),
@@ -26,14 +31,17 @@ const nodesSchema = z.array(
       }),
     }),
   ]),
+  // TODO: image
 );
 
 const edgesSchema = z.array(
   z.object({
     id: z.string(),
-    type: z.literal("step"),
+    type: z.string(),
     source: z.string().cuid2(),
+    sourceHandle: z.string(),
     target: z.string().cuid2(),
+    targetHandle: z.string(),
   }),
 );
 
@@ -61,6 +69,7 @@ export const updateFlow = async (formData: FormData) => {
         error: "Ungültige Anfrage",
       };
     }
+    console.log(nodes);
     const result = schema.safeParse({
       flowId: formData.get("flowId"),
       nodes: JSON.parse(nodes as string) as unknown,
@@ -87,12 +96,6 @@ export const updateFlow = async (formData: FormData) => {
      * Update flow
      */
     await prisma.$transaction([
-      prisma.flowEdge.deleteMany({
-        where: {
-          flowId: result.data.flowId,
-        },
-      }),
-
       prisma.flowNode.deleteMany({
         where: {
           flowId: result.data.flowId,
@@ -118,7 +121,10 @@ export const updateFlow = async (formData: FormData) => {
             positionY: node.position.y,
             width: node.measured.width,
             height: node.measured.height,
-            roleId: node.data.id,
+            roleId: node.data.role.id,
+            roleImage: node.data.roleImage,
+            backgroundColor: node.data.backgroundColor,
+            backgroundTransparency: node.data.backgroundTransparency,
           };
         }),
       }),
@@ -126,9 +132,11 @@ export const updateFlow = async (formData: FormData) => {
       prisma.flowEdge.createMany({
         data: result.data.edges.map((edge) => ({
           id: edge.id,
-          flowId: result.data.flowId,
-          sourceNodeId: edge.source,
-          targetNodeId: edge.target,
+          type: edge.type,
+          sourceId: edge.source,
+          sourceHandle: edge.sourceHandle,
+          targetId: edge.target,
+          targetHandle: edge.targetHandle,
         })),
       }),
     ]);

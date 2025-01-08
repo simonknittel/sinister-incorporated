@@ -1,7 +1,7 @@
 "use client";
 
 import { env } from "@/env";
-import type { Role } from "@prisma/client";
+import { FlowNodeRoleImage, type Role } from "@prisma/client";
 import {
   Handle,
   NodeResizer,
@@ -17,13 +17,15 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { FaTrash } from "react-icons/fa6";
 import { IoMdResize } from "react-icons/io";
+import { getBackground } from "../utils/getBackground";
 
 export type RoleNode = Node<
   {
-    id: Role["id"];
-    name: Role["name"];
-    iconId: Role["iconId"];
+    role: Role;
+    roleImage: FlowNodeRoleImage;
     unlocked: boolean;
+    backgroundColor: string;
+    backgroundTransparency: number;
   },
   "role"
 >;
@@ -37,6 +39,16 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
     setNodes((nodes) => nodes.filter((node) => node.id !== nodeId));
     setEdges((edges) => edges.filter((edge) => edge.source !== nodeId));
   }, [nodeId, setNodes, setEdges]);
+
+  const backgroundColor = getBackground(
+    props.data.backgroundColor,
+    props.data.backgroundTransparency,
+  );
+
+  const imageSrc =
+    props.data.roleImage === FlowNodeRoleImage.THUMBNAIL
+      ? `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.role.thumbnailId}`
+      : `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.role.iconId}`;
 
   return (
     <>
@@ -69,21 +81,26 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
 
       <div
         className={clsx("bg-neutral-800 rounded h-full p-4", {
-          "grayscale hover:grayscale-0": !props.data.unlocked,
+          // "grayscale hover:grayscale-0": !props.data.unlocked,
         })}
+        style={{
+          backgroundColor,
+        }}
       >
         <Image
-          src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.iconId}`}
-          alt={props.data.name}
-          title={props.data.name}
+          src={imageSrc}
+          alt={props.data.role.name}
+          title={props.data.role.name}
           width={100}
           height={100}
           className="object-contain object-center w-full h-full"
         />
       </div>
 
-      <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Bottom} />
+      <Handle id="left" type="source" position={Position.Left} />
+      <Handle id="right" type="source" position={Position.Right} />
+      <Handle id="top" type="target" position={Position.Top} />
+      <Handle id="bottom" type="source" position={Position.Bottom} />
     </>
   );
 };
