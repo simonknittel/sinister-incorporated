@@ -163,7 +163,6 @@ export const Flow = ({ className, flow, roles }: Props) => {
   const onSave: MouseEventHandler<HTMLButtonElement> = useCallback(() => {
     startTransition(async () => {
       try {
-        console.log(nodes);
         const formData = new FormData();
         formData.append("flowId", flow.id);
         formData.append("nodes", JSON.stringify(nodes));
