@@ -2,8 +2,10 @@ import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
 import { RadioGroup } from "@/common/components/form/RadioGroup";
 import { Select } from "@/common/components/form/Select";
+import { env } from "@/env";
 import { FlowNodeRoleImage, type Role } from "@prisma/client";
 import clsx from "clsx";
+import Image from "next/image";
 import { useId, useState, type FormEventHandler } from "react";
 
 type Props = Readonly<{
@@ -20,12 +22,15 @@ export const CreateNodeModal = ({
   roles,
 }: Props) => {
   const [nodeType, setNodeType] = useState("role");
+  const [roleId, setRoleId] = useState<Role["id"]>(roles[0].id);
   const [roleImage, setRoleImage] = useState<keyof typeof FlowNodeRoleImage>(
     FlowNodeRoleImage.ICON,
   );
   const roleInputId = useId();
   const backgroundColorInputId = useId();
   const backgroundTransparencyInputId = useId();
+
+  const role = roles.find((role) => role.id === roleId);
 
   return (
     <Modal
@@ -59,7 +64,12 @@ export const CreateNodeModal = ({
             <label htmlFor={roleInputId} className="mt-6 block">
               Rolle
             </label>
-            <Select name="roleId" className="mt-2">
+            <Select
+              name="roleId"
+              className="mt-2"
+              value={roleId}
+              onChange={(e) => setRoleId(e.target.value)}
+            >
               {roles.map((role) => (
                 <option key={role.id} value={role.id}>
                   {role.name}
@@ -85,6 +95,24 @@ export const CreateNodeModal = ({
               onChange={setRoleImage}
               className="mt-2"
             />
+            {roleImage === FlowNodeRoleImage.ICON && role && (
+              <Image
+                src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
+                alt=""
+                width={128}
+                height={128}
+                className="mt-2 size-32 border border-neutral-700 rounded object-contain object-center"
+              />
+            )}
+            {roleImage === FlowNodeRoleImage.THUMBNAIL && role && (
+              <Image
+                src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.thumbnailId}`}
+                alt=""
+                width={228}
+                height={128}
+                className="mt-2 w-[228px] h-32 border border-neutral-700 rounded object-contain object-center"
+              />
+            )}
           </>
         )}
 
