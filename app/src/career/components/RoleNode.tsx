@@ -33,7 +33,7 @@ export type RoleNode = Node<
 export const RoleNode = (props: NodeProps<RoleNode>) => {
   const nodeId = useNodeId();
   const { setNodes, setEdges } = useReactFlow();
-  const [isResizing, setIsResizing] = useState(true);
+  const [isResizing, setIsResizing] = useState(false);
 
   const onDelete = useCallback(() => {
     setNodes((nodes) => nodes.filter((node) => node.id !== nodeId));
