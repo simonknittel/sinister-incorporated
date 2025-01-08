@@ -136,7 +136,10 @@ export const Flow = ({ className, flow, roles }: Props) => {
                     x: 0,
                     y: 0,
                   },
-                  width: 100,
+                  width:
+                    result.data.roleImage === FlowNodeRoleImage.THUMBNAIL
+                      ? 178
+                      : 100,
                   height: 100,
                   data: {
                     role,
