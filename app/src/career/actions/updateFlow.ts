@@ -69,7 +69,6 @@ export const updateFlow = async (formData: FormData) => {
         error: "Ungültige Anfrage",
       };
     }
-    console.log(nodes);
     const result = schema.safeParse({
       flowId: formData.get("flowId"),
       nodes: JSON.parse(nodes as string) as unknown,
