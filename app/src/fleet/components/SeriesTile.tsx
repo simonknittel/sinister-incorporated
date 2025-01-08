@@ -60,6 +60,7 @@ export const SeriesTile = async ({ className, manufacturerId }: Props) => {
                   <Link
                     href={`/app/fleet/settings/manufacturer/${manufacturerId}/series/${row.id}`}
                     className="text-sinister-red-500 hover:text-sinister-red-300"
+                    prefetch={false}
                   >
                     {row.name}
                   </Link>

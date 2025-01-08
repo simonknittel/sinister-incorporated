@@ -25,9 +25,10 @@ export const RolesTile = async ({ className }: Props) => {
           key={role.id}
           href={`/app/roles/${role.id}`}
           className="flex items-center gap-2 hover:bg-neutral-800 p-2 rounded"
+          prefetch={false}
         >
-          {role.iconId && (
-            <div className="aspect-square w-8 h-8 flex items-center justify-center rounded overflow-hidden">
+          {role.iconId ? (
+            <div className="aspect-square size-8 flex items-center justify-center rounded overflow-hidden">
               <Image
                 src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
                 alt=""
@@ -36,6 +37,8 @@ export const RolesTile = async ({ className }: Props) => {
                 className="max-w-full max-h-full"
               />
             </div>
+          ) : (
+            <div className="size-8" />
           )}
 
           <p className="font-bold">{role.name}</p>

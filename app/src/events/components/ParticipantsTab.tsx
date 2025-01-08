@@ -107,6 +107,7 @@ export const ParticipantsTab = async ({ className, event }: Props) => {
                                 authentication.session.entityId,
                             },
                           )}
+                          prefetch={false}
                         >
                           <span className="flex items-center h-14">
                             <span className="overflow-hidden text-ellipsis">

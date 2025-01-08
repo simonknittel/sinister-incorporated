@@ -58,6 +58,7 @@ export const ManufacturersTile = async () => {
                   <Link
                     href={`/app/fleet/settings/manufacturer/${row.id}`}
                     className="text-sinister-red-500 hover:underline"
+                    prefetch={false}
                   >
                     {row.name}
                   </Link>
@@ -71,6 +72,7 @@ export const ManufacturersTile = async () => {
                         key={series.id}
                         href={`/app/fleet/settings/manufacturer/${row.id}/series/${series.id}`}
                         className="text-sinister-red-500 hover:underline"
+                        prefetch={false}
                       >
                         {series.name}
                       </Link>
