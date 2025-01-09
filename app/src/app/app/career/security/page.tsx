@@ -28,6 +28,13 @@ export default async function Page() {
 
   const roles = await getRoles();
 
+  const canUpdate = await authentication.authorize("career", "update", [
+    {
+      key: "flowId",
+      value: "security",
+    },
+  ]);
+
   return (
     <main className="p-4 pb-20 lg:p-8">
       <div className="flex justify-center">
@@ -38,7 +45,7 @@ export default async function Page() {
 
       <Suspense fallback={<SkeletonTile className="h-[1080px] mt-2" />}>
         <div className="h-[1080px] bg-neutral-800/50 rounded-2xl overflow-hidden text-black mt-2">
-          <Flow flow={flow} roles={roles} />
+          <Flow flow={flow} roles={roles} canUpdate={canUpdate} />
         </div>
       </Suspense>
     </main>

@@ -2,27 +2,28 @@
 
 import type { Role } from "@prisma/client";
 import type { ReactNode } from "react";
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useMemo } from "react";
 
 interface FlowContext {
   roles: Role[];
+  canUpdate: boolean;
 }
 
 const FlowContext = createContext<FlowContext | undefined>(undefined);
 
-interface Props {
+type Props = Readonly<{
   children: ReactNode;
   roles: Role[];
-}
+  canUpdate: boolean;
+}>;
 
-export const FlowProvider = ({ children, roles }: Readonly<Props>) => {
-  const [_roles] = useState(roles);
-
+export const FlowProvider = ({ children, roles, canUpdate }: Props) => {
   const value = useMemo(
     () => ({
-      roles: _roles,
+      roles,
+      canUpdate,
     }),
-    [_roles],
+    [roles, canUpdate],
   );
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;

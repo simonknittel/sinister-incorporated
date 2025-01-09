@@ -36,7 +36,7 @@ export type RoleNode = Node<
 >;
 
 export const RoleNode = (props: NodeProps<RoleNode>) => {
-  const { roles } = useFlowContext();
+  const { roles, canUpdate } = useFlowContext();
   const nodeId = useNodeId();
   const { setNodes, setEdges } = useReactFlow();
   const [isResizing, setIsResizing] = useState(false);
@@ -127,54 +127,56 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
 
   return (
     <>
-      <NodeToolbar
-        isVisible={true}
-        position={Position.Right}
-        align="start"
-        className="flex flex-col gap-2"
-      >
-        <button
-          title="Größe ändern"
-          type="button"
-          onClick={() => setIsResizing((value) => !value)}
-          className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+      {canUpdate && (
+        <NodeToolbar
+          isVisible={true}
+          position={Position.Right}
+          align="start"
+          className="flex flex-col gap-2"
         >
-          <IoMdResize />
-        </button>
+          <button
+            title="Größe ändern"
+            type="button"
+            onClick={() => setIsResizing((value) => !value)}
+            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+          >
+            <IoMdResize />
+          </button>
 
-        <button
-          onClick={onEdit}
-          type="button"
-          title="Bearbeiten"
-          className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
-        >
-          <FaPen />
-        </button>
+          <button
+            onClick={onEdit}
+            type="button"
+            title="Bearbeiten"
+            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+          >
+            <FaPen />
+          </button>
 
-        {isEditModalOpen && (
-          <CreateOrUpdateNodeModal
-            onRequestClose={onEdit}
-            onSubmit={onUpdate}
-            initialData={{
-              id: props.id,
-              type: FlowNodeType.ROLE,
-              roleId: props.data.role.id,
-              roleImage: props.data.roleImage,
-              backgroundColor: props.data.backgroundColor,
-              backgroundTransparency: props.data.backgroundTransparency,
-            }}
-          />
-        )}
+          {isEditModalOpen && (
+            <CreateOrUpdateNodeModal
+              onRequestClose={onEdit}
+              onSubmit={onUpdate}
+              initialData={{
+                id: props.id,
+                type: FlowNodeType.ROLE,
+                roleId: props.data.role.id,
+                roleImage: props.data.roleImage,
+                backgroundColor: props.data.backgroundColor,
+                backgroundTransparency: props.data.backgroundTransparency,
+              }}
+            />
+          )}
 
-        <button
-          onClick={onDelete}
-          type="button"
-          title="Löschen"
-          className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
-        >
-          <FaTrash />
-        </button>
-      </NodeToolbar>
+          <button
+            onClick={onDelete}
+            type="button"
+            title="Löschen"
+            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+          >
+            <FaTrash />
+          </button>
+        </NodeToolbar>
+      )}
 
       {isResizing && <NodeResizer minWidth={100} minHeight={100} />}
 
@@ -196,10 +198,30 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         />
       </div>
 
-      <Handle id="left" type="source" position={Position.Left} />
-      <Handle id="right" type="source" position={Position.Right} />
-      <Handle id="top" type="target" position={Position.Top} />
-      <Handle id="bottom" type="source" position={Position.Bottom} />
+      <Handle
+        id="left"
+        type="source"
+        position={Position.Left}
+        className={clsx({ "opacity-0": !canUpdate })}
+      />
+      <Handle
+        id="right"
+        type="source"
+        position={Position.Right}
+        className={clsx({ "opacity-0": !canUpdate })}
+      />
+      <Handle
+        id="top"
+        type="target"
+        position={Position.Top}
+        className={clsx({ "opacity-0": !canUpdate })}
+      />
+      <Handle
+        id="bottom"
+        type="source"
+        position={Position.Bottom}
+        className={clsx({ "opacity-0": !canUpdate })}
+      />
     </>
   );
 };
