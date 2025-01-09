@@ -231,7 +231,6 @@ export const MobileActionBar = async ({ className }: Props) => {
                       >
                         <TbMilitaryRank />
                         Karriere
-                        <Chip title="Proof of Concept">PoC</Chip>
                       </Link>
                     </li>
                   )}

@@ -1,8 +1,8 @@
 "use client";
 
-import { createId } from "@paralleldrive/cuid2";
 import {
   FlowNodeRoleImage,
+  FlowNodeType,
   type FlowEdge,
   type FlowNode,
   type Flow as FlowPrisma,
@@ -35,26 +35,11 @@ import {
 import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
-import { z } from "zod";
 import { updateFlow } from "../actions/updateFlow";
 import { getInitialNodesAndEdges } from "../utils/getInitialNodesAndEdges";
 import { nodeTypes } from "../utils/nodeTypes";
-import { CreateNodeModal } from "./CreateNodeModal";
-
-const schema = z.discriminatedUnion("nodeType", [
-  z.object({
-    nodeType: z.literal("role"),
-    roleId: z.string(),
-    roleImage: z.nativeEnum(FlowNodeRoleImage),
-    backgroundColor: z.string(),
-    backgroundTransparency: z.coerce.number().min(0).max(1),
-  }),
-  z.object({
-    nodeType: z.literal("image"),
-    backgroundColor: z.string(),
-    backgroundTransparency: z.coerce.number().min(0).max(1),
-  }),
-]);
+import { CreateOrUpdateNodeModal, schema } from "./CreateOrUpdateNodeModal";
+import { FlowProvider } from "./FlowContext";
 
 type Props = Readonly<{
   className?: string;
@@ -95,6 +80,7 @@ export const Flow = ({ className, flow, roles }: Props) => {
 
       const formData = new FormData(event.currentTarget);
       const result = schema.safeParse({
+        id: formData.get("id"),
         nodeType: formData.get("nodeType"),
         roleId: formData.get("roleId"),
         roleImage: formData.get("roleImage"),
@@ -104,25 +90,24 @@ export const Flow = ({ className, flow, roles }: Props) => {
 
       if (!result.success) {
         toast.error(
-          "Beim Hinzufügen ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
+          "Beim Speichern ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
         );
         console.error(result.error);
         return;
       }
 
-      if (result.data.nodeType === "role") {
-        // @ts-expect-error Don't know how to fix this
+      if (result.data.nodeType === FlowNodeType.ROLE) {
         const role = roles.find((role) => role.id === result.data.roleId);
         if (!role) {
           toast.error(
-            "Beim Hinzufügen ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
+            "Beim Speichern ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
           );
           return;
         }
 
         setNodes((nds) => {
           // I don't know why this is required here if we are already checking this some lines above
-          if (result.data.nodeType !== "role")
+          if (result.data.nodeType !== FlowNodeType.ROLE)
             throw new Error("Invalid node type");
 
           return applyNodeChanges(
@@ -130,8 +115,8 @@ export const Flow = ({ className, flow, roles }: Props) => {
               {
                 type: "add",
                 item: {
-                  id: createId(),
-                  type: "role",
+                  id: result.data.id,
+                  type: FlowNodeType.ROLE,
                   position: {
                     x: 0,
                     y: 0,
@@ -190,7 +175,7 @@ export const Flow = ({ className, flow, roles }: Props) => {
   // TODO: Map over nodes and add unlocked property
 
   return (
-    <>
+    <FlowProvider roles={roles}>
       <ReactFlow
         nodeTypes={nodeTypes}
         nodes={nodes}
@@ -207,7 +192,7 @@ export const Flow = ({ className, flow, roles }: Props) => {
       >
         <Background color="#444" variant={BackgroundVariant.Dots} />
 
-        <Controls position="top-left">
+        <Controls position="top-left" showInteractive={false}>
           <ControlButton
             onClick={() => setIsCreateNodeModalOpen(true)}
             title="Element hinzufügen"
@@ -222,12 +207,11 @@ export const Flow = ({ className, flow, roles }: Props) => {
       </ReactFlow>
 
       {isCreateNodeModalOpen && (
-        <CreateNodeModal
+        <CreateOrUpdateNodeModal
           onRequestClose={() => setIsCreateNodeModalOpen(false)}
           onSubmit={onCreate}
-          roles={roles}
         />
       )}
-    </>
+    </FlowProvider>
   );
 };

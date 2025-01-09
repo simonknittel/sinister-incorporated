@@ -1,8 +1,9 @@
 "use client";
 
 import { env } from "@/env";
-import { FlowNodeRoleImage, type Role } from "@prisma/client";
+import { FlowNodeRoleImage, FlowNodeType, type Role } from "@prisma/client";
 import {
+  applyNodeChanges,
   Handle,
   NodeResizer,
   NodeToolbar,
@@ -14,26 +15,98 @@ import {
 } from "@xyflow/react";
 import clsx from "clsx";
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback, useState, type FormEventHandler } from "react";
+import toast from "react-hot-toast";
+import { FaPen } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa6";
 import { IoMdResize } from "react-icons/io";
 import { getBackground } from "../utils/getBackground";
+import { CreateOrUpdateNodeModal, roleSchema } from "./CreateOrUpdateNodeModal";
+import { useFlowContext } from "./FlowContext";
 
 export type RoleNode = Node<
   {
     role: Role;
     roleImage: FlowNodeRoleImage;
-    unlocked: boolean;
     backgroundColor: string;
     backgroundTransparency: number;
+    unlocked: boolean;
   },
-  "role"
+  typeof FlowNodeType.ROLE
 >;
 
 export const RoleNode = (props: NodeProps<RoleNode>) => {
+  const { roles } = useFlowContext();
   const nodeId = useNodeId();
   const { setNodes, setEdges } = useReactFlow();
   const [isResizing, setIsResizing] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const onEdit = useCallback(() => {
+    setIsEditModalOpen((currentValue) => !currentValue);
+  }, []);
+
+  const onUpdate: FormEventHandler<HTMLFormElement> = useCallback(
+    (event) => {
+      event.preventDefault();
+      setIsEditModalOpen(false);
+
+      const formData = new FormData(event.currentTarget);
+      const result = roleSchema.safeParse({
+        id: formData.get("id"),
+        nodeType: formData.get("nodeType"),
+        roleId: formData.get("roleId"),
+        roleImage: formData.get("roleImage"),
+        backgroundColor: formData.get("backgroundColor"),
+        backgroundTransparency: formData.get("backgroundTransparency"),
+      });
+
+      if (!result.success) {
+        toast.error(
+          "Beim Speichern ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
+        );
+        console.error(result.error);
+        return;
+      }
+
+      const role = roles.find((role) => role.id === result.data.roleId);
+      if (!role) {
+        toast.error(
+          "Beim Speichern ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
+        );
+        return;
+      }
+
+      setNodes((nds) => {
+        return applyNodeChanges(
+          [
+            {
+              type: "replace",
+              id: props.id,
+              item: {
+                id: props.id,
+                type: props.type,
+                position: {
+                  x: props.positionAbsoluteX,
+                  y: props.positionAbsoluteY,
+                },
+                width: props.width,
+                height: props.height,
+                data: {
+                  role,
+                  roleImage: result.data.roleImage,
+                  backgroundColor: result.data.backgroundColor,
+                  backgroundTransparency: result.data.backgroundTransparency,
+                },
+              },
+            },
+          ],
+          nds,
+        );
+      });
+    },
+    [roles, setNodes, props],
+  );
 
   const onDelete = useCallback(() => {
     setNodes((nodes) => nodes.filter((node) => node.id !== nodeId));
@@ -68,6 +141,30 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         >
           <IoMdResize />
         </button>
+
+        <button
+          onClick={onEdit}
+          type="button"
+          title="Bearbeiten"
+          className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+        >
+          <FaPen />
+        </button>
+
+        {isEditModalOpen && (
+          <CreateOrUpdateNodeModal
+            onRequestClose={onEdit}
+            onSubmit={onUpdate}
+            initialData={{
+              id: props.id,
+              type: FlowNodeType.ROLE,
+              roleId: props.data.role.id,
+              roleImage: props.data.roleImage,
+              backgroundColor: props.data.backgroundColor,
+              backgroundTransparency: props.data.backgroundTransparency,
+            }}
+          />
+        )}
 
         <button
           onClick={onDelete}

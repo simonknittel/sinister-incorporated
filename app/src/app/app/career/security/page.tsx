@@ -3,7 +3,6 @@ import { Flow } from "@/career/components/Flow";
 import { Navigation } from "@/career/components/Navigation";
 import { getMyReadableFlows } from "@/career/queries";
 import { Hero } from "@/common/components/Hero";
-import Note from "@/common/components/Note";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { getRoles } from "@/roles/queries";
 import { type Metadata } from "next";
@@ -34,16 +33,6 @@ export default async function Page() {
       <div className="flex justify-center">
         <Hero text="Karriere" withGlitch />
       </div>
-
-      <Note
-        message={
-          <p>
-            Dies ist ein Proof of Concept. Es sind noch nicht alle Funktionen
-            implementiert und es kann zu Fehlern kommen.
-          </p>
-        }
-        className="mt-8 mx-auto"
-      />
 
       <Navigation flows={flows} className="mt-2" />
 

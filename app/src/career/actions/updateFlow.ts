@@ -11,12 +11,14 @@ import { z } from "zod";
 const nodesSchema = z.array(
   z.discriminatedUnion("type", [
     z.object({
-      type: z.enum(["role"]),
+      type: z.nativeEnum(FlowNodeType),
       id: z.string().cuid2(),
       position: z.object({
         x: z.number(),
         y: z.number(),
       }),
+      width: z.number(),
+      height: z.number(),
       data: z.object({
         role: z.object({
           id: z.string().cuid(),
@@ -24,10 +26,6 @@ const nodesSchema = z.array(
         roleImage: z.nativeEnum(FlowNodeRoleImage),
         backgroundColor: z.string().optional(),
         backgroundTransparency: z.number().min(0).max(1).optional(),
-      }),
-      measured: z.object({
-        width: z.number(),
-        height: z.number(),
       }),
     }),
   ]),
@@ -103,23 +101,14 @@ export const updateFlow = async (formData: FormData) => {
 
       prisma.flowNode.createMany({
         data: result.data.nodes.map((node) => {
-          let type: FlowNodeType;
-          switch (node.type) {
-            case "role":
-              type = FlowNodeType.ROLE;
-              break;
-            default:
-              throw new Error("Invalid node type");
-          }
-
           return {
             id: node.id,
             flowId: result.data.flowId,
-            type,
+            type: node.type,
             positionX: node.position.x,
             positionY: node.position.y,
-            width: node.measured.width,
-            height: node.measured.height,
+            width: node.width,
+            height: node.height,
             roleId: node.data.role.id,
             roleImage: node.data.roleImage,
             backgroundColor: node.data.backgroundColor,

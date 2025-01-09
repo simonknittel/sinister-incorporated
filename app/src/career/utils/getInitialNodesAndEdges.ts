@@ -56,7 +56,7 @@ const getNodeTypeRole = (node: FlowNode, roles: Role[]) => {
 
   return {
     id: node.id,
-    type: "role",
+    type: FlowNodeType.ROLE,
     position: {
       x: node.positionX,
       y: node.positionY,
