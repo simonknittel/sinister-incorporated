@@ -50,9 +50,10 @@ type Props = Readonly<{
     })[];
   };
   roles: Role[];
+  canUpdate?: boolean;
 }>;
 
-export const Flow = ({ className, flow, roles }: Props) => {
+export const Flow = ({ className, flow, roles, canUpdate = false }: Props) => {
   const { initialNodes, initialEdges } = getInitialNodesAndEdges(flow, roles);
 
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
@@ -175,7 +176,7 @@ export const Flow = ({ className, flow, roles }: Props) => {
   // TODO: Map over nodes and add unlocked property
 
   return (
-    <FlowProvider roles={roles}>
+    <FlowProvider roles={roles} canUpdate={canUpdate}>
       <ReactFlow
         nodeTypes={nodeTypes}
         nodes={nodes}
@@ -189,20 +190,33 @@ export const Flow = ({ className, flow, roles }: Props) => {
           type: "smoothstep",
         }}
         snapToGrid
+        nodesDraggable={canUpdate}
+        nodesConnectable={canUpdate}
+        nodesFocusable={canUpdate}
+        edgesFocusable={canUpdate}
+        elementsSelectable={canUpdate}
       >
         <Background color="#444" variant={BackgroundVariant.Dots} />
 
         <Controls position="top-left" showInteractive={false}>
-          <ControlButton
-            onClick={() => setIsCreateNodeModalOpen(true)}
-            title="Element hinzufügen"
-          >
-            <FaPlus />
-          </ControlButton>
+          {canUpdate && (
+            <>
+              <ControlButton
+                onClick={() => setIsCreateNodeModalOpen(true)}
+                title="Element hinzufügen"
+              >
+                <FaPlus />
+              </ControlButton>
 
-          <ControlButton onClick={onSave} title="Speichern">
-            {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
-          </ControlButton>
+              <ControlButton onClick={onSave} title="Speichern">
+                {isPending ? (
+                  <FaSpinner className="animate-spin" />
+                ) : (
+                  <FaSave />
+                )}
+              </ControlButton>
+            </>
+          )}
         </Controls>
       </ReactFlow>
 
