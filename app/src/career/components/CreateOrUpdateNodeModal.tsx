@@ -3,28 +3,57 @@ import Modal from "@/common/components/Modal";
 import { RadioGroup } from "@/common/components/form/RadioGroup";
 import { Select } from "@/common/components/form/Select";
 import { env } from "@/env";
-import { FlowNodeRoleImage, type Role } from "@prisma/client";
+import { createId } from "@paralleldrive/cuid2";
+import { FlowNodeRoleImage, FlowNodeType, type Role } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 import { useId, useState, type FormEventHandler } from "react";
+import { z } from "zod";
+import { useFlowContext } from "./FlowContext";
+
+export const roleSchema = z.object({
+  id: z.string().cuid2(),
+  nodeType: z.literal(FlowNodeType.ROLE),
+  roleId: z.string(),
+  roleImage: z.nativeEnum(FlowNodeRoleImage),
+  backgroundColor: z.string(),
+  backgroundTransparency: z.coerce.number().min(0).max(1),
+});
+
+export const schema = z.discriminatedUnion("nodeType", [
+  roleSchema,
+  // TODO: image
+]);
 
 type Props = Readonly<{
   className?: string;
   onRequestClose: () => void;
   onSubmit: FormEventHandler<HTMLFormElement>;
-  roles: Role[];
+  initialData?: {
+    id: string;
+    type: FlowNodeType;
+    roleId: Role["id"];
+    roleImage: FlowNodeRoleImage;
+    backgroundColor: string;
+    backgroundTransparency: number;
+  };
 }>;
 
-export const CreateNodeModal = ({
+export const CreateOrUpdateNodeModal = ({
   className,
   onRequestClose,
   onSubmit,
-  roles,
+  initialData,
 }: Props) => {
-  const [nodeType, setNodeType] = useState("role");
-  const [roleId, setRoleId] = useState<Role["id"]>(roles[0].id);
+  const { roles } = useFlowContext();
+  const [nodeType, setNodeType] = useState<string>(
+    initialData?.type || FlowNodeType.ROLE,
+  );
+  const [roleId, setRoleId] = useState<Role["id"]>(
+    initialData?.roleId || roles[0].id,
+  );
   const [roleImage, setRoleImage] = useState<keyof typeof FlowNodeRoleImage>(
-    FlowNodeRoleImage.ICON,
+    initialData?.roleImage || FlowNodeRoleImage.ICON,
   );
   const roleInputId = useId();
   const backgroundColorInputId = useId();
@@ -38,15 +67,23 @@ export const CreateNodeModal = ({
       onRequestClose={onRequestClose}
       className={clsx("w-[480px]", className)}
     >
-      <h2 className="text-xl font-bold">Element hinzufügen</h2>
+      <h2 className="text-xl font-bold">
+        Element {initialData ? "bearbeiten" : "hinzufügen"}
+      </h2>
 
       <form onSubmit={onSubmit} className="mt-6">
+        <input
+          name="id"
+          type="hidden"
+          defaultValue={initialData?.id || createId()}
+        />
+
         <p>Typ</p>
         <RadioGroup
           name="nodeType"
           items={[
             {
-              value: "role",
+              value: FlowNodeType.ROLE,
               label: "Rolle",
             },
             // {
@@ -59,7 +96,7 @@ export const CreateNodeModal = ({
           className="mt-2"
         />
 
-        {nodeType === "role" && (
+        {nodeType === FlowNodeType.ROLE && (
           <>
             <label htmlFor={roleInputId} className="mt-6 block">
               Rolle
@@ -124,14 +161,16 @@ export const CreateNodeModal = ({
             type="color"
             name="backgroundColor"
             id={backgroundColorInputId}
-            defaultValue="#262626"
+            defaultValue={initialData?.backgroundColor || "#262626"}
           />
 
           <div className="flex gap-1 items-baseline">
             <Select
               name="backgroundTransparency"
               id={backgroundTransparencyInputId}
-              defaultValue="1"
+              defaultValue={
+                initialData?.backgroundTransparency.toString() || "1"
+              }
             >
               <option value="0">0%</option>
               <option value="0.25">25%</option>
@@ -143,7 +182,7 @@ export const CreateNodeModal = ({
         </div>
 
         <div className="flex justify-end mt-8">
-          <Button type="submit">Hinzufügen</Button>
+          <Button type="submit">Speichern</Button>
         </div>
       </form>
     </Modal>

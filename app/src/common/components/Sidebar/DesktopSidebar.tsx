@@ -192,7 +192,6 @@ export const DesktopSidebar = async () => {
                   >
                     <TbMilitaryRank />
                     Karriere
-                    <Chip title="Proof of Concept">PoC</Chip>
                   </Link>
                 </li>
               )}
