@@ -1,7 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import { SingleRole } from "@/common/components/SingleRole";
-import { getAssignableRoles } from "@/common/utils/getAssignableRoles";
-import { getAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
+import { getAssignableRoles } from "@/roles/utils/getAssignableRoles";
+import { getAssignedAndVisibleRoles } from "@/roles/utils/getAssignedAndVisibleRoles";
 import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import { FaLock } from "react-icons/fa";

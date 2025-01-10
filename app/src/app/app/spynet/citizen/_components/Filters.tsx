@@ -1,7 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
-import getVisibleRoles from "@/common/utils/getVisibleRoles";
+import { getVisibleRoles } from "@/roles/utils/getVisibleRoles";
 import { Filter } from "@/spynet/components/Filter";
-import RoleFilter from "./RoleFilter";
+import { RoleFilter } from "./RoleFilter";
 import { UnknownsFilter } from "./UnknownsFilter";
 
 export const Filters = async () => {

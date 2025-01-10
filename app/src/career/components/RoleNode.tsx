@@ -25,13 +25,16 @@ import { CreateOrUpdateNodeModal, roleSchema } from "./CreateOrUpdateNodeModal";
 import { useFlowContext } from "./FlowContext";
 
 export type RoleNode = Node<
-  {
-    role: Role;
-    roleImage: FlowNodeRoleImage;
-    backgroundColor: string;
-    backgroundTransparency: number;
-    unlocked: boolean;
-  },
+  | {
+      redacted: true;
+    }
+  | {
+      role: Role;
+      roleImage: FlowNodeRoleImage;
+      backgroundColor: string;
+      backgroundTransparency: number;
+      unlocked: boolean;
+    },
   typeof FlowNodeType.ROLE
 >;
 
@@ -115,15 +118,20 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
     );
   }, [nodeId, setNodes, setEdges]);
 
-  const backgroundColor = getBackground(
-    props.data.backgroundColor,
-    props.data.backgroundTransparency,
-  );
+  const backgroundColor =
+    "redacted" in props.data
+      ? "rgb(38, 38, 38)"
+      : getBackground(
+          props.data.backgroundColor,
+          props.data.backgroundTransparency,
+        );
 
   const imageSrc =
-    props.data.roleImage === FlowNodeRoleImage.THUMBNAIL
-      ? `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.role.thumbnailId}`
-      : `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.role.iconId}`;
+    "redacted" in props.data
+      ? null
+      : props.data.roleImage === FlowNodeRoleImage.THUMBNAIL
+        ? `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.role.thumbnailId}`
+        : `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.role.iconId}`;
 
   return (
     <>
@@ -152,7 +160,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
             <FaPen />
           </button>
 
-          {isEditModalOpen && (
+          {isEditModalOpen && "role" in props.data && (
             <CreateOrUpdateNodeModal
               onRequestClose={onEdit}
               onSubmit={onUpdate}
@@ -181,21 +189,33 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
       {isResizing && <NodeResizer minWidth={100} minHeight={100} />}
 
       <div
-        className={clsx("bg-neutral-800 rounded h-full p-4", {
-          // "grayscale hover:grayscale-0": !props.data.unlocked,
-        })}
+        className={clsx(
+          "bg-neutral-800 rounded h-full p-4 flex justify-center items-center",
+          {
+            // "grayscale hover:grayscale-0": !props.data.unlocked,
+            "opacity-40": "redacted" in props.data,
+          },
+        )}
         style={{
           backgroundColor,
         }}
       >
-        <Image
-          src={imageSrc}
-          alt={props.data.role.name}
-          title={props.data.role.name}
-          width={100}
-          height={100}
-          className="object-contain object-center w-full h-full"
-        />
+        {"role" in props.data && (
+          <Image
+            src={imageSrc!}
+            alt={props.data.role.name}
+            title={props.data.role.name}
+            width={100}
+            height={100}
+            className="object-contain object-center w-full h-full"
+          />
+        )}
+
+        {"redacted" in props.data && (
+          <p className="text-sinister-red-500 font-bold border border-sinister-red-500 rounded px-2 py-1 inline-block text-xs">
+            Redacted
+          </p>
+        )}
       </div>
 
       <Handle

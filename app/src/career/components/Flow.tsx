@@ -173,8 +173,6 @@ export const Flow = ({ className, flow, roles, canUpdate = false }: Props) => {
     });
   }, [flow.id, nodes, edges]);
 
-  // TODO: Map over nodes and add unlocked property
-
   return (
     <FlowProvider roles={roles} canUpdate={canUpdate}>
       <ReactFlow
@@ -195,6 +193,7 @@ export const Flow = ({ className, flow, roles, canUpdate = false }: Props) => {
         nodesFocusable={canUpdate}
         edgesFocusable={canUpdate}
         elementsSelectable={canUpdate}
+        colorMode="dark"
       >
         <Background color="#444" variant={BackgroundVariant.Dots} />
 

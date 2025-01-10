@@ -7,7 +7,7 @@
  * need to use are documented accordingly near the end.
  */
 import { getServerAuthSession } from "@/auth/server";
-import { requireConfirmedEmailForTrpc } from "@/common/utils/emailConfirmation";
+import { requireConfirmedEmailForTrpc } from "@/auth/utils/emailConfirmation";
 import { prisma } from "@/db";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";

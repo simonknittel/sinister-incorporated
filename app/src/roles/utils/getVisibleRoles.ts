@@ -1,7 +1,8 @@
 import { requireAuthentication } from "@/auth/server";
 import { getRoles } from "@/roles/queries";
+import { cache } from "react";
 
-export default async function getVisibleRoles() {
+export const getVisibleRoles = cache(async () => {
   const authentication = await requireAuthentication();
 
   const allRoles = await getRoles();
@@ -26,4 +27,4 @@ export default async function getVisibleRoles() {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return visibleRoles;
-}
+});

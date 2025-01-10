@@ -1,7 +1,7 @@
 import { AdminEnabler } from "@/auth/components/AdminEnabler";
 import { authenticate } from "@/auth/server";
+import { requireConfirmedEmailForPage } from "@/auth/utils/emailConfirmation";
 import { Footer } from "@/common/components/Footer";
-import { requireConfirmedEmailForPage } from "@/common/utils/emailConfirmation";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";

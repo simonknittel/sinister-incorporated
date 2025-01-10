@@ -1,6 +1,6 @@
 import type { PermissionSet } from "@/auth/common";
 import { getPermissionSetsByRoles } from "@/auth/server";
-import { requestEmailConfirmation } from "@/common/utils/emailConfirmation";
+import { requestEmailConfirmation } from "@/auth/utils/emailConfirmation";
 import { prisma } from "@/db";
 import { env } from "@/env";
 import { log } from "@/logging";

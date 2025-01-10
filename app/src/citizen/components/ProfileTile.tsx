@@ -2,7 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
 import { Link } from "@/common/components/Link";
 import { SingleRole } from "@/common/components/SingleRole";
-import { getMyAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
+import { getMyAssignedAndVisibleRoles } from "@/roles/utils/getAssignedAndVisibleRoles";
 import clsx from "clsx";
 import { FaExternalLinkAlt } from "react-icons/fa";
 

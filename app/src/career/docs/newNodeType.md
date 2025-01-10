@@ -6,3 +6,4 @@
 4. Add to `onCreate` in `components/Flow.tsx`
 5. Add to `nodesSchema` and `prisma.flowNode.createMany` in `actions/updateFlow.ts`
 6. Add to `switch` in `utils/getInitialNodesAndEdges.ts`
+7. Add to `switch` in `utils/useNodes.ts`

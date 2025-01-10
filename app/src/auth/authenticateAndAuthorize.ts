@@ -3,7 +3,7 @@ import {
   requireConfirmedEmailForAction,
   requireConfirmedEmailForApi,
   requireConfirmedEmailForPage,
-} from "@/common/utils/emailConfirmation";
+} from "@/auth/utils/emailConfirmation";
 import { log } from "@/logging";
 import { getServerSession, type Session } from "next-auth";
 import { cookies } from "next/headers";

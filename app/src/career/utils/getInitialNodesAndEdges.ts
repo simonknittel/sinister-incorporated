@@ -52,7 +52,15 @@ export const getInitialNodesAndEdges = (
 
 const getNodeTypeRole = (node: FlowNode, roles: Role[]) => {
   const role = roles.find((role) => role.id === node.roleId);
-  if (!role) throw new Error("Role not found");
+
+  const data = role
+    ? {
+        role,
+        roleImage: node.roleImage,
+        backgroundColor: node.backgroundColor,
+        backgroundTransparency: node.backgroundTransparency,
+      }
+    : { redacted: true };
 
   return {
     id: node.id,
@@ -61,12 +69,7 @@ const getNodeTypeRole = (node: FlowNode, roles: Role[]) => {
       x: node.positionX,
       y: node.positionY,
     },
-    data: {
-      role,
-      roleImage: node.roleImage,
-      backgroundColor: node.backgroundColor,
-      backgroundTransparency: node.backgroundTransparency,
-    },
+    data,
     width: node.width,
     height: node.height,
   };
