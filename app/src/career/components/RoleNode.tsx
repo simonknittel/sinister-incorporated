@@ -118,6 +118,8 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
     );
   }, [nodeId, setNodes, setEdges]);
 
+  const unlocked = "unlocked" in props.data && props.data.unlocked;
+
   const backgroundColor =
     "redacted" in props.data
       ? "rgb(38, 38, 38)"
@@ -192,9 +194,8 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         className={clsx(
           "bg-neutral-800 rounded h-full p-4 flex justify-center items-center",
           {
-            "grayscale hover:grayscale-0":
-              "unlocked" in props.data && props.data.unlocked,
-            "opacity-40": "redacted" in props.data,
+            grayscale: !unlocked,
+            "opacity-40 grayscale-0": "redacted" in props.data,
           },
         )}
         style={{

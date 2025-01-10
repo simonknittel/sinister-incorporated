@@ -50,11 +50,22 @@ type Props = Readonly<{
     })[];
   };
   roles: Role[];
+  assignedRoles: Role[];
   canUpdate?: boolean;
 }>;
 
-export const Flow = ({ className, flow, roles, canUpdate = false }: Props) => {
-  const { initialNodes, initialEdges } = getInitialNodesAndEdges(flow, roles);
+export const Flow = ({
+  className,
+  flow,
+  roles,
+  canUpdate = false,
+  assignedRoles,
+}: Props) => {
+  const { initialNodes, initialEdges } = getInitialNodesAndEdges(
+    flow,
+    roles,
+    assignedRoles,
+  );
 
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
