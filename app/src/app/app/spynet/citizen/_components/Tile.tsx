@@ -1,7 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
 import { getCitizen } from "@/citizen/queries";
-import { getAssignableRoles } from "@/common/utils/getAssignableRoles";
-import { getAssignedAndVisibleRoles } from "@/common/utils/getAssignedAndVisibleRoles";
 import { getLastSeenAt } from "@/common/utils/getLastSeenAt";
 import {
   getCurrentPageFromSearchParams,
@@ -12,6 +10,8 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "@/common/utils/sorting";
+import { getAssignableRoles } from "@/roles/utils/getAssignableRoles";
+import { getAssignedAndVisibleRoles } from "@/roles/utils/getAssignedAndVisibleRoles";
 import Pagination from "@/spynet/components/Pagination";
 import clsx from "clsx";
 import { Filters } from "./Filters";

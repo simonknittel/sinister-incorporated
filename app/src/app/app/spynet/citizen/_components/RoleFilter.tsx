@@ -14,11 +14,11 @@ interface FormValues {
   values: string[];
 }
 
-interface Props {
+type Props = Readonly<{
   roles: Role[];
-}
+}>;
 
-const RoleFilter = ({ roles }: Readonly<Props>) => {
+export const RoleFilter = ({ roles }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -100,5 +100,3 @@ const RoleFilter = ({ roles }: Readonly<Props>) => {
     </form>
   );
 };
-
-export default RoleFilter;

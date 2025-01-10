@@ -6,8 +6,8 @@ import { TRPCError } from "@trpc/server";
 import { type Session } from "next-auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { dedupedGetUnleashFlag } from "./getUnleashFlag";
-import { sendEmailV2 } from "./sendEmail";
+import { dedupedGetUnleashFlag } from "../../common/utils/getUnleashFlag";
+import { sendEmailV2 } from "../../common/utils/sendEmail";
 
 export const requestEmailConfirmation = async (
   userId: string,

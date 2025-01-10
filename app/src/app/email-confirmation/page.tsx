@@ -1,9 +1,9 @@
 import { requestEmailConfirmationAction } from "@/auth/actions/requestEmailConfirmationAction";
 import { AdminEnabler } from "@/auth/components/AdminEnabler";
 import { authenticate } from "@/auth/server";
+import { requiresEmailConfirmation } from "@/auth/utils/emailConfirmation";
 import { Footer } from "@/common/components/Footer";
 import { Link } from "@/common/components/Link";
-import { requiresEmailConfirmation } from "@/common/utils/emailConfirmation";
 import type { NextjsSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { log } from "@/logging";
 import { type Metadata } from "next";

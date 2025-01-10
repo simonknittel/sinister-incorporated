@@ -4,36 +4,74 @@ import { Navigation } from "@/career/components/Navigation";
 import { getMyReadableFlows } from "@/career/queries";
 import { Hero } from "@/common/components/Hero";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { log } from "@/logging";
 import { getRoles } from "@/roles/queries";
+import { getVisibleRoles } from "@/roles/utils/getVisibleRoles";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { serializeError } from "serialize-error";
 
-export const metadata: Metadata = {
-  title: "Security - Karriere | S.A.M. - Sinister Incorporated",
-};
+type Params = Promise<
+  Readonly<{
+    flowId: string;
+  }>
+>;
 
-export default async function Page() {
+export async function generateMetadata(props: {
+  params: Params;
+}): Promise<Metadata> {
+  try {
+    const flowId = (await props.params).flowId;
+    const flows = await getMyReadableFlows();
+    const flow = flows.find((flow) => flow.id === flowId);
+    if (!flow) {
+    }
+
+    return {
+      title: `${flow?.name} - Karriere | S.A.M. - Sinister Incorporated`,
+    };
+  } catch (error) {
+    void log.error(
+      "Error while generating metadata for /app/career/[flowId]/page.tsx",
+      {
+        error: serializeError(error),
+      },
+    );
+
+    return {
+      title: `Error | S.A.M. - Sinister Incorporated`,
+    };
+  }
+}
+
+type Props = Readonly<{
+  params: Params;
+}>;
+
+export default async function Page({ params }: Props) {
+  const { flowId } = await params;
+
   const authentication = await authenticatePage("/app/career");
   await authentication.authorizePage("career", "read", [
     {
       key: "flowId",
-      value: "security",
+      value: flowId,
     },
   ]);
 
   const flows = await getMyReadableFlows();
-  const flow = flows.find((flow) => flow.id === "security");
+  const flow = flows.find((flow) => flow.id === flowId);
   if (!flow) notFound();
-
-  const roles = await getRoles();
 
   const canUpdate = await authentication.authorize("career", "update", [
     {
       key: "flowId",
-      value: "security",
+      value: flowId,
     },
   ]);
+
+  const roles = canUpdate ? await getRoles() : await getVisibleRoles();
 
   return (
     <main className="p-4 pb-20 lg:p-8">

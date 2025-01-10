@@ -1,7 +1,7 @@
 "use server";
 
 import { authenticate } from "@/auth/server";
-import { requestEmailConfirmation } from "@/common/utils/emailConfirmation";
+import { requestEmailConfirmation } from "@/auth/utils/emailConfirmation";
 import { log } from "@/logging";
 import { redirect } from "next/navigation";
 import { serializeError } from "serialize-error";
