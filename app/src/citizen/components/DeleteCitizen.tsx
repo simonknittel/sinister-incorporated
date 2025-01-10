@@ -33,7 +33,7 @@ export const DeleteCitizen = ({ entity }: Props) => {
       });
 
       if (response.ok) {
-        router.push("/app/spynet/search");
+        router.push("/app/spynet");
         toast.success("Erfolgreich gelöscht");
       } else {
         toast.error("Beim Löschen ist ein Fehler aufgetreten.");

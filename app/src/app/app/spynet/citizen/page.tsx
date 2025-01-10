@@ -33,7 +33,7 @@ export default async function Page({ searchParams }: Props) {
     <main className="p-4 pb-20 lg:p-8">
       <div className="flex gap-2 font-bold text-xl">
         <Link
-          href="/app/spynet/search"
+          href="/app/spynet"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
         >
           Spynet
