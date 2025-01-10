@@ -1,5 +1,5 @@
-import { RolesCell } from "@/app/app/spynet/citizen/_components/RolesCell";
 import { requireAuthentication } from "@/auth/server";
+import { RolesCell } from "@/citizen/components/RolesCell";
 import { Link } from "@/common/components/Link";
 import { type getEvent } from "@/discord/utils/getEvent";
 import type { memberSchema, userSchema } from "@/discord/utils/schemas";
@@ -95,7 +95,7 @@ export const ParticipantsTab = async ({ className, event }: Props) => {
                     >
                       <td className="h-full min-h-14">
                         <Link
-                          href={`/app/spynet/entity/${user.entity!.id}`}
+                          href={`/app/spynet/citizen/${user.entity!.id}`}
                           className={clsx(
                             "hover:bg-neutral-800 block rounded px-2 h-full",
                             {

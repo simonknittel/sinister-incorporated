@@ -7,7 +7,7 @@ import {
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import { Tile } from "./_components/Tile";
+import { CitizenTableTile } from "../../../../citizen/components/CitizenTableTile";
 
 export const revalidate = 0; // TODO: Revert to 60
 
@@ -45,7 +45,7 @@ export default async function Page({ searchParams }: Props) {
       </div>
 
       <Suspense fallback={<SkeletonTile className="mt-4" />}>
-        <Tile searchParams={urlSearchParams} className="mt-4" />
+        <CitizenTableTile searchParams={urlSearchParams} className="mt-4" />
       </Suspense>
     </main>
   );

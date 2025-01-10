@@ -14,7 +14,7 @@ export const SpynetSearchResultEntry = ({ hit, onSelect }: Props) => {
     return (
       <Command.Item
         onSelect={() => {
-          router.push(`/app/spynet/entity/${hit.objectID}`);
+          router.push(`/app/spynet/citizen/${hit.objectID}`);
           onSelect?.();
         }}
         className="flex flex-col !gap-0 mt-2"

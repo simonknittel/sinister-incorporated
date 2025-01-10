@@ -23,7 +23,7 @@ export const CreateCitizen = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`/api/spynet/entity`, {
+      const response = await fetch(`/api/spynet/citizen`, {
         method: "POST",
         body: JSON.stringify({
           type: "citizen",
@@ -33,7 +33,7 @@ export const CreateCitizen = () => {
 
       if (response.ok) {
         const data = (await response.json()) as { id: string };
-        router.push(`/app/spynet/entity/${data.id}`);
+        router.push(`/app/spynet/citizen/${data.id}`);
         reset();
         setIsOpen(false);
       } else {

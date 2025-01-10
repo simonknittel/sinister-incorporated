@@ -68,7 +68,7 @@ export const Search = () => {
                 });
               },
               getItemUrl({ item }: { item: Hit }) {
-                return `/app/spynet/entity/${item.objectID}`;
+                return `/app/spynet/citizen/${item.objectID}`;
               },
               templates: {
                 item: ({ item }: { item: Hit }) => {

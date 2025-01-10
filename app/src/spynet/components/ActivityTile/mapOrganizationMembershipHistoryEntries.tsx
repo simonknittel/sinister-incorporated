@@ -54,7 +54,7 @@ export const mapOrganizationMembershipHistoryEntries = async (
               <p>
                 Citizen{" "}
                 <Link
-                  href={`/app/spynet/entity/${entry.citizen.id}`}
+                  href={`/app/spynet/citizen/${entry.citizen.id}`}
                   className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.citizen.handle}
@@ -89,7 +89,7 @@ export const mapOrganizationMembershipHistoryEntries = async (
               <p>
                 Citizen{" "}
                 <Link
-                  href={`/app/spynet/entity/${entry.citizen.id}`}
+                  href={`/app/spynet/citizen/${entry.citizen.id}`}
                   className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.citizen.handle}
@@ -114,7 +114,7 @@ export const mapOrganizationMembershipHistoryEntries = async (
               <p>
                 Citizen{" "}
                 <Link
-                  href={`/app/spynet/entity/${entry.citizen.id}`}
+                  href={`/app/spynet/citizen/${entry.citizen.id}`}
                   className="inline-flex gap-1 items-center text-sinister-red-500 hover:text-sinister-red-300"
                 >
                   {entry.citizen.handle}

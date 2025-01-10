@@ -1,5 +1,5 @@
-import isAllowedToCreate from "@/app/app/spynet/entity/[id]/_components/notes/lib/isAllowedToCreate";
 import { requireAuthentication } from "@/auth/server";
+import isAllowedToCreate from "@/citizen/components/notes/lib/isAllowedToCreate";
 import { getAllClassificationLevels } from "@/spynet/queries";
 import type { NoteType } from "@prisma/client";
 import { cache } from "react";
