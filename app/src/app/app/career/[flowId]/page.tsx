@@ -81,8 +81,8 @@ export default async function Page({ params }: Props) {
 
       <Navigation flows={flows} className="mt-2" />
 
-      <Suspense fallback={<SkeletonTile className="h-[1080px] mt-2" />}>
-        <div className="h-[1080px] bg-neutral-800/50 rounded-2xl overflow-hidden text-black mt-2">
+      <Suspense fallback={<SkeletonTile className="h-[1080px] mt-3" />}>
+        <div className="h-[1080px] bg-neutral-800/50 rounded-2xl overflow-hidden text-black mt-3">
           <Flow flow={flow} roles={roles} canUpdate={canUpdate} />
         </div>
       </Suspense>

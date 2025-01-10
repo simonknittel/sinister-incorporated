@@ -193,6 +193,7 @@ export const Flow = ({ className, flow, roles, canUpdate = false }: Props) => {
         nodesFocusable={canUpdate}
         edgesFocusable={canUpdate}
         elementsSelectable={canUpdate}
+        colorMode="dark"
       >
         <Background color="#444" variant={BackgroundVariant.Dots} />
 
