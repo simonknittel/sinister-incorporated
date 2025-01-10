@@ -424,7 +424,7 @@ model FlowNode {
     targets                FlowEdge[]         @relation("targets")
     type                   FlowNodeType
     roleId                 String?
-    role                   Role?              @relation("flowNodes", fields: [roleId], references: [id], onDelete: SetNull)
+    role                   Role?              @relation("flowNodes", fields: [roleId], references: [id], onDelete: Cascade)
     roleImage              FlowNodeRoleImage?
     backgroundColor        String?
     backgroundTransparency Float?
