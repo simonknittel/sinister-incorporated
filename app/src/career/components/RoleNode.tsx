@@ -120,7 +120,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
 
   const backgroundColor =
     "redacted" in props.data
-      ? "rgb(38, 38, 38, 0.3)"
+      ? "rgb(38, 38, 38)"
       : getBackground(
           props.data.backgroundColor,
           props.data.backgroundTransparency,
@@ -193,6 +193,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
           "bg-neutral-800 rounded h-full p-4 flex justify-center items-center",
           {
             // "grayscale hover:grayscale-0": !props.data.unlocked,
+            "opacity-40": "redacted" in props.data,
           },
         )}
         style={{
