@@ -14,11 +14,12 @@ export const getInitialNodesAndEdges = (
     })[];
   },
   roles: Role[],
+  assignedRoles: Role[],
 ) => {
   const initialNodes = flow.nodes.map((node) => {
     switch (node.type) {
       case FlowNodeType.ROLE:
-        return getNodeTypeRole(node, roles);
+        return getNodeTypeRole(node, roles, assignedRoles);
 
       // TODO: image
 
@@ -50,7 +51,11 @@ export const getInitialNodesAndEdges = (
   return { initialNodes, initialEdges };
 };
 
-const getNodeTypeRole = (node: FlowNode, roles: Role[]) => {
+const getNodeTypeRole = (
+  node: FlowNode,
+  roles: Role[],
+  assignedRoles: Role[],
+) => {
   const role = roles.find((role) => role.id === node.roleId);
 
   const data = role
@@ -59,6 +64,9 @@ const getNodeTypeRole = (node: FlowNode, roles: Role[]) => {
         roleImage: node.roleImage,
         backgroundColor: node.backgroundColor,
         backgroundTransparency: node.backgroundTransparency,
+        unlocked: assignedRoles.some(
+          (assignedRole) => assignedRole.id === role.id,
+        ),
       }
     : { redacted: true };
 

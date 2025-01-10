@@ -1,5 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
-import { getVisibleRoles } from "@/roles/utils/getVisibleRoles";
+import { getVisibleRoles } from "@/roles/utils/getRoles";
 import { Filter } from "@/spynet/components/Filter";
 import { RoleFilter } from "./RoleFilter";
 import { UnknownsFilter } from "./UnknownsFilter";

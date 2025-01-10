@@ -2,7 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import { SingleRole } from "@/common/components/SingleRole";
 import type { getEvent } from "@/discord/utils/getEvent";
 import { VariantTagBadge } from "@/fleet/components/VariantTagBadge";
-import { getAssignedAndVisibleRoles } from "@/roles/utils/getAssignedAndVisibleRoles";
+import { getAssignedRoles } from "@/roles/utils/getRoles";
 import type { Role, VariantTag } from "@prisma/client";
 import clsx from "clsx";
 import { getEventFleet } from "../utils/getEventFleet";
@@ -109,7 +109,7 @@ const ParticipantsSummary = async ({
   const countedRoles = new Map<string, { role: Role; count: number }>();
 
   for (const citizen of spynetCitizen) {
-    const roles = await getAssignedAndVisibleRoles(citizen.entity!);
+    const roles = await getAssignedRoles(citizen.entity!);
 
     for (const role of roles) {
       if (countedRoles.has(role.id)) {

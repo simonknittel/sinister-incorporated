@@ -6,7 +6,7 @@ import { Hero } from "@/common/components/Hero";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { log } from "@/logging";
 import { getRoles } from "@/roles/queries";
-import { getVisibleRoles } from "@/roles/utils/getVisibleRoles";
+import { getMyAssignedRoles, getVisibleRoles } from "@/roles/utils/getRoles";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -71,7 +71,10 @@ export default async function Page({ params }: Props) {
     },
   ]);
 
-  const roles = canUpdate ? await getRoles() : await getVisibleRoles();
+  const [roles, assignedRoles] = await Promise.all([
+    canUpdate ? getRoles() : getVisibleRoles(),
+    getMyAssignedRoles(),
+  ]);
 
   return (
     <main className="p-4 pb-20 lg:p-8">
@@ -83,7 +86,12 @@ export default async function Page({ params }: Props) {
 
       <Suspense fallback={<SkeletonTile className="h-[1080px] mt-3" />}>
         <div className="h-[1080px] bg-neutral-800/50 rounded-2xl overflow-hidden text-black mt-3">
-          <Flow flow={flow} roles={roles} canUpdate={canUpdate} />
+          <Flow
+            flow={flow}
+            roles={roles}
+            assignedRoles={assignedRoles}
+            canUpdate={canUpdate}
+          />
         </div>
       </Suspense>
     </main>

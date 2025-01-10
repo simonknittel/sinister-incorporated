@@ -10,8 +10,7 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "@/common/utils/sorting";
-import { getAssignableRoles } from "@/roles/utils/getAssignableRoles";
-import { getAssignedAndVisibleRoles } from "@/roles/utils/getAssignedAndVisibleRoles";
+import { getAssignableRoles, getAssignedRoles } from "@/roles/utils/getRoles";
 import Pagination from "@/spynet/components/Pagination";
 import clsx from "clsx";
 import { Filters } from "./Filters";
@@ -39,7 +38,7 @@ export const Tile = async ({ className, searchParams }: Props) => {
         ? await getLastSeenAt(entity)
         : undefined,
       roles: filters?.some((filter) => filter.startsWith("role-"))
-        ? await getAssignedAndVisibleRoles(entity)
+        ? await getAssignedRoles(entity)
         : undefined,
       entity,
     })),

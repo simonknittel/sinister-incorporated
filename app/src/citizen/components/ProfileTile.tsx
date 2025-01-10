@@ -2,7 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
 import { Link } from "@/common/components/Link";
 import { SingleRole } from "@/common/components/SingleRole";
-import { getMyAssignedAndVisibleRoles } from "@/roles/utils/getAssignedAndVisibleRoles";
+import { getMyAssignedRoles } from "@/roles/utils/getRoles";
 import clsx from "clsx";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
@@ -16,7 +16,7 @@ export const ProfileTile = async ({ className }: Props) => {
   const name =
     authentication.session.user.name || authentication.session.discordId;
   const image = authentication.session.user.image;
-  const roles = await getMyAssignedAndVisibleRoles();
+  const roles = await getMyAssignedRoles();
 
   const showLink =
     authentication.session.entityId &&
