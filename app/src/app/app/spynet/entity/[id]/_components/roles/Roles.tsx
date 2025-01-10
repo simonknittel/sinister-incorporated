@@ -1,7 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { SingleRole } from "@/common/components/SingleRole";
-import { getAssignableRoles } from "@/roles/utils/getAssignableRoles";
-import { getAssignedAndVisibleRoles } from "@/roles/utils/getAssignedAndVisibleRoles";
+import { getAssignableRoles, getAssignedRoles } from "@/roles/utils/getRoles";
 import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import { FaLock } from "react-icons/fa";
@@ -15,7 +14,7 @@ type Props = Readonly<{
 export const Roles = async ({ className, entity }: Props) => {
   const authentication = await requireAuthentication();
 
-  const assignedAndVisibleRoles = await getAssignedAndVisibleRoles(entity);
+  const assignedAndVisibleRoles = await getAssignedRoles(entity);
   const assignedAndVisibleRoleIds = assignedAndVisibleRoles.map(
     (role) => role.id,
   );

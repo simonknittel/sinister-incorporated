@@ -192,7 +192,8 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         className={clsx(
           "bg-neutral-800 rounded h-full p-4 flex justify-center items-center",
           {
-            // "grayscale hover:grayscale-0": !props.data.unlocked,
+            "grayscale hover:grayscale-0":
+              "unlocked" in props.data && props.data.unlocked,
             "opacity-40": "redacted" in props.data,
           },
         )}

@@ -6,7 +6,7 @@ import { Hero } from "@/common/components/Hero";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { log } from "@/logging";
 import { getRoles } from "@/roles/queries";
-import { getVisibleRoles } from "@/roles/utils/getVisibleRoles";
+import { getVisibleRoles } from "@/roles/utils/getRoles";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
