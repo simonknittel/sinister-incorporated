@@ -99,6 +99,8 @@ export const Flow = ({
         nodeType: formData.get("nodeType"),
         roleId: formData.get("roleId"),
         roleImage: formData.get("roleImage"),
+        markdown: formData.get("markdown"),
+        markdownPosition: formData.get("markdownPosition"),
         backgroundColor: formData.get("backgroundColor"),
         backgroundTransparency: formData.get("backgroundTransparency"),
       });
@@ -111,51 +113,65 @@ export const Flow = ({
         return;
       }
 
-      if (result.data.nodeType === FlowNodeType.ROLE) {
-        const role = roles.find((role) => role.id === result.data.roleId);
-        if (!role) {
-          toast.error(
-            "Beim Speichern ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
-          );
-          return;
-        }
-
-        setNodes((nds) => {
-          // I don't know why this is required here if we are already checking this some lines above
-          if (result.data.nodeType !== FlowNodeType.ROLE)
-            throw new Error("Invalid node type");
-
+      setNodes((nds) => {
+        if (result.data.nodeType === FlowNodeType.ROLE) {
+          const data = result.data;
+          const role = roles.find((role) => role.id === data.roleId);
           return applyNodeChanges(
             [
               {
                 type: "add",
                 item: {
-                  id: result.data.id,
+                  id: data.id,
                   type: FlowNodeType.ROLE,
                   position: {
                     x: 0,
                     y: 0,
                   },
                   width:
-                    result.data.roleImage === FlowNodeRoleImage.THUMBNAIL
-                      ? 178
-                      : 100,
+                    data.roleImage === FlowNodeRoleImage.THUMBNAIL ? 178 : 100,
                   height: 100,
                   data: {
                     role,
-                    roleImage: result.data.roleImage,
-                    backgroundColor: result.data.backgroundColor,
-                    backgroundTransparency: result.data.backgroundTransparency,
+                    roleImage: data.roleImage,
+                    backgroundColor: data.backgroundColor,
+                    backgroundTransparency: data.backgroundTransparency,
                   },
                 },
               },
             ],
             nds,
           );
-        });
-      } else if (result.data.nodeType === "image") {
-        // TODO: image
-      }
+        } else if (result.data.nodeType === FlowNodeType.MARKDOWN) {
+          const data = result.data;
+          return applyNodeChanges(
+            [
+              {
+                type: "add",
+                item: {
+                  id: data.id,
+                  type: FlowNodeType.MARKDOWN,
+                  position: {
+                    x: 0,
+                    y: 0,
+                  },
+                  width: 178,
+                  height: 316,
+                  data: {
+                    markdown: data.markdown,
+                    markdownPosition: data.markdownPosition,
+                    backgroundColor: data.backgroundColor,
+                    backgroundTransparency: data.backgroundTransparency,
+                  },
+                },
+              },
+            ],
+            nds,
+          );
+        }
+
+        throw new Error("Invalid node type");
+      });
     },
     [roles],
   );

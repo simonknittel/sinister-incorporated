@@ -3,7 +3,11 @@
 import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
-import { FlowNodeRoleImage, FlowNodeType } from "@prisma/client";
+import {
+  FlowNodeMarkdownPosition,
+  FlowNodeRoleImage,
+  FlowNodeType,
+} from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
@@ -11,7 +15,7 @@ import { z } from "zod";
 const nodesSchema = z.array(
   z.discriminatedUnion("type", [
     z.object({
-      type: z.nativeEnum(FlowNodeType),
+      type: z.literal(FlowNodeType.ROLE),
       id: z.string().cuid2(),
       position: z.object({
         x: z.number(),
@@ -28,8 +32,23 @@ const nodesSchema = z.array(
         backgroundTransparency: z.number().min(0).max(1).optional(),
       }),
     }),
+    z.object({
+      type: z.literal(FlowNodeType.MARKDOWN),
+      id: z.string().cuid2(),
+      position: z.object({
+        x: z.number(),
+        y: z.number(),
+      }),
+      width: z.number(),
+      height: z.number(),
+      data: z.object({
+        markdown: z.string(),
+        markdownPosition: z.nativeEnum(FlowNodeMarkdownPosition),
+        backgroundColor: z.string().optional(),
+        backgroundTransparency: z.number().min(0).max(1).optional(),
+      }),
+    }),
   ]),
-  // TODO: image
 );
 
 const edgesSchema = z.array(
@@ -109,8 +128,18 @@ export const updateFlow = async (formData: FormData) => {
             positionY: node.position.y,
             width: node.width,
             height: node.height,
-            roleId: node.data.role.id,
-            roleImage: node.data.roleImage,
+            ...(node.type === FlowNodeType.ROLE
+              ? {
+                  roleId: node.data.role.id,
+                  roleImage: node.data.roleImage,
+                }
+              : {}),
+            ...(node.type === FlowNodeType.MARKDOWN
+              ? {
+                  markdown: node.data.markdown,
+                  markdownPosition: node.data.markdownPosition,
+                }
+              : {}),
             backgroundColor: node.data.backgroundColor,
             backgroundTransparency: node.data.backgroundTransparency,
           };

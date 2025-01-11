@@ -5,6 +5,7 @@ import {
   type FlowNode,
   type Role,
 } from "@prisma/client";
+import { getNodeTypeMarkdown } from "../components/nodes/getNodeTypeMarkdown";
 import { getNodeTypeRole } from "../components/nodes/getNodeTypeRole";
 
 export const getInitialNodesAndEdges = (
@@ -22,7 +23,8 @@ export const getInitialNodesAndEdges = (
       case FlowNodeType.ROLE:
         return getNodeTypeRole(node, roles, assignedRoles);
 
-      // TODO: image
+      case FlowNodeType.MARKDOWN:
+        return getNodeTypeMarkdown(node);
 
       default:
         throw new Error("Invalid node type");
