@@ -2,6 +2,7 @@
 
 import { env } from "@/env";
 import { FlowNodeRoleImage, FlowNodeType, type Role } from "@prisma/client";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   applyNodeChanges,
   Handle,
@@ -23,6 +24,7 @@ import { IoMdResize } from "react-icons/io";
 import { getBackground } from "../../utils/getBackground";
 import { CreateOrUpdateNodeModal } from "../CreateOrUpdateNodeModal";
 import { useFlowContext } from "../FlowContext";
+import styles from "./RoleNode.module.css";
 import { roleSchema } from "./roleSchema";
 
 export type RoleNode = Node<
@@ -204,14 +206,32 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         }}
       >
         {"role" in props.data && (
-          <Image
-            src={imageSrc!}
-            alt={props.data.role.name}
-            title={props.data.role.name}
-            width={100}
-            height={100}
-            className="object-contain object-center w-full h-full"
-          />
+          <Tooltip.Provider delayDuration={0}>
+            <Tooltip.Root>
+              <Tooltip.Trigger className="cursor-help w-full h-full">
+                <Image
+                  src={imageSrc!}
+                  alt={props.data.role.name}
+                  title={props.data.role.name}
+                  width={100}
+                  height={100}
+                  className="object-contain object-center w-full h-full"
+                />
+              </Tooltip.Trigger>
+
+              <Tooltip.Content
+                className={clsx(
+                  "px-2 py-1 text-sm leading-tight select-none rounded bg-sinister-red-500 text-white",
+                  styles.TooltipContent,
+                )}
+                side="top"
+                sideOffset={20}
+              >
+                {props.data.role.name}
+                <Tooltip.Arrow className="fill-sinister-red-500" />
+              </Tooltip.Content>
+            </Tooltip.Root>
+          </Tooltip.Provider>
         )}
 
         {"redacted" in props.data && (
