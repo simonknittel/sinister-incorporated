@@ -10,15 +10,7 @@ import Image from "next/image";
 import { useId, useState, type FormEventHandler } from "react";
 import { z } from "zod";
 import { useFlowContext } from "./FlowContext";
-
-export const roleSchema = z.object({
-  id: z.string().cuid2(),
-  nodeType: z.literal(FlowNodeType.ROLE),
-  roleId: z.string(),
-  roleImage: z.nativeEnum(FlowNodeRoleImage),
-  backgroundColor: z.string(),
-  backgroundTransparency: z.coerce.number().min(0).max(1),
-});
+import { roleSchema } from "./nodes/roleSchema";
 
 export const schema = z.discriminatedUnion("nodeType", [
   roleSchema,

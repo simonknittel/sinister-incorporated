@@ -20,9 +20,10 @@ import toast from "react-hot-toast";
 import { FaPen } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa6";
 import { IoMdResize } from "react-icons/io";
-import { getBackground } from "../utils/getBackground";
-import { CreateOrUpdateNodeModal, roleSchema } from "./CreateOrUpdateNodeModal";
-import { useFlowContext } from "./FlowContext";
+import { getBackground } from "../../utils/getBackground";
+import { CreateOrUpdateNodeModal } from "../CreateOrUpdateNodeModal";
+import { useFlowContext } from "../FlowContext";
+import { roleSchema } from "./roleSchema";
 
 export type RoleNode = Node<
   | {
