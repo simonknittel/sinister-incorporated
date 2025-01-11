@@ -6,7 +6,7 @@ import { createContext, useContext, useMemo } from "react";
 
 interface FlowContext {
   roles: Role[];
-  canUpdate: boolean;
+  isUpdating: boolean;
 }
 
 const FlowContext = createContext<FlowContext | undefined>(undefined);
@@ -14,16 +14,16 @@ const FlowContext = createContext<FlowContext | undefined>(undefined);
 type Props = Readonly<{
   children: ReactNode;
   roles: Role[];
-  canUpdate: boolean;
+  isUpdating: boolean;
 }>;
 
-export const FlowProvider = ({ children, roles, canUpdate }: Props) => {
+export const FlowProvider = ({ children, roles, isUpdating }: Props) => {
   const value = useMemo(
     () => ({
       roles,
-      canUpdate,
+      isUpdating,
     }),
-    [roles, canUpdate],
+    [roles, isUpdating],
   );
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;

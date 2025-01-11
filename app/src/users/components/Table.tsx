@@ -107,7 +107,7 @@ export const Table = ({ users }: Props) => {
 
           return (
             <Link
-              href={`/app/spynet/entity/${entityId}`}
+              href={`/app/spynet/citizen/${entityId}`}
               className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
             >
               <span className="hidden sm:inline">Spynet</span>{" "}

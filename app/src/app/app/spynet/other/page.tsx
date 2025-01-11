@@ -7,7 +7,7 @@ import {
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { type Metadata } from "next";
 import { Suspense } from "react";
-import Tile from "./_components/Tile";
+import OtherTableTile from "../../../../citizen/components/OtherTableTile";
 
 export const revalidate = 0; // TODO: Revert to 60
 
@@ -33,7 +33,7 @@ export default async function Page({ searchParams }: Props) {
     <main className="p-4 pb-20 lg:p-8">
       <div className="flex gap-2 font-bold text-xl">
         <Link
-          href="/app/spynet/search"
+          href="/app/spynet"
           className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
         >
           Spynet
@@ -45,7 +45,7 @@ export default async function Page({ searchParams }: Props) {
       </div>
 
       <Suspense fallback={<SkeletonTile className="mt-4" />}>
-        <Tile searchParams={urlSearchParams} className="mt-4" />
+        <OtherTableTile searchParams={urlSearchParams} className="mt-4" />
       </Suspense>
     </main>
   );

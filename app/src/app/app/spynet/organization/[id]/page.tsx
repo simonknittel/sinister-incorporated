@@ -3,13 +3,13 @@ import { Link } from "@/common/components/Link";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { prisma } from "@/db";
 import { log } from "@/logging";
+import { ActivityTile } from "@/organizations/components/ActivityTile";
+import { MembershipsTile } from "@/organizations/components/MembershipsTile";
+import { OverviewTile } from "@/organizations/components/OverviewTile";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense, cache } from "react";
 import { serializeError } from "serialize-error";
-import { ActivityTile } from "./_components/ActivityTile";
-import { MembershipsTile } from "./_components/MembershipsTile";
-import { OverviewTile } from "./_components/OverviewTile";
 
 const getOrganization = cache(async (id: string) => {
   return prisma.organization.findUnique({
@@ -40,7 +40,7 @@ export async function generateMetadata(props: {
     };
   } catch (error) {
     void log.error(
-      "Error while generating metadata for /(app)/spynet/organization/[id]/page.tsx",
+      "Error while generating metadata for /app/spynet/organization/[id]/page.tsx",
       {
         error: serializeError(error),
       },

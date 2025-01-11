@@ -5,6 +5,8 @@ import {
   type FlowNode,
   type Role,
 } from "@prisma/client";
+import { getNodeTypeMarkdown } from "../components/nodes/getNodeTypeMarkdown";
+import { getNodeTypeRole } from "../components/nodes/getNodeTypeRole";
 
 export const getInitialNodesAndEdges = (
   flow: Flow & {
@@ -21,7 +23,8 @@ export const getInitialNodesAndEdges = (
       case FlowNodeType.ROLE:
         return getNodeTypeRole(node, roles, assignedRoles);
 
-      // TODO: image
+      case FlowNodeType.MARKDOWN:
+        return getNodeTypeMarkdown(node);
 
       default:
         throw new Error("Invalid node type");
@@ -49,36 +52,4 @@ export const getInitialNodesAndEdges = (
   });
 
   return { initialNodes, initialEdges };
-};
-
-const getNodeTypeRole = (
-  node: FlowNode,
-  roles: Role[],
-  assignedRoles: Role[],
-) => {
-  const role = roles.find((role) => role.id === node.roleId);
-
-  const data = role
-    ? {
-        role,
-        roleImage: node.roleImage,
-        backgroundColor: node.backgroundColor,
-        backgroundTransparency: node.backgroundTransparency,
-        unlocked: assignedRoles.some(
-          (assignedRole) => assignedRole.id === role.id,
-        ),
-      }
-    : { redacted: true };
-
-  return {
-    id: node.id,
-    type: FlowNodeType.ROLE,
-    position: {
-      x: node.positionX,
-      y: node.positionY,
-    },
-    data,
-    width: node.width,
-    height: node.height,
-  };
 };

@@ -147,7 +147,7 @@ export const CmdK = ({
                   keywords={["Spynet"]}
                   onSelect={() => {
                     router.push(
-                      `/app/spynet/entity/${authentication.session.entityId}`,
+                      `/app/spynet/citizen/${authentication.session.entityId}`,
                     );
                     setOpen(false);
                     setSearch("");

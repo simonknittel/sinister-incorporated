@@ -1,0 +1,215 @@
+"use client";
+
+import { FlowNodeMarkdownPosition, FlowNodeType } from "@prisma/client";
+import {
+  applyNodeChanges,
+  Handle,
+  NodeResizer,
+  NodeToolbar,
+  Position,
+  useNodeId,
+  useReactFlow,
+  type Node,
+  type NodeProps,
+} from "@xyflow/react";
+import clsx from "clsx";
+import { useCallback, useState, type FormEventHandler } from "react";
+import toast from "react-hot-toast";
+import { FaPen } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa6";
+import { IoMdResize } from "react-icons/io";
+import Markdown from "react-markdown";
+import { getBackground } from "../../utils/getBackground";
+import { CreateOrUpdateNodeModal } from "../CreateOrUpdateNodeModal";
+import { useFlowContext } from "../FlowContext";
+import { markdownSchema } from "./markdownSchema";
+
+export type Markdown = Node<
+  {
+    markdown: string;
+    markdownPosition: FlowNodeMarkdownPosition;
+    backgroundColor: string;
+    backgroundTransparency: number;
+  },
+  typeof FlowNodeType.MARKDOWN
+>;
+
+export const MarkdownNode = (props: NodeProps<Markdown>) => {
+  const { isUpdating } = useFlowContext();
+  const nodeId = useNodeId();
+  const { setNodes, setEdges } = useReactFlow();
+  const [isResizing, setIsResizing] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const onEdit = useCallback(() => {
+    setIsEditModalOpen((currentValue) => !currentValue);
+  }, []);
+
+  const onUpdate: FormEventHandler<HTMLFormElement> = useCallback(
+    (event) => {
+      event.preventDefault();
+      setIsEditModalOpen(false);
+
+      const formData = new FormData(event.currentTarget);
+      const result = markdownSchema.safeParse({
+        id: formData.get("id"),
+        nodeType: formData.get("nodeType"),
+        markdown: formData.get("markdown"),
+        markdownPosition: formData.get("markdownPosition"),
+        backgroundColor: formData.get("backgroundColor"),
+        backgroundTransparency: formData.get("backgroundTransparency"),
+      });
+
+      if (!result.success) {
+        toast.error(
+          "Beim Speichern ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
+        );
+        console.error(result.error);
+        return;
+      }
+
+      setNodes((nds) => {
+        return applyNodeChanges(
+          [
+            {
+              type: "replace",
+              id: props.id,
+              item: {
+                id: props.id,
+                type: props.type,
+                position: {
+                  x: props.positionAbsoluteX,
+                  y: props.positionAbsoluteY,
+                },
+                width: props.width,
+                height: props.height,
+                data: {
+                  markdown: result.data.markdown,
+                  markdownPosition: result.data.markdownPosition,
+                  backgroundColor: result.data.backgroundColor,
+                  backgroundTransparency: result.data.backgroundTransparency,
+                },
+              },
+            },
+          ],
+          nds,
+        );
+      });
+    },
+    [setNodes, props],
+  );
+
+  const onDelete = useCallback(() => {
+    setNodes((nodes) => nodes.filter((node) => node.id !== nodeId));
+    setEdges((edges) =>
+      edges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId),
+    );
+  }, [nodeId, setNodes, setEdges]);
+
+  const backgroundColor = getBackground(
+    props.data.backgroundColor,
+    props.data.backgroundTransparency,
+  );
+
+  return (
+    <>
+      {isUpdating && (
+        <NodeToolbar
+          isVisible={true}
+          position={Position.Right}
+          align="start"
+          className="flex flex-col gap-2"
+        >
+          <button
+            title="Größe ändern"
+            type="button"
+            onClick={() => setIsResizing((value) => !value)}
+            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+          >
+            <IoMdResize />
+          </button>
+
+          <button
+            onClick={onEdit}
+            type="button"
+            title="Bearbeiten"
+            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+          >
+            <FaPen />
+          </button>
+
+          {isEditModalOpen && (
+            <CreateOrUpdateNodeModal
+              onRequestClose={onEdit}
+              onSubmit={onUpdate}
+              initialData={{
+                id: props.id,
+                type: FlowNodeType.MARKDOWN,
+                markdown: props.data.markdown,
+                markdownPosition: props.data.markdownPosition,
+                backgroundColor: props.data.backgroundColor,
+                backgroundTransparency: props.data.backgroundTransparency,
+              }}
+            />
+          )}
+
+          <button
+            onClick={onDelete}
+            type="button"
+            title="Löschen"
+            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+          >
+            <FaTrash />
+          </button>
+        </NodeToolbar>
+      )}
+
+      {isResizing && <NodeResizer minWidth={100} minHeight={100} />}
+
+      <div
+        className={clsx(
+          "rounded h-full p-4 prose prose-invert prose-sm overflow-hidden flex flex-col justify-center",
+          {
+            "text-left":
+              props.data.markdownPosition === FlowNodeMarkdownPosition.LEFT ||
+              !props.data.markdownPosition,
+            "text-right":
+              props.data.markdownPosition === FlowNodeMarkdownPosition.RIGHT,
+            "text-center":
+              props.data.markdownPosition === FlowNodeMarkdownPosition.CENTER,
+          },
+        )}
+        style={{
+          backgroundColor,
+        }}
+      >
+        <Markdown>{props.data.markdown}</Markdown>
+      </div>
+
+      <Handle
+        id="left"
+        type="source"
+        position={Position.Left}
+        className={clsx({ "opacity-0": !isUpdating })}
+      />
+      <Handle
+        id="right"
+        type="source"
+        position={Position.Right}
+        className={clsx({ "opacity-0": !isUpdating })}
+      />
+      <Handle
+        id="top"
+        type="target"
+        position={Position.Top}
+        className={clsx({ "opacity-0": !isUpdating })}
+      />
+      <Handle
+        id="bottom"
+        type="source"
+        position={Position.Bottom}
+        className={clsx({ "opacity-0": !isUpdating })}
+      />
+    </>
+  );
+};

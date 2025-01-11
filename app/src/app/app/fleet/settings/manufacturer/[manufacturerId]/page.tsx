@@ -30,7 +30,7 @@ export async function generateMetadata(props: {
     };
   } catch (error) {
     void log.error(
-      "Error while generating metadata for /(app)/spynet/entity/[id]/page.tsx",
+      "Error while generating metadata for /app/spynet/citizen/[id]/page.tsx",
       {
         error: serializeError(error),
       },

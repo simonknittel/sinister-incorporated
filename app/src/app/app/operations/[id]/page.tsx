@@ -31,7 +31,7 @@ export async function generateMetadata(props: {
     };
   } catch (error) {
     void log.error(
-      "Error while generating metadata for /(app)/operations/[id]/page.tsx",
+      "Error while generating metadata for /app/operations/[id]/page.tsx",
       {
         error: serializeError(error),
       },

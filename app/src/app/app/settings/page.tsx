@@ -1,11 +1,11 @@
+import { Algolia } from "@/algolia/components/Algolia";
 import { authenticatePage } from "@/auth/server";
 import { log } from "@/logging";
+import { AnalyticsCheckboxLoader } from "@/settings/components/AnalyticsCheckboxLoader";
+import ClassificationLevelsTile from "@/spynet/components/classification-level/ClassificationLevelsTile";
+import NoteTypesTile from "@/spynet/components/note-type/NoteTypesTile";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Algolia } from "./_components/Algolia";
-import { AnalyticsCheckboxLoader } from "./_components/AnalyticsCheckboxLoader";
-import ClassificationLevelsTile from "./_components/classification-level/ClassificationLevelsTile";
-import NoteTypesTile from "./_components/note-type/NoteTypesTile";
 
 export const metadata: Metadata = {
   title: "Einstellungen | S.A.M. - Sinister Incorporated",

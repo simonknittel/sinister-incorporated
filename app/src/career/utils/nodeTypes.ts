@@ -1,4 +1,8 @@
 import { FlowNodeType } from "@prisma/client";
-import { RoleNode } from "../components/RoleNode";
+import { MarkdownNode } from "../components/nodes/MarkdownNode";
+import { RoleNode } from "../components/nodes/RoleNode";
 
-export const nodeTypes = { [FlowNodeType.ROLE]: RoleNode };
+export const nodeTypes = {
+  [FlowNodeType.ROLE]: RoleNode,
+  [FlowNodeType.MARKDOWN]: MarkdownNode,
+};

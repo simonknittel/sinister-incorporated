@@ -4,25 +4,23 @@ import { RadioGroup } from "@/common/components/form/RadioGroup";
 import { Select } from "@/common/components/form/Select";
 import { env } from "@/env";
 import { createId } from "@paralleldrive/cuid2";
-import { FlowNodeRoleImage, FlowNodeType, type Role } from "@prisma/client";
+import {
+  FlowNodeMarkdownPosition,
+  FlowNodeRoleImage,
+  FlowNodeType,
+  type Role,
+} from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 import { useId, useState, type FormEventHandler } from "react";
 import { z } from "zod";
 import { useFlowContext } from "./FlowContext";
-
-export const roleSchema = z.object({
-  id: z.string().cuid2(),
-  nodeType: z.literal(FlowNodeType.ROLE),
-  roleId: z.string(),
-  roleImage: z.nativeEnum(FlowNodeRoleImage),
-  backgroundColor: z.string(),
-  backgroundTransparency: z.coerce.number().min(0).max(1),
-});
+import { markdownSchema } from "./nodes/markdownSchema";
+import { roleSchema } from "./nodes/roleSchema";
 
 export const schema = z.discriminatedUnion("nodeType", [
   roleSchema,
-  // TODO: image
+  markdownSchema,
 ]);
 
 type Props = Readonly<{
@@ -31,12 +29,21 @@ type Props = Readonly<{
   onSubmit: FormEventHandler<HTMLFormElement>;
   initialData?: {
     id: string;
-    type: FlowNodeType;
-    roleId: Role["id"];
-    roleImage: FlowNodeRoleImage;
     backgroundColor: string;
     backgroundTransparency: number;
-  };
+  } & (
+    | {
+        type: typeof FlowNodeType.ROLE;
+        roleId: Role["id"];
+        roleImage: FlowNodeRoleImage;
+      }
+    | {
+        id: string;
+        type: typeof FlowNodeType.MARKDOWN;
+        markdown: string;
+        markdownPosition: FlowNodeMarkdownPosition;
+      }
+  );
 }>;
 
 export const CreateOrUpdateNodeModal = ({
@@ -50,10 +57,19 @@ export const CreateOrUpdateNodeModal = ({
     initialData?.type || FlowNodeType.ROLE,
   );
   const [roleId, setRoleId] = useState<Role["id"]>(
-    initialData?.roleId || roles[0].id,
+    (initialData?.type === FlowNodeType.ROLE && initialData?.roleId) ||
+      roles[0].id,
   );
   const [roleImage, setRoleImage] = useState<keyof typeof FlowNodeRoleImage>(
-    initialData?.roleImage || FlowNodeRoleImage.ICON,
+    (initialData?.type === FlowNodeType.ROLE && initialData?.roleImage) ||
+      FlowNodeRoleImage.ICON,
+  );
+  const [markdownPosition, setMarkdownPosition] = useState<
+    keyof typeof FlowNodeMarkdownPosition
+  >(
+    (initialData?.type === FlowNodeType.MARKDOWN &&
+      initialData?.markdownPosition) ||
+      FlowNodeMarkdownPosition.LEFT,
   );
   const roleInputId = useId();
   const backgroundColorInputId = useId();
@@ -86,10 +102,10 @@ export const CreateOrUpdateNodeModal = ({
               value: FlowNodeType.ROLE,
               label: "Rolle",
             },
-            // {
-            //   value: "image",
-            //   label: "Bild",
-            // },
+            {
+              value: FlowNodeType.MARKDOWN,
+              label: "Markdown",
+            },
           ]}
           value={nodeType}
           onChange={setNodeType}
@@ -150,6 +166,46 @@ export const CreateOrUpdateNodeModal = ({
                 className="mt-2 w-[228px] h-32 border border-neutral-700 rounded object-contain object-center"
               />
             )}
+          </>
+        )}
+
+        {nodeType === FlowNodeType.MARKDOWN && (
+          <>
+            <label htmlFor={roleInputId} className="mt-6 block">
+              Markdown
+            </label>
+            <textarea
+              name="markdown"
+              className="mt-2 w-full h-64 p-2 rounded-l bg-neutral-900"
+              defaultValue={
+                initialData?.type === FlowNodeType.MARKDOWN
+                  ? initialData.markdown
+                  : ""
+              }
+            ></textarea>
+
+            <p className="mt-6">Position</p>
+            <RadioGroup
+              name="markdownPosition"
+              items={[
+                {
+                  value: FlowNodeMarkdownPosition.LEFT,
+                  label: "linksbündig",
+                },
+                {
+                  value: FlowNodeMarkdownPosition.CENTER,
+                  label: "zentriert",
+                },
+                {
+                  value: FlowNodeMarkdownPosition.RIGHT,
+                  label: "rechtsbündig",
+                },
+              ]}
+              value={markdownPosition}
+              // @ts-expect-error Don't know how to fix this
+              onChange={setMarkdownPosition}
+              className="mt-2"
+            />
           </>
         )}
 

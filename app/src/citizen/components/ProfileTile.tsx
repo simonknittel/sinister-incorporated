@@ -43,7 +43,7 @@ export const ProfileTile = async ({ className }: Props) => {
 
       {showLink && (
         <Link
-          href={`/app/spynet/entity/${authentication.session.entityId}`}
+          href={`/app/spynet/citizen/${authentication.session.entityId}`}
           className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
         >
           Vollständiges Profil

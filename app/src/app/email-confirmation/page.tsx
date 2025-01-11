@@ -1,5 +1,10 @@
 import { requestEmailConfirmationAction } from "@/auth/actions/requestEmailConfirmationAction";
 import { AdminEnabler } from "@/auth/components/AdminEnabler";
+import { PageRefresher } from "@/auth/components/PageRefresher";
+import {
+  RequestConfirmationEmailButton,
+  RequestConfirmationEmailLink,
+} from "@/auth/components/RequestConfirmationEmail";
 import { authenticate } from "@/auth/server";
 import { requiresEmailConfirmation } from "@/auth/utils/emailConfirmation";
 import { Footer } from "@/common/components/Footer";
@@ -10,11 +15,6 @@ import { type Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { RiInformationLine } from "react-icons/ri";
-import { PageRefresher } from "./_components/PageRefresher";
-import {
-  RequestConfirmationEmailButton,
-  RequestConfirmationEmailLink,
-} from "./_components/RequestConfirmationEmail";
 
 export const metadata: Metadata = {
   title:

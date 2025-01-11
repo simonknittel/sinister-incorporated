@@ -1,5 +1,5 @@
-import { updateAlgoliaWithGenericLogType } from "@/app/api/spynet/entity/[id]/log/[logId]/_lib/updateAlgoliaWithGenericLogType";
-import { updateEntityCaches } from "@/app/api/spynet/entity/[id]/log/[logId]/_lib/updateEntityCaches";
+import { updateAlgoliaWithGenericLogType } from "@/app/api/spynet/citizen/[id]/log/[logId]/_lib/updateAlgoliaWithGenericLogType";
+import { updateEntityCaches } from "@/app/api/spynet/citizen/[id]/log/[logId]/_lib/updateEntityCaches";
 import { requireAuthentication } from "@/auth/server";
 import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import { prisma } from "@/db";
