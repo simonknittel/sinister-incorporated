@@ -24,7 +24,7 @@ import {
   type OnNodesChange,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { unstable_rethrow } from "next/navigation";
+import { unstable_rethrow, useRouter } from "next/navigation";
 import {
   useCallback,
   useState,
@@ -33,7 +33,7 @@ import {
   type MouseEventHandler,
 } from "react";
 import toast from "react-hot-toast";
-import { FaSave, FaSpinner } from "react-icons/fa";
+import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
 import { updateFlow } from "../actions/updateFlow";
 import { getInitialNodesAndEdges } from "../utils/getInitialNodesAndEdges";
@@ -52,6 +52,7 @@ type Props = Readonly<{
   roles: Role[];
   assignedRoles: Role[];
   canUpdate?: boolean;
+  isUpdating?: boolean;
 }>;
 
 export const Flow = ({
@@ -59,6 +60,7 @@ export const Flow = ({
   flow,
   roles,
   canUpdate = false,
+  isUpdating = false,
   assignedRoles,
 }: Props) => {
   const { initialNodes, initialEdges } = getInitialNodesAndEdges(
@@ -71,6 +73,7 @@ export const Flow = ({
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [isCreateNodeModalOpen, setIsCreateNodeModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -184,8 +187,19 @@ export const Flow = ({
     });
   }, [flow.id, nodes, edges]);
 
+  const onToggleUpdating: MouseEventHandler<HTMLButtonElement> =
+    useCallback(() => {
+      if (isUpdating) {
+        document.cookie = `is_updating_flow=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+      } else {
+        document.cookie = `is_updating_flow=${flow.id}; path=/`;
+      }
+
+      router.refresh();
+    }, [isUpdating, flow.id, router]);
+
   return (
-    <FlowProvider roles={roles} canUpdate={canUpdate}>
+    <FlowProvider roles={roles} isUpdating={isUpdating}>
       <ReactFlow
         nodeTypes={nodeTypes}
         nodes={nodes}
@@ -199,11 +213,11 @@ export const Flow = ({
           type: "smoothstep",
         }}
         snapToGrid
-        nodesDraggable={canUpdate}
-        nodesConnectable={canUpdate}
-        nodesFocusable={canUpdate}
-        edgesFocusable={canUpdate}
-        elementsSelectable={canUpdate}
+        nodesDraggable={isUpdating}
+        nodesConnectable={isUpdating}
+        nodesFocusable={isUpdating}
+        edgesFocusable={isUpdating}
+        elementsSelectable={isUpdating}
         colorMode="dark"
       >
         <Background color="#444" variant={BackgroundVariant.Dots} />
@@ -212,19 +226,30 @@ export const Flow = ({
           {canUpdate && (
             <>
               <ControlButton
-                onClick={() => setIsCreateNodeModalOpen(true)}
-                title="Element hinzufügen"
+                onClick={onToggleUpdating}
+                title="Bearbeiten de-/aktivieren"
               >
-                <FaPlus />
+                <FaPen />
               </ControlButton>
 
-              <ControlButton onClick={onSave} title="Speichern">
-                {isPending ? (
-                  <FaSpinner className="animate-spin" />
-                ) : (
-                  <FaSave />
-                )}
-              </ControlButton>
+              {isUpdating && (
+                <>
+                  <ControlButton
+                    onClick={() => setIsCreateNodeModalOpen(true)}
+                    title="Element hinzufügen"
+                  >
+                    <FaPlus />
+                  </ControlButton>
+
+                  <ControlButton onClick={onSave} title="Speichern">
+                    {isPending ? (
+                      <FaSpinner className="animate-spin" />
+                    ) : (
+                      <FaSave />
+                    )}
+                  </ControlButton>
+                </>
+              )}
             </>
           )}
         </Controls>

@@ -39,7 +39,7 @@ export type RoleNode = Node<
 >;
 
 export const RoleNode = (props: NodeProps<RoleNode>) => {
-  const { roles, canUpdate } = useFlowContext();
+  const { roles, isUpdating } = useFlowContext();
   const nodeId = useNodeId();
   const { setNodes, setEdges } = useReactFlow();
   const [isResizing, setIsResizing] = useState(false);
@@ -137,7 +137,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
 
   return (
     <>
-      {canUpdate && (
+      {isUpdating && (
         <NodeToolbar
           isVisible={true}
           position={Position.Right}
@@ -224,25 +224,25 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         id="left"
         type="source"
         position={Position.Left}
-        className={clsx({ "opacity-0": !canUpdate })}
+        className={clsx({ "opacity-0": !isUpdating })}
       />
       <Handle
         id="right"
         type="source"
         position={Position.Right}
-        className={clsx({ "opacity-0": !canUpdate })}
+        className={clsx({ "opacity-0": !isUpdating })}
       />
       <Handle
         id="top"
         type="target"
         position={Position.Top}
-        className={clsx({ "opacity-0": !canUpdate })}
+        className={clsx({ "opacity-0": !isUpdating })}
       />
       <Handle
         id="bottom"
         type="source"
         position={Position.Bottom}
-        className={clsx({ "opacity-0": !canUpdate })}
+        className={clsx({ "opacity-0": !isUpdating })}
       />
     </>
   );

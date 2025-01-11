@@ -8,6 +8,7 @@ import { log } from "@/logging";
 import { getRoles } from "@/roles/queries";
 import { getMyAssignedRoles, getVisibleRoles } from "@/roles/utils/getRoles";
 import { type Metadata } from "next";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { serializeError } from "serialize-error";
@@ -71,8 +72,11 @@ export default async function Page({ params }: Props) {
     },
   ]);
 
+  const isUpdating =
+    canUpdate && (await cookies()).get("is_updating_flow")?.value === flowId;
+
   const [roles, assignedRoles] = await Promise.all([
-    canUpdate ? getRoles() : getVisibleRoles(),
+    isUpdating ? getRoles() : getVisibleRoles(),
     getMyAssignedRoles(),
   ]);
 
@@ -91,6 +95,7 @@ export default async function Page({ params }: Props) {
             roles={roles}
             assignedRoles={assignedRoles}
             canUpdate={canUpdate}
+            isUpdating={isUpdating}
           />
         </div>
       </Suspense>
