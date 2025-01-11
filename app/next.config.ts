@@ -83,6 +83,10 @@ const nextConfig: NextConfig = {
       permanent: false,
     },
   ],
+
+  experimental: {
+    authInterrupts: true,
+  },
 };
 
 export default nextConfig;
