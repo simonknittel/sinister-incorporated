@@ -1,10 +1,8 @@
 import { Link } from "@/common/components/Link";
-import { isOpenAIEnabled } from "@/common/utils/isOpenAIEnabled";
 import { env } from "@/env";
 import clsx from "clsx";
 import Image from "next/image";
 import { getRoles } from "../queries";
-import { Create } from "./Create";
 
 type Props = Readonly<{
   className?: string;
@@ -15,10 +13,7 @@ export const RolesTile = async ({ className }: Props) => {
 
   return (
     <section
-      className={clsx(
-        className,
-        "max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50 ",
-      )}
+      className={clsx(className, "p-4 lg:p-8 rounded-2xl bg-neutral-800/50 ")}
     >
       {roles.map((role) => (
         <Link
@@ -48,11 +43,6 @@ export const RolesTile = async ({ className }: Props) => {
       {roles.length <= 0 && (
         <p className="text-neutral-500 italic">Keine Rollen vorhanden</p>
       )}
-
-      <Create
-        className="mt-4"
-        enableSuggestions={await isOpenAIEnabled("RoleNameSuggestions")}
-      />
     </section>
   );
 };

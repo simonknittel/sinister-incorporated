@@ -55,11 +55,7 @@ export const Create = ({ className, enableSuggestions }: Readonly<Props>) => {
 
   return (
     <>
-      <Button
-        variant="secondary"
-        onClick={() => setIsOpen(true)}
-        className={clsx(className)}
-      >
+      <Button onClick={() => setIsOpen(true)} className={clsx(className)}>
         <FaPlus />
         Hinzufügen
       </Button>
