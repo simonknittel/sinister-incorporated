@@ -12,7 +12,7 @@ export const ManufacturersTile = async () => {
   const rows = await getManufacturers();
 
   return (
-    <section className="p-8 pb-4 bg-neutral-800/50  mt-4 rounded-2xl overflow-auto">
+    <section className="p-8 pb-4 bg-neutral-800/50 mt-4 rounded-2xl overflow-auto">
       <table className="w-full min-w-[320px]">
         <thead>
           <tr
