@@ -233,7 +233,6 @@ export const Flow = ({
         nodesConnectable={isUpdating}
         nodesFocusable={isUpdating}
         edgesFocusable={isUpdating}
-        elementsSelectable={isUpdating}
         colorMode="dark"
       >
         <Background color="#444" variant={BackgroundVariant.Dots} />
