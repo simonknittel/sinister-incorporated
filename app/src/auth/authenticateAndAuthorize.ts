@@ -7,7 +7,7 @@ import {
 import { log } from "@/logging";
 import { getServerSession, type Session } from "next-auth";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { cache } from "react";
 import { type PermissionSet } from "./PermissionSet";
 import comparePermissionSets from "./comparePermissionSets";
@@ -63,7 +63,7 @@ export async function authenticatePage(requestPath?: string) {
           reason: "Insufficient permissions",
         });
 
-        redirect("/app/forbidden");
+        forbidden();
       }
 
       return result;
