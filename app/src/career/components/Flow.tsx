@@ -16,6 +16,7 @@ import {
   BackgroundVariant,
   ControlButton,
   Controls,
+  MarkerType,
   ReactFlow,
   type Edge,
   type Node,
@@ -227,6 +228,9 @@ export const Flow = ({
         className={className}
         defaultEdgeOptions={{
           type: "smoothstep",
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+          },
         }}
         snapToGrid
         nodesDraggable={isUpdating}
