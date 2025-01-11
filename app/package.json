@@ -81,7 +81,7 @@
     "@vitest/coverage-v8": "2.1.8",
     "autoprefixer": "10.4.20",
     "csv": "6.3.11",
-    "eslint": "8.57.1",
+    "eslint": "9.18.0",
     "eslint-config-next": "15.1.2",
     "eslint-plugin-react-compiler": "latest",
     "postcss": "8.4.49",
