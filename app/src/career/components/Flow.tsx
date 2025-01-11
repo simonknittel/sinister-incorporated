@@ -238,6 +238,7 @@ export const Flow = ({
         nodesFocusable={isUpdating}
         edgesFocusable={isUpdating}
         colorMode="dark"
+        minZoom={0.25}
       >
         <Background color="#444" variant={BackgroundVariant.Dots} />
 
