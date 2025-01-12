@@ -5,6 +5,7 @@ import { prisma } from "@/db";
 import { log } from "@/logging";
 import { VariantStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { createAndReturnTags } from "../utils/createAndReturnTags";
@@ -93,6 +94,7 @@ export const createVariant = async (formData: FormData) => {
       success: "Erfolgreich gespeichert.",
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error("Internal Server Error", { error: serializeError(error) });
     return {
       error:

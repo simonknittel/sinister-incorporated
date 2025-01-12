@@ -1,5 +1,6 @@
 import { log } from "@/logging";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { ZodError } from "zod";
 import { type ServerActionResponse } from "./types";
@@ -17,6 +18,8 @@ export const serverActionErrorHandler = (
     };
   },
 ): ServerActionResponse => {
+  unstable_rethrow(error);
+
   if (
     error instanceof ZodError ||
     (error instanceof Error &&

@@ -4,6 +4,7 @@ import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { revalidatePath } from "next/cache";
+import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
 
@@ -63,6 +64,7 @@ export const verifyEmailAction = async (formData: FormData) => {
       success: "Erfolgreich gespeichert",
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error("Internal Server Error", { error: serializeError(error) });
     return {
       error:

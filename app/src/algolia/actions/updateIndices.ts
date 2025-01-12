@@ -2,6 +2,7 @@
 
 import { prisma } from "@/db";
 import { log } from "@/logging";
+import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { getIndex } from "..";
 
@@ -63,10 +64,10 @@ export const updateIndices = async () => {
       success: "Successfully updated Algolia indices",
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error("Failed to update Algolia indices", {
       error: serializeError(error),
     });
-
     return {
       error: "Failed to update Algolia indices",
     };
