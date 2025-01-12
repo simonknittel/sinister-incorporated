@@ -3,7 +3,7 @@
 import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
 
@@ -49,6 +49,7 @@ export const deleteRole = async (
      */
     redirect("/app/roles");
   } catch (error) {
+    unstable_rethrow(error);
     void log.error("Internal Server Error", { error: serializeError(error) });
     return {
       error:
