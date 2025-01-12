@@ -1,11 +1,9 @@
 import { authenticatePage } from "@/auth/server";
-import { Link } from "@/common/components/Link";
 import { getEvent } from "@/discord/utils/getEvent";
+import { Navigation } from "@/events/components/Navigation";
 import { OverviewTab } from "@/events/components/OverviewTab";
 import { log } from "@/logging";
 import { type Metadata } from "next";
-import { FaHome, FaUsers } from "react-icons/fa";
-import { MdWorkspaces } from "react-icons/md";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<{
@@ -42,7 +40,6 @@ type Props = Readonly<{
 export default async function Page({ params }: Props) {
   const authentication = await authenticatePage("/app/events/[id]");
   await authentication.authorizePage("event", "read");
-  const showFleetTile = await authentication.authorize("orgFleet", "read");
 
   const event = await getEvent((await params).id);
 
@@ -53,33 +50,12 @@ export default async function Page({ params }: Props) {
         <p>{event.data.name}</p>
       </div>
 
-      <div className="flex flex-wrap mt-4">
-        <Link
-          href={`/app/events/${event.data.id}`}
-          className="first:rounded-l border-[1px] border-sinister-red-500 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase bg-sinister-red-500 text-white"
-        >
-          <FaHome />
-          Übersicht
-        </Link>
-
-        <Link
-          href={`/app/events/${event.data.id}/participants`}
-          className="first:rounded-l border-[1px] border-sinister-red-500 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"
-        >
-          <FaUsers />
-          Teilnehmer ({event.data.user_count})
-        </Link>
-
-        {showFleetTile && (
-          <Link
-            href={`/app/events/${event.data.id}/fleet`}
-            className="first:rounded-l border-[1px] border-sinister-red-500 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"
-          >
-            <MdWorkspaces />
-            Flotte
-          </Link>
-        )}
-      </div>
+      <Navigation
+        eventId={event.data.id}
+        participantsCount={event.data.user_count}
+        active=""
+        className="mt-4"
+      />
 
       <OverviewTab event={event} className="mt-4" />
     </main>
