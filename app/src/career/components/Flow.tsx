@@ -51,7 +51,9 @@ type Props = Readonly<{
     })[];
   };
   roles: Role[];
-  assignedRoles: Role[];
+  assignedRoles: (Role & {
+    inherits: Role[];
+  })[];
   canUpdate?: boolean;
   isUpdating?: boolean;
 }>;

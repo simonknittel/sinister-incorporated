@@ -1,45 +1,39 @@
-import { requireAuthentication } from "@/auth/server";
 import { Link } from "@/common/components/Link";
+import type { Role } from "@prisma/client";
 import clsx from "clsx";
-import { FaHome, FaUsers } from "react-icons/fa";
-import { MdWorkspaces } from "react-icons/md";
+import { FaHome, FaLock, FaUsers } from "react-icons/fa";
+import { TbHierarchy3 } from "react-icons/tb";
 
 type Props = Readonly<{
   className?: string;
-  eventId: string;
-  participantsCount: number;
+  role: Role & {
+    inherits: Role[];
+  };
   active: string;
 }>;
 
-export const Navigation = async ({
-  className,
-  eventId,
-  participantsCount,
-  active,
-}: Props) => {
-  const authentication = await requireAuthentication();
-  const showFleetLink = await authentication.authorize("orgFleet", "read");
-
+export const Navigation = ({ className, role, active }: Props) => {
   const pages = [
     {
       name: "Übersicht",
       icon: FaHome,
-      path: `/app/events/${eventId}`,
+      path: `/app/roles/${role.id}`,
     },
     {
-      name: `Teilnehmer (${participantsCount})`,
-      icon: FaUsers,
-      path: `/app/events/${eventId}/participants`,
+      name: "Berechtigungen",
+      icon: FaLock,
+      path: `/app/roles/${role.id}/permissions`,
     },
-    ...(showFleetLink
-      ? [
-          {
-            name: "Flotte",
-            icon: MdWorkspaces,
-            path: `/app/events/${eventId}/fleet`,
-          },
-        ]
-      : []),
+    {
+      name: `Vererbungen (${role.inherits.length})`,
+      icon: TbHierarchy3,
+      path: `/app/roles/${role.id}/inheritance`,
+    },
+    {
+      name: "Citizen",
+      icon: FaUsers,
+      path: `/app/spynet/citizen?filters=role-${role.id}`,
+    },
   ];
 
   return (

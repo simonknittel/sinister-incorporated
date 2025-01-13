@@ -1,0 +1,74 @@
+"use server";
+
+import { authenticateAction } from "@/auth/server";
+import { prisma } from "@/db";
+import { log } from "@/logging";
+import { revalidatePath } from "next/cache";
+import { unstable_rethrow } from "next/navigation";
+import { serializeError } from "serialize-error";
+import { z } from "zod";
+
+const schema = z.object({
+  id: z.string().cuid(),
+  roles: z.array(z.string().cuid()),
+});
+
+export const updateRoleInheritance = async (
+  previousState: unknown,
+  formData: FormData,
+) => {
+  try {
+    /**
+     * Authenticate and authorize the request
+     */
+    const authentication = await authenticateAction("updateRoleInheritance");
+    await authentication.authorizeAction("role", "manage");
+
+    /**
+     * Validate the request
+     */
+    const result = schema.safeParse({
+      id: formData.get("id"),
+      roles: formData.getAll("roles"),
+    });
+    if (!result.success) {
+      void log.warn("Bad Request", { error: serializeError(result.error) });
+      return {
+        error: "Ungültige Anfrage",
+      };
+    }
+
+    /**
+     * Update role
+     */
+    await prisma.role.update({
+      where: {
+        id: result.data.id,
+      },
+      data: {
+        inherits: {
+          set: result.data.roles.map((id) => ({ id })),
+        },
+      },
+    });
+
+    /**
+     * Revalidate cache(s)
+     */
+    revalidatePath(`/app/roles/${result.data.id}`);
+
+    /**
+     * Respond with the result
+     */
+    return {
+      success: "Erfolgreich gespeichert.",
+    };
+  } catch (error) {
+    unstable_rethrow(error);
+    void log.error("Internal Server Error", { error: serializeError(error) });
+    return {
+      error:
+        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+    };
+  }
+};

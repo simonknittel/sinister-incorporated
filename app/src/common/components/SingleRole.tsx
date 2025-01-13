@@ -6,9 +6,14 @@ import Image from "next/image";
 type Props = Readonly<{
   className?: string;
   role: Role;
+  showPlaceholder?: boolean;
 }>;
 
-export const SingleRole = ({ className, role }: Props) => {
+export const SingleRole = ({
+  className,
+  role,
+  showPlaceholder = false,
+}: Props) => {
   return (
     <span
       className={clsx(
@@ -17,7 +22,7 @@ export const SingleRole = ({ className, role }: Props) => {
       )}
     >
       {role.iconId && (
-        <div className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
+        <span className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
           <Image
             src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
             alt=""
@@ -25,8 +30,10 @@ export const SingleRole = ({ className, role }: Props) => {
             height={24}
             className="max-w-full max-h-full"
           />
-        </div>
+        </span>
       )}
+
+      {!role.iconId && showPlaceholder && <span className="size-6" />}
 
       {role.name}
     </span>

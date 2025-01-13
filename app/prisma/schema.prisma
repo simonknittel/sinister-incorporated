@@ -201,6 +201,8 @@ model Role {
     thumbnail         Upload?            @relation(name: "thumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
     permissionStrings PermissionString[]
     flowNodes         FlowNode[]         @relation("flowNodes")
+    inherits          Role[]             @relation("inheritance")
+    inheritedBy       Role[]             @relation("inheritance")
 }
 
 model PermissionString {
@@ -410,7 +412,7 @@ model Flow {
     id       String     @id
     name     String
     nodes    FlowNode[]
-    position Int?       @unique @default(autoincrement())
+    position Int        @unique @default(autoincrement())
 }
 
 model FlowNode {

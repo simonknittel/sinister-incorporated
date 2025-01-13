@@ -8,6 +8,7 @@ export const getVisibleRoles = cache(async () => {
   const authentication = await requireAuthentication();
 
   const allRoles = await getRoles();
+  // TODO: Filter `inherits` as well
   const visibleRoles = (
     await Promise.all(
       allRoles.map(async (role) => {
@@ -49,7 +50,6 @@ export const getMyAssignedRoles = cache(async () => {
       discordId: authentication.session.discordId,
     },
   });
-
   if (!entity) throw new Error("Forbidden");
 
   return getAssignedRoles(entity);

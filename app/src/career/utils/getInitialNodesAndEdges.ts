@@ -16,7 +16,9 @@ export const getInitialNodesAndEdges = (
     })[];
   },
   roles: Role[],
-  assignedRoles: Role[],
+  assignedRoles: (Role & {
+    inherits: Role[];
+  })[],
 ) => {
   const initialNodes = flow.nodes.map((node) => {
     switch (node.type) {

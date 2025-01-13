@@ -42,7 +42,8 @@ export default async function Page({ params }: Props) {
   await authentication.authorizePage("event", "read");
   await authentication.authorizePage("orgFleet", "read");
 
-  const event = await getEvent((await params).id);
+  const eventId = (await params).id;
+  const event = await getEvent(eventId);
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
@@ -52,9 +53,9 @@ export default async function Page({ params }: Props) {
       </div>
 
       <Navigation
-        eventId={event.data.id}
+        eventId={eventId}
         participantsCount={event.data.user_count}
-        active="/fleet"
+        active={`/app/events/${eventId}/fleet`}
         className="mt-4"
       />
 

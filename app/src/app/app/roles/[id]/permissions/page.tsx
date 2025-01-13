@@ -1,13 +1,12 @@
 import { authenticatePage } from "@/auth/server";
-import { Link } from "@/common/components/Link";
 import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { log } from "@/logging";
+import { Navigation } from "@/roles/components/Navigation";
 import { PermissionsTab } from "@/roles/components/PermissionsTab";
 import { getRoleById, getRoles } from "@/roles/queries";
 import { getAllClassificationLevels, getAllNoteTypes } from "@/spynet/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { FaHome, FaLock, FaUsers } from "react-icons/fa";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<{
@@ -45,7 +44,8 @@ export default async function Page({ params }: Props) {
   const authentication = await authenticatePage("/app/roles");
   await authentication.authorizePage("role", "manage");
 
-  const role = await getRoleById((await params).id);
+  const roleId = (await params).id;
+  const role = await getRoleById(roleId);
   if (!role) notFound();
 
   const [allRoles, noteTypes, classificationLevels] = await Promise.all([
@@ -65,31 +65,11 @@ export default async function Page({ params }: Props) {
         <p>{role?.name}</p>
       </div>
 
-      <div className="flex flex-wrap mt-2">
-        <Link
-          href={`/app/roles/${role.id}`}
-          className="first:rounded-l border-[1px] border-sinister-red-500 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"
-        >
-          <FaHome />
-          Übersicht
-        </Link>
-
-        <Link
-          href={`/app/roles/${role.id}/permissions`}
-          className="first:rounded-l border-[1px] border-sinister-red-500 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase bg-sinister-red-500 text-white"
-        >
-          <FaLock />
-          Berechtigungen
-        </Link>
-
-        <Link
-          href={`/app/spynet/citizen?filters=role-${role.id}`}
-          className="first:rounded-l border-[1px] border-sinister-red-500 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"
-        >
-          <FaUsers />
-          Citizen
-        </Link>
-      </div>
+      <Navigation
+        role={role}
+        active={`/app/roles/${roleId}/permissions`}
+        className="mt-2"
+      />
 
       <PermissionsTab
         role={role}
