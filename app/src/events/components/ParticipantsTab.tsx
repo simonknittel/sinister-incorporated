@@ -10,12 +10,12 @@ import { Suspense } from "react";
 import type { z } from "zod";
 import { getParticipants } from "../utils/getParticipants";
 
+const GRID_COLS = "grid-cols-[160px_1fr]";
+
 type Props = Readonly<{
   className?: string;
   event: Awaited<ReturnType<typeof getEvent>>["data"];
 }>;
-
-const GRID_COLS = "grid-cols-[160px,1fr]";
 
 export const ParticipantsTab = async ({ className, event }: Props) => {
   const authentication = await requireAuthentication();

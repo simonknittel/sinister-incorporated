@@ -4,6 +4,8 @@ import clsx from "clsx";
 import Image from "next/image";
 import { getRoles } from "../queries";
 
+const GRID_COLS = "grid-cols-[1fr_128px]";
+
 type Props = Readonly<{
   className?: string;
 }>;
@@ -13,32 +15,69 @@ export const RolesTile = async ({ className }: Props) => {
 
   return (
     <section
-      className={clsx(className, "p-4 lg:p-8 rounded-2xl bg-neutral-800/50 ")}
+      className={clsx(
+        "p-4 lg:p-8 rounded-2xl bg-neutral-800/50 overflow-hidden",
+        className,
+      )}
     >
-      {roles.map((role) => (
-        <Link
-          key={role.id}
-          href={`/app/roles/${role.id}`}
-          className="flex items-center gap-2 hover:bg-neutral-800 p-2 rounded"
-          prefetch={false}
-        >
-          {role.iconId ? (
-            <div className="aspect-square size-8 flex items-center justify-center rounded overflow-hidden">
-              <Image
-                src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
-                alt=""
-                width={32}
-                height={32}
-                className="max-w-full max-h-full"
-              />
-            </div>
-          ) : (
-            <div className="size-8" />
-          )}
+      <table className="w-full">
+        <thead>
+          <tr
+            className={clsx(
+              "grid items-center gap-4 text-left text-neutral-500 -mx-2",
+              GRID_COLS,
+            )}
+          >
+            <th className="px-2">Rolle</th>
+            <th className="px-2">Vererbungen</th>
+          </tr>
+        </thead>
 
-          <p className="font-bold">{role.name}</p>
-        </Link>
-      ))}
+        <tbody>
+          {roles.map((role) => (
+            <tr
+              key={role.id}
+              className={clsx("grid items-center gap-4 -mx-2", GRID_COLS)}
+            >
+              <td className="h-14 overflow-hidden">
+                <Link
+                  href={`/app/roles/${role.id}`}
+                  className="flex items-center gap-2 hover:bg-neutral-800 px-2 rounded h-full"
+                  prefetch={false}
+                >
+                  {role.iconId ? (
+                    <div className="aspect-square size-8 flex items-center justify-center rounded overflow-hidden flex-none">
+                      <Image
+                        src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
+                        alt=""
+                        width={32}
+                        height={32}
+                        className="max-w-full max-h-full"
+                      />
+                    </div>
+                  ) : (
+                    <div className="size-8 flex-none" />
+                  )}
+
+                  <p className="font-bold overflow-hidden text-ellipsis whitespace-nowrap">
+                    {role.name}
+                  </p>
+                </Link>
+              </td>
+
+              <td className="h-14">
+                <Link
+                  href={`/app/roles/${role.id}/inheritance`}
+                  className="flex items-center gap-2 hover:bg-neutral-800 px-2 rounded h-full"
+                  prefetch={false}
+                >
+                  {role.inherits.length > 0 ? role.inherits.length : "-"}
+                </Link>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       {roles.length <= 0 && (
         <p className="text-neutral-500 italic">Keine Rollen vorhanden</p>

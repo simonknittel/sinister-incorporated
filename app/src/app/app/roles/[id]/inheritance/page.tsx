@@ -67,7 +67,7 @@ export default async function Page({ params }: Props) {
 
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 mt-4">
         <h2 className="text-xl font-bold mb-2">Vererbungen</h2>
-        <p>
+        <p className="max-w-prose">
           Die Rolle <SingleRole role={role} className="inline-flex align-sub" />{" "}
           erhält alle Berechtigungen von den folgenden ausgewählten Rollen. Im
           Karrieresystem gelten die folgenden Rollen ebenfalls als
