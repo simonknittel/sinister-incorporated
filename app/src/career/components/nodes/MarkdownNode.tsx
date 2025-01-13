@@ -164,7 +164,7 @@ export const MarkdownNode = (props: NodeProps<Markdown>) => {
         </NodeToolbar>
       )}
 
-      {isResizing && <NodeResizer minWidth={100} minHeight={100} />}
+      {isResizing && <NodeResizer minWidth={1} minHeight={1} />}
 
       <div
         className={clsx(
