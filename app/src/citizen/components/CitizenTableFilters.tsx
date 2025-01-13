@@ -16,8 +16,6 @@ export const CitizenTableFilters = async () => {
 
   return (
     <div className="flex gap-4 items-center">
-      <p>Filter</p>
-
       <Filter name="Unbekannt">
         <UnknownsFilter
           showDiscordId={showDiscordId}

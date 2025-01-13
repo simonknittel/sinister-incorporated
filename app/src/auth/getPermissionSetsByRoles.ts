@@ -26,7 +26,7 @@ export const getPermissionSetsByRoles = (roles: Roles): PermissionSet[] => {
         permissionSet.attributes = attributeStrings.map((attributeString) => {
           const [key, value] = attributeString.split("=");
 
-          if (!key || !value) throw new Error("Invalid attributeString string");
+          if (!key || !value) throw new Error("Invalid attributeString");
 
           return { key, value };
         });

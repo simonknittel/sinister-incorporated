@@ -5,7 +5,9 @@ import { type FlowNode, type Role, FlowNodeType } from "@prisma/client";
 export const getNodeTypeRole = (
   node: FlowNode,
   roles: Role[],
-  assignedRoles: Role[],
+  assignedRoles: (Role & {
+    inherits: Role[];
+  })[],
 ) => {
   const role = roles.find((role) => role.id === node.roleId);
 
@@ -15,9 +17,7 @@ export const getNodeTypeRole = (
         roleImage: node.roleImage,
         backgroundColor: node.backgroundColor,
         backgroundTransparency: node.backgroundTransparency,
-        unlocked: assignedRoles.some(
-          (assignedRole) => assignedRole.id === role.id,
-        ),
+        unlocked: isUnlocked(role, assignedRoles),
       }
     : { redacted: true };
 
@@ -32,4 +32,20 @@ export const getNodeTypeRole = (
     width: node.width,
     height: node.height,
   };
+};
+
+export const isUnlocked = (
+  role: Pick<Role, "id">,
+  assignedRoles: (Pick<Role, "id"> & { inherits: Pick<Role, "id">[] })[],
+) => {
+  return assignedRoles.some((assignedRole) => {
+    if (assignedRole.id === role.id) return true;
+
+    if (assignedRole.inherits.length > 0)
+      return assignedRole.inherits.some(
+        (inheritedRole) => inheritedRole.id === role.id,
+      );
+
+    return false;
+  });
 };
