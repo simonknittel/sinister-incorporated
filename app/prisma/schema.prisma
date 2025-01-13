@@ -407,9 +407,10 @@ enum ConfirmationStatus {
 //
 
 model Flow {
-    id    String     @id
-    name  String
-    nodes FlowNode[]
+    id       String     @id
+    name     String
+    nodes    FlowNode[]
+    position Int?       @unique @default(autoincrement())
 }
 
 model FlowNode {
