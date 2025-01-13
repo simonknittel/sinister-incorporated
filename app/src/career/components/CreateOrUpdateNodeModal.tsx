@@ -38,7 +38,6 @@ type Props = Readonly<{
         roleImage: FlowNodeRoleImage;
       }
     | {
-        id: string;
         type: typeof FlowNodeType.MARKDOWN;
         markdown: string;
         markdownPosition: FlowNodeMarkdownPosition;
