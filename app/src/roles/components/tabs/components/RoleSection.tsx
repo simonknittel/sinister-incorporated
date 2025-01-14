@@ -13,7 +13,7 @@ type Props = Readonly<{
 export const RoleSection = ({ className, roles }: Props) => {
   const { permissionStrings } = usePermissionsContext();
 
-  const [rules, setRules] = useState<Array<string>>(
+  const [rules, setRules] = useState<string[]>(
     permissionStrings.filter((permissionString) =>
       permissionString.startsWith("otherRole;"),
     ),

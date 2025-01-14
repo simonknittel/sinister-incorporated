@@ -21,7 +21,7 @@ export type CitizenHit = HitBase & {
 
 export type OrganizationHit = HitBase & {
   type: "organization";
-  names: Array<string>;
+  names: string[];
 };
 
 export type Hit = CitizenHit | OrganizationHit;

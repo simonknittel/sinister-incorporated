@@ -12,7 +12,7 @@ import { FaSortDown, FaSortUp } from "react-icons/fa";
 import { ConfirmationState } from "./ConfirmationState";
 import { OtherTableDelete } from "./OtherTableDelete";
 
-export type Row = {
+export type Row = Readonly<{
   entity: Entity;
   confirmationState?: EntityLogConfirmationState;
   confirmedAt?: Date;
@@ -21,7 +21,7 @@ export type Row = {
     attributes: EntityLogAttribute[];
     submittedBy: User;
   };
-};
+}>;
 
 type Props = Readonly<{
   rows: Row[];

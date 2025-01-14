@@ -10,15 +10,13 @@ import {
 import Image from "next/image";
 
 export const mapOrganizationMembershipHistoryEntries = async (
-  entries: Array<
-    Pick<
-      OrganizationMembershipHistoryEntry,
-      "id" | "createdAt" | "type" | "visibility"
-    > & {
-      citizen: Pick<Entity, "id" | "handle">;
-      organization: Pick<Organization, "id" | "name" | "logo">;
-    }
-  >,
+  entries: (Pick<
+    OrganizationMembershipHistoryEntry,
+    "id" | "createdAt" | "type" | "visibility"
+  > & {
+    citizen: Pick<Entity, "id" | "handle">;
+    organization: Pick<Organization, "id" | "name" | "logo">;
+  })[],
 ) => {
   const authentication = await requireAuthentication();
   if (!(await authentication.authorize("organization", "read"))) return [];

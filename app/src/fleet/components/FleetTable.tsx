@@ -28,7 +28,7 @@ import { VariantWithLogo } from "./VariantWithLogo";
 
 type Props = Readonly<{
   className?: string;
-  fleet: Array<{
+  fleet: {
     variant: Variant & {
       series: Series & {
         manufacturer: Manufacturer;
@@ -36,7 +36,7 @@ type Props = Readonly<{
       tags: VariantTag[];
     };
     count: number;
-  }>;
+  }[];
 }>;
 
 type Row = Props["fleet"][number];

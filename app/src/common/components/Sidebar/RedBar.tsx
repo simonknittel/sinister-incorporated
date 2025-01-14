@@ -58,8 +58,7 @@ const findMatchingLink = (
   let bestMatch: HTMLAnchorElement | null = null;
   let bestMatchHref = "";
 
-  for (let i = 0; i < links.length; i++) {
-    const link = links[i];
+  for (const link of links) {
     if (!link) continue;
 
     const href = link.getAttribute("href");

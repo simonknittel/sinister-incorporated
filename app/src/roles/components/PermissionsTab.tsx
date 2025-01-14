@@ -13,7 +13,7 @@ import { PermissionsProvider } from "./PermissionsContext";
 type Props = Readonly<{
   className?: string;
   role: Role & {
-    permissionStrings: Array<PermissionString>;
+    permissionStrings: PermissionString[];
   };
   noteTypes: NoteType[];
   classificationLevels: ClassificationLevel[];

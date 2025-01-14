@@ -42,7 +42,7 @@ export const CmdK = ({
   const authentication = useAuthentication();
   const [search, setSearch] = useState("");
   const router = useRouter();
-  const [pages, setPages] = useState<Array<string>>([]);
+  const [pages, setPages] = useState<string[]>([]);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {

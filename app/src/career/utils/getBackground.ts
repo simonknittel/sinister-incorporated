@@ -1,7 +1,4 @@
-export const getBackground = (
-  hexColor: string = "#262626",
-  transparency?: number,
-) => {
+export const getBackground = (hexColor = "#262626", transparency?: number) => {
   const { r, g, b } = hexToRgb(hexColor);
   return `rgba(${r}, ${g}, ${b}, ${transparency ?? 1})`;
 };

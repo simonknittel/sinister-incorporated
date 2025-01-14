@@ -19,7 +19,7 @@ const PermissionsContext = createContext<
 type Props = Readonly<{
   children: ReactNode;
   role: Role & {
-    permissionStrings: Array<PermissionString>;
+    permissionStrings: PermissionString[];
   };
 }>;
 

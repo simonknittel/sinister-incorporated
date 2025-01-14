@@ -3,17 +3,15 @@ import { Link } from "@/common/components/Link";
 import { type OrganizationAttributeHistoryEntry } from "@prisma/client";
 
 export const mapOrganizationAttributeHistoryEntries = async (
-  entries: Array<
-    Pick<
-      OrganizationAttributeHistoryEntry,
-      | "id"
-      | "organizationId"
-      | "createdAt"
-      | "attributeKey"
-      | "oldValue"
-      | "newValue"
-    >
-  >,
+  entries: Pick<
+    OrganizationAttributeHistoryEntry,
+    | "id"
+    | "organizationId"
+    | "createdAt"
+    | "attributeKey"
+    | "oldValue"
+    | "newValue"
+  >[],
 ) => {
   const authentication = await requireAuthentication();
   if (!(await authentication.authorize("organization", "read"))) return [];

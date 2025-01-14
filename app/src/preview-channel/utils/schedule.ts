@@ -1,8 +1,8 @@
-export type Schedule = Array<{
+export type Schedule = {
   start: Date;
   end: Date;
   region: "APAC" | "EU" | "US";
-}>;
+}[];
 
 export const schedule: Schedule = [
   {
