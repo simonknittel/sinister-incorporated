@@ -1,11 +1,9 @@
 import { type PermissionString, type Role } from "@prisma/client";
 import { type PermissionSet } from "./PermissionSet";
 
-type Roles = Array<
-  Role & {
-    permissionStrings: Array<PermissionString>;
-  }
->;
+type Roles = (Role & {
+  permissionStrings: PermissionString[];
+})[];
 
 export const getPermissionSetsByRoles = (roles: Roles): PermissionSet[] => {
   const permissionSets = [];

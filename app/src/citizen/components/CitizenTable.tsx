@@ -8,9 +8,9 @@ import { LastSeenAt } from "./LastSeenAt";
 import { RolesCell } from "./RolesCell";
 import { HistoryModal } from "./generic-log-type/HistoryModal";
 
-type Row = {
+type Row = Readonly<{
   entity: Entity;
-};
+}>;
 
 type Props = Readonly<{
   rows: Row[];

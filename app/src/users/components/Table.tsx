@@ -27,11 +27,11 @@ type Props = Readonly<{
   }[];
 }>;
 
-type Row = {
+type Row = Readonly<{
   user: User;
   discordId: string;
   entity?: Entity;
-};
+}>;
 
 const columnHelper = createColumnHelper<Row>();
 

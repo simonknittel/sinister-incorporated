@@ -19,7 +19,7 @@ export const NoteSection = ({
 }: Props) => {
   const { permissionStrings } = usePermissionsContext();
 
-  const [rules, setRules] = useState<Array<string>>(
+  const [rules, setRules] = useState<string[]>(
     permissionStrings.filter((permissionString) =>
       permissionString.startsWith("note;"),
     ),

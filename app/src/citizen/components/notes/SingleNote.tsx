@@ -60,10 +60,11 @@ export const SingleNote = async ({ note }: Props) => {
         .map((match) => match.slice(5)),
     );
 
-    let citizens: Array<Pick<Entity, "handle" | "spectrumId" | "id">> = [];
-    let organizations: Array<
-      Pick<Organization, "name" | "spectrumId" | "id" | "logo">
-    > = [];
+    let citizens: Pick<Entity, "handle" | "spectrumId" | "id">[] = [];
+    let organizations: Pick<
+      Organization,
+      "name" | "spectrumId" | "id" | "logo"
+    >[] = [];
 
     if (uniqueCitizenSpectrumIds.size > 0) {
       const result = await prisma.$transaction([
@@ -103,8 +104,8 @@ export const SingleNote = async ({ note }: Props) => {
       ?.split(/(@citizen:\d+)|(@org:[a-zA-Z]+)/g)
       .filter((part) => part !== undefined)
       .map((part, index) => {
-        const citizenMatch = part.match(/@citizen:(\d+)/);
-        const organizationMatch = part.match(/@org:([a-zA-Z]+)/);
+        const citizenMatch = /@citizen:(\d+)/.exec(part);
+        const organizationMatch = /@org:([a-zA-Z]+)/.exec(part);
 
         if (citizenMatch?.[1]) {
           const citizen = citizens.find(

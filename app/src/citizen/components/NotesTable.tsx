@@ -14,7 +14,7 @@ import { ConfirmationState } from "./ConfirmationState";
 import { DeleteLog } from "./DeleteLog";
 import { UpdateNote } from "./UpdateNote";
 
-export type Row = {
+export type Row = Readonly<{
   entity: Entity;
   noteType: NoteType;
   classificationLevel: ClassificationLevel;
@@ -25,7 +25,7 @@ export type Row = {
     attributes: EntityLogAttribute[];
     submittedBy: User;
   };
-};
+}>;
 
 type Props = Readonly<{
   rows: Row[];

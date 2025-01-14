@@ -9,7 +9,7 @@ export const scrapeOrganizationLogo = async (
 
   const html = await website.text();
 
-  const logoUrl = html.match(/"(\/media\/(?:.+)\/logo\/(?:.+))"/);
+  const logoUrl = /"(\/media\/(?:.+)\/logo\/(?:.+))"/.exec(html);
 
   return logoUrl?.[1] || undefined;
 };

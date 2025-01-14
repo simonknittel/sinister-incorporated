@@ -1,6 +1,6 @@
 import type { GenericEntityLogType } from "@/types";
 
-export type PermissionSet = {
+export interface PermissionSet {
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   resource:
     | GenericEntityLogType
@@ -29,7 +29,8 @@ export type PermissionSet = {
     | "spynetCitizen"
     | "spynetNotes"
     | "spynetOther"
-    | "career";
+    | "career"
+    | "leaderboards";
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   operation:
     | "create"
@@ -43,9 +44,9 @@ export type PermissionSet = {
     | "dismiss"
     | "negate";
   attributes?: PermissionSetAttribute[];
-};
+}
 
-export type PermissionSetAttribute = {
+export interface PermissionSetAttribute {
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   key:
     | "confirmed"
@@ -56,4 +57,4 @@ export type PermissionSetAttribute = {
     | "alsoVisibilityRedacted"
     | "flowId";
   value: string | boolean;
-};
+}

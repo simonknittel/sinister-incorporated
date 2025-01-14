@@ -1,7 +1,7 @@
 import { env } from "@/env";
 
 export const checkResponseForError = (
-  data: Record<string, unknown> | Array<unknown>,
+  data: Record<string, unknown> | unknown[],
 ) => {
   if (Array.isArray(data) || typeof data.message !== "string") return;
 

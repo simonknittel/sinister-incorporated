@@ -4,7 +4,7 @@ import { type Organization } from "@prisma/client";
 import Image from "next/image";
 
 export const mapOrganizationEntries = async (
-  entries: Array<Pick<Organization, "id" | "createdAt" | "name" | "logo">>,
+  entries: Pick<Organization, "id" | "createdAt" | "name" | "logo">[],
 ) => {
   const authentication = await requireAuthentication();
   if (!(await authentication.authorize("organization", "read"))) return [];

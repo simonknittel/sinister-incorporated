@@ -20,7 +20,7 @@ const fetcher = async (key: string) => {
 };
 
 type AlgoliaResponse = Readonly<{
-  hits: Array<Hit>;
+  hits: Hit[];
 }>;
 
 type Props = Readonly<{
@@ -51,7 +51,7 @@ export const SpynetSearchPage = ({ search, onSelect }: Props) => {
     debouncedHandleSearch(search);
   }, [debouncedHandleSearch, search]);
 
-  const showDogfightTrainer = !isValidating && data && search.match(/knebel/i);
+  const showDogfightTrainer = !isValidating && data && /knebel/i.exec(search);
 
   return (
     <Command.Group heading="Spynet > Suchen">
