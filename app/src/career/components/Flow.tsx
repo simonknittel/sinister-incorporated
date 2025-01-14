@@ -1,5 +1,6 @@
 "use client";
 
+import Note from "@/common/components/Note";
 import {
   FlowNodeRoleImage,
   FlowNodeType,
@@ -77,19 +78,28 @@ export const Flow = ({
   const [isCreateNodeModalOpen, setIsCreateNodeModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const [unsaved, setUnsaved] = useState(false);
 
-  const onNodesChange: OnNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [],
-  );
-  const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [],
-  );
-  const onConnect: OnConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [],
-  );
+  const onNodesChange: OnNodesChange = useCallback((changes) => {
+    console.log("node changes", changes);
+    if (
+      changes.some((change) => {
+        if (change.type === "select") return false;
+        if (change.type === "dimensions" && !change.resizing) return false;
+        return true;
+      })
+    )
+      setUnsaved(true);
+    return setNodes((nds) => applyNodeChanges(changes, nds));
+  }, []);
+  const onEdgesChange: OnEdgesChange = useCallback((changes) => {
+    if (changes.some((change) => change.type !== "select")) setUnsaved(true);
+    return setEdges((eds) => applyEdgeChanges(changes, eds));
+  }, []);
+  const onConnect: OnConnect = useCallback((params) => {
+    setUnsaved(true);
+    return setEdges((eds) => addEdge(params, eds));
+  }, []);
 
   const onCreate: FormEventHandler<HTMLFormElement> = useCallback(
     (event) => {
@@ -115,6 +125,8 @@ export const Flow = ({
         console.error(result.error);
         return;
       }
+
+      setUnsaved(true);
 
       setNodes((nds) => {
         if (result.data.nodeType === FlowNodeType.ROLE) {
@@ -195,6 +207,7 @@ export const Flow = ({
           return;
         }
 
+        setUnsaved(false);
         toast.success(result.success);
       } catch (error) {
         unstable_rethrow(error);
@@ -219,6 +232,14 @@ export const Flow = ({
 
   return (
     <FlowProvider roles={roles} isUpdating={isUpdating}>
+      {unsaved && (
+        <Note
+          type="info"
+          className="absolute left-1/2 -translate-x-1/2 top-4 z-10 text-blue-500"
+          message="Ungespeicherte Änderungen"
+        />
+      )}
+
       <ReactFlow
         nodeTypes={nodeTypes}
         nodes={nodes}
