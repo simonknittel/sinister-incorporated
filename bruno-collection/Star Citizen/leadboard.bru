@@ -1,0 +1,22 @@
+meta {
+  name: leadboard
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://robertsspaceindustries.com/api/leaderboards/getLeaderboard
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "mode": "SB",
+    "map": "MAP-ANY",
+    "type": "Account",
+    "season": "46",
+    "page": 1,
+    "pagesize": "100"
+  }
+}
