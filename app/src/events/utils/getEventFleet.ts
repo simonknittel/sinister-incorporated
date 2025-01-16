@@ -1,13 +1,13 @@
 import { prisma } from "@/db";
 import type { getEvent } from "@/discord/utils/getEvent";
-import { getEventUsersDeduped } from "@/discord/utils/getEventUsers";
+import { getEventUsers } from "@/discord/utils/getEventUsers";
 import { VariantStatus } from "@prisma/client";
 import { groupBy } from "lodash";
 import { cache } from "react";
 
 export const getEventFleet = cache(
   async (event: Awaited<ReturnType<typeof getEvent>>["data"]) => {
-    const users = await getEventUsersDeduped(event.id);
+    const users = await getEventUsers(event.id);
     const userIds = users.map((user) => user.user.id);
 
     const ships = await prisma.ship.findMany({

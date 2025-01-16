@@ -4,7 +4,7 @@ import { z } from "zod";
 import { checkResponseForError } from "./checkResponseForError";
 import { memberSchema, userSchema } from "./schemas";
 
-export const getEventUsersDeduped = cache(async (id: string) => {
+export const getEventUsers = cache(async (id: string) => {
   // https://discord.com/developers/docs/resources/guild-scheduled-event#get-guild-scheduled-event-users
   const response = await fetch(
     `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}/users?with_member=true`,

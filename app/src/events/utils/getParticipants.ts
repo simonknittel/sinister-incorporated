@@ -1,6 +1,6 @@
 import { prisma } from "@/db";
 import type { getEvent } from "@/discord/utils/getEvent";
-import { getEventUsersDeduped } from "@/discord/utils/getEventUsers";
+import { getEventUsers } from "@/discord/utils/getEventUsers";
 import { type memberSchema, type userSchema } from "@/discord/utils/schemas";
 import { cache } from "react";
 import type { z } from "zod";
@@ -10,7 +10,7 @@ export const getParticipants = cache(
     const discordEventUsers: {
       user: z.infer<typeof userSchema>;
       member?: z.infer<typeof memberSchema>;
-    }[] = await getEventUsersDeduped(event.id);
+    }[] = await getEventUsers(event.id);
 
     if (
       discordEventUsers.some((user) => user.user.id === event.creator_id) ===

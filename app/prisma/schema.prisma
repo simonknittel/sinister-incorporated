@@ -461,3 +461,15 @@ model FlowEdge {
     target       FlowNode @relation("targets", fields: [targetId], references: [id], onDelete: Cascade)
     targetHandle String
 }
+
+//
+// Events
+//
+
+model DiscordEvent {
+    id          String                   @id @default(cuid())
+    discordId   String                   @unique
+    hash        String                   @unique
+    createdAt   DateTime                 @default(now())
+    updatedAt   DateTime                 @updatedAt
+}

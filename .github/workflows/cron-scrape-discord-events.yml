@@ -1,0 +1,14 @@
+name: Cron - Scrape Discord Events
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run curl
+        run: |
+          curl -X POST https://sam.sinister-incorporated.de/api/scrape-discord-events -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
