@@ -3,6 +3,7 @@ import { prisma } from "@/db";
 import { getEvent } from "@/discord/utils/getEvent";
 import { getEvents } from "@/discord/utils/getEvents";
 import { env } from "@/env";
+import { beamsClient } from "@/pusher/utils/beamsClient";
 import { NextResponse, type NextRequest } from "next/server";
 import { createHash } from "node:crypto";
 
@@ -47,7 +48,17 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        // TODO: Send notification (updated event)
+        if (beamsClient) {
+          await beamsClient.publishToInterests(["updatedDiscordEvent"], {
+            web: {
+              notification: {
+                title: "Event aktualisiert | Sinister Incorporated",
+                body: event.name,
+                deep_link: `${env.BASE_URL}/app/events/${event.id}`,
+              },
+            },
+          });
+        }
       } else if (!existingEvent) {
         await prisma.discordEvent.create({
           data: {
@@ -56,7 +67,17 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        // TODO: Send notification (new event)
+        if (beamsClient) {
+          await beamsClient.publishToInterests(["newDiscordEvent"], {
+            web: {
+              notification: {
+                title: "Neues Event | Sinister Incorporated",
+                body: event.name,
+                deep_link: `${env.BASE_URL}/app/events/${event.id}`,
+              },
+            },
+          });
+        }
       } else {
         // Do nothing if event already exists and hash is the same (event details have not changed)
       }

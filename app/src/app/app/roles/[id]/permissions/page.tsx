@@ -1,5 +1,5 @@
 import { authenticatePage } from "@/auth/server";
-import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { log } from "@/logging";
 import { Navigation } from "@/roles/components/Navigation";
 import { PermissionsTab } from "@/roles/components/PermissionsTab";
@@ -54,9 +54,7 @@ export default async function Page({ params }: Props) {
     getAllClassificationLevels(),
   ]);
 
-  const enableOperations = Boolean(
-    await dedupedGetUnleashFlag("EnableOperations"),
-  );
+  const enableOperations = Boolean(await getUnleashFlag("EnableOperations"));
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">

@@ -1,5 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
-import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import clsx from "clsx";
 import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
 import { IoDocuments } from "react-icons/io5";
@@ -25,7 +25,7 @@ export const MobileActionBar = async ({ className }: Props) => {
     (await authentication.authorize("citizen", "read")) ||
     (await authentication.authorize("organization", "read"));
   const showOperations =
-    (await dedupedGetUnleashFlag("EnableOperations")) &&
+    (await getUnleashFlag("EnableOperations")) &&
     (await authentication.authorize("operation", "manage"));
   const showDocuments =
     (await authentication.authorize(

@@ -1,7 +1,10 @@
 import { TimeAgoLoader } from "@/common/components/TimeAgoLoader";
+import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { getMyDiscordEventSubscriber } from "@/events/queries";
 import clsx from "clsx";
 import { getEvents } from "../utils/getEvents";
 import { Event } from "./Event";
+import { NotificationsTooltip } from "./NotificationsTooltip";
 
 type Props = Readonly<{
   className?: string;
@@ -9,6 +12,8 @@ type Props = Readonly<{
 
 export const CalendarTile = async ({ className }: Props) => {
   const { date, data: events } = await getEvents();
+  const enableNotifications = await getUnleashFlag("EnableNotifications");
+  const discordEventSubscriber = await getMyDiscordEventSubscriber();
 
   return (
     <section
@@ -17,7 +22,14 @@ export const CalendarTile = async ({ className }: Props) => {
         "flex flex-col gap-4 items-center 3xl:overflow-hidden",
       )}
     >
-      <h2 className="font-bold text-xl self-start">Discord-Events</h2>
+      <div className="w-full flex gap-2 items-center">
+        <h2 className="font-bold text-xl">Discord-Events</h2>
+        {enableNotifications && (
+          <NotificationsTooltip
+            discordEventSubscriber={discordEventSubscriber}
+          />
+        )}
+      </div>
 
       {events
         .toSorted(

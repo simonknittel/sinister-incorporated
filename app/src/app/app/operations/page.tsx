@@ -1,6 +1,6 @@
 import { authenticatePage } from "@/auth/server";
 import Note from "@/common/components/Note";
-import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { CreateOperation } from "@/operations/components/CreateOperation";
 import OperationTile from "@/operations/components/OperationTile";
 import { getOperations } from "@/operations/queries";
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  if (!(await dedupedGetUnleashFlag("EnableOperations"))) notFound();
+  if (!(await getUnleashFlag("EnableOperations"))) notFound();
 
   const authentication = await authenticatePage("/app/operations");
   await authentication.authorizePage("operation", "manage");

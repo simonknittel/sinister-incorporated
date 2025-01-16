@@ -1,7 +1,7 @@
 import { authenticatePage } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
 import { Link } from "@/common/components/Link";
-import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { log } from "@/logging";
 import ConfirmParticipation from "@/operations/components/ConfirmParticipation";
 import CreateUnit from "@/operations/components/CreateUnit";
@@ -48,7 +48,7 @@ interface Props {
 }
 
 export default async function Page(props: Readonly<Props>) {
-  if (!(await dedupedGetUnleashFlag("EnableOperations"))) notFound();
+  if (!(await getUnleashFlag("EnableOperations"))) notFound();
 
   const authentication = await authenticatePage("/app/operations/[id]");
   await authentication.authorizePage("operation", "manage");
