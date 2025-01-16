@@ -3,7 +3,6 @@
 import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
-import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
@@ -57,11 +56,6 @@ export const updateMyDiscordEventSubscriber = async (formData: FormData) => {
         updatedEvent: result.data.updatedEvent,
       },
     });
-
-    /**
-     * Revalidate cache(s)
-     */
-    revalidatePath("/app");
 
     /**
      * Respond with the result
