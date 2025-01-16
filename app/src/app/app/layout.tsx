@@ -5,6 +5,7 @@ import ImpersonationBannerContainer from "@/common/components/ImpersonationBanne
 import QueryClientProviderContainer from "@/common/components/QueryClientProviderContainer";
 import { DesktopSidebarContainer } from "@/common/components/Sidebar/DesktopSidebarContainer";
 import { MobileActionBarContainer } from "@/common/components/Sidebar/MobileActionBarContainer";
+import { PusherBeams } from "@/pusher/components/PusherBeams";
 import { TRPCReactProvider } from "@/trpc/react";
 import { cookies } from "next/headers";
 import { Suspense, type ReactNode } from "react";
@@ -36,6 +37,10 @@ export default async function AppLayout({ children }: Readonly<Props>) {
               enabled={(await cookies()).get("enable_admin")?.value === "1"}
             />
           )}
+
+          <Suspense>
+            <PusherBeams />
+          </Suspense>
         </TRPCReactProvider>
       </QueryClientProviderContainer>
     </SessionProviderContainer>

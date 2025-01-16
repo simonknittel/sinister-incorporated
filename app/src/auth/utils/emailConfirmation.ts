@@ -6,14 +6,14 @@ import { TRPCError } from "@trpc/server";
 import { type Session } from "next-auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { dedupedGetUnleashFlag } from "../../common/utils/getUnleashFlag";
+import { getUnleashFlag } from "../../common/utils/getUnleashFlag";
 import { sendEmailV2 } from "../../common/utils/sendEmail";
 
 export const requestEmailConfirmation = async (
   userId: string,
   userEmail: string,
 ) => {
-  if (await dedupedGetUnleashFlag("DisableConfirmationEmail")) return;
+  if (await getUnleashFlag("DisableConfirmationEmail")) return;
 
   const emailConfirmationToken = createId();
 

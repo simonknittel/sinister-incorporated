@@ -4,7 +4,7 @@ import { evaluateFlags, flagsClient, getDefinitions } from "@unleash/nextjs";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
 
-export const dedupedGetUnleashFlag = cache(
+export const getUnleashFlag = cache(
   async (
     name:
       | "DisableAlgolia"
@@ -12,7 +12,8 @@ export const dedupedGetUnleashFlag = cache(
       | "EnableCareBearShooter"
       | "DisableConfirmationEmail"
       | "DisableRoleNameSuggestions"
-      | "EnableOperations",
+      | "EnableOperations"
+      | "EnableNotifications",
   ) => {
     try {
       const authentication = await authenticate();

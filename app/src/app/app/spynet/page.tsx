@@ -1,6 +1,6 @@
 import { authenticatePage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
-import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { CreateCitizen } from "@/spynet/components/CreateCitizen";
 import { CreateOrganization } from "@/spynet/components/CreateOrganization";
 import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
@@ -26,9 +26,7 @@ export default async function Page() {
       </div>
 
       <div className="max-w-[400px] mx-auto mt-8">
-        {!(await dedupedGetUnleashFlag("DisableAlgolia")) && (
-          <SpynetSearchTile />
-        )}
+        {!(await getUnleashFlag("DisableAlgolia")) && <SpynetSearchTile />}
 
         {(showCreateCitizen || showCreateOrganization) && (
           <div className="flex gap-4 justify-center mt-4">

@@ -1,0 +1,30 @@
+meta {
+  name: Publish notification
+  type: http
+  seq: 1
+}
+
+post {
+  url: https:/{{PUSHER_ENDPOINT}}/publishes
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{PUSHER_KEY}}
+}
+
+body:json {
+  {
+    "interests": [
+      "newDiscordEvent"
+    ],
+    "web": {
+      "notification": {
+        "title": "New Discord Event!",
+        "body": "Hello, world!"
+      }
+    }
+  }
+}

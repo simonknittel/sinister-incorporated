@@ -2,7 +2,7 @@ import { authenticatePage } from "@/auth/server";
 import { ProfileTile } from "@/citizen/components/ProfileTile";
 import { Hero } from "@/common/components/Hero";
 import { UwuHero } from "@/common/components/UwuHero";
-import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import {
   searchParamsNextjsToURLSearchParams,
   type NextjsSearchParams,
@@ -27,7 +27,7 @@ export default async function Page({ searchParams }: Props) {
 
   const showCalendar = await authentication.authorize("event", "read");
   const showSpynetSearchTile =
-    !(await dedupedGetUnleashFlag("DisableAlgolia")) &&
+    !(await getUnleashFlag("DisableAlgolia")) &&
     ((await authentication.authorize("citizen", "read")) ||
       (await authentication.authorize("organization", "read")));
 

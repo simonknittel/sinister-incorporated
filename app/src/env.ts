@@ -73,6 +73,8 @@ export const env = createEnv({
     API_CLIENT_CERT: z.string().transform((str) => str.replace(/\\n/g, "\n")),
     OPENAI_API_KEY: z.string().optional(),
     CRON_SECRET: z.string().optional(),
+    PUSHER_BEAMS_INSTANCE_ID: z.string().optional(),
+    PUSHER_BEAMS_KEY: z.string().optional(),
   },
 
   /*
@@ -128,6 +130,9 @@ export const env = createEnv({
     API_CLIENT_CERT: process.env.API_CLIENT_CERT,
     API_CLIENT_KEY: process.env.API_CLIENT_KEY,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    CRON_SECRET: process.env.CRON_SECRET,
+    PUSHER_BEAMS_INSTANCE_ID: process.env.PUSHER_BEAMS_INSTANCE_ID,
+    PUSHER_BEAMS_KEY: process.env.PUSHER_BEAMS_KEY,
   },
 
   emptyStringAsUndefined: true,

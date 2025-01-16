@@ -1,4 +1,4 @@
-import { dedupedGetUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { GameLoader } from "@/dogfight-trainer/components/GameLoader";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  if (!(await dedupedGetUnleashFlag("EnableCareBearShooter"))) redirect("/");
+  if (!(await getUnleashFlag("EnableCareBearShooter"))) redirect("/");
 
   return (
     <main className="min-h-dvh bg-sinister-radial-gradient flex items-center justify-center relative">
