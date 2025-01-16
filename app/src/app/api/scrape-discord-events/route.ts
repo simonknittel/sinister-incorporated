@@ -1,6 +1,5 @@
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
-import { getEvent } from "@/discord/utils/getEvent";
 import { getEvents } from "@/discord/utils/getEvents";
 import { env } from "@/env";
 import { beamsClient } from "@/pusher/utils/beamsClient";
@@ -17,9 +16,7 @@ export async function POST(request: NextRequest) {
 
     const { data: events } = await getEvents();
 
-    for (const _event of events) {
-      const { data: event } = await getEvent(_event.id);
-
+    for (const event of events) {
       const hash = createHash("md5");
       hash.update(
         JSON.stringify({
