@@ -113,7 +113,7 @@ export const NotificationsTooltip = ({
             </Button>
 
             <p className="text-neutral-500 text-xs max-w-80 mt-2">
-              Unterstützt wird Google Chrome (Desktop und Android), Microsoft
+              Unterstützt werden Google Chrome (Desktop und Android), Microsoft
               Edge (Desktop und Android) sowie Firefox (nur, wenn geöffnet).
               Safari wird nicht unterstützt.
             </p>
