@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
-import { updateMyDiscordEventSubscriber } from "@/events/actions/updateEventNotifications";
+import { updateMyDiscordEventSubscriber } from "@/events/actions/updateMyDiscordEventSubscriber";
 import type { DiscordEventSubscriber } from "@prisma/client";
 import * as Popover from "@radix-ui/react-popover";
 import clsx from "clsx";
@@ -20,6 +20,12 @@ export const NotificationsTooltip = ({
 }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [newEvent, setNewEvent] = useState(
+    discordEventSubscriber?.newEvent ? "true" : "false",
+  );
+  const [updatedEvent, setUpdatedEvent] = useState(
+    discordEventSubscriber?.updatedEvent ? "true" : "false",
+  );
 
   const formAction = (formData: FormData) => {
     startTransition(async () => {
@@ -66,8 +72,11 @@ export const NotificationsTooltip = ({
                 type="checkbox"
                 name="newEvent"
                 value="true"
+                onChange={(event) =>
+                  setNewEvent(event.target.checked ? "true" : "false")
+                }
+                defaultChecked={newEvent === "true"}
                 className="hidden peer"
-                defaultChecked={discordEventSubscriber?.newEvent}
               />
               <span className="w-8 h-8 bg-neutral-700 rounded block relative peer-checked:hidden">
                 <span className="absolute inset-1 rounded bg-green-500/50 hidden group-hover:block" />
@@ -83,8 +92,11 @@ export const NotificationsTooltip = ({
                 type="checkbox"
                 name="updatedEvent"
                 value="true"
+                onChange={(event) =>
+                  setUpdatedEvent(event.target.checked ? "true" : "false")
+                }
+                defaultChecked={updatedEvent === "true"}
                 className="hidden peer"
-                defaultChecked={discordEventSubscriber?.updatedEvent}
               />
               <span className="w-8 h-8 bg-neutral-700 rounded block relative peer-checked:hidden">
                 <span className="absolute inset-1 rounded bg-green-500/50 hidden group-hover:block" />
