@@ -72,6 +72,7 @@ export const env = createEnv({
     API_CLIENT_KEY: z.string().transform((str) => str.replace(/\\n/g, "\n")),
     API_CLIENT_CERT: z.string().transform((str) => str.replace(/\\n/g, "\n")),
     OPENAI_API_KEY: z.string().optional(),
+    CRON_SECRET: z.string().optional(),
   },
 
   /*
