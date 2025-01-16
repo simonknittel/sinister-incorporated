@@ -1,7 +1,7 @@
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { env } from "@/env";
 import { getMyDiscordEventSubscriber } from "@/events/queries";
-import { Client } from "./Client";
+import { ClientLoader } from "./ClientLoader";
 
 export const PusherBeams = async () => {
   const enableNotifications = await getUnleashFlag("EnableNotifications");
@@ -16,7 +16,7 @@ export const PusherBeams = async () => {
     return null;
 
   return (
-    <Client
+    <ClientLoader
       instanceId={env.PUSHER_BEAMS_INSTANCE_ID}
       discordEventSubscriber={discordEventSubscriber}
     />
