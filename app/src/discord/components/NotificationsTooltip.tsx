@@ -1,50 +1,54 @@
 "use client";
 
 import Button from "@/common/components/Button";
-import { updateMyDiscordEventSubscriber } from "@/events/actions/updateMyDiscordEventSubscriber";
-import type { DiscordEventSubscriber } from "@prisma/client";
+import { useBeamsContext } from "@/pusher/components/BeamsContext";
 import * as Popover from "@radix-ui/react-popover";
 import clsx from "clsx";
-import { useState, useTransition } from "react";
+import { useEffect, useState, type FormEventHandler } from "react";
 import toast from "react-hot-toast";
-import { FaBell, FaSpinner } from "react-icons/fa";
+import { FaBell } from "react-icons/fa";
 
 type Props = Readonly<{
   className?: string;
-  discordEventSubscriber?: DiscordEventSubscriber | null;
 }>;
 
-export const NotificationsTooltip = ({
-  className,
-  discordEventSubscriber,
-}: Props) => {
+export const NotificationsTooltip = ({ className }: Props) => {
+  const { interests, setInterests } = useBeamsContext();
   const [isOpen, setIsOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
   const [newEvent, setNewEvent] = useState(
-    discordEventSubscriber?.newEvent ? "true" : "false",
+    interests.includes("newDiscordEvent") ? "true" : "false",
   );
   const [updatedEvent, setUpdatedEvent] = useState(
-    discordEventSubscriber?.updatedEvent ? "true" : "false",
+    interests.includes("updatedEvent") ? "true" : "false",
   );
 
-  const formAction = (formData: FormData) => {
-    startTransition(async () => {
-      try {
-        const state = await updateMyDiscordEventSubscriber(formData);
+  useEffect(() => {
+    setNewEvent(interests.includes("newDiscordEvent") ? "true" : "false");
+    setUpdatedEvent(
+      interests.includes("updatedDiscordEvent") ? "true" : "false",
+    );
+  }, [interests]);
 
-        if (state.error) {
-          toast.error(state.error);
-          return;
-        }
+  const submitHandler: FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
 
-        toast.success(state.success);
-      } catch (error) {
-        toast.error(
-          "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-        );
-        console.error(error);
-      }
+    const formData = new FormData(event.currentTarget);
+
+    setInterests((currentValue) => {
+      const newValue = currentValue.filter(
+        (interest) =>
+          ["newDiscordEvent", "updatedDiscordEvent"].includes(interest) ===
+          false,
+      );
+
+      if (formData.get("newEvent") === "true") newValue.push("newDiscordEvent");
+      if (formData.get("updatedEvent") === "true")
+        newValue.push("updatedDiscordEvent");
+
+      return newValue;
     });
+
+    toast.success("Erfolgreich gespeichert");
   };
 
   return (
@@ -62,7 +66,7 @@ export const NotificationsTooltip = ({
       <Popover.Portal>
         <Popover.Content sideOffset={4}>
           <form
-            action={formAction}
+            onSubmit={submitHandler}
             className="px-6 py-4 rounded bg-neutral-800"
           >
             <p>Erhalte ein Benachrichtigung bei ...</p>
@@ -107,8 +111,7 @@ export const NotificationsTooltip = ({
               Aktualisierungen
             </label>
 
-            <Button type="submit" className="ml-auto mt-2" disabled={isPending}>
-              {isPending ? <FaSpinner className="animate-spin" /> : ""}
+            <Button type="submit" className="ml-auto mt-2">
               Speichern
             </Button>
 
@@ -116,6 +119,10 @@ export const NotificationsTooltip = ({
               Unterstützt werden Google Chrome (Desktop und Android), Microsoft
               Edge (Desktop und Android) sowie Firefox (nur, wenn geöffnet).
               Safari wird nicht unterstützt.
+            </p>
+
+            <p className="text-neutral-500 text-xs max-w-80 mt-2">
+              Diese Einstellungen werden pro Browser und Gerät gespeichert.
             </p>
           </form>
 

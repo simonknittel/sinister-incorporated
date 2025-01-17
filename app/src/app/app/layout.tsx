@@ -5,7 +5,8 @@ import ImpersonationBannerContainer from "@/common/components/ImpersonationBanne
 import QueryClientProviderContainer from "@/common/components/QueryClientProviderContainer";
 import { DesktopSidebarContainer } from "@/common/components/Sidebar/DesktopSidebarContainer";
 import { MobileActionBarContainer } from "@/common/components/Sidebar/MobileActionBarContainer";
-import { PusherBeams } from "@/pusher/components/PusherBeams";
+import { env } from "@/env";
+import { BeamsProvider } from "@/pusher/components/BeamsContext";
 import { TRPCReactProvider } from "@/trpc/react";
 import { cookies } from "next/headers";
 import { Suspense, type ReactNode } from "react";
@@ -21,26 +22,24 @@ export default async function AppLayout({ children }: Readonly<Props>) {
     <SessionProviderContainer session={authentication.session}>
       <QueryClientProviderContainer>
         <TRPCReactProvider>
-          <div className="min-h-dvh bg-sinister-radial-gradient">
-            <MobileActionBarContainer />
-            <DesktopSidebarContainer />
+          <BeamsProvider instanceId={env.PUSHER_BEAMS_INSTANCE_ID}>
+            <div className="min-h-dvh bg-sinister-radial-gradient">
+              <MobileActionBarContainer />
+              <DesktopSidebarContainer />
 
-            <div className="lg:ml-[26rem] min-h-dvh">{children}</div>
-          </div>
+              <div className="lg:ml-[26rem] min-h-dvh">{children}</div>
+            </div>
 
-          <Suspense>
-            <ImpersonationBannerContainer />
-          </Suspense>
+            <Suspense>
+              <ImpersonationBannerContainer />
+            </Suspense>
 
-          {authentication.session.user.role === "admin" && (
-            <AdminEnabler
-              enabled={(await cookies()).get("enable_admin")?.value === "1"}
-            />
-          )}
-
-          <Suspense>
-            <PusherBeams />
-          </Suspense>
+            {authentication.session.user.role === "admin" && (
+              <AdminEnabler
+                enabled={(await cookies()).get("enable_admin")?.value === "1"}
+              />
+            )}
+          </BeamsProvider>
         </TRPCReactProvider>
       </QueryClientProviderContainer>
     </SessionProviderContainer>

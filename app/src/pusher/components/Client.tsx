@@ -1,42 +1,43 @@
 "use client";
 
-import type { DiscordEventSubscriber } from "@prisma/client";
 import * as PusherPushNotifications from "@pusher/push-notifications-web";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
+import { useBeamsContext } from "./BeamsContext";
 
 type Props = Readonly<{
   instanceId: string;
-  discordEventSubscriber: DiscordEventSubscriber;
 }>;
 
-export const Client = ({ instanceId, discordEventSubscriber }: Props) => {
-  return (
-    <div
-      ref={() => {
-        let beamsClient: PusherPushNotifications.Client;
+export const Client = ({ instanceId }: Props) => {
+  const { interests } = useBeamsContext();
 
-        try {
-          beamsClient = new PusherPushNotifications.Client({
-            instanceId,
-          });
+  useEffect(() => {
+    let beamsClient: PusherPushNotifications.Client;
 
-          void beamsClient.start().then(() => {
-            return beamsClient.setDeviceInterests([
-              ...(discordEventSubscriber.newEvent ? ["newDiscordEvent"] : []),
-              ...(discordEventSubscriber.updatedEvent
-                ? ["updatedDiscordEvent"]
-                : []),
-            ]);
-          });
-        } catch (error) {
-          console.error(error);
-          toast.error("Benachrichtigungen konnten nicht aktiviert werden.");
-        }
+    try {
+      beamsClient = new PusherPushNotifications.Client({
+        instanceId,
+      });
 
-        return () => {
-          void beamsClient.stop();
-        };
-      }}
-    />
-  );
+      if (interests.length <= 0) {
+        void beamsClient.stop();
+        return;
+      }
+
+      void beamsClient
+        .start()
+        .then(() => {
+          return beamsClient.setDeviceInterests(interests);
+        })
+        .then(() => {
+          console.info("Device interests set");
+        });
+    } catch (error) {
+      console.error(error);
+      toast.error("Benachrichtigungen konnten nicht aktiviert werden.");
+    }
+  }, [interests, instanceId]);
+
+  return null;
 };
