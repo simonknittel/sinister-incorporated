@@ -15,6 +15,7 @@ export const publishNotification = async (
         title: `${title} | Sinister Incorporated`,
         body,
         deep_link: `${env.BASE_URL}${deep_link}`,
+        icon: `${env.BASE_URL}/logo-white-on-black.png`,
       },
     },
   });
