@@ -22,7 +22,10 @@ export default async function AppLayout({ children }: Readonly<Props>) {
     <SessionProviderContainer session={authentication.session}>
       <QueryClientProviderContainer>
         <TRPCReactProvider>
-          <BeamsProvider instanceId={env.PUSHER_BEAMS_INSTANCE_ID}>
+          <BeamsProvider
+            instanceId={env.PUSHER_BEAMS_INSTANCE_ID}
+            userId={authentication.session.user.id}
+          >
             <div className="min-h-dvh bg-sinister-radial-gradient">
               <MobileActionBarContainer />
               <DesktopSidebarContainer />

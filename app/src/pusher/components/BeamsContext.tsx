@@ -1,5 +1,6 @@
 "use client";
 
+import type { User } from "@prisma/client";
 import dynamic from "next/dynamic";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
@@ -18,9 +19,10 @@ const BeamsContext = createContext<BeamsContext | undefined>(undefined);
 type Props = Readonly<{
   children: ReactNode;
   instanceId?: string;
+  userId: User["id"];
 }>;
 
-export const BeamsProvider = ({ children, instanceId }: Props) => {
+export const BeamsProvider = ({ children, instanceId, userId }: Props) => {
   const [interests, setInterests] = useState<string[] | undefined>(undefined);
 
   useEffect(() => {
@@ -49,7 +51,7 @@ export const BeamsProvider = ({ children, instanceId }: Props) => {
   return (
     <BeamsContext.Provider value={value}>
       {children}
-      {instanceId && <Client instanceId={instanceId} />}
+      {instanceId && <Client instanceId={instanceId} userId={userId} />}
     </BeamsContext.Provider>
   );
 };
