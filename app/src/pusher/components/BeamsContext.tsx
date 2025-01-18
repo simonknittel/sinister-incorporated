@@ -1,5 +1,6 @@
 "use client";
 
+import type { User } from "@prisma/client";
 import dynamic from "next/dynamic";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
@@ -9,8 +10,8 @@ const Client = dynamic(() => import("./Client").then((mod) => mod.Client), {
 });
 
 interface BeamsContext {
-  interests: string[];
-  setInterests: Dispatch<SetStateAction<string[]>>;
+  interests?: string[];
+  setInterests: Dispatch<SetStateAction<string[] | undefined>>;
 }
 
 const BeamsContext = createContext<BeamsContext | undefined>(undefined);
@@ -18,10 +19,11 @@ const BeamsContext = createContext<BeamsContext | undefined>(undefined);
 type Props = Readonly<{
   children: ReactNode;
   instanceId?: string;
+  userId: User["id"];
 }>;
 
-export const BeamsProvider = ({ children, instanceId }: Props) => {
-  const [interests, setInterests] = useState<string[]>([]);
+export const BeamsProvider = ({ children, instanceId, userId }: Props) => {
+  const [interests, setInterests] = useState<string[] | undefined>(undefined);
 
   useEffect(() => {
     const _interests = localStorage
@@ -29,12 +31,11 @@ export const BeamsProvider = ({ children, instanceId }: Props) => {
       ?.split(",")
       .filter(Boolean);
 
-    if (_interests) {
-      setInterests(_interests);
-    }
+    setInterests(_interests ?? []);
   }, []);
 
   useEffect(() => {
+    if (interests === undefined) return;
     const _interests = interests.join(",");
     localStorage.setItem("notification_interests", _interests);
   }, [interests]);
@@ -50,7 +51,7 @@ export const BeamsProvider = ({ children, instanceId }: Props) => {
   return (
     <BeamsContext.Provider value={value}>
       {children}
-      {instanceId && <Client instanceId={instanceId} />}
+      {instanceId && <Client instanceId={instanceId} userId={userId} />}
     </BeamsContext.Provider>
   );
 };

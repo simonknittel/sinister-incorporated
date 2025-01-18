@@ -16,40 +16,31 @@ export const Algolia = ({ className }: Props) => {
   const [state, formAction, isPending] = useActionState(updateIndices, null);
 
   return (
-    <section
-      className={clsx(
-        "mt-4 max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50",
-        className,
+    <form action={formAction} className={clsx(className)}>
+      <Button type="submit">
+        {isPending ? <FaSpinner className="animate-spin" /> : <TbRestore />}
+        Update Algolia indices
+      </Button>
+
+      {state?.success && (
+        <Note
+          type="success"
+          message={state.success}
+          className={clsx("mt-4", {
+            "animate-pulse": isPending,
+          })}
+        />
       )}
-    >
-      <h2 className="font-bold text-xl">Algolia</h2>
 
-      <form action={formAction} className="mt-4">
-        <Button type="submit">
-          {isPending ? <FaSpinner className="animate-spin" /> : <TbRestore />}
-          Update indices
-        </Button>
-
-        {state?.success && (
-          <Note
-            type="success"
-            message={state.success}
-            className={clsx("mt-4", {
-              "animate-pulse": isPending,
-            })}
-          />
-        )}
-
-        {state?.error && (
-          <Note
-            type="error"
-            message={state.error}
-            className={clsx("mt-4", {
-              "animate-pulse": isPending,
-            })}
-          />
-        )}
-      </form>
-    </section>
+      {state?.error && (
+        <Note
+          type="error"
+          message={state.error}
+          className={clsx("mt-4", {
+            "animate-pulse": isPending,
+          })}
+        />
+      )}
+    </form>
   );
 };

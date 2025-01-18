@@ -58,7 +58,9 @@ export default async function Page() {
         </section>
       )}
 
-      {showAlgolia && <Algolia />}
+      <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50">
+        {showAlgolia && <Algolia />}
+      </section>
     </main>
   );
 }

@@ -15,18 +15,15 @@ type Props = Readonly<{
 export const NotificationsTooltip = ({ className }: Props) => {
   const { interests, setInterests } = useBeamsContext();
   const [isOpen, setIsOpen] = useState(false);
-  const [newEvent, setNewEvent] = useState(
-    interests.includes("newDiscordEvent") ? "true" : "false",
-  );
-  const [updatedEvent, setUpdatedEvent] = useState(
-    interests.includes("updatedEvent") ? "true" : "false",
+  const [newEvent, setNewEvent] = useState<boolean | undefined>(undefined);
+  const [updatedEvent, setUpdatedEvent] = useState<boolean | undefined>(
+    undefined,
   );
 
   useEffect(() => {
-    setNewEvent(interests.includes("newDiscordEvent") ? "true" : "false");
-    setUpdatedEvent(
-      interests.includes("updatedDiscordEvent") ? "true" : "false",
-    );
+    if (interests === undefined) return;
+    setNewEvent(interests.includes("newDiscordEvent"));
+    setUpdatedEvent(interests.includes("updatedDiscordEvent"));
   }, [interests]);
 
   const submitHandler: FormEventHandler<HTMLFormElement> = (event) => {
@@ -35,6 +32,8 @@ export const NotificationsTooltip = ({ className }: Props) => {
     const formData = new FormData(event.currentTarget);
 
     setInterests((currentValue) => {
+      if (currentValue === undefined) return currentValue;
+
       const newValue = currentValue.filter(
         (interest) =>
           ["newDiscordEvent", "updatedDiscordEvent"].includes(interest) ===
@@ -76,10 +75,8 @@ export const NotificationsTooltip = ({ className }: Props) => {
                 type="checkbox"
                 name="newEvent"
                 value="true"
-                onChange={(event) =>
-                  setNewEvent(event.target.checked ? "true" : "false")
-                }
-                defaultChecked={newEvent === "true"}
+                onChange={(event) => setNewEvent(event.target.checked)}
+                defaultChecked={newEvent}
                 className="hidden peer"
               />
               <span className="w-8 h-8 bg-neutral-700 rounded block relative peer-checked:hidden">
@@ -96,10 +93,8 @@ export const NotificationsTooltip = ({ className }: Props) => {
                 type="checkbox"
                 name="updatedEvent"
                 value="true"
-                onChange={(event) =>
-                  setUpdatedEvent(event.target.checked ? "true" : "false")
-                }
-                defaultChecked={updatedEvent === "true"}
+                onChange={(event) => setUpdatedEvent(event.target.checked)}
+                defaultChecked={updatedEvent}
                 className="hidden peer"
               />
               <span className="w-8 h-8 bg-neutral-700 rounded block relative peer-checked:hidden">
