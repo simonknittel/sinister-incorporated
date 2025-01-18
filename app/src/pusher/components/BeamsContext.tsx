@@ -9,8 +9,8 @@ const Client = dynamic(() => import("./Client").then((mod) => mod.Client), {
 });
 
 interface BeamsContext {
-  interests: string[];
-  setInterests: Dispatch<SetStateAction<string[]>>;
+  interests?: string[];
+  setInterests: Dispatch<SetStateAction<string[] | undefined>>;
 }
 
 const BeamsContext = createContext<BeamsContext | undefined>(undefined);
@@ -21,7 +21,7 @@ type Props = Readonly<{
 }>;
 
 export const BeamsProvider = ({ children, instanceId }: Props) => {
-  const [interests, setInterests] = useState<string[]>([]);
+  const [interests, setInterests] = useState<string[] | undefined>(undefined);
 
   useEffect(() => {
     const _interests = localStorage
@@ -29,12 +29,11 @@ export const BeamsProvider = ({ children, instanceId }: Props) => {
       ?.split(",")
       .filter(Boolean);
 
-    if (_interests) {
-      setInterests(_interests);
-    }
+    setInterests(_interests ?? []);
   }, []);
 
   useEffect(() => {
+    if (interests === undefined) return;
     const _interests = interests.join(",");
     localStorage.setItem("notification_interests", _interests);
   }, [interests]);

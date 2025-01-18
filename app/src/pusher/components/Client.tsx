@@ -13,6 +13,8 @@ export const Client = ({ instanceId }: Props) => {
   const { interests } = useBeamsContext();
 
   useEffect(() => {
+    if (interests === undefined) return;
+
     let beamsClient: PusherPushNotifications.Client;
 
     try {
@@ -22,19 +24,21 @@ export const Client = ({ instanceId }: Props) => {
 
       if (interests.length <= 0) {
         void beamsClient.stop();
+        console.info("[Pusher] Client stopped");
         return;
       }
 
       void beamsClient
         .start()
         .then(() => {
+          console.info("[Pusher] Client started");
           return beamsClient.setDeviceInterests(interests);
         })
         .then(() => {
-          console.info("Device interests set");
+          console.info("[Pusher] Device interests set");
         });
     } catch (error) {
-      console.error(error);
+      console.error("[Pusher] Error initializing client", error);
       toast.error("Benachrichtigungen konnten nicht aktiviert werden.");
     }
   }, [interests, instanceId]);
