@@ -292,13 +292,11 @@ model VerificationToken {
 }
 
 model EmailConfirmationToken {
+    token   String   @id
+    email   String
     userId  String
     user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    email   String
-    token   String   @unique
     expires DateTime
-
-    @@unique([userId, email])
 }
 
 //
