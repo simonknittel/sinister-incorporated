@@ -19,9 +19,9 @@ export const requestEmailConfirmation = async (
 
   await prisma.emailConfirmationToken.create({
     data: {
-      userId,
       token: emailConfirmationToken,
       email: userEmail,
+      userId,
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
     },
   });
