@@ -75,6 +75,9 @@ export const env = createEnv({
     CRON_SECRET: z.string().optional(),
     PUSHER_BEAMS_INSTANCE_ID: z.string().optional(),
     PUSHER_BEAMS_KEY: z.string().optional(),
+    ENABLE_INSTRUMENTATION: z.string().optional(),
+    OTEL_EXPORTER_OTLP_PROTOCOL: z.string().optional(),
+    OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
   },
 
   /*
@@ -133,6 +136,9 @@ export const env = createEnv({
     CRON_SECRET: process.env.CRON_SECRET,
     PUSHER_BEAMS_INSTANCE_ID: process.env.PUSHER_BEAMS_INSTANCE_ID,
     PUSHER_BEAMS_KEY: process.env.PUSHER_BEAMS_KEY,
+    ENABLE_INSTRUMENTATION: process.env.ENABLE_INSTRUMENTATION,
+    OTEL_EXPORTER_OTLP_PROTOCOL: process.env.OTEL_EXPORTER_OTLP_PROTOCOL,
+    OTEL_EXPORTER_OTLP_ENDPOINT: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
   },
 
   emptyStringAsUndefined: true,
