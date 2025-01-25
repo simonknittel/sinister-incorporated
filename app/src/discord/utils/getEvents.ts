@@ -1,31 +1,40 @@
 import { env } from "@/env";
+import { trace } from "@opentelemetry/api";
 import { cache } from "react";
 import { z } from "zod";
 import { checkResponseForError } from "./checkResponseForError";
 
 export const getEvents = cache(async () => {
-  // https://discord.com/developers/docs/resources/guild-scheduled-event#list-scheduled-events-for-guild
-  const response = await fetch(
-    `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events?with_user_count=true`,
-    {
-      headers: new Headers({
-        Authorization: `Bot ${env.DISCORD_TOKEN}`,
-      }),
-      next: {
-        revalidate: 30,
-      },
-    },
-  );
+  return await trace
+    .getTracer("sam")
+    .startActiveSpan("getEvents", async (span) => {
+      try {
+        // https://discord.com/developers/docs/resources/guild-scheduled-event#list-scheduled-events-for-guild
+        const response = await fetch(
+          `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events?with_user_count=true`,
+          {
+            headers: new Headers({
+              Authorization: `Bot ${env.DISCORD_TOKEN}`,
+            }),
+            next: {
+              revalidate: 30,
+            },
+          },
+        );
 
-  const body: unknown = await response.json();
-  const data = responseSchema.parse(body);
+        const body: unknown = await response.json();
+        const data = responseSchema.parse(body);
 
-  checkResponseForError(data);
+        checkResponseForError(data);
 
-  return {
-    date: response.headers.get("Date"),
-    data: data as z.infer<typeof successSchema>,
-  };
+        return {
+          date: response.headers.get("Date"),
+          data: data as z.infer<typeof successSchema>,
+        };
+      } finally {
+        span.end();
+      }
+    });
 });
 
 const successSchema = z.array(
