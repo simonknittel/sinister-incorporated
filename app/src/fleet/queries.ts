@@ -1,5 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
+import { trace } from "@opentelemetry/api";
 import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import { cache } from "react";
 
@@ -8,29 +9,37 @@ export const getOrgFleet = async ({
 }: {
   onlyFlightReady?: boolean;
 }) => {
-  const authentication = await requireAuthentication();
-  if (!(await authentication.authorize("orgFleet", "read")))
-    throw new Error("Forbidden");
+  return await trace
+    .getTracer("sam")
+    .startActiveSpan("getOrgFleet", async (span) => {
+      try {
+        const authentication = await requireAuthentication();
+        if (!(await authentication.authorize("orgFleet", "read")))
+          throw new Error("Forbidden");
 
-  return prisma.ship.findMany({
-    where: {
-      variant: {
-        status: onlyFlightReady ? VariantStatus.FLIGHT_READY : undefined,
-      },
-    },
-    include: {
-      variant: {
-        include: {
-          series: {
-            include: {
-              manufacturer: true,
+        return prisma.ship.findMany({
+          where: {
+            variant: {
+              status: onlyFlightReady ? VariantStatus.FLIGHT_READY : undefined,
             },
           },
-          tags: true,
-        },
-      },
-    },
-  });
+          include: {
+            variant: {
+              include: {
+                series: {
+                  include: {
+                    manufacturer: true,
+                  },
+                },
+                tags: true,
+              },
+            },
+          },
+        });
+      } finally {
+        span.end();
+      }
+    });
 };
 
 export const getVariantsBySeriesId = (seriesId: Series["id"]) => {

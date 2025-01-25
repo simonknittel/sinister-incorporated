@@ -19,6 +19,7 @@
     "@aws-sdk/client-s3": "3.726.1",
     "@aws-sdk/s3-request-presigner": "3.726.1",
     "@next-auth/prisma-adapter": "1.0.7",
+    "@opentelemetry/api": "1.9.0",
     "@opentelemetry/api-logs": "0.57.1",
     "@opentelemetry/instrumentation": "0.57.1",
     "@opentelemetry/sdk-logs": "0.57.1",
