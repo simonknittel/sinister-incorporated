@@ -1,6 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
-import { trace } from "@opentelemetry/api";
+import { getTracer } from "@/tracing/utils/getTracer";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import { cache } from "react";
 
@@ -9,127 +10,191 @@ export const getOrgFleet = async ({
 }: {
   onlyFlightReady?: boolean;
 }) => {
-  return await trace
-    .getTracer("sam")
-    .startActiveSpan("getOrgFleet", async (span) => {
-      try {
-        const authentication = await requireAuthentication();
-        if (!(await authentication.authorize("orgFleet", "read")))
-          throw new Error("Forbidden");
+  return getTracer().startActiveSpan("getOrgFleet", async (span) => {
+    try {
+      const authentication = await requireAuthentication();
+      if (!(await authentication.authorize("orgFleet", "read")))
+        throw new Error("Forbidden");
 
-        return prisma.ship.findMany({
-          where: {
-            variant: {
-              status: onlyFlightReady ? VariantStatus.FLIGHT_READY : undefined,
-            },
+      return await prisma.ship.findMany({
+        where: {
+          variant: {
+            status: onlyFlightReady ? VariantStatus.FLIGHT_READY : undefined,
           },
-          include: {
-            variant: {
-              include: {
-                series: {
-                  include: {
-                    manufacturer: true,
-                  },
+        },
+        include: {
+          variant: {
+            include: {
+              series: {
+                include: {
+                  manufacturer: true,
                 },
-                tags: true,
               },
+              tags: true,
             },
           },
-        });
-      } finally {
-        span.end();
-      }
-    });
+        },
+      });
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
 };
 
 export const getVariantsBySeriesId = (seriesId: Series["id"]) => {
-  return prisma.variant.findMany({
-    where: {
-      seriesId,
-    },
-    include: {
-      _count: {
-        select: {
-          ships: true,
+  return getTracer().startActiveSpan("getVariantsBySeriesId", async (span) => {
+    try {
+      return await prisma.variant.findMany({
+        where: {
+          seriesId,
         },
-      },
-      tags: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
+        include: {
+          _count: {
+            select: {
+              ships: true,
+            },
+          },
+          tags: true,
+        },
+        orderBy: {
+          name: "asc",
+        },
+      });
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
   });
 };
 
 export const getSeriesByManufacturerId = (
   manufacturerId: Manufacturer["id"],
 ) => {
-  return prisma.series.findMany({
-    select: {
-      id: true,
-      name: true,
-      variants: {
-        select: {
-          name: true,
-        },
-        orderBy: {
-          name: "asc",
-        },
-      },
+  return getTracer().startActiveSpan(
+    "getSeriesByManufacturerId",
+    async (span) => {
+      try {
+        return await prisma.series.findMany({
+          select: {
+            id: true,
+            name: true,
+            variants: {
+              select: {
+                name: true,
+              },
+              orderBy: {
+                name: "asc",
+              },
+            },
+          },
+          where: {
+            manufacturerId,
+          },
+          orderBy: {
+            name: "asc",
+          },
+        });
+      } catch (error) {
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+        });
+        throw error;
+      } finally {
+        span.end();
+      }
     },
-    where: {
-      manufacturerId,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  });
+  );
 };
 
-export const dedupedGetSeriesAndManufacturerById = cache(
+export const getSeriesAndManufacturerById = cache(
   async (seriesId: Series["id"], manufacturerId: Manufacturer["id"]) => {
-    return Promise.all([
-      prisma.series.findUnique({
-        where: {
-          id: seriesId,
-        },
-      }),
+    return getTracer().startActiveSpan(
+      "getSeriesAndManufacturerById",
+      async (span) => {
+        try {
+          return await Promise.all([
+            prisma.series.findUnique({
+              where: {
+                id: seriesId,
+              },
+            }),
 
-      prisma.manufacturer.findUnique({
-        where: {
-          id: manufacturerId,
-        },
-      }),
-    ]);
+            prisma.manufacturer.findUnique({
+              where: {
+                id: manufacturerId,
+              },
+            }),
+          ]);
+        } catch (error) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+          });
+          throw error;
+        } finally {
+          span.end();
+        }
+      },
+    );
   },
 );
 
 export const getManufacturers = () => {
-  return prisma.manufacturer.findMany({
-    select: {
-      id: true,
-      imageId: true,
-      name: true,
-      series: {
+  return getTracer().startActiveSpan("getManufacturers", async (span) => {
+    try {
+      return await prisma.manufacturer.findMany({
         select: {
           id: true,
+          imageId: true,
           name: true,
+          series: {
+            select: {
+              id: true,
+              name: true,
+            },
+            orderBy: {
+              name: "asc",
+            },
+          },
         },
         orderBy: {
           name: "asc",
         },
-      },
-    },
-    orderBy: {
-      name: "asc",
-    },
+      });
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
   });
 };
 
 export const getManufacturerById = (manufacturerId: Manufacturer["id"]) => {
-  return prisma.manufacturer.findUnique({
-    where: {
-      id: manufacturerId,
-    },
+  return getTracer().startActiveSpan("getManufacturerById", async (span) => {
+    try {
+      return await prisma.manufacturer.findUnique({
+        where: {
+          id: manufacturerId,
+        },
+      });
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
   });
 };

@@ -1,7 +1,7 @@
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { EditableSeriesName } from "@/fleet/components/EditableSeriesName";
 import { VariantsTile } from "@/fleet/components/VariantsTile";
-import { dedupedGetSeriesAndManufacturerById } from "@/fleet/queries";
+import { getSeriesAndManufacturerById } from "@/fleet/queries";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -20,7 +20,7 @@ export async function generateMetadata(props: {
 }): Promise<Metadata> {
   try {
     const params = await props.params;
-    const [series] = await dedupedGetSeriesAndManufacturerById(
+    const [series] = await getSeriesAndManufacturerById(
       params.seriesId,
       params.manufacturerId,
     );
@@ -50,7 +50,7 @@ type Props = Readonly<{
 
 export default async function Page(props: Props) {
   const params = await props.params;
-  const [series, manufacturer] = await dedupedGetSeriesAndManufacturerById(
+  const [series, manufacturer] = await getSeriesAndManufacturerById(
     params.seriesId,
     params.manufacturerId,
   );

@@ -1,38 +1,42 @@
 import { env } from "@/env";
-import { trace } from "@opentelemetry/api";
+import { getTracer } from "@/tracing/utils/getTracer";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { cache } from "react";
 import { z } from "zod";
 import { checkResponseForError } from "./checkResponseForError";
 import { memberSchema, userSchema } from "./schemas";
 
 export const getEventUsers = cache(async (id: string) => {
-  return await trace
-    .getTracer("sam")
-    .startActiveSpan("getEventUsers", async (span) => {
-      try {
-        // https://discord.com/developers/docs/resources/guild-scheduled-event#get-guild-scheduled-event-users
-        const response = await fetch(
-          `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}/users?with_member=true`,
-          {
-            headers: new Headers({
-              Authorization: `Bot ${env.DISCORD_TOKEN}`,
-            }),
-            next: {
-              revalidate: 30,
-            },
+  return getTracer().startActiveSpan("getEventUsers", async (span) => {
+    try {
+      // https://discord.com/developers/docs/resources/guild-scheduled-event#get-guild-scheduled-event-users
+      const response = await fetch(
+        `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}/users?with_member=true`,
+        {
+          headers: new Headers({
+            Authorization: `Bot ${env.DISCORD_TOKEN}`,
+          }),
+          next: {
+            revalidate: 30,
           },
-        );
+        },
+      );
 
-        const body: unknown = await response.json();
-        const data = schema.parse(body);
+      const body: unknown = await response.json();
+      const data = schema.parse(body);
 
-        checkResponseForError(data);
+      checkResponseForError(data);
 
-        return data as z.infer<typeof successSchema>;
-      } finally {
-        span.end();
-      }
-    });
+      return data as z.infer<typeof successSchema>;
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
 });
 
 const successSchema = z.array(
