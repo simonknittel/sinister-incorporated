@@ -1,3 +1,5 @@
+import { getTracer } from "@/tracing/utils/getTracer";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { unstable_cache } from "next/cache";
 import { z } from "zod";
 
@@ -35,27 +37,38 @@ const schema = z.object({
 export const getLeaderboard = (mode: "SB", season: string) => {
   return unstable_cache(
     async (mode: "SB", season: string) => {
-      const response = await fetch(
-        "https://robertsspaceindustries.com/api/leaderboards/getLeaderboard",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            mode,
-            map: "MAP-ANY",
-            type: "Account",
-            season,
-            page: 1,
-            pagesize: "100",
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      return getTracer().startActiveSpan("getLeaderboard", async (span) => {
+        try {
+          const response = await fetch(
+            "https://robertsspaceindustries.com/api/leaderboards/getLeaderboard",
+            {
+              method: "POST",
+              body: JSON.stringify({
+                mode,
+                map: "MAP-ANY",
+                type: "Account",
+                season,
+                page: 1,
+                pagesize: "100",
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            },
+          );
 
-      const json = (await response.json()) as unknown;
-      const result = schema.parse(json);
-      return result.data.resultset;
+          const json = (await response.json()) as unknown;
+          const result = schema.parse(json);
+          return result.data.resultset;
+        } catch (error) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+          });
+          throw error;
+        } finally {
+          span.end();
+        }
+      });
     },
     [`mode=${mode}`, `season=${season}`],
     {

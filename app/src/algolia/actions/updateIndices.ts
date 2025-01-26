@@ -2,6 +2,8 @@
 
 import { prisma } from "@/db";
 import { log } from "@/logging";
+import { getTracer } from "@/tracing/utils/getTracer";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { getIndex } from "..";
@@ -34,31 +36,53 @@ export const updateIndices = async () => {
     ]);
 
     const index = getIndex();
-    await index.clearObjects();
+    await getTracer().startActiveSpan("clearAlgoliaObjects", async (span) => {
+      try {
+      } catch (error) {
+        await index.clearObjects();
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+        });
+        throw error;
+      } finally {
+        span.end();
+      }
+    });
 
-    await index.saveObjects([
-      ...organizations.map((organization) => ({
-        objectID: organization.id,
-        spectrumId: organization.spectrumId,
-        type: "organization",
-        names: [organization.name],
-      })),
+    await getTracer().startActiveSpan("saveAlgoliaObjects", async (span) => {
+      try {
+        await index.saveObjects([
+          ...organizations.map((organization) => ({
+            objectID: organization.id,
+            spectrumId: organization.spectrumId,
+            type: "organization",
+            names: [organization.name],
+          })),
 
-      ...citizen.map((citizen) => ({
-        objectID: citizen.id,
-        spectrumId: citizen.spectrumId,
-        type: "citizen",
-        handles: citizen.logs
-          .filter((log) => log.type === "handle")
-          .map((log) => log.content),
-        communityMonikers: citizen.logs
-          .filter((log) => log.type === "community-moniker")
-          .map((log) => log.content),
-        citizenIds: citizen.logs
-          .filter((log) => log.type === "citizen-id")
-          .map((log) => log.content),
-      })),
-    ]);
+          ...citizen.map((citizen) => ({
+            objectID: citizen.id,
+            spectrumId: citizen.spectrumId,
+            type: "citizen",
+            handles: citizen.logs
+              .filter((log) => log.type === "handle")
+              .map((log) => log.content),
+            communityMonikers: citizen.logs
+              .filter((log) => log.type === "community-moniker")
+              .map((log) => log.content),
+            citizenIds: citizen.logs
+              .filter((log) => log.type === "citizen-id")
+              .map((log) => log.content),
+          })),
+        ]);
+      } catch (error) {
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+        });
+        throw error;
+      } finally {
+        span.end();
+      }
+    });
 
     return {
       success: "Successfully updated Algolia indices",
