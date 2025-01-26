@@ -1,6 +1,7 @@
 import { authenticate } from "@/auth/server";
 import { log } from "@/logging";
-import { trace } from "@opentelemetry/api";
+import { getTracer } from "@/tracing/utils/getTracer";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { evaluateFlags, flagsClient, getDefinitions } from "@unleash/nextjs";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
@@ -16,36 +17,37 @@ export const getUnleashFlag = cache(
       | "EnableOperations"
       | "EnableNotifications",
   ) => {
-    return await trace
-      .getTracer("sam")
-      .startActiveSpan("getUnleashFlag", async (span) => {
+    return getTracer().startActiveSpan("getUnleashFlag", async (span) => {
+      try {
         try {
-          try {
-            const authentication = await authenticate();
+          const authentication = await authenticate();
 
-            const definitions = await getDefinitions({
-              fetchOptions: {
-                next: { revalidate: 30 },
-              },
-            });
+          const definitions = await getDefinitions({
+            fetchOptions: {
+              next: { revalidate: 30 },
+            },
+          });
 
-            const { toggles } = evaluateFlags(definitions, {
-              userId: authentication
-                ? authentication.session.user.id
-                : undefined,
-            });
+          const { toggles } = evaluateFlags(definitions, {
+            userId: authentication ? authentication.session.user.id : undefined,
+          });
 
-            const flags = flagsClient(toggles);
+          const flags = flagsClient(toggles);
 
-            return flags.isEnabled(name);
-          } catch (error) {
-            void log.error("Error fetching feature flag", {
-              error: serializeError(error),
-            });
-          }
-        } finally {
-          span.end();
+          return flags.isEnabled(name);
+        } catch (error) {
+          void log.error("Error fetching feature flag", {
+            error: serializeError(error),
+          });
         }
-      });
+      } catch (error) {
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+        });
+        throw error;
+      } finally {
+        span.end();
+      }
+    });
   },
 );

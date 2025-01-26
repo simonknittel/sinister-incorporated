@@ -1,15 +1,16 @@
 import { prisma } from "@/db";
-import { trace } from "@opentelemetry/api";
+import { getTracer } from "@/tracing/utils/getTracer";
+import { SpanStatusCode } from "@opentelemetry/api";
 import type { EmailConfirmationToken } from "@prisma/client";
 
 export const getEmailConfirmationToken = async (
   token: EmailConfirmationToken["token"],
 ) => {
-  return await trace
-    .getTracer("sam")
-    .startActiveSpan("getEmailConfirmationToken", async (span) => {
+  return getTracer().startActiveSpan(
+    "getEmailConfirmationToken",
+    async (span) => {
       try {
-        return prisma.emailConfirmationToken.findUnique({
+        return await prisma.emailConfirmationToken.findUnique({
           where: {
             token,
             expires: {
@@ -17,8 +18,14 @@ export const getEmailConfirmationToken = async (
             },
           },
         });
+      } catch (error) {
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+        });
+        throw error;
       } finally {
         span.end();
       }
-    });
+    },
+  );
 };
