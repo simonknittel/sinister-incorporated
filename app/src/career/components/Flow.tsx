@@ -81,7 +81,6 @@ export const Flow = ({
   const [unsaved, setUnsaved] = useState(false);
 
   const onNodesChange: OnNodesChange = useCallback((changes) => {
-    console.log("node changes", changes);
     if (
       changes.some((change) => {
         if (change.type === "select") return false;
