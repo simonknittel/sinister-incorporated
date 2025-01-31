@@ -15,7 +15,7 @@ export const getDiscordAvatar = (
     return `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.${format}`;
   }
 
-  const defaultAvatarNumber = parseInt(profile.discriminator) % 5;
+  const defaultAvatarNumber = (Number.parseInt(profile.id) >> 6) % 5;
   return `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNumber}.png`;
 };
 
