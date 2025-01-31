@@ -21,6 +21,8 @@ interface Props {
 }
 
 const Avatar = ({ className, name, image, size }: Readonly<Props>) => {
+  const imageSize = size || 64;
+
   return (
     <span
       className={clsx(
@@ -40,16 +42,16 @@ const Avatar = ({ className, name, image, size }: Readonly<Props>) => {
           : name
             ? stringToColor(name)
             : "#dedfe0",
-        width: size || 64,
-        height: size || 64,
+        width: imageSize,
+        height: imageSize,
       }}
     >
       {image ? (
         <Image
-          src={image}
+          src={`${image}?size=${imageSize}`}
           alt={name ? `Image of ${name}` : ""}
-          width={size || 64}
-          height={size || 64}
+          width={imageSize}
+          height={imageSize}
         />
       ) : name ? (
         name.replace(/\s/g, "").substring(0, 2)

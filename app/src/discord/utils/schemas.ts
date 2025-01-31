@@ -11,3 +11,13 @@ export const memberSchema = z.object({
   nick: z.string().optional().nullable(),
   avatar: z.string().optional().nullable(),
 });
+
+export const guildMemberResponseSchema = z.union([
+  z.object({
+    avatar: z.string().nullable(),
+  }),
+
+  z.object({
+    message: z.string(),
+  }),
+]);

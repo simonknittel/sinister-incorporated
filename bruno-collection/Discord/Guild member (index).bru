@@ -1,0 +1,15 @@
+meta {
+  name: Guild member (index)
+  type: http
+  seq: 5
+}
+
+get {
+  url: https://discord.com/api/v10/guilds/{{DISCORD_GUILD_ID}}/members/117890449187930113
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bot {{DISCORD_TOKEN}}
+}
