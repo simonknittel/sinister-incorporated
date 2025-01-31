@@ -1,0 +1,15 @@
+meta {
+  name: @me Guild member
+  type: http
+  seq: 4
+}
+
+get {
+  url: https://discord.com/api/v10/users/@me/guilds/{{DISCORD_GUILD_ID}}/member
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{DISCORD_ACCESS_TOKEN}}
+}

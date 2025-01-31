@@ -2,6 +2,8 @@ import type { PermissionSet } from "@/auth/common";
 import { getPermissionSetsByRoles } from "@/auth/server";
 import { requestEmailConfirmation } from "@/auth/utils/emailConfirmation";
 import { prisma } from "@/db";
+import { getDiscordAvatar } from "@/discord/utils/getDiscordAvatar";
+import { getGuildMember } from "@/discord/utils/getGuildMember";
 import { env } from "@/env";
 import { log } from "@/logging";
 import { getUserById } from "@/users/queries";
@@ -12,58 +14,9 @@ import {
   type NextAuthOptions,
   type User,
 } from "next-auth";
-import DiscordProvider, {
-  type DiscordProfile,
-} from "next-auth/providers/discord";
+import DiscordProvider from "next-auth/providers/discord";
 import { serializeError } from "serialize-error";
-import { z } from "zod";
 import { type UserRole } from "../../types";
-
-const guildMemberResponseSchema = z.union([
-  z.object({
-    avatar: z.string().nullable(),
-  }),
-
-  z.object({
-    message: z.string(),
-  }),
-]);
-
-async function getGuildMember(access_token: string) {
-  const headers = new Headers();
-  headers.set("Authorization", `Bearer ${access_token}`);
-
-  const response = await fetch(
-    `https://discord.com/api/v10/users/@me/guilds/${env.DISCORD_GUILD_ID}/member`,
-    {
-      headers,
-      next: {
-        revalidate: 0,
-      },
-    },
-  );
-
-  const body: unknown = await response.json();
-  const data = guildMemberResponseSchema.parse(body);
-
-  return data;
-}
-
-function getAvatar(
-  profile: DiscordProfile,
-  guildMember: z.infer<typeof guildMemberResponseSchema>,
-) {
-  if ("avatar" in guildMember && guildMember.avatar) {
-    const format = guildMember.avatar.startsWith("a_") ? "gif" : "png";
-    return `https://cdn.discordapp.com/avatars/${profile.id}/${guildMember.avatar}.${format}`;
-  } else if (profile.avatar) {
-    const format = profile.avatar.startsWith("a_") ? "gif" : "png";
-    return `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.${format}`;
-  }
-
-  const defaultAvatarNumber = parseInt(profile.discriminator) % 5;
-  return `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNumber}.png`;
-}
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -204,7 +157,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error(guildMember.message);
         }
 
-        const avatar = getAvatar(profile, guildMember);
+        const avatar = getDiscordAvatar(profile, guildMember);
 
         await prisma.$transaction([
           prisma.account.update({
@@ -247,7 +200,7 @@ export const authOptions: NextAuthOptions = {
 
         user.email = profile.email!.toLocaleLowerCase();
 
-        const avatar = getAvatar(profile, guildMember);
+        const avatar = getDiscordAvatar(profile, guildMember);
         user.image = avatar;
 
         user.name = null;

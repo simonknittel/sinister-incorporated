@@ -16,7 +16,7 @@
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "runtimeVersion": "22.12.0",
+      "runtimeVersion": "22.13.0",
       "skipFiles": ["<node_internals>/**"],
       "console": "integratedTerminal"
     }

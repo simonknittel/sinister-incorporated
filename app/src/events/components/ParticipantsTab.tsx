@@ -1,6 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import { RolesCell } from "@/citizen/components/RolesCell";
 import { Link } from "@/common/components/Link";
+import { getDiscordAvatar } from "@/discord/utils/getDiscordAvatar";
 import { type getEvent } from "@/discord/utils/getEvent";
 import type { memberSchema, userSchema } from "@/discord/utils/schemas";
 import type { Entity } from "@prisma/client";
@@ -183,7 +184,7 @@ const DiscordUser = ({
     >
       <div className="rounded overflow-hidden">
         <Image
-          src={`https://cdn.discordapp.com/avatars/${discord.user.id}/${discord.member?.avatar || discord.user.avatar}.png`}
+          src={`${getDiscordAvatar(discord.user, discord.member)}?size=32`}
           alt=""
           width={32}
           height={32}
