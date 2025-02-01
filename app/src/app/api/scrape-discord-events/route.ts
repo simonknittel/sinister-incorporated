@@ -113,34 +113,33 @@ const updateParticipants = async (
 
   // Collect new participants
   for (const userId of discordEventUserIds) {
-    if (!existingDatabaseParticipantIds.includes(userId)) {
-      participants.create.push(userId);
-    }
+    if (existingDatabaseParticipantIds.includes(userId)) continue;
+    participants.create.push(userId);
   }
 
   // Collect removed participants
   for (const userId of existingDatabaseParticipantIds) {
-    if (!discordEventUserIds.includes(userId)) {
-      participants.delete.push(userId);
-    }
+    if (discordEventUserIds.includes(userId)) continue;
+    participants.delete.push(userId);
   }
 
   // Save to database
-  await prisma.$transaction([
-    prisma.discordEventParticipant.deleteMany({
+  if (participants.delete.length > 0) {
+    await prisma.discordEventParticipant.deleteMany({
       where: {
         eventId: discordEvent.id,
         discordUserId: {
           in: participants.delete,
         },
       },
-    }),
-
-    prisma.discordEventParticipant.createMany({
+    });
+  }
+  if (participants.create.length > 0) {
+    await prisma.discordEventParticipant.createMany({
       data: participants.create.map((participantId) => ({
         eventId: databaseEvent.id,
         discordUserId: participantId,
       })),
-    }),
-  ]);
+    });
+  }
 };
