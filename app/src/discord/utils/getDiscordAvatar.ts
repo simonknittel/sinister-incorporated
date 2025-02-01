@@ -7,7 +7,7 @@ export const getDiscordAvatar = (
   profile: DiscordProfile,
   guildMember: z.infer<typeof guildMemberResponseSchema>,
 ) => {
-  if ("avatar" in guildMember && guildMember.avatar) {
+  if (guildMember && "avatar" in guildMember && guildMember.avatar) {
     const format = getFormat(guildMember.avatar);
     return `https://cdn.discordapp.com/guilds/${env.DISCORD_GUILD_ID}/users/${profile.id}/avatars/${guildMember.avatar}.${format}`;
   } else if (profile.avatar) {

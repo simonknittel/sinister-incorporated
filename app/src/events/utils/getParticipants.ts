@@ -6,26 +6,38 @@ import { cache } from "react";
 import type { z } from "zod";
 
 export const getParticipants = cache(
-  async (event: Awaited<ReturnType<typeof getEvent>>["data"]) => {
+  async (discordEvent: Awaited<ReturnType<typeof getEvent>>["data"]) => {
     const discordEventUsers: {
       user: z.infer<typeof userSchema>;
       member?: z.infer<typeof memberSchema>;
-    }[] = await getEventUsers(event.id);
+    }[] = await getEventUsers(discordEvent.id);
 
     if (
-      discordEventUsers.some((user) => user.user.id === event.creator_id) ===
-      false
+      discordEventUsers.some(
+        (user) => user.user.id === discordEvent.creator_id,
+      ) === false
     ) {
-      discordEventUsers.push({ user: event.creator });
+      discordEventUsers.push({ user: discordEvent.creator });
     }
 
-    const citizenEntities = await prisma.entity.findMany({
-      where: {
-        discordId: {
-          in: discordEventUsers.map((user) => user.user.id),
-        },
-      },
-    });
+    const [citizenEntities, databaseEventParticipants] =
+      await prisma.$transaction([
+        prisma.entity.findMany({
+          where: {
+            discordId: {
+              in: discordEventUsers.map((user) => user.user.id),
+            },
+          },
+        }),
+
+        prisma.discordEventParticipant.findMany({
+          where: {
+            event: {
+              discordId: discordEvent.id,
+            },
+          },
+        }),
+      ]);
 
     const resolvedUsers = discordEventUsers
       .map((user) => {
@@ -33,9 +45,14 @@ export const getParticipants = cache(
           (entity) => entity.discordId === user.user.id,
         );
 
+        const databaseEventParticipant = databaseEventParticipants.find(
+          (participant) => participant.discordUserId === user.user.id,
+        );
+
         return {
           entity,
           discord: user,
+          databaseEventParticipant,
         };
       })
       .toSorted((a, b) => {
@@ -53,10 +70,10 @@ export const getParticipants = cache(
       });
 
     const discordCreator = resolvedUsers.find(
-      (user) => user.discord.user.id === event.creator_id,
+      (user) => user.discord.user.id === discordEvent.creator_id,
     )!;
     const discordParticipants = resolvedUsers.filter(
-      (user) => user.discord.user.id !== event.creator_id,
+      (user) => user.discord.user.id !== discordEvent.creator_id,
     );
     const spynetCitizen = resolvedUsers.filter((user) => Boolean(user.entity));
 

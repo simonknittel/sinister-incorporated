@@ -1,4 +1,8 @@
 import { authenticatePage } from "@/auth/server";
+import {
+  searchParamsNextjsToURLSearchParams,
+  type NextjsSearchParams,
+} from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { getEvent } from "@/discord/utils/getEvent";
 import { Navigation } from "@/events/components/Navigation";
 import { ParticipantsTab } from "@/events/components/ParticipantsTab";
@@ -35,14 +39,18 @@ export async function generateMetadata(props: {
 
 type Props = Readonly<{
   params: Params;
+  searchParams: NextjsSearchParams;
 }>;
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params, searchParams }: Props) {
   const authentication = await authenticatePage("/app/events/[id]");
   await authentication.authorizePage("event", "read");
 
   const eventId = (await params).id;
   const event = await getEvent(eventId);
+
+  const urlSearchParams =
+    await searchParamsNextjsToURLSearchParams(searchParams);
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
@@ -58,7 +66,11 @@ export default async function Page({ params }: Props) {
         className="mt-4"
       />
 
-      <ParticipantsTab event={event.data} className="mt-4" />
+      <ParticipantsTab
+        event={event.data}
+        urlSearchParams={urlSearchParams}
+        className="mt-4"
+      />
     </main>
   );
 }

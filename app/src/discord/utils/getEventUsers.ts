@@ -41,6 +41,7 @@ export const getEventUsers = cache(async (id: string) => {
 
 const successSchema = z.array(
   z.object({
+    user_id: z.string(),
     user: userSchema,
     member: memberSchema,
   }),
