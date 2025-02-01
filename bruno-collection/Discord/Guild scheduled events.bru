@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: https://discord.com/api/v10/guilds/{{DISCORD_GUILD_ID}}/scheduled-events
+  url: https://discord.com/api/v10/guilds/{{DISCORD_GUILD_ID}}/scheduled-events?with_user_count=true
   body: none
   auth: none
+}
+
+params:query {
+  with_user_count: true
 }
 
 headers {

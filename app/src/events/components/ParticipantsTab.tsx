@@ -1,6 +1,10 @@
 import { requireAuthentication } from "@/auth/server";
 import { RolesCell } from "@/citizen/components/RolesCell";
 import { Link } from "@/common/components/Link";
+import {
+  sortAscWithAndNullLast,
+  sortDescAndNullLast,
+} from "@/common/utils/sorting";
 import { getDiscordAvatar } from "@/discord/utils/getDiscordAvatar";
 import { type getEvent } from "@/discord/utils/getEvent";
 import type { memberSchema, userSchema } from "@/discord/utils/schemas";
@@ -8,21 +12,74 @@ import type { Entity } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 import { Suspense } from "react";
+import {
+  FaSortAlphaDown,
+  FaSortAlphaUp,
+  FaSortNumericDown,
+  FaSortNumericUp,
+} from "react-icons/fa";
 import type { z } from "zod";
 import { getParticipants } from "../utils/getParticipants";
 
-const GRID_COLS = "grid-cols-[160px_1fr]";
+const GRID_COLS = "grid-cols-[160px_140px_1fr]";
 
 type Props = Readonly<{
   className?: string;
   event: Awaited<ReturnType<typeof getEvent>>["data"];
+  urlSearchParams: URLSearchParams;
 }>;
 
-export const ParticipantsTab = async ({ className, event }: Props) => {
+export const ParticipantsTab = async ({
+  className,
+  event,
+  urlSearchParams,
+}: Props) => {
   const authentication = await requireAuthentication();
 
   const { resolvedUsers, discordCreator, discordParticipants, spynetCitizen } =
     await getParticipants(event);
+
+  const citizenSearchParams = new URLSearchParams(urlSearchParams);
+  if (
+    !urlSearchParams.has("sort") ||
+    urlSearchParams.get("sort") === "citizen-asc"
+  ) {
+    citizenSearchParams.set("sort", "citizen-desc");
+  } else {
+    citizenSearchParams.set("sort", "citizen-asc");
+  }
+
+  const joinedAtSearchParams = new URLSearchParams(urlSearchParams);
+  if (urlSearchParams.get("sort") === "joined-at-asc") {
+    joinedAtSearchParams.set("sort", "joined-at-desc");
+  } else {
+    joinedAtSearchParams.set("sort", "joined-at-asc");
+  }
+
+  const sortedResolvedUsers = resolvedUsers
+    .filter((user) => Boolean(user.entity))
+    .toSorted((a, b) => {
+      switch (urlSearchParams.get("sort")) {
+        case "citizen-asc":
+          return sortAscWithAndNullLast(a.entity!.handle, b.entity!.handle);
+        case "citizen-desc":
+          return sortDescAndNullLast(a.entity!.handle, b.entity!.handle);
+
+        case "joined-at-asc":
+          return sortAscWithAndNullLast(
+            a.databaseEventParticipant?.createdAt?.getTime(),
+            b.databaseEventParticipant?.createdAt?.getTime(),
+          );
+        case "joined-at-desc":
+          return sortDescAndNullLast(
+            a.databaseEventParticipant?.createdAt?.getTime(),
+            b.databaseEventParticipant?.createdAt?.getTime(),
+          );
+
+        default:
+          return sortAscWithAndNullLast(a.entity!.handle, b.entity!.handle);
+      }
+    });
 
   return (
     <div className={clsx("flex flex-col gap-4", className)}>
@@ -71,7 +128,36 @@ export const ParticipantsTab = async ({ className, event }: Props) => {
                   GRID_COLS,
                 )}
               >
-                <th className="px-2">Handle</th>
+                <th className="px-2">
+                  <Link
+                    href={`?${citizenSearchParams.toString()}`}
+                    className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300 whitespace-nowrap"
+                  >
+                    Citizen
+                    {(!urlSearchParams.has("sort") ||
+                      urlSearchParams.get("sort") === "citizen-asc") && (
+                      <FaSortAlphaDown />
+                    )}
+                    {urlSearchParams.get("sort") === "citizen-desc" && (
+                      <FaSortAlphaUp />
+                    )}
+                  </Link>
+                </th>
+
+                <th>
+                  <Link
+                    href={`?${joinedAtSearchParams.toString()}`}
+                    className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300 whitespace-nowrap"
+                  >
+                    Zugesagt am
+                    {urlSearchParams.get("sort") === "joined-at-asc" && (
+                      <FaSortNumericDown />
+                    )}
+                    {urlSearchParams.get("sort") === "joined-at-desc" && (
+                      <FaSortNumericUp />
+                    )}
+                  </Link>
+                </th>
 
                 <th
                   className="overflow-hidden text-ellipsis whitespace-nowrap"
@@ -83,65 +169,81 @@ export const ParticipantsTab = async ({ className, event }: Props) => {
             </thead>
 
             <tbody>
-              {resolvedUsers
-                .filter((user) => Boolean(user.entity))
-                .map((user) => {
-                  return (
-                    <tr
-                      key={user.entity!.id}
-                      className={clsx(
-                        "grid items-center gap-4 rounded -mx-2",
-                        GRID_COLS,
-                      )}
-                    >
-                      <td className="h-full min-h-14">
-                        <Link
-                          href={`/app/spynet/citizen/${user.entity!.id}`}
-                          className={clsx(
-                            "hover:bg-neutral-800 block rounded px-2 h-full",
+              {sortedResolvedUsers.map((user) => {
+                return (
+                  <tr
+                    key={user.entity!.id}
+                    className={clsx(
+                      "grid items-center gap-4 rounded -mx-2",
+                      GRID_COLS,
+                    )}
+                  >
+                    <td className="h-full min-h-14">
+                      <Link
+                        href={`/app/spynet/citizen/${user.entity!.id}`}
+                        className={clsx(
+                          "hover:bg-neutral-800 block rounded px-2 h-full",
+                          {
+                            "text-green-500":
+                              user.entity!.id ===
+                              authentication.session.entityId,
+                            "text-sinister-red-500":
+                              user.entity!.id !==
+                              authentication.session.entityId,
+                          },
+                        )}
+                        prefetch={false}
+                      >
+                        <span className="flex items-center h-14">
+                          <span className="overflow-hidden text-ellipsis">
+                            {user.entity!.handle ? (
+                              <span title={user.entity!.handle}>
+                                {user.entity!.handle}
+                              </span>
+                            ) : (
+                              <span className="text-neutral-500 italic">-</span>
+                            )}
+                          </span>
+                        </span>
+                      </Link>
+                    </td>
+
+                    <td className="h-full min-h-14 flex items-center">
+                      {user.databaseEventParticipant?.createdAt ? (
+                        <time>
+                          {user.databaseEventParticipant.createdAt.toLocaleDateString(
+                            "de-DE",
                             {
-                              "text-green-500":
-                                user.entity!.id ===
-                                authentication.session.entityId,
-                              "text-sinister-red-500":
-                                user.entity!.id !==
-                                authentication.session.entityId,
+                              timeZone: "Europe/Berlin",
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit",
                             },
                           )}
-                          prefetch={false}
-                        >
-                          <span className="flex items-center h-14">
-                            <span className="overflow-hidden text-ellipsis">
-                              {user.entity!.handle ? (
-                                <span title={user.entity!.handle}>
-                                  {user.entity!.handle}
-                                </span>
-                              ) : (
-                                <span className="text-neutral-500 italic">
-                                  -
-                                </span>
-                              )}
-                            </span>
-                          </span>
-                        </Link>
-                      </td>
+                        </time>
+                      ) : (
+                        <span className="text-neutral-500 italic">-</span>
+                      )}
+                    </td>
 
-                      <td className="h-full min-h-14 flex items-center">
-                        <Suspense
-                          fallback={
-                            <div className="bg-neutral-800 animate-pulse rounded h-8 w-20" />
-                          }
-                        >
-                          <RolesCell
-                            entity={user.entity!}
-                            assignableRoles={[]}
-                            className="flex-wrap"
-                          />
-                        </Suspense>
-                      </td>
-                    </tr>
-                  );
-                })}
+                    <td className="h-full min-h-14 flex items-center">
+                      <Suspense
+                        fallback={
+                          <div className="bg-neutral-800 animate-pulse rounded h-8 w-20" />
+                        }
+                      >
+                        <RolesCell
+                          entity={user.entity!}
+                          assignableRoles={[]}
+                          className="flex-wrap"
+                        />
+                      </Suspense>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         ) : (
