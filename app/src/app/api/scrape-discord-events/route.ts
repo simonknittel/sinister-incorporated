@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const { data: events } = await getEvents();
 
     for (const event of events) {
-      await setTimeout(5000); // Cheap way to avoid rate limiting
+      await setTimeout(2000); // Cheap way to avoid rate limiting
 
       const hash = createHash("md5");
       hash.update(
