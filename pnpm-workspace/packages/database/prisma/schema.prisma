@@ -1,0 +1,484 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+//
+// Fleet
+//
+
+model Manufacturer {
+    id      String   @id @default(cuid())
+    name    String   @unique
+    imageId String?
+    image   Upload?  @relation(fields: [imageId], references: [id], onDelete: SetNull)
+    series  Series[]
+}
+
+model Series {
+    id             String       @id @default(cuid())
+    name           String       @unique
+    manufacturerId String
+    manufacturer   Manufacturer @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+    variants       Variant[]
+
+    @@unique([name, manufacturerId])
+}
+
+model Variant {
+    id       String         @id @default(cuid())
+    name     String
+    seriesId String
+    series   Series         @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+    ships    Ship[]
+    status   VariantStatus?
+    tags     VariantTag[]
+
+    @@unique([name, seriesId])
+}
+
+model VariantTag {
+    id       String    @id @default(cuid())
+    key      String
+    value    String
+    variants Variant[]
+
+    createdAt   DateTime @default(now())
+    createdById String
+    createdBy   User     @relation("createdBy", fields: [createdById], references: [id])
+    updatedAt   DateTime @updatedAt
+    updatedById String?
+    updatedBy   User?    @relation("updatedBy", fields: [updatedById], references: [id])
+
+    @@unique([key, value])
+}
+
+enum VariantStatus {
+    FLIGHT_READY
+    NOT_FLIGHT_READY
+}
+
+model Ship {
+    id         String            @id @default(cuid())
+    ownerId    String
+    owner      User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    variantId  String
+    variant    Variant           @relation(fields: [variantId], references: [id], onDelete: Cascade)
+    name       String?
+    operations OperationMember[]
+}
+
+//
+// Operations
+//
+
+model Operation {
+    id      String            @id @default(cuid())
+    title   String
+    units   OperationUnit[]
+    members OperationMember[]
+}
+
+model OperationMember {
+    operationId String
+    operation   Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+    userId      String
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    status      String    @default("pending") // pending, confirmed
+
+    operationUnitId String?
+    operationUnit   OperationUnit? @relation(fields: [operationUnitId], references: [id])
+    title           String? // E.g. Squadron Leader, Alpha-1 Flight Leader, Alpha-1 Wingman, ...
+    shipId          String?
+    ship            Ship?          @relation(fields: [shipId], references: [id], onDelete: Cascade)
+
+    @@id([operationId, userId])
+}
+
+model OperationUnit {
+    id          String            @id @default(cuid())
+    operationId String
+    operation   Operation         @relation(fields: [operationId], references: [id], onDelete: Cascade)
+    title       String // E.g. Squadron 1, Squad 2, Freighters, ...
+    type        String // squadron, flight, squad, fireteam, flight-other
+    members     OperationMember[]
+
+    parentUnitId String?
+    parentUnit   OperationUnit?  @relation("ChildUnits", fields: [parentUnitId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+    childUnits   OperationUnit[] @relation("ChildUnits")
+}
+
+//
+// Spynet - Citizen
+//
+
+model Entity {
+    id                                           String                               @id @default(cuid())
+    createdAt                                    DateTime                             @default(now())
+    updatedAt                                    DateTime                             @updatedAt
+    logs                                         EntityLog[]
+    createdById                                  String
+    createdBy                                    User                                 @relation("createdBy", fields: [createdById], references: [id], onDelete: Cascade)
+    // careBearShooterScores CareBearShooterScore[]
+    activeOrganizationsMemberships               ActiveOrganizationMembership[]
+    organizationMembershipHistoryEntries         OrganizationMembershipHistoryEntry[] @relation(name: "OrganizationMembershipHistoryEntry")
+    createdOrganizationMemberHistoryEntries      OrganizationMembershipHistoryEntry[] @relation(name: "CreatedOrganizationMemberHistoryEntries")
+    confirmedOrganizationMemberHistoryEntries    OrganizationMembershipHistoryEntry[] @relation(name: "ConfirmedOrganizationMemberHistoryEntries")
+    createdOrganizationAttributeHistoryEntries   OrganizationAttributeHistoryEntry[]  @relation(name: "CreatedOrganizationAttributeHistoryEntries")
+    confirmedOrganizationAttributeHistoryEntries OrganizationAttributeHistoryEntry[]  @relation(name: "ConfirmedOrganizationAttributeHistoryEntries")
+    createdOrganizations                         Organization[]                       @relation(name: "CreatedOrganizations")
+
+    // Holds the latest confirmed values
+    spectrumId       String?
+    handle           String?
+    discordId        String? @unique
+    teamspeakId      String?
+    citizenId        String?
+    communityMoniker String?
+    roles            String? @db.Text
+}
+
+model EntityLog {
+    id            String               @id @default(cuid())
+    entityId      String
+    entity        Entity               @relation(fields: [entityId], references: [id], onDelete: Cascade)
+    createdAt     DateTime             @default(now())
+    updatedAt     DateTime             @updatedAt
+    type          String // TODO: types.ts
+    content       String?              @db.Text
+    submittedById String
+    submittedBy   User                 @relation("submittedBy", fields: [submittedById], references: [id], onDelete: Cascade)
+    attributes    EntityLogAttribute[]
+
+    @@index([type]) // `type: Hash` isn't supported on MySQL
+}
+
+model EntityLogAttribute {
+    id          String    @id @default(cuid())
+    eneityLogId String
+    entityLog   EntityLog @relation(fields: [eneityLogId], references: [id], onDelete: Cascade)
+    key         String // TODO: types.ts
+    value       String
+    createdAt   DateTime  @default(now())
+    createdById String
+    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+    @@index([key]) // `type: Hash` isn't supported on MySQL
+}
+
+//
+// Spynet - Note types
+//
+
+model NoteType {
+    id   String @id @default(cuid())
+    name String @unique
+}
+
+//
+// Classification levels (for notes, events and operations)
+//
+
+model ClassificationLevel {
+    id   String @id @default(cuid())
+    name String @unique
+}
+
+//
+// Roles and permissions
+//
+
+model Role {
+    id                String             @id @default(cuid())
+    name              String             @unique
+    iconId            String?            @map("imageId")
+    icon              Upload?            @relation(name: "icon", fields: [iconId], references: [id], onDelete: SetNull)
+    thumbnailId       String?            @map("thumbnailId")
+    thumbnail         Upload?            @relation(name: "thumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
+    permissionStrings PermissionString[]
+    flowNodes         FlowNode[]         @relation("flowNodes")
+    inherits          Role[]             @relation("inheritance")
+    inheritedBy       Role[]             @relation("inheritance")
+}
+
+model PermissionString {
+    id               String @id @default(cuid())
+    roleId           String
+    role             Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    permissionString String
+}
+
+//
+// Uploads
+//
+
+model Upload {
+    id             String         @id @default(cuid())
+    fileName       String
+    mimeType       String
+    createdAt      DateTime       @default(now())
+    createdById    String
+    createdBy      User           @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    roleIcons      Role[]         @relation("icon")
+    roleThumbnails Role[]         @relation("thumbnail")
+    manufacturers  Manufacturer[]
+}
+
+//
+// NextAuth.js
+//
+
+model Account {
+    id                String    @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?   @db.Text
+    access_token      String?   @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?   @db.Text
+    session_state     String?
+    user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdAt         DateTime? @default(now())
+    updatedAt         DateTime?
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id                         String                   @id @default(cuid())
+    name                       String?
+    email                      String?                  @unique
+    emailVerified              DateTime?
+    image                      String?
+    accounts                   Account[]
+    sessions                   Session[]
+    role                       String?
+    createdAt                  DateTime?                @default(now())
+    updatedAt                  DateTime?
+    operations                 OperationMember[]
+    ships                      Ship[]
+    createdEntities            Entity[]                 @relation("createdBy")
+    submittedEntityLogs        EntityLog[]              @relation("submittedBy")
+    createdEntityLogAttributes EntityLogAttribute[]
+    lastSeenAt                 DateTime?
+    uploads                    Upload[]
+    emailConfirmationTokens    EmailConfirmationToken[]
+    createdVariantTags         VariantTag[]             @relation("createdBy")
+    updatedVariantTags         VariantTag[]             @relation("updatedBy")
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model EmailConfirmationToken {
+    token   String   @id
+    email   String
+    userId  String
+    user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    expires DateTime
+}
+
+//
+// Care Bear Huhn
+//
+
+// model CareBearShooterScore {
+//     id        String   @id @default(cuid())
+//     entityId  String
+//     entity    Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+//     score     Int
+//     createdAt DateTime @default(now())
+// }
+
+//
+// Organizations
+//
+
+model Organization {
+    id                       String                               @id @default(cuid())
+    name                     String
+    spectrumId               String                               @unique
+    description              String?
+    logo                     String?
+    activeMemberships        ActiveOrganizationMembership[]
+    membershipHistoryEntries OrganizationMembershipHistoryEntry[]
+    attributeHistoryEntries  OrganizationAttributeHistoryEntry[]
+    createdAt                DateTime                             @default(now())
+    createdById              String
+    createdBy                Entity                               @relation(name: "CreatedOrganizations", fields: [createdById], references: [id], onDelete: Cascade)
+}
+
+model OrganizationAttributeHistoryEntry {
+    id             String       @id @default(cuid())
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+    attributeKey String
+    oldValue     String?
+    newValue     String
+
+    createdAt   DateTime @default(now())
+    createdById String
+    createdBy   Entity   @relation(name: "CreatedOrganizationAttributeHistoryEntries", fields: [createdById], references: [id], onDelete: Cascade)
+
+    confirmed     ConfirmationStatus?
+    confirmedAt   DateTime?
+    confirmedById String?
+    confirmedBy   Entity?             @relation(name: "ConfirmedOrganizationAttributeHistoryEntries", fields: [confirmedById], references: [id], onDelete: Cascade)
+
+    @@index([organizationId])
+}
+
+model ActiveOrganizationMembership {
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    citizenId      String
+    citizen        Entity       @relation(fields: [citizenId], references: [id], onDelete: Cascade)
+
+    type       OrganizationMembershipType
+    visibility OrganizationMembershipVisibility
+
+    @@id([organizationId, citizenId])
+    @@index([organizationId])
+}
+
+enum OrganizationMembershipType {
+    MAIN
+    AFFILIATE
+    LEFT
+}
+
+enum OrganizationMembershipVisibility {
+    PUBLIC
+    REDACTED
+}
+
+model OrganizationMembershipHistoryEntry {
+    id             String       @id @default(cuid())
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    citizenId      String
+    citizen        Entity       @relation(name: "OrganizationMembershipHistoryEntry", fields: [citizenId], references: [id], onDelete: Cascade)
+
+    type       OrganizationMembershipType
+    visibility OrganizationMembershipVisibility
+
+    createdAt   DateTime @default(now())
+    createdById String
+    createdBy   Entity   @relation(name: "CreatedOrganizationMemberHistoryEntries", fields: [createdById], references: [id], onDelete: Cascade)
+
+    confirmed     ConfirmationStatus?
+    confirmedAt   DateTime?
+    confirmedById String?
+    confirmedBy   Entity?             @relation(name: "ConfirmedOrganizationMemberHistoryEntries", fields: [confirmedById], references: [id], onDelete: Cascade)
+
+    @@index([organizationId])
+    @@index([citizenId])
+}
+
+enum ConfirmationStatus {
+    CONFIRMED
+    FALSE_REPORT
+}
+
+//
+// Flows
+//
+
+model Flow {
+    id       String     @id
+    name     String
+    nodes    FlowNode[]
+    position Int        @unique @default(autoincrement())
+}
+
+model FlowNode {
+    id                     String                    @id @default(cuid())
+    flowId                 String
+    flow                   Flow                      @relation(fields: [flowId], references: [id], onDelete: Cascade)
+    positionX              Float
+    positionY              Float
+    width                  Float
+    height                 Float
+    sources                FlowEdge[]                @relation("sources")
+    targets                FlowEdge[]                @relation("targets")
+    type                   FlowNodeType
+    roleId                 String?
+    role                   Role?                     @relation("flowNodes", fields: [roleId], references: [id], onDelete: Cascade)
+    roleImage              FlowNodeRoleImage?
+    markdown               String?
+    markdownPosition       FlowNodeMarkdownPosition?
+    backgroundColor        String?
+    backgroundTransparency Float?
+}
+
+enum FlowNodeType {
+    ROLE
+    MARKDOWN
+}
+
+enum FlowNodeRoleImage {
+    ICON
+    THUMBNAIL
+}
+
+enum FlowNodeMarkdownPosition {
+    LEFT
+    RIGHT
+    CENTER
+}
+
+model FlowEdge {
+    id           String   @id @default(cuid())
+    type         String
+    sourceId     String
+    source       FlowNode @relation("sources", fields: [sourceId], references: [id], onDelete: Cascade)
+    sourceHandle String
+    targetId     String
+    target       FlowNode @relation("targets", fields: [targetId], references: [id], onDelete: Cascade)
+    targetHandle String
+}
+
+//
+// Events
+//
+
+model DiscordEvent {
+    id           String                    @id @default(cuid())
+    discordId    String                    @unique
+    hash         String                    @unique
+    createdAt    DateTime                  @default(now())
+    updatedAt    DateTime                  @updatedAt
+    participants DiscordEventParticipant[]
+}
+
+model DiscordEventParticipant {
+    id            String       @id @default(cuid())
+    eventId       String
+    event         DiscordEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+    discordUserId String
+    createdAt     DateTime     @default(now())
+
+    @@unique([eventId, discordUserId])
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@sinister-administration-module/database",
+  "private": true,
+  "type": "module",
+  "files": [
+    "./dist/*"
+  ],
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "seed": "tsx seed.ts",
+    "build": "prisma generate && tsc"
+  },
+  "dependencies": {
+    "@prisma/client": "6.1.0",
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.0",
+    "prisma": "6.1.0",
+    "tsx": "4.19.2",
+    "typescript": "5.7.3"
+  }
+}

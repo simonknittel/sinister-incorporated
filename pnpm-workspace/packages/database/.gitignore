@@ -1,0 +1,4 @@
+dist
+*.env
+!.env.example
+tsconfig.tsbuildinfo

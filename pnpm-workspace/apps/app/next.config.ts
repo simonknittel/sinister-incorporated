@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
 
   cleanDistDir: true,
 
+  poweredByHeader: false,
+
   images: {
     remotePatterns: [
       {
@@ -33,8 +35,6 @@ const nextConfig: NextConfig = {
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-
-  poweredByHeader: false,
 
   // eslint-disable-next-line @typescript-eslint/require-await
   headers: async () => [
