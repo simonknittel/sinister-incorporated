@@ -7,7 +7,8 @@ on:
       - develop
     paths:
       - .github/workflows/validate-app.yml
-      - app/**
+      - pnpm-workspace/apps/app/**
+      - pnpm-workspace/packages/database/**
 
 jobs:
   lint:
@@ -16,27 +17,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.0.0
+        with:
+          version: 10.0.0
+
       - uses: actions/setup-node@v4.1.0
         with:
-          node-version-file: "app/.nvmrc"
-
-      - uses: actions/cache@v4.2.0
-        id: node-modules-cache
-        with:
-          path: app/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('app/.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
+          node-version-file: "pnpm-workspace/.nvmrc"
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-workspace/pnpm-lock.yaml'
 
       - name: Install dependencies
-        run: npm ci
-        working-directory: app
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: pnpm install
+        working-directory: pnpm-workspace
 
       - name: Lint
-        run: npm run lint
-        working-directory: app
+        run: pnpm --filter @sinister-administration-module/app run lint
+        working-directory: pnpm-workspace
         continue-on-error: true
         env:
-          DATABASE_URL: "mysql://foo"
+          DATABASE_URL: "postgresql://foo"
           NEXTAUTH_SECRET: "foo"
           NEXTAUTH_URL: "https://foo"
           DISCORD_CLIENT_ID: "foo"
@@ -60,24 +61,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.0.0
+        with:
+          version: 10.0.0
+
       - uses: actions/setup-node@v4.1.0
         with:
-          node-version-file: "app/.nvmrc"
-
-      - uses: actions/cache@v4.2.0
-        id: node-modules-cache
-        with:
-          path: app/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('app/.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
+          node-version-file: "pnpm-workspace/.nvmrc"
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-workspace/pnpm-lock.yaml'
 
       - name: Install dependencies
-        run: npm ci
-        working-directory: app
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: pnpm install
+        working-directory: pnpm-workspace
 
       - name: Prettier
-        run: npx prettier --check .
-        working-directory: app
+        run: pnpm --filter @sinister-administration-module/app exec prettier --check .
+        working-directory: pnpm-workspace
         continue-on-error: true
 
   test:
@@ -86,21 +87,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.0.0
+        with:
+          version: 10.0.0
+
       - uses: actions/setup-node@v4.1.0
         with:
-          node-version-file: "app/.nvmrc"
-
-      - uses: actions/cache@v4.2.0
-        id: node-modules-cache
-        with:
-          path: app/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('app/.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
+          node-version-file: "pnpm-workspace/.nvmrc"
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-workspace/pnpm-lock.yaml'
 
       - name: Install dependencies
-        run: npm ci
-        working-directory: app
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: pnpm install
+        working-directory: pnpm-workspace
 
       - name: Test
-        run: npm run test
-        working-directory: app
+        run: pnpm --filter @sinister-administration-module/app run test
+        working-directory: pnpm-workspace

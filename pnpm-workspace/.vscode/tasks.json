@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "npm run lint",
+      "label": "pnpm --filter \"@sinister-administration-module/app\" run lint",
       "type": "npm",
       "script": "lint",
       "problemMatcher": ["$eslint-stylish"]

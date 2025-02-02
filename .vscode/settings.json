@@ -1,15 +1,23 @@
 {
 	"cSpell.words": [
+		"algoliasearch",
 		"biomejs",
+		"cmdk",
 		"dbname",
+		"dccache",
 		"hashicorp",
+		"mysql",
+		"nvmrc",
 		"oidc",
 		"OIDC",
+		"openai",
 		"postgres",
 		"postgresql",
 		"prisma",
 		"psql",
 		"tfbackend",
-		"tfvars"
+		"tfvars",
+		"VERCEL",
+		"xyflow"
 	]
 }

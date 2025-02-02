@@ -1,0 +1,14 @@
+{
+  "name": "sinister-administration-module",
+  "private": true,
+  "scripts": {
+    "build:database": "pnpm --filter @sinister-administration-module/database run build",
+    "build:app": "pnpm run build:database && pnpm --filter @sinister-administration-module/app run build",
+    "dev:app": "pnpm run build:database && pnpm --filter @sinister-administration-module/app run dev"
+  },
+  "engines": {
+    "node": "22.13.1",
+    "pnpm": "10.0.0"
+  },
+  "packageManager": "pnpm@10.0.0"
+}

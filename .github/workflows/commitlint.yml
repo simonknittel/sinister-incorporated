@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v4.1.0
         with:
-          node-version-file: "app/.nvmrc"
+          node-version: "latest"
 
       - name: Install commitlint
         run: npm install --global @commitlint/cli @commitlint/config-conventional
