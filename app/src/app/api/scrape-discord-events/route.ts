@@ -127,7 +127,7 @@ const updateParticipants = async (
   if (participants.delete.length > 0) {
     await prisma.discordEventParticipant.deleteMany({
       where: {
-        eventId: discordEvent.id,
+        eventId: databaseEvent.id,
         discordUserId: {
           in: participants.delete,
         },
