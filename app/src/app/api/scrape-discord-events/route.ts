@@ -4,10 +4,12 @@ import { getEvents } from "@/discord/utils/getEvents";
 import { getEventUsers } from "@/discord/utils/getEventUsers";
 import type { eventSchema } from "@/discord/utils/schemas";
 import { env } from "@/env";
+import { log } from "@/logging";
 import { publishNotification } from "@/pusher/utils/publishNotification";
+import { getTracer } from "@/tracing/utils/getTracer";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { NextResponse, type NextRequest } from "next/server";
 import { createHash } from "node:crypto";
-import { setTimeout } from "node:timers/promises";
 import { type z } from "zod";
 
 export async function POST(request: NextRequest) {
@@ -20,9 +22,10 @@ export async function POST(request: NextRequest) {
 
     const { data: events } = await getEvents();
 
+    void log.info("Scraping Discord events", {
+      events: events.map((event) => event.id),
+    });
     for (const event of events) {
-      await setTimeout(2000); // Cheap way to avoid rate limiting
-
       const hash = createHash("md5");
       hash.update(
         JSON.stringify({
@@ -87,59 +90,70 @@ export async function POST(request: NextRequest) {
 const updateParticipants = async (
   discordEvent: z.infer<typeof eventSchema>,
 ) => {
-  const databaseEvent = await prisma.discordEvent.findUnique({
-    where: {
-      discordId: discordEvent.id,
-    },
-  });
-  if (!databaseEvent) return;
-
-  const participants: { create: string[]; delete: string[] } = {
-    create: [],
-    delete: [],
-  };
-  const discordEventUserIds = (await getEventUsers(discordEvent.id)).map(
-    (user) => user.user_id,
-  );
-  const existingDatabaseParticipantIds = (
-    await prisma.discordEventParticipant.findMany({
-      where: {
-        event: {
+  return getTracer().startActiveSpan("updateParticipants", async (span) => {
+    try {
+      const databaseEvent = await prisma.discordEvent.findUnique({
+        where: {
           discordId: discordEvent.id,
         },
-      },
-    })
-  ).map((participant) => participant.discordUserId);
+      });
+      if (!databaseEvent) return;
 
-  // Collect new participants
-  for (const userId of discordEventUserIds) {
-    if (existingDatabaseParticipantIds.includes(userId)) continue;
-    participants.create.push(userId);
-  }
+      const participants: { create: string[]; delete: string[] } = {
+        create: [],
+        delete: [],
+      };
+      const discordEventUserIds = (await getEventUsers(discordEvent.id)).map(
+        (user) => user.user_id,
+      );
+      const existingDatabaseParticipantIds = (
+        await prisma.discordEventParticipant.findMany({
+          where: {
+            event: {
+              discordId: discordEvent.id,
+            },
+          },
+        })
+      ).map((participant) => participant.discordUserId);
 
-  // Collect removed participants
-  for (const userId of existingDatabaseParticipantIds) {
-    if (discordEventUserIds.includes(userId)) continue;
-    participants.delete.push(userId);
-  }
+      // Collect new participants
+      for (const userId of discordEventUserIds) {
+        if (existingDatabaseParticipantIds.includes(userId)) continue;
+        participants.create.push(userId);
+      }
 
-  // Save to database
-  if (participants.delete.length > 0) {
-    await prisma.discordEventParticipant.deleteMany({
-      where: {
-        eventId: databaseEvent.id,
-        discordUserId: {
-          in: participants.delete,
-        },
-      },
-    });
-  }
-  if (participants.create.length > 0) {
-    await prisma.discordEventParticipant.createMany({
-      data: participants.create.map((participantId) => ({
-        eventId: databaseEvent.id,
-        discordUserId: participantId,
-      })),
-    });
-  }
+      // Collect removed participants
+      for (const userId of existingDatabaseParticipantIds) {
+        if (discordEventUserIds.includes(userId)) continue;
+        participants.delete.push(userId);
+      }
+
+      // Save to database
+      if (participants.delete.length > 0) {
+        await prisma.discordEventParticipant.deleteMany({
+          where: {
+            eventId: databaseEvent.id,
+            discordUserId: {
+              in: participants.delete,
+            },
+          },
+        });
+      }
+      if (participants.create.length > 0) {
+        await prisma.discordEventParticipant.createMany({
+          data: participants.create.map((participantId) => ({
+            eventId: databaseEvent.id,
+            discordUserId: participantId,
+          })),
+        });
+      }
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
 };

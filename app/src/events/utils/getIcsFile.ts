@@ -8,7 +8,10 @@ export const getIcsFile = (
   const start = format(event.scheduled_start_time, "yyyy-MM-dd-HH-mm")
     .split("-")
     .map(Number) as DateTime;
-  const end = format(event.scheduled_end_time, "yyyy-MM-dd-HH-mm")
+  const endDate = new Date(
+    event.scheduled_end_time || event.scheduled_start_time,
+  );
+  const end = format(endDate, "yyyy-MM-dd-HH-mm")
     .split("-")
     .map(Number) as DateTime;
 

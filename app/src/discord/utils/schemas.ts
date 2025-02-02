@@ -28,9 +28,11 @@ export const eventSchema = z.object({
   name: z.string(),
   image: z.string().optional().nullable(),
   scheduled_start_time: z.coerce.date(),
-  scheduled_end_time: z.coerce.date(),
+  scheduled_end_time: z.coerce.date().nullable(),
   user_count: z.number(),
   description: z.string().optional(),
+  creator_id: z.string(),
+  creator: userSchema,
   entity_metadata: z.object({
     location: z.string().optional(),
   }),

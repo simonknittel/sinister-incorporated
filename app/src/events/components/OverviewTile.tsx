@@ -58,7 +58,7 @@ export const OverviewTile = ({ className, event, date }: Props) => {
 
             <dt className="text-neutral-500 mt-4">Ende</dt>
             <dd>
-              {event.scheduled_end_time.toLocaleString("de-DE", {
+              {event.scheduled_end_time?.toLocaleString("de-DE", {
                 timeZone: "Europe/Berlin",
                 weekday: "short",
                 year: "numeric",
@@ -66,7 +66,7 @@ export const OverviewTile = ({ className, event, date }: Props) => {
                 day: "numeric",
                 hour: "2-digit",
                 minute: "2-digit",
-              })}
+              }) || "-"}
             </dd>
           </dl>
 
