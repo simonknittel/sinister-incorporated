@@ -8,7 +8,10 @@ export const getGoogleCalendarUrl = (
 
   const start = formatISO(event.scheduled_start_time, { format: "basic" });
 
-  const end = formatISO(event.scheduled_end_time, { format: "basic" });
+  const endDate = new Date(
+    event.scheduled_end_time || event.scheduled_start_time,
+  );
+  const end = formatISO(endDate, { format: "basic" });
 
   const description = event.description
     ? `&details=${encodeURIComponent(event.description)}`

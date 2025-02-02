@@ -4,18 +4,12 @@ import { Link } from "@/common/components/Link";
 import TimeAgoContainer from "@/common/components/TimeAgoContainer";
 import clsx from "clsx";
 import Image from "next/image";
+import type { z } from "zod";
+import type { eventSchema } from "../utils/schemas";
 
 type Props = Readonly<{
   className?: string;
-  event: {
-    id: string;
-    guild_id: string;
-    name: string;
-    image?: string | null;
-    scheduled_start_time: Date;
-    scheduled_end_time: Date;
-    user_count: number;
-  };
+  event: z.infer<typeof eventSchema>;
   index: number;
 }>;
 

@@ -4,7 +4,7 @@ import { SpanStatusCode } from "@opentelemetry/api";
 import { cache } from "react";
 import { z } from "zod";
 import { checkResponseForError } from "./checkResponseForError";
-import { userSchema } from "./schemas";
+import { eventSchema } from "./schemas";
 
 export const getEvent = cache(async (id: string) => {
   return getTracer().startActiveSpan("getEvent", async (span) => {
@@ -42,21 +42,7 @@ export const getEvent = cache(async (id: string) => {
   });
 });
 
-const successSchema = z.object({
-  id: z.string(),
-  guild_id: z.string(),
-  name: z.string(),
-  image: z.string().optional().nullable(),
-  scheduled_start_time: z.coerce.date(),
-  scheduled_end_time: z.coerce.date(),
-  user_count: z.number(),
-  description: z.string().optional(),
-  creator_id: z.string(),
-  creator: userSchema,
-  entity_metadata: z.object({
-    location: z.string().optional(),
-  }),
-});
+const successSchema = eventSchema;
 
 const errorSchema = z.object({
   message: z.string(),

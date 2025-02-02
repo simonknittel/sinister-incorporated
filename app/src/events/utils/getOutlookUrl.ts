@@ -12,8 +12,11 @@ export const getOutlookUrl = (
     "yyyy-MM-dd'T'HH:mm:ss",
   );
 
+  const endDate = new Date(
+    event.scheduled_end_time || event.scheduled_start_time,
+  );
   const end = formatInTimeZone(
-    event.scheduled_end_time,
+    endDate,
     "Europe/Berlin",
     "yyyy-MM-dd'T'HH:mm:ss",
   );

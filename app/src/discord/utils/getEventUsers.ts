@@ -1,6 +1,8 @@
 import { env } from "@/env";
+import { log } from "@/logging";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
+import { setTimeout } from "node:timers/promises";
 import { cache } from "react";
 import { z } from "zod";
 import { checkResponseForError } from "./checkResponseForError";
@@ -9,18 +11,32 @@ import { memberSchema, userSchema } from "./schemas";
 export const getEventUsers = cache(async (id: string) => {
   return getTracer().startActiveSpan("getEventUsers", async (span) => {
     try {
-      // https://discord.com/developers/docs/resources/guild-scheduled-event#get-guild-scheduled-event-users
-      const response = await fetch(
-        `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}/users?with_member=true`,
-        {
-          headers: new Headers({
-            Authorization: `Bot ${env.DISCORD_TOKEN}`,
-          }),
-          next: {
-            revalidate: 30,
+      let response;
+      const maxRetries = 5;
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        response = await fetch(
+          `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}/users?with_member=true`,
+          {
+            headers: new Headers({
+              Authorization: `Bot ${env.DISCORD_TOKEN}`,
+            }),
+            next: {
+              revalidate: 30,
+            },
           },
-        },
-      );
+        );
+        if (response.status !== 429) break;
+        const retryAfterHeader = response.headers.get("Retry-After");
+        const retryAfterSeconds = retryAfterHeader
+          ? Number.parseInt(retryAfterHeader, 10)
+          : 1;
+        void log.warn("Hit rate limit of Discord", {
+          endpoint: "getEventUsers",
+          retryAfter: retryAfterSeconds,
+        });
+        await setTimeout(retryAfterSeconds * 1000);
+      }
+      if (!response) throw new Error("Failed to fetch");
 
       const body: unknown = await response.json();
       const data = schema.parse(body);
