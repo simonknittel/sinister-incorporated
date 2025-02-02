@@ -4,7 +4,6 @@ import { getEvents } from "@/discord/utils/getEvents";
 import { getEventUsers } from "@/discord/utils/getEventUsers";
 import type { eventSchema } from "@/discord/utils/schemas";
 import { env } from "@/env";
-import { log } from "@/logging";
 import { publishNotification } from "@/pusher/utils/publishNotification";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
@@ -22,9 +21,6 @@ export async function POST(request: NextRequest) {
 
     const { data: events } = await getEvents();
 
-    void log.info("Scraping Discord events", {
-      events: events.map((event) => event.id),
-    });
     for (const event of events) {
       const hash = createHash("md5");
       hash.update(
