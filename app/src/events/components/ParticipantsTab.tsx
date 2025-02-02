@@ -9,10 +9,12 @@ import { getDiscordAvatar } from "@/discord/utils/getDiscordAvatar";
 import { type getEvent } from "@/discord/utils/getEvent";
 import type { memberSchema, userSchema } from "@/discord/utils/schemas";
 import type { Entity } from "@prisma/client";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import Image from "next/image";
 import { Suspense } from "react";
 import {
+  FaInfoCircle,
   FaSortAlphaDown,
   FaSortAlphaUp,
   FaSortNumericDown,
@@ -21,7 +23,7 @@ import {
 import type { z } from "zod";
 import { getParticipants } from "../utils/getParticipants";
 
-const GRID_COLS = "grid-cols-[160px_140px_1fr]";
+const GRID_COLS = "grid-cols-[160px_160px_1fr]";
 
 type Props = Readonly<{
   className?: string;
@@ -120,7 +122,7 @@ export const ParticipantsTab = async ({
         <h2 className="font-bold mb-4">Spynet ({spynetCitizen.length})</h2>
 
         {spynetCitizen.length > 0 ? (
-          <table>
+          <table className="w-full min-w-[720px]">
             <thead>
               <tr
                 className={clsx(
@@ -144,7 +146,7 @@ export const ParticipantsTab = async ({
                   </Link>
                 </th>
 
-                <th>
+                <th className="flex items-center gap-2">
                   <Link
                     href={`?${joinedAtSearchParams.toString()}`}
                     className="flex items-center gap-2 cursor-pointer select-none hover:text-neutral-300 whitespace-nowrap"
@@ -157,6 +159,22 @@ export const ParticipantsTab = async ({
                       <FaSortNumericUp />
                     )}
                   </Link>
+
+                  <Tooltip.Provider delayDuration={300}>
+                    <Tooltip.Root>
+                      <Tooltip.Trigger className="text-sinister-red-500 hover:underline cursor-help">
+                        <FaInfoCircle />
+                      </Tooltip.Trigger>
+
+                      <Tooltip.Content
+                        className="p-2 text-sm leading-tight max-w-[640px] select-none rounded bg-neutral-600 text-white font-normal"
+                        sideOffset={5}
+                      >
+                        Auf etwa 2 Minuten genau
+                        <Tooltip.Arrow className="fill-neutral-600" />
+                      </Tooltip.Content>
+                    </Tooltip.Root>
+                  </Tooltip.Provider>
                 </th>
 
                 <th
