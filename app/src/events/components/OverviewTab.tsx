@@ -1,13 +1,13 @@
 import { requireAuthentication } from "@/auth/server";
-import { SingleRole } from "@/common/components/SingleRole";
 import type { getEvent } from "@/discord/utils/getEvent";
-import { VariantTagBadge } from "@/fleet/components/VariantTagBadge";
 import { getAssignedRoles } from "@/roles/utils/getRoles";
 import type { Role, VariantTag } from "@prisma/client";
 import clsx from "clsx";
 import { getEventFleet } from "../utils/getEventFleet";
 import { getParticipants } from "../utils/getParticipants";
 import { OverviewTile } from "./OverviewTile";
+import { RolesTable } from "./RolesTable";
+import { VariantTagsTable } from "./VariantTagsTable";
 
 type Props = Readonly<{
   className?: string;
@@ -28,13 +28,21 @@ export const OverviewTab = async ({ className, event }: Props) => {
       <OverviewTile
         event={event.data}
         date={event.date}
-        className="w-[480px] flex-none"
+        className="w-full max-w-[480px] flex-none"
       />
 
-      <div className="flex-1 w-full flex flex-col gap-4">
-        {showFleetSummary && <FleetSummary event={event.data} />}
+      <div className="flex-1 w-full flex-col md:flex-row lg:flex-col xl:flex-row 2xl:flex-col 3xl:flex-row flex gap-2">
+        {showFleetSummary && (
+          <FleetSummary
+            event={event.data}
+            className="flex-initial w-full md:w-1/2 lg:w-full xl:w-1/2 2xl:w-full 3xl:w-1/2"
+          />
+        )}
 
-        <ParticipantsSummary event={event.data} />
+        <ParticipantsSummary
+          event={event.data}
+          className="flex-initial w-full md:w-1/2 lg:w-full xl:w-1/2 2xl:w-full 3xl:w-1/2"
+        />
       </div>
     </div>
   );
@@ -75,21 +83,8 @@ const FleetSummary = async ({ className, event }: FleetSummaryProps) => {
         Summe aller Tags. Nur flight ready.
       </p>
 
-      <div className="flex gap-2 flex-wrap">
-        {Array.from(countedTags.values())
-          .toSorted((a, b) => b.count - a.count)
-          .map((countedTag) => (
-            <div
-              key={countedTag.tag.id}
-              className="flex items-center rounded-l bg-neutral-700/50"
-            >
-              <span className="inline-block px-2 text-xl font-bold">
-                {countedTag.count}
-              </span>
-
-              <VariantTagBadge tag={countedTag.tag} />
-            </div>
-          ))}
+      <div className="flex gap-2 flex-wrap overflow-x-auto">
+        <VariantTagsTable rows={Array.from(countedTags.values())} />
       </div>
     </section>
   );
@@ -135,21 +130,8 @@ const ParticipantsSummary = async ({
         Summe aller Rollen/Zertifikate
       </p>
 
-      <div className="flex gap-2 flex-wrap">
-        {Array.from(countedRoles.values())
-          .toSorted((a, b) => b.count - a.count)
-          .map((countedRole) => (
-            <div
-              key={countedRole.role.id}
-              className="flex items-center rounded-l bg-neutral-700/50"
-            >
-              <span className="inline-block px-2 text-xl font-bold">
-                {countedRole.count}
-              </span>
-
-              <SingleRole role={countedRole.role} />
-            </div>
-          ))}
+      <div className="flex gap-2 flex-wrap overflow-x-auto">
+        <RolesTable rows={Array.from(countedRoles.values())} />
       </div>
     </section>
   );

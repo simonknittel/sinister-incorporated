@@ -17,12 +17,12 @@ export const SingleRole = ({
   return (
     <span
       className={clsx(
+        "px-2 py-1 rounded bg-neutral-700/50 flex gap-2 items-center overflow-hidden",
         className,
-        "px-2 py-1 rounded bg-neutral-700/50 flex gap-2 items-center whitespace-nowrap",
       )}
     >
       {role.iconId && (
-        <span className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
+        <span className="aspect-square size-6 flex items-center justify-center">
           <Image
             src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
             alt=""
@@ -35,7 +35,9 @@ export const SingleRole = ({
 
       {!role.iconId && showPlaceholder && <span className="size-6" />}
 
-      {role.name}
+      <span className="overflow-hidden whitespace-nowrap text-ellipsis">
+        {role.name}
+      </span>
     </span>
   );
 };
