@@ -1,3 +1,4 @@
+import { prisma } from "@/db";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
 import { unstable_cache } from "next/cache";
@@ -7,7 +8,7 @@ const schema = z.object({
   data: z.object({
     resultset: z.array(
       z.object({
-        nickname: z.string(),
+        nickname: z.string(), // Handle
         displayname: z.string(),
 
         rank: z.coerce.number(),
@@ -34,32 +35,66 @@ const schema = z.object({
   }),
 });
 
-export const getLeaderboard = (mode: "SB", season: string) => {
+export const getLeaderboard = (mode: "SB", season: string, pages: number) => {
   return unstable_cache(
     async (mode: "SB", season: string) => {
       return getTracer().startActiveSpan("getLeaderboard", async (span) => {
         try {
-          const response = await fetch(
-            "https://robertsspaceindustries.com/api/leaderboards/getLeaderboard",
-            {
-              method: "POST",
-              body: JSON.stringify({
-                mode,
-                map: "MAP-ANY",
-                type: "Account",
-                season,
-                page: 1,
-                pagesize: "100",
-              }),
-              headers: {
-                "Content-Type": "application/json",
+          const ranks: z.infer<typeof schema>["data"]["resultset"] = [];
+
+          for (let page = 1; page <= pages; page++) {
+            const response = await fetch(
+              "https://robertsspaceindustries.com/api/leaderboards/getLeaderboard",
+              {
+                method: "POST",
+                body: JSON.stringify({
+                  mode,
+                  map: "MAP-ANY",
+                  type: "Account",
+                  season,
+                  page,
+                  pagesize: "100",
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              },
+            );
+
+            const json = (await response.json()) as unknown;
+            const result = schema.parse(json);
+            ranks.push(...result.data.resultset);
+          }
+
+          // Get entities from all Sinister members
+          const discordIds = await prisma.user.findMany({
+            select: {
+              accounts: {
+                select: {
+                  providerAccountId: true,
+                },
               },
             },
-          );
+          });
+          const entities = await prisma.entity.findMany({
+            where: {
+              discordId: {
+                in: discordIds.flatMap(({ accounts }) =>
+                  accounts.map(({ providerAccountId }) => providerAccountId),
+                ),
+              },
+            },
+            select: {
+              id: true,
+              handle: true,
+            },
+          });
 
-          const json = (await response.json()) as unknown;
-          const result = schema.parse(json);
-          return result.data.resultset;
+          const filteredRanks = ranks.filter((rank) =>
+            entities.some((entity) => entity.handle === rank.nickname),
+          );
+          const sortedRanks = filteredRanks.toSorted((a, b) => a.rank - b.rank);
+          return sortedRanks;
         } catch (error) {
           span.setStatus({
             code: SpanStatusCode.ERROR,
@@ -72,7 +107,7 @@ export const getLeaderboard = (mode: "SB", season: string) => {
     },
     [`mode=${mode}`, `season=${season}`],
     {
-      revalidate: 60,
+      revalidate: 60 * 60, // 1 hour
     },
   )(mode, season);
 };
