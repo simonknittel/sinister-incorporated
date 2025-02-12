@@ -1,6 +1,5 @@
 import { authenticatePage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
-import { Link } from "@/common/components/Link";
 import { getLeaderboard } from "@/leaderboards/queries";
 import clsx from "clsx";
 import { type Metadata } from "next";
@@ -15,7 +14,7 @@ export default async function Page() {
   const authentication = await authenticatePage("/app/leaderboards");
   await authentication.authorizePage("leaderboards", "read");
 
-  const leaderboard = await getLeaderboard("SB", "46");
+  const leaderboard = await getLeaderboard("SB", "47", 15);
 
   return (
     <main className="p-4 pb-20 lg:p-8">
@@ -47,14 +46,14 @@ export default async function Page() {
                   {citizen.rank}
                 </td>
 
-                <td className="h-14 overflow-hidden">
-                  <Link
-                    href=""
+                <td className="h-14 flex items-center px-2 overflow-hidden text-ellipsis whitespace-nowrap">
+                  {/* <Link
+                    href={`/app/spynet/citizen/${}`}
                     prefetch={false}
                     className="flex items-center gap-2 text-sinister-red-500 hover:bg-neutral-800 px-2 rounded h-full overflow-hidden text-ellipsis whitespace-nowrap"
-                  >
-                    {citizen.displayname}
-                  </Link>
+                  > */}
+                  {citizen.displayname}
+                  {/* </Link> */}
                 </td>
               </tr>
             ))}
