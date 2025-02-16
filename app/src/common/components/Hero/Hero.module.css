@@ -44,6 +44,17 @@
     movement 8s step-end infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .glitch span {
+    animation: none;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    display: none;
+  }
+}
+
 @keyframes paths {
   0% {
     clip-path: polygon(

@@ -68,6 +68,9 @@ export const OverviewTile = ({ className, event, date }: Props) => {
                 minute: "2-digit",
               }) || "-"}
             </dd>
+
+            <dt className="text-neutral-500 mt-4">Ort</dt>
+            <dd>{event.entity_metadata.location || "-"}</dd>
           </dl>
 
           <div className="flex flex-col gap-2 mt-4">
