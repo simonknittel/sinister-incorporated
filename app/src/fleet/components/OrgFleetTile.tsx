@@ -23,9 +23,14 @@ export const OrgFleetTile = async ({ className, urlSearchParams }: Props) => {
     };
   });
 
+  const groupedByUser = Object.groupBy(fleet, (ship) => ship.ownerId);
+
   return (
     <section className={className}>
       <h2 className="font-bold">Sinister Incorporated</h2>
+      <p className="text-neutral-500 text-sm">
+        Schiffe von {Object.keys(groupedByUser).length} Citizen
+      </p>
 
       <div className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 mt-4 overflow-x-auto">
         <Filters />
