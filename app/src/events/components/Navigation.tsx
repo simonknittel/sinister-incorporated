@@ -26,6 +26,12 @@ export const Navigation = async ({
       icon: FaHome,
       path: `/app/events/${eventId}`,
     },
+    // TODO: Enable
+    // {
+    //   name: "Aufstellung",
+    //   icon: MdWorkspaces,
+    //   path: `/app/events/${eventId}/lineup`,
+    // },
     {
       name: `Teilnehmer (${participantsCount})`,
       icon: FaUsers,

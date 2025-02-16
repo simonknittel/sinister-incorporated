@@ -1,0 +1,88 @@
+"use server";
+
+import { authenticateAction } from "@/auth/server";
+import { prisma } from "@/db";
+import { log } from "@/logging";
+import { revalidatePath } from "next/cache";
+import { unstable_rethrow } from "next/navigation";
+import { serializeError } from "serialize-error";
+import { z } from "zod";
+
+const schema = z.object({
+  eventId: z.string().cuid(),
+  name: z.string().trim().max(256),
+  description: z.string().trim().max(512).optional(),
+});
+
+export const createEventPosition = async (formData: FormData) => {
+  try {
+    /**
+     * Authenticate
+     */
+    const authentication = await authenticateAction("createEventPosition");
+
+    /**
+     * Validate the request
+     */
+    const result = schema.safeParse({
+      eventId: formData.get("eventId"),
+      name: formData.get("name"),
+      description: formData.has("description")
+        ? formData.get("description")
+        : undefined,
+    });
+    if (!result.success)
+      return {
+        error: "Ungültige Anfrage",
+        errorDetails: result.error,
+      };
+
+    /**
+     * Authorize the request
+     */
+    const event = await prisma.discordEvent.findUnique({
+      where: {
+        id: result.data.eventId,
+      },
+    });
+    if (
+      authentication.session.discordId !== event?.discordCreatorId &&
+      !(await authentication.authorize("othersEventPosition", "create"))
+    )
+      throw new Error("Forbidden");
+
+    /**
+     * Create entry
+     */
+    await prisma.eventPosition.create({
+      data: {
+        event: {
+          connect: {
+            id: result.data.eventId,
+          },
+        },
+        name: result.data.name,
+        description: result.data.description,
+      },
+    });
+
+    /**
+     * Revalidate cache(s)
+     */
+    revalidatePath(`/app/events/${event?.discordId}/lineup`);
+
+    /**
+     * Respond with the result
+     */
+    return {
+      success: "Erfolgreich gespeichert.",
+    };
+  } catch (error) {
+    unstable_rethrow(error);
+    void log.error("Internal Server Error", { error: serializeError(error) });
+    return {
+      error:
+        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+    };
+  }
+};

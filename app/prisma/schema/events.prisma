@@ -1,10 +1,12 @@
 model DiscordEvent {
-  id           String                    @id @default(cuid())
-  discordId    String                    @unique
-  hash         String                    @unique
-  createdAt    DateTime                  @default(now())
-  updatedAt    DateTime                  @updatedAt
-  participants DiscordEventParticipant[]
+  id               String                    @id @default(cuid())
+  discordId        String                    @unique
+  discordCreatorId String? // TODO: Remove this optional flag once only events got their creator scraped
+  hash             String                    @unique
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+  participants     DiscordEventParticipant[]
+  positions        EventPosition[]
 }
 
 model DiscordEventParticipant {
@@ -15,4 +17,34 @@ model DiscordEventParticipant {
   createdAt     DateTime     @default(now())
 
   @@unique([eventId, discordUserId])
+}
+
+model EventPosition {
+  id                String                     @id @default(cuid())
+  eventId           String
+  event             DiscordEvent               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name              String
+  description       String?
+  requiredVariantId String?
+  requiredVariant   Variant?                   @relation(fields: [requiredVariantId], references: [id], onDelete: SetNull)
+  requiredRoles     Role[]
+  applications      EventPositionApplication[]
+}
+
+model EventPositionApplication {
+  id              String                         @id @default(cuid())
+  eventPositionId String
+  eventPosition   EventPosition                  @relation(fields: [eventPositionId], references: [id], onDelete: Cascade)
+  citizenId       String
+  citizen         Entity                         @relation("citizen", fields: [citizenId], references: [id], onDelete: Cascade)
+  createdAt       DateTime                       @default(now())
+  status          EventPositionApplicationStatus @default(PENDING)
+
+  @@unique([eventPositionId, citizenId])
+}
+
+enum EventPositionApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }

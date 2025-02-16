@@ -17,13 +17,14 @@ model Series {
 }
 
 model Variant {
-  id       String         @id @default(cuid())
-  name     String
-  seriesId String
-  series   Series         @relation(fields: [seriesId], references: [id], onDelete: Cascade)
-  ships    Ship[]
-  status   VariantStatus?
-  tags     VariantTag[]
+  id             String          @id @default(cuid())
+  name           String
+  seriesId       String
+  series         Series          @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  ships          Ship[]
+  status         VariantStatus?
+  tags           VariantTag[]
+  eventPositions EventPosition[]
 
   @@unique([name, seriesId])
 }
