@@ -1,6 +1,6 @@
 # Adding a new node type
 
-1. Add to `FlowNodeType` enum in `schema.prisma`
+1. Add to `FlowNodeType` enum in `career.prisma`
 2. Create `MyNode.tsx`, `getNodeTypeMyRole.ts` and `roleSchema.ts` in `components/nodes` folder.
 3. Add to `utils/nodeTypes.ts`
 4. Add to [CreateOrUpdateNodeModal.tsx](../components/CreateOrUpdateNodeModal.tsx)

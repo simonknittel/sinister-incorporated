@@ -1,0 +1,18 @@
+model DiscordEvent {
+  id           String                    @id @default(cuid())
+  discordId    String                    @unique
+  hash         String                    @unique
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  participants DiscordEventParticipant[]
+}
+
+model DiscordEventParticipant {
+  id            String       @id @default(cuid())
+  eventId       String
+  event         DiscordEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  discordUserId String
+  createdAt     DateTime     @default(now())
+
+  @@unique([eventId, discordUserId])
+}

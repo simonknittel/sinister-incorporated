@@ -13,6 +13,8 @@ import {
 import clsx from "clsx";
 import { useActionState } from "react";
 import { FaCalendarDay, FaCog, FaSave, FaSpinner } from "react-icons/fa";
+import { FaScaleBalanced } from "react-icons/fa6";
+import { IoDocuments } from "react-icons/io5";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
 import { updateRolePermissions } from "../actions/updateRolePermissions";
@@ -22,6 +24,7 @@ import EventsTab from "./tabs/EventsTab";
 import FleetTab from "./tabs/FleetTab";
 import { OrganizationsTab } from "./tabs/OrganizationsTab";
 import OtherTab from "./tabs/OtherTab";
+import { PenaltyPointsTab } from "./tabs/PenaltyPointsTab";
 
 type Props = Readonly<{
   role: Role;
@@ -66,7 +69,11 @@ export const Permissions = ({
           </Tab>
 
           <Tab id="documents">
-            <FaCog /> Dokumente
+            <IoDocuments /> Dokumente
+          </Tab>
+
+          <Tab id="penalty_points">
+            <FaScaleBalanced /> Strafpunkte
           </Tab>
 
           <Tab id="other">
@@ -82,6 +89,7 @@ export const Permissions = ({
         <FleetTab />
         <EventsTab enableOperations={enableOperations} />
         <DocumentsTab />
+        <PenaltyPointsTab />
         <OtherTab roles={allRoles} />
       </TabsProvider>
 

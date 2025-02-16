@@ -30,7 +30,8 @@ export interface PermissionSet {
     | "spynetNotes"
     | "spynetOther"
     | "career"
-    | "leaderboards";
+    | "leaderboards"
+    | "penaltyEntry";
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   operation:
     | "create"

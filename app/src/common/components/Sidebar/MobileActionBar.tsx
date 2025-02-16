@@ -2,6 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import clsx from "clsx";
 import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
+import { FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
@@ -61,6 +62,10 @@ export const MobileActionBar = async ({ className }: Props) => {
     showSpynetCitizen ||
     showSpynetNotes ||
     showSpynetOther;
+  const showPenaltyPoints = await authentication.authorize(
+    "penaltyEntry",
+    "create",
+  );
 
   return (
     <div
@@ -231,6 +236,18 @@ export const MobileActionBar = async ({ className }: Props) => {
                       >
                         <TbMilitaryRank />
                         Karriere
+                      </Link>
+                    </li>
+                  )}
+
+                  {showPenaltyPoints && (
+                    <li>
+                      <Link
+                        href="/app/penalty-points"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                      >
+                        <FaScaleBalanced />
+                        Strafpunkte
                       </Link>
                     </li>
                   )}

@@ -1,6 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
+import { FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
@@ -78,6 +79,10 @@ export const DesktopSidebar = async () => {
     showSpynetCitizen ||
     showSpynetNotes ||
     showSpynetOther;
+  const showPenaltyPoints = await authentication.authorize(
+    "penaltyEntry",
+    "create",
+  );
 
   const disableAlgolia = (await getUnleashFlag("DisableAlgolia")) || false;
 
@@ -191,6 +196,18 @@ export const DesktopSidebar = async () => {
                   >
                     <TbMilitaryRank />
                     Karriere
+                  </Link>
+                </li>
+              )}
+
+              {showPenaltyPoints && (
+                <li>
+                  <Link
+                    href="/app/penalty-points"
+                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
+                  >
+                    <FaScaleBalanced />
+                    Strafpunkte
                   </Link>
                 </li>
               )}
