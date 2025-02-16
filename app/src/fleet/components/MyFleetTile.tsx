@@ -44,7 +44,7 @@ export const MyFleetTile = async ({ className }: Props) => {
 
   return (
     <section className={clsx("flex flex-col gap-4 overflow-hidden", className)}>
-      <h2 className="font-bold">Mein Schiffe</h2>
+      <h2 className="font-bold">Meine Schiffe ({myShips.length})</h2>
 
       {myShips
         .toSorted((a, b) => {
