@@ -38,8 +38,8 @@ export const updateIndices = async () => {
     const index = getIndex();
     await getTracer().startActiveSpan("clearAlgoliaObjects", async (span) => {
       try {
-      } catch (error) {
         await index.clearObjects();
+      } catch (error) {
         span.setStatus({
           code: SpanStatusCode.ERROR,
         });
