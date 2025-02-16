@@ -67,5 +67,3 @@ export const DeleteLog = ({ log }: Props) => {
     </Button>
   );
 };
-
-export default DeleteLog;
