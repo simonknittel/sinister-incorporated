@@ -7,12 +7,14 @@ type Props = Readonly<{
   className?: string;
   variant: Variant;
   manufacturer: Manufacturer;
+  size?: 32 | 48;
 }>;
 
 export const VariantWithLogo = ({
   className,
   variant,
   manufacturer,
+  size = 48,
 }: Props) => {
   return (
     <div className={clsx("flex items-center gap-2", className)}>
@@ -20,13 +22,21 @@ export const VariantWithLogo = ({
         <Image
           src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.imageId}`}
           alt={`Logo of ${manufacturer.name}`}
-          width={48}
-          height={48}
-          className="flex-none size-[48px] object-contain object-center"
+          width={size}
+          height={size}
+          className={clsx("flex-none object-contain object-center", {
+            "size-[32px]": size === 32,
+            "size-[48px]": size === 48,
+          })}
           title={`Logo of ${manufacturer.name}`}
         />
       ) : (
-        <div className="flex-none size-[48px]"></div>
+        <div
+          className={clsx("flex-none", {
+            "size-[32px]": size === 32,
+            "size-[48px]": size === 48,
+          })}
+        ></div>
       )}
 
       <div

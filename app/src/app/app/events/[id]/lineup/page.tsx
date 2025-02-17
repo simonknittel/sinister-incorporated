@@ -1,4 +1,5 @@
 import { authenticatePage } from "@/auth/server";
+import { prisma } from "@/db";
 import { getEvent } from "@/discord/utils/getEvent";
 import { LineupTab } from "@/events/components/LineupTab";
 import { Navigation } from "@/events/components/Navigation";
@@ -51,6 +52,16 @@ export default async function Page({ params }: Props) {
     event.data.creator_id === authentication.session.discordId ||
     (await authentication.authorize("othersEventPosition", "manage"));
 
+  const variants = await prisma.manufacturer.findMany({
+    include: {
+      series: {
+        include: {
+          variants: true,
+        },
+      },
+    },
+  });
+
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl">
@@ -68,6 +79,7 @@ export default async function Page({ params }: Props) {
       <LineupTab
         event={databaseEvent}
         canManagePositions={canManagePositions}
+        variants={variants}
         className="mt-4"
       />
     </main>

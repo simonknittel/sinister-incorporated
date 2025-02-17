@@ -9,24 +9,24 @@ import { serializeError } from "serialize-error";
 import { z } from "zod";
 
 const schema = z.object({
-  eventId: z.string().cuid(),
+  positionId: z.string().cuid(),
   name: z.string().trim().max(256),
   description: z.string().trim().max(512).optional(),
   variantId: z.string().cuid(),
 });
 
-export const createEventPosition = async (formData: FormData) => {
+export const updateEventPosition = async (formData: FormData) => {
   try {
     /**
      * Authenticate
      */
-    const authentication = await authenticateAction("createEventPosition");
+    const authentication = await authenticateAction("updateEventPosition");
 
     /**
      * Validate the request
      */
     const result = schema.safeParse({
-      eventId: formData.get("eventId"),
+      positionId: formData.get("positionId"),
       name: formData.get("name"),
       description: formData.has("description")
         ? formData.get("description")
@@ -44,25 +44,23 @@ export const createEventPosition = async (formData: FormData) => {
      */
     const event = await prisma.discordEvent.findUnique({
       where: {
-        id: result.data.eventId,
+        id: result.data.positionId,
       },
     });
     if (
       authentication.session.discordId !== event?.discordCreatorId &&
-      !(await authentication.authorize("othersEventPosition", "create"))
+      !(await authentication.authorize("othersEventPosition", "update"))
     )
       throw new Error("Forbidden");
 
     /**
      * Create entry
      */
-    await prisma.eventPosition.create({
+    await prisma.eventPosition.update({
+      where: {
+        id: result.data.positionId,
+      },
       data: {
-        event: {
-          connect: {
-            id: result.data.eventId,
-          },
-        },
         name: result.data.name,
         description: result.data.description,
         requiredVariant: {

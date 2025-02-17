@@ -9,29 +9,25 @@ import { serializeError } from "serialize-error";
 import { z } from "zod";
 
 const schema = z.object({
-  eventId: z.string().cuid(),
-  name: z.string().trim().max(256),
-  description: z.string().trim().max(512).optional(),
-  variantId: z.string().cuid(),
+  applicationId: z.string().cuid(),
 });
 
-export const createEventPosition = async (formData: FormData) => {
+export const updateEventPositionAcceptedApplication = async (
+  formData: FormData,
+) => {
   try {
     /**
      * Authenticate
      */
-    const authentication = await authenticateAction("createEventPosition");
+    const authentication = await authenticateAction(
+      "updateEventPositionAcceptedApplication",
+    );
 
     /**
      * Validate the request
      */
     const result = schema.safeParse({
-      eventId: formData.get("eventId"),
-      name: formData.get("name"),
-      description: formData.has("description")
-        ? formData.get("description")
-        : undefined,
-      variantId: formData.get("variantId"),
+      applicationId: formData.get("applicationId"),
     });
     if (!result.success)
       return {
@@ -42,41 +38,48 @@ export const createEventPosition = async (formData: FormData) => {
     /**
      * Authorize the request
      */
-    const event = await prisma.discordEvent.findUnique({
+    const application = await prisma.eventPositionApplication.findUnique({
       where: {
-        id: result.data.eventId,
+        id: result.data.applicationId,
+      },
+      include: {
+        position: {
+          include: {
+            event: true,
+          },
+        },
       },
     });
     if (
-      authentication.session.discordId !== event?.discordCreatorId &&
-      !(await authentication.authorize("othersEventPosition", "create"))
+      authentication.session.discordId !==
+        application?.position.event.discordCreatorId &&
+      !(await authentication.authorize("othersEventPosition", "update"))
     )
       throw new Error("Forbidden");
 
     /**
-     * Create entry
+     * updatePosition
      */
-    await prisma.eventPosition.create({
+    const updatedPosition = await prisma.eventPosition.update({
+      where: {
+        id: application?.positionId,
+      },
       data: {
-        event: {
+        acceptedApplication: {
           connect: {
-            id: result.data.eventId,
+            id: result.data.applicationId,
           },
         },
-        name: result.data.name,
-        description: result.data.description,
-        requiredVariant: {
-          connect: {
-            id: result.data.variantId,
-          },
-        },
+      },
+      include: {
+        event: true,
       },
     });
 
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/events/${event?.discordId}/lineup`);
+    revalidatePath(`/app/events/${updatedPosition.event.discordId}/lineup`);
 
     /**
      * Respond with the result
