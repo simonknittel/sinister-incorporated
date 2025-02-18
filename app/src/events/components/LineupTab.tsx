@@ -64,7 +64,10 @@ export const LineupTab = ({
             ))}
         </div>
       ) : (
-        <p className="italic">Keine Positionen vorhanden.</p>
+        <p className="italic">
+          Keine Posten vorhanden. Diese können vom Organisator des Events
+          angelegt und zugeordnet werden.
+        </p>
       )}
     </section>
   );

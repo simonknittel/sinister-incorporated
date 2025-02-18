@@ -55,13 +55,13 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
         type="submit"
         title={
           hasCurrentUserAlreadyApplied
-            ? "Für diesen Posten abmelden"
-            : "Für diesen Posten anmelden"
+            ? "Abmelden"
+            : "Für diesen Posten Interesse anmelden"
         }
         disabled={isPending}
         variant="secondary"
       >
-        {hasCurrentUserAlreadyApplied ? "Abmelden" : "Anmelden"}{" "}
+        {hasCurrentUserAlreadyApplied ? "Abmelden" : "Interesse anmelden"}{" "}
         {isPending ? (
           <FaSpinner className="animate-spin" />
         ) : hasCurrentUserAlreadyApplied ? (

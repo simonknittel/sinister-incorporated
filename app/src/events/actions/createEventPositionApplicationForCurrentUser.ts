@@ -73,7 +73,8 @@ export const createEventPositionApplicationForCurrentUser = async (
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert.",
+      success:
+        "Erfolgreich gespeichert. Die Anmeldung muss vom Organisator des Events bestätigt werden.",
     };
   } catch (error) {
     unstable_rethrow(error);

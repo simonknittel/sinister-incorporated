@@ -12,7 +12,7 @@ const schema = z.object({
   eventId: z.string().cuid(),
   name: z.string().trim().max(256),
   description: z.string().trim().max(512).optional(),
-  variantId: z.string().cuid(), // TODO: Allow setting to null
+  variantId: z.union([z.string().cuid(), z.literal("-")]),
 });
 
 export const createEventPosition = async (formData: FormData) => {
@@ -65,11 +65,14 @@ export const createEventPosition = async (formData: FormData) => {
         },
         name: result.data.name,
         description: result.data.description,
-        requiredVariant: {
-          connect: {
-            id: result.data.variantId,
-          },
-        },
+        requiredVariant:
+          result.data.variantId !== "-"
+            ? {
+                connect: {
+                  id: result.data.variantId,
+                },
+              }
+            : {},
       },
     });
 
