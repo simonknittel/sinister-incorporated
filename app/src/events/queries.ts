@@ -11,6 +11,7 @@ export const getEventByDiscordId = async (discordId: DiscordEvent["id"]) => {
           discordId,
         },
         include: {
+          participants: true,
           positions: {
             include: {
               applications: {

@@ -116,7 +116,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
         <Button
           onClick={handleClick}
           variant="tertiary"
-          className={clsx(props.className)}
+          className={clsx("px-2 w-auto", props.className)}
           title="Posten bearbeiten"
           iconOnly
         >
@@ -169,14 +169,19 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
           />
 
           <label className="block mt-4" htmlFor={variantId}>
-            Schiff
+            Schiff (optional)
           </label>
           <select
             name="variantId"
             autoFocus
             id={variantId}
             className="p-2 rounded bg-neutral-900 w-full mt-2"
+            defaultValue={
+              ("position" in props && props.position?.requiredVariantId) || "-"
+            }
           >
+            <option value="-">-</option>
+
             {variantOptions.map((option) => (
               <optgroup
                 key={option.manufacturer.id}

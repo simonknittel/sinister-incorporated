@@ -1,6 +1,6 @@
 import { authenticatePage } from "@/auth/server";
+import Note from "@/common/components/Note";
 import { prisma } from "@/db";
-import { getEvent } from "@/discord/utils/getEvent";
 import { LineupTab } from "@/events/components/LineupTab";
 import { Navigation } from "@/events/components/Navigation";
 import { getEventByDiscordId } from "@/events/queries";
@@ -16,10 +16,11 @@ export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
-    const { data: event } = await getEvent((await props.params).id);
+    const eventId = (await props.params).id;
+    const event = await getEventByDiscordId(eventId);
 
     return {
-      title: `Aufstellung - ${event.name} - Event | S.A.M. - Sinister Incorporated`,
+      title: `Aufstellung - ${event?.discordName} - Event | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
     void log.error(
@@ -44,12 +45,31 @@ export default async function Page({ params }: Props) {
   await authentication.authorizePage("event", "read");
 
   const eventId = (await params).id;
-  const event = await getEvent(eventId);
   const databaseEvent = await getEventByDiscordId(eventId);
-  if (!databaseEvent) return null; // TODO: Find better fallback for when event didn't get scraped yet
+  if (!databaseEvent)
+    return (
+      <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+        <div className="flex gap-2 font-bold text-xl">
+          <span className="text-neutral-500">Event /</span>
+          <p>???</p>
+        </div>
+
+        <Navigation
+          eventId={eventId}
+          active={`/app/events/${eventId}/lineup`}
+          className="mt-4"
+        />
+
+        <Note
+          type="info"
+          className="mt-4"
+          message="Es dauert etwa drei Minuten nach Eventerstellung bis die Aufstellung verfügbar ist."
+        />
+      </main>
+    );
 
   const canManagePositions =
-    event.data.creator_id === authentication.session.discordId ||
+    databaseEvent.discordCreatorId === authentication.session.discordId ||
     (await authentication.authorize("othersEventPosition", "manage"));
 
   const variants = await prisma.manufacturer.findMany({
@@ -66,12 +86,12 @@ export default async function Page({ params }: Props) {
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl">
         <span className="text-neutral-500">Event /</span>
-        <p>{event.data.name}</p>
+        <p>{databaseEvent.discordName}</p>
       </div>
 
       <Navigation
         eventId={eventId}
-        participantsCount={event.data.user_count}
+        participantsCount={databaseEvent.participants.length}
         active={`/app/events/${eventId}/lineup`}
         className="mt-4"
       />

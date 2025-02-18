@@ -12,7 +12,7 @@ const schema = z.object({
   positionId: z.string().cuid(),
 });
 
-export const createEventPositionApplicationForCurrentUser = async (
+export const deleteEventPositionApplicationForCurrentUser = async (
   formData: FormData,
 ) => {
   try {
@@ -20,10 +20,9 @@ export const createEventPositionApplicationForCurrentUser = async (
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction(
-      "createEventPositionApplicationForCurrentUser",
+      "deleteEventPositionApplicationForCurrentUser",
     );
-    if (!authentication.session.entityId)
-      return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
+    if (!authentication.session.entityId) throw new Error("Forbidden");
 
     /**
      * Validate the request
@@ -40,17 +39,11 @@ export const createEventPositionApplicationForCurrentUser = async (
     /**
      * Create application
      */
-    const createdApplication = await prisma.eventPositionApplication.create({
-      data: {
-        position: {
-          connect: {
-            id: result.data.positionId,
-          },
-        },
-        citizen: {
-          connect: {
-            id: authentication.session.entityId,
-          },
+    const deletedApplication = await prisma.eventPositionApplication.delete({
+      where: {
+        positionId_citizenId: {
+          citizenId: authentication.session.entityId,
+          positionId: result.data.positionId,
         },
       },
       include: {
@@ -66,7 +59,7 @@ export const createEventPositionApplicationForCurrentUser = async (
      * Revalidate cache(s)
      */
     revalidatePath(
-      `/app/events/${createdApplication.position.event.discordId}/lineup`,
+      `/app/events/${deletedApplication.position.event.discordId}/lineup`,
     );
 
     /**

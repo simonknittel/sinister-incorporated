@@ -9,6 +9,7 @@ import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
 import { useTransition, type ChangeEventHandler } from "react";
 import toast from "react-hot-toast";
+import { resetEventPositionAcceptedApplication } from "../actions/resetEventPositionAcceptedApplication";
 import { updateEventPositionAcceptedApplication } from "../actions/updateEventPositionAcceptedApplication";
 
 type Props = Readonly<{
@@ -38,7 +39,10 @@ export const UpdateEventPositionAcceptedApplication = ({
 
     startTransition(async () => {
       try {
-        const response = await updateEventPositionAcceptedApplication(formData);
+        const response =
+          event.target.value === "-"
+            ? await resetEventPositionAcceptedApplication(formData)
+            : await updateEventPositionAcceptedApplication(formData);
 
         if (response.error) {
           toast.error(response.error);
@@ -67,7 +71,7 @@ export const UpdateEventPositionAcceptedApplication = ({
         disabled={isPending}
         defaultValue={position.acceptedApplication?.id}
       >
-        <option value="">Bitte wählen</option>
+        <option value="-">-</option>
 
         <optgroup label="Anforderungen erfüllt"></optgroup>
 

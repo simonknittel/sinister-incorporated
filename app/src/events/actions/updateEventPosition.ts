@@ -12,7 +12,7 @@ const schema = z.object({
   positionId: z.string().cuid(),
   name: z.string().trim().max(256),
   description: z.string().trim().max(512).optional(),
-  variantId: z.string().cuid(),
+  variantId: z.union([z.string().cuid(), z.literal("-")]),
 });
 
 export const updateEventPosition = async (formData: FormData) => {
@@ -51,7 +51,7 @@ export const updateEventPosition = async (formData: FormData) => {
       authentication.session.discordId !== event?.discordCreatorId &&
       !(await authentication.authorize("othersEventPosition", "update"))
     )
-      throw new Error("Forbidden");
+      return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
 
     /**
      * Create entry
@@ -63,11 +63,16 @@ export const updateEventPosition = async (formData: FormData) => {
       data: {
         name: result.data.name,
         description: result.data.description,
-        requiredVariant: {
-          connect: {
-            id: result.data.variantId,
-          },
-        },
+        requiredVariant:
+          result.data.variantId === "-"
+            ? {
+                disconnect: true,
+              }
+            : {
+                connect: {
+                  id: result.data.variantId,
+                },
+              },
       },
     });
 

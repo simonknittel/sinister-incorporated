@@ -12,7 +12,7 @@ const schema = z.object({
   eventId: z.string().cuid(),
   name: z.string().trim().max(256),
   description: z.string().trim().max(512).optional(),
-  variantId: z.string().cuid(),
+  variantId: z.string().cuid(), // TODO: Allow setting to null
 });
 
 export const createEventPosition = async (formData: FormData) => {

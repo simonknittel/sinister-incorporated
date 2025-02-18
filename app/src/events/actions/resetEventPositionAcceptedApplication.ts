@@ -12,18 +12,16 @@ const schema = z.object({
   positionId: z.string().cuid(),
 });
 
-export const createEventPositionApplicationForCurrentUser = async (
+export const resetEventPositionAcceptedApplication = async (
   formData: FormData,
 ) => {
   try {
     /**
-     * Authenticate and authorize the request
+     * Authenticate
      */
     const authentication = await authenticateAction(
-      "createEventPositionApplicationForCurrentUser",
+      "resetEventPositionAcceptedApplication",
     );
-    if (!authentication.session.entityId)
-      return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
 
     /**
      * Validate the request
@@ -38,36 +36,44 @@ export const createEventPositionApplicationForCurrentUser = async (
       };
 
     /**
-     * Create application
+     * Authorize the request
      */
-    const createdApplication = await prisma.eventPositionApplication.create({
+    const position = await prisma.eventPosition.findUnique({
+      where: {
+        id: result.data.positionId,
+      },
+      include: {
+        event: true,
+      },
+    });
+    if (!position) return { error: "Posten nicht gefunden" };
+    if (
+      authentication.session.discordId !== position.event.discordCreatorId &&
+      !(await authentication.authorize("othersEventPosition", "update"))
+    )
+      return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
+
+    /**
+     * Update position
+     */
+    const updatedPosition = await prisma.eventPosition.update({
+      where: {
+        id: position.id,
+      },
       data: {
-        position: {
-          connect: {
-            id: result.data.positionId,
-          },
-        },
-        citizen: {
-          connect: {
-            id: authentication.session.entityId,
-          },
+        acceptedApplication: {
+          disconnect: true,
         },
       },
       include: {
-        position: {
-          include: {
-            event: true,
-          },
-        },
+        event: true,
       },
     });
 
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(
-      `/app/events/${createdApplication.position.event.discordId}/lineup`,
-    );
+    revalidatePath(`/app/events/${updatedPosition.event.discordId}/lineup`);
 
     /**
      * Respond with the result

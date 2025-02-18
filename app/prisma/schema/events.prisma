@@ -2,6 +2,7 @@ model DiscordEvent {
   id               String                    @id @default(cuid())
   discordId        String                    @unique
   discordCreatorId String? // TODO: Remove this optional flag once only events got their creator scraped
+  discordName      String? // TODO: Remove this optional flag once only events got their name scraped
   hash             String                    @unique
   createdAt        DateTime                  @default(now())
   updatedAt        DateTime                  @updatedAt

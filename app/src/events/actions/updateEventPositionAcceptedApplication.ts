@@ -50,19 +50,20 @@ export const updateEventPositionAcceptedApplication = async (
         },
       },
     });
+    if (!application) return { error: "Citizen nicht gefunden" };
     if (
       authentication.session.discordId !==
-        application?.position.event.discordCreatorId &&
+        application.position.event.discordCreatorId &&
       !(await authentication.authorize("othersEventPosition", "update"))
     )
-      throw new Error("Forbidden");
+      return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
 
     /**
-     * updatePosition
+     * Update position
      */
     const updatedPosition = await prisma.eventPosition.update({
       where: {
-        id: application?.positionId,
+        id: application.positionId,
       },
       data: {
         acceptedApplication: {

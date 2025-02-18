@@ -47,7 +47,7 @@ export const deleteEventPosition = async (formData: FormData) => {
         eventPosition?.event?.discordCreatorId &&
       !(await authentication.authorize("othersEventPosition", "create"))
     )
-      throw new Error("Forbidden");
+      return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
 
     /**
      * Delete position
