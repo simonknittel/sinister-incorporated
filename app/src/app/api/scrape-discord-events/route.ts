@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
             id: existingEvent.id,
           },
           data: {
+            discordName: event.name,
             hash: hashHex,
           },
         });
@@ -60,6 +61,8 @@ export async function POST(request: NextRequest) {
         await prisma.discordEvent.create({
           data: {
             discordId: event.id,
+            discordCreatorId: event.creator_id,
+            discordName: event.name,
             hash: hashHex,
           },
         });

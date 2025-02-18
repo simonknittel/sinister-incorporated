@@ -14,16 +14,17 @@ model Entity {
   createdOrganizations                         Organization[]                       @relation(name: "CreatedOrganizations")
 
   // Holds the latest confirmed values
-  spectrumId            String?
-  handle                String?
-  discordId             String?        @unique
-  teamspeakId           String?
-  citizenId             String?
-  communityMoniker      String?
-  roles                 String?        @db.Text
-  createdPenaltyEntries PenaltyEntry[] @relation("createdBy")
-  deletedPenaltyEntries PenaltyEntry[] @relation("deletedBy")
-  penaltyEntries        PenaltyEntry[] @relation("citizen")
+  spectrumId                String?
+  handle                    String?
+  discordId                 String?                    @unique
+  teamspeakId               String?
+  citizenId                 String?
+  communityMoniker          String?
+  roles                     String?                    @db.Text
+  createdPenaltyEntries     PenaltyEntry[]             @relation("createdBy")
+  deletedPenaltyEntries     PenaltyEntry[]             @relation("deletedBy")
+  penaltyEntries            PenaltyEntry[]             @relation("citizen")
+  eventPositionApplications EventPositionApplication[] @relation("citizen")
 }
 
 model EntityLog {

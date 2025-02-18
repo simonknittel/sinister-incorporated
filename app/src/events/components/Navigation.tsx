@@ -7,7 +7,7 @@ import { MdWorkspaces } from "react-icons/md";
 type Props = Readonly<{
   className?: string;
   eventId: string;
-  participantsCount: number;
+  participantsCount?: number;
   active: string;
 }>;
 
@@ -27,7 +27,14 @@ export const Navigation = async ({
       path: `/app/events/${eventId}`,
     },
     {
-      name: `Teilnehmer (${participantsCount})`,
+      name: "Aufstellung",
+      icon: MdWorkspaces,
+      path: `/app/events/${eventId}/lineup`,
+    },
+    {
+      name: participantsCount
+        ? `Teilnehmer (${participantsCount})`
+        : "Teilnehmer",
       icon: FaUsers,
       path: `/app/events/${eventId}/participants`,
     },

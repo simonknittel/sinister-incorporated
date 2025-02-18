@@ -76,6 +76,7 @@ model Role {
   flowNodes         FlowNode[]         @relation("flowNodes")
   inherits          Role[]             @relation("inheritance")
   inheritedBy       Role[]             @relation("inheritance")
+  eventPositions    EventPosition[]
 }
 
 model PermissionString {
