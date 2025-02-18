@@ -164,7 +164,7 @@ export const Position = ({
               <p>{position.description || "-"}</p>
             </div>
 
-            {/* TODO: Implement */}
+            {/* TODO: Implement (multiple) role requirements */}
             {/* <div className="flex-1 flex flex-col">
               <h3 className="text-sm text-gray-500">
                 Erforderliche Ränge/Zertifikate

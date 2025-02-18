@@ -25,6 +25,19 @@ const EventsTab = ({ enableOperations }: Props) => {
         <YesNoCheckbox {...register("eventFleet;read")} />
       </div>
 
+      <div className="py-2 flex justify-between items-center gap-2">
+        <div>
+          <h4 className="font-bold">Aufstellung - Posten verwalten</h4>
+          <p>
+            Citizen mit dieser Berechtigung können die Posten der
+            Eventaufstellung bearbeiten, selbst wenn sie nicht Organisator des
+            Events sind.
+          </p>
+        </div>
+
+        <YesNoCheckbox {...register("othersEventPosition;manage")} />
+      </div>
+
       {enableOperations && (
         <div className="py-2 flex justify-between items-center">
           <h4 className="font-bold">Operationen verwalten</h4>

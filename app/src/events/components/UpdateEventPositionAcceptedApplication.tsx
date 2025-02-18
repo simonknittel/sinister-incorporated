@@ -78,6 +78,7 @@ export const UpdateEventPositionAcceptedApplication = ({
         <optgroup label="Anforderungen nicht erfüllt">
           {position.applications.map((application) => (
             <option key={application.id} value={application.id}>
+              {/* TODO: Show hint of citizen already assigned to a other position */}
               {application.citizen.handle}
             </option>
           ))}

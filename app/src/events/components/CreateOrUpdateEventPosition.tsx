@@ -196,7 +196,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             ))}
           </select>
 
-          {/* TODO: Add input for selecting the roles */}
+          {/* TODO: Add input for selecting multiple roles */}
 
           <Button type="submit" disabled={isPending} className="ml-auto mt-8">
             {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
