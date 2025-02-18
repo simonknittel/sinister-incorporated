@@ -64,7 +64,7 @@ export const LineupTab = ({
             ))}
         </div>
       ) : (
-        <p className="italic">
+        <p className="rounded-2xl bg-neutral-800/50 p-4">
           Keine Posten vorhanden. Diese können vom Organisator des Events
           angelegt und zugeordnet werden.
         </p>
