@@ -51,6 +51,7 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
     <form action={formAction} className={clsx(className)}>
       <input type="hidden" name="positionId" value={position.id} />
 
+      {/* TODO: Show modal for hinting if citizen doesn't match all requirements */}
       <Button
         type="submit"
         title={
