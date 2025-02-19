@@ -12,7 +12,7 @@ import type {
 import clsx from "clsx";
 import { flatten } from "lodash";
 import { unstable_rethrow } from "next/navigation";
-import { useId, useState, useTransition } from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaPen, FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createEventPosition } from "../actions/createEventPosition";
@@ -43,6 +43,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
   const nameInputId = useId();
   const descriptionInputId = useId();
   const variantIdInputId = useId();
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
     setIsOpen(true);
@@ -67,7 +68,12 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
         }
 
         toast.success(response.success);
-        setIsOpen(false);
+        if (formData.has("createAnother")) {
+          nameInputRef.current?.focus();
+          return;
+        } else {
+          setIsOpen(false);
+        }
       } catch (error) {
         unstable_rethrow(error);
         toast.error(
@@ -153,6 +159,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             maxLength={256}
             defaultValue={("position" in props && props.position?.name) || ""}
             id={nameInputId}
+            ref={nameInputRef}
           />
 
           <label className="block mt-4" htmlFor={descriptionInputId}>
@@ -197,10 +204,28 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
 
           {/* TODO: Add input for selecting multiple roles */}
 
-          <Button type="submit" disabled={isPending} className="ml-auto mt-8">
-            {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
-            Speichern
-          </Button>
+          <div className="flex flex-col gap-2 mt-8">
+            <Button type="submit" disabled={isPending}>
+              {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
+              Speichern
+            </Button>
+
+            {"event" in props && (
+              <Button
+                type="submit"
+                disabled={isPending}
+                variant="tertiary"
+                name="createAnother"
+              >
+                {isPending ? (
+                  <FaSpinner className="animate-spin" />
+                ) : (
+                  <FaSave />
+                )}
+                Speichern und weiteren Posten erstellen
+              </Button>
+            )}
+          </div>
         </form>
       </Modal>
     </>
