@@ -169,7 +169,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
           />
 
           <label className="block mt-4" htmlFor={variantId}>
-            Schiff (optional)
+            Erforderliches Schiff (optional)
           </label>
           <select
             name="variantId"

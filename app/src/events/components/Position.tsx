@@ -95,7 +95,7 @@ export const Position = ({
                 "sr-only": !isOpen,
               })}
             >
-              Schiff
+              Erforderliches Schiff
             </h3>
             {position.requiredVariant ? (
               <VariantWithLogo
