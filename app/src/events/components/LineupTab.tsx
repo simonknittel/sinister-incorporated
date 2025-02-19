@@ -7,6 +7,7 @@ import {
   type EventPositionApplication,
   type Manufacturer,
   type Series,
+  type Ship,
   type Variant,
 } from "@prisma/client";
 import clsx from "clsx";
@@ -33,6 +34,7 @@ type Props = Readonly<{
       variants: Variant[];
     })[];
   })[];
+  myShips: Ship[];
 }>;
 
 export const LineupTab = ({
@@ -40,6 +42,7 @@ export const LineupTab = ({
   event,
   canManagePositions,
   variants,
+  myShips,
 }: Props) => {
   return (
     <section className={clsx("flex flex-col gap-4", className)}>
@@ -60,6 +63,7 @@ export const LineupTab = ({
                 position={position}
                 showManage={canManagePositions}
                 variants={variants}
+                myShips={myShips}
               />
             ))}
         </div>

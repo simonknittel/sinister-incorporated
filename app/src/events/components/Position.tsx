@@ -6,6 +6,7 @@ import {
   type EventPositionApplication,
   type Manufacturer,
   type Series,
+  type Ship,
   type Variant,
 } from "@prisma/client";
 import clsx from "clsx";
@@ -40,6 +41,7 @@ type Props = Readonly<{
       variants: Variant[];
     })[];
   })[];
+  myShips: Ship[];
 }>;
 
 export const Position = ({
@@ -47,6 +49,7 @@ export const Position = ({
   position,
   showManage,
   variants,
+  myShips,
 }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const authentication = useAuthentication();
@@ -59,6 +62,13 @@ export const Position = ({
   const handleToggleOpen = () => {
     setIsOpen((prev) => !prev);
   };
+
+  let doesCurrentUserSatisfyRequirements = true;
+  if (
+    position.requiredVariant &&
+    !myShips.find((ship) => ship.variantId === position.requiredVariantId)
+  )
+    doesCurrentUserSatisfyRequirements = false;
 
   return (
     <div
@@ -178,6 +188,9 @@ export const Position = ({
               <ToggleEventPositionApplicationForCurrentUser
                 position={position}
                 hasCurrentUserAlreadyApplied={hasCurrentUserAlreadyApplied}
+                doesCurrentUserSatisfyRequirements={
+                  doesCurrentUserSatisfyRequirements
+                }
               />
             </div>
 
