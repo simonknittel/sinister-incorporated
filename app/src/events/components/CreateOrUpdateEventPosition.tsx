@@ -40,9 +40,9 @@ type Props = (CreateProps | UpdateProps) & BaseProps;
 export const CreateOrUpdateEventPosition = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const nameId = useId();
-  const descriptionId = useId();
-  const variantId = useId();
+  const nameInputId = useId();
+  const descriptionInputId = useId();
+  const variantIdInputId = useId();
 
   const handleClick = () => {
     setIsOpen(true);
@@ -141,7 +141,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             <input type="hidden" name="eventId" value={props.event.id} />
           )}
 
-          <label className="block" htmlFor={nameId}>
+          <label className="block" htmlFor={nameInputId}>
             Name
           </label>
           <input
@@ -152,10 +152,10 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             type="text"
             maxLength={256}
             defaultValue={("position" in props && props.position?.name) || ""}
-            id={nameId}
+            id={nameInputId}
           />
 
-          <label className="block mt-4" htmlFor={descriptionId}>
+          <label className="block mt-4" htmlFor={descriptionInputId}>
             Beschreibung (optional)
           </label>
           <textarea
@@ -165,16 +165,15 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             defaultValue={
               ("position" in props && props.position?.description) || ""
             }
-            id={descriptionId}
+            id={descriptionInputId}
           />
 
-          <label className="block mt-4" htmlFor={variantId}>
+          <label className="block mt-4" htmlFor={variantIdInputId}>
             Erforderliches Schiff (optional)
           </label>
           <select
             name="variantId"
-            autoFocus
-            id={variantId}
+            id={variantIdInputId}
             className="p-2 rounded bg-neutral-900 w-full mt-2"
             defaultValue={
               ("position" in props && props.position?.requiredVariantId) || "-"
