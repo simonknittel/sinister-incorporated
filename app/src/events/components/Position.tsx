@@ -9,9 +9,9 @@ import {
   type Ship,
   type Variant,
 } from "@prisma/client";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import clsx from "clsx";
 import Link from "next/link";
-import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { DeleteEventPosition } from "./DeleteEventPosition";
@@ -51,7 +51,10 @@ export const Position = ({
   variants,
   myShips,
 }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useLocalStorage(
+    `position_${position.id}.isopen`,
+    false,
+  );
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
 
