@@ -9,12 +9,13 @@ import type {
   Series,
   Variant,
 } from "@prisma/client";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { flatten } from "lodash";
 import { unstable_rethrow } from "next/navigation";
 import { useId, useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
-import { FaPen, FaPlus, FaSave, FaSpinner } from "react-icons/fa";
+import { FaInfoCircle, FaPen, FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createEventPosition } from "../actions/createEventPosition";
 import { updateEventPosition } from "../actions/updateEventPosition";
 
@@ -175,8 +176,31 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             id={descriptionInputId}
           />
 
-          <label className="block mt-4" htmlFor={variantIdInputId}>
+          <label
+            className="flex gap-2 items-center mt-4"
+            htmlFor={variantIdInputId}
+          >
             Erforderliches Schiff (optional)
+            <Tooltip.Provider delayDuration={0}>
+              <Tooltip.Root>
+                <Tooltip.Trigger className="text-sinister-red-500 hover:underline cursor-help">
+                  <FaInfoCircle />
+                </Tooltip.Trigger>
+
+                <Tooltip.Content
+                  className="p-2 text-sm leading-tight max-w-[320px] select-none rounded bg-neutral-600 text-white font-normal"
+                  sideOffset={5}
+                >
+                  Für ein Multicrew-Schiff sollte das erforderliche Schiff nur
+                  bei einem Posten angegeben werden, bspw. für den Piloten.
+                  <br />
+                  <br />
+                  Bei den übrigen Posten, bspw. Turmschütze, sollte kein Schiff
+                  angegeben werden.
+                  <Tooltip.Arrow className="fill-neutral-600" />
+                </Tooltip.Content>
+              </Tooltip.Root>
+            </Tooltip.Provider>
           </label>
           <select
             name="variantId"
