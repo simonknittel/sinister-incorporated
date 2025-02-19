@@ -12,7 +12,7 @@ import type {
 import clsx from "clsx";
 import { flatten } from "lodash";
 import { unstable_rethrow } from "next/navigation";
-import { useId, useState, useTransition } from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaPen, FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createEventPosition } from "../actions/createEventPosition";
@@ -40,9 +40,10 @@ type Props = (CreateProps | UpdateProps) & BaseProps;
 export const CreateOrUpdateEventPosition = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const nameId = useId();
-  const descriptionId = useId();
-  const variantId = useId();
+  const nameInputId = useId();
+  const descriptionInputId = useId();
+  const variantIdInputId = useId();
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
     setIsOpen(true);
@@ -67,7 +68,12 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
         }
 
         toast.success(response.success);
-        setIsOpen(false);
+        if (formData.has("createAnother")) {
+          nameInputRef.current?.focus();
+          return;
+        } else {
+          setIsOpen(false);
+        }
       } catch (error) {
         unstable_rethrow(error);
         toast.error(
@@ -141,7 +147,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             <input type="hidden" name="eventId" value={props.event.id} />
           )}
 
-          <label className="block" htmlFor={nameId}>
+          <label className="block" htmlFor={nameInputId}>
             Name
           </label>
           <input
@@ -152,10 +158,11 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             type="text"
             maxLength={256}
             defaultValue={("position" in props && props.position?.name) || ""}
-            id={nameId}
+            id={nameInputId}
+            ref={nameInputRef}
           />
 
-          <label className="block mt-4" htmlFor={descriptionId}>
+          <label className="block mt-4" htmlFor={descriptionInputId}>
             Beschreibung (optional)
           </label>
           <textarea
@@ -165,16 +172,15 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             defaultValue={
               ("position" in props && props.position?.description) || ""
             }
-            id={descriptionId}
+            id={descriptionInputId}
           />
 
-          <label className="block mt-4" htmlFor={variantId}>
-            Schiff (optional)
+          <label className="block mt-4" htmlFor={variantIdInputId}>
+            Erforderliches Schiff (optional)
           </label>
           <select
             name="variantId"
-            autoFocus
-            id={variantId}
+            id={variantIdInputId}
             className="p-2 rounded bg-neutral-900 w-full mt-2"
             defaultValue={
               ("position" in props && props.position?.requiredVariantId) || "-"
@@ -198,10 +204,28 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
 
           {/* TODO: Add input for selecting multiple roles */}
 
-          <Button type="submit" disabled={isPending} className="ml-auto mt-8">
-            {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
-            Speichern
-          </Button>
+          <div className="flex flex-col gap-2 mt-8">
+            <Button type="submit" disabled={isPending}>
+              {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
+              Speichern
+            </Button>
+
+            {"event" in props && (
+              <Button
+                type="submit"
+                disabled={isPending}
+                variant="tertiary"
+                name="createAnother"
+              >
+                {isPending ? (
+                  <FaSpinner className="animate-spin" />
+                ) : (
+                  <FaSave />
+                )}
+                Speichern und weiteren Posten erstellen
+              </Button>
+            )}
+          </div>
         </form>
       </Modal>
     </>

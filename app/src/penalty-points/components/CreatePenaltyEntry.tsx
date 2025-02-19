@@ -86,14 +86,14 @@ export const CreatePenaltyEntry = ({ className }: Props) => {
             min={1}
           />
 
-          <label className="block mt-4">Begründung</label>
+          <label className="block mt-4">Begründung (optional)</label>
           <textarea
             className="p-2 rounded bg-neutral-900 w-full h-32 mt-2"
             name="reason"
             maxLength={512}
           />
 
-          <label className="block mt-4">Verfällt am</label>
+          <label className="block mt-4">Verfällt am (optional)</label>
           <input
             className="p-2 rounded bg-neutral-900 w-full mt-2"
             name="expiresAt"

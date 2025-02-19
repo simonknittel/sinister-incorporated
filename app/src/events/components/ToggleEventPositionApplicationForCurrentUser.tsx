@@ -1,10 +1,27 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/common/components/AlertDialog";
 import Button from "@/common/components/Button";
-import type { EventPosition } from "@prisma/client";
+import { VariantWithLogo } from "@/fleet/components/VariantWithLogo";
+import type {
+  EventPosition,
+  Manufacturer,
+  Series,
+  Variant,
+} from "@prisma/client";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
-import { useTransition } from "react";
+import { useId, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaMinus, FaPlus, FaSpinner } from "react-icons/fa";
 import { createEventPositionApplicationForCurrentUser } from "../actions/createEventPositionApplicationForCurrentUser";
@@ -12,16 +29,25 @@ import { deleteEventPositionApplicationForCurrentUser } from "../actions/deleteE
 
 type Props = Readonly<{
   className?: string;
-  position: EventPosition;
+  position: EventPosition & {
+    requiredVariant?: Variant & {
+      series: Series & {
+        manufacturer: Manufacturer;
+      };
+    };
+  };
   hasCurrentUserAlreadyApplied?: boolean;
+  doesCurrentUserSatisfyRequirements?: boolean;
 }>;
 
 export const ToggleEventPositionApplicationForCurrentUser = ({
   className,
   position,
   hasCurrentUserAlreadyApplied,
+  doesCurrentUserSatisfyRequirements,
 }: Props) => {
   const [isPending, startTransition] = useTransition();
+  const formId = useId();
 
   const formAction = (formData: FormData) => {
     startTransition(async () => {
@@ -48,29 +74,81 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
   };
 
   return (
-    <form action={formAction} className={clsx(className)}>
+    <form action={formAction} id={formId} className={clsx(className)}>
       <input type="hidden" name="positionId" value={position.id} />
 
-      {/* TODO: Show modal for hinting if citizen doesn't match all requirements */}
-      <Button
-        type="submit"
-        title={
-          hasCurrentUserAlreadyApplied
-            ? "Abmelden"
-            : "Für diesen Posten Interesse anmelden"
-        }
-        disabled={isPending}
-        variant="secondary"
-      >
-        {hasCurrentUserAlreadyApplied ? "Abmelden" : "Interesse anmelden"}{" "}
-        {isPending ? (
-          <FaSpinner className="animate-spin" />
-        ) : hasCurrentUserAlreadyApplied ? (
-          <FaMinus />
-        ) : (
-          <FaPlus />
-        )}
-      </Button>
+      {hasCurrentUserAlreadyApplied ? (
+        <Button
+          type="submit"
+          title="Abmelden"
+          disabled={isPending}
+          variant="primary"
+        >
+          Abmelden
+          {isPending ? <FaSpinner className="animate-spin" /> : <FaMinus />}
+        </Button>
+      ) : doesCurrentUserSatisfyRequirements ? (
+        <Button
+          type="submit"
+          title="Für diesen Posten Interesse anmelden"
+          disabled={isPending}
+          variant="primary"
+        >
+          Interesse anmelden
+          {isPending ? <FaSpinner className="animate-spin" /> : <FaPlus />}
+        </Button>
+      ) : (
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button
+              disabled={isPending}
+              className="flex items-center justify-center rounded uppercase gap-2 min-h-11 py-2 text-base font-bold bg-sinister-red-500 text-neutral-50 enabled:hover:bg-sinister-red-300 enabled:active:bg-sinister-red-300 px-6"
+              title="Für diesen Posten Interesse anmelden"
+            >
+              Interesse anmelden
+              {isPending ? <FaSpinner className="animate-spin" /> : <FaPlus />}
+            </button>
+          </AlertDialogTrigger>
+
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Interesse anmelden?</AlertDialogTitle>
+              <AlertDialogDescription asChild>
+                <div>
+                  <p>
+                    Du erfüllst nicht die Voraussetzungen für den Posten. Du
+                    kannst trotzdem Interesse anmelden. Bitte bespreche mit dem
+                    Organisator des Events, was du mitbringen sollst.
+                  </p>
+
+                  {position.requiredVariant && (
+                    <>
+                      <p className="text-sm text-gray-500 mt-4">
+                        Erforderliches Schiff
+                      </p>
+                      <VariantWithLogo
+                        variant={position.requiredVariant}
+                        manufacturer={
+                          position.requiredVariant.series.manufacturer
+                        }
+                        size={32}
+                      />
+                    </>
+                  )}
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+
+              <AlertDialogAction type="submit" form={formId}>
+                Anmelden
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </form>
   );
 };

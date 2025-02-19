@@ -4,6 +4,9 @@ import type {
   Entity,
   EventPosition,
   EventPositionApplication,
+  Manufacturer,
+  Series,
+  Variant,
 } from "@prisma/client";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
@@ -23,6 +26,11 @@ type Props = Readonly<{
           citizen: Entity;
         })
       | null;
+    requiredVariant?: Variant & {
+      series: Series & {
+        manufacturer: Manufacturer;
+      };
+    };
   };
 }>;
 

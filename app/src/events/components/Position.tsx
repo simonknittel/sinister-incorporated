@@ -6,11 +6,12 @@ import {
   type EventPositionApplication,
   type Manufacturer,
   type Series,
+  type Ship,
   type Variant,
 } from "@prisma/client";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import clsx from "clsx";
 import Link from "next/link";
-import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { DeleteEventPosition } from "./DeleteEventPosition";
@@ -40,6 +41,7 @@ type Props = Readonly<{
       variants: Variant[];
     })[];
   })[];
+  myShips: Ship[];
 }>;
 
 export const Position = ({
@@ -47,8 +49,12 @@ export const Position = ({
   position,
   showManage,
   variants,
+  myShips,
 }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useLocalStorage(
+    `position_${position.id}.isopen`,
+    false,
+  );
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
 
@@ -59,6 +65,13 @@ export const Position = ({
   const handleToggleOpen = () => {
     setIsOpen((prev) => !prev);
   };
+
+  let doesCurrentUserSatisfyRequirements = true;
+  if (
+    position.requiredVariant &&
+    !myShips.find((ship) => ship.variantId === position.requiredVariantId)
+  )
+    doesCurrentUserSatisfyRequirements = false;
 
   return (
     <div
@@ -95,7 +108,7 @@ export const Position = ({
                 "sr-only": !isOpen,
               })}
             >
-              Schiff
+              Erforderliches Schiff
             </h3>
             {position.requiredVariant ? (
               <VariantWithLogo
@@ -178,6 +191,9 @@ export const Position = ({
               <ToggleEventPositionApplicationForCurrentUser
                 position={position}
                 hasCurrentUserAlreadyApplied={hasCurrentUserAlreadyApplied}
+                doesCurrentUserSatisfyRequirements={
+                  doesCurrentUserSatisfyRequirements
+                }
               />
             </div>
 

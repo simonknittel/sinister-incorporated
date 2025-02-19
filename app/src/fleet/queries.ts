@@ -46,6 +46,38 @@ export const getOrgFleet = async ({
   });
 };
 
+export const getMyFleet = async () => {
+  return getTracer().startActiveSpan("getMyFleet", async (span) => {
+    try {
+      const authentication = await requireAuthentication();
+
+      return await prisma.ship.findMany({
+        where: {
+          ownerId: authentication.session.user.id,
+        },
+        include: {
+          variant: {
+            include: {
+              series: {
+                include: {
+                  manufacturer: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
+};
+
 export const getVariantsBySeriesId = (seriesId: Series["id"]) => {
   return getTracer().startActiveSpan("getVariantsBySeriesId", async (span) => {
     try {

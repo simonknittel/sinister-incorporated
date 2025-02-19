@@ -4,6 +4,7 @@ import { prisma } from "@/db";
 import { LineupTab } from "@/events/components/LineupTab";
 import { Navigation } from "@/events/components/Navigation";
 import { getEventByDiscordId } from "@/events/queries";
+import { getMyFleet } from "@/fleet/queries";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { serializeError } from "serialize-error";
@@ -72,15 +73,19 @@ export default async function Page({ params }: Props) {
     databaseEvent.discordCreatorId === authentication.session.discordId ||
     (await authentication.authorize("othersEventPosition", "manage"));
 
-  const variants = await prisma.manufacturer.findMany({
-    include: {
-      series: {
-        include: {
-          variants: true,
+  const [variants, myShips] = await Promise.all([
+    prisma.manufacturer.findMany({
+      include: {
+        series: {
+          include: {
+            variants: true,
+          },
         },
       },
-    },
-  });
+    }),
+
+    getMyFleet(),
+  ]);
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
@@ -100,6 +105,7 @@ export default async function Page({ params }: Props) {
         event={databaseEvent}
         canManagePositions={canManagePositions}
         variants={variants}
+        myShips={myShips}
         className="mt-4"
       />
     </main>

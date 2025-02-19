@@ -25,7 +25,7 @@ type Props = Readonly<{
 
 export const DeleteEventPosition = ({ className, position }: Props) => {
   const [isPending, startTransition] = useTransition();
-  const id = useId();
+  const formId = useId();
 
   const formAction = (formData: FormData) => {
     startTransition(async () => {
@@ -50,7 +50,7 @@ export const DeleteEventPosition = ({ className, position }: Props) => {
   };
 
   return (
-    <form action={formAction} id={id} className={className}>
+    <form action={formAction} id={formId} className={className}>
       <input type="hidden" name="id" value={position.id} />
 
       <AlertDialog>
@@ -76,7 +76,7 @@ export const DeleteEventPosition = ({ className, position }: Props) => {
           <AlertDialogFooter>
             <AlertDialogCancel>Abbrechen</AlertDialogCancel>
 
-            <AlertDialogAction type="submit" form={id}>
+            <AlertDialogAction type="submit" form={formId}>
               Löschen
             </AlertDialogAction>
           </AlertDialogFooter>
