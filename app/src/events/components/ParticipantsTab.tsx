@@ -1,6 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import { RolesCell } from "@/citizen/components/RolesCell";
 import { Link } from "@/common/components/Link";
+import { Tooltip } from "@/common/components/Tooltip";
 import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
@@ -9,7 +10,6 @@ import { getDiscordAvatar } from "@/discord/utils/getDiscordAvatar";
 import { type getEvent } from "@/discord/utils/getEvent";
 import type { memberSchema, userSchema } from "@/discord/utils/schemas";
 import type { Entity } from "@prisma/client";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -160,21 +160,9 @@ export const ParticipantsTab = async ({
                     )}
                   </Link>
 
-                  <Tooltip.Provider delayDuration={300}>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger className="text-sinister-red-500 hover:underline cursor-help">
-                        <FaInfoCircle />
-                      </Tooltip.Trigger>
-
-                      <Tooltip.Content
-                        className="p-2 text-sm leading-tight max-w-[640px] select-none rounded bg-neutral-600 text-white font-normal"
-                        sideOffset={5}
-                      >
-                        Auf etwa 2 Minuten genau
-                        <Tooltip.Arrow className="fill-neutral-600" />
-                      </Tooltip.Content>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
+                  <Tooltip triggerChildren={<FaInfoCircle />}>
+                    Auf etwa 2 Minuten genau
+                  </Tooltip>
                 </th>
 
                 <th

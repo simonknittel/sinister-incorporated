@@ -26,7 +26,7 @@ const OtherTab = ({ roles }: Readonly<Props>) => {
       <div className="py-2 flex justify-between items-center">
         <div>
           <h4 className="font-bold">Gesperrt</h4>
-          <p>Negiert Anmelden anderer Rollen</p>
+          <p className="text-sm">Negiert Anmelden anderer Rollen</p>
         </div>
 
         <YesNoCheckbox {...register("login;negate")} />

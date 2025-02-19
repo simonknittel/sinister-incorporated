@@ -2,6 +2,7 @@
 
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
+import { Tooltip } from "@/common/components/Tooltip";
 import type {
   DiscordEvent,
   EventPosition,
@@ -9,7 +10,6 @@ import type {
   Series,
   Variant,
 } from "@prisma/client";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { flatten } from "lodash";
 import { unstable_rethrow } from "next/navigation";
@@ -181,26 +181,14 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             htmlFor={variantIdInputId}
           >
             Erforderliches Schiff (optional)
-            <Tooltip.Provider delayDuration={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger className="text-sinister-red-500 hover:underline cursor-help">
-                  <FaInfoCircle />
-                </Tooltip.Trigger>
-
-                <Tooltip.Content
-                  className="p-2 text-sm leading-tight max-w-[320px] select-none rounded bg-neutral-600 text-white font-normal"
-                  sideOffset={5}
-                >
-                  Für ein Multicrew-Schiff sollte das erforderliche Schiff nur
-                  bei einem Posten angegeben werden, bspw. für den Piloten.
-                  <br />
-                  <br />
-                  Bei den übrigen Posten, bspw. Turmschütze, sollte kein Schiff
-                  angegeben werden.
-                  <Tooltip.Arrow className="fill-neutral-600" />
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+            <Tooltip triggerChildren={<FaInfoCircle />}>
+              Für ein Multicrew-Schiff sollte das erforderliche Schiff nur bei
+              einem Posten angegeben werden, bspw. für den Piloten.
+              <br />
+              <br />
+              Bei den übrigen Posten, bspw. Turmschütze, sollte kein Schiff
+              angegeben werden.
+            </Tooltip>
           </label>
           <select
             name="variantId"

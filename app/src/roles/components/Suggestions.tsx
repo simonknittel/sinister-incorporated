@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
-import * as Tooltip from "@radix-ui/react-tooltip";
+import { Tooltip } from "@/common/components/Tooltip";
 import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
 import { FiRefreshCcw } from "react-icons/fi";
@@ -27,37 +27,26 @@ export const Suggestions = ({ className, onClick }: Props) => {
         </p>
 
         {suggestions.data?.prompt && (
-          <div className="relative z-10">
-            <Tooltip.Provider delayDuration={300}>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <Button variant="tertiary" type="button">
-                    <FaInfoCircle />
-                  </Button>
-                </Tooltip.Trigger>
+          <div className="relative z-10 flex items-center">
+            <Tooltip
+              triggerChildren={<FaInfoCircle />}
+              contentClassName="max-w-[640px]"
+            >
+              <p>
+                Diese Vorschläge wurden mit Hilfe von GPT-4 basierend auf
+                folgenden Prompts generiert:
+              </p>
 
-                <Tooltip.Content
-                  className="p-4 text-sm leading-tight max-w-[640px] select-none rounded bg-neutral-600 shadow-sm"
-                  sideOffset={5}
-                >
-                  <p>
-                    Diese Vorschläge wurden mit Hilfe von GPT-4 basierend auf
-                    folgenden Prompts generiert:
-                  </p>
+              <p className="mt-2">
+                <span className="font-bold">System:</span>{" "}
+                {suggestions.data.prompt.system}
+              </p>
 
-                  <p className="mt-2">
-                    <span className="font-bold">System:</span>{" "}
-                    {suggestions.data.prompt.system}
-                  </p>
-
-                  <p className="mt-2">
-                    <span className="font-bold">User:</span>{" "}
-                    {suggestions.data.prompt.user}
-                  </p>
-                  <Tooltip.Arrow className="fill-neutral-600" />
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+              <p className="mt-2">
+                <span className="font-bold">User:</span>{" "}
+                {suggestions.data.prompt.user}
+              </p>
+            </Tooltip>
           </div>
         )}
       </div>
