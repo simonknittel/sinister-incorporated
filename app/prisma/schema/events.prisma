@@ -30,8 +30,10 @@ model EventPosition {
   requiredVariant       Variant?                   @relation(fields: [requiredVariantId], references: [id], onDelete: SetNull)
   requiredRoles         Role[]
   applications          EventPositionApplication[] @relation("applications")
-  acceptedApplicationId String?
-  acceptedApplication   EventPositionApplication?  @relation("acceptedApplication", fields: [acceptedApplicationId], references: [id], onDelete: SetNull)
+  acceptedApplicationId String? // TODO: Delete
+  acceptedApplication   EventPositionApplication?  @relation("acceptedApplication", fields: [acceptedApplicationId], references: [id], onDelete: SetNull) // TODO: Delete
+  citizenId             String?
+  citizen               Entity?                    @relation("citizen", fields: [citizenId], references: [id], onDelete: SetNull)
 }
 
 model EventPositionApplication {
@@ -41,7 +43,7 @@ model EventPositionApplication {
   citizenId         String
   citizen           Entity          @relation("citizen", fields: [citizenId], references: [id], onDelete: Cascade)
   createdAt         DateTime        @default(now())
-  acceptedPositions EventPosition[] @relation("acceptedApplication")
+  acceptedPositions EventPosition[] @relation("acceptedApplication") // TODO: Delete
 
   @@unique([positionId, citizenId])
 }

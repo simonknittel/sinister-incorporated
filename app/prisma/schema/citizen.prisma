@@ -25,6 +25,7 @@ model Entity {
   deletedPenaltyEntries     PenaltyEntry[]             @relation("deletedBy")
   penaltyEntries            PenaltyEntry[]             @relation("citizen")
   eventPositionApplications EventPositionApplication[] @relation("citizen")
+  eventPositions            EventPosition[]            @relation("citizen")
 }
 
 model EntityLog {

@@ -4,6 +4,7 @@ import { prisma } from "@/db";
 import { LineupTab } from "@/events/components/LineupTab";
 import { Navigation } from "@/events/components/Navigation";
 import { getEventByDiscordId } from "@/events/queries";
+import { getEventCitizen } from "@/events/utils/getEventCitizen";
 import { getMyFleet } from "@/fleet/queries";
 import { log } from "@/logging";
 import { type Metadata } from "next";
@@ -73,7 +74,7 @@ export default async function Page({ params }: Props) {
     databaseEvent.discordCreatorId === authentication.session.discordId ||
     (await authentication.authorize("othersEventPosition", "manage"));
 
-  const [variants, myShips] = await Promise.all([
+  const [variants, myShips, allEventCitizen] = await Promise.all([
     prisma.manufacturer.findMany({
       include: {
         series: {
@@ -85,6 +86,8 @@ export default async function Page({ params }: Props) {
     }),
 
     getMyFleet(),
+
+    getEventCitizen(databaseEvent.id),
   ]);
 
   return (
@@ -106,6 +109,7 @@ export default async function Page({ params }: Props) {
         canManagePositions={canManagePositions}
         variants={variants}
         myShips={myShips}
+        allEventCitizen={allEventCitizen}
         className="mt-4"
       />
     </main>

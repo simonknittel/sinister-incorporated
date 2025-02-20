@@ -10,17 +10,16 @@ import { z } from "zod";
 
 const schema = z.object({
   positionId: z.string().cuid(),
+  citizenId: z.string().cuid(),
 });
 
-export const resetEventPositionAcceptedApplication = async (
-  formData: FormData,
-) => {
+export const updateEventPositionCitizenId = async (formData: FormData) => {
   try {
     /**
      * Authenticate
      */
     const authentication = await authenticateAction(
-      "resetEventPositionAcceptedApplication",
+      "updateEventPositionCitizenId",
     );
 
     /**
@@ -28,6 +27,7 @@ export const resetEventPositionAcceptedApplication = async (
      */
     const result = schema.safeParse({
       positionId: formData.get("positionId"),
+      citizenId: formData.get("citizenId"),
     });
     if (!result.success)
       return {
@@ -46,7 +46,7 @@ export const resetEventPositionAcceptedApplication = async (
         event: true,
       },
     });
-    if (!position) return { error: "Posten nicht gefunden" };
+    if (!position) return { error: "Citizen nicht gefunden" };
     if (
       authentication.session.discordId !== position.event.discordCreatorId &&
       !(await authentication.authorize("othersEventPosition", "update"))
@@ -56,24 +56,23 @@ export const resetEventPositionAcceptedApplication = async (
     /**
      * Update position
      */
-    const updatedPosition = await prisma.eventPosition.update({
+    await prisma.eventPosition.update({
       where: {
-        id: position.id,
+        id: result.data.positionId,
       },
       data: {
-        acceptedApplication: {
-          disconnect: true,
+        citizen: {
+          connect: {
+            id: result.data.citizenId,
+          },
         },
-      },
-      include: {
-        event: true,
       },
     });
 
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/events/${updatedPosition.event.discordId}/lineup`);
+    revalidatePath(`/app/events/${position.event.discordId}/lineup`);
 
     /**
      * Respond with the result
