@@ -41,6 +41,7 @@ type Props = Readonly<{
     })[];
   })[];
   myShips: Ship[];
+  allEventCitizen: Entity[];
 }>;
 
 export const LineupTab = ({
@@ -49,6 +50,7 @@ export const LineupTab = ({
   canManagePositions,
   variants,
   myShips,
+  allEventCitizen,
 }: Props) => {
   return (
     <section className={clsx("flex flex-col gap-4", className)}>
@@ -70,6 +72,7 @@ export const LineupTab = ({
                 showManage={canManagePositions}
                 variants={variants}
                 myShips={myShips}
+                allEventCitizen={allEventCitizen}
               />
             ))}
         </div>

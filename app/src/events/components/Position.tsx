@@ -42,6 +42,7 @@ type Props = Readonly<{
     })[];
   })[];
   myShips: Ship[];
+  allEventCitizen: Entity[];
 }>;
 
 export const Position = ({
@@ -50,6 +51,7 @@ export const Position = ({
   showManage,
   variants,
   myShips,
+  allEventCitizen,
 }: Props) => {
   const [isOpen, setIsOpen] = useLocalStorage(
     `position_${position.id}.isopen`,
@@ -134,6 +136,8 @@ export const Position = ({
               <UpdateEventPositionAcceptedApplication
                 position={position}
                 className="mt-1"
+                eventCitizenSatisfyingRequirements={[]}
+                eventCitizenNotSatisfyingRequirements={allEventCitizen}
               />
             ) : position.acceptedApplication ? (
               <Link
