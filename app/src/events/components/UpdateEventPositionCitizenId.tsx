@@ -21,11 +21,6 @@ type Props = Readonly<{
     applications: (EventPositionApplication & {
       citizen: Entity;
     })[];
-    acceptedApplication:
-      | (EventPositionApplication & {
-          citizen: Entity;
-        })
-      | null;
     requiredVariant?: Variant & {
       series: Series & {
         manufacturer: Manufacturer;
@@ -36,7 +31,7 @@ type Props = Readonly<{
   eventCitizenNotSatisfyingRequirements: Entity[];
 }>;
 
-export const UpdateEventPositionAcceptedApplication = ({
+export const UpdateEventPositionCitizenId = ({
   className,
   position,
   eventCitizenSatisfyingRequirements,
@@ -81,7 +76,7 @@ export const UpdateEventPositionAcceptedApplication = ({
         className="block w-full p-2 bg-neutral-900 text-neutral-100 rounded cursor-pointer"
         onChange={handleChange}
         disabled={isPending}
-        defaultValue={position.acceptedApplication?.id}
+        defaultValue={position.citizenId || "-"}
       >
         <option value="-">-</option>
 

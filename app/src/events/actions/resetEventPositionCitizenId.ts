@@ -59,7 +59,7 @@ export const resetEventPositionCitizenId = async (formData: FormData) => {
         id: position.id,
       },
       data: {
-        acceptedApplication: {
+        citizen: {
           disconnect: true,
         },
       },
