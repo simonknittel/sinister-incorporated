@@ -1,16 +1,5 @@
 "use client";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/common/components/AlertDialog";
 import Button from "@/common/components/Button";
 import { VariantWithLogo } from "@/fleet/components/VariantWithLogo";
 import type {
@@ -19,6 +8,7 @@ import type {
   Series,
   Variant,
 } from "@prisma/client";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
 import { useId, useTransition } from "react";
@@ -98,56 +88,53 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
           {isPending ? <FaSpinner className="animate-spin" /> : <FaPlus />}
         </Button>
       ) : (
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <button
-              disabled={isPending}
-              className="flex items-center justify-center rounded uppercase gap-2 min-h-11 py-2 text-base font-bold bg-sinister-red-500 text-neutral-50 enabled:hover:bg-sinister-red-300 enabled:active:bg-sinister-red-300 px-6"
-              title="Für diesen Posten Interesse anmelden"
+        <Tooltip.Provider delayDuration={0}>
+          <Tooltip.Root>
+            <Tooltip.Trigger asChild>
+              <Button
+                title="Für diesen Posten Interesse anmelden"
+                disabled={isPending}
+                variant="primary"
+              >
+                Interesse anmelden
+                {isPending ? (
+                  <FaSpinner className="animate-spin" />
+                ) : (
+                  <FaPlus />
+                )}
+              </Button>
+            </Tooltip.Trigger>
+
+            <Tooltip.Content
+              className="p-4 max-w-[320px] select-none rounded bg-neutral-950 border border-sinister-red-500 text-white font-normal"
+              sideOffset={5}
             >
-              Interesse anmelden
-              {isPending ? <FaSpinner className="animate-spin" /> : <FaPlus />}
-            </button>
-          </AlertDialogTrigger>
+              <div>
+                <p>
+                  Du erfüllst nicht die Voraussetzungen für diesen Posten. Du
+                  kannst trotzdem Interesse anmelden. Bespreche mit dem
+                  Organisator, was du mitbringen sollst.
+                </p>
 
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Interesse anmelden?</AlertDialogTitle>
-              <AlertDialogDescription asChild>
-                <div>
-                  <p>
-                    Du erfüllst nicht die Voraussetzungen für den Posten. Du
-                    kannst trotzdem Interesse anmelden. Bitte bespreche mit dem
-                    Organisator des Events, was du mitbringen sollst.
-                  </p>
-
-                  {position.requiredVariant && (
-                    <>
-                      <p className="text-sm text-gray-500 mt-4">
-                        Erforderliches Schiff
-                      </p>
-                      <VariantWithLogo
-                        variant={position.requiredVariant}
-                        manufacturer={
-                          position.requiredVariant.series.manufacturer
-                        }
-                        size={32}
-                      />
-                    </>
-                  )}
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-
-            <AlertDialogFooter>
-              <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-
-              <AlertDialogAction type="submit" form={formId}>
-                Anmelden
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+                {position.requiredVariant && (
+                  <>
+                    <p className="text-sm text-gray-500 mt-4">
+                      Erforderliches Schiff
+                    </p>
+                    <VariantWithLogo
+                      variant={position.requiredVariant}
+                      manufacturer={
+                        position.requiredVariant.series.manufacturer
+                      }
+                      size={32}
+                    />
+                  </>
+                )}
+              </div>
+              <Tooltip.Arrow className="fill-sinister-red-500" />
+            </Tooltip.Content>
+          </Tooltip.Root>
+        </Tooltip.Provider>
       )}
     </form>
   );

@@ -1,6 +1,5 @@
-import Button from "@/common/components/Button";
 import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
-import * as Tooltip from "@radix-ui/react-tooltip";
+import { Tooltip } from "@/common/components/Tooltip";
 import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
 import { usePermissionsContext } from "../../PermissionsContext";
@@ -21,27 +20,9 @@ export const SpynetSection = ({ className }: Props) => {
           <div className="flex items-center gap-2 mb-2">
             <h5 className="font-bold">Aktivität</h5>
 
-            <div className="relative z-10">
-              <Tooltip.Provider delayDuration={300}>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <Button variant="tertiary" type="button">
-                      <FaInfoCircle />
-                    </Button>
-                  </Tooltip.Trigger>
-
-                  <Tooltip.Content
-                    className="p-4 text-sm leading-tight max-w-[640px] select-none rounded bg-neutral-600 shadow-sm"
-                    sideOffset={5}
-                  >
-                    <p>
-                      Ermöglicht das Aufrufen der Aktivität-Seite im Spynet.
-                    </p>
-                    <Tooltip.Arrow className="fill-neutral-600" />
-                  </Tooltip.Content>
-                </Tooltip.Root>
-              </Tooltip.Provider>
-            </div>
+            <Tooltip triggerChildren={<FaInfoCircle />}>
+              Ermöglicht das Aufrufen der Aktivität-Seite im Spynet.
+            </Tooltip>
           </div>
 
           <YesNoCheckbox {...register("spynetActivity;read")} />
@@ -51,25 +32,9 @@ export const SpynetSection = ({ className }: Props) => {
           <div className="flex items-center gap-2 mb-2">
             <h5 className="font-bold">Citizen</h5>
 
-            <div className="relative z-10">
-              <Tooltip.Provider delayDuration={300}>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <Button variant="tertiary" type="button">
-                      <FaInfoCircle />
-                    </Button>
-                  </Tooltip.Trigger>
-
-                  <Tooltip.Content
-                    className="p-4 text-sm leading-tight max-w-[640px] select-none rounded bg-neutral-600 shadow-sm"
-                    sideOffset={5}
-                  >
-                    <p>Ermöglicht das Aufrufen der Citizen-Seite im Spynet.</p>
-                    <Tooltip.Arrow className="fill-neutral-600" />
-                  </Tooltip.Content>
-                </Tooltip.Root>
-              </Tooltip.Provider>
-            </div>
+            <Tooltip triggerChildren={<FaInfoCircle />}>
+              Ermöglicht das Aufrufen der Citizen-Seite im Spynet.
+            </Tooltip>
           </div>
 
           <YesNoCheckbox {...register("spynetCitizen;read")} />
@@ -79,25 +44,9 @@ export const SpynetSection = ({ className }: Props) => {
           <div className="flex items-center gap-2 mb-2">
             <h5 className="font-bold">Notizen</h5>
 
-            <div className="relative z-10">
-              <Tooltip.Provider delayDuration={300}>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <Button variant="tertiary" type="button">
-                      <FaInfoCircle />
-                    </Button>
-                  </Tooltip.Trigger>
-
-                  <Tooltip.Content
-                    className="p-4 text-sm leading-tight max-w-[640px] select-none rounded bg-neutral-600 shadow-sm"
-                    sideOffset={5}
-                  >
-                    <p>Ermöglicht das Aufrufen der Notizen-Seite im Spynet.</p>
-                    <Tooltip.Arrow className="fill-neutral-600" />
-                  </Tooltip.Content>
-                </Tooltip.Root>
-              </Tooltip.Provider>
-            </div>
+            <Tooltip triggerChildren={<FaInfoCircle />}>
+              Ermöglicht das Aufrufen der Notizen-Seite im Spynet.
+            </Tooltip>
           </div>
 
           <YesNoCheckbox {...register("spynetNotes;read")} />
@@ -107,25 +56,9 @@ export const SpynetSection = ({ className }: Props) => {
           <div className="flex items-center gap-2 mb-2">
             <h5 className="font-bold">Sonstige</h5>
 
-            <div className="relative z-10">
-              <Tooltip.Provider delayDuration={300}>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <Button variant="tertiary" type="button">
-                      <FaInfoCircle />
-                    </Button>
-                  </Tooltip.Trigger>
-
-                  <Tooltip.Content
-                    className="p-4 text-sm leading-tight max-w-[640px] select-none rounded bg-neutral-600 shadow-sm"
-                    sideOffset={5}
-                  >
-                    <p>Ermöglicht das Aufrufen der Sonstige-Seite im Spynet.</p>
-                    <Tooltip.Arrow className="fill-neutral-600" />
-                  </Tooltip.Content>
-                </Tooltip.Root>
-              </Tooltip.Provider>
-            </div>
+            <Tooltip triggerChildren={<FaInfoCircle />}>
+              Ermöglicht das Aufrufen der Sonstige-Seite im Spynet.
+            </Tooltip>
           </div>
 
           <YesNoCheckbox {...register("spynetOther;read")} />

@@ -12,7 +12,7 @@ export const PenaltyPointsTab = () => {
       <div className="py-2 flex justify-between items-center gap-2  mt-2">
         <div>
           <h4 className="font-bold">Eintragen</h4>
-          <p>
+          <p className="text-sm">
             Citizen mit dieser Berechtigung können Strafpunkte bei anderen
             Citizen eintragen. Diese Berechtigung gibt auch Zugriff auf die
             Seite mit aktiven Strafpunkten.
@@ -25,7 +25,7 @@ export const PenaltyPointsTab = () => {
       <div className="py-2 flex justify-between items-center gap-2 mt-2">
         <div>
           <h4 className="font-bold">Löschen</h4>
-          <p>
+          <p className="text-sm">
             Citizen mit dieser Berechtigung können Strafpunkte bei anderen
             Citizen löschen. Dies sollte nur in Ausnahmefällen verwendet werden.
             Wenn Strafpunkte selbstständig ablaufen sollen, sollte stattdessen

@@ -28,7 +28,7 @@ const EventsTab = ({ enableOperations }: Props) => {
       <div className="py-2 flex justify-between items-center gap-2">
         <div>
           <h4 className="font-bold">Aufstellung - Posten verwalten</h4>
-          <p>
+          <p className="text-sm">
             Citizen mit dieser Berechtigung können die Posten der
             Eventaufstellung bearbeiten, selbst wenn sie nicht Organisator des
             Events sind.
