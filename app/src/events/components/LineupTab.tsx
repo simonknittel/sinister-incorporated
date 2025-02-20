@@ -27,11 +27,14 @@ type Props = Readonly<{
       applications: (EventPositionApplication & {
         citizen: Entity;
       })[];
-      acceptedApplication:
-        | (EventPositionApplication & {
-            citizen: Entity;
+      requiredVariant:
+        | (Variant & {
+            series: Series & {
+              manufacturer: Manufacturer;
+            };
           })
         | null;
+      citizen: Entity | null;
     })[];
   };
   canManagePositions?: boolean;

@@ -19,11 +19,7 @@ export const getEventByDiscordId = async (discordId: DiscordEvent["id"]) => {
                   citizen: true,
                 },
               },
-              acceptedApplication: {
-                include: {
-                  citizen: true,
-                },
-              },
+              citizen: true,
               requiredVariant: {
                 include: {
                   series: {

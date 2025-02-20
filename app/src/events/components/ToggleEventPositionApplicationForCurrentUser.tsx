@@ -20,11 +20,13 @@ import { deleteEventPositionApplicationForCurrentUser } from "../actions/deleteE
 type Props = Readonly<{
   className?: string;
   position: EventPosition & {
-    requiredVariant?: Variant & {
-      series: Series & {
-        manufacturer: Manufacturer;
-      };
-    };
+    requiredVariant:
+      | (Variant & {
+          series: Series & {
+            manufacturer: Manufacturer;
+          };
+        })
+      | null;
   };
   hasCurrentUserAlreadyApplied?: boolean;
   doesCurrentUserSatisfyRequirements?: boolean;

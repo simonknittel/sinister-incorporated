@@ -21,29 +21,26 @@ model DiscordEventParticipant {
 }
 
 model EventPosition {
-  id                    String                     @id @default(cuid())
-  eventId               String
-  event                 DiscordEvent               @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  name                  String
-  description           String?
-  requiredVariantId     String?
-  requiredVariant       Variant?                   @relation(fields: [requiredVariantId], references: [id], onDelete: SetNull)
-  requiredRoles         Role[]
-  applications          EventPositionApplication[] @relation("applications")
-  acceptedApplicationId String? // TODO: Delete
-  acceptedApplication   EventPositionApplication?  @relation("acceptedApplication", fields: [acceptedApplicationId], references: [id], onDelete: SetNull) // TODO: Delete
-  citizenId             String?
-  citizen               Entity?                    @relation("citizen", fields: [citizenId], references: [id], onDelete: SetNull)
+  id                String                     @id @default(cuid())
+  eventId           String
+  event             DiscordEvent               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name              String
+  description       String?
+  requiredVariantId String?
+  requiredVariant   Variant?                   @relation(fields: [requiredVariantId], references: [id], onDelete: SetNull)
+  requiredRoles     Role[]
+  applications      EventPositionApplication[] @relation("applications")
+  citizenId         String?
+  citizen           Entity?                    @relation("citizen", fields: [citizenId], references: [id], onDelete: SetNull)
 }
 
 model EventPositionApplication {
-  id                String          @id @default(cuid())
-  positionId        String
-  position          EventPosition   @relation("applications", fields: [positionId], references: [id], onDelete: Cascade)
-  citizenId         String
-  citizen           Entity          @relation("citizen", fields: [citizenId], references: [id], onDelete: Cascade)
-  createdAt         DateTime        @default(now())
-  acceptedPositions EventPosition[] @relation("acceptedApplication") // TODO: Delete
+  id         String        @id @default(cuid())
+  positionId String
+  position   EventPosition @relation("applications", fields: [positionId], references: [id], onDelete: Cascade)
+  citizenId  String
+  citizen    Entity        @relation("citizen", fields: [citizenId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
 
   @@unique([positionId, citizenId])
 }

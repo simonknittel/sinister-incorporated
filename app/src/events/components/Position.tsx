@@ -16,7 +16,7 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { DeleteEventPosition } from "./DeleteEventPosition";
 import { ToggleEventPositionApplicationForCurrentUser } from "./ToggleEventPositionApplicationForCurrentUser";
-import { UpdateEventPositionAcceptedApplication } from "./UpdateEventPositionAcceptedApplication";
+import { UpdateEventPositionCitizenId } from "./UpdateEventPositionCitizenId";
 
 type Props = Readonly<{
   className?: string;
@@ -24,16 +24,14 @@ type Props = Readonly<{
     applications: (EventPositionApplication & {
       citizen: Entity;
     })[];
-    acceptedApplication:
-      | (EventPositionApplication & {
-          citizen: Entity;
+    requiredVariant:
+      | (Variant & {
+          series: Series & {
+            manufacturer: Manufacturer;
+          };
         })
       | null;
-    requiredVariant?: Variant & {
-      series: Series & {
-        manufacturer: Manufacturer;
-      };
-    };
+    citizen: Entity | null;
   };
   showManage?: boolean;
   variants: (Manufacturer & {
@@ -133,26 +131,24 @@ export const Position = ({
             </h3>
 
             {showManage ? (
-              <UpdateEventPositionAcceptedApplication
+              <UpdateEventPositionCitizenId
                 position={position}
                 className="mt-1"
                 eventCitizenSatisfyingRequirements={[]}
                 eventCitizenNotSatisfyingRequirements={allEventCitizen}
               />
-            ) : position.acceptedApplication ? (
+            ) : position.citizen ? (
               <Link
-                href={`/app/spynet/citizen/${position.acceptedApplication.citizen.id}`}
+                href={`/app/spynet/citizen/${position.citizen.id}`}
                 className={clsx("hover:underline self-start", {
                   "text-green-500":
-                    position.acceptedApplication.citizen.id ===
-                    authentication.session.entityId,
+                    position.citizen.id === authentication.session.entityId,
                   "text-sinister-red-500":
-                    position.acceptedApplication.citizen.id !==
-                    authentication.session.entityId,
+                    position.citizen.id !== authentication.session.entityId,
                 })}
                 prefetch={false}
               >
-                {position.acceptedApplication.citizen.handle}
+                {position.citizen.handle}
               </Link>
             ) : (
               <p>-</p>
