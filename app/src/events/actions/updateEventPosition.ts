@@ -42,13 +42,17 @@ export const updateEventPosition = async (formData: FormData) => {
     /**
      * Authorize the request
      */
-    const event = await prisma.discordEvent.findUnique({
+    const position = await prisma.eventPosition.findUnique({
       where: {
         id: result.data.positionId,
       },
+      include: {
+        event: true,
+      },
     });
+    if (!position) return { error: "Posten nicht gefunden" };
     if (
-      authentication.session.discordId !== event?.discordCreatorId &&
+      authentication.session.discordId !== position.event.discordCreatorId &&
       !(await authentication.authorize("othersEventPosition", "update"))
     )
       return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
@@ -79,7 +83,7 @@ export const updateEventPosition = async (formData: FormData) => {
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/events/${event?.discordId}/lineup`);
+    revalidatePath(`/app/events/${position.event.discordId}/lineup`);
 
     /**
      * Respond with the result

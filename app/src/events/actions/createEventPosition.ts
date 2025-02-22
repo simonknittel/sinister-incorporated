@@ -47,11 +47,12 @@ export const createEventPosition = async (formData: FormData) => {
         id: result.data.eventId,
       },
     });
+    if (!event) return { error: "Event nicht gefunden" };
     if (
-      authentication.session.discordId !== event?.discordCreatorId &&
+      authentication.session.discordId !== event.discordCreatorId &&
       !(await authentication.authorize("othersEventPosition", "create"))
     )
-      throw new Error("Forbidden");
+      return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
 
     /**
      * Create entry
@@ -79,7 +80,7 @@ export const createEventPosition = async (formData: FormData) => {
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/events/${event?.discordId}/lineup`);
+    revalidatePath(`/app/events/${event.discordId}/lineup`);
 
     /**
      * Respond with the result

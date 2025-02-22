@@ -46,7 +46,7 @@ export const updateEventPositionCitizenId = async (formData: FormData) => {
         event: true,
       },
     });
-    if (!position) return { error: "Citizen nicht gefunden" };
+    if (!position) return { error: "Posten nicht gefunden" };
     if (
       authentication.session.discordId !== position.event.discordCreatorId &&
       !(await authentication.authorize("othersEventPosition", "update"))
