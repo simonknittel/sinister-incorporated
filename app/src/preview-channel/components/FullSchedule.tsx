@@ -57,6 +57,7 @@ const FullSchedule = ({ schedule }: Readonly<Props>) => {
         <Link
           href="https://robertsspaceindustries.com/spectrum/community/SC/forum/1/thread/pyro-preview-channel-update"
           className="inline-flex items-center justify-center rounded gap-2 text-sinister-red-500 hover:bg-sinisterborder-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300 underline"
+          rel="noreferrer"
         >
           Spectrum
         </Link>

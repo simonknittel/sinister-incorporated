@@ -38,6 +38,7 @@ export const OverviewTile = ({ className, event, date }: Props) => {
 
           {event.description && (
             <div className="mt-4 prose prose-invert">
+              {/* TODO: Add noreferrer to links */}
               <MDXRemote source={event.description} />
             </div>
           )}
