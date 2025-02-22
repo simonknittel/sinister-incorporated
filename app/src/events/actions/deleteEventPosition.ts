@@ -34,7 +34,7 @@ export const deleteEventPosition = async (formData: FormData) => {
     /**
      * Authorize the request
      */
-    const eventPosition = await prisma.eventPosition.findUnique({
+    const position = await prisma.eventPosition.findUnique({
       where: {
         id: result.data.id,
       },
@@ -42,10 +42,10 @@ export const deleteEventPosition = async (formData: FormData) => {
         event: true,
       },
     });
+    if (!position) return { error: "Posten nicht gefunden" };
     if (
-      authentication.session.discordId !==
-        eventPosition?.event?.discordCreatorId &&
-      !(await authentication.authorize("othersEventPosition", "create"))
+      authentication.session.discordId !== position.event.discordCreatorId &&
+      !(await authentication.authorize("othersEventPosition", "delete"))
     )
       return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
 
@@ -61,7 +61,7 @@ export const deleteEventPosition = async (formData: FormData) => {
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/events/${eventPosition?.event.discordId}/lineup`);
+    revalidatePath(`/app/events/${position.event.discordId}/lineup`);
 
     /**
      * Respond with the result
