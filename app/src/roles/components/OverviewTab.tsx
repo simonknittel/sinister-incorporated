@@ -3,7 +3,7 @@
 import Button from "@/common/components/Button";
 import { ImageUpload } from "@/common/components/ImageUpload";
 import Note from "@/common/components/Note";
-import type { Role } from "@prisma/client";
+import type { Role, Upload } from "@prisma/client";
 import clsx from "clsx";
 import { useActionState, useId } from "react";
 import { FaSave, FaSpinner, FaTrash } from "react-icons/fa";
@@ -12,7 +12,9 @@ import { updateRoleName } from "../actions/updateRoleName";
 
 type Props = Readonly<{
   className?: string;
-  role: Role;
+  role: Role & {
+    icon: Upload | null;
+  };
 }>;
 
 export const OverviewTab = ({ className, role }: Props) => {
@@ -81,7 +83,8 @@ export const OverviewTab = ({ className, role }: Props) => {
               resourceType="role"
               resourceId={role.id}
               resourceAttribute="iconId"
-              imageId={role.iconId}
+              imageId={role.icon?.id}
+              imageMimeType={role.icon?.mimeType}
               width={128}
               height={128}
               className={clsx(

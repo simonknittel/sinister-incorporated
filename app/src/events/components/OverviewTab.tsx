@@ -1,7 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import type { getEvent } from "@/discord/utils/getEvent";
 import { getAssignedRoles } from "@/roles/utils/getRoles";
-import type { Role, VariantTag } from "@prisma/client";
+import type { Role, Upload, VariantTag } from "@prisma/client";
 import clsx from "clsx";
 import { getEventFleet } from "../utils/getEventFleet";
 import { getParticipants } from "../utils/getParticipants";
@@ -101,7 +101,15 @@ const ParticipantsSummary = async ({
 }: ParticipantsSummaryProps) => {
   const { spynetCitizen } = await getParticipants(event);
 
-  const countedRoles = new Map<string, { role: Role; count: number }>();
+  const countedRoles = new Map<
+    string,
+    {
+      role: Role & {
+        icon: Upload | null;
+      };
+      count: number;
+    }
+  >();
 
   for (const citizen of spynetCitizen) {
     const roles = await getAssignedRoles(citizen.entity!);

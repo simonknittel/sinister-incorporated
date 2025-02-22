@@ -4,7 +4,7 @@ import Button from "@/common/components/Button";
 import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import { env } from "@/env";
 import { useFilter } from "@/spynet/components/Filter";
-import { type Role } from "@prisma/client";
+import { type Role, type Upload } from "@prisma/client";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -15,7 +15,9 @@ interface FormValues {
 }
 
 type Props = Readonly<{
-  roles: Role[];
+  roles: (Role & {
+    icon: Upload | null;
+  })[];
 }>;
 
 export const RoleFilter = ({ roles }: Props) => {
@@ -69,14 +71,17 @@ export const RoleFilter = ({ roles }: Props) => {
           className="flex justify-between items-center w-full gap-4"
         >
           <label className="flex gap-2 items-center whitespace-nowrap">
-            {role.iconId && (
+            {role.icon && (
               <div className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
                 <Image
-                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
+                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.icon.id}`}
                   alt=""
                   width={24}
                   height={24}
                   className="max-w-full max-h-full"
+                  unoptimized={["image/svg+xml", "image/gif"].includes(
+                    role.icon.mimeType,
+                  )}
                 />
               </div>
             )}

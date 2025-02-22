@@ -1,12 +1,14 @@
 import { env } from "@/env";
-import type { Manufacturer, Variant } from "@prisma/client";
+import type { Manufacturer, Upload, Variant } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 
 type Props = Readonly<{
   className?: string;
   variant: Variant;
-  manufacturer: Manufacturer;
+  manufacturer: Manufacturer & {
+    image: Upload | null;
+  };
   size?: 32 | 48;
 }>;
 
@@ -18,9 +20,9 @@ export const VariantWithLogo = ({
 }: Props) => {
   return (
     <div className={clsx("flex items-center gap-2", className)}>
-      {manufacturer.imageId ? (
+      {manufacturer.image ? (
         <Image
-          src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.imageId}`}
+          src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${manufacturer.image.id}`}
           alt={`Logo of ${manufacturer.name}`}
           width={size}
           height={size}
@@ -29,6 +31,9 @@ export const VariantWithLogo = ({
             "size-[48px]": size === 48,
           })}
           title={`Logo of ${manufacturer.name}`}
+          unoptimized={["image/svg+xml", "image/gif"].includes(
+            manufacturer.image.mimeType,
+          )}
         />
       ) : (
         <div

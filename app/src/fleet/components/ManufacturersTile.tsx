@@ -40,13 +40,16 @@ export const ManufacturersTile = async () => {
                 )}
               >
                 <td>
-                  {row.imageId && (
+                  {row.image && (
                     <Image
-                      src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${row.imageId}`}
+                      src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${row.image.id}`}
                       width={48}
                       height={48}
                       alt={`Logo of ${row.name}`}
                       className="w-[48px] h-[48px] object-contain object-center"
+                      unoptimized={["image/svg+xml", "image/gif"].includes(
+                        row.image.mimeType,
+                      )}
                     />
                   )}
                 </td>

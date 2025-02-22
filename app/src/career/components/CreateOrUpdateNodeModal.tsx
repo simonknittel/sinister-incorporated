@@ -147,22 +147,28 @@ export const CreateOrUpdateNodeModal = ({
               onChange={setRoleImage}
               className="mt-2"
             />
-            {roleImage === FlowNodeRoleImage.ICON && role && (
+            {roleImage === FlowNodeRoleImage.ICON && role?.icon && (
               <Image
-                src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
+                src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.icon.id}`}
                 alt=""
                 width={128}
                 height={128}
                 className="mt-2 size-32 border border-neutral-700 rounded object-contain object-center"
+                unoptimized={["image/svg+xml", "image/gif"].includes(
+                  role.icon.mimeType,
+                )}
               />
             )}
-            {roleImage === FlowNodeRoleImage.THUMBNAIL && role && (
+            {roleImage === FlowNodeRoleImage.THUMBNAIL && role?.thumbnail && (
               <Image
-                src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.thumbnailId}`}
+                src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.thumbnail.id}`}
                 alt=""
                 width={228}
                 height={128}
                 className="mt-2 w-[228px] h-32 border border-neutral-700 rounded object-contain object-center"
+                unoptimized={["image/svg+xml", "image/gif"].includes(
+                  role.thumbnail.mimeType,
+                )}
               />
             )}
           </>

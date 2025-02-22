@@ -1,6 +1,6 @@
 import { Actions } from "@/common/components/Actions";
 import { Link } from "@/common/components/Link";
-import { type Entity, type Role } from "@prisma/client";
+import { type Entity, type Role, type Upload } from "@prisma/client";
 import { Suspense } from "react";
 import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
 import { CitizenTableDelete } from "./CitizenTableDelete";
@@ -14,7 +14,9 @@ type Row = Readonly<{
 
 type Props = Readonly<{
   rows: Row[];
-  assignableRoles: Role[];
+  assignableRoles: (Role & {
+    icon: Upload | null;
+  })[];
   showDiscordIdColumn?: boolean;
   showTeamspeakIdColumn?: boolean;
   showLastSeenAtColumn?: boolean;

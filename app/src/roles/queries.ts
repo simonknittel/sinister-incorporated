@@ -17,6 +17,8 @@ export const getRoleById = cache(async (id: Role["id"]) => {
         include: {
           permissionStrings: true,
           inherits: true,
+          icon: true,
+          thumbnail: true,
         },
       });
     } catch (error) {
@@ -43,6 +45,8 @@ export const getRoles = cache(async (withPermissionStrings = false) => {
         include: {
           permissionStrings: withPermissionStrings,
           inherits: true,
+          icon: true,
+          thumbnail: true,
         },
       });
     } catch (error) {

@@ -4,7 +4,7 @@ import { getAssignableRoles, getAssignedRoles } from "@/roles/utils/getRoles";
 import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import { FaLock } from "react-icons/fa";
-import AddRoles from "./AddRoles";
+import { AddRoles } from "./AddRoles";
 
 type Props = Readonly<{
   className?: string;
