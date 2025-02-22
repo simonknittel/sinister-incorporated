@@ -19,9 +19,11 @@ export const Unassigned = ({
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
 
-  const unassignedCitizen = allEventCitizen.filter((citizen) => {
-    return !positions.some((position) => position.citizen?.id === citizen.id);
-  });
+  const unassignedCitizen = allEventCitizen
+    .filter((citizen) => {
+      return !positions.some((position) => position.citizen?.id === citizen.id);
+    })
+    .toSorted((a, b) => (a.handle || a.id).localeCompare(b.handle || b.id));
 
   return (
     <section className={clsx("rounded-2xl bg-neutral-800/50 p-4", className)}>
