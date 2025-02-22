@@ -14,6 +14,7 @@ import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { PositionSkeleton } from "./PositionSkeleton";
+import { Unassigned } from "./Unassigned";
 
 const Position = dynamic(
   () => import("./Position").then((mod) => mod.Position),
@@ -85,6 +86,11 @@ export const LineupTab = ({
           angelegt und zugeordnet werden.
         </p>
       )}
+
+      <Unassigned
+        positions={event.positions}
+        allEventCitizen={allEventCitizen}
+      />
     </section>
   );
 };
