@@ -117,7 +117,7 @@ export const Position = ({
                 size={32}
               />
             ) : (
-              <p>-</p>
+              <p className="text-neutral-500">-</p>
             )}
           </div>
 
@@ -151,7 +151,7 @@ export const Position = ({
                 {position.citizen.handle}
               </Link>
             ) : (
-              <p>-</p>
+              <p className="text-neutral-500">-</p>
             )}
           </div>
         </div>
