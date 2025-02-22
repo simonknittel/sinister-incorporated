@@ -4,6 +4,7 @@ import { Link } from "@/common/components/Link";
 import TimeAgoContainer from "@/common/components/TimeAgoContainer";
 import clsx from "clsx";
 import Image from "next/image";
+import { FaClock, FaUser } from "react-icons/fa";
 import type { z } from "zod";
 import type { eventSchema } from "../utils/schemas";
 
@@ -20,6 +21,16 @@ export const Event = async ({ className, event, index }: Props) => {
   const isToday =
     event.scheduled_start_time.toISOString().split("T")[0] ===
     new Date().toISOString().split("T")[0];
+
+  const startTime = event.scheduled_start_time.toLocaleString("de-DE", {
+    timeZone: "Europe/Berlin",
+    weekday: "short",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   /**
    * Image size:
@@ -55,23 +66,23 @@ export const Event = async ({ className, event, index }: Props) => {
             {event.name}
           </h2>
 
-          <p>
-            <span className="text-neutral-500">Start:</span>{" "}
-            {event.scheduled_start_time.toLocaleString("de-DE", {
-              timeZone: "Europe/Berlin",
-              weekday: "short",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </p>
+          <div className="flex flex-wrap gap-2">
+            <p
+              title={`Startzeit: ${startTime}`}
+              className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
+            >
+              <FaClock className="text-xs text-neutral-500" />
+              {startTime}
+            </p>
 
-          <p>
-            <span className="text-neutral-500">Teilnehmer:</span>{" "}
-            {event.user_count}
-          </p>
+            <p
+              title={`Teilnehmer: ${event.user_count}`}
+              className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
+            >
+              <FaUser className="text-xs text-neutral-500" />
+              {event.user_count}
+            </p>
+          </div>
         </div>
 
         <div className="flex-initial flex 3xl:flex-col gap-2 p-4 pt-0 lg:pl-8 lg:pr-8 lg:pb-8 3xl:pt-8">
