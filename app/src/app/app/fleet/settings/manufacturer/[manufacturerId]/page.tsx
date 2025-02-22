@@ -59,7 +59,8 @@ export default async function Page(props: Props) {
           resourceType="manufacturer"
           resourceId={manufacturer.id}
           resourceAttribute="imageId"
-          imageId={manufacturer.imageId}
+          imageId={manufacturer.image?.id}
+          imageMimeType={manufacturer.image?.mimeType}
           width={400}
           height={128}
           className={clsx(

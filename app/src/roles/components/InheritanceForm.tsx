@@ -3,7 +3,7 @@
 import Button from "@/common/components/Button";
 import Note from "@/common/components/Note";
 import { SingleRole } from "@/common/components/SingleRole";
-import type { Role } from "@prisma/client";
+import type { Role, Upload } from "@prisma/client";
 import clsx from "clsx";
 import { useActionState } from "react";
 import { FaSave, FaSpinner } from "react-icons/fa";
@@ -14,7 +14,9 @@ type Props = Readonly<{
   currentRole: Role & {
     inherits: Role[];
   };
-  roles: Role[];
+  roles: (Role & {
+    icon: Upload | null;
+  })[];
 }>;
 
 export const InheritanceForm = ({ className, currentRole, roles }: Props) => {

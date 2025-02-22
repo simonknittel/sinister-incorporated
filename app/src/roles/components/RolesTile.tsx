@@ -45,14 +45,17 @@ export const RolesTile = async ({ className }: Props) => {
                   className="flex items-center gap-2 hover:bg-neutral-800 px-2 rounded h-full"
                   prefetch={false}
                 >
-                  {role.iconId ? (
+                  {role.icon ? (
                     <div className="aspect-square size-8 flex items-center justify-center rounded overflow-hidden flex-none">
                       <Image
-                        src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
+                        src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.icon.id}`}
                         alt=""
                         width={32}
                         height={32}
                         className="max-w-full max-h-full"
+                        unoptimized={["image/svg+xml", "image/gif"].includes(
+                          role.icon.mimeType,
+                        )}
                       />
                     </div>
                   ) : (

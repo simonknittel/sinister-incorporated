@@ -8,6 +8,7 @@ import {
   type FlowNode,
   type Flow as FlowPrisma,
   type Role,
+  type Upload,
 } from "@prisma/client";
 import {
   addEdge,
@@ -51,9 +52,14 @@ type Props = Readonly<{
       targets: FlowEdge[];
     })[];
   };
-  roles: Role[];
+  roles: (Role & {
+    icon: Upload | null;
+    thumbnail: Upload | null;
+  })[];
   assignedRoles: (Role & {
     inherits: Role[];
+    icon: Upload | null;
+    thumbnail: Upload | null;
   })[];
   canUpdate?: boolean;
   isUpdating?: boolean;

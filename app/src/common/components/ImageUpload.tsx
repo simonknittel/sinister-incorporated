@@ -17,6 +17,7 @@ type Props = Readonly<{
   resourceId: string;
   resourceAttribute: string;
   imageId?: string | null;
+  imageMimeType?: string;
   width: number;
   height: number;
 }>;
@@ -29,6 +30,7 @@ export const ImageUpload = ({
   resourceId,
   resourceAttribute,
   imageId,
+  imageMimeType,
   width,
   height,
 }: Props) => {
@@ -80,6 +82,11 @@ export const ImageUpload = ({
           width={width}
           height={height}
           className={clsx(imageClassName, "object-contain object-center")}
+          unoptimized={
+            imageMimeType
+              ? ["image/svg+xml", "image/gif"].includes(imageMimeType)
+              : true
+          }
         />
       )}
 

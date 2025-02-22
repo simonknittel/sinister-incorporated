@@ -1,14 +1,16 @@
 import { requireAuthentication } from "@/auth/server";
-import AddRoles from "@/citizen/components/roles/AddRoles";
+import { AddRoles } from "@/citizen/components/roles/AddRoles";
 import { SingleRole } from "@/common/components/SingleRole";
 import { getAssignedRoles } from "@/roles/utils/getRoles";
-import { type Entity, type Role } from "@prisma/client";
+import { type Entity, type Role, type Upload } from "@prisma/client";
 import clsx from "clsx";
 
 type Props = Readonly<{
   className?: string;
   entity: Entity;
-  assignableRoles: Role[];
+  assignableRoles: (Role & {
+    icon: Upload | null;
+  })[];
 }>;
 
 export const RolesCell = async ({

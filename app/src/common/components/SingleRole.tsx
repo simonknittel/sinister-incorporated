@@ -1,11 +1,14 @@
 import { env } from "@/env";
+import type { Upload } from "@prisma/client";
 import { type Role } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 
 type Props = Readonly<{
   className?: string;
-  role: Role;
+  role: Role & {
+    icon: Upload | null;
+  };
   showPlaceholder?: boolean;
 }>;
 
@@ -21,14 +24,17 @@ export const SingleRole = ({
         className,
       )}
     >
-      {role.iconId && (
+      {role.icon && (
         <span className="aspect-square size-6 flex items-center justify-center">
           <Image
-            src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.iconId}`}
+            src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.icon.id}`}
             alt=""
             width={24}
             height={24}
             className="max-w-full max-h-full"
+            unoptimized={["image/svg+xml", "image/gif"].includes(
+              role.icon.mimeType,
+            )}
           />
         </span>
       )}

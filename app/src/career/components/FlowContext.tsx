@@ -1,11 +1,14 @@
 "use client";
 
-import type { Role } from "@prisma/client";
+import type { Role, Upload } from "@prisma/client";
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo } from "react";
 
 interface FlowContext {
-  roles: Role[];
+  roles: (Role & {
+    icon: Upload | null;
+    thumbnail: Upload | null;
+  })[];
   isUpdating: boolean;
 }
 
@@ -13,7 +16,10 @@ const FlowContext = createContext<FlowContext | undefined>(undefined);
 
 type Props = Readonly<{
   children: ReactNode;
-  roles: Role[];
+  roles: (Role & {
+    icon: Upload | null;
+    thumbnail: Upload | null;
+  })[];
   isUpdating: boolean;
 }>;
 

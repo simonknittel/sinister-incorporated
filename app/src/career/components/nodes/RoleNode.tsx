@@ -1,7 +1,12 @@
 "use client";
 
 import { env } from "@/env";
-import { FlowNodeRoleImage, FlowNodeType, type Role } from "@prisma/client";
+import {
+  FlowNodeRoleImage,
+  FlowNodeType,
+  type Role,
+  type Upload,
+} from "@prisma/client";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   applyNodeChanges,
@@ -32,7 +37,10 @@ export type RoleNode = Node<
       redacted: true;
     }
   | {
-      role: Role;
+      role: Role & {
+        icon: Upload | null;
+        thumbnail: Upload | null;
+      };
       roleImage: FlowNodeRoleImage;
       backgroundColor: string;
       backgroundTransparency: number;
@@ -131,12 +139,12 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
           props.data.backgroundTransparency,
         );
 
-  const imageSrc =
+  const image =
     "redacted" in props.data
       ? null
       : props.data.roleImage === FlowNodeRoleImage.THUMBNAIL
-        ? `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.role.thumbnailId}`
-        : `https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${props.data.role.iconId}`;
+        ? props.data.role.thumbnail
+        : props.data.role.icon;
 
   return (
     <>
@@ -211,12 +219,19 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
             <Tooltip.Root>
               <Tooltip.Trigger className="cursor-help w-full h-full">
                 <Image
-                  src={imageSrc!}
+                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${image?.id}`}
                   alt={props.data.role.name}
                   title={props.data.role.name}
                   width={100}
                   height={100}
                   className="object-contain object-center w-full h-full"
+                  unoptimized={
+                    (image &&
+                      ["image/svg+xml", "image/gif"].includes(
+                        image.mimeType,
+                      )) ??
+                    false
+                  }
                 />
               </Tooltip.Trigger>
 

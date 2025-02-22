@@ -1,7 +1,7 @@
 "use client";
 
 import { SingleRole } from "@/common/components/SingleRole";
-import type { Role } from "@prisma/client";
+import type { Role, Upload } from "@prisma/client";
 import {
   createColumnHelper,
   flexRender,
@@ -15,7 +15,9 @@ import { useMemo, useState } from "react";
 import { FaSortAlphaDown, FaSortAlphaUpAlt } from "react-icons/fa";
 
 interface Row {
-  role: Role;
+  role: Role & {
+    icon: Upload | null;
+  };
   count: number;
 }
 

@@ -186,6 +186,7 @@ export const getManufacturers = () => {
         select: {
           id: true,
           imageId: true,
+          image: true,
           name: true,
           series: {
             select: {
@@ -218,6 +219,9 @@ export const getManufacturerById = (manufacturerId: Manufacturer["id"]) => {
       return await prisma.manufacturer.findUnique({
         where: {
           id: manufacturerId,
+        },
+        include: {
+          image: true,
         },
       });
     } catch (error) {
