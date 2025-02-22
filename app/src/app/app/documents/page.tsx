@@ -36,6 +36,7 @@ export default async function Page() {
           <Link
             href="https://downloads.sinister-incorporated.de/introduction.pdf"
             className="block"
+            rel="noreferrer"
           >
             <Image
               src={introductionCompendium}
@@ -53,6 +54,7 @@ export default async function Page() {
           <Link
             href="https://downloads.sinister-incorporated.de/alliance.pdf"
             className="block"
+            rel="noreferrer"
           >
             <Image
               src={allianceManifest}

@@ -187,7 +187,10 @@ export default function Page() {
 
             <p>
               Details entnehmen Sie der Datenschutzerklärung von Hetzner:{" "}
-              <Link href="https://www.hetzner.com/de/rechtliches/datenschutz">
+              <Link
+                href="https://www.hetzner.com/de/rechtliches/datenschutz"
+                rel="noreferrer"
+              >
                 https://www.hetzner.com/de/rechtliches/datenschutz
               </Link>
               .
@@ -242,7 +245,10 @@ export default function Page() {
               Die verantwortliche Stelle für die Datenverarbeitung auf dieser
               Website ist: Andreas Gerte, c/o COCENTER, Koppoldstr. 1, 86551
               Aichach, E-Mail:{" "}
-              <Link href="mailto:info@sinister-incorporated.de">
+              <Link
+                href="mailto:info@sinister-incorporated.de"
+                rel="noreferrer"
+              >
                 info@sinister-incorporated.de
               </Link>{" "}
               . Verantwortliche Stelle ist die natürliche oder juristische
