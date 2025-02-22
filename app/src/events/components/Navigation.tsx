@@ -56,7 +56,7 @@ export const Navigation = async ({
           key={page.path}
           href={page.path}
           className={clsx(
-            "first:rounded-l border-[1px] border-sinister-red-500 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase",
+            "first:rounded-l border-[1px] border-sinister-red-700 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase",
             {
               "bg-sinister-red-500 text-white": active === page.path,
               "text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300":

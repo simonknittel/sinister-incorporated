@@ -22,7 +22,7 @@ export const Navigation = ({ className, flows }: Props) => {
             key={flow.id}
             href={`/app/career/${flow.id}`}
             className={clsx(
-              "first:rounded-l last:rounded-r border border-sinister-red-500 h-8 flex items-center justify-center px-3 gap-2 uppercase",
+              "first:rounded-l last:rounded-r border border-sinister-red-700 h-8 flex items-center justify-center px-3 gap-2 uppercase",
               {
                 "bg-sinister-red-500 text-white":
                   pathname === `/app/career/${flow.id}`,

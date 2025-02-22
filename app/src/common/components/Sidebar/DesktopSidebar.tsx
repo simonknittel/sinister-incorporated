@@ -124,7 +124,7 @@ export const DesktopSidebar = async () => {
                   href="/app"
                   className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                 >
-                  <FaHome />
+                  <FaHome className="text-neutral-500" />
                   Dashboard
                 </Link>
               </li>
@@ -135,7 +135,7 @@ export const DesktopSidebar = async () => {
                     href="/app/spynet"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                   >
-                    <RiSpyFill />
+                    <RiSpyFill className="text-neutral-500" />
                     Spynet
                   </Link>
                 </li>
@@ -147,7 +147,7 @@ export const DesktopSidebar = async () => {
                     href="/app/operations"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                   >
-                    <RiSwordFill />
+                    <RiSwordFill className="text-neutral-500" />
                     Operationen
                     <Chip title="Proof of Concept">PoC</Chip>
                   </Link>
@@ -159,7 +159,7 @@ export const DesktopSidebar = async () => {
                 href="/app/preview-channel"
                 className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
               >
-                <FaClock />
+                <FaClock className="text-neutral-500" />
                 Preview Channel
               </Link>
             </li> */}
@@ -170,7 +170,7 @@ export const DesktopSidebar = async () => {
                     href="/app/fleet"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                   >
-                    <MdWorkspaces />
+                    <MdWorkspaces className="text-neutral-500" />
                     Flotte
                   </Link>
                 </li>
@@ -182,7 +182,7 @@ export const DesktopSidebar = async () => {
                     href="/app/documents"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                   >
-                    <IoDocuments />
+                    <IoDocuments className="text-neutral-500" />
                     Dokumente
                   </Link>
                 </li>
@@ -194,7 +194,7 @@ export const DesktopSidebar = async () => {
                     href="/app/career"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                   >
-                    <TbMilitaryRank />
+                    <TbMilitaryRank className="text-neutral-500" />
                     Karriere
                   </Link>
                 </li>
@@ -206,7 +206,7 @@ export const DesktopSidebar = async () => {
                     href="/app/penalty-points"
                     className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                   >
-                    <FaScaleBalanced />
+                    <FaScaleBalanced className="text-neutral-500" />
                     Strafpunkte
                   </Link>
                 </li>
@@ -224,7 +224,7 @@ export const DesktopSidebar = async () => {
                         href="/app/spynet/activity"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                       >
-                        <RxActivityLog />
+                        <RxActivityLog className="text-neutral-500" />
                         Aktivität
                       </Link>
                     </li>
@@ -236,7 +236,7 @@ export const DesktopSidebar = async () => {
                         href="/app/spynet/citizen"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                       >
-                        <FaTable />
+                        <FaTable className="text-neutral-500" />
                         Citizen
                       </Link>
                     </li>
@@ -248,7 +248,7 @@ export const DesktopSidebar = async () => {
                         href="/app/spynet/notes"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                       >
-                        <FaTable />
+                        <FaTable className="text-neutral-500" />
                         Notizen
                       </Link>
                     </li>
@@ -260,7 +260,7 @@ export const DesktopSidebar = async () => {
                         href="/app/spynet/other"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                       >
-                        <FaTable />
+                        <FaTable className="text-neutral-500" />
                         Sonstige
                       </Link>
                     </li>
@@ -287,7 +287,7 @@ export const DesktopSidebar = async () => {
                         href="/app/settings"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                       >
-                        <FaCog />
+                        <FaCog className="text-neutral-500" />
                         Einstellungen
                       </Link>
                     </li>
@@ -299,7 +299,7 @@ export const DesktopSidebar = async () => {
                         href="/app/roles"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                       >
-                        <FaLock />
+                        <FaLock className="text-neutral-500" />
                         Rollen
                       </Link>
                     </li>
@@ -311,7 +311,7 @@ export const DesktopSidebar = async () => {
                         href="/app/fleet/settings/manufacturer"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                       >
-                        <FaCog />
+                        <FaCog className="text-neutral-500" />
                         Schiffe
                       </Link>
                     </li>
@@ -322,7 +322,7 @@ export const DesktopSidebar = async () => {
                         href="/app/users"
                         className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
                       >
-                        <FaUsers />
+                        <FaUsers className="text-neutral-500" />
                         Benutzer
                       </Link>
                     </li>
