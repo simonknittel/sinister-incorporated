@@ -177,7 +177,11 @@ export const Position = ({
           <div className="p-4 flex gap-2">
             <div className="flex-1 flex flex-col">
               <h3 className="text-sm text-gray-500">Beschreibung</h3>
-              <p>{position.description || "-"}</p>
+              {position.description ? (
+                <p>{position.description}</p>
+              ) : (
+                <p className="text-neutral-500">-</p>
+              )}
             </div>
 
             {/* TODO: Implement (multiple) role requirements */}
