@@ -22,11 +22,6 @@ export const DesktopSidebar = async () => {
   const showOperations =
     (await getUnleashFlag("EnableOperations")) &&
     (await authentication.authorize("operation", "manage"));
-  const showDocuments =
-    (await authentication.authorize(
-      "documentIntroductionCompendium",
-      "read",
-    )) || (await authentication.authorize("documentAllianceManifest", "read"));
   const showShipManage = await authentication.authorize("ship", "manage");
   const showOrgFleetRead = await authentication.authorize("orgFleet", "read");
   const showCitizenRead = await authentication.authorize("citizen", "read");
@@ -176,17 +171,15 @@ export const DesktopSidebar = async () => {
                 </li>
               )}
 
-              {showDocuments && (
-                <li>
-                  <Link
-                    href="/app/documents"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <IoDocuments className="text-neutral-500" />
-                    Dokumente
-                  </Link>
-                </li>
-              )}
+              <li>
+                <Link
+                  href="/app/documents"
+                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
+                >
+                  <IoDocuments className="text-neutral-500" />
+                  Dokumente
+                </Link>
+              </li>
 
               {showCareer && (
                 <li>
