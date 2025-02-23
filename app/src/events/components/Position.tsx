@@ -7,6 +7,7 @@ import {
   type Manufacturer,
   type Series,
   type Ship,
+  type Upload,
   type Variant,
 } from "@prisma/client";
 import { useLocalStorage } from "@uidotdev/usehooks";
@@ -27,7 +28,9 @@ type Props = Readonly<{
     requiredVariant:
       | (Variant & {
           series: Series & {
-            manufacturer: Manufacturer;
+            manufacturer: Manufacturer & {
+              image: Upload | null;
+            };
           };
         })
       | null;

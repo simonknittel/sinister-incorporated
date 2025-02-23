@@ -77,6 +77,7 @@ export default async function Page({ params }: Props) {
   const [variants, myShips, allEventCitizen] = await Promise.all([
     prisma.manufacturer.findMany({
       include: {
+        image: true,
         series: {
           include: {
             variants: true,
