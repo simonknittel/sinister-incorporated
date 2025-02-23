@@ -6,6 +6,7 @@ import type {
   EventPosition,
   Manufacturer,
   Series,
+  Upload,
   Variant,
 } from "@prisma/client";
 import * as Tooltip from "@radix-ui/react-tooltip";
@@ -23,7 +24,9 @@ type Props = Readonly<{
     requiredVariant:
       | (Variant & {
           series: Series & {
-            manufacturer: Manufacturer;
+            manufacturer: Manufacturer & {
+              image: Upload | null;
+            };
           };
         })
       | null;

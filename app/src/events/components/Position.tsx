@@ -7,6 +7,7 @@ import {
   type Manufacturer,
   type Series,
   type Ship,
+  type Upload,
   type Variant,
 } from "@prisma/client";
 import { useLocalStorage } from "@uidotdev/usehooks";
@@ -27,7 +28,9 @@ type Props = Readonly<{
     requiredVariant:
       | (Variant & {
           series: Series & {
-            manufacturer: Manufacturer;
+            manufacturer: Manufacturer & {
+              image: Upload | null;
+            };
           };
         })
       | null;
@@ -174,7 +177,11 @@ export const Position = ({
           <div className="p-4 flex gap-2">
             <div className="flex-1 flex flex-col">
               <h3 className="text-sm text-gray-500">Beschreibung</h3>
-              <p>{position.description || "-"}</p>
+              {position.description ? (
+                <p>{position.description}</p>
+              ) : (
+                <p className="text-neutral-500">-</p>
+              )}
             </div>
 
             {/* TODO: Implement (multiple) role requirements */}
