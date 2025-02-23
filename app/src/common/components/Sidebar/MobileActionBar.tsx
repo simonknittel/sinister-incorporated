@@ -28,11 +28,6 @@ export const MobileActionBar = async ({ className }: Props) => {
   const showOperations =
     (await getUnleashFlag("EnableOperations")) &&
     (await authentication.authorize("operation", "manage"));
-  const showDocuments =
-    (await authentication.authorize(
-      "documentIntroductionCompendium",
-      "read",
-    )) || (await authentication.authorize("documentAllianceManifest", "read"));
   const showCareer =
     (await authentication.authorize("career", "read", [
       {
@@ -124,17 +119,15 @@ export const MobileActionBar = async ({ className }: Props) => {
             </li>
           )}
 
-          {showDocuments && (
-            <li className="h-full py-1">
-              <Link
-                href="/app/documents"
-                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
-              >
-                <IoDocuments className="text-xl text-neutral-500" />
-                <span className="text-xs">Dokumente</span>
-              </Link>
-            </li>
-          )}
+          <li className="h-full py-1">
+            <Link
+              href="/app/documents"
+              className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
+            >
+              <IoDocuments className="text-xl text-neutral-500" />
+              <span className="text-xs">Dokumente</span>
+            </Link>
+          </li>
 
           {showCareer && (
             <li className="h-full py-1">
@@ -216,17 +209,15 @@ export const MobileActionBar = async ({ className }: Props) => {
                     </li>
                   )}
 
-                  {showDocuments && (
-                    <li>
-                      <Link
-                        href="/app/documents"
-                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
-                      >
-                        <IoDocuments className="text-neutral-500" />
-                        Dokumente
-                      </Link>
-                    </li>
-                  )}
+                  <li>
+                    <Link
+                      href="/app/documents"
+                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                    >
+                      <IoDocuments className="text-neutral-500" />
+                      Dokumente
+                    </Link>
+                  </li>
 
                   {showCareer && (
                     <li>

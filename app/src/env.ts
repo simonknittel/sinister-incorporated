@@ -95,6 +95,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY: z.string(),
     NEXT_PUBLIC_R2_PUBLIC_URL: z.string(),
     NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL: z.string().url(),
+    NEXT_PUBLIC_DOWNLOADS_BASE_URL: z.string().url().optional(),
   },
 
   /*
@@ -144,6 +145,7 @@ export const env = createEnv({
     ENABLE_INSTRUMENTATION: process.env.ENABLE_INSTRUMENTATION,
     OTEL_EXPORTER_OTLP_PROTOCOL: process.env.OTEL_EXPORTER_OTLP_PROTOCOL,
     OTEL_EXPORTER_OTLP_ENDPOINT: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
+    NEXT_PUBLIC_DOWNLOADS_BASE_URL: process.env.NEXT_PUBLIC_DOWNLOADS_BASE_URL,
   },
 
   emptyStringAsUndefined: true,
