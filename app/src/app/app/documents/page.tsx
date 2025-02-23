@@ -5,7 +5,7 @@ import srcA1 from "@/documents/assets/a1.svg";
 import srcA2 from "@/documents/assets/a2.svg";
 import srcA3 from "@/documents/assets/a3.svg";
 import srcAdvancedDogfight from "@/documents/assets/advancedDogfight.svg";
-import srcAlliance from "@/documents/assets/alliance.png";
+import srcAlliance from "@/documents/assets/alliance.svg";
 import srcBombardment from "@/documents/assets/bombardment.svg";
 import srcBootsOnTheGround from "@/documents/assets/bootsOnTheGround.svg";
 import srcCaptainOnTheBridge from "@/documents/assets/captainOnTheBridge.svg";
