@@ -68,11 +68,11 @@ export async function POST(request: NextRequest) {
             ["updatedDiscordEvent"],
             "Event aktualisiert",
             currentEvent.name,
-            `/app/events/${currentEvent.id}`,
+            `/app/events/${existingEvent.id}`,
           );
         }
       } else {
-        await prisma.discordEvent.create({
+        const newEvent = await prisma.discordEvent.create({
           data: {
             discordId: currentEvent.id,
             discordCreatorId: currentEvent.creator_id,
@@ -89,8 +89,8 @@ export async function POST(request: NextRequest) {
         await publishNotification(
           ["newDiscordEvent"],
           "Neues Event",
-          currentEvent.name,
-          `/app/events/${currentEvent.id}`,
+          newEvent.discordName,
+          `/app/events/${newEvent.id}`,
         );
       }
 
