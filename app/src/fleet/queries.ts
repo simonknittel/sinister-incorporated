@@ -27,7 +27,11 @@ export const getOrgFleet = async ({
             include: {
               series: {
                 include: {
-                  manufacturer: true,
+                  manufacturer: {
+                    include: {
+                      image: true,
+                    },
+                  },
                 },
               },
               tags: true,
@@ -60,7 +64,11 @@ export const getMyFleet = async () => {
             include: {
               series: {
                 include: {
-                  manufacturer: true,
+                  manufacturer: {
+                    include: {
+                      image: true,
+                    },
+                  },
                 },
               },
             },

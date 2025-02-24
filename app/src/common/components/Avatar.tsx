@@ -52,6 +52,7 @@ const Avatar = ({ className, name, image, size }: Readonly<Props>) => {
           alt={name ? `Image of ${name}` : ""}
           width={imageSize}
           height={imageSize}
+          loading="lazy"
         />
       ) : name ? (
         name.replace(/\s/g, "").substring(0, 2)

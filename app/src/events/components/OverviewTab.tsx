@@ -1,7 +1,12 @@
 import { requireAuthentication } from "@/auth/server";
-import type { getEvent } from "@/discord/utils/getEvent";
 import { getAssignedRoles } from "@/roles/utils/getRoles";
-import type { Role, Upload, VariantTag } from "@prisma/client";
+import type {
+  DiscordEvent,
+  DiscordEventParticipant,
+  Role,
+  Upload,
+  VariantTag,
+} from "@prisma/client";
 import clsx from "clsx";
 import { getEventFleet } from "../utils/getEventFleet";
 import { getParticipants } from "../utils/getParticipants";
@@ -11,7 +16,9 @@ import { VariantTagsTable } from "./VariantTagsTable";
 
 type Props = Readonly<{
   className?: string;
-  event: Awaited<ReturnType<typeof getEvent>>;
+  event: DiscordEvent & {
+    participants: DiscordEventParticipant[];
+  };
 }>;
 
 export const OverviewTab = async ({ className, event }: Props) => {
@@ -25,22 +32,18 @@ export const OverviewTab = async ({ className, event }: Props) => {
         className,
       )}
     >
-      <OverviewTile
-        event={event.data}
-        date={event.date}
-        className="w-full max-w-[480px] flex-none"
-      />
+      <OverviewTile event={event} className="w-full max-w-[480px] flex-none" />
 
       <div className="flex-1 w-full flex-col md:flex-row lg:flex-col xl:flex-row 2xl:flex-col 3xl:flex-row flex gap-2">
         {showFleetSummary && (
           <FleetSummary
-            event={event.data}
+            event={event}
             className="flex-initial w-full md:w-1/2 lg:w-full xl:w-1/2 2xl:w-full 3xl:w-1/2"
           />
         )}
 
         <ParticipantsSummary
-          event={event.data}
+          event={event}
           className="flex-initial w-full md:w-1/2 lg:w-full xl:w-1/2 2xl:w-full 3xl:w-1/2"
         />
       </div>
@@ -50,7 +53,9 @@ export const OverviewTab = async ({ className, event }: Props) => {
 
 type FleetSummaryProps = Readonly<{
   className?: string;
-  event: Awaited<ReturnType<typeof getEvent>>["data"];
+  event: DiscordEvent & {
+    participants: DiscordEventParticipant[];
+  };
 }>;
 
 const FleetSummary = async ({ className, event }: FleetSummaryProps) => {
@@ -92,14 +97,16 @@ const FleetSummary = async ({ className, event }: FleetSummaryProps) => {
 
 type ParticipantsSummaryProps = Readonly<{
   className?: string;
-  event: Awaited<ReturnType<typeof getEvent>>["data"];
+  event: DiscordEvent & {
+    participants: DiscordEventParticipant[];
+  };
 }>;
 
 const ParticipantsSummary = async ({
   className,
   event,
 }: ParticipantsSummaryProps) => {
-  const { spynetCitizen } = await getParticipants(event);
+  const resolvedParticipants = await getParticipants(event);
 
   const countedRoles = new Map<
     string,
@@ -111,8 +118,8 @@ const ParticipantsSummary = async ({
     }
   >();
 
-  for (const citizen of spynetCitizen) {
-    const roles = await getAssignedRoles(citizen.entity!);
+  for (const resolvedParticipant of resolvedParticipants) {
+    const roles = await getAssignedRoles(resolvedParticipant.citizen);
 
     for (const role of roles) {
       if (countedRoles.has(role.id)) {

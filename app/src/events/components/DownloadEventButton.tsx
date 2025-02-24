@@ -1,6 +1,6 @@
 import Button from "@/common/components/Button";
 import { Link } from "@/common/components/Link";
-import type { getEvent } from "@/discord/utils/getEvent";
+import type { DiscordEvent } from "@prisma/client";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { FaDownload, FaExternalLinkAlt } from "react-icons/fa";
@@ -11,7 +11,7 @@ import { getOutlookUrl } from "../utils/getOutlookUrl";
 
 type Props = Readonly<{
   className?: string;
-  event: Awaited<ReturnType<typeof getEvent>>["data"];
+  event: DiscordEvent;
 }>;
 
 export const DownloadEventButton = ({ className, event }: Props) => {

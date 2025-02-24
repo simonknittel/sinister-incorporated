@@ -68,6 +68,7 @@ export const AddRoles = ({
                     unoptimized={["image/svg+xml", "image/gif"].includes(
                       role.icon.mimeType,
                     )}
+                    loading="lazy"
                   />
                 </div>
               )}

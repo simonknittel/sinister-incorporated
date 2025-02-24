@@ -28,13 +28,9 @@ import srcSupervisor from "@/documents/assets/supervisor.svg";
 import srcTechAndTactic from "@/documents/assets/techAndTactic.svg";
 import srcTradeAndTransport from "@/documents/assets/tradeAndTransport.svg";
 import { env } from "@/env";
-import * as Accordion from "@radix-ui/react-accordion";
-import clsx from "clsx";
 import { type Metadata } from "next";
 import Image from "next/image";
 import { forbidden } from "next/navigation";
-import type { ComponentProps } from "react";
-import { FaChevronDown } from "react-icons/fa";
 
 const categories = [
   {
@@ -254,19 +250,12 @@ export default async function Page() {
         <Hero text="Dokumente" withGlitch />
       </div>
 
-      <Accordion.Root type="multiple" className="mt-4 lg:mt-8">
+      <div className="flex flex-col gap-4 mt-4 lg:mt-8">
         {categoriesWithAuthorizedDocuments.map(({ name, documents }) => (
-          <Accordion.Item
-            key={name}
-            value={name.toLowerCase()}
-            className="mt-[1px]"
-          >
-            <AccordionTrigger>{name}</AccordionTrigger>
+          <section key={name} className="bg-neutral-800/50 rounded">
+            <h2 className="font-bold text-lg p-4">{name}</h2>
 
-            <AccordionContent
-              className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-2 p-4 bg-neutral-800/50 border-t border-neutral-800"
-              asChild
-            >
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-2 p-4 border-t border-neutral-800">
               {documents.map(({ name, src, href }) => (
                 <div key={name} className="flex items-center justify-center">
                   <Link
@@ -282,50 +271,15 @@ export default async function Page() {
                       width={391}
                       height={219}
                       unoptimized
+                      loading="lazy"
                     />
                   </Link>
                 </div>
               ))}
-            </AccordionContent>
-          </Accordion.Item>
+            </div>
+          </section>
         ))}
-      </Accordion.Root>
+      </div>
     </main>
   );
 }
-
-type AccordionTriggerProps = Readonly<ComponentProps<typeof Accordion.Trigger>>;
-
-const AccordionTrigger = ({
-  children,
-  className,
-  ...props
-}: AccordionTriggerProps) => (
-  <Accordion.Header>
-    <Accordion.Trigger
-      className={clsx(
-        "bg-neutral-800/50 hover:bg-neutral-500/50 focus-visible:bg-neutral-500/50 rounded w-full flex gap-2 items-center justify-between font-bold text-lg",
-        className,
-      )}
-      {...props}
-    >
-      <span className="block p-4">{children}</span>
-
-      <span className="border-l border-white/10 flex items-center justify-center p-2">
-        <FaChevronDown aria-hidden className="text-sinister-red-500" />
-      </span>
-    </Accordion.Trigger>
-  </Accordion.Header>
-);
-
-type AccordionContentProps = Readonly<ComponentProps<typeof Accordion.Content>>;
-
-const AccordionContent = ({
-  children,
-  className,
-  ...props
-}: AccordionContentProps) => (
-  <Accordion.Content className={clsx(className)} {...props}>
-    <div>{children}</div>
-  </Accordion.Content>
-);

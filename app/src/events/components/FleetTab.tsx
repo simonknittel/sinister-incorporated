@@ -1,11 +1,13 @@
-import { type getEvent } from "@/discord/utils/getEvent";
 import { FleetTable } from "@/fleet/components/FleetTable";
+import type { DiscordEvent, DiscordEventParticipant } from "@prisma/client";
 import clsx from "clsx";
 import { getEventFleet } from "../utils/getEventFleet";
 
 type Props = Readonly<{
   className?: string;
-  event: Awaited<ReturnType<typeof getEvent>>["data"];
+  event: DiscordEvent & {
+    participants: DiscordEventParticipant[];
+  };
 }>;
 
 export const FleetTab = async ({ className, event }: Props) => {

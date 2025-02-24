@@ -43,7 +43,7 @@ export const Unassigned = ({
                 })}
                 prefetch={false}
               >
-                {citizen.handle}
+                {citizen.handle || citizen.id}
               </Link>
             </li>
           ))}

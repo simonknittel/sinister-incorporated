@@ -1,13 +1,13 @@
 import { authenticatePage } from "@/auth/server";
-import Note from "@/common/components/Note";
 import { prisma } from "@/db";
 import { LineupTab } from "@/events/components/LineupTab";
 import { Navigation } from "@/events/components/Navigation";
-import { getEventByDiscordId } from "@/events/queries";
+import { getEventById } from "@/events/queries";
 import { getEventCitizen } from "@/events/utils/getEventCitizen";
 import { getMyFleet } from "@/fleet/queries";
 import { log } from "@/logging";
 import { type Metadata } from "next";
+import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<{
@@ -18,11 +18,11 @@ export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
-    const eventId = (await props.params).id;
-    const event = await getEventByDiscordId(eventId);
+    const event = await getEventById((await props.params).id);
+    if (!event) notFound();
 
     return {
-      title: `Aufstellung - ${event?.discordName} - Event | S.A.M. - Sinister Incorporated`,
+      title: `Aufstellung - ${event.discordName} - Event | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
     void log.error(
@@ -47,32 +47,14 @@ export default async function Page({ params }: Props) {
   await authentication.authorizePage("event", "read");
 
   const eventId = (await params).id;
-  const databaseEvent = await getEventByDiscordId(eventId);
-  if (!databaseEvent)
-    return (
-      <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
-        <div className="flex gap-2 font-bold text-xl">
-          <span className="text-neutral-500">Event /</span>
-          <p>???</p>
-        </div>
-
-        <Navigation
-          eventId={eventId}
-          active={`/app/events/${eventId}/lineup`}
-          className="mt-4"
-        />
-
-        <Note
-          type="info"
-          className="mt-4"
-          message="Es dauert etwa drei Minuten nach Eventerstellung bis die Aufstellung verfügbar ist."
-        />
-      </main>
-    );
+  const event = await getEventById(eventId);
+  if (!event) notFound();
 
   const canManagePositions =
-    databaseEvent.discordCreatorId === authentication.session.discordId ||
+    event.discordCreatorId === authentication.session.discordId ||
     (await authentication.authorize("othersEventPosition", "manage"));
+
+  // if (!event.lineupEnabled && !canManagePositions) forbidden();
 
   const [variants, myShips, allEventCitizen] = await Promise.all([
     prisma.manufacturer.findMany({
@@ -88,25 +70,24 @@ export default async function Page({ params }: Props) {
 
     getMyFleet(),
 
-    getEventCitizen(databaseEvent.id),
+    getEventCitizen(event.id),
   ]);
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl">
         <span className="text-neutral-500">Event /</span>
-        <p>{databaseEvent.discordName}</p>
+        <p>{event.discordName}</p>
       </div>
 
       <Navigation
-        eventId={eventId}
-        participantsCount={databaseEvent.participants.length}
+        event={event}
         active={`/app/events/${eventId}/lineup`}
         className="mt-4"
       />
 
       <LineupTab
-        event={databaseEvent}
+        event={event}
         canManagePositions={canManagePositions}
         variants={variants}
         myShips={myShips}

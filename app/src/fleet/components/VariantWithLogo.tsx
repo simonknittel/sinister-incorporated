@@ -34,6 +34,7 @@ export const VariantWithLogo = ({
           unoptimized={["image/svg+xml", "image/gif"].includes(
             manufacturer.image.mimeType,
           )}
+          loading="lazy"
         />
       ) : (
         <div
