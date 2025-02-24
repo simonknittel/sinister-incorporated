@@ -2,6 +2,7 @@ import {
   type Manufacturer,
   type Series,
   type Ship,
+  type Upload,
   type Variant,
 } from "@prisma/client";
 import clsx from "clsx";
@@ -14,7 +15,9 @@ type Props = Readonly<{
   ship: Ship & {
     variant: Variant & {
       series: Series & {
-        manufacturer: Manufacturer;
+        manufacturer: Manufacturer & {
+          image: Upload | null;
+        };
       };
     };
   };

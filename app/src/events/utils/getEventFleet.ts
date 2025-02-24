@@ -30,7 +30,11 @@ export const getEventFleet = cache(
           include: {
             series: {
               include: {
-                manufacturer: true,
+                manufacturer: {
+                  include: {
+                    image: true,
+                  },
+                },
               },
             },
             tags: true,

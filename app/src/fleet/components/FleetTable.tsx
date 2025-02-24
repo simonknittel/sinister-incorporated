@@ -4,6 +4,7 @@ import {
   VariantStatus,
   type Manufacturer,
   type Series,
+  type Upload,
   type Variant,
   type VariantTag,
 } from "@prisma/client";
@@ -31,7 +32,9 @@ type Props = Readonly<{
   fleet: {
     variant: Variant & {
       series: Series & {
-        manufacturer: Manufacturer;
+        manufacturer: Manufacturer & {
+          image: Upload | null;
+        };
       };
       tags: VariantTag[];
     };

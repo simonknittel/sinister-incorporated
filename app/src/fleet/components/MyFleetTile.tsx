@@ -23,7 +23,11 @@ export const MyFleetTile = async ({ className }: Props) => {
           include: {
             series: {
               include: {
-                manufacturer: true,
+                manufacturer: {
+                  include: {
+                    image: true,
+                  },
+                },
               },
             },
           },
