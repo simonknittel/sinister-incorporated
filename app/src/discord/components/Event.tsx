@@ -1,25 +1,28 @@
 import { DiscordNavigationButton } from "@/common/components/DiscordNavigationButton";
 import { Link } from "@/common/components/Link";
 import TimeAgoContainer from "@/common/components/TimeAgoContainer";
+import type { DiscordEvent } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 import { FaClock, FaUser } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
-import type { z } from "zod";
-import type { eventSchema } from "../utils/schemas";
 
 type Props = Readonly<{
   className?: string;
-  event: z.infer<typeof eventSchema>;
+  event: DiscordEvent & {
+    _count: {
+      participants: number;
+    };
+  };
   index: number;
 }>;
 
 export const Event = ({ className, event, index }: Props) => {
   const isToday =
-    event.scheduled_start_time.toISOString().split("T")[0] ===
+    event.startTime!.toISOString().split("T")[0] ===
     new Date().toISOString().split("T")[0];
 
-  const startTime = event.scheduled_start_time.toLocaleString("de-DE", {
+  const startTime = event.startTime!.toLocaleString("de-DE", {
     timeZone: "Europe/Berlin",
     weekday: "short",
     month: "long",
@@ -40,15 +43,15 @@ export const Event = ({ className, event, index }: Props) => {
     <article className={clsx(className, "rounded-2xl overflow-hidden w-full")}>
       {isToday && (
         <div className="bg-sinister-red-500/50 text-white font-bold text-center p-2">
-          <TimeAgoContainer date={event.scheduled_start_time} />
+          <TimeAgoContainer date={event.startTime!} />
         </div>
       )}
 
       <div className="flex flex-col 3xl:flex-row bg-neutral-800/50">
-        {event.image && (
+        {event.discordImage && (
           <div className="3xl:flex-grow-0 3xl:flex-shrink-0 3xl:basis-[400px] max-h-[160px] flex justify-center rounded-r-2xl rounded-b-2xl overflow-hidden">
             <Image
-              src={`https://cdn.discordapp.com/guild-events/${event.id}/${event.image}.webp?size=1024`}
+              src={`https://cdn.discordapp.com/guild-events/${event.discordId}/${event.discordImage}.webp?size=1024`}
               alt=""
               width={400}
               height={160}
@@ -60,9 +63,9 @@ export const Event = ({ className, event, index }: Props) => {
         <div className="flex-1 flex flex-col gap-3 justify-center p-4 lg:p-6 3xl:overflow-hidden">
           <h2
             className="font-bold text-xl 3xl:text-ellipsis 3xl:whitespace-nowrap 3xl:overflow-hidden"
-            title={event.name}
+            title={event.discordName!}
           >
-            {event.name}
+            {event.discordName}
           </h2>
 
           <div className="flex flex-wrap gap-2">
@@ -75,11 +78,11 @@ export const Event = ({ className, event, index }: Props) => {
             </p>
 
             <p
-              title={`Teilnehmer: ${event.user_count}`}
+              title={`Teilnehmer: ${event._count.participants}`}
               className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
             >
               <FaUser className="text-xs text-neutral-500" />
-              {event.user_count}
+              {event._count.participants}
             </p>
           </div>
 
@@ -91,16 +94,20 @@ export const Event = ({ className, event, index }: Props) => {
               Details
             </Link>
 
-            <Link
-              href={`/app/events/${event.id}/lineup`}
-              className="first:rounded-l border-[1px] border-sinister-red-700 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"
-            >
-              <MdWorkspaces />
-              Aufstellung
-            </Link>
+            {/* TODO: Implement */}
+            {/* {event.lineupEnabled && ( */}
+            {true && (
+              <Link
+                href={`/app/events/${event.id}/lineup`}
+                className="first:rounded-l border-[1px] border-sinister-red-700 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"
+              >
+                <MdWorkspaces />
+                Aufstellung
+              </Link>
+            )}
 
             <DiscordNavigationButton
-              path={`events/${event.guild_id}/${event.id}`}
+              path={`events/${event.discordGuildId}/${event.id}`}
             />
           </div>
         </div>

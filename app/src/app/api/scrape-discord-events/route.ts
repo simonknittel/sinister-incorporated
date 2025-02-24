@@ -8,7 +8,6 @@ import { publishNotification } from "@/pusher/utils/publishNotification";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
 import { NextResponse, type NextRequest } from "next/server";
-import { createHash } from "node:crypto";
 import { type z } from "zod";
 
 export async function POST(request: NextRequest) {
@@ -22,48 +21,64 @@ export async function POST(request: NextRequest) {
     const { data: events } = await getEvents();
 
     for (const event of events) {
-      const hash = createHash("md5");
-      hash.update(
-        JSON.stringify({
-          name: event.name,
-          scheduled_start_time: event.scheduled_start_time,
-          scheduled_end_time: event.scheduled_end_time,
-          description: event.description,
-          location: event.entity_metadata.location,
-        }),
-      );
-      const hashHex = hash.digest("hex");
-
       const existingEvent = await prisma.discordEvent.findUnique({
         where: {
           discordId: event.id,
         },
       });
 
-      if (existingEvent && existingEvent.hash !== hashHex) {
-        await prisma.discordEvent.update({
-          where: {
-            id: existingEvent.id,
-          },
-          data: {
-            discordName: event.name,
-            hash: hashHex,
-          },
-        });
+      if (existingEvent) {
+        const hasAnyChanges =
+          existingEvent.discordName !== event.name ||
+          existingEvent.startTime !== event.scheduled_start_time ||
+          existingEvent.endTime !== event.scheduled_end_time ||
+          existingEvent.description !== event.description ||
+          existingEvent.location !== event.entity_metadata.location ||
+          existingEvent.discordImage !== event.image;
 
-        await publishNotification(
-          ["updatedDiscordEvent"],
-          "Event aktualisiert",
-          event.name,
-          `/app/events/${event.id}`,
-        );
-      } else if (!existingEvent) {
+        if (hasAnyChanges) {
+          await prisma.discordEvent.update({
+            where: {
+              id: existingEvent.id,
+            },
+            data: {
+              discordName: event.name,
+              startTime: event.scheduled_start_time,
+              endTime: event.scheduled_end_time,
+              description: event.description,
+              location: event.entity_metadata.location,
+              discordImage: event.image,
+            },
+          });
+        }
+
+        const hasChangesForNotification =
+          existingEvent.discordName !== event.name ||
+          existingEvent.startTime !== event.scheduled_start_time ||
+          existingEvent.endTime !== event.scheduled_end_time ||
+          existingEvent.description !== event.description ||
+          existingEvent.location !== event.entity_metadata.location;
+
+        if (hasChangesForNotification) {
+          await publishNotification(
+            ["updatedDiscordEvent"],
+            "Event aktualisiert",
+            event.name,
+            `/app/events/${event.id}`,
+          );
+        }
+      } else {
         await prisma.discordEvent.create({
           data: {
             discordId: event.id,
             discordCreatorId: event.creator_id,
             discordName: event.name,
-            hash: hashHex,
+            startTime: event.scheduled_start_time,
+            endTime: event.scheduled_end_time,
+            description: event.description,
+            location: event.entity_metadata.location,
+            discordImage: event.image,
+            discordGuildId: event.guild_id,
           },
         });
 
@@ -73,8 +88,6 @@ export async function POST(request: NextRequest) {
           event.name,
           `/app/events/${event.id}`,
         );
-      } else {
-        // Do nothing if event already exists and hash is the same (event details have not changed)
       }
 
       await updateParticipants(event);

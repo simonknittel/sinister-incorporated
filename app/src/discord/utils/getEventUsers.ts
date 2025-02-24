@@ -8,14 +8,14 @@ import { z } from "zod";
 import { checkResponseForError } from "./checkResponseForError";
 import { memberSchema, userSchema } from "./schemas";
 
-export const getEventUsers = cache(async (id: string) => {
+export const getEventUsers = cache(async (discordId: string) => {
   return getTracer().startActiveSpan("getEventUsers", async (span) => {
     try {
       let response;
       const maxRetries = 5;
       for (let attempt = 0; attempt < maxRetries; attempt++) {
         response = await fetch(
-          `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${id}/users?with_member=true`,
+          `https://discord.com/api/v10/guilds/${env.DISCORD_GUILD_ID}/scheduled-events/${discordId}/users?with_member=true`,
           {
             headers: new Headers({
               Authorization: `Bot ${env.DISCORD_TOKEN}`,

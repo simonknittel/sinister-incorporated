@@ -1,22 +1,17 @@
 import { requireAuthentication } from "@/auth/server";
 import { Link } from "@/common/components/Link";
+import type { DiscordEvent } from "@prisma/client";
 import clsx from "clsx";
 import { FaHome, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 
 type Props = Readonly<{
   className?: string;
-  eventId: string;
-  participantsCount?: number;
+  event: DiscordEvent;
   active: string;
 }>;
 
-export const Navigation = async ({
-  className,
-  eventId,
-  participantsCount,
-  active,
-}: Props) => {
+export const Navigation = async ({ className, event, active }: Props) => {
   const authentication = await requireAuthentication();
   const showFleetLink = await authentication.authorize("orgFleet", "read");
 
@@ -24,26 +19,24 @@ export const Navigation = async ({
     {
       name: "Übersicht",
       icon: FaHome,
-      path: `/app/events/${eventId}`,
+      path: `/app/events/${event.id}`,
     },
     {
       name: "Aufstellung",
       icon: MdWorkspaces,
-      path: `/app/events/${eventId}/lineup`,
+      path: `/app/events/${event.id}/lineup`,
     },
     {
-      name: participantsCount
-        ? `Teilnehmer (${participantsCount})`
-        : "Teilnehmer",
+      name: "Teilnehmer",
       icon: FaUsers,
-      path: `/app/events/${eventId}/participants`,
+      path: `/app/events/${event.id}/participants`,
     },
     ...(showFleetLink
       ? [
           {
             name: "Flotte",
             icon: MdWorkspaces,
-            path: `/app/events/${eventId}/fleet`,
+            path: `/app/events/${event.id}/fleet`,
           },
         ]
       : []),

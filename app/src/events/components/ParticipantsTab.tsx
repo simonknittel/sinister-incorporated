@@ -6,12 +6,8 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "@/common/utils/sorting";
-import { getDiscordAvatar } from "@/discord/utils/getDiscordAvatar";
-import { type getEvent } from "@/discord/utils/getEvent";
-import type { memberSchema, userSchema } from "@/discord/utils/schemas";
-import type { Entity } from "@prisma/client";
+import type { DiscordEvent, DiscordEventParticipant } from "@prisma/client";
 import clsx from "clsx";
-import Image from "next/image";
 import { Suspense } from "react";
 import {
   FaInfoCircle,
@@ -20,14 +16,15 @@ import {
   FaSortNumericDown,
   FaSortNumericUp,
 } from "react-icons/fa";
-import type { z } from "zod";
 import { getParticipants } from "../utils/getParticipants";
 
 const GRID_COLS = "grid-cols-[160px_160px_1fr]";
 
 type Props = Readonly<{
   className?: string;
-  event: Awaited<ReturnType<typeof getEvent>>["data"];
+  event: DiscordEvent & {
+    participants: DiscordEventParticipant[];
+  };
   urlSearchParams: URLSearchParams;
 }>;
 
@@ -38,8 +35,7 @@ export const ParticipantsTab = async ({
 }: Props) => {
   const authentication = await requireAuthentication();
 
-  const { resolvedUsers, discordCreator, discordParticipants, spynetCitizen } =
-    await getParticipants(event);
+  const resolvedParticipants = await getParticipants(event);
 
   const citizenSearchParams = new URLSearchParams(urlSearchParams);
   if (
@@ -58,70 +54,65 @@ export const ParticipantsTab = async ({
     joinedAtSearchParams.set("sort", "joined-at-asc");
   }
 
-  const sortedResolvedUsers = resolvedUsers
-    .filter((user) => Boolean(user.entity))
-    .toSorted((a, b) => {
-      switch (urlSearchParams.get("sort")) {
-        case "citizen-asc":
-          return sortAscWithAndNullLast(a.entity!.handle, b.entity!.handle);
-        case "citizen-desc":
-          return sortDescAndNullLast(a.entity!.handle, b.entity!.handle);
+  const sortedResolvedParticipants = resolvedParticipants.toSorted((a, b) => {
+    switch (urlSearchParams.get("sort")) {
+      case "citizen-asc":
+        return sortAscWithAndNullLast(a.citizen.handle, b.citizen.handle);
+      case "citizen-desc":
+        return sortDescAndNullLast(a.citizen.handle, b.citizen.handle);
 
-        case "joined-at-asc":
-          return sortAscWithAndNullLast(
-            a.databaseEventParticipant?.createdAt?.getTime(),
-            b.databaseEventParticipant?.createdAt?.getTime(),
-          );
-        case "joined-at-desc":
-          return sortDescAndNullLast(
-            a.databaseEventParticipant?.createdAt?.getTime(),
-            b.databaseEventParticipant?.createdAt?.getTime(),
-          );
+      case "joined-at-asc":
+        return sortAscWithAndNullLast(
+          a.participant.createdAt?.getTime(),
+          b.participant.createdAt?.getTime(),
+        );
+      case "joined-at-desc":
+        return sortDescAndNullLast(
+          a.participant.createdAt?.getTime(),
+          b.participant.createdAt?.getTime(),
+        );
 
-        default:
-          return sortAscWithAndNullLast(a.entity!.handle, b.entity!.handle);
-      }
-    });
+      default:
+        return sortAscWithAndNullLast(a.citizen.handle, b.citizen.handle);
+    }
+  });
+
+  const resolvedCreatorParticipant = resolvedParticipants.find(
+    (resolvedParticipant) =>
+      resolvedParticipant.citizen.discordId === event.discordCreatorId,
+  )!;
 
   return (
     <div className={clsx("flex flex-col gap-4", className)}>
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
-        <h2 className="font-bold mb-4">
-          Discord-Anmeldungen ({event.user_count})
-        </h2>
-
-        <h3 className="mb-2">Organisator</h3>
-        <DiscordUser
-          discord={discordCreator.discord}
-          citizen={discordCreator.entity}
-          isCurrentUser={
-            discordCreator.entity?.id === authentication.session.entityId
-          }
-        />
-
-        <h3 className="mt-4 mb-2">Teilnehmer</h3>
-        {discordParticipants.length > 0 ? (
-          <div className="flex gap-2 flex-wrap">
-            {discordParticipants.map((user) => (
-              <DiscordUser
-                key={user.discord.user.id}
-                discord={user.discord}
-                citizen={user.entity}
-                isCurrentUser={
-                  user.entity?.id === authentication.session.entityId
-                }
-              />
-            ))}
-          </div>
-        ) : (
-          <p>Es sind keine Teilnehmer angemeldet.</p>
-        )}
+        <h2 className="font-bold mb-4">Organisator</h2>
+        <Link
+          href={`/app/spynet/citizen/${resolvedCreatorParticipant.citizen.id}`}
+          className={clsx("mt-2 hover:underline self-start", {
+            "text-green-500":
+              resolvedCreatorParticipant.citizen.id ===
+              authentication.session.entityId,
+            "text-sinister-red-500":
+              resolvedCreatorParticipant.citizen.id !==
+              authentication.session.entityId,
+          })}
+          prefetch={false}
+        >
+          {resolvedCreatorParticipant.citizen.handle ||
+            resolvedCreatorParticipant.citizen.id}
+        </Link>
       </section>
 
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 overflow-auto">
-        <h2 className="font-bold mb-4">Spynet ({spynetCitizen.length})</h2>
+        <h2 className="font-bold mb-4 flex items-center gap-2">
+          Teilnehmer ({sortedResolvedParticipants.length})
+          <Tooltip triggerChildren={<FaInfoCircle />}>
+            Es werden nur Discord-Anmeldungen mit einem Spynet-Eintrag
+            angezeigt.
+          </Tooltip>
+        </h2>
 
-        {spynetCitizen.length > 0 ? (
+        {sortedResolvedParticipants.length > 0 ? (
           <table className="w-full min-w-[720px]">
             <thead>
               <tr
@@ -175,10 +166,10 @@ export const ParticipantsTab = async ({
             </thead>
 
             <tbody>
-              {sortedResolvedUsers.map((user) => {
+              {sortedResolvedParticipants.map((resolvedParticipant) => {
                 return (
                   <tr
-                    key={user.entity!.id}
+                    key={resolvedParticipant.citizen.id}
                     className={clsx(
                       "grid items-center gap-4 rounded -mx-2",
                       GRID_COLS,
@@ -186,15 +177,15 @@ export const ParticipantsTab = async ({
                   >
                     <td className="h-full min-h-14">
                       <Link
-                        href={`/app/spynet/citizen/${user.entity!.id}`}
+                        href={`/app/spynet/citizen/${resolvedParticipant.citizen.id}`}
                         className={clsx(
                           "hover:bg-neutral-800 block rounded px-2 h-full",
                           {
                             "text-green-500":
-                              user.entity!.id ===
+                              resolvedParticipant.citizen.id ===
                               authentication.session.entityId,
                             "text-sinister-red-500":
-                              user.entity!.id !==
+                              resolvedParticipant.citizen.id !==
                               authentication.session.entityId,
                           },
                         )}
@@ -202,9 +193,9 @@ export const ParticipantsTab = async ({
                       >
                         <span className="flex items-center h-14">
                           <span className="overflow-hidden text-ellipsis">
-                            {user.entity!.handle ? (
-                              <span title={user.entity!.handle}>
-                                {user.entity!.handle}
+                            {resolvedParticipant.citizen.handle ? (
+                              <span title={resolvedParticipant.citizen.handle}>
+                                {resolvedParticipant.citizen.handle}
                               </span>
                             ) : (
                               <span className="text-neutral-500 italic">-</span>
@@ -215,9 +206,9 @@ export const ParticipantsTab = async ({
                     </td>
 
                     <td className="h-full min-h-14 flex items-center">
-                      {user.databaseEventParticipant?.createdAt ? (
+                      {resolvedParticipant.participant.createdAt ? (
                         <time>
-                          {user.databaseEventParticipant.createdAt.toLocaleDateString(
+                          {resolvedParticipant.participant.createdAt.toLocaleDateString(
                             "de-DE",
                             {
                               timeZone: "Europe/Berlin",
@@ -241,7 +232,7 @@ export const ParticipantsTab = async ({
                         }
                       >
                         <RolesCell
-                          entity={user.entity!}
+                          entity={resolvedParticipant.citizen}
                           assignableRoles={[]}
                           className="flex-wrap"
                         />
@@ -256,50 +247,6 @@ export const ParticipantsTab = async ({
           <p>Zu den gemeldeten Teilnehmern gibt es keine Spynet-Einträge.</p>
         )}
       </section>
-    </div>
-  );
-};
-
-type DiscordUserProps = Readonly<{
-  discord: {
-    user: z.infer<typeof userSchema>;
-    member?: z.infer<typeof memberSchema>;
-  };
-  citizen?: Entity;
-  isCurrentUser?: boolean;
-}>;
-
-const DiscordUser = ({
-  discord,
-  citizen,
-  isCurrentUser = false,
-}: DiscordUserProps) => {
-  const name =
-    citizen?.handle ||
-    discord.member?.nick ||
-    discord.user.global_name ||
-    discord.user.username;
-
-  return (
-    <div
-      className={clsx(
-        "inline-flex gap-2 rounded bg-neutral-800 p-1 pr-2 items-center border",
-        {
-          "border-green-500": isCurrentUser,
-          "border-neutral-800": !isCurrentUser,
-        },
-      )}
-    >
-      <div className="rounded overflow-hidden">
-        <Image
-          src={`${getDiscordAvatar(discord.user, discord.member)}?size=32`}
-          alt=""
-          width={32}
-          height={32}
-        />
-      </div>
-
-      <span>{name}</span>
     </div>
   );
 };

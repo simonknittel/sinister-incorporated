@@ -1,9 +1,10 @@
 import { authenticatePage } from "@/auth/server";
-import { getEvent } from "@/discord/utils/getEvent";
 import { Navigation } from "@/events/components/Navigation";
 import { OverviewTab } from "@/events/components/OverviewTab";
+import { getEventById } from "@/events/queries";
 import { log } from "@/logging";
 import { type Metadata } from "next";
+import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<{
@@ -14,10 +15,11 @@ export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
-    const { data: event } = await getEvent((await props.params).id);
+    const event = await getEventById((await props.params).id);
+    if (!event) notFound();
 
     return {
-      title: `${event.name} - Event | S.A.M. - Sinister Incorporated`,
+      title: `${event.discordName} - Event | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
     void log.error(
@@ -42,19 +44,19 @@ export default async function Page({ params }: Props) {
   await authentication.authorizePage("event", "read");
 
   const eventId = (await params).id;
-  const event = await getEvent(eventId);
+  const event = await getEventById(eventId);
+  if (!event) notFound();
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl">
         <span className="text-neutral-500">Event /</span>
-        <p>{event.data.name}</p>
+        <p>{event.discordName}</p>
       </div>
 
       <Navigation
-        eventId={eventId}
-        participantsCount={event.data.user_count}
-        active={`/app/events/${eventId}`}
+        event={event}
+        active={`/app/events/${event.id}`}
         className="mt-4"
       />
 

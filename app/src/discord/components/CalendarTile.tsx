@@ -1,6 +1,5 @@
-import { TimeAgoLoader } from "@/common/components/TimeAgoLoader";
+import { getFutureEvents } from "@/events/queries";
 import clsx from "clsx";
-import { getEvents } from "../utils/getEvents";
 import { Event } from "./Event";
 import { NotificationsTooltip } from "./NotificationsTooltip";
 
@@ -9,12 +8,7 @@ type Props = Readonly<{
 }>;
 
 export const CalendarTile = async ({ className }: Props) => {
-  const { date, data: _events } = await getEvents();
-
-  const events = _events.toSorted(
-    (a, b) =>
-      a.scheduled_start_time.getTime() - b.scheduled_start_time.getTime(),
-  );
+  const events = await getFutureEvents();
 
   return (
     <section
@@ -36,13 +30,6 @@ export const CalendarTile = async ({ className }: Props) => {
         <div className="bg-neutral-800/50 rounded-2xl p-4 lg:p-8 w-full">
           <p>Aktuell sind keine Events geplant.</p>
         </div>
-      )}
-
-      {date && (
-        <p className="text-neutral-500 flex items-center gap-2 w-full">
-          Letzte Aktualisierung:
-          <TimeAgoLoader date={date} />
-        </p>
       )}
     </section>
   );

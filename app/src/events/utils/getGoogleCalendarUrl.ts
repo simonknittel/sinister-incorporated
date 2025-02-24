@@ -1,24 +1,20 @@
-import type { getEvent } from "@/discord/utils/getEvent";
+import type { DiscordEvent } from "@prisma/client";
 import { formatISO } from "date-fns/formatISO";
 
-export const getGoogleCalendarUrl = (
-  event: Awaited<ReturnType<typeof getEvent>>["data"],
-) => {
-  const subject = encodeURIComponent(event.name);
+export const getGoogleCalendarUrl = (event: DiscordEvent) => {
+  const subject = encodeURIComponent(event.discordName!);
 
-  const start = formatISO(event.scheduled_start_time, { format: "basic" });
+  const start = formatISO(event.startTime!, { format: "basic" });
 
-  const endDate = new Date(
-    event.scheduled_end_time || event.scheduled_start_time,
-  );
+  const endDate = new Date(event.endTime || event.startTime!);
   const end = formatISO(endDate, { format: "basic" });
 
   const description = event.description
     ? `&details=${encodeURIComponent(event.description)}`
     : "";
 
-  const location = event.entity_metadata.location
-    ? `&location=${encodeURIComponent(event.entity_metadata.location)}`
+  const location = event.location
+    ? `&location=${encodeURIComponent(event.location)}`
     : "";
 
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${subject}&dates=${start}/${end}&ctz=UTC${description}${location}`;
