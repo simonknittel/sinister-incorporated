@@ -141,6 +141,7 @@ export const SingleNote = async ({ note }: Props) => {
                     alt=""
                     width={24}
                     height={24}
+                    loading="lazy"
                   />
                 </span>
               )}

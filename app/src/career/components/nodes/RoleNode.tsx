@@ -232,6 +232,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
                       )) ??
                     false
                   }
+                  loading="lazy"
                 />
               </Tooltip.Trigger>
 
