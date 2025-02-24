@@ -18,23 +18,25 @@ export async function POST(request: NextRequest) {
     )
       throw new Error("Unauthorized");
 
-    const { data: events } = await getEvents();
+    const { data: currentEvents } = await getEvents();
 
-    for (const event of events) {
+    for (const currentEvent of currentEvents) {
       const existingEvent = await prisma.discordEvent.findUnique({
         where: {
-          discordId: event.id,
+          discordId: currentEvent.id,
         },
       });
 
       if (existingEvent) {
         const hasAnyChanges =
-          existingEvent.discordName !== event.name ||
-          existingEvent.startTime !== event.scheduled_start_time ||
-          existingEvent.endTime !== event.scheduled_end_time ||
-          existingEvent.description !== event.description ||
-          existingEvent.location !== event.entity_metadata.location ||
-          existingEvent.discordImage !== event.image;
+          existingEvent.discordName !== currentEvent.name ||
+          existingEvent.startTime.getTime() !==
+            currentEvent.scheduled_start_time.getTime() ||
+          existingEvent.endTime?.getTime() !=
+            currentEvent.scheduled_end_time?.getTime() ||
+          existingEvent.description != currentEvent.description ||
+          existingEvent.location != currentEvent.entity_metadata.location ||
+          existingEvent.discordImage != currentEvent.image;
 
         if (hasAnyChanges) {
           await prisma.discordEvent.update({
@@ -42,55 +44,57 @@ export async function POST(request: NextRequest) {
               id: existingEvent.id,
             },
             data: {
-              discordName: event.name,
-              startTime: event.scheduled_start_time,
-              endTime: event.scheduled_end_time,
-              description: event.description,
-              location: event.entity_metadata.location,
-              discordImage: event.image,
+              discordName: currentEvent.name,
+              startTime: currentEvent.scheduled_start_time,
+              endTime: currentEvent.scheduled_end_time,
+              description: currentEvent.description,
+              location: currentEvent.entity_metadata.location,
+              discordImage: currentEvent.image,
             },
           });
         }
 
         const hasChangesForNotification =
-          existingEvent.discordName !== event.name ||
-          existingEvent.startTime !== event.scheduled_start_time ||
-          existingEvent.endTime !== event.scheduled_end_time ||
-          existingEvent.description !== event.description ||
-          existingEvent.location !== event.entity_metadata.location;
+          existingEvent.discordName !== currentEvent.name ||
+          existingEvent.startTime.getTime() !==
+            currentEvent.scheduled_start_time.getTime() ||
+          existingEvent.endTime?.getTime() !=
+            currentEvent.scheduled_end_time?.getTime() ||
+          existingEvent.description != currentEvent.description ||
+          existingEvent.location != currentEvent.entity_metadata.location;
 
         if (hasChangesForNotification) {
           await publishNotification(
             ["updatedDiscordEvent"],
             "Event aktualisiert",
-            event.name,
-            `/app/events/${event.id}`,
+            currentEvent.name,
+            `/app/events/${currentEvent.id}`,
           );
         }
       } else {
         await prisma.discordEvent.create({
           data: {
-            discordId: event.id,
-            discordCreatorId: event.creator_id,
-            discordName: event.name,
-            startTime: event.scheduled_start_time,
-            endTime: event.scheduled_end_time,
-            description: event.description,
-            location: event.entity_metadata.location,
-            discordImage: event.image,
-            discordGuildId: event.guild_id,
+            discordId: currentEvent.id,
+            discordCreatorId: currentEvent.creator_id,
+            discordName: currentEvent.name,
+            startTime: currentEvent.scheduled_start_time,
+            endTime: currentEvent.scheduled_end_time,
+            description: currentEvent.description,
+            location: currentEvent.entity_metadata.location,
+            discordImage: currentEvent.image,
+            discordGuildId: currentEvent.guild_id,
           },
         });
 
         await publishNotification(
           ["newDiscordEvent"],
           "Neues Event",
-          event.name,
-          `/app/events/${event.id}`,
+          currentEvent.name,
+          `/app/events/${currentEvent.id}`,
         );
       }
 
-      await updateParticipants(event);
+      await updateParticipants(currentEvent);
     }
 
     return NextResponse.json({ ok: true });
