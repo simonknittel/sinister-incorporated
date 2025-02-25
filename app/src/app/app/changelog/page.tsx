@@ -28,6 +28,24 @@ export default async function Page() {
             </p>
           </DayItem>
 
+          <DayItem heading="Vergangene Events">
+            <p>
+              Unter der Auflistung der anstehenden Events im Dashboard gibt es
+              nun einen Link um sich vergangene Events anzeigen zu lassen.
+            </p>
+
+            <p>
+              Diese Events sind nur bearbeitebar (z.B. Aufstellung) während
+              diese noch nicht beendet sind. Hat das Event keine Endzeit
+              eingetragen, gilt: Startzeit + vier Stunden.
+            </p>
+
+            <p>
+              Es werden nur Events seit gestern angezeigt. Ältere Events werden
+              nicht nachgetragen.
+            </p>
+          </DayItem>
+
           <DayItem heading="Changelog">
             <p>
               Es wurde ein Changelog implementiert. Hier werden zukünftig alle
