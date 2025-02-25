@@ -245,7 +245,7 @@ export const MobileActionBar = async ({ className }: Props) => {
 
                   <li>
                     <Link
-                      href="/app/penalty-points"
+                      href="/app/changelog"
                       className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
                     >
                       <FaCodePullRequest className="text-neutral-500" />
