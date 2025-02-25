@@ -25,7 +25,11 @@ export const getEventById = cache(async (id: Event["id"]) => {
                 include: {
                   series: {
                     include: {
-                      manufacturer: true,
+                      manufacturer: {
+                        include: {
+                          image: true,
+                        },
+                      },
                     },
                   },
                 },
@@ -46,7 +50,7 @@ export const getEventById = cache(async (id: Event["id"]) => {
 });
 
 export const getFutureEvents = cache(async () => {
-  return getTracer().startActiveSpan("getEvents", async (span) => {
+  return getTracer().startActiveSpan("getFutureEvents", async (span) => {
     try {
       const now = new Date();
 
@@ -65,6 +69,39 @@ export const getFutureEvents = cache(async () => {
         },
         orderBy: {
           startTime: "asc",
+        },
+      });
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
+});
+
+export const getPastEvents = cache(async () => {
+  return getTracer().startActiveSpan("getPastEvents", async (span) => {
+    try {
+      const now = new Date();
+
+      return await prisma.event.findMany({
+        where: {
+          startTime: {
+            lt: now,
+          },
+        },
+        include: {
+          _count: {
+            select: {
+              discordParticipants: true,
+            },
+          },
+        },
+        orderBy: {
+          startTime: "desc",
         },
       });
     } catch (error) {

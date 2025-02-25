@@ -11,6 +11,8 @@ type Props = Readonly<{
 }>;
 
 export const OverviewTile = ({ className, event }: Props) => {
+  const showActions = event.startTime > new Date();
+
   return (
     <section
       className={clsx("rounded-2xl bg-neutral-800/50 overflow-auto", className)}
@@ -71,13 +73,15 @@ export const OverviewTile = ({ className, event }: Props) => {
           <dd>{event.location || "-"}</dd>
         </dl>
 
-        <div className="flex flex-col gap-2 mt-4">
-          <DownloadEventButton event={event} />
+        {showActions && (
+          <div className="flex flex-col gap-2 mt-4">
+            <DownloadEventButton event={event} />
 
-          <DiscordButton
-            path={`events/${event.discordGuildId}/${event.discordId}`}
-          />
-        </div>
+            <DiscordButton
+              path={`events/${event.discordGuildId}/${event.discordId}`}
+            />
+          </div>
+        )}
       </div>
     </section>
   );

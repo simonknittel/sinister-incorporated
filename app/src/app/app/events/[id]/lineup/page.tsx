@@ -3,6 +3,7 @@ import { prisma } from "@/db";
 import { LineupTab } from "@/events/components/LineupTab";
 import { Navigation } from "@/events/components/Navigation";
 import { getEventById } from "@/events/queries";
+import { canEditEvent } from "@/events/utils/canEditEvent";
 import { getEventCitizen } from "@/events/utils/getEventCitizen";
 import { getMyFleet } from "@/fleet/queries";
 import { log } from "@/logging";
@@ -50,9 +51,12 @@ export default async function Page({ params }: Props) {
   const event = await getEventById(eventId);
   if (!event) notFound();
 
+  const showActions = canEditEvent(event);
+
   const canManagePositions =
-    event.discordCreatorId === authentication.session.discordId ||
-    (await authentication.authorize("othersEventPosition", "manage"));
+    (event.discordCreatorId === authentication.session.discordId ||
+      (await authentication.authorize("othersEventPosition", "manage"))) &&
+    showActions;
 
   // if (!event.lineupEnabled && !canManagePositions) forbidden();
 
@@ -93,6 +97,7 @@ export default async function Page({ params }: Props) {
         myShips={myShips}
         allEventCitizen={allEventCitizen}
         className="mt-4"
+        showActions={showActions}
       />
     </main>
   );

@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
+import { canEditEvent } from "../utils/canEditEvent";
 
 const schema = z.object({
   eventId: z.string().cuid(),
@@ -48,6 +49,7 @@ export const createEventPosition = async (formData: FormData) => {
       },
     });
     if (!event) return { error: "Event nicht gefunden" };
+    if (!canEditEvent(event)) return { error: "Das Event ist bereits vorbei." };
     if (
       authentication.session.discordId !== event.discordCreatorId &&
       !(await authentication.authorize("othersEventPosition", "create"))
