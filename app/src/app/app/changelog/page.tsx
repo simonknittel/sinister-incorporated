@@ -17,7 +17,7 @@ export default async function Page() {
         <Hero text="Changelog" withGlitch />
       </div>
 
-      <div className="flex flex-col gap-4 max-w-prose">
+      <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
         <Day heading="25. Februar 2025">
           <DayItem heading="Abgesagte Events">
             <p>
@@ -25,6 +25,24 @@ export default async function Page() {
               S.A.M. synchronisiert. Hier gibt es nun die Möglichkeit sich vom
               S.A.M. eine Benachrichtigung zuschicken zu lassen. Hierzu einfach
               auf die rote Glocke im Dashboard klicken.
+            </p>
+          </DayItem>
+
+          <DayItem heading="Vergangene Events">
+            <p>
+              Unter der Auflistung der anstehenden Events im Dashboard gibt es
+              nun einen Link um sich vergangene Events anzeigen zu lassen.
+            </p>
+
+            <p>
+              Diese Events sind nur bearbeitebar (z.B. Aufstellung) während
+              diese noch nicht beendet sind. Hat das Event keine Endzeit
+              eingetragen, gilt: Startzeit + vier Stunden.
+            </p>
+
+            <p>
+              Es werden nur Events seit gestern angezeigt. Ältere Events werden
+              nicht nachgetragen.
             </p>
           </DayItem>
 
