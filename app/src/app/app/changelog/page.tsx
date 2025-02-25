@@ -17,7 +17,7 @@ export default async function Page() {
         <Hero text="Changelog" withGlitch />
       </div>
 
-      <div className="flex flex-col gap-4 max-w-prose">
+      <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
         <Day heading="25. Februar 2025">
           <DayItem heading="Abgesagte Events">
             <p>
