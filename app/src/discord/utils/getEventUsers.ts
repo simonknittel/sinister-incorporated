@@ -20,9 +20,7 @@ export const getEventUsers = cache(async (discordId: string) => {
             headers: new Headers({
               Authorization: `Bot ${env.DISCORD_TOKEN}`,
             }),
-            next: {
-              revalidate: 30,
-            },
+            cache: "no-store",
           },
         );
         if (response.status !== 429) break;
