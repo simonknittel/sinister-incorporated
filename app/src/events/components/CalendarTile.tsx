@@ -1,3 +1,4 @@
+import { Link } from "@/common/components/Link";
 import { getFutureEvents } from "@/events/queries";
 import clsx from "clsx";
 import { Event } from "./Event";
@@ -31,6 +32,13 @@ export const CalendarTile = async ({ className }: Props) => {
           <p>Aktuell sind keine Events geplant.</p>
         </div>
       )}
+
+      <Link
+        href="/app/events/history"
+        className="text-sinister-red-500 hover:underline focus-visible:underline"
+      >
+        Vergangene Events
+      </Link>
     </section>
   );
 };

@@ -1,12 +1,12 @@
-import type { DiscordEvent } from "@prisma/client";
+import type { Event } from "@prisma/client";
 import { formatISO } from "date-fns/formatISO";
 
-export const getGoogleCalendarUrl = (event: DiscordEvent) => {
-  const subject = encodeURIComponent(event.discordName!);
+export const getGoogleCalendarUrl = (event: Event) => {
+  const subject = encodeURIComponent(event.name);
 
-  const start = formatISO(event.startTime!, { format: "basic" });
+  const start = formatISO(event.startTime, { format: "basic" });
 
-  const endDate = new Date(event.endTime || event.startTime!);
+  const endDate = new Date(event.endTime || event.startTime);
   const end = formatISO(endDate, { format: "basic" });
 
   const description = event.description

@@ -1,14 +1,16 @@
 import { prisma } from "@/db";
-import type { DiscordEvent, DiscordEventParticipant } from "@prisma/client";
+import type { Event, EventDiscordParticipant } from "@prisma/client";
 import { cache } from "react";
 
 export const getParticipants = cache(
   async (
-    event: DiscordEvent & {
-      participants: DiscordEventParticipant[];
+    event: Event & {
+      discordParticipants: EventDiscordParticipant[];
     },
   ) => {
-    const discordUserIds = event.participants.map((user) => user.discordUserId);
+    const discordUserIds = event.discordParticipants.map(
+      (user) => user.discordUserId,
+    );
 
     const citizens = await prisma.entity.findMany({
       where: {
@@ -19,12 +21,12 @@ export const getParticipants = cache(
     });
 
     const resolvedParticipants = citizens.map((citizen) => {
-      const discordEventParticipant = event.participants.find(
+      const EventDiscordParticipant = event.discordParticipants.find(
         (participant) => participant.discordUserId === citizen.discordId,
       );
 
       return {
-        participant: discordEventParticipant!,
+        participant: EventDiscordParticipant!,
         citizen,
       };
     });

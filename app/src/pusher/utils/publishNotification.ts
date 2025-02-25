@@ -7,7 +7,7 @@ export const publishNotification = async (
   interests: string[],
   title: string,
   body: string,
-  deep_link: string,
+  deep_link?: string,
 ) => {
   return getTracer().startActiveSpan("publishNotification", async (span) => {
     try {
@@ -18,7 +18,7 @@ export const publishNotification = async (
           notification: {
             title: `${title} | Sinister Incorporated`,
             body,
-            deep_link: `${env.BASE_URL}${deep_link}`,
+            deep_link: deep_link ? `${env.BASE_URL}${deep_link}` : undefined,
             icon: `${env.BASE_URL}/logo-white-on-black.png`,
           },
         },

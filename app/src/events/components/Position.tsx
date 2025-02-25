@@ -44,6 +44,7 @@ type Props = Readonly<{
   })[];
   myShips: Ship[];
   allEventCitizen: Entity[];
+  showActions?: boolean;
 }>;
 
 export const Position = ({
@@ -53,6 +54,7 @@ export const Position = ({
   variants,
   myShips,
   allEventCitizen,
+  showActions,
 }: Props) => {
   const [isOpen, setIsOpen] = useLocalStorage(
     `position_${position.id}.isopen`,
@@ -193,31 +195,33 @@ export const Position = ({
             </div> */}
           </div>
 
-          <div className="flex flex-row-reverse justify-between border-t border-white/10 p-4">
-            <div className="justify-self-end">
-              <ToggleEventPositionApplicationForCurrentUser
-                position={position}
-                hasCurrentUserAlreadyApplied={hasCurrentUserAlreadyApplied}
-                doesCurrentUserSatisfyRequirements={
-                  doesCurrentUserSatisfyRequirements
-                }
-              />
-            </div>
-
-            {showManage && (
-              <div className="flex items-center justify-center gap-2">
-                <CreateOrUpdateEventPosition
+          {showActions && (
+            <div className="flex flex-row-reverse justify-between border-t border-white/10 p-4">
+              <div className="justify-self-end">
+                <ToggleEventPositionApplicationForCurrentUser
                   position={position}
-                  variants={variants}
-                  className="flex-none"
-                />
-                <DeleteEventPosition
-                  position={position}
-                  className="flex-none"
+                  hasCurrentUserAlreadyApplied={hasCurrentUserAlreadyApplied}
+                  doesCurrentUserSatisfyRequirements={
+                    doesCurrentUserSatisfyRequirements
+                  }
                 />
               </div>
-            )}
-          </div>
+
+              {showManage && (
+                <div className="flex items-center justify-center gap-2">
+                  <CreateOrUpdateEventPosition
+                    position={position}
+                    variants={variants}
+                    className="flex-none"
+                  />
+                  <DeleteEventPosition
+                    position={position}
+                    className="flex-none"
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

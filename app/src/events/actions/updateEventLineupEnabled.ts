@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
+import { canEditEvent } from "../utils/canEditEvent";
 
 const schema = z.object({
   eventId: z.string().cuid(),
@@ -36,12 +37,13 @@ export const updateEventLineupEnabled = async (formData: FormData) => {
     /**
      * Authorize the request
      */
-    const event = await prisma.discordEvent.findUnique({
+    const event = await prisma.event.findUnique({
       where: {
         id: result.data.eventId,
       },
     });
     if (!event) return { error: "Event nicht gefunden" };
+    if (!canEditEvent(event)) return { error: "Das Event ist bereits vorbei." };
     if (
       authentication.session.discordId !== event.discordCreatorId &&
       !(await authentication.authorize("othersEventPosition", "update"))
@@ -51,7 +53,7 @@ export const updateEventLineupEnabled = async (formData: FormData) => {
     /**
      * Create entry
      */
-    await prisma.discordEvent.update({
+    await prisma.event.update({
       where: {
         id: result.data.eventId,
       },

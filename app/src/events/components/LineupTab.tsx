@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  type DiscordEvent,
   type Entity,
+  type Event,
   type EventPosition,
   type EventPositionApplication,
   type Manufacturer,
@@ -24,7 +24,7 @@ const Position = dynamic(
 
 type Props = Readonly<{
   className?: string;
-  event: DiscordEvent & {
+  event: Event & {
     positions: (EventPosition & {
       applications: (EventPositionApplication & {
         citizen: Entity;
@@ -49,6 +49,7 @@ type Props = Readonly<{
   })[];
   myShips: Ship[];
   allEventCitizen: Entity[];
+  showActions?: boolean;
 }>;
 
 export const LineupTab = ({
@@ -58,6 +59,7 @@ export const LineupTab = ({
   variants,
   myShips,
   allEventCitizen,
+  showActions,
 }: Props) => {
   return (
     <section className={clsx("flex flex-col gap-4", className)}>
@@ -80,6 +82,7 @@ export const LineupTab = ({
                 variants={variants}
                 myShips={myShips}
                 allEventCitizen={allEventCitizen}
+                showActions={showActions}
               />
             ))}
         </div>

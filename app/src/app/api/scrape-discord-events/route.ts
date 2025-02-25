@@ -18,83 +18,90 @@ export async function POST(request: NextRequest) {
     )
       throw new Error("Unauthorized");
 
-    const { data: currentEvents } = await getEvents();
+    const { data: futureEventsFromDiscord } = await getEvents();
 
-    for (const currentEvent of currentEvents) {
-      const existingEvent = await prisma.discordEvent.findUnique({
+    await deleteCancelledEvents(futureEventsFromDiscord);
+
+    for (const futureEventFromDiscord of futureEventsFromDiscord) {
+      const existingEventFromDatabase = await prisma.event.findUnique({
         where: {
-          discordId: currentEvent.id,
+          discordId: futureEventFromDiscord.id,
         },
       });
 
-      if (existingEvent) {
+      if (existingEventFromDatabase) {
         const hasAnyChanges =
-          existingEvent.discordName !== currentEvent.name ||
-          existingEvent.startTime.getTime() !==
-            currentEvent.scheduled_start_time.getTime() ||
-          existingEvent.endTime?.getTime() !=
-            currentEvent.scheduled_end_time?.getTime() ||
-          existingEvent.description != currentEvent.description ||
-          existingEvent.location != currentEvent.entity_metadata.location ||
-          existingEvent.discordImage != currentEvent.image;
+          existingEventFromDatabase.name !== futureEventFromDiscord.name ||
+          existingEventFromDatabase.startTime.getTime() !==
+            futureEventFromDiscord.scheduled_start_time.getTime() ||
+          existingEventFromDatabase.endTime?.getTime() !=
+            futureEventFromDiscord.scheduled_end_time?.getTime() ||
+          existingEventFromDatabase.description !=
+            futureEventFromDiscord.description ||
+          existingEventFromDatabase.location !=
+            futureEventFromDiscord.entity_metadata.location ||
+          existingEventFromDatabase.discordImage !=
+            futureEventFromDiscord.image;
 
         if (hasAnyChanges) {
-          await prisma.discordEvent.update({
+          await prisma.event.update({
             where: {
-              id: existingEvent.id,
+              id: existingEventFromDatabase.id,
             },
             data: {
-              discordName: currentEvent.name,
-              startTime: currentEvent.scheduled_start_time,
-              endTime: currentEvent.scheduled_end_time,
-              description: currentEvent.description,
-              location: currentEvent.entity_metadata.location,
-              discordImage: currentEvent.image,
+              name: futureEventFromDiscord.name,
+              startTime: futureEventFromDiscord.scheduled_start_time,
+              endTime: futureEventFromDiscord.scheduled_end_time,
+              description: futureEventFromDiscord.description,
+              location: futureEventFromDiscord.entity_metadata.location,
+              discordImage: futureEventFromDiscord.image,
             },
           });
         }
 
         const hasChangesForNotification =
-          existingEvent.discordName !== currentEvent.name ||
-          existingEvent.startTime.getTime() !==
-            currentEvent.scheduled_start_time.getTime() ||
-          existingEvent.endTime?.getTime() !=
-            currentEvent.scheduled_end_time?.getTime() ||
-          existingEvent.description != currentEvent.description ||
-          existingEvent.location != currentEvent.entity_metadata.location;
+          existingEventFromDatabase.name !== futureEventFromDiscord.name ||
+          existingEventFromDatabase.startTime.getTime() !==
+            futureEventFromDiscord.scheduled_start_time.getTime() ||
+          existingEventFromDatabase.endTime?.getTime() !=
+            futureEventFromDiscord.scheduled_end_time?.getTime() ||
+          existingEventFromDatabase.description !=
+            futureEventFromDiscord.description ||
+          existingEventFromDatabase.location !=
+            futureEventFromDiscord.entity_metadata.location;
 
         if (hasChangesForNotification) {
           await publishNotification(
             ["updatedDiscordEvent"],
             "Event aktualisiert",
-            currentEvent.name,
-            `/app/events/${existingEvent.id}`,
+            futureEventFromDiscord.name,
+            `/app/events/${existingEventFromDatabase.id}`,
           );
         }
       } else {
-        const newEvent = await prisma.discordEvent.create({
+        const newEvent = await prisma.event.create({
           data: {
-            discordId: currentEvent.id,
-            discordCreatorId: currentEvent.creator_id,
-            discordName: currentEvent.name,
-            startTime: currentEvent.scheduled_start_time,
-            endTime: currentEvent.scheduled_end_time,
-            description: currentEvent.description,
-            location: currentEvent.entity_metadata.location,
-            discordImage: currentEvent.image,
-            discordGuildId: currentEvent.guild_id,
+            discordId: futureEventFromDiscord.id,
+            discordCreatorId: futureEventFromDiscord.creator_id,
+            name: futureEventFromDiscord.name,
+            startTime: futureEventFromDiscord.scheduled_start_time,
+            endTime: futureEventFromDiscord.scheduled_end_time,
+            description: futureEventFromDiscord.description,
+            location: futureEventFromDiscord.entity_metadata.location,
+            discordImage: futureEventFromDiscord.image,
+            discordGuildId: futureEventFromDiscord.guild_id,
           },
         });
 
         await publishNotification(
           ["newDiscordEvent"],
           "Neues Event",
-          newEvent.discordName,
+          newEvent.name,
           `/app/events/${newEvent.id}`,
         );
       }
 
-      await updateParticipants(currentEvent);
+      await updateParticipants(futureEventFromDiscord);
     }
 
     return NextResponse.json({ ok: true });
@@ -103,12 +110,60 @@ export async function POST(request: NextRequest) {
   }
 }
 
+const deleteCancelledEvents = async (
+  futureEventsFromDiscord: Awaited<ReturnType<typeof getEvents>>["data"],
+) => {
+  return getTracer().startActiveSpan("deleteCancelledEvents", async (span) => {
+    try {
+      const futureEventsFromDatabase = await prisma.event.findMany({
+        where: {
+          startTime: {
+            gte: new Date(),
+          },
+        },
+      });
+
+      const cancelledEvents = futureEventsFromDatabase.filter(
+        (event) =>
+          !futureEventsFromDiscord.some(
+            (discordEvent) => discordEvent.id === event.discordId,
+          ),
+      );
+
+      if (cancelledEvents.length > 0) {
+        await prisma.event.deleteMany({
+          where: {
+            id: {
+              in: cancelledEvents.map((event) => event.id),
+            },
+          },
+        });
+      }
+
+      for (const cancelledEvent of cancelledEvents) {
+        await publishNotification(
+          ["deletedDiscordEvent"],
+          "Event abgesagt",
+          cancelledEvent.name,
+        );
+      }
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
+};
+
 const updateParticipants = async (
   discordEvent: z.infer<typeof eventSchema>,
 ) => {
   return getTracer().startActiveSpan("updateParticipants", async (span) => {
     try {
-      const databaseEvent = await prisma.discordEvent.findUnique({
+      const databaseEvent = await prisma.event.findUnique({
         where: {
           discordId: discordEvent.id,
         },
@@ -123,7 +178,7 @@ const updateParticipants = async (
         (user) => user.user_id,
       );
       const existingDatabaseParticipantIds = (
-        await prisma.discordEventParticipant.findMany({
+        await prisma.eventDiscordParticipant.findMany({
           where: {
             event: {
               discordId: discordEvent.id,
@@ -146,7 +201,7 @@ const updateParticipants = async (
 
       // Save to database
       if (participants.delete.length > 0) {
-        await prisma.discordEventParticipant.deleteMany({
+        await prisma.eventDiscordParticipant.deleteMany({
           where: {
             eventId: databaseEvent.id,
             discordUserId: {
@@ -156,7 +211,7 @@ const updateParticipants = async (
         });
       }
       if (participants.create.length > 0) {
-        await prisma.discordEventParticipant.createMany({
+        await prisma.eventDiscordParticipant.createMany({
           data: participants.create.map((participantId) => ({
             eventId: databaseEvent.id,
             discordUserId: participantId,

@@ -1,5 +1,5 @@
 import { DiscordButton } from "@/common/components/DiscordButton";
-import type { DiscordEvent } from "@prisma/client";
+import type { Event } from "@prisma/client";
 import clsx from "clsx";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Image from "next/image";
@@ -7,10 +7,12 @@ import { DownloadEventButton } from "./DownloadEventButton";
 
 type Props = Readonly<{
   className?: string;
-  event: DiscordEvent;
+  event: Event;
 }>;
 
 export const OverviewTile = ({ className, event }: Props) => {
+  const showActions = event.startTime > new Date();
+
   return (
     <section
       className={clsx("rounded-2xl bg-neutral-800/50 overflow-auto", className)}
@@ -31,7 +33,7 @@ export const OverviewTile = ({ className, event }: Props) => {
       )}
 
       <div className="p-4 lg:p-8">
-        <h1 className="font-bold">{event.discordName}</h1>
+        <h1 className="font-bold">{event.name}</h1>
 
         {event.description && (
           <div className="mt-4 prose prose-invert">
@@ -43,7 +45,7 @@ export const OverviewTile = ({ className, event }: Props) => {
         <dl className="mt-4">
           <dt className="text-neutral-500">Start</dt>
           <dd>
-            {event.startTime!.toLocaleString("de-DE", {
+            {event.startTime.toLocaleString("de-DE", {
               timeZone: "Europe/Berlin",
               weekday: "short",
               year: "numeric",
@@ -71,13 +73,15 @@ export const OverviewTile = ({ className, event }: Props) => {
           <dd>{event.location || "-"}</dd>
         </dl>
 
-        <div className="flex flex-col gap-2 mt-4">
-          <DownloadEventButton event={event} />
+        {showActions && (
+          <div className="flex flex-col gap-2 mt-4">
+            <DownloadEventButton event={event} />
 
-          <DiscordButton
-            path={`events/${event.discordGuildId}/${event.discordId}`}
-          />
-        </div>
+            <DiscordButton
+              path={`events/${event.discordGuildId}/${event.discordId}`}
+            />
+          </div>
+        )}
       </div>
     </section>
   );

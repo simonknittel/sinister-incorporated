@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
+import { canEditEvent } from "../utils/canEditEvent";
 
 const schema = z.object({
   positionId: z.string().cuid(),
@@ -36,6 +37,18 @@ export const createEventPositionApplicationForCurrentUser = async (
         error: "Ungültige Anfrage",
         errorDetails: result.error,
       };
+
+    const position = await prisma.eventPosition.findUnique({
+      where: {
+        id: result.data.positionId,
+      },
+      include: {
+        event: true,
+      },
+    });
+    if (!position) return { error: "Posten nicht gefunden" };
+    if (!canEditEvent(position.event))
+      return { error: "Das Event ist bereits vorbei." };
 
     /**
      * Create application

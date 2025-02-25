@@ -1,7 +1,7 @@
 import { DiscordNavigationButton } from "@/common/components/DiscordNavigationButton";
 import { Link } from "@/common/components/Link";
 import TimeAgoContainer from "@/common/components/TimeAgoContainer";
-import type { DiscordEvent } from "@prisma/client";
+import type { Event as PrismaEvent } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 import { FaClock, FaUser } from "react-icons/fa";
@@ -9,9 +9,9 @@ import { MdWorkspaces } from "react-icons/md";
 
 type Props = Readonly<{
   className?: string;
-  event: DiscordEvent & {
+  event: PrismaEvent & {
     _count: {
-      participants: number;
+      discordParticipants: number;
     };
   };
   index: number;
@@ -19,10 +19,10 @@ type Props = Readonly<{
 
 export const Event = ({ className, event, index }: Props) => {
   const isToday =
-    event.startTime!.toISOString().split("T")[0] ===
+    event.startTime.toISOString().split("T")[0] ===
     new Date().toISOString().split("T")[0];
 
-  const startTime = event.startTime!.toLocaleString("de-DE", {
+  const startTime = event.startTime.toLocaleString("de-DE", {
     timeZone: "Europe/Berlin",
     weekday: "short",
     month: "long",
@@ -43,7 +43,7 @@ export const Event = ({ className, event, index }: Props) => {
     <article className={clsx(className, "rounded-2xl overflow-hidden w-full")}>
       {isToday && (
         <div className="bg-sinister-red-500/50 text-white font-bold text-center p-2">
-          <TimeAgoContainer date={event.startTime!} />
+          <TimeAgoContainer date={event.startTime} />
         </div>
       )}
 
@@ -63,9 +63,9 @@ export const Event = ({ className, event, index }: Props) => {
         <div className="flex-1 flex flex-col gap-3 justify-center p-4 lg:p-6 3xl:overflow-hidden">
           <h2
             className="font-bold text-xl 3xl:text-ellipsis 3xl:whitespace-nowrap 3xl:overflow-hidden"
-            title={event.discordName!}
+            title={event.name}
           >
-            {event.discordName}
+            {event.name}
           </h2>
 
           <div className="flex flex-wrap gap-2">
@@ -78,11 +78,11 @@ export const Event = ({ className, event, index }: Props) => {
             </p>
 
             <p
-              title={`Teilnehmer: ${event._count.participants}`}
+              title={`Teilnehmer: ${event._count.discordParticipants}`}
               className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
             >
               <FaUser className="text-xs text-neutral-500" />
-              {event._count.participants}
+              {event._count.discordParticipants}
             </p>
           </div>
 

@@ -1,13 +1,13 @@
 import { requireAuthentication } from "@/auth/server";
 import { Link } from "@/common/components/Link";
-import type { DiscordEvent } from "@prisma/client";
+import type { Event } from "@prisma/client";
 import clsx from "clsx";
 import { FaHome, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 
 type Props = Readonly<{
   className?: string;
-  event: DiscordEvent;
+  event: Event;
   active: string;
 }>;
 

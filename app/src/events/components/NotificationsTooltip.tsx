@@ -19,11 +19,15 @@ export const NotificationsTooltip = ({ className }: Props) => {
   const [updatedEvent, setUpdatedEvent] = useState<boolean | undefined>(
     undefined,
   );
+  const [deletedEvent, setDeletedEvent] = useState<boolean | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     if (interests === undefined) return;
     setNewEvent(interests.includes("newDiscordEvent"));
     setUpdatedEvent(interests.includes("updatedDiscordEvent"));
+    setDeletedEvent(interests.includes("deletedDiscordEvent"));
   }, [interests]);
 
   const submitHandler: FormEventHandler<HTMLFormElement> = (event) => {
@@ -36,13 +40,18 @@ export const NotificationsTooltip = ({ className }: Props) => {
 
       const newValue = currentValue.filter(
         (interest) =>
-          ["newDiscordEvent", "updatedDiscordEvent"].includes(interest) ===
-          false,
+          [
+            "newDiscordEvent",
+            "updatedDiscordEvent",
+            "deletedDiscordEvent",
+          ].includes(interest) === false,
       );
 
       if (formData.get("newEvent") === "true") newValue.push("newDiscordEvent");
       if (formData.get("updatedEvent") === "true")
         newValue.push("updatedDiscordEvent");
+      if (formData.get("deletedEvent") === "true")
+        newValue.push("deletedDiscordEvent");
 
       return newValue;
     });
@@ -104,6 +113,24 @@ export const NotificationsTooltip = ({ className }: Props) => {
                 <span className="absolute inset-1 rounded bg-green-500" />
               </span>
               Aktualisierungen
+            </label>
+
+            <label className="group flex gap-2 items-center cursor-pointer mt-2">
+              <input
+                type="checkbox"
+                name="deletedEvent"
+                value="true"
+                onChange={(event) => setDeletedEvent(event.target.checked)}
+                defaultChecked={deletedEvent}
+                className="hidden peer"
+              />
+              <span className="w-8 h-8 bg-neutral-700 rounded block relative peer-checked:hidden">
+                <span className="absolute inset-1 rounded bg-green-500/50 hidden group-hover:block" />
+              </span>
+              <span className="w-8 h-8 bg-neutral-700 rounded hidden relative peer-checked:block">
+                <span className="absolute inset-1 rounded bg-green-500" />
+              </span>
+              Absagen
             </label>
 
             <Button type="submit" className="ml-auto mt-2">

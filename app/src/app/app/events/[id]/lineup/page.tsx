@@ -3,6 +3,7 @@ import { prisma } from "@/db";
 import { LineupTab } from "@/events/components/LineupTab";
 import { Navigation } from "@/events/components/Navigation";
 import { getEventById } from "@/events/queries";
+import { canEditEvent } from "@/events/utils/canEditEvent";
 import { getEventCitizen } from "@/events/utils/getEventCitizen";
 import { getMyFleet } from "@/fleet/queries";
 import { log } from "@/logging";
@@ -22,7 +23,7 @@ export async function generateMetadata(props: {
     if (!event) notFound();
 
     return {
-      title: `Aufstellung - ${event.discordName} - Event | S.A.M. - Sinister Incorporated`,
+      title: `Aufstellung - ${event.name} - Event | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
     void log.error(
@@ -50,9 +51,12 @@ export default async function Page({ params }: Props) {
   const event = await getEventById(eventId);
   if (!event) notFound();
 
+  const showActions = canEditEvent(event);
+
   const canManagePositions =
-    event.discordCreatorId === authentication.session.discordId ||
-    (await authentication.authorize("othersEventPosition", "manage"));
+    (event.discordCreatorId === authentication.session.discordId ||
+      (await authentication.authorize("othersEventPosition", "manage"))) &&
+    showActions;
 
   // if (!event.lineupEnabled && !canManagePositions) forbidden();
 
@@ -77,7 +81,7 @@ export default async function Page({ params }: Props) {
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl">
         <span className="text-neutral-500">Event /</span>
-        <p>{event.discordName}</p>
+        <p>{event.name}</p>
       </div>
 
       <Navigation
@@ -93,6 +97,7 @@ export default async function Page({ params }: Props) {
         myShips={myShips}
         allEventCitizen={allEventCitizen}
         className="mt-4"
+        showActions={showActions}
       />
     </main>
   );
