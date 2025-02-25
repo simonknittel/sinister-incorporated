@@ -2,7 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import clsx from "clsx";
 import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
-import { FaScaleBalanced } from "react-icons/fa6";
+import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdWorkspaces } from "react-icons/md";
 import { RiSpyFill, RiSwordFill } from "react-icons/ri";
@@ -242,6 +242,16 @@ export const MobileActionBar = async ({ className }: Props) => {
                       </Link>
                     </li>
                   )}
+
+                  <li>
+                    <Link
+                      href="/app/penalty-points"
+                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                    >
+                      <FaCodePullRequest className="text-neutral-500" />
+                      Changelog
+                    </Link>
+                  </li>
                 </ul>
 
                 {showSpynetAdmin && (
