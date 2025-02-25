@@ -16,9 +16,7 @@ export const getEvents = cache(async () => {
           headers: new Headers({
             Authorization: `Bot ${env.DISCORD_TOKEN}`,
           }),
-          next: {
-            revalidate: 30,
-          },
+          cache: "no-store",
         },
       );
 
