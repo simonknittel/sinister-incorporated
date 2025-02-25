@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const { data: currentEvents } = await getEvents();
 
     for (const currentEvent of currentEvents) {
-      const existingEvent = await prisma.discordEvent.findUnique({
+      const existingEvent = await prisma.event.findUnique({
         where: {
           discordId: currentEvent.id,
         },
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
       if (existingEvent) {
         const hasAnyChanges =
-          existingEvent.discordName !== currentEvent.name ||
+          existingEvent.name !== currentEvent.name ||
           existingEvent.startTime.getTime() !==
             currentEvent.scheduled_start_time.getTime() ||
           existingEvent.endTime?.getTime() !=
@@ -39,12 +39,12 @@ export async function POST(request: NextRequest) {
           existingEvent.discordImage != currentEvent.image;
 
         if (hasAnyChanges) {
-          await prisma.discordEvent.update({
+          await prisma.event.update({
             where: {
               id: existingEvent.id,
             },
             data: {
-              discordName: currentEvent.name,
+              name: currentEvent.name,
               startTime: currentEvent.scheduled_start_time,
               endTime: currentEvent.scheduled_end_time,
               description: currentEvent.description,
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         }
 
         const hasChangesForNotification =
-          existingEvent.discordName !== currentEvent.name ||
+          existingEvent.name !== currentEvent.name ||
           existingEvent.startTime.getTime() !==
             currentEvent.scheduled_start_time.getTime() ||
           existingEvent.endTime?.getTime() !=
@@ -72,11 +72,11 @@ export async function POST(request: NextRequest) {
           );
         }
       } else {
-        const newEvent = await prisma.discordEvent.create({
+        const newEvent = await prisma.event.create({
           data: {
             discordId: currentEvent.id,
             discordCreatorId: currentEvent.creator_id,
-            discordName: currentEvent.name,
+            name: currentEvent.name,
             startTime: currentEvent.scheduled_start_time,
             endTime: currentEvent.scheduled_end_time,
             description: currentEvent.description,
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
         await publishNotification(
           ["newDiscordEvent"],
           "Neues Event",
-          newEvent.discordName,
+          newEvent.name,
           `/app/events/${newEvent.id}`,
         );
       }
@@ -108,7 +108,7 @@ const updateParticipants = async (
 ) => {
   return getTracer().startActiveSpan("updateParticipants", async (span) => {
     try {
-      const databaseEvent = await prisma.discordEvent.findUnique({
+      const databaseEvent = await prisma.event.findUnique({
         where: {
           discordId: discordEvent.id,
         },
@@ -123,7 +123,7 @@ const updateParticipants = async (
         (user) => user.user_id,
       );
       const existingDatabaseParticipantIds = (
-        await prisma.discordEventParticipant.findMany({
+        await prisma.eventDiscordParticipant.findMany({
           where: {
             event: {
               discordId: discordEvent.id,
@@ -146,7 +146,7 @@ const updateParticipants = async (
 
       // Save to database
       if (participants.delete.length > 0) {
-        await prisma.discordEventParticipant.deleteMany({
+        await prisma.eventDiscordParticipant.deleteMany({
           where: {
             eventId: databaseEvent.id,
             discordUserId: {
@@ -156,7 +156,7 @@ const updateParticipants = async (
         });
       }
       if (participants.create.length > 0) {
-        await prisma.discordEventParticipant.createMany({
+        await prisma.eventDiscordParticipant.createMany({
           data: participants.create.map((participantId) => ({
             eventId: databaseEvent.id,
             discordUserId: participantId,

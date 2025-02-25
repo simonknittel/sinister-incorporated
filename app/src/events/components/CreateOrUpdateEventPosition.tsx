@@ -4,7 +4,7 @@ import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
 import { Tooltip } from "@/common/components/Tooltip";
 import type {
-  DiscordEvent,
+  Event,
   EventPosition,
   Manufacturer,
   Series,
@@ -29,7 +29,7 @@ type BaseProps = Readonly<{
 }>;
 
 type CreateProps = Readonly<{
-  event: DiscordEvent;
+  event: Event;
 }>;
 
 type UpdateProps = Readonly<{

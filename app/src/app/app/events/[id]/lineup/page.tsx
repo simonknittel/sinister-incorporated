@@ -22,7 +22,7 @@ export async function generateMetadata(props: {
     if (!event) notFound();
 
     return {
-      title: `Aufstellung - ${event.discordName} - Event | S.A.M. - Sinister Incorporated`,
+      title: `Aufstellung - ${event.name} - Event | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
     void log.error(
@@ -77,7 +77,7 @@ export default async function Page({ params }: Props) {
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl">
         <span className="text-neutral-500">Event /</span>
-        <p>{event.discordName}</p>
+        <p>{event.name}</p>
       </div>
 
       <Navigation

@@ -6,7 +6,7 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "@/common/utils/sorting";
-import type { DiscordEvent, DiscordEventParticipant } from "@prisma/client";
+import type { Event, EventDiscordParticipant } from "@prisma/client";
 import clsx from "clsx";
 import { Suspense } from "react";
 import {
@@ -22,8 +22,8 @@ const GRID_COLS = "grid-cols-[160px_160px_1fr]";
 
 type Props = Readonly<{
   className?: string;
-  event: DiscordEvent & {
-    participants: DiscordEventParticipant[];
+  event: Event & {
+    discordParticipants: EventDiscordParticipant[];
   };
   urlSearchParams: URLSearchParams;
 }>;

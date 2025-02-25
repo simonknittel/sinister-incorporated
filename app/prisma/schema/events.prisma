@@ -1,35 +1,38 @@
-model DiscordEvent {
-  id               String                    @id @default(cuid())
-  discordId        String                    @unique
-  discordCreatorId String
-  discordName      String
-  createdAt        DateTime                  @default(now())
-  updatedAt        DateTime                  @updatedAt
-  participants     DiscordEventParticipant[]
-  positions        EventPosition[]
-  lineupEnabled    Boolean                   @default(false)
-  startTime        DateTime
-  endTime          DateTime?
-  description      String?
-  location         String?
-  discordImage     String?
-  discordGuildId   String?
+model Event {
+  id                  String                    @id @default(cuid())
+  discordId           String                    @unique
+  discordCreatorId    String
+  name                String                    @map("discordName")
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
+  discordParticipants EventDiscordParticipant[]
+  positions           EventPosition[]
+  lineupEnabled       Boolean                   @default(false)
+  startTime           DateTime
+  endTime             DateTime?
+  description         String?
+  location            String?
+  discordImage        String?
+  discordGuildId      String?
+
+  @@map("DiscordEvent")
 }
 
-model DiscordEventParticipant {
-  id            String       @id @default(cuid())
+model EventDiscordParticipant {
+  id            String   @id @default(cuid())
   eventId       String
-  event         DiscordEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   discordUserId String
-  createdAt     DateTime     @default(now())
+  createdAt     DateTime @default(now())
 
   @@unique([eventId, discordUserId])
+  @@map("DiscordEventParticipant")
 }
 
 model EventPosition {
   id                String                     @id @default(cuid())
   eventId           String
-  event             DiscordEvent               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event             Event                      @relation(fields: [eventId], references: [id], onDelete: Cascade)
   name              String
   description       String?
   requiredVariantId String?

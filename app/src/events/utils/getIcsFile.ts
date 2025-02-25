@@ -1,18 +1,18 @@
-import type { DiscordEvent } from "@prisma/client";
+import type { Event } from "@prisma/client";
 import { format } from "date-fns";
 import { createEvent, type DateTime } from "ics";
 
-export const getIcsFile = (event: DiscordEvent) => {
-  const start = format(event.startTime!, "yyyy-MM-dd-HH-mm")
+export const getIcsFile = (event: Event) => {
+  const start = format(event.startTime, "yyyy-MM-dd-HH-mm")
     .split("-")
     .map(Number) as DateTime;
-  const endDate = new Date(event.endTime || event.startTime!);
+  const endDate = new Date(event.endTime || event.startTime);
   const end = format(endDate, "yyyy-MM-dd-HH-mm")
     .split("-")
     .map(Number) as DateTime;
 
   const { error, value } = createEvent({
-    title: event.discordName!,
+    title: event.name,
     start,
     end,
     ...(event.description && { description: event.description }),

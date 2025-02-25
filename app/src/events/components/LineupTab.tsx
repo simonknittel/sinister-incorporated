@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  type DiscordEvent,
   type Entity,
+  type Event,
   type EventPosition,
   type EventPositionApplication,
   type Manufacturer,
@@ -24,7 +24,7 @@ const Position = dynamic(
 
 type Props = Readonly<{
   className?: string;
-  event: DiscordEvent & {
+  event: Event & {
     positions: (EventPosition & {
       applications: (EventPositionApplication & {
         citizen: Entity;

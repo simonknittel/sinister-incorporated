@@ -1,8 +1,8 @@
 import { requireAuthentication } from "@/auth/server";
 import { getAssignedRoles } from "@/roles/utils/getRoles";
 import type {
-  DiscordEvent,
-  DiscordEventParticipant,
+  Event,
+  EventDiscordParticipant,
   Role,
   Upload,
   VariantTag,
@@ -16,8 +16,8 @@ import { VariantTagsTable } from "./VariantTagsTable";
 
 type Props = Readonly<{
   className?: string;
-  event: DiscordEvent & {
-    participants: DiscordEventParticipant[];
+  event: Event & {
+    discordParticipants: EventDiscordParticipant[];
   };
 }>;
 
@@ -53,8 +53,8 @@ export const OverviewTab = async ({ className, event }: Props) => {
 
 type FleetSummaryProps = Readonly<{
   className?: string;
-  event: DiscordEvent & {
-    participants: DiscordEventParticipant[];
+  event: Event & {
+    discordParticipants: EventDiscordParticipant[];
   };
 }>;
 
@@ -97,8 +97,8 @@ const FleetSummary = async ({ className, event }: FleetSummaryProps) => {
 
 type ParticipantsSummaryProps = Readonly<{
   className?: string;
-  event: DiscordEvent & {
-    participants: DiscordEventParticipant[];
+  event: Event & {
+    discordParticipants: EventDiscordParticipant[];
   };
 }>;
 

@@ -1,12 +1,12 @@
 import { FleetTable } from "@/fleet/components/FleetTable";
-import type { DiscordEvent, DiscordEventParticipant } from "@prisma/client";
+import type { Event, EventDiscordParticipant } from "@prisma/client";
 import clsx from "clsx";
 import { getEventFleet } from "../utils/getEventFleet";
 
 type Props = Readonly<{
   className?: string;
-  event: DiscordEvent & {
-    participants: DiscordEventParticipant[];
+  event: Event & {
+    discordParticipants: EventDiscordParticipant[];
   };
 }>;
 

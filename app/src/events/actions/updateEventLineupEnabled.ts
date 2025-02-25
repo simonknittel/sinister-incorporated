@@ -36,7 +36,7 @@ export const updateEventLineupEnabled = async (formData: FormData) => {
     /**
      * Authorize the request
      */
-    const event = await prisma.discordEvent.findUnique({
+    const event = await prisma.event.findUnique({
       where: {
         id: result.data.eventId,
       },
@@ -51,7 +51,7 @@ export const updateEventLineupEnabled = async (formData: FormData) => {
     /**
      * Create entry
      */
-    await prisma.discordEvent.update({
+    await prisma.event.update({
       where: {
         id: result.data.eventId,
       },

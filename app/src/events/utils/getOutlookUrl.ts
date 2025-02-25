@@ -1,16 +1,16 @@
-import type { DiscordEvent } from "@prisma/client";
+import type { Event } from "@prisma/client";
 import { formatInTimeZone } from "date-fns-tz";
 
-export const getOutlookUrl = (event: DiscordEvent) => {
-  const subject = encodeURIComponent(event.discordName!);
+export const getOutlookUrl = (event: Event) => {
+  const subject = encodeURIComponent(event.name);
 
   const start = formatInTimeZone(
-    event.startTime!,
+    event.startTime,
     "Europe/Berlin",
     "yyyy-MM-dd'T'HH:mm:ss",
   );
 
-  const endDate = new Date(event.endTime || event.startTime!);
+  const endDate = new Date(event.endTime || event.startTime);
   const end = formatInTimeZone(
     endDate,
     "Europe/Berlin",

@@ -42,7 +42,7 @@ export const createEventPosition = async (formData: FormData) => {
     /**
      * Authorize the request
      */
-    const event = await prisma.discordEvent.findUnique({
+    const event = await prisma.event.findUnique({
       where: {
         id: result.data.eventId,
       },

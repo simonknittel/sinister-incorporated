@@ -1,18 +1,18 @@
 import { prisma } from "@/db";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
-import type { DiscordEvent } from "@prisma/client";
+import type { Event } from "@prisma/client";
 import { cache } from "react";
 
-export const getEventById = cache(async (id: DiscordEvent["id"]) => {
+export const getEventById = cache(async (id: Event["id"]) => {
   return getTracer().startActiveSpan("getEventById", async (span) => {
     try {
-      return await prisma.discordEvent.findUnique({
+      return await prisma.event.findUnique({
         where: {
           id,
         },
         include: {
-          participants: true,
+          discordParticipants: true,
           positions: {
             include: {
               applications: {
@@ -50,7 +50,7 @@ export const getFutureEvents = cache(async () => {
     try {
       const now = new Date();
 
-      return await prisma.discordEvent.findMany({
+      return await prisma.event.findMany({
         where: {
           startTime: {
             gte: now,
@@ -59,7 +59,7 @@ export const getFutureEvents = cache(async () => {
         include: {
           _count: {
             select: {
-              participants: true,
+              discordParticipants: true,
             },
           },
         },

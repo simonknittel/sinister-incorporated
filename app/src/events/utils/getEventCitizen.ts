@@ -1,9 +1,9 @@
 import { prisma } from "@/db";
-import type { DiscordEvent } from "@prisma/client";
+import type { Event } from "@prisma/client";
 import { cache } from "react";
 
-export const getEventCitizen = cache(async (eventId: DiscordEvent["id"]) => {
-  const databaseParticipants = await prisma.discordEventParticipant.findMany({
+export const getEventCitizen = cache(async (eventId: Event["id"]) => {
+  const databaseParticipants = await prisma.eventDiscordParticipant.findMany({
     where: {
       event: {
         id: eventId,

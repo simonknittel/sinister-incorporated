@@ -1,19 +1,21 @@
 import { prisma } from "@/db";
 import {
   VariantStatus,
-  type DiscordEvent,
-  type DiscordEventParticipant,
+  type Event,
+  type EventDiscordParticipant,
 } from "@prisma/client";
 import { groupBy } from "lodash";
 import { cache } from "react";
 
 export const getEventFleet = cache(
   async (
-    event: DiscordEvent & {
-      participants: DiscordEventParticipant[];
+    event: Event & {
+      discordParticipants: EventDiscordParticipant[];
     },
   ) => {
-    const discordUserIds = event.participants.map((user) => user.discordUserId);
+    const discordUserIds = event.discordParticipants.map(
+      (user) => user.discordUserId,
+    );
 
     const ships = await prisma.ship.findMany({
       where: {
