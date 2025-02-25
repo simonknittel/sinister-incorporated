@@ -85,7 +85,7 @@ export default async function Page() {
 
           <DayItem heading="Bug: Hersteller-Logos">
             <p>
-              Es wurde einFehler mit den Hersteller-Logos behoben. Diese werden
+              Es wurde ein Fehler mit den Hersteller-Logos behoben. Diese werden
               nun wieder angezeigt.
             </p>
           </DayItem>
@@ -94,7 +94,7 @@ export default async function Page() {
         <Day heading="23. Februar 2025">
           <DayItem heading="Neue Dokumente">
             <p>
-              Es wurden neue Dokumente für diverse Zertifikate usw. hinzugefügt.
+              Es wurden neue Dokumente für diverse Zertifikate hinzugefügt.
               Diese werden freigeschaltet, sobald diese vollständig sind.
             </p>
           </DayItem>
