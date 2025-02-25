@@ -10,7 +10,7 @@ import {
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { QuotesTile } from "@/dashboard/components/QuotesTile";
 import { TileSkeleton } from "@/dashboard/components/TileSkeleton";
-import { CalendarTile } from "@/discord/components/CalendarTile";
+import { CalendarTile } from "@/events/components/CalendarTile";
 import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
 import { type Metadata } from "next";
 import { Suspense } from "react";
