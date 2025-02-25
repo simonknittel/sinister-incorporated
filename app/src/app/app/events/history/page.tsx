@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app");
+  const authentication = await authenticatePage("/app/events/history");
   await authentication.authorizePage("event", "read");
 
   const events = await getPastEvents();
