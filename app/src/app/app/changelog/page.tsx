@@ -233,7 +233,7 @@ export default async function Page() {
 
           <DayItem heading="Eventstandort">
             <p>
-              In den Eventstandort wird nun der eingetragene Standort aus
+              In den Eventdetails wird nun der eingetragene Standort aus
               Discord angezeigt.
             </p>
           </DayItem>
