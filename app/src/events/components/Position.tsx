@@ -228,7 +228,7 @@ export const Position = ({
             </div> */}
           </div>
 
-          {showActions && (
+          {showActions && (showToggle || showManage) && (
             <div className="flex flex-row-reverse justify-between border-t border-white/10 p-4">
               <div className="justify-self-end">
                 {showToggle && (
