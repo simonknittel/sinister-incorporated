@@ -4,7 +4,7 @@ import { LineupTab } from "@/events/components/LineupTab";
 import { Navigation } from "@/events/components/Navigation";
 import { getEventById } from "@/events/queries";
 import { canEditEvent } from "@/events/utils/canEditEvent";
-import { getEventCitizen } from "@/events/utils/getEventCitizen";
+import { getEventCitizens } from "@/events/utils/getEventCitizens";
 import { getMyFleet } from "@/fleet/queries";
 import { log } from "@/logging";
 import { type Metadata } from "next";
@@ -60,7 +60,7 @@ export default async function Page({ params }: Props) {
 
   // if (!event.lineupEnabled && !canManagePositions) forbidden();
 
-  const [variants, myShips, allEventCitizen] = await Promise.all([
+  const [variants, myShips, allEventCitizens] = await Promise.all([
     prisma.manufacturer.findMany({
       include: {
         image: true,
@@ -74,8 +74,12 @@ export default async function Page({ params }: Props) {
 
     getMyFleet(),
 
-    getEventCitizen(event.id),
+    getEventCitizens(event.id),
   ]);
+
+  const showToggle = allEventCitizens.some(
+    (citizen) => citizen.citizen.id === authentication.session.entityId,
+  );
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
@@ -95,9 +99,10 @@ export default async function Page({ params }: Props) {
         canManagePositions={canManagePositions}
         variants={variants}
         myShips={myShips}
-        allEventCitizen={allEventCitizen}
+        allEventCitizens={allEventCitizens}
         className="mt-4"
         showActions={showActions}
+        showToggle={showToggle}
       />
     </main>
   );

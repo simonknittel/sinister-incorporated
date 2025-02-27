@@ -43,8 +43,9 @@ type Props = Readonly<{
     })[];
   })[];
   myShips: Ship[];
-  allEventCitizen: Entity[];
+  allEventCitizens: { citizen: Entity; ships: Ship[] }[];
   showActions?: boolean;
+  showToggle?: boolean;
 }>;
 
 export const Position = ({
@@ -53,8 +54,9 @@ export const Position = ({
   showManage,
   variants,
   myShips,
-  allEventCitizen,
+  allEventCitizens,
   showActions,
+  showToggle,
 }: Props) => {
   const [isOpen, setIsOpen] = useLocalStorage(
     `position_${position.id}.isopen`,
@@ -77,6 +79,29 @@ export const Position = ({
     !myShips.find((ship) => ship.variantId === position.requiredVariantId)
   )
     doesCurrentUserSatisfyRequirements = false;
+
+  const citizensSatisfyingRequirements = allEventCitizens.filter((citizen) =>
+    citizen.ships.some((ship) => ship.variantId === position.requiredVariantId),
+  );
+  const citizensNotSatisfyingRequirements = allEventCitizens.filter(
+    (citizen) =>
+      !citizen.ships.some(
+        (ship) => ship.variantId === position.requiredVariantId,
+      ),
+  );
+
+  const applicationsSatisfyingRequirements = position.applications.filter(
+    (application) =>
+      citizensSatisfyingRequirements.some(
+        (citizen) => citizen.citizen.id === application.citizen.id,
+      ),
+  );
+  const applicationsNotSatisfyingRequirements = position.applications.filter(
+    (application) =>
+      citizensNotSatisfyingRequirements.some(
+        (citizen) => citizen.citizen.id === application.citizen.id,
+      ),
+  );
 
   return (
     <div
@@ -139,8 +164,16 @@ export const Position = ({
               <UpdateEventPositionCitizenId
                 position={position}
                 className="mt-1"
-                eventCitizenSatisfyingRequirements={[]}
-                eventCitizenNotSatisfyingRequirements={allEventCitizen}
+                citizensSatisfyingRequirements={citizensSatisfyingRequirements}
+                citizensNotSatisfyingRequirements={
+                  citizensNotSatisfyingRequirements
+                }
+                applicationsSatisfyingRequirements={
+                  applicationsSatisfyingRequirements
+                }
+                applicationsNotSatisfyingRequirements={
+                  applicationsNotSatisfyingRequirements
+                }
               />
             ) : position.citizen ? (
               <Link
@@ -195,16 +228,18 @@ export const Position = ({
             </div> */}
           </div>
 
-          {showActions && (
+          {showActions && (showToggle || showManage) && (
             <div className="flex flex-row-reverse justify-between border-t border-white/10 p-4">
               <div className="justify-self-end">
-                <ToggleEventPositionApplicationForCurrentUser
-                  position={position}
-                  hasCurrentUserAlreadyApplied={hasCurrentUserAlreadyApplied}
-                  doesCurrentUserSatisfyRequirements={
-                    doesCurrentUserSatisfyRequirements
-                  }
-                />
+                {showToggle && (
+                  <ToggleEventPositionApplicationForCurrentUser
+                    position={position}
+                    hasCurrentUserAlreadyApplied={hasCurrentUserAlreadyApplied}
+                    doesCurrentUserSatisfyRequirements={
+                      doesCurrentUserSatisfyRequirements
+                    }
+                  />
+                )}
               </div>
 
               {showManage && (

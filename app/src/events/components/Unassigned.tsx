@@ -1,6 +1,6 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Link } from "@/common/components/Link";
-import type { Entity, EventPosition } from "@prisma/client";
+import type { Entity, EventPosition, Ship } from "@prisma/client";
 import clsx from "clsx";
 
 type Props = Readonly<{
@@ -8,22 +8,28 @@ type Props = Readonly<{
   positions: (EventPosition & {
     citizen: Entity | null;
   })[];
-  allEventCitizen: Entity[];
+  allEventCitizens: { citizen: Entity; ships: Ship[] }[];
 }>;
 
 export const Unassigned = ({
   className,
   positions,
-  allEventCitizen,
+  allEventCitizens,
 }: Props) => {
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
 
-  const unassignedCitizen = allEventCitizen
+  const unassignedCitizen = allEventCitizens
     .filter((citizen) => {
-      return !positions.some((position) => position.citizen?.id === citizen.id);
+      return !positions.some(
+        (position) => position.citizen?.id === citizen.citizen.id,
+      );
     })
-    .toSorted((a, b) => (a.handle || a.id).localeCompare(b.handle || b.id));
+    .toSorted((a, b) =>
+      (a.citizen.handle || a.citizen.id).localeCompare(
+        b.citizen.handle || b.citizen.id,
+      ),
+    );
 
   return (
     <section className={clsx("rounded-2xl bg-neutral-800/50 p-4", className)}>
@@ -32,18 +38,18 @@ export const Unassigned = ({
       {unassignedCitizen.length > 0 ? (
         <ul className="mt-2 flex gap-x-3 gap-y-1 flex-wrap">
           {unassignedCitizen.map((citizen) => (
-            <li key={citizen.id}>
+            <li key={citizen.citizen.id}>
               <Link
-                href={`/app/spynet/citizen/${citizen.id}`}
+                href={`/app/spynet/citizen/${citizen.citizen.id}`}
                 className={clsx("hover:underline self-start", {
                   "text-green-500":
-                    citizen.id === authentication.session.entityId,
+                    citizen.citizen.id === authentication.session.entityId,
                   "text-sinister-red-500":
-                    citizen.id !== authentication.session.entityId,
+                    citizen.citizen.id !== authentication.session.entityId,
                 })}
                 prefetch={false}
               >
-                {citizen.handle || citizen.id}
+                {citizen.citizen.handle || citizen.citizen.id}
               </Link>
             </li>
           ))}

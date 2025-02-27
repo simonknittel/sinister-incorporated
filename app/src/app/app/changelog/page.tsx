@@ -1,6 +1,8 @@
 import { authenticatePage } from "@/auth/server";
+import image20250227Dropdown from "@/changelog/assets/2025-02-27-dropdown.png";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
+import Image from "next/image";
 import { type ReactNode } from "react";
 import { FaCalendar } from "react-icons/fa";
 
@@ -18,6 +20,31 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="27. Februar 2025">
+          <DayItem heading="Eventaufstellung">
+            <p>
+              Teilnehmer im Dropdown zur Zuordnung von Teilnehmern zu einem
+              Posten, werden nun in den richtigen Abschnitt sortiert - je
+              nachdem, ob sie die Anforderungen erfüllen oder nicht.
+            </p>
+
+            <Image
+              src={image20250227Dropdown}
+              alt=""
+              width={466}
+              height={312}
+              loading="lazy"
+            />
+          </DayItem>
+
+          <DayItem heading="Bug: Discord-Verlinkung">
+            <p>
+              Die Discord-Verlinkungen von Events im Dashboard führt zun wieder
+              korrekt zu Discord.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="25. Februar 2025">
           <DayItem heading="Abgesagte Events">
             <p>
@@ -51,10 +78,6 @@ export default async function Page() {
               Es wurde ein Changelog implementiert. Hier werden zukünftig alle
               großen und kleinen Änderungen vom S.A.M. kommuniziert.
             </p>
-          </DayItem>
-
-          <DayItem heading="Refactoring">
-            <p>Der Code wurde an ein paar Stellen refactored.</p>
           </DayItem>
         </Day>
 
@@ -233,8 +256,8 @@ export default async function Page() {
 
           <DayItem heading="Eventstandort">
             <p>
-              In den Eventstandort wird nun der eingetragene Standort aus
-              Discord angezeigt.
+              In den Eventdetails wird nun der eingetragene Standort aus Discord
+              angezeigt.
             </p>
           </DayItem>
 
