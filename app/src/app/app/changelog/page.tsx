@@ -39,7 +39,7 @@ export default async function Page() {
 
           <DayItem heading="Bug: Discord-Verlinkung">
             <p>
-              Die Discord-Verlinkungen von Events im Dashboard führt zun wieder
+              Die Discord-Verlinkungen von Events im Dashboard führen nun wieder
               korrekt zu Discord.
             </p>
           </DayItem>
