@@ -107,7 +107,7 @@ export const Event = ({ className, event, index }: Props) => {
             )}
 
             <DiscordNavigationButton
-              path={`events/${event.discordGuildId}/${event.id}`}
+              path={`events/${event.discordGuildId}/${event.discordId}`}
             />
           </div>
         </div>

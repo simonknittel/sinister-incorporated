@@ -36,6 +36,13 @@ export default async function Page() {
               loading="lazy"
             />
           </DayItem>
+
+          <DayItem heading="Bug: Discord-Verlinkung">
+            <p>
+              Die Discord-Verlinkungen von Events im Dashboard führt zun wieder
+              korrekt zu Discord.
+            </p>
+          </DayItem>
         </Day>
 
         <Day heading="25. Februar 2025">
@@ -71,10 +78,6 @@ export default async function Page() {
               Es wurde ein Changelog implementiert. Hier werden zukünftig alle
               großen und kleinen Änderungen vom S.A.M. kommuniziert.
             </p>
-          </DayItem>
-
-          <DayItem heading="Refactoring">
-            <p>Der Code wurde an ein paar Stellen refactored.</p>
           </DayItem>
         </Day>
 
