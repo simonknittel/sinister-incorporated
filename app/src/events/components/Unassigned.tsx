@@ -8,18 +8,18 @@ type Props = Readonly<{
   positions: (EventPosition & {
     citizen: Entity | null;
   })[];
-  allEventCitizen: { citizen: Entity; ships: Ship[] }[];
+  allEventCitizens: { citizen: Entity; ships: Ship[] }[];
 }>;
 
 export const Unassigned = ({
   className,
   positions,
-  allEventCitizen,
+  allEventCitizens,
 }: Props) => {
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
 
-  const unassignedCitizen = allEventCitizen
+  const unassignedCitizen = allEventCitizens
     .filter((citizen) => {
       return !positions.some(
         (position) => position.citizen?.id === citizen.citizen.id,

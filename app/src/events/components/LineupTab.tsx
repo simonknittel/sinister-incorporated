@@ -98,7 +98,7 @@ export const LineupTab = ({
 
       <Unassigned
         positions={event.positions}
-        allEventCitizen={allEventCitizens}
+        allEventCitizens={allEventCitizens}
       />
     </section>
   );
