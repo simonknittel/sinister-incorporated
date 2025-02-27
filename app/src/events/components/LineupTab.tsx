@@ -48,8 +48,9 @@ type Props = Readonly<{
     })[];
   })[];
   myShips: Ship[];
-  allEventCitizen: Entity[];
+  allEventCitizens: { citizen: Entity; ships: Ship[] }[];
   showActions?: boolean;
+  showToggle?: boolean;
 }>;
 
 export const LineupTab = ({
@@ -58,8 +59,9 @@ export const LineupTab = ({
   canManagePositions,
   variants,
   myShips,
-  allEventCitizen,
+  allEventCitizens,
   showActions,
+  showToggle,
 }: Props) => {
   return (
     <section className={clsx("flex flex-col gap-4", className)}>
@@ -81,8 +83,9 @@ export const LineupTab = ({
                 showManage={canManagePositions}
                 variants={variants}
                 myShips={myShips}
-                allEventCitizen={allEventCitizen}
+                allEventCitizens={allEventCitizens}
                 showActions={showActions}
+                showToggle={showToggle}
               />
             ))}
         </div>
@@ -95,7 +98,7 @@ export const LineupTab = ({
 
       <Unassigned
         positions={event.positions}
-        allEventCitizen={allEventCitizen}
+        allEventCitizen={allEventCitizens}
       />
     </section>
   );

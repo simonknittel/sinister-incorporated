@@ -50,6 +50,17 @@ export const createEventPositionApplicationForCurrentUser = async (
     if (!canEditEvent(position.event))
       return { error: "Das Event ist bereits vorbei." };
 
+    const participant = await prisma.eventDiscordParticipant.findUnique({
+      where: {
+        eventId_discordUserId: {
+          eventId: position.event.id,
+          discordUserId: authentication.session.discordId,
+        },
+      },
+    });
+    if (!participant)
+      return { error: "Du bist nicht für dieses Event angemeldet." };
+
     /**
      * Create application
      */

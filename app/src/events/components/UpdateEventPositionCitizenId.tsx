@@ -6,6 +6,7 @@ import type {
   EventPositionApplication,
   Manufacturer,
   Series,
+  Ship,
   Variant,
 } from "@prisma/client";
 import clsx from "clsx";
@@ -18,9 +19,6 @@ import { updateEventPositionCitizenId } from "../actions/updateEventPositionCiti
 type Props = Readonly<{
   className?: string;
   position: EventPosition & {
-    applications: (EventPositionApplication & {
-      citizen: Entity;
-    })[];
     requiredVariant:
       | (Variant & {
           series: Series & {
@@ -29,15 +27,23 @@ type Props = Readonly<{
         })
       | null;
   };
-  eventCitizenSatisfyingRequirements: Entity[];
-  eventCitizenNotSatisfyingRequirements: Entity[];
+  citizensSatisfyingRequirements: { citizen: Entity; ships: Ship[] }[];
+  citizensNotSatisfyingRequirements: { citizen: Entity; ships: Ship[] }[];
+  applicationsSatisfyingRequirements: (EventPositionApplication & {
+    citizen: Entity;
+  })[];
+  applicationsNotSatisfyingRequirements: (EventPositionApplication & {
+    citizen: Entity;
+  })[];
 }>;
 
 export const UpdateEventPositionCitizenId = ({
   className,
   position,
-  eventCitizenSatisfyingRequirements,
-  eventCitizenNotSatisfyingRequirements,
+  citizensSatisfyingRequirements,
+  citizensNotSatisfyingRequirements,
+  applicationsSatisfyingRequirements,
+  applicationsNotSatisfyingRequirements,
 }: Props) => {
   const [isPending, startTransition] = useTransition();
 
@@ -59,7 +65,7 @@ export const UpdateEventPositionCitizenId = ({
           return;
         }
 
-        toast.success(response.success);
+        toast.success(response.success!);
       } catch (error) {
         unstable_rethrow(error);
         toast.error(
@@ -82,10 +88,22 @@ export const UpdateEventPositionCitizenId = ({
       >
         <option value="-">-</option>
 
-        <optgroup label="Interessenten - Voraussetzungen erfüllt"></optgroup>
+        <optgroup label="Interessenten - Voraussetzungen erfüllt">
+          {applicationsSatisfyingRequirements
+            .sort((a, b) =>
+              (a.citizen.handle || a.citizen.id).localeCompare(
+                b.citizen.handle || b.citizen.id,
+              ),
+            )
+            .map((application) => (
+              <option key={application.citizenId} value={application.citizenId}>
+                {application.citizen.handle}
+              </option>
+            ))}
+        </optgroup>
 
         <optgroup label="Interessenten - Voraussetzungen nicht erfüllt">
-          {position.applications
+          {applicationsNotSatisfyingRequirements
             .sort((a, b) =>
               (a.citizen.handle || a.citizen.id).localeCompare(
                 b.citizen.handle || b.citizen.id,
@@ -99,21 +117,29 @@ export const UpdateEventPositionCitizenId = ({
         </optgroup>
 
         <optgroup label="Alle Teilnehmer - Voraussetzungen erfüllt">
-          {eventCitizenSatisfyingRequirements
-            .sort((a, b) => (a.handle || a.id).localeCompare(b.handle || b.id))
+          {citizensSatisfyingRequirements
+            .sort((a, b) =>
+              (a.citizen.handle || a.citizen.id).localeCompare(
+                b.citizen.handle || b.citizen.id,
+              ),
+            )
             .map((citizen) => (
-              <option key={citizen.id} value={citizen.id}>
-                {citizen.handle}
+              <option key={citizen.citizen.id} value={citizen.citizen.id}>
+                {citizen.citizen.handle}
               </option>
             ))}
         </optgroup>
 
         <optgroup label="Alle Teilnehmer - Voraussetzungen nicht erfüllt">
-          {eventCitizenNotSatisfyingRequirements
-            .sort((a, b) => (a.handle || a.id).localeCompare(b.handle || b.id))
+          {citizensNotSatisfyingRequirements
+            .sort((a, b) =>
+              (a.citizen.handle || a.citizen.id).localeCompare(
+                b.citizen.handle || b.citizen.id,
+              ),
+            )
             .map((citizen) => (
-              <option key={citizen.id} value={citizen.id}>
-                {citizen.handle}
+              <option key={citizen.citizen.id} value={citizen.citizen.id}>
+                {citizen.citizen.handle}
               </option>
             ))}
         </optgroup>
