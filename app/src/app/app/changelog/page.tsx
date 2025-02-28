@@ -20,6 +20,15 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="28. Februar 2025">
+          <DayItem heading="Fix: Eventaufstellung">
+            <p>
+              Wenn ein Posten kein Schiff vorraussetzt, werden die Teilnehmer
+              nun auch hier korrekt im Dropdown einsortiert.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="27. Februar 2025">
           <DayItem heading="Eventaufstellung">
             <p>
@@ -37,9 +46,9 @@ export default async function Page() {
             />
           </DayItem>
 
-          <DayItem heading="Bug: Discord-Verlinkung">
+          <DayItem heading="Fix: Discord-Verlinkung">
             <p>
-              Die Discord-Verlinkungen von Events im Dashboard führt zun wieder
+              Die Discord-Verlinkungen von Events im Dashboard führen nun wieder
               korrekt zu Discord.
             </p>
           </DayItem>
@@ -106,7 +115,7 @@ export default async function Page() {
             </p>
           </DayItem>
 
-          <DayItem heading="Bug: Hersteller-Logos">
+          <DayItem heading="Fix: Hersteller-Logos">
             <p>
               Es wurde ein Fehler mit den Hersteller-Logos behoben. Diese werden
               nun wieder angezeigt.
