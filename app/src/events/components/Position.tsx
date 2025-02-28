@@ -80,13 +80,19 @@ export const Position = ({
   )
     doesCurrentUserSatisfyRequirements = false;
 
-  const citizensSatisfyingRequirements = allEventCitizens.filter((citizen) =>
-    citizen.ships.some((ship) => ship.variantId === position.requiredVariantId),
-  );
+  let citizensSatisfyingRequirements = allEventCitizens;
+  if (position.requiredVariant) {
+    citizensSatisfyingRequirements = citizensSatisfyingRequirements.filter(
+      (citizen) =>
+        citizen.ships.some(
+          (ship) => ship.variantId === position.requiredVariantId,
+        ),
+    );
+  }
   const citizensNotSatisfyingRequirements = allEventCitizens.filter(
     (citizen) =>
-      !citizen.ships.some(
-        (ship) => ship.variantId === position.requiredVariantId,
+      !citizensSatisfyingRequirements.some(
+        (c) => c.citizen.id === citizen.citizen.id,
       ),
   );
 
