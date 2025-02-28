@@ -10,7 +10,7 @@ export const runtime = "edge";
 
 export default async function og() {
   const fontData = await fetch(
-    new URL("../../assets/Inter/static/Inter-Bold.ttf", import.meta.url),
+    new URL("../../assets/subset-Inter-Bold.ttf", import.meta.url),
   ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
