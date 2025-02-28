@@ -54,7 +54,7 @@ export const ProfileTile = async ({ className }: Props) => {
 
       {showPenaltyPoints && (
         <p
-          title={`Aktive Strafpunkte: $ {penaltyPoints}`}
+          title={`Aktive Strafpunkte: ${penaltyPoints}`}
           className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
         >
           <FaScaleBalanced className="text-xs text-neutral-500" />
