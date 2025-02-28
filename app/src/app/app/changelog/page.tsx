@@ -1,5 +1,6 @@
 import { authenticatePage } from "@/auth/server";
 import image20250227Dropdown from "@/changelog/assets/2025-02-27-dropdown.png";
+import image20250228PenaltyPoints from "@/changelog/assets/2025-02-28-penalty-points.png";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 import Image from "next/image";
@@ -21,6 +22,20 @@ export default async function Page() {
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
         <Day heading="28. Februar 2025">
+          <DayItem heading="Eigene Strafpunkte im Dashboard">
+            <p>
+              Im Profil auf dem Dashboard können nun die eigenen aktiven
+              Strafpunkte eingesehen werden.
+            </p>
+
+            <p>
+              Diese Funktion muss von der Leitung freigeschaltet werden, bevor
+              sie sichtbar wird.
+            </p>
+
+            <Image src={image20250228PenaltyPoints} alt="" loading="lazy" />
+          </DayItem>
+
           <DayItem heading="Fix: Eventaufstellung">
             <p>
               Wenn ein Posten kein Schiff vorraussetzt, werden die Teilnehmer
@@ -37,13 +52,7 @@ export default async function Page() {
               nachdem, ob sie die Anforderungen erfüllen oder nicht.
             </p>
 
-            <Image
-              src={image20250227Dropdown}
-              alt=""
-              width={466}
-              height={312}
-              loading="lazy"
-            />
+            <Image src={image20250227Dropdown} alt="" loading="lazy" />
           </DayItem>
 
           <DayItem heading="Fix: Discord-Verlinkung">

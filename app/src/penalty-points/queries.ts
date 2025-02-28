@@ -2,13 +2,15 @@ import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
-import type { Entity, PenaltyEntry } from "@prisma/client";
+import { type Entity, type PenaltyEntry } from "@prisma/client";
+import { cache } from "react";
 
 export const getEntriesGroupedByCitizen = async () => {
   return getTracer().startActiveSpan("getAllEntries", async (span) => {
     try {
       const authentication = await requireAuthentication();
-      await authentication.authorize("penaltyEntry", "read");
+      if (!(await authentication.authorize("penaltyEntry", "read")))
+        throw new Error("Forbidden");
 
       const now = new Date();
 
@@ -67,3 +69,43 @@ export const getEntriesGroupedByCitizen = async () => {
     }
   });
 };
+
+export const getPenaltyEntriesOfCurrentUser = cache(async () => {
+  return getTracer().startActiveSpan(
+    "getPenaltyEntriesOfCurrentUser",
+    async (span) => {
+      try {
+        const authentication = await requireAuthentication();
+        if (!authentication.session.entityId) throw new Error("Forbidden");
+        if (!(await authentication.authorize("ownPenaltyEntry", "read")))
+          throw new Error("Forbidden");
+
+        const now = new Date();
+
+        return await prisma.penaltyEntry.findMany({
+          where: {
+            deletedAt: null,
+            OR: [
+              {
+                expiresAt: {
+                  gte: now,
+                },
+              },
+              {
+                expiresAt: null,
+              },
+            ],
+            citizenId: authentication.session.entityId,
+          },
+        });
+      } catch (error) {
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+        });
+        throw error;
+      } finally {
+        span.end();
+      }
+    },
+  );
+});
