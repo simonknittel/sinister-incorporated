@@ -3,6 +3,7 @@ import { log } from "@/logging";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
 import { evaluateFlags, flagsClient, getDefinitions } from "@unleash/nextjs";
+import { unstable_rethrow } from "next/navigation";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
 
@@ -36,6 +37,7 @@ export const getUnleashFlag = cache(
 
           return flags.isEnabled(name);
         } catch (error) {
+          unstable_rethrow(error);
           void log.error("Error fetching feature flag", {
             error: serializeError(error),
           });

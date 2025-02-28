@@ -35,6 +35,18 @@ export const PenaltyPointsTab = () => {
 
         <YesNoCheckbox {...register("penaltyEntry;delete")} />
       </div>
+
+      <div className="py-2 flex justify-between items-center gap-2 mt-2">
+        <div>
+          <h4 className="font-bold">Eigene Strafpunkte einsehen</h4>
+          <p className="text-sm">
+            Citizen mit dieser Berechtigung können ihre eigenen Strafpunkte
+            einsehen.
+          </p>
+        </div>
+
+        <YesNoCheckbox {...register("ownPenaltyEntry;read")} />
+      </div>
     </TabPanel>
   );
 };

@@ -2,9 +2,11 @@ import { requireAuthentication } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
 import { Link } from "@/common/components/Link";
 import { SingleRole } from "@/common/components/SingleRole";
+import { getPenaltyEntriesOfCurrentUser } from "@/penalty-points/queries";
 import { getMyAssignedRoles } from "@/roles/utils/getRoles";
 import clsx from "clsx";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaScaleBalanced } from "react-icons/fa6";
 
 type Props = Readonly<{
   className?: string;
@@ -12,15 +14,24 @@ type Props = Readonly<{
 
 export const ProfileTile = async ({ className }: Props) => {
   const authentication = await requireAuthentication();
+  if (!authentication.session.entityId) throw new Error("Forbidden");
 
   const name =
     authentication.session.user.name || authentication.session.discordId;
   const image = authentication.session.user.image;
   const roles = await getMyAssignedRoles();
 
-  const showLink =
-    authentication.session.entityId &&
-    (await authentication.authorize("citizen", "read"));
+  const [showSpynetLink, showPenaltyPoints] = await Promise.all([
+    authentication.authorize("citizen", "read"),
+    authentication.authorize("ownPenaltyEntry", "read"),
+  ]);
+
+  const penaltyPoints = showPenaltyPoints
+    ? (await getPenaltyEntriesOfCurrentUser()).reduce(
+        (previous, current) => (previous += current.points),
+        0,
+      )
+    : undefined;
 
   return (
     <section
@@ -41,7 +52,17 @@ export const ProfileTile = async ({ className }: Props) => {
         </div>
       ) : null}
 
-      {showLink && (
+      {showPenaltyPoints && (
+        <p
+          title={`Aktive Strafpunkte: ${penaltyPoints}`}
+          className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
+        >
+          <FaScaleBalanced className="text-xs text-neutral-500" />
+          {penaltyPoints}
+        </p>
+      )}
+
+      {showSpynetLink && (
         <Link
           href={`/app/spynet/citizen/${authentication.session.entityId}`}
           className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
