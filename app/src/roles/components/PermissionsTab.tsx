@@ -2,6 +2,7 @@
 
 import type {
   ClassificationLevel,
+  Flow,
   NoteType,
   PermissionString,
   Role,
@@ -19,6 +20,7 @@ type Props = Readonly<{
   classificationLevels: ClassificationLevel[];
   allRoles: Role[];
   enableOperations: boolean;
+  flows: Flow[];
 }>;
 
 export const PermissionsTab = ({
@@ -28,6 +30,7 @@ export const PermissionsTab = ({
   classificationLevels,
   allRoles,
   enableOperations,
+  flows,
 }: Props) => {
   return (
     <section
@@ -42,6 +45,7 @@ export const PermissionsTab = ({
           classificationLevels={classificationLevels}
           allRoles={allRoles}
           enableOperations={Boolean(enableOperations)}
+          flows={flows}
         />
       </PermissionsProvider>
     </section>

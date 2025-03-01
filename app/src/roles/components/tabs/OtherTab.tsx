@@ -2,7 +2,7 @@
 
 import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import TabPanel from "@/common/components/tabs/TabPanel";
-import { type Role } from "@prisma/client";
+import { type Flow, type Role } from "@prisma/client";
 import { usePermissionsContext } from "../PermissionsContext";
 import { CareerSection } from "./components/CareerSection";
 import { RoleSection } from "./components/RoleSection";
@@ -10,9 +10,10 @@ import { SpynetSection } from "./components/SpynetSection";
 
 interface Props {
   roles: Role[];
+  flows: Flow[];
 }
 
-const OtherTab = ({ roles }: Readonly<Props>) => {
+const OtherTab = ({ roles, flows }: Readonly<Props>) => {
   const { register } = usePermissionsContext();
 
   return (
@@ -50,7 +51,7 @@ const OtherTab = ({ roles }: Readonly<Props>) => {
         <YesNoCheckbox {...register("role;manage")} />
       </div>
 
-      <CareerSection className="mt-2" />
+      <CareerSection flows={flows} className="mt-2" />
 
       <SpynetSection className="mt-2" />
 

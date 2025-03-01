@@ -1,14 +1,17 @@
 import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import { Tooltip } from "@/common/components/Tooltip";
+import type { Flow } from "@prisma/client";
 import clsx from "clsx";
+import { Fragment } from "react";
 import { FaInfoCircle } from "react-icons/fa";
 import { usePermissionsContext } from "../../PermissionsContext";
 
 type Props = Readonly<{
   className?: string;
+  flows: Flow[];
 }>;
 
-export const CareerSection = ({ className }: Props) => {
+export const CareerSection = ({ className, flows }: Props) => {
   const { register } = usePermissionsContext();
 
   return (
@@ -16,61 +19,37 @@ export const CareerSection = ({ className }: Props) => {
       <h4 className="font-bold">Karriere</h4>
 
       <div className="border border-neutral-700 p-4 rounded mt-2 grid grid-cols-2 grid-rows-2 gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <h5 className="font-bold">Security lesen</h5>
+        {flows.map((flow) => (
+          <Fragment key={flow.id}>
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <h5 className="font-bold">{flow.name} lesen</h5>
 
-            <Tooltip triggerChildren={<FaInfoCircle />}>
-              Nutzer mit dieser Berechtigung können die Security-Karriereseite
-              aufrufen. Sie können nur die Rollen und Zertifikate sehen, die für
-              sie sichtbar sind.
-            </Tooltip>
-          </div>
+                <Tooltip triggerChildren={<FaInfoCircle />}>
+                  Nutzer mit dieser Berechtigung können die
+                  {flow.name}-Karriereseite aufrufen. Sie können nur die Rollen
+                  und Zertifikate sehen, die für sie sichtbar sind.
+                </Tooltip>
+              </div>
 
-          <YesNoCheckbox {...register("career;read;flowId=security")} />
-        </div>
+              <YesNoCheckbox {...register(`career;read;flowId=${flow.id}`)} />
+            </div>
 
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <h5 className="font-bold">Security bearbeiten</h5>
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <h5 className="font-bold">{flow.name} bearbeiten</h5>
 
-            <Tooltip triggerChildren={<FaInfoCircle />}>
-              Nutzer mit dieser Berechtigung können die Darstellung der
-              Security-Karriereseite bearbeiten. Hierzu werden sie alle Rollen
-              und Zertifikate sehen können.
-            </Tooltip>
-          </div>
+                <Tooltip triggerChildren={<FaInfoCircle />}>
+                  Nutzer mit dieser Berechtigung können die Darstellung der
+                  {flow.name}-Karriereseite bearbeiten. Hierzu werden sie alle
+                  Rollen und Zertifikate sehen können.
+                </Tooltip>
+              </div>
 
-          <YesNoCheckbox {...register("career;update;flowId=security")} />
-        </div>
-
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <h5 className="font-bold">Economic lesen</h5>
-
-            <Tooltip triggerChildren={<FaInfoCircle />}>
-              Nutzer mit dieser Berechtigung können die Economic-Karriereseite
-              aufrufen. Sie können nur die Rollen und Zertifikate sehen, die für
-              sie sichtbar sind.
-            </Tooltip>
-          </div>
-
-          <YesNoCheckbox {...register("career;read;flowId=economic")} />
-        </div>
-
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <h5 className="font-bold">Economic bearbeiten</h5>
-
-            <Tooltip triggerChildren={<FaInfoCircle />}>
-              Nutzer mit dieser Berechtigung können die Darstellung der
-              Economic-Karriereseite bearbeiten. Hierzu werden sie alle Rollen
-              und Zertifikate sehen können.
-            </Tooltip>
-          </div>
-
-          <YesNoCheckbox {...register("career;update;flowId=economic")} />
-        </div>
+              <YesNoCheckbox {...register(`career;update;flowId=${flow.id}`)} />
+            </div>
+          </Fragment>
+        ))}
       </div>
     </div>
   );

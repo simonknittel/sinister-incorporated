@@ -7,6 +7,7 @@ import TabList from "@/common/components/tabs/TabList";
 import { TabsProvider } from "@/common/components/tabs/TabsContext";
 import {
   type ClassificationLevel,
+  type Flow,
   type NoteType,
   type Role,
 } from "@prisma/client";
@@ -32,6 +33,7 @@ type Props = Readonly<{
   classificationLevels: ClassificationLevel[];
   allRoles: Role[];
   enableOperations: boolean;
+  flows: Flow[];
 }>;
 
 export const Permissions = ({
@@ -40,6 +42,7 @@ export const Permissions = ({
   classificationLevels,
   allRoles,
   enableOperations,
+  flows,
 }: Props) => {
   const [state, formAction, isPending] = useActionState(
     updateRolePermissions,
@@ -90,7 +93,7 @@ export const Permissions = ({
         <EventsTab enableOperations={enableOperations} />
         <DocumentsTab />
         <PenaltyPointsTab />
-        <OtherTab roles={allRoles} />
+        <OtherTab roles={allRoles} flows={flows} />
       </TabsProvider>
 
       <Button type="submit" disabled={isPending} className="mt-4 ml-auto">

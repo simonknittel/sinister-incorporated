@@ -4,6 +4,21 @@ import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
 import { cache } from "react";
 
+export const getAllFlows = cache(async () => {
+  return getTracer().startActiveSpan("getAllFlows", async (span) => {
+    try {
+      return await prisma.flow.findMany();
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
+});
+
 export const getMyReadableFlows = cache(async () => {
   return getTracer().startActiveSpan("getMyReadableFlows", async (span) => {
     try {
