@@ -1,4 +1,5 @@
 import { authenticatePage } from "@/auth/server";
+import { getAllFlows } from "@/career/queries";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { log } from "@/logging";
 import { Navigation } from "@/roles/components/Navigation";
@@ -48,10 +49,11 @@ export default async function Page({ params }: Props) {
   const role = await getRoleById(roleId);
   if (!role) notFound();
 
-  const [allRoles, noteTypes, classificationLevels] = await Promise.all([
+  const [allRoles, noteTypes, classificationLevels, flows] = await Promise.all([
     getRoles(true),
     getAllNoteTypes(),
     getAllClassificationLevels(),
+    getAllFlows(),
   ]);
 
   const enableOperations = Boolean(await getUnleashFlag("EnableOperations"));
@@ -75,6 +77,7 @@ export default async function Page({ params }: Props) {
         noteTypes={noteTypes}
         classificationLevels={classificationLevels}
         enableOperations={enableOperations}
+        flows={flows}
         className="mt-4"
       />
     </main>
