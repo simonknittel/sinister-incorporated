@@ -133,9 +133,17 @@ export const SilcTransactionsTableClient = ({
           return (
             <span className="flex items-center gap-1 h-full">
               {showEdit && (
-                <CreateOrUpdateSilcTransaction transaction={transaction} />
+                <CreateOrUpdateSilcTransaction
+                  transaction={transaction}
+                  className="flex-none"
+                />
               )}
-              {showDelete && <DeleteSilcTransaction id={row.getValue()} />}
+              {showDelete && (
+                <DeleteSilcTransaction
+                  id={row.getValue()}
+                  className="flex-none"
+                />
+              )}
             </span>
           );
         },
