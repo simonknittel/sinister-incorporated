@@ -1,4 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
+import { CopyToClipboard } from "@/common/components/CopyToClipboard";
 import { RSIButton } from "@/common/components/RSIButton";
 import { type Entity } from "@prisma/client";
 import clsx from "clsx";
@@ -30,7 +31,10 @@ export const Overview = async ({ className, entity }: Props) => {
 
       <dl className="mt-4">
         <dt className="text-neutral-500">Sinister ID</dt>
-        <dd>{entity.id}</dd>
+        <dd className="flex items-center gap-2">
+          {entity.id}
+          <CopyToClipboard value={entity.id} />
+        </dd>
 
         <dt className="text-neutral-500 mt-4">Spectrum ID</dt>
         <dd>{entity.spectrumId || <span className="italic">-</span>}</dd>
