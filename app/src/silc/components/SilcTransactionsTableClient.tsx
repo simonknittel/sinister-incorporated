@@ -50,7 +50,7 @@ export const SilcTransactionsTableClient = ({
         header: "Datum",
         id: "createdAt",
         cell: (row) => (
-          <span className="flex items-center h-10">
+          <span className="flex items-center h-10 whitespace-nowrap">
             {row.getValue().toLocaleDateString("de-DE", {
               timeZone: "Europe/Berlin",
               year: "numeric",
@@ -72,7 +72,7 @@ export const SilcTransactionsTableClient = ({
           return (
             <Link
               href={`/app/spynet/citizen/${receiver.id}`}
-              className="hover:bg-neutral-800 flex items-center rounded px-2 h-10 text-sinister-red-500 overflow-hidden text-ellipsis"
+              className="hover:bg-neutral-800 flex items-center rounded px-2 h-full text-sinister-red-500 overflow-hidden whitespace-nowrap text-ellipsis"
               prefetch={false}
               title={receiver.handle || receiver.id}
             >
@@ -86,11 +86,7 @@ export const SilcTransactionsTableClient = ({
         header: "Wert",
         id: "value",
         enableSorting: false,
-        cell: (row) => (
-          <span className="flex items-center h-10 font-bold">
-            {row.getValue()}
-          </span>
-        ),
+        cell: (row) => <span className="font-bold">{row.getValue()}</span>,
       }),
 
       columnHelper.accessor("description", {
@@ -100,7 +96,7 @@ export const SilcTransactionsTableClient = ({
         cell: (row) => (
           <span
             title={row.getValue() || undefined}
-            className="flex items-center h-10 overflow-hidden text-ellipsis whitespace-nowrap"
+            className="overflow-hidden text-ellipsis whitespace-nowrap"
           >
             {row.getValue()}
           </span>
@@ -117,7 +113,7 @@ export const SilcTransactionsTableClient = ({
           return (
             <Link
               href={`/app/spynet/citizen/${citizen.id}`}
-              className="hover:bg-neutral-800 flex items-center rounded px-2 h-10 text-sinister-red-500 overflow-hidden text-ellipsis"
+              className="hover:bg-neutral-800 flex items-center rounded px-2 h-full text-sinister-red-500 overflow-hidden whitespace-nowrap text-ellipsis"
               prefetch={false}
               title={citizen.handle || citizen.id}
             >
@@ -135,7 +131,7 @@ export const SilcTransactionsTableClient = ({
           const transaction = row.row.original;
 
           return (
-            <span className="flex items-center gap-1 h-10">
+            <span className="flex items-center gap-1 h-full">
               {showEdit && (
                 <CreateOrUpdateSilcTransaction transaction={transaction} />
               )}
@@ -204,7 +200,10 @@ export const SilcTransactionsTableClient = ({
               )}
             >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="overflow-hidden h-full">
+                <td
+                  key={cell.id}
+                  className="overflow-hidden flex items-center h-10"
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

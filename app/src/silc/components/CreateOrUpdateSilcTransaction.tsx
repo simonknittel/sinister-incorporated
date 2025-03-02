@@ -142,7 +142,7 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
           ))}
 
           <label className="block" htmlFor={receiverIdsInputId}>
-            Citizen (Spectrum ID)
+            Citizen (Sinister ID)
           </label>
           <input
             autoFocus
