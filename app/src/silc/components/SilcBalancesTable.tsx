@@ -20,10 +20,14 @@ export const SilcBalancesTable = async ({ className }: Props) => {
 
   return (
     <section className={clsx("rounded-2xl bg-neutral-800/50", className)}>
-      <div className="border-b border-white/5 p-4 lg:px-8 flex justify-between items-center">
-        <h2 className="font-bold text-xl">Übersicht</h2>
+      <div className="border-b border-white/5 flex justify-between items-center">
+        <h2 className="font-bold text-xl p-4 lg:px-8">Übersicht</h2>
 
-        {showCreate && <CreateOrUpdateSilcTransaction />}
+        {showCreate && (
+          <div className="pr-4 lg:pr-8">
+            <CreateOrUpdateSilcTransaction />
+          </div>
+        )}
       </div>
 
       <div className="p-4 lg:p-8">
