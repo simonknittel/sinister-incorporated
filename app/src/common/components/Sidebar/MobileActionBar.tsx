@@ -1,7 +1,14 @@
 import { requireAuthentication } from "@/auth/server";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import clsx from "clsx";
-import { FaCog, FaHome, FaLock, FaTable, FaUsers } from "react-icons/fa";
+import {
+  FaCog,
+  FaHome,
+  FaLock,
+  FaPiggyBank,
+  FaTable,
+  FaUsers,
+} from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdWorkspaces } from "react-icons/md";
@@ -60,6 +67,10 @@ export const MobileActionBar = async ({ className }: Props) => {
   const showPenaltyPoints = await authentication.authorize(
     "penaltyEntry",
     "create",
+  );
+  const showSilc = await authentication.authorize(
+    "silcBalanceOfOtherCitizen",
+    "read",
   );
 
   return (
@@ -227,6 +238,18 @@ export const MobileActionBar = async ({ className }: Props) => {
                       >
                         <TbMilitaryRank className="text-neutral-500" />
                         Karriere
+                      </Link>
+                    </li>
+                  )}
+
+                  {showSilc && (
+                    <li>
+                      <Link
+                        href="/app/silc"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                      >
+                        <FaPiggyBank className="text-neutral-500" />
+                        SILC
                       </Link>
                     </li>
                   )}

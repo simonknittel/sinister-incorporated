@@ -7,21 +7,24 @@ import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
+import { updateCitizensSilcBalances } from "../utils/updateCitizensSilcBalances";
 
 const schema = z.object({
-  sinisterId: z.string().cuid(),
-  points: z.coerce.number().int().min(1),
-  reason: z.string().trim().max(512).optional(),
-  expiresAt: z.coerce.date().optional(),
+  transactionId: z.string().cuid(),
+  value: z.coerce.number().int(),
+  description: z.string().trim().max(512).optional(),
 });
 
-export const createPenaltyEntry = async (formData: FormData) => {
+export const updateSilcTransaction = async (formData: FormData) => {
   try {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("createPenaltyEntry");
-    await authentication.authorizeAction("penaltyEntry", "create");
+    const authentication = await authenticateAction("updateSilcTransaction");
+    await authentication.authorizeAction(
+      "silcTransactionOfOtherCitizen",
+      "update",
+    );
     if (!authentication.session.entityId)
       return { error: "Du bist nicht berechtigt, diese Aktion durchzuführen." };
 
@@ -29,13 +32,11 @@ export const createPenaltyEntry = async (formData: FormData) => {
      * Validate the request
      */
     const result = schema.safeParse({
-      sinisterId: formData.get("sinisterId"),
-      points: formData.get("points"),
-      reason: formData.has("reason") ? formData.get("reason") : undefined,
-      expiresAt:
-        formData.has("expiresAt") && formData.get("expiresAt") !== ""
-          ? formData.get("expiresAt")
-          : undefined,
+      transactionId: formData.get("transactionId"),
+      value: formData.get("value"),
+      description: formData.has("description")
+        ? formData.get("description")
+        : undefined,
     });
     if (!result.success)
       return {
@@ -44,33 +45,35 @@ export const createPenaltyEntry = async (formData: FormData) => {
       };
 
     /**
-     * Create entry
+     * Update transaction
      */
-    const createdEntry = await prisma.penaltyEntry.create({
+    const updatedTransaction = await prisma.silcTransaction.update({
+      where: {
+        id: result.data.transactionId,
+      },
       data: {
-        createdBy: {
+        value: result.data.value,
+        description: result.data.description,
+        updatedAt: new Date(),
+        updatedBy: {
           connect: {
             id: authentication.session.entityId,
           },
         },
-        citizen: {
-          connect: {
-            id: result.data.sinisterId,
-          },
-        },
-        points: result.data.points,
-        reason: result.data.reason,
-        expiresAt: result.data.expiresAt,
       },
     });
 
     /**
+     * Update citizens' balances
+     */
+    await updateCitizensSilcBalances([updatedTransaction.receiverId]);
+
+    /**
      * Revalidate cache(s)
      */
-    revalidatePath(
-      `/app/spynet/citizen/${createdEntry.citizenId}/penalty-points`,
-    );
-    revalidatePath("/app/penalty-points");
+    revalidatePath(`/app/silc`);
+    revalidatePath("/app/silc/transactions");
+    revalidatePath("/app/dashboard");
 
     /**
      * Respond with the result

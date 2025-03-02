@@ -1,0 +1,18 @@
+model SilcTransaction {
+  id          String    @id @default(cuid())
+  receiverId  String
+  receiver    Entity    @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  value       Int
+  description String?
+  createdAt   DateTime  @default(now())
+  createdById String?
+  createdBy   Entity?   @relation("createdBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedAt   DateTime?
+  updatedById String?
+  updatedBy   Entity?   @relation("updatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  deletedAt   DateTime?
+  deletedById String?
+  deletedBy   Entity?   @relation("deletedBy", fields: [deletedById], references: [id], onDelete: SetNull)
+
+  @@index([receiverId])
+}

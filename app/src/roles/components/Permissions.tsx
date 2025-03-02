@@ -13,7 +13,13 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import { useActionState } from "react";
-import { FaCalendarDay, FaCog, FaSave, FaSpinner } from "react-icons/fa";
+import {
+  FaCalendarDay,
+  FaCog,
+  FaPiggyBank,
+  FaSave,
+  FaSpinner,
+} from "react-icons/fa";
 import { FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdWorkspaces } from "react-icons/md";
@@ -26,6 +32,7 @@ import FleetTab from "./tabs/FleetTab";
 import { OrganizationsTab } from "./tabs/OrganizationsTab";
 import OtherTab from "./tabs/OtherTab";
 import { PenaltyPointsTab } from "./tabs/PenaltyPointsTab";
+import { SilcTab } from "./tabs/SilcTab";
 
 type Props = Readonly<{
   role: Role;
@@ -75,6 +82,10 @@ export const Permissions = ({
             <IoDocuments /> Dokumente
           </Tab>
 
+          <Tab id="silc">
+            <FaPiggyBank /> SILC
+          </Tab>
+
           <Tab id="penalty_points">
             <FaScaleBalanced /> Strafpunkte
           </Tab>
@@ -92,6 +103,7 @@ export const Permissions = ({
         <FleetTab />
         <EventsTab enableOperations={enableOperations} />
         <DocumentsTab />
+        <SilcTab />
         <PenaltyPointsTab />
         <OtherTab roles={allRoles} flows={flows} />
       </TabsProvider>

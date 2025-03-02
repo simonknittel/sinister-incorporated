@@ -21,7 +21,7 @@ export const AllEntriesTable = async ({ className }: Props) => {
       className={clsx("rounded-2xl bg-neutral-800/50 p-4 lg:p-8", className)}
     >
       <div className="flex justify-between items-center">
-        <h2 className="font-bold">Aktive Strafpunkte</h2>
+        <h2 className="font-bold text-xl">Aktive Strafpunkte</h2>
         {showCreate && <CreatePenaltyEntry />}
       </div>
 

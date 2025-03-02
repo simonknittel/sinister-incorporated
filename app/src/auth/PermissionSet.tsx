@@ -57,7 +57,11 @@ export interface PermissionSet {
     | "leaderboards"
     | "penaltyEntry"
     | "ownPenaltyEntry"
-    | "othersEventPosition";
+    | "othersEventPosition"
+    | "silcBalanceOfOtherCitizen"
+    | "silcBalanceOfCurrentCitizen"
+    | "silcTransactionOfOtherCitizen"
+    | "silcTransactionOfCurrentCitizen";
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   operation:
     | "create"

@@ -11,4 +11,6 @@ model PenaltyEntry {
   points      Int
   reason      String?
   expiresAt   DateTime?
+
+  @@index([citizenId])
 }
