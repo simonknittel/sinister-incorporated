@@ -1,6 +1,6 @@
 "use client";
 
-import type { Entity, PenaltyEntry as PenaltyEntryType } from "@prisma/client";
+import type { Entity } from "@prisma/client";
 import {
   createColumnHelper,
   flexRender,
@@ -13,89 +13,54 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { FaSortAlphaDown, FaSortAlphaUpAlt } from "react-icons/fa";
-import { PenaltyEntry } from "./PenaltyEntry";
 
-interface Row {
-  citizen: Entity;
-  totalPoints: number;
-  entries: (PenaltyEntryType & {
-    createdBy: Entity;
-  })[];
-}
+type Row = Pick<Entity, "id" | "handle" | "silcBalance">;
 
 const columnHelper = createColumnHelper<Row>();
 
-const TABLE_MIN_WIDTH = "min-w-[640px]";
-const GRID_COLS = "grid-cols-[160px_88px_1fr]";
+const TABLE_MIN_WIDTH = "min-w-[240px]";
+const GRID_COLS = "grid-cols-[160px_88px]";
 
 type Props = Readonly<{
   className?: string;
   rows: Row[];
-  showDelete?: boolean;
 }>;
 
-export const AllEntriesTableClient = ({
-  className,
-  rows,
-  showDelete,
-}: Props) => {
+export const SilcBalancesTableClient = ({ className, rows }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([
-    { id: "name", desc: false },
+    { id: "silcBalance", desc: true },
+    { id: "handle", desc: false },
   ]);
 
   const columns = useMemo(() => {
     return [
-      columnHelper.accessor("citizen.handle", {
+      columnHelper.accessor("handle", {
         header: "Citizen",
-        id: "name",
+        id: "handle",
         cell: (row) => {
-          const { citizen } = row.row.original;
+          const { id, handle } = row.row.original;
           return (
             <Link
-              href={`/app/spynet/citizen/${citizen.id}`}
+              href={`/app/spynet/citizen/${id}`}
               className="hover:bg-neutral-800 flex items-center rounded px-2 h-10 text-sinister-red-500 overflow-hidden text-ellipsis"
               prefetch={false}
-              title={citizen.handle || ""}
+              title={handle || id}
             >
-              {citizen.handle}
+              {handle || id}
             </Link>
           );
         },
       }),
 
-      columnHelper.accessor("totalPoints", {
-        header: "Gesamt",
-        id: "totalPoints",
+      columnHelper.accessor("silcBalance", {
+        header: "Kontostand",
+        id: "silcBalance",
         sortDescFirst: true,
         cell: (row) => (
           <span className="flex items-center h-10 font-bold">
             {row.getValue()}
           </span>
         ),
-      }),
-
-      columnHelper.accessor("entries", {
-        header: "Einträge",
-        id: "entries",
-        enableSorting: false,
-        cell: (row) => {
-          const { entries } = row.row.original;
-          return (
-            <div className="flex flex-col gap-4 py-3">
-              {entries
-                .toSorted(
-                  (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
-                )
-                .map((entry) => (
-                  <PenaltyEntry
-                    key={entry.id}
-                    entry={entry}
-                    showDelete={showDelete}
-                  />
-                ))}
-            </div>
-          );
-        },
       }),
     ];
   }, []);

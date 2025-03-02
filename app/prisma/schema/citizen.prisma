@@ -12,6 +12,10 @@ model Entity {
   createdOrganizationAttributeHistoryEntries   OrganizationAttributeHistoryEntry[]  @relation(name: "CreatedOrganizationAttributeHistoryEntries")
   confirmedOrganizationAttributeHistoryEntries OrganizationAttributeHistoryEntry[]  @relation(name: "ConfirmedOrganizationAttributeHistoryEntries")
   createdOrganizations                         Organization[]                       @relation(name: "CreatedOrganizations")
+  receivedSilcTransactions                     SilcTransaction[]                    @relation("receiver")
+  createdSilcTransactions                      SilcTransaction[]                    @relation("createdBy")
+  updatedSilcTransactions                      SilcTransaction[]                    @relation("updatedBy")
+  deletedSilcTransactions                      SilcTransaction[]                    @relation("deletedBy")
 
   // Holds the latest confirmed values
   spectrumId                String?
@@ -26,6 +30,7 @@ model Entity {
   penaltyEntries            PenaltyEntry[]             @relation("citizen")
   eventPositionApplications EventPositionApplication[] @relation("citizen")
   eventPositions            EventPosition[]            @relation("citizen")
+  silcBalance               Int                        @default(0)
 }
 
 model EntityLog {

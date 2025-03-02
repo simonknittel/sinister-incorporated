@@ -1,6 +1,9 @@
 import { authenticatePage } from "@/auth/server";
 import image20250227Dropdown from "@/changelog/assets/2025-02-27-dropdown.png";
 import image20250228PenaltyPoints from "@/changelog/assets/2025-02-28-penalty-points.png";
+import image20250302SilcDashboard from "@/changelog/assets/2025-03-02-silc-dashboard.png";
+import image20250302SilcOverview from "@/changelog/assets/2025-03-02-silc-overview.png";
+import image20250302SilcTransactions from "@/changelog/assets/2025-03-02-silc-transactions.png";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 import Image from "next/image";
@@ -21,6 +24,54 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="2. März 2025">
+          <DayItem heading="SILC MVP">
+            <p>Die erste Version des SILC-System ist nun implementiert.</p>
+
+            <p>
+              Citizen mit entsprechenden Berechtigungen können SILC an andere
+              Citizen verteilen und die aktuellen Kontostände einsehen.
+            </p>
+
+            <p>
+              Hierzu gibt es zwei neue Seiten: Übersicht und Transaktionen. In
+              der Übersicht werden die aktuellen Kontostände aller Citizen
+              aufgelistet. In den Transaktionen können chronologisch die
+              einzelnen Transaktionen eingesehen werden.
+            </p>
+
+            <Image
+              src={image20250302SilcOverview}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+
+            <Image
+              src={image20250302SilcTransactions}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+
+            <p>
+              In der Profilkachel können Citizen ihre eigenen SILC einsehen.
+            </p>
+
+            <Image
+              src={image20250302SilcDashboard}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+
+            <p>
+              Die Berechtigungen, um auf die einzelnen Funktionen zugreifen zu
+              können, werden zeitnahe verteilt.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="28. Februar 2025">
           <DayItem heading="Eigene Strafpunkte im Dashboard">
             <p>

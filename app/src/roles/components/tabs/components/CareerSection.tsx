@@ -26,9 +26,9 @@ export const CareerSection = ({ className, flows }: Props) => {
                 <h5 className="font-bold">{flow.name} lesen</h5>
 
                 <Tooltip triggerChildren={<FaInfoCircle />}>
-                  Nutzer mit dieser Berechtigung können die
-                  {flow.name}-Karriereseite aufrufen. Sie können nur die Rollen
-                  und Zertifikate sehen, die für sie sichtbar sind.
+                  Nutzer mit dieser Berechtigung können die {flow.name}
+                  -Karriereseite aufrufen. Sie können nur die Rollen und
+                  Zertifikate sehen, die für sie sichtbar sind.
                 </Tooltip>
               </div>
 
@@ -40,7 +40,7 @@ export const CareerSection = ({ className, flows }: Props) => {
                 <h5 className="font-bold">{flow.name} bearbeiten</h5>
 
                 <Tooltip triggerChildren={<FaInfoCircle />}>
-                  Nutzer mit dieser Berechtigung können die Darstellung der
+                  Nutzer mit dieser Berechtigung können die Darstellung der{" "}
                   {flow.name}-Karriereseite bearbeiten. Hierzu werden sie alle
                   Rollen und Zertifikate sehen können.
                 </Tooltip>

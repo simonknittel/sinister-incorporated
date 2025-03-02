@@ -7,18 +7,22 @@ import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
+import { updateCitizensSilcBalances } from "../utils/updateCitizensSilcBalances";
 
 const schema = z.object({
   id: z.string().cuid(),
 });
 
-export const deletePenaltyEntry = async (formData: FormData) => {
+export const deleteSilcTransaction = async (formData: FormData) => {
   try {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("deletePenaltyEntry");
-    await authentication.authorizeAction("penaltyEntry", "delete");
+    const authentication = await authenticateAction("deleteSilcTransaction");
+    await authentication.authorizeAction(
+      "silcTransactionOfOtherCitizen",
+      "delete",
+    );
     if (!authentication.session.entityId)
       return { error: "Du bist nicht berechtigt, diese Aktion durchzuführen." };
 
@@ -34,9 +38,9 @@ export const deletePenaltyEntry = async (formData: FormData) => {
       };
 
     /**
-     * (Soft-)delete entry
+     * (Soft-)delete transaction
      */
-    const deletedEntry = await prisma.penaltyEntry.update({
+    const deletedEntry = await prisma.silcTransaction.update({
       where: {
         id: result.data.id,
       },
@@ -51,12 +55,16 @@ export const deletePenaltyEntry = async (formData: FormData) => {
     });
 
     /**
+     * Update citizens' balances
+     */
+    await updateCitizensSilcBalances([deletedEntry.receiverId]);
+
+    /**
      * Revalidate cache(s)
      */
-    revalidatePath(
-      `/app/spynet/citizen/${deletedEntry.citizenId}/penalty-points`,
-    );
-    revalidatePath("/app/penalty-points");
+    revalidatePath(`/app/silc`);
+    revalidatePath("/app/silc/transactions");
+    revalidatePath("/app/dashboard");
 
     /**
      * Respond with the result
