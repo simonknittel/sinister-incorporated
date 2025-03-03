@@ -24,7 +24,7 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
-      <Day heading="2. März 2025">
+      <Day heading="3. März 2025">
           <DayItem heading="Bug: SILC-Kontostände">
             <p>Es wurde ein Fehler behoben, welcher verhinderte, dass der SILC-Kontostand eines Citizen korrekt berechnet wird, wenn alle seine Transaktionen gelöscht wurden.</p>
           </DayItem>
