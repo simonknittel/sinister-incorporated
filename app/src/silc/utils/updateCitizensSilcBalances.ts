@@ -12,7 +12,7 @@ export const updateCitizensSilcBalances = async (
   );
 
   const silcBalancePerCitizen = new Map<string, number>(
-    transactions.map((transaction) => [transaction.receiverId, 0]),
+    citizenIds.map((citizenId) => [citizenId, 0]),
   );
 
   for (const transaction of transactions) {
