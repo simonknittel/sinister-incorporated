@@ -3,6 +3,7 @@ import { Hero } from "@/common/components/Hero";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { Navigation } from "@/silc/components/Navigation";
 import { SilcBalancesTable } from "@/silc/components/SilcBalancesTable";
+import { SilcStatistics } from "@/silc/components/SilcStatistics";
 import { type Metadata } from "next";
 import { Suspense } from "react";
 
@@ -21,6 +22,10 @@ export default async function Page() {
       </div>
 
       <Navigation active="/app/silc" className="mt-4" />
+
+      <Suspense fallback={<SkeletonTile className="mt-4" />}>
+        <SilcStatistics className="mt-4" />
+      </Suspense>
 
       <Suspense fallback={<SkeletonTile className="mt-4" />}>
         <SilcBalancesTable className="mt-4" />

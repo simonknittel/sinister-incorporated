@@ -61,7 +61,8 @@ export interface PermissionSet {
     | "silcBalanceOfOtherCitizen"
     | "silcBalanceOfCurrentCitizen"
     | "silcTransactionOfOtherCitizen"
-    | "silcTransactionOfCurrentCitizen";
+    | "silcTransactionOfCurrentCitizen"
+    | "silcSetting";
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   operation:
     | "create"

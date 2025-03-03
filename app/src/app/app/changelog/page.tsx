@@ -4,6 +4,8 @@ import image20250228PenaltyPoints from "@/changelog/assets/2025-02-28-penalty-po
 import image20250302SilcDashboard from "@/changelog/assets/2025-03-02-silc-dashboard.png";
 import image20250302SilcOverview from "@/changelog/assets/2025-03-02-silc-overview.png";
 import image20250302SilcTransactions from "@/changelog/assets/2025-03-02-silc-transactions.png";
+import image20250303SilcAuecConversionRate from "@/changelog/assets/2025-03-03-silc-auec-conversion-rate.png";
+import image20250303SilcStatistics from "@/changelog/assets/2025-03-03-silc-statistics.png";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 import Image from "next/image";
@@ -24,9 +26,39 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
-      <Day heading="2. März 2025">
+        <Day heading="3. März 2025">
+          <DayItem heading="SILC: aUEC Umrechnungskurs">
+            <p>
+              Im SILC-System kann nun ein Umrechnungskurs zu aUEC konfiguriert
+              werden. Hierzu gibt es auch eine neue Berechtigung.
+            </p>
+
+            <p>
+              Zudem wird in der Übersicht nun angezeigt wie viel SILC im Umlauf
+              ist.
+            </p>
+
+            <Image
+              src={image20250303SilcAuecConversionRate}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+
+            <Image
+              src={image20250303SilcStatistics}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+          </DayItem>
+
           <DayItem heading="Bug: SILC-Kontostände">
-            <p>Es wurde ein Fehler behoben, welcher verhinderte, dass der SILC-Kontostand eines Citizen korrekt berechnet wird, wenn alle seine Transaktionen gelöscht wurden.</p>
+            <p>
+              Es wurde ein Fehler behoben, welcher verhinderte, dass der
+              SILC-Kontostand eines Citizen korrekt berechnet wird, wenn alle
+              seine Transaktionen gelöscht wurden.
+            </p>
           </DayItem>
         </Day>
 

@@ -9,14 +9,11 @@ type Props = Readonly<{
 
 export const Navigation = async ({ className, active }: Props) => {
   const authentication = await requireAuthentication();
-  const showOverview = await authentication.authorize(
-    "silcBalanceOfOtherCitizen",
-    "read",
-  );
-  const showTransactions = await authentication.authorize(
-    "silcTransactionOfOtherCitizen",
-    "read",
-  );
+  const [showOverview, showTransactions, showSettings] = await Promise.all([
+    authentication.authorize("silcBalanceOfOtherCitizen", "read"),
+    authentication.authorize("silcTransactionOfOtherCitizen", "read"),
+    authentication.authorize("silcSetting", "manage"),
+  ]);
 
   if (!showOverview && !showTransactions) return null;
 
@@ -34,6 +31,14 @@ export const Navigation = async ({ className, active }: Props) => {
           {
             name: "Transaktionen",
             path: `/app/silc/transactions`,
+          },
+        ]
+      : []),
+    ...(showSettings
+      ? [
+          {
+            name: "Einstellungen",
+            path: `/app/silc/settings`,
           },
         ]
       : []),
