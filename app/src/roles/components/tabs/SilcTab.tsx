@@ -67,6 +67,18 @@ export const SilcTab = () => {
 
         <YesNoCheckbox {...register("silcTransactionOfOtherCitizen;manage")} />
       </div>
+
+      <div className="py-2 flex justify-between items-center gap-2 mt-2">
+        <div>
+          <h4 className="font-bold">Einstellungen bearbeiten</h4>
+          <p className="text-sm">
+            Citizen mit dieser Berechtigung können SILC-Einstellungen
+            bearbeiten.
+          </p>
+        </div>
+
+        <YesNoCheckbox {...register("silcSetting;manage")} />
+      </div>
     </TabPanel>
   );
 };

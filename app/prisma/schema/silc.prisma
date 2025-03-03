@@ -16,3 +16,15 @@ model SilcTransaction {
 
   @@index([receiverId])
 }
+
+model SilcSetting {
+  key         SilcSettingKey @id
+  value       String
+  updatedAt   DateTime?      @updatedAt
+  updatedBy   Entity?        @relation("updatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  updatedById String?
+}
+
+enum SilcSettingKey {
+  AUEC_CONVERSION_RATE
+}
