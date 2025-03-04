@@ -11,6 +11,18 @@ export const PenaltyPointsTab = () => {
     <TabPanel id="penalty_points">
       <div className="py-2 flex justify-between items-center gap-2  mt-2">
         <div>
+          <h4 className="font-bold">Einsehen</h4>
+          <p className="text-sm">
+            Citizen mit dieser Berechtigung können Strafpunkte von anderen
+            Citizen einsehen.
+          </p>
+        </div>
+
+        <YesNoCheckbox {...register("penaltyEntry;read")} />
+      </div>
+
+      <div className="py-2 flex justify-between items-center gap-2  mt-2">
+        <div>
           <h4 className="font-bold">Eintragen</h4>
           <p className="text-sm">
             Citizen mit dieser Berechtigung können Strafpunkte bei anderen

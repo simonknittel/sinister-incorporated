@@ -10,8 +10,10 @@ type Props = Readonly<{
 
 export const AllEntriesTable = async ({ className }: Props) => {
   const authentication = await requireAuthentication();
-  const showCreate = await authentication.authorize("penaltyEntry", "create");
-  const showDelete = await authentication.authorize("penaltyEntry", "delete");
+  const [showCreate, showDelete] = await Promise.all([
+    authentication.authorize("penaltyEntry", "create"),
+    authentication.authorize("penaltyEntry", "delete"),
+  ]);
 
   const entries = await getEntriesGroupedByCitizen();
   const hasEntries = entries.size > 0;
