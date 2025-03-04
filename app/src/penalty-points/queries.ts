@@ -6,68 +6,71 @@ import { type Entity, type PenaltyEntry } from "@prisma/client";
 import { cache } from "react";
 
 export const getEntriesGroupedByCitizen = async () => {
-  return getTracer().startActiveSpan("getAllEntries", async (span) => {
-    try {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("penaltyEntry", "read")))
-        throw new Error("Forbidden");
+  return getTracer().startActiveSpan(
+    "getEntriesGroupedByCitizen",
+    async (span) => {
+      try {
+        const authentication = await requireAuthentication();
+        if (!(await authentication.authorize("penaltyEntry", "read")))
+          throw new Error("Forbidden");
 
-      const now = new Date();
+        const now = new Date();
 
-      const entries = await prisma.penaltyEntry.findMany({
-        where: {
-          deletedAt: null,
-          OR: [
-            {
-              expiresAt: {
-                gte: now,
+        const entries = await prisma.penaltyEntry.findMany({
+          where: {
+            deletedAt: null,
+            OR: [
+              {
+                expiresAt: {
+                  gte: now,
+                },
               },
-            },
-            {
-              expiresAt: null,
-            },
-          ],
-        },
-        include: {
-          citizen: true,
-          createdBy: true,
-        },
-      });
+              {
+                expiresAt: null,
+              },
+            ],
+          },
+          include: {
+            citizen: true,
+            createdBy: true,
+          },
+        });
 
-      const groupedEntries = new Map<
-        Entity["id"],
-        {
-          citizen: Entity;
-          totalPoints: number;
-          entries: (PenaltyEntry & { createdBy: Entity })[];
+        const groupedEntries = new Map<
+          Entity["id"],
+          {
+            citizen: Entity;
+            totalPoints: number;
+            entries: (PenaltyEntry & { createdBy: Entity })[];
+          }
+        >();
+
+        for (const entry of entries) {
+          if (!groupedEntries.has(entry.citizenId)) {
+            groupedEntries.set(entry.citizenId, {
+              citizen: entry.citizen,
+              totalPoints: 0,
+              entries: [],
+            });
+          }
+
+          const mapEntry = groupedEntries.get(entry.citizenId)!;
+          mapEntry.entries.push(entry);
+
+          mapEntry.totalPoints += entry.points;
         }
-      >();
 
-      for (const entry of entries) {
-        if (!groupedEntries.has(entry.citizenId)) {
-          groupedEntries.set(entry.citizenId, {
-            citizen: entry.citizen,
-            totalPoints: 0,
-            entries: [],
-          });
-        }
-
-        const mapEntry = groupedEntries.get(entry.citizenId)!;
-        mapEntry.entries.push(entry);
-
-        mapEntry.totalPoints += entry.points;
+        return groupedEntries;
+      } catch (error) {
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+        });
+        throw error;
+      } finally {
+        span.end();
       }
-
-      return groupedEntries;
-    } catch (error) {
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-      });
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
+    },
+  );
 };
 
 export const getPenaltyEntriesOfCurrentUser = cache(async () => {
