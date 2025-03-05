@@ -1,5 +1,6 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Link } from "@/common/components/Link";
+import Note from "@/common/components/Note";
 import type { Entity, EventPosition, Ship } from "@prisma/client";
 import clsx from "clsx";
 
@@ -31,32 +32,36 @@ export const Unassigned = ({
       ),
     );
 
-  return (
-    <section className={clsx("rounded-2xl bg-neutral-800/50 p-4", className)}>
-      <h3 className="font-bold">Keinem Posten zugeordnet</h3>
+  if (unassignedCitizen.length <= 0) return null;
 
-      {unassignedCitizen.length > 0 ? (
-        <ul className="mt-2 flex gap-x-3 gap-y-1 flex-wrap">
-          {unassignedCitizen.map((citizen) => (
-            <li key={citizen.citizen.id}>
-              <Link
-                href={`/app/spynet/citizen/${citizen.citizen.id}`}
-                className={clsx("hover:underline self-start", {
-                  "text-green-500":
-                    citizen.citizen.id === authentication.session.entityId,
-                  "text-sinister-red-500":
-                    citizen.citizen.id !== authentication.session.entityId,
-                })}
-                prefetch={false}
-              >
-                {citizen.citizen.handle || citizen.citizen.id}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="mt-2 text-neutral-500">-</p>
-      )}
-    </section>
+  return (
+    <Note
+      type="info"
+      message={
+        <div className="flex flex-col">
+          <p className="font-bold">Keinem Posten zugeordnet</p>
+
+          <ul className="mt-2 flex gap-x-3 gap-y-1 flex-wrap">
+            {unassignedCitizen.map((citizen) => (
+              <li key={citizen.citizen.id}>
+                <Link
+                  href={`/app/spynet/citizen/${citizen.citizen.id}`}
+                  className={clsx("hover:underline self-start", {
+                    "text-green-500":
+                      citizen.citizen.id === authentication.session.entityId,
+                    "text-sinister-red-500":
+                      citizen.citizen.id !== authentication.session.entityId,
+                  })}
+                  prefetch={false}
+                >
+                  {citizen.citizen.handle || citizen.citizen.id}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      }
+      className={clsx("!max-w-none", className)}
+    />
   );
 };

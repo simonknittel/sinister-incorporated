@@ -66,11 +66,16 @@ export const LineupTab = ({
   return (
     <section className={clsx("flex flex-col gap-4", className)}>
       <div className="flex items-center justify-between">
-        <h2 className="font-bold">Aufstellung</h2>
+        <h2 className="font-bold text-lg">Aufstellung</h2>
         {canManagePositions && (
           <CreateOrUpdateEventPosition event={event} variants={variants} />
         )}
       </div>
+
+      <Unassigned
+        positions={event.positions}
+        allEventCitizens={allEventCitizens}
+      />
 
       {event.positions.length > 0 ? (
         <div className="flex flex-col gap-[1px]">
@@ -95,11 +100,6 @@ export const LineupTab = ({
           angelegt und zugeordnet werden.
         </p>
       )}
-
-      <Unassigned
-        positions={event.positions}
-        allEventCitizens={allEventCitizens}
-      />
     </section>
   );
 };
