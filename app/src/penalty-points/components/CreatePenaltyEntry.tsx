@@ -36,7 +36,7 @@ export const CreatePenaltyEntry = ({ className }: Props) => {
           return;
         }
 
-        toast.success(response.success);
+        toast.success(response.success!);
         setIsOpen(false);
       } catch (error) {
         unstable_rethrow(error);

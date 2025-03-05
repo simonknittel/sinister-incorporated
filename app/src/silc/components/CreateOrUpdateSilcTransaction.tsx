@@ -67,7 +67,7 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
           return;
         }
 
-        toast.success(response.success);
+        toast.success(response.success!);
         if (formData.has("createAnother")) {
           receiverIdsInputRef.current?.focus();
           return;

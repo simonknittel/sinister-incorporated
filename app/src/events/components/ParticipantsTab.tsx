@@ -85,7 +85,7 @@ export const ParticipantsTab = async ({
   return (
     <div className={clsx("flex flex-col gap-4", className)}>
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
-        <h2 className="font-bold mb-4">Organisator</h2>
+        <h2 className="font-bold mb-4 text-lg">Organisator</h2>
         <Link
           href={`/app/spynet/citizen/${resolvedCreatorParticipant.citizen.id}`}
           className={clsx("mt-2 hover:underline self-start", {
@@ -104,7 +104,7 @@ export const ParticipantsTab = async ({
       </section>
 
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 overflow-auto">
-        <h2 className="font-bold mb-4 flex items-center gap-2">
+        <h2 className="font-bold mb-4 flex items-center gap-2 text-lg">
           Teilnehmer ({sortedResolvedParticipants.length})
           <Tooltip triggerChildren={<FaInfoCircle />}>
             Es werden nur Discord-Anmeldungen mit einem Spynet-Eintrag

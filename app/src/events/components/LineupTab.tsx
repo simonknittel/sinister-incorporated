@@ -17,8 +17,8 @@ import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { PositionSkeleton } from "./PositionSkeleton";
 import { Unassigned } from "./Unassigned";
 
-const Position = dynamic(
-  () => import("./Position").then((mod) => mod.Position),
+const Positions = dynamic(
+  () => import("./Positions").then((mod) => mod.Positions),
   { ssr: false, loading: () => <PositionSkeleton /> },
 );
 
@@ -65,8 +65,8 @@ export const LineupTab = ({
 }: Props) => {
   return (
     <section className={clsx("flex flex-col gap-4", className)}>
-      <div className="flex items-center justify-between">
-        <h2 className="font-bold text-lg">Aufstellung</h2>
+      <div className="flex justify-end">
+        <h2 className="sr-only">Aufstellung</h2>
         {canManagePositions && (
           <CreateOrUpdateEventPosition event={event} variants={variants} />
         )}
@@ -78,22 +78,15 @@ export const LineupTab = ({
       />
 
       {event.positions.length > 0 ? (
-        <div className="flex flex-col gap-[1px]">
-          {event.positions
-            .toSorted((a, b) => a.name.localeCompare(b.name))
-            .map((position) => (
-              <Position
-                key={position.id}
-                position={position}
-                showManage={canManagePositions}
-                variants={variants}
-                myShips={myShips}
-                allEventCitizens={allEventCitizens}
-                showActions={showActions}
-                showToggle={showToggle}
-              />
-            ))}
-        </div>
+        <Positions
+          positions={event.positions}
+          canManagePositions={canManagePositions}
+          variants={variants}
+          myShips={myShips}
+          allEventCitizens={allEventCitizens}
+          showActions={showActions}
+          showToggle={showToggle}
+        />
       ) : (
         <p className="rounded-2xl bg-neutral-800/50 p-4">
           Keine Posten vorhanden. Diese können vom Organisator des Events

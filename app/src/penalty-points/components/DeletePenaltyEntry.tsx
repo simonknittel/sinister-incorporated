@@ -38,7 +38,7 @@ export const DeletePenaltyEntry = ({ className, entry }: Props) => {
           return;
         }
 
-        toast.success(response.success);
+        toast.success(response.success!);
       } catch (error) {
         unstable_rethrow(error);
         toast.error(
