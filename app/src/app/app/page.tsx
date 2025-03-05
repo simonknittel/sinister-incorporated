@@ -8,7 +8,6 @@ import {
   searchParamsNextjsToURLSearchParams,
   type NextjsSearchParams,
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
-import { QuotesTile } from "@/dashboard/components/QuotesTile";
 import { TileSkeleton } from "@/dashboard/components/TileSkeleton";
 import { CalendarTile } from "@/events/components/CalendarTile";
 import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
@@ -62,7 +61,7 @@ export default async function Page({ searchParams }: Props) {
         </section>
       </div>
 
-      <QuotesTile className="mt-4" />
+      {/* <QuotesTile className="mt-4" /> */}
     </main>
   );
 }
