@@ -48,7 +48,7 @@ export const getSilcBalanceOfAllCitizens = cache(async () => {
       try {
         return await prisma.entity.findMany({
           where: {
-            silcBalance: {
+            totalEarnedSilc: {
               not: {
                 equals: 0,
               },
@@ -58,6 +58,7 @@ export const getSilcBalanceOfAllCitizens = cache(async () => {
             id: true,
             handle: true,
             silcBalance: true,
+            totalEarnedSilc: true,
           },
           orderBy: {
             silcBalance: "desc",

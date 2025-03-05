@@ -32,6 +32,7 @@ model Entity {
   eventPositionApplications EventPositionApplication[] @relation("citizen")
   eventPositions            EventPosition[]            @relation("citizen")
   silcBalance               Int                        @default(0)
+  totalEarnedSilc           Int                        @default(0)
 }
 
 model EntityLog {

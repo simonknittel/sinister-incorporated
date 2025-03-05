@@ -2,6 +2,7 @@ import { Algolia } from "@/algolia/components/Algolia";
 import { authenticatePage } from "@/auth/server";
 import { log } from "@/logging";
 import { AnalyticsCheckboxLoader } from "@/settings/components/AnalyticsCheckboxLoader";
+import { RefreshSilcBalances } from "@/silc/components/RefreshSilcBalances";
 import ClassificationLevelsTile from "@/spynet/components/classification-level/ClassificationLevelsTile";
 import NoteTypesTile from "@/spynet/components/note-type/NoteTypesTile";
 import { type Metadata } from "next";
@@ -14,13 +15,19 @@ export const metadata: Metadata = {
 export default async function Page() {
   const authentication = await authenticatePage("/app/settings");
 
-  const showNoteTypes = await authentication.authorize("noteType", "manage");
-  const showClassificationLevels = await authentication.authorize(
-    "classificationLevel",
-    "manage",
-  );
-  const showAnalytics = await authentication.authorize("analytics", "manage");
-  const showAlgolia = await authentication.authorize("algolia", "manage");
+  const [
+    showNoteTypes,
+    showClassificationLevels,
+    showAnalytics,
+    showAlgolia,
+    showRefreshBalance,
+  ] = await Promise.all([
+    authentication.authorize("noteType", "manage"),
+    authentication.authorize("classificationLevel", "manage"),
+    authentication.authorize("analytics", "manage"),
+    authentication.authorize("algolia", "manage"),
+    authentication.authorize("silcBalanceOfOtherCitizen", "manage"),
+  ]);
 
   if (
     !showNoteTypes &&
@@ -58,9 +65,17 @@ export default async function Page() {
         </section>
       )}
 
-      <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50">
-        {showAlgolia && <Algolia />}
-      </section>
+      {showAlgolia && (
+        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50 flex flex-col gap-4">
+          <Algolia />
+        </section>
+      )}
+
+      {showRefreshBalance && (
+        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50">
+          <RefreshSilcBalances />
+        </section>
+      )}
     </main>
   );
 }
