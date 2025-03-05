@@ -14,12 +14,12 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { FaSortAlphaDown, FaSortAlphaUpAlt } from "react-icons/fa";
 
-type Row = Pick<Entity, "id" | "handle" | "silcBalance">;
+type Row = Pick<Entity, "id" | "handle" | "silcBalance" | "totalEarnedSilc">;
 
 const columnHelper = createColumnHelper<Row>();
 
-const TABLE_MIN_WIDTH = "min-w-[240px]";
-const GRID_COLS = "grid-cols-[160px_88px]";
+const TABLE_MIN_WIDTH = "min-w-[320px]";
+const GRID_COLS = "grid-cols-[160px_96px_96px]";
 
 type Props = Readonly<{
   className?: string;
@@ -55,6 +55,17 @@ export const SilcBalancesTableClient = ({ className, rows }: Props) => {
       columnHelper.accessor("silcBalance", {
         header: "Kontostand",
         id: "silcBalance",
+        sortDescFirst: true,
+        cell: (row) => (
+          <span className="flex items-center h-10 font-bold">
+            {row.getValue()}
+          </span>
+        ),
+      }),
+
+      columnHelper.accessor("totalEarnedSilc", {
+        header: "Verdient",
+        id: "totalEarnedSilc",
         sortDescFirst: true,
         cell: (row) => (
           <span className="flex items-center h-10 font-bold">

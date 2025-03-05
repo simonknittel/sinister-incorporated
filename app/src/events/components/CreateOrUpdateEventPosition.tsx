@@ -110,7 +110,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
       {"event" in props && (
         <Button
           onClick={handleClick}
-          variant="secondary"
+          variant="primary"
           className={clsx(props.className)}
           title="Posten hinzufügen"
         >

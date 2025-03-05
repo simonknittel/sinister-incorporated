@@ -23,35 +23,13 @@ import { RedBar } from "./RedBar";
 
 export const DesktopSidebar = async () => {
   const authentication = await requireAuthentication();
+
   const showSpynet =
     (await authentication.authorize("citizen", "read")) ||
     (await authentication.authorize("organization", "read"));
   const showOperations =
     (await getUnleashFlag("EnableOperations")) &&
     (await authentication.authorize("operation", "manage"));
-  const showShipManage = await authentication.authorize("ship", "manage");
-  const showOrgFleetRead = await authentication.authorize("orgFleet", "read");
-  const showCitizenRead = await authentication.authorize("citizen", "read");
-  const showUserRead = await authentication.authorize("user", "read");
-  const showOrganizationRead = await authentication.authorize(
-    "organization",
-    "read",
-  );
-  const showRoleManage = await authentication.authorize("role", "manage");
-  const showClassificationLevelManage = await authentication.authorize(
-    "classificationLevel",
-    "manage",
-  );
-  const showNoteTypeManage = await authentication.authorize(
-    "noteType",
-    "manage",
-  );
-  const showAnalyticsManage = await authentication.authorize(
-    "analytics",
-    "manage",
-  );
-  const showManufacturersSeriesAndVariantsManage =
-    await authentication.authorize("manufacturersSeriesAndVariants", "manage");
   const showCareer =
     (await authentication.authorize("career", "read", [
       {
@@ -65,10 +43,37 @@ export const DesktopSidebar = async () => {
         value: "economic",
       },
     ]));
-  const showSpynetActivity = await authentication.authorize(
-    "spynetActivity",
-    "read",
-  );
+
+  const [
+    showShipManage,
+    showOrgFleetRead,
+    showCitizenRead,
+    showUserRead,
+    showOrganizationRead,
+    showRoleManage,
+    showClassificationLevelManage,
+    showNoteTypeManage,
+    showAnalyticsManage,
+    showManufacturersSeriesAndVariantsManage,
+    showPenaltyPoints,
+    showSilc,
+    showSpynetActivity,
+  ] = await Promise.all([
+    authentication.authorize("ship", "manage"),
+    authentication.authorize("orgFleet", "read"),
+    authentication.authorize("citizen", "read"),
+    authentication.authorize("user", "read"),
+    authentication.authorize("organization", "read"),
+    authentication.authorize("role", "manage"),
+    authentication.authorize("classificationLevel", "manage"),
+    authentication.authorize("noteType", "manage"),
+    authentication.authorize("analytics", "manage"),
+    authentication.authorize("manufacturersSeriesAndVariants", "manage"),
+    authentication.authorize("penaltyEntry", "create"),
+    authentication.authorize("silcBalanceOfOtherCitizen", "read"),
+    authentication.authorize("spynetActivity", "read"),
+  ]);
+
   const showSpynetCitizen =
     showCitizenRead &&
     (await authentication.authorize("spynetCitizen", "read"));
@@ -81,22 +86,14 @@ export const DesktopSidebar = async () => {
     showSpynetCitizen ||
     showSpynetNotes ||
     showSpynetOther;
-  const showPenaltyPoints = await authentication.authorize(
-    "penaltyEntry",
-    "create",
-  );
-  const showSilc = await authentication.authorize(
-    "silcBalanceOfOtherCitizen",
-    "read",
-  );
 
   const disableAlgolia = (await getUnleashFlag("DisableAlgolia")) || false;
 
   return (
-    <>
+    <div className="overflow-auto pl-8 py-8">
       {/* <GlobalAlert /> */}
 
-      <div className="bg-neutral-800/50 flex flex-col justify-between rounded-2xl overflow-auto">
+      <div className="bg-neutral-800/50 flex flex-col justify-between rounded-2xl">
         <div>
           <Account />
 
@@ -363,6 +360,6 @@ export const DesktopSidebar = async () => {
       </div>
 
       <Footer className="px-8 py-4" />
-    </>
+    </div>
   );
 };

@@ -40,47 +40,55 @@ export const ProfileTile = async ({ className }: Props) => {
     : undefined;
 
   return (
-    <section
-      className={clsx(
-        className,
-        "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col gap-4 items-center",
-      )}
-    >
-      <Avatar name={name} image={image} size={128} />
+    <div className="flex flex-col gap-2 items-center">
+      <section
+        className={clsx(
+          className,
+          "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col gap-4 items-center",
+        )}
+      >
+        <Avatar name={name} image={image} size={128} />
 
-      <h2 className="font-bold">{name}</h2>
+        <h2 className="font-bold">{name}</h2>
 
-      {roles.length > 0 ? (
-        <div className="flex gap-2 flex-wrap justify-center">
-          {roles.map((role) => (
-            <SingleRole key={role.id} role={role} />
-          ))}
-        </div>
-      ) : null}
+        {roles.length > 0 && (
+          <div className="flex gap-2 flex-wrap justify-center">
+            {roles.map((role) => (
+              <SingleRole key={role.id} role={role} />
+            ))}
+          </div>
+        )}
+      </section>
 
-      {showSilcBalance || showPenaltyPoints ? (
-        <div className="flex flex-wrap gap-1">
+      {(showSilcBalance || showPenaltyPoints) && (
+        <div className="flex gap-2 w-full">
           {showSilcBalance && (
-            <p
+            <section
               title={`SILC: ${silcBalance}`}
-              className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
+              className="flex-1 rounded-2xl bg-neutral-800/50 flex flex-col justify-center items-center p-4"
             >
-              <FaPiggyBank className="text-xs text-neutral-500" />
-              {silcBalance}
-            </p>
+              <span className="font-black text-4xl">{silcBalance}</span>
+              <p className="text-neutral-500 flex gap-2 items-center">
+                <FaPiggyBank className="text-neutral-500" />
+                SILC
+              </p>
+            </section>
           )}
 
           {showPenaltyPoints && (
-            <p
-              title={`Aktive Strafpunkte: ${penaltyPoints}`}
-              className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
+            <section
+              title={`Strafpunkte: ${penaltyPoints}`}
+              className="flex-1 rounded-2xl bg-neutral-800/50 flex flex-col justify-center items-center p-4"
             >
-              <FaScaleBalanced className="text-xs text-neutral-500" />
-              {penaltyPoints}
-            </p>
+              <span className="font-black text-4xl">{penaltyPoints}</span>
+              <p className="text-neutral-500 flex gap-2 items-center">
+                <FaScaleBalanced className="text-neutral-500" />
+                Strafpunkte
+              </p>
+            </section>
           )}
         </div>
-      ) : null}
+      )}
 
       {showSpynetLink && (
         <Link
@@ -91,6 +99,6 @@ export const ProfileTile = async ({ className }: Props) => {
           <FaExternalLinkAlt />
         </Link>
       )}
-    </section>
+    </div>
   );
 };

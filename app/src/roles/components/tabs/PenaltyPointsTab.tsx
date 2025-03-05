@@ -26,8 +26,7 @@ export const PenaltyPointsTab = () => {
           <h4 className="font-bold">Eintragen</h4>
           <p className="text-sm">
             Citizen mit dieser Berechtigung können Strafpunkte bei anderen
-            Citizen eintragen. Diese Berechtigung gibt auch Zugriff auf die
-            Seite mit aktiven Strafpunkten.
+            Citizen eintragen.
           </p>
         </div>
 

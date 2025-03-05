@@ -26,6 +26,25 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="5. März 2025">
+          <DayItem heading="Aufstellung">
+            <p>
+              Es gibt nun einen Button um alle Positionen auf- oder zuzuklappen.
+            </p>
+          </DayItem>
+
+          <DayItem heading="SILC">
+            <p>
+              In der SILC-Übersicht gibt es nun eine neue Spalte, welche die
+              gesamt verdienten SILC pro Citizen anzeigt.
+            </p>
+          </DayItem>
+
+          <DayItem heading="Visuelle Optimierungen">
+            <p>Es wurden diverse visuelle Optimierungen vorgenommen.</p>
+          </DayItem>
+        </Day>
+
         <Day heading="3. März 2025">
           <DayItem heading="SILC: aUEC Umrechnungskurs">
             <p>

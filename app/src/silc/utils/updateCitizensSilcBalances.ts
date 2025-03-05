@@ -11,26 +11,31 @@ export const updateCitizensSilcBalances = async (
     citizenIds.includes(transaction.receiverId),
   );
 
-  const silcBalancePerCitizen = new Map<string, number>(
-    citizenIds.map((citizenId) => [citizenId, 0]),
-  );
+  const silcBalancePerCitizen = new Map<
+    string,
+    { balance: number; totalEarned: number }
+  >(citizenIds.map((citizenId) => [citizenId, { balance: 0, totalEarned: 0 }]));
 
   for (const transaction of transactions) {
     const { receiverId, value } = transaction;
 
-    silcBalancePerCitizen.set(
-      receiverId,
-      silcBalancePerCitizen.get(receiverId)! + value,
-    );
+    const balance = silcBalancePerCitizen.get(receiverId)!.balance;
+    const totalEarned = silcBalancePerCitizen.get(receiverId)!.totalEarned;
+
+    silcBalancePerCitizen.set(receiverId, {
+      balance: balance + value,
+      totalEarned: value > 0 ? totalEarned + value : totalEarned,
+    });
   }
 
-  for (const [receiverId, balance] of silcBalancePerCitizen) {
+  for (const [receiverId, { balance, totalEarned }] of silcBalancePerCitizen) {
     await prisma.entity.update({
       where: {
         id: receiverId,
       },
       data: {
         silcBalance: balance,
+        totalEarnedSilc: totalEarned,
       },
     });
   }

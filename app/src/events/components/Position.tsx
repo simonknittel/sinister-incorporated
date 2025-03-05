@@ -10,12 +10,12 @@ import {
   type Upload,
   type Variant,
 } from "@prisma/client";
-import { useLocalStorage } from "@uidotdev/usehooks";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { DeleteEventPosition } from "./DeleteEventPosition";
+import { useLineup } from "./LineupContext";
 import { ToggleEventPositionApplicationForCurrentUser } from "./ToggleEventPositionApplicationForCurrentUser";
 import { UpdateEventPositionCitizenId } from "./UpdateEventPositionCitizenId";
 
@@ -58,19 +58,22 @@ export const Position = ({
   showActions,
   showToggle,
 }: Props) => {
-  const [isOpen, setIsOpen] = useLocalStorage(
-    `position_${position.id}.isopen`,
-    false,
-  );
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
+
+  const { openPositions, open, close } = useLineup();
+  const isOpen = openPositions.includes(position.id);
 
   const hasCurrentUserAlreadyApplied = position.applications.some(
     (application) => application.citizen.id === authentication.session.entityId,
   );
 
   const handleToggleOpen = () => {
-    setIsOpen((prev) => !prev);
+    if (isOpen) {
+      close(position.id);
+    } else {
+      open(position.id);
+    }
   };
 
   let doesCurrentUserSatisfyRequirements = true;

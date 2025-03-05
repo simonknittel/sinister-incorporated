@@ -27,7 +27,7 @@ export const SilcStatistics = async ({ className }: Props) => {
   return (
     <section
       className={clsx(
-        "rounded-2xl bg-neutral-800/50 flex justify-around p-4 lg:p-8",
+        "rounded-2xl bg-neutral-800/50 flex justify-evenly p-4 lg:p-8",
         className,
       )}
     >
