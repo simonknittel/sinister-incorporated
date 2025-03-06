@@ -150,7 +150,6 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
             name="citizenIds"
             required
             type="text"
-            maxLength={256}
             defaultValue={
               ("transaction" in props && props.transaction?.receiverId) || ""
             }
