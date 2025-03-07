@@ -1,8 +1,8 @@
 import { authenticatePage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { AllSilcTransactionsTable } from "@/silc/components/AllSilcTransactionsTable";
 import { Navigation } from "@/silc/components/Navigation";
-import { SilcTransactionsTable } from "@/silc/components/SilcTransactionsTable";
 import { type Metadata } from "next";
 import { Suspense } from "react";
 
@@ -23,7 +23,7 @@ export default async function Page() {
       <Navigation active="/app/silc/transactions" className="mt-4" />
 
       <Suspense fallback={<SkeletonTile className="mt-4" />}>
-        <SilcTransactionsTable className="mt-4" />
+        <AllSilcTransactionsTable className="mt-4" />
       </Suspense>
     </main>
   );

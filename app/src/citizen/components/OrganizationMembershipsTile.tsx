@@ -66,8 +66,8 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
     <section
       className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
     >
-      <h2 className="font-bold flex gap-2 items-center">
-        <FaSitemap /> Organisationen
+      <h2 className="font-bold flex gap-2 items-center text-lg">
+        <FaSitemap className="text-neutral-500" /> Organisationen
       </h2>
 
       {activeOrganizationMemberships.length > 0 ? (

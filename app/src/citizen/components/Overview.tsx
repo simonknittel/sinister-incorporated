@@ -27,7 +27,7 @@ export const Overview = async ({ className, entity }: Props) => {
     <section
       className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
     >
-      <h2 className="font-bold">Übersicht</h2>
+      <h2 className="font-bold text-lg">Übersicht</h2>
 
       <dl className="mt-4">
         <dt className="text-neutral-500">Sinister ID</dt>

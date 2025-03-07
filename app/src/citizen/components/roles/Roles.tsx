@@ -47,8 +47,8 @@ export const Roles = async ({ className, entity }: Props) => {
     <section
       className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
     >
-      <h2 className="font-bold flex gap-2 items-center">
-        <FaLock /> Rollen
+      <h2 className="font-bold flex gap-2 items-center text-lg">
+        <FaLock className="text-neutral-500" /> Rollen
       </h2>
 
       {assignedAndVisibleRoles.length > 0 ? (

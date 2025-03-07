@@ -27,10 +27,18 @@ export default async function Page() {
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
         <Day heading="7. März 2025">
-          <DayItem heading="Dashboard">
+          <DayItem heading="Zusagen im Dashboard">
             <p>
               Bei den Events auf dem Dashboard wird nun angezeigt, ob man selber
               zugesagt hat.
+            </p>
+          </DayItem>
+
+          <DayItem heading="SILC-Transaktionen">
+            <p>
+              Ein Klick auf die Kachel mit dem eigenen SILC-Kontostand im
+              Dashboard führt nun zu einer Übersicht mit den SILC-Transaktionen
+              zum eigenen SILC-Konto.
             </p>
           </DayItem>
 

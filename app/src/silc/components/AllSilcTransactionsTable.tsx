@@ -1,21 +1,16 @@
 import { requireAuthentication } from "@/auth/server";
-import type { Entity } from "@prisma/client";
 import clsx from "clsx";
-import { getSilcTransactionsOfCitizen } from "../queries";
+import { getSilcTransactionsOfAllCitizens } from "../queries";
 import { SilcTransactionsTableClient } from "./SilcTransactionsTableClient";
 
 type Props = Readonly<{
   className?: string;
-  citizenId: Entity["id"];
 }>;
 
-export const SilcTransactionsTable = async ({
-  className,
-  citizenId,
-}: Props) => {
+export const AllSilcTransactionsTable = async ({ className }: Props) => {
   const authentication = await requireAuthentication();
 
-  const entries = await getSilcTransactionsOfCitizen(citizenId);
+  const entries = await getSilcTransactionsOfAllCitizens();
   const hasEntries = entries.length > 0;
 
   const [showEdit, showDelete] = await Promise.all([

@@ -107,7 +107,7 @@ export const NotesTable = ({ rows, searchParams }: Props) => {
             >
               <td>
                 <Link
-                  href={`/app/spynet/citizen/${row.entity.id}`}
+                  href={`/app/spynet/citizen/${row.entity.id}/notes`}
                   className="text-sinister-red-500 hover:bg-neutral-800 block rounded px-2 h-full"
                 >
                   <span className="flex items-center h-14">

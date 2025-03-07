@@ -11,7 +11,6 @@ import {
   type NoteType,
 } from "@prisma/client";
 import clsx from "clsx";
-import { FaListAlt } from "react-icons/fa";
 import { NoteTypePanel } from "./NoteTypePanel";
 import isAllowedToRead from "./lib/isAllowedToRead";
 import isAllowedToReadRedacted from "./lib/isAllowedToReadRedacted";
@@ -123,10 +122,6 @@ export const Notes = async ({ className, entity }: Props) => {
         "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 w-full",
       )}
     >
-      <h2 className="font-bold flex gap-2 items-center mb-2">
-        <FaListAlt /> Notizen
-      </h2>
-
       <TabsProvider initialActiveTab={filteredNoteTypes[0].id}>
         <TabList>
           {filteredNoteTypes.map((noteType) => (
