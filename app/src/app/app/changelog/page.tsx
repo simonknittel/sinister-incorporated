@@ -27,6 +27,13 @@ export default async function Page() {
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
         <Day heading="7. März 2025">
+          <DayItem heading="Dashboard">
+            <p>
+              Bei den Events auf dem Dashboard wird nun angezeigt, ob man selber
+              zugesagt hat.
+            </p>
+          </DayItem>
+
           <DayItem heading="SILC-Transaktion erstellen">
             <p>
               Das Eingabefeld für die Sinister IDs ist nun ein Mehrzeilen-Feld

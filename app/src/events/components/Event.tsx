@@ -1,23 +1,27 @@
+import { requireAuthentication } from "@/auth/server";
 import { DiscordNavigationButton } from "@/common/components/DiscordNavigationButton";
 import { Link } from "@/common/components/Link";
 import TimeAgoContainer from "@/common/components/TimeAgoContainer";
-import type { Event as PrismaEvent } from "@prisma/client";
+import type {
+  EventDiscordParticipant,
+  Event as PrismaEvent,
+} from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
-import { FaClock, FaUser } from "react-icons/fa";
+import { FaCheck, FaClock, FaUser } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 
 type Props = Readonly<{
   className?: string;
   event: PrismaEvent & {
-    _count: {
-      discordParticipants: number;
-    };
+    discordParticipants: EventDiscordParticipant[];
   };
   index: number;
 }>;
 
-export const Event = ({ className, event, index }: Props) => {
+export const Event = async ({ className, event, index }: Props) => {
+  const authentication = await requireAuthentication();
+
   const isToday =
     event.startTime.toISOString().split("T")[0] ===
     new Date().toISOString().split("T")[0];
@@ -31,6 +35,11 @@ export const Event = ({ className, event, index }: Props) => {
     minute: "2-digit",
   });
 
+  const isCurrentCitizenParticipating = event.discordParticipants.some(
+    (participant) =>
+      participant.discordUserId === authentication.session.discordId,
+  );
+
   /**
    * Image size:
    * Discord recommends 800x320px.
@@ -40,7 +49,7 @@ export const Event = ({ className, event, index }: Props) => {
    */
 
   return (
-    <article className={clsx(className, "rounded-2xl overflow-hidden w-full")}>
+    <article className={clsx("rounded-2xl overflow-hidden w-full", className)}>
       {isToday && (
         <div className="bg-sinister-red-500/50 text-white font-bold text-center p-2">
           <TimeAgoContainer date={event.startTime} />
@@ -78,12 +87,22 @@ export const Event = ({ className, event, index }: Props) => {
             </p>
 
             <p
-              title={`Teilnehmer: ${event._count.discordParticipants}`}
+              title={`Teilnehmer: ${event.discordParticipants.length}`}
               className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
             >
               <FaUser className="text-xs text-neutral-500" />
-              {event._count.discordParticipants}
+              {event.discordParticipants.length}
             </p>
+
+            {isCurrentCitizenParticipating && (
+              <p
+                title={"Du hast dem Event zugesagt"}
+                className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center text-green-500"
+              >
+                <FaCheck className="text-xs text-neutral-500" />
+                Zugesagt
+              </p>
+            )}
           </div>
 
           <div className="flex flex-wrap">
