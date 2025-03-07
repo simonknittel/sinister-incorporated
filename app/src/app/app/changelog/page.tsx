@@ -34,11 +34,19 @@ export default async function Page() {
             </p>
           </DayItem>
 
-          <DayItem heading="SILC-Transaktionen">
+          <DayItem heading="Eigene SILC-Transaktionen">
             <p>
               Ein Klick auf die Kachel mit dem eigenen SILC-Kontostand im
               Dashboard führt nun zu einer Übersicht mit den SILC-Transaktionen
               zum eigenen SILC-Konto.
+            </p>
+          </DayItem>
+
+          <DayItem heading="Eigene Strafpunkte">
+            <p>
+              Ein Klick auf die Kachel mit den eigenen aktiven Strafpunkten im
+              Dashboard führt nun zu einer Übersicht mit den eigenen
+              Strafpunkten inkl. Begründung.
             </p>
           </DayItem>
 

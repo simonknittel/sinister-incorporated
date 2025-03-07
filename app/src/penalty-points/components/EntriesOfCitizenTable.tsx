@@ -1,21 +1,26 @@
 import { requireAuthentication } from "@/auth/server";
+import type { Entity } from "@prisma/client";
 import clsx from "clsx";
-import { getEntriesGroupedByCitizen } from "../queries";
+import { getEntriesOfCitizen } from "../queries";
 import { AllEntriesTableClient } from "./AllEntriesTableClient";
 import { CreatePenaltyEntry } from "./CreatePenaltyEntry";
 
 type Props = Readonly<{
   className?: string;
+  citizenId: Entity["id"];
 }>;
 
-export const AllEntriesTable = async ({ className }: Props) => {
+export const EntriesOfCitizenTable = async ({
+  className,
+  citizenId,
+}: Props) => {
   const authentication = await requireAuthentication();
   const [showCreate, showDelete] = await Promise.all([
     authentication.authorize("penaltyEntry", "create"),
     authentication.authorize("penaltyEntry", "delete"),
   ]);
 
-  const entries = await getEntriesGroupedByCitizen();
+  const entries = await getEntriesOfCitizen(citizenId);
   const hasEntries = entries.size > 0;
 
   return (

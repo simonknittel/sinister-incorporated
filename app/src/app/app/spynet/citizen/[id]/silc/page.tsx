@@ -37,7 +37,7 @@ export async function generateMetadata(props: {
     };
   } catch (error) {
     void log.error(
-      "Error while generating metadata for /app/spynet/citizen/[id]/notes/page.tsx",
+      "Error while generating metadata for /app/spynet/citizen/[id]/silc/page.tsx",
       {
         error: serializeError(error),
       },
@@ -54,7 +54,9 @@ type Props = Readonly<{
 }>;
 
 export default async function Page(props: Props) {
-  const authentication = await authenticatePage("/app/spynet/citizen/[id]");
+  const authentication = await authenticatePage(
+    "/app/spynet/citizen/[id]/silc",
+  );
 
   const entity = await getEntity((await props.params).id);
   if (!entity) notFound();

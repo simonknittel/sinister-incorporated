@@ -22,6 +22,10 @@ export const CitizenNavigation = async ({
           "read",
         )
       : await authentication.authorize("silcTransactionOfOtherCitizen", "read");
+  const showPenaltyPoints =
+    citizenId === authentication.session.entityId
+      ? await authentication.authorize("ownPenaltyEntry", "read")
+      : await authentication.authorize("penaltyEntry", "read");
 
   const pages = [
     {
@@ -39,6 +43,15 @@ export const CitizenNavigation = async ({
           {
             name: "SILC",
             path: `/app/spynet/citizen/${citizenId}/silc`,
+          },
+        ]
+      : []),
+
+    ...(showPenaltyPoints
+      ? [
+          {
+            name: "Strafpunkte",
+            path: `/app/spynet/citizen/${citizenId}/penalty-points`,
           },
         ]
       : []),

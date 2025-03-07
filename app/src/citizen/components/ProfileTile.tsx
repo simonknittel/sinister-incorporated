@@ -77,16 +77,17 @@ export const ProfileTile = async ({ className }: Props) => {
           )}
 
           {showPenaltyPoints && (
-            <section
-              title={`Strafpunkte: ${penaltyPoints}`}
-              className="flex-1 rounded-2xl bg-neutral-800/50 flex flex-col justify-center items-center p-4"
+            <Link
+              href={`/app/spynet/citizen/${authentication.session.entityId}/penalty-points`}
+              title="Übersicht öffnen"
+              className="flex-1 rounded-2xl bg-neutral-800/50 hover:bg-neutral-600/50 focus-visible:bg-neutral-600/50 flex flex-col justify-center items-center p-4"
             >
               <span className="font-black text-4xl">{penaltyPoints}</span>
               <p className="text-neutral-500 flex gap-2 items-center">
                 <FaScaleBalanced className="text-neutral-500" />
                 Strafpunkte
               </p>
-            </section>
+            </Link>
           )}
         </div>
       )}

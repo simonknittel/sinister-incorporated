@@ -73,6 +73,68 @@ export const getEntriesGroupedByCitizen = async () => {
   );
 };
 
+export const getEntriesOfCitizen = async (citizenId: Entity["id"]) => {
+  return getTracer().startActiveSpan("getEntriesOfCitizen", async (span) => {
+    try {
+      const now = new Date();
+
+      const entries = await prisma.penaltyEntry.findMany({
+        where: {
+          citizenId,
+          deletedAt: null,
+          OR: [
+            {
+              expiresAt: {
+                gte: now,
+              },
+            },
+            {
+              expiresAt: null,
+            },
+          ],
+        },
+        include: {
+          citizen: true,
+          createdBy: true,
+        },
+      });
+
+      const groupedEntries = new Map<
+        Entity["id"],
+        {
+          citizen: Entity;
+          totalPoints: number;
+          entries: (PenaltyEntry & { createdBy: Entity })[];
+        }
+      >();
+
+      for (const entry of entries) {
+        if (!groupedEntries.has(entry.citizenId)) {
+          groupedEntries.set(entry.citizenId, {
+            citizen: entry.citizen,
+            totalPoints: 0,
+            entries: [],
+          });
+        }
+
+        const mapEntry = groupedEntries.get(entry.citizenId)!;
+        mapEntry.entries.push(entry);
+
+        mapEntry.totalPoints += entry.points;
+      }
+
+      return groupedEntries;
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
+};
+
 export const getPenaltyEntriesOfCurrentUser = cache(async () => {
   return getTracer().startActiveSpan(
     "getPenaltyEntriesOfCurrentUser",
