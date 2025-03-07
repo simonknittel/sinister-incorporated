@@ -31,6 +31,8 @@ export const getEventUsers = cache(async (discordId: string) => {
         void log.warn("Hit rate limit of Discord", {
           endpoint: "getEventUsers",
           retryAfter: retryAfterSeconds,
+          attempt,
+          maxRetries,
         });
         await setTimeout(retryAfterSeconds * 1000);
       }
