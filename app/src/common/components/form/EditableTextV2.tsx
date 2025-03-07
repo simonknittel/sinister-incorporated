@@ -37,7 +37,7 @@ export const EditableTextV2 = ({ className, action, initialValue }: Props) => {
 
         if ("error" in response) {
           /**
-           * `setTimeout()` is need here because `isPending` is used for the
+           * `setTimeout()` is needed here because `isPending` is used for the
            * `disabled` attribute on the input element and `isPending` only
            * reverts to false once this transition finishes. This would lead to
            * calling `focus()` too early.
