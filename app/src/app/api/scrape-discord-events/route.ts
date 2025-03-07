@@ -7,6 +7,7 @@ import { env } from "@/env";
 import { publishNotification } from "@/pusher/utils/publishNotification";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
+import { shuffle } from "lodash";
 import { NextResponse, type NextRequest } from "next/server";
 import { type z } from "zod";
 
@@ -18,7 +19,10 @@ export async function POST(request: NextRequest) {
     )
       throw new Error("Unauthorized");
 
-    const { data: futureEventsFromDiscord } = await getEvents();
+    const { data: _futureEventsFromDiscord } = await getEvents();
+
+    // Shuffle array so rate limits not always hitting the same events
+    const futureEventsFromDiscord = shuffle(_futureEventsFromDiscord);
 
     await deleteCancelledEvents(futureEventsFromDiscord);
 
