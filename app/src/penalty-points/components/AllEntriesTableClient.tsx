@@ -52,7 +52,7 @@ export const AllEntriesTableClient = ({
           const { citizen } = row.row.original;
           return (
             <Link
-              href={`/app/spynet/citizen/${citizen.id}`}
+              href={`/app/spynet/citizen/${citizen.id}/penalty-points`}
               className="hover:bg-neutral-800 flex items-center rounded px-2 h-10 text-sinister-red-500 overflow-hidden text-ellipsis"
               prefetch={false}
               title={citizen.handle || ""}

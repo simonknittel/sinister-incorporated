@@ -26,8 +26,56 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="7. März 2025">
+          <DayItem heading="Zusagen im Dashboard">
+            <p>
+              Bei den Events auf dem Dashboard wird nun angezeigt, ob man selber
+              zugesagt hat.
+            </p>
+          </DayItem>
+
+          <DayItem heading="Eigene SILC-Transaktionen">
+            <p>
+              Ein Klick auf die Kachel mit dem eigenen SILC-Kontostand im
+              Dashboard führt nun zu einer Übersicht mit den SILC-Transaktionen
+              zum eigenen SILC-Konto.
+            </p>
+          </DayItem>
+
+          <DayItem heading="Eigene Strafpunkte">
+            <p>
+              Ein Klick auf die Kachel mit den eigenen aktiven Strafpunkten im
+              Dashboard führt nun zu einer Übersicht mit den eigenen
+              Strafpunkten inkl. Begründung.
+            </p>
+          </DayItem>
+
+          <DayItem heading="Eventaufstellung">
+            <p>
+              Der Name eines Posten kann nun direkt bearbeitet werden ohne das
+              Modal öffnen zu müssen. Dazu einfach auf den Namen klicken und im
+              Anschluss mit Enter bestätigen.
+            </p>
+          </DayItem>
+
+          <DayItem heading="SILC-Transaktion erstellen">
+            <p>
+              Das Eingabefeld für die Sinister IDs ist nun ein Mehrzeilen-Feld
+              um die Eingabe zu vereinfachen. Pro Zeile muss eine Sinister ID
+              angegeben werden.
+            </p>
+          </DayItem>
+
+          <DayItem heading="Fix: Eventaufstellung">
+            <p>
+              Es wurde ein Fehler behoben, wenn ein Eventteilnehmer absagt,
+              allerdings einem Posten zugeteilt war.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="5. März 2025">
-          <DayItem heading="Aufstellung">
+          <DayItem heading="Eventaufstellung">
             <p>
               Es gibt nun einen Button um alle Positionen auf- oder zuzuklappen.
             </p>

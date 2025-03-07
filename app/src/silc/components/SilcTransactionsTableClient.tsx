@@ -18,7 +18,7 @@ import { DeleteSilcTransaction } from "./DeleteSilcTransaction";
 
 type Row = SilcTransaction & {
   receiver: Pick<Entity, "id" | "handle">;
-  createdBy: Pick<Entity, "id" | "handle">;
+  createdBy: Pick<Entity, "id" | "handle"> | null;
   updatedBy: Pick<Entity, "id" | "handle"> | null;
 };
 
@@ -71,7 +71,7 @@ export const SilcTransactionsTableClient = ({
           const { receiver } = row.row.original;
           return (
             <Link
-              href={`/app/spynet/citizen/${receiver.id}`}
+              href={`/app/spynet/citizen/${receiver.id}/silc`}
               className="hover:bg-neutral-800 flex items-center rounded px-2 h-full text-sinister-red-500 overflow-hidden whitespace-nowrap text-ellipsis"
               prefetch={false}
               title={receiver.handle || receiver.id}
@@ -110,6 +110,7 @@ export const SilcTransactionsTableClient = ({
         cell: (row) => {
           const { createdBy, updatedBy } = row.row.original;
           const citizen = updatedBy || createdBy;
+          if (!citizen) return null;
           return (
             <Link
               href={`/app/spynet/citizen/${citizen.id}`}

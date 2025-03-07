@@ -61,11 +61,7 @@ export const getFutureEvents = cache(async () => {
           },
         },
         include: {
-          _count: {
-            select: {
-              discordParticipants: true,
-            },
-          },
+          discordParticipants: true,
         },
         orderBy: {
           startTime: "asc",

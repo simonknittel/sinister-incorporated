@@ -38,7 +38,7 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
   const receiverIdsInputId = useId();
   const valueInputId = useId();
   const descriptionInputId = useId();
-  const receiverIdsInputRef = useRef<HTMLInputElement>(null);
+  const receiverIdsInputRef = useRef<HTMLTextAreaElement>(null);
   const [receiverIds, setReceiverIds] = useState<string[]>(
     "transaction" in props && props.transaction
       ? [props.transaction.receiverId]
@@ -84,12 +84,17 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
     });
   };
 
-  const handleReceiverIdsChange: FormEventHandler<HTMLInputElement> = (
+  const handleReceiverIdsChange: FormEventHandler<HTMLTextAreaElement> = (
     event,
   ) => {
     startTransition(() => {
       const value = event.currentTarget.value;
-      setReceiverIds(value.split(",").map((id) => id.trim()));
+      setReceiverIds(
+        value
+          .split("\n")
+          .map((id) => id.trim())
+          .filter(Boolean),
+      );
     });
   };
 
@@ -144,12 +149,11 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
           <label className="block" htmlFor={receiverIdsInputId}>
             Citizen (Sinister ID)
           </label>
-          <input
+          <textarea
             autoFocus
-            className="p-2 rounded bg-neutral-900 w-full mt-2 disabled:opacity-50"
+            className="p-2 rounded bg-neutral-900 w-full mt-2 disabled:opacity-50 align-baseline h-32"
             name="citizenIds"
             required
-            type="text"
             defaultValue={
               ("transaction" in props && props.transaction?.receiverId) || ""
             }
@@ -159,9 +163,7 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
             readOnly={"transaction" in props}
             disabled={"transaction" in props}
           />
-          <p className="text-xs mt-1">
-            Es können mehrere IDs mit Komma getrennt angegeben werden.
-          </p>
+          <p className="text-xs mt-1">Eine ID pro Zeile, ohne Komma</p>
 
           <label className="block mt-4" htmlFor={valueInputId}>
             Wert

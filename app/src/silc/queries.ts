@@ -2,6 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
+import type { Entity } from "@prisma/client";
 import { cache } from "react";
 
 export const getSilcBalanceOfCurrentCitizen = cache(async () => {
@@ -120,3 +121,51 @@ export const getSilcTransactionsOfAllCitizens = cache(async () => {
     },
   );
 });
+
+export const getSilcTransactionsOfCitizen = cache(
+  async (citizenId: Entity["id"]) => {
+    return getTracer().startActiveSpan(
+      "getSilcTransactionsOfCitizen",
+      async (span) => {
+        try {
+          return await prisma.silcTransaction.findMany({
+            where: {
+              receiverId: citizenId,
+              deletedAt: null,
+            },
+            orderBy: {
+              createdAt: "asc",
+            },
+            include: {
+              receiver: {
+                select: {
+                  id: true,
+                  handle: true,
+                },
+              },
+              createdBy: {
+                select: {
+                  id: true,
+                  handle: true,
+                },
+              },
+              updatedBy: {
+                select: {
+                  id: true,
+                  handle: true,
+                },
+              },
+            },
+          });
+        } catch (error) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+          });
+          throw error;
+        } finally {
+          span.end();
+        }
+      },
+    );
+  },
+);
