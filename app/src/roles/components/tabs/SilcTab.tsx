@@ -35,7 +35,19 @@ export const SilcTab = () => {
 
       <div className="py-2 flex justify-between items-center gap-2 mt-2">
         <div>
-          <h4 className="font-bold">Transaktionen einsehen</h4>
+          <h4 className="font-bold">Eigene Transaktionen einsehen</h4>
+          <p className="text-sm">
+            Citizen mit dieser Berechtigung können die SILC-Transaktionen zum
+            eigenen Konto einsehen.
+          </p>
+        </div>
+
+        <YesNoCheckbox {...register("silcTransactionOfCurrentCitizen;read")} />
+      </div>
+
+      <div className="py-2 flex justify-between items-center gap-2 mt-2">
+        <div>
+          <h4 className="font-bold">Alle Transaktionen einsehen</h4>
           <p className="text-sm">
             Citizen mit dieser Berechtigung können die SILC-Transaktionen aller
             Citizen einsehen.
