@@ -26,8 +26,17 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="7. März 2025">
+          <DayItem heading="Fix: Eventaufstellung">
+            <p>
+              Es wurde ein Fehler behoben, wenn ein Eventteilnehmer absagt,
+              allerdings einem Posten zugeteilt war.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="5. März 2025">
-          <DayItem heading="Aufstellung">
+          <DayItem heading="Eventaufstellung">
             <p>
               Es gibt nun einen Button um alle Positionen auf- oder zuzuklappen.
             </p>

@@ -201,14 +201,29 @@ const updateParticipants = async (
 
       // Save to database
       if (participants.delete.length > 0) {
-        await prisma.eventDiscordParticipant.deleteMany({
-          where: {
-            eventId: databaseEvent.id,
-            discordUserId: {
-              in: participants.delete,
+        await prisma.$transaction([
+          prisma.eventDiscordParticipant.deleteMany({
+            where: {
+              eventId: databaseEvent.id,
+              discordUserId: {
+                in: participants.delete,
+              },
             },
-          },
-        });
+          }),
+
+          prisma.eventPositionApplication.deleteMany({
+            where: {
+              position: {
+                eventId: databaseEvent.id,
+              },
+              citizen: {
+                discordId: {
+                  in: participants.delete,
+                },
+              },
+            },
+          }),
+        ]);
       }
       if (participants.create.length > 0) {
         await prisma.eventDiscordParticipant.createMany({
