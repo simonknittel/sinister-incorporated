@@ -72,6 +72,14 @@ export default async function Page() {
               allerdings einem Posten zugeteilt war.
             </p>
           </DayItem>
+
+          <DayItem heading="Fix: Discord-Synchronisation">
+            <p>
+              Es wurden Fehler in der Synchronisation mit Discord behoben.
+              Teilnehmer an einem Event sollten nun zuverlässiger synchronisiert
+              werden.
+            </p>
+          </DayItem>
         </Day>
 
         <Day heading="5. März 2025">

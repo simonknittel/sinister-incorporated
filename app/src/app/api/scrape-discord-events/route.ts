@@ -227,6 +227,18 @@ const updateParticipants = async (
               },
             },
           }),
+
+          prisma.eventPosition.updateMany({
+            where: {
+              eventId: databaseEvent.id,
+              citizenId: {
+                in: participants.delete,
+              },
+            },
+            data: {
+              citizenId: null,
+            },
+          }),
         ]);
       }
       if (participants.create.length > 0) {
