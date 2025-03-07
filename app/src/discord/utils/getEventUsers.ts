@@ -26,7 +26,7 @@ export const getEventUsers = cache(async (discordId: string) => {
         if (response.status !== 429) break;
         const retryAfterHeader = response.headers.get("Retry-After");
         const retryAfterSeconds = retryAfterHeader
-          ? Number.parseInt(retryAfterHeader, 10)
+          ? Number.parseInt(retryAfterHeader, 10) + 1
           : 1;
         void log.warn("Hit rate limit of Discord", {
           endpoint: "getEventUsers",

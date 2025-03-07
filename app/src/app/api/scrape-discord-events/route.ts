@@ -22,7 +22,9 @@ export async function POST(request: NextRequest) {
     const { data: _futureEventsFromDiscord } = await getEvents();
 
     // Shuffle array so rate limits not always hitting the same events
-    const futureEventsFromDiscord = shuffle(_futureEventsFromDiscord);
+    let futureEventsFromDiscord = shuffle(_futureEventsFromDiscord);
+    // Limit to 5 events to avoid rate limits
+    futureEventsFromDiscord = futureEventsFromDiscord.slice(0, 5);
 
     await deleteCancelledEvents(futureEventsFromDiscord);
 
