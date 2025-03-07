@@ -34,6 +34,14 @@ export default async function Page() {
             </p>
           </DayItem>
 
+          <DayItem heading="Eventaufstellung">
+            <p>
+              Der Name eines Posten kann nun direkt bearbeitet werden ohne das
+              Modal öffnen zu müssen. Dazu einfach auf den Namen klicken und im
+              Anschluss mit Enter bestätigen.
+            </p>
+          </DayItem>
+
           <DayItem heading="SILC-Transaktion erstellen">
             <p>
               Das Eingabefeld für die Sinister IDs ist nun ein Mehrzeilen-Feld

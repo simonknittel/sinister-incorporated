@@ -15,6 +15,7 @@ import Link from "next/link";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { DeleteEventPosition } from "./DeleteEventPosition";
+import { EditablePositionName } from "./EditablePositionName";
 import { useLineup } from "./LineupContext";
 import { ToggleEventPositionApplicationForCurrentUser } from "./ToggleEventPositionApplicationForCurrentUser";
 import { UpdateEventPositionCitizenId } from "./UpdateEventPositionCitizenId";
@@ -136,9 +137,18 @@ export const Position = ({
             >
               Name
             </h3>
-            <p className="overflow-hidden whitespace-nowrap text-ellipsis font-bold">
-              {position.name}
-            </p>
+
+            {showManage ? (
+              <EditablePositionName
+                positionId={position.id}
+                name={position.name}
+                className="font-bold"
+              />
+            ) : (
+              <p className="overflow-hidden whitespace-nowrap text-ellipsis font-bold">
+                {position.name}
+              </p>
+            )}
           </div>
 
           <div className="flex-1 flex flex-col justify-center">
