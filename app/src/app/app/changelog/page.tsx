@@ -33,6 +33,13 @@ export default async function Page() {
               sollte die Synchronisation zuverlässiger machen.
             </p>
           </DayItem>
+
+          <DayItem heading="Fix: Event-History">
+            <p>
+              Die Seite mit vergangenen Events wird nun wieder korrekt
+              angezeigt.
+            </p>
+          </DayItem>
         </Day>
 
         <Day heading="7. März 2025">

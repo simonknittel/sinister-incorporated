@@ -90,11 +90,7 @@ export const getPastEvents = cache(async () => {
           },
         },
         include: {
-          _count: {
-            select: {
-              discordParticipants: true,
-            },
-          },
+          discordParticipants: true,
         },
         orderBy: {
           startTime: "desc",
