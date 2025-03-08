@@ -130,25 +130,24 @@ const deleteCancelledEvents = async (
 				(discordEvent) => discordEvent.id === event.discordId,
 			),
 	);
-	console.log("Cancelled events", cancelledEvents);
 
-	// if (cancelledEvents.length > 0) {
-	// 	await prisma.event.deleteMany({
-	// 		where: {
-	// 			id: {
-	// 				in: cancelledEvents.map((event) => event.id),
-	// 			},
-	// 		},
-	// 	});
-	// }
+	if (cancelledEvents.length > 0) {
+		await prisma.event.deleteMany({
+			where: {
+				id: {
+					in: cancelledEvents.map((event) => event.id),
+				},
+			},
+		});
+	}
 
-	// for (const cancelledEvent of cancelledEvents) {
-	// 	await publishNotification(
-	// 		["deletedDiscordEvent"],
-	// 		"Event abgesagt",
-	// 		cancelledEvent.name,
-	// 	);
-	// }
+	for (const cancelledEvent of cancelledEvents) {
+		await publishNotification(
+			["deletedDiscordEvent"],
+			"Event abgesagt",
+			cancelledEvent.name,
+		);
+	}
 };
 
 const updateParticipants = async (
@@ -191,44 +190,43 @@ const updateParticipants = async (
 	}
 
 	// Save to database
-	console.log("Deleted participants", participants.delete);
-	// if (participants.delete.length > 0) {
-	// 	await prisma.$transaction([
-	// 		prisma.eventDiscordParticipant.deleteMany({
-	// 			where: {
-	// 				eventId: databaseEvent.id,
-	// 				discordUserId: {
-	// 					in: participants.delete,
-	// 				},
-	// 			},
-	// 		}),
+	if (participants.delete.length > 0) {
+		await prisma.$transaction([
+			prisma.eventDiscordParticipant.deleteMany({
+				where: {
+					eventId: databaseEvent.id,
+					discordUserId: {
+						in: participants.delete,
+					},
+				},
+			}),
 
-	// 		prisma.eventPositionApplication.deleteMany({
-	// 			where: {
-	// 				position: {
-	// 					eventId: databaseEvent.id,
-	// 				},
-	// 				citizen: {
-	// 					discordId: {
-	// 						in: participants.delete,
-	// 					},
-	// 				},
-	// 			},
-	// 		}),
+			prisma.eventPositionApplication.deleteMany({
+				where: {
+					position: {
+						eventId: databaseEvent.id,
+					},
+					citizen: {
+						discordId: {
+							in: participants.delete,
+						},
+					},
+				},
+			}),
 
-	// 		prisma.eventPosition.updateMany({
-	// 			where: {
-	// 				eventId: databaseEvent.id,
-	// 				citizenId: {
-	// 					in: participants.delete,
-	// 				},
-	// 			},
-	// 			data: {
-	// 				citizenId: null,
-	// 			},
-	// 		}),
-	// 	]);
-	// }
+			prisma.eventPosition.updateMany({
+				where: {
+					eventId: databaseEvent.id,
+					citizenId: {
+						in: participants.delete,
+					},
+				},
+				data: {
+					citizenId: null,
+				},
+			}),
+		]);
+	}
 	if (participants.create.length > 0) {
 		await prisma.eventDiscordParticipant.createMany({
 			data: participants.create.map((participantId) => ({
