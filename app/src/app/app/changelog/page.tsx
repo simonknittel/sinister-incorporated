@@ -26,7 +26,7 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
-        <Day heading="7. März 2025">
+        <Day heading="8. März 2025">
           <DayItem heading="Rework: Discord-Synchronisation">
             <p>
               Die Synchronisation mit Discord wurde erneut überarbeitet. Dies
