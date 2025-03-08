@@ -217,8 +217,10 @@ const updateParticipants = async (
 			prisma.eventPosition.updateMany({
 				where: {
 					eventId: databaseEvent.id,
-					citizenId: {
-						in: participants.delete,
+					citizen: {
+						discordId: {
+							in: participants.delete,
+						},
 					},
 				},
 				data: {
