@@ -6,7 +6,7 @@ resource "aws_lambda_function" "main" {
   source_code_hash = filebase64sha256("${path.module}/placeholder.zip")
   runtime          = "nodejs22.x"
   timeout          = var.timeout
-  memory_size      = 256
+  memory_size      = 192
   architectures    = ["arm64"]
 
   # https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html
@@ -16,10 +16,6 @@ resource "aws_lambda_function" "main" {
   tracing_config {
     mode = "Active"
   }
-
-  layers = [
-    "arn:aws:lambda:eu-central-1:187925254637:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:12" # https://docs.aws.amazon.com/systems-manager/latest/userguide/ps-integration-lambda-extensions.html#ps-integration-lambda-extensions-add
-  ]
 
   lifecycle {
     # Changes to the function's source code are deployed using `.github/workflows/deploy-email-function.yml`
