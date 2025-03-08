@@ -43,6 +43,7 @@ jobs:
           SHA=$(git log -1 '--format=format:%H')
           # bun run build --define:process.env.COMMIT_SHA=\\\"$SHA\\\"
           bun run build
+          ls -la dist/
         working-directory: bun-packages/packages/scrape-discord-events-function
 
       - name: Store artifact
