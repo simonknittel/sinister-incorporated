@@ -1,13 +1,13 @@
-name: Deploy email-function
+name: Deploy Lambda functions
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/deploy-email-function.yml
-      - .github/workflows/build-email-function.yml
-      - bun-packages/**
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - .github/workflows/deploy-lambda-functions.yml
+  #     - .github/workflows/build-lambda-functions.yml
+  #     - bun-packages/**
   workflow_dispatch:
     inputs:
       environment:
@@ -25,7 +25,7 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/build-email-function.yml
+    uses: ./.github/workflows/build-lambda-functions.yml
     with:
       git_ref: ${{ github.event.inputs.git_ref || 'develop' }}
 
@@ -41,7 +41,7 @@ jobs:
 
     needs: [build]
 
-    environment: email-function-${{ inputs.environment || 'test' }}
+    environment: lambda-functions-${{ inputs.environment || 'test' }}
 
     steps:
       - name: Configure AWS Credentials
@@ -56,10 +56,24 @@ jobs:
           name: email-function-dist
           path: bun-packages/packages/email-function/dist
 
+      - name: Retrieve scrape-discord-events-function artifact
+        uses: actions/download-artifact@v4.1.8
+        with:
+          name: scrape-discord-events-function-dist
+          path: bun-packages/packages/scrape-discord-events-function/dist
+
       - name: Prepare ZIP
         run: zip -r ../dist.zip .
         working-directory: bun-packages/packages/email-function/dist/
 
+      - name: Prepare ZIP
+        run: zip -r ../dist.zip .
+        working-directory: bun-packages/packages/scrape-discord-events-function/dist/
+
       - name: Deploy
         run: aws lambda update-function-code --function-name email-function --zip-file fileb://dist.zip
         working-directory: bun-packages/packages/email-function/
+
+      - name: Deploy
+        run: aws lambda update-function-code --function-name scrape-discord-events-function --zip-file fileb://dist.zip
+        working-directory: bun-packages/packages/scrape-discord-events-function/

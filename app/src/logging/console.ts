@@ -1,4 +1,4 @@
-import { env } from "process";
+import { env } from "@/env";
 import { type LogOutput } from "./types";
 
 export const logToConsole: LogOutput = (logEntry) => {

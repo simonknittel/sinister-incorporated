@@ -1,6 +1,7 @@
 {
 	"recommendations": [
 		"biomejs.biome",
-		"streetsidesoftware.code-spell-checker-german"
+		"streetsidesoftware.code-spell-checker-german",
+		"prisma.prisma"
 	]
 }
