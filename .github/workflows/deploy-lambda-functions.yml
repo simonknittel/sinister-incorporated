@@ -1,13 +1,13 @@
 name: Deploy Lambda functions
 
 on:
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - .github/workflows/deploy-lambda-functions.yml
-  #     - .github/workflows/build-lambda-functions.yml
-  #     - bun-packages/**
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/deploy-lambda-functions.yml
+      - .github/workflows/build-lambda-functions.yml
+      - bun-packages/**
   workflow_dispatch:
     inputs:
       environment:
