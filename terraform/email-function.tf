@@ -64,7 +64,7 @@ module "email_function" {
   source = "./modules/eventbridge-sqs-lambda"
 
   function_name                  = "email-function"
-  reserved_concurrent_executions = 1
+  reserved_concurrent_executions = 5
   account_id                     = data.aws_caller_identity.current.account_id
   timeout                        = 15
   event_bus                      = aws_cloudwatch_event_bus.api_gateway

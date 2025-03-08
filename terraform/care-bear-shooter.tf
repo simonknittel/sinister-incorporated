@@ -27,31 +27,30 @@ resource "aws_iam_role" "care_bear_shooter_build_uploader" {
       }
     ]
   })
+}
 
-  managed_policy_arns = []
+resource "aws_iam_role_policy" "care_bear_shooter_build_uploader_s3" {
+  role = aws_iam_role.care_bear_shooter_build_uploader.id
+  name = "s3"
 
-  inline_policy {
-    name = "s3"
-
-    policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Action = [
-            "s3:ListBucket",
-            "s3:PutObject",
-            "s3:GetObject",
-            "s3:DeleteObject",
-          ]
-          Effect = "Allow"
-          Resource = [
-            aws_s3_bucket.care_bear_shooter_build.arn,
-            "${aws_s3_bucket.care_bear_shooter_build.arn}/*",
-          ]
-        },
-      ]
-    })
-  }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:ListBucket",
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+        ]
+        Effect = "Allow"
+        Resource = [
+          aws_s3_bucket.care_bear_shooter_build.arn,
+          "${aws_s3_bucket.care_bear_shooter_build.arn}/*",
+        ]
+      },
+    ]
+  })
 }
 
 data "aws_iam_openid_connect_provider" "github" {
