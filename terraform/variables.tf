@@ -14,3 +14,8 @@ variable "email_function_parameters" {
   }))
   sensitive = true
 }
+
+variable "scrape_discord_events_function_environment_variables" {
+  type      = map(string)
+  sensitive = true
+}
