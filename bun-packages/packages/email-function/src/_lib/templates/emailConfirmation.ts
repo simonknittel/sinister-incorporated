@@ -1,11 +1,11 @@
 import { render } from "@react-email/render";
-import { IMailgunClient } from "mailgun.js/Interfaces";
+import { Interfaces } from "mailgun.js/definitions";
 import Email, {
 	EmailConfirmationProps,
 } from "../../../../emails/emails/EmailConfirmation";
 
 export const emailConfirmation = async (
-	mg: IMailgunClient,
+	mg: Interfaces.IMailgunClient,
 	messages: Array<{
 		to: string;
 		templateProps: Record<string, string>;
@@ -17,7 +17,7 @@ export const emailConfirmation = async (
 	 */
 	const htmlMessages = messages.filter((email) => !email.recipientsPublicKey);
 
-	const htmlEmail = renderHtmlEmail({
+	const htmlEmail = await renderHtmlEmail({
 		baseUrl: "%recipient.baseUrl%",
 		host: "%recipient.host%",
 		token: "%recipient.token%",
