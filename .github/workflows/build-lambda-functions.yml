@@ -1,4 +1,4 @@
-name: Build email-functon
+name: Build Lambda functions
 
 on:
   workflow_call:
@@ -8,7 +8,7 @@ on:
         type: string
 
 jobs:
-  build-email-function:
+  build:
     runs-on: ubuntu-24.04
 
     steps:
@@ -18,7 +18,7 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2.0.1
         with:
-          bun-version: 1.1.8
+          bun-version: 1.2.4
 
       - uses: actions/cache@v4.2.1
         id: node-modules-cache
@@ -34,8 +34,16 @@ jobs:
       - name: Build
         run: |
           SHA=$(git log -1 '--format=format:%H')
-          bun run build --define:process.env.COMMIT_SHA=\\\"$SHA\\\"
+          # bun run build --define:process.env.COMMIT_SHA=\\\"$SHA\\\"
+          bun run build
         working-directory: bun-packages/packages/email-function
+
+      - name: Build
+        run: |
+          SHA=$(git log -1 '--format=format:%H')
+          # bun run build --define:process.env.COMMIT_SHA=\\\"$SHA\\\"
+          bun run build
+        working-directory: bun-packages/packages/scrape-discord-events-function
 
       - name: Store artifact
         uses: actions/upload-artifact@v4.6.0
@@ -43,3 +51,11 @@ jobs:
           name: email-function-dist
           path: bun-packages/packages/email-function/dist/
           retention-days: 1
+
+      - name: Store artifact
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: scrape-discord-events-function-dist
+          path: bun-packages/packages/scrape-discord-events-function/dist/
+          retention-days: 1
+          include-hidden-files: true # Required for the .prisma folder within node_modules

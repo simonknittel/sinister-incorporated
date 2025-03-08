@@ -1,6 +1,12 @@
 {
 	"cSpell.words": [
-		"biomejs"
+		"biomejs",
+		"cuid",
+		"postgres",
+		"postgresql",
+		"prisma",
+		"silc",
+		"Silc"
 	],
 	"[typescript]": {
 		"editor.defaultFormatter": "biomejs.biome",

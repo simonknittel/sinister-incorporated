@@ -27,6 +27,22 @@ export default async function Page() {
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
         <Day heading="7. März 2025">
+          <DayItem heading="Rework: Discord-Synchronisation">
+            <p>
+              Die Synchronisation mit Discord wurde erneut überarbeitet. Dies
+              sollte die Synchronisation zuverlässiger machen.
+            </p>
+          </DayItem>
+
+          <DayItem heading="Fix: Event-History">
+            <p>
+              Die Seite mit vergangenen Events wird nun wieder korrekt
+              angezeigt.
+            </p>
+          </DayItem>
+        </Day>
+
+        <Day heading="7. März 2025">
           <DayItem heading="Zusagen im Dashboard">
             <p>
               Bei den Events auf dem Dashboard wird nun angezeigt, ob man selber

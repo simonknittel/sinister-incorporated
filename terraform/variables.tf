@@ -14,3 +14,9 @@ variable "email_function_parameters" {
   }))
   sensitive = true
 }
+
+# TF_VAR_scrape_discord_events_function_environment_variables = {"VAR_1":"value","VAR_2":"value"}
+variable "scrape_discord_events_function_environment_variables" {
+  type      = map(string)
+  sensitive = true
+}

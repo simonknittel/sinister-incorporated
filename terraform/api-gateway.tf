@@ -100,10 +100,9 @@ resource "aws_iam_role" "api_gateway_cloudwatch" {
       },
     ]
   })
+}
 
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
-  ]
-
-  inline_policy {}
+resource "aws_iam_role_policy_attachment" "api_gateway_cloudwatch_amazon_api_gateway_push_to_cloudwatch_logs" {
+  role       = aws_iam_role.api_gateway_cloudwatch.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
 }
