@@ -3,17 +3,15 @@
 import {
   type Entity,
   type Event,
-  type EventPosition,
-  type EventPositionApplication,
   type Manufacturer,
   type Series,
   type Ship,
-  type Upload,
   type Variant,
 } from "@prisma/client";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
+import type { PositionType } from "./Position";
 import { PositionSkeleton } from "./PositionSkeleton";
 import { Unassigned } from "./Unassigned";
 
@@ -25,21 +23,7 @@ const Positions = dynamic(
 type Props = Readonly<{
   className?: string;
   event: Event & {
-    positions: (EventPosition & {
-      applications: (EventPositionApplication & {
-        citizen: Entity;
-      })[];
-      requiredVariant:
-        | (Variant & {
-            series: Series & {
-              manufacturer: Manufacturer & {
-                image: Upload | null;
-              };
-            };
-          })
-        | null;
-      citizen: Entity | null;
-    })[];
+    positions: PositionType[];
   };
   canManagePositions?: boolean;
   variants: (Manufacturer & {
@@ -68,7 +52,7 @@ export const LineupTab = ({
       <div className="flex justify-end">
         <h2 className="sr-only">Aufstellung</h2>
         {canManagePositions && (
-          <CreateOrUpdateEventPosition event={event} variants={variants} />
+          <CreateOrUpdateEventPosition eventId={event.id} variants={variants} />
         )}
       </div>
 

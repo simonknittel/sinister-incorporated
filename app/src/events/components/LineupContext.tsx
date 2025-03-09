@@ -23,7 +23,13 @@ const FlowContext = createContext<LineupContext | undefined>(undefined);
 
 type Props = Readonly<{
   children: ReactNode;
-  positions: EventPosition[];
+  positions: (EventPosition & {
+    childPositions?: (EventPosition & {
+      childPositions?: (EventPosition & {
+        childPositions?: EventPosition[];
+      })[];
+    })[];
+  })[];
 }>;
 
 export const LineupProvider = ({ children, positions }: Props) => {
@@ -39,8 +45,32 @@ export const LineupProvider = ({ children, positions }: Props) => {
   );
 
   const openAll = useCallback(() => {
+    const allPositionIds: EventPosition["id"][] = [];
+
+    for (const position of positions) {
+      allPositionIds.push(position.id);
+
+      if (position.childPositions) {
+        for (const childPosition of position.childPositions) {
+          allPositionIds.push(childPosition.id);
+
+          if (childPosition.childPositions) {
+            for (const grandChildPosition of childPosition.childPositions) {
+              allPositionIds.push(grandChildPosition.id);
+
+              if (grandChildPosition.childPositions) {
+                for (const greatGrandChildPosition of grandChildPosition.childPositions) {
+                  allPositionIds.push(greatGrandChildPosition.id);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     startTransition(() => {
-      setOpenPositions(positions.map((position) => position.id));
+      setOpenPositions(allPositionIds);
     });
   }, [setOpenPositions, positions]);
 

@@ -14,6 +14,9 @@ export const getEventById = cache(async (id: Event["id"]) => {
         include: {
           discordParticipants: true,
           positions: {
+            where: {
+              parentPositionId: null,
+            },
             include: {
               applications: {
                 include: {
@@ -28,6 +31,75 @@ export const getEventById = cache(async (id: Event["id"]) => {
                       manufacturer: {
                         include: {
                           image: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              childPositions: {
+                include: {
+                  applications: {
+                    include: {
+                      citizen: true,
+                    },
+                  },
+                  citizen: true,
+                  requiredVariant: {
+                    include: {
+                      series: {
+                        include: {
+                          manufacturer: {
+                            include: {
+                              image: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  childPositions: {
+                    include: {
+                      applications: {
+                        include: {
+                          citizen: true,
+                        },
+                      },
+                      citizen: true,
+                      requiredVariant: {
+                        include: {
+                          series: {
+                            include: {
+                              manufacturer: {
+                                include: {
+                                  image: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      childPositions: {
+                        include: {
+                          applications: {
+                            include: {
+                              citizen: true,
+                            },
+                          },
+                          citizen: true,
+                          requiredVariant: {
+                            include: {
+                              series: {
+                                include: {
+                                  manufacturer: {
+                                    include: {
+                                      image: true,
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
                         },
                       },
                     },
