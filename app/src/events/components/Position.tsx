@@ -119,7 +119,7 @@ export const Position = ({
   );
 
   return (
-    <div className={clsx(className)}>
+    <div className={className}>
       <div
         className={clsx(
           "flex items-stretch gap-2 p-2 sm:pl-4 bg-neutral-800/50",
