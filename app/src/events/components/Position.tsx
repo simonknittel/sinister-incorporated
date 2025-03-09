@@ -1,5 +1,7 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { VariantWithLogo } from "@/fleet/components/VariantWithLogo";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   type Entity,
   type EventPosition,
@@ -67,6 +69,9 @@ export const Position = ({
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
 
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: position.id });
+
   const { openPositions, open, close } = useLineup();
   const isOpen = openPositions.includes(position.id);
 
@@ -118,8 +123,24 @@ export const Position = ({
       ),
   );
 
+  const childPositions =
+    position.childPositions && position.childPositions.length > 0
+      ? position.childPositions.toSorted((a, b) => a.name.localeCompare(b.name))
+      : [];
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
-    <div className={className}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={className}
+    >
       <div
         className={clsx(
           "flex items-stretch gap-2 p-2 sm:pl-4 bg-neutral-800/50",
@@ -290,21 +311,19 @@ export const Position = ({
 
       {position.childPositions && position.childPositions.length > 0 && (
         <div className="flex flex-col gap-[1px] pl-4 lg:pl-8 mt-[1px]">
-          {position.childPositions
-            .toSorted((a, b) => a.name.localeCompare(b.name))
-            .map((position) => (
-              <Position
-                key={position.id}
-                position={position}
-                showManage={showManage}
-                variants={variants}
-                myShips={myShips}
-                allEventCitizens={allEventCitizens}
-                showActions={showActions}
-                showToggle={showToggle}
-                groupLevel={groupLevel + 1}
-              />
-            ))}
+          {childPositions.map((position) => (
+            <Position
+              key={position.id}
+              position={position}
+              showManage={showManage}
+              variants={variants}
+              myShips={myShips}
+              allEventCitizens={allEventCitizens}
+              showActions={showActions}
+              showToggle={showToggle}
+              groupLevel={groupLevel + 1}
+            />
+          ))}
         </div>
       )}
     </div>
