@@ -2,35 +2,18 @@
 
 import type {
   Entity,
-  EventPosition,
-  EventPositionApplication,
   Manufacturer,
   Series,
   Ship,
-  Upload,
   Variant,
 } from "@prisma/client";
 import { LineupProvider } from "./LineupContext";
 import { OpenAndCloseAll } from "./OpenAndCloseAll";
-import { Position } from "./Position";
+import { Position, type PositionType } from "./Position";
 
 type Props = Readonly<{
   className?: string;
-  positions: (EventPosition & {
-    applications: (EventPositionApplication & {
-      citizen: Entity;
-    })[];
-    requiredVariant:
-      | (Variant & {
-          series: Series & {
-            manufacturer: Manufacturer & {
-              image: Upload | null;
-            };
-          };
-        })
-      | null;
-    citizen: Entity | null;
-  })[];
+  positions: PositionType[];
   canManagePositions?: boolean;
   variants: (Manufacturer & {
     series: (Series & {
@@ -69,6 +52,7 @@ export const Positions = ({
               allEventCitizens={allEventCitizens}
               showActions={showActions}
               showToggle={showToggle}
+              groupLevel={1}
             />
           ))}
       </div>

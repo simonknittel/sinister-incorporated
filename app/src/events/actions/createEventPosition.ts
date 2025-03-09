@@ -14,6 +14,7 @@ const schema = z.object({
   name: z.string().trim().max(256),
   description: z.string().trim().max(512).optional(),
   variantId: z.union([z.string().cuid(), z.literal("-")]),
+  parentPositionId: z.string().cuid().optional(),
 });
 
 export const createEventPosition = async (formData: FormData) => {
@@ -33,6 +34,7 @@ export const createEventPosition = async (formData: FormData) => {
         ? formData.get("description")
         : undefined,
       variantId: formData.get("variantId"),
+      parentPositionId: formData.get("parentPositionId"),
     });
     if (!result.success)
       return {
@@ -76,6 +78,11 @@ export const createEventPosition = async (formData: FormData) => {
                 },
               }
             : {},
+        parentPosition: {
+          connect: {
+            id: result.data.parentPositionId,
+          },
+        },
       },
     });
 

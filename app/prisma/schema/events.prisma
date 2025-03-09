@@ -41,6 +41,10 @@ model EventPosition {
   applications      EventPositionApplication[] @relation("applications")
   citizenId         String?
   citizen           Entity?                    @relation("citizen", fields: [citizenId], references: [id], onDelete: SetNull)
+  parentPositionId  String?
+  parentPosition    EventPosition?             @relation("parentPosition", fields: [parentPositionId], references: [id], onDelete: Cascade)
+  childPositions    EventPosition[]            @relation("parentPosition")
+  order             Int                        @default(0)
 }
 
 model EventPositionApplication {

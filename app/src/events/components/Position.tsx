@@ -20,23 +20,26 @@ import { useLineup } from "./LineupContext";
 import { ToggleEventPositionApplicationForCurrentUser } from "./ToggleEventPositionApplicationForCurrentUser";
 import { UpdateEventPositionCitizenId } from "./UpdateEventPositionCitizenId";
 
+export type PositionType = EventPosition & {
+  applications: (EventPositionApplication & {
+    citizen: Entity;
+  })[];
+  requiredVariant:
+    | (Variant & {
+        series: Series & {
+          manufacturer: Manufacturer & {
+            image: Upload | null;
+          };
+        };
+      })
+    | null;
+  citizen: Entity | null;
+  childPositions?: PositionType[];
+};
+
 type Props = Readonly<{
   className?: string;
-  position: EventPosition & {
-    applications: (EventPositionApplication & {
-      citizen: Entity;
-    })[];
-    requiredVariant:
-      | (Variant & {
-          series: Series & {
-            manufacturer: Manufacturer & {
-              image: Upload | null;
-            };
-          };
-        })
-      | null;
-    citizen: Entity | null;
-  };
+  position: PositionType;
   showManage?: boolean;
   variants: (Manufacturer & {
     series: (Series & {
@@ -47,6 +50,7 @@ type Props = Readonly<{
   allEventCitizens: { citizen: Entity; ships: Ship[] }[];
   showActions?: boolean;
   showToggle?: boolean;
+  groupLevel: number;
 }>;
 
 export const Position = ({
@@ -58,6 +62,7 @@ export const Position = ({
   allEventCitizens,
   showActions,
   showToggle,
+  groupLevel,
 }: Props) => {
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
@@ -114,22 +119,18 @@ export const Position = ({
   );
 
   return (
-    <div
-      className={clsx(
-        "rounded bg-neutral-800/50",
-        {
-          "mb-2": isOpen,
-        },
-        className,
-      )}
-    >
+    <div className={clsx(className)}>
       <div
-        className={clsx("flex items-stretch gap-2 p-2 sm:pl-4", {
-          "bg-neutral-800/50": isOpen,
-        })}
+        className={clsx(
+          "flex items-stretch gap-2 p-2 sm:pl-4 bg-neutral-800/50",
+          {
+            "bg-neutral-800/70 rounded-t": isOpen,
+            "rounded-b": !isOpen,
+          },
+        )}
       >
-        <div className="flex-1 flex flex-col sm:flex-row items-stretch gap-2">
-          <div className="flex-1 flex flex-col justify-center overflow-hidden">
+        <div className="flex-1 flex flex-col xl:grid xl:grid-cols-[1fr_256px_256px] gap-2">
+          <div className="flex flex-col justify-center overflow-hidden">
             <h3
               className={clsx("text-sm text-gray-500", {
                 "sr-only": !isOpen,
@@ -151,7 +152,7 @@ export const Position = ({
             )}
           </div>
 
-          <div className="flex-1 flex flex-col justify-center">
+          <div className="flex flex-col justify-center">
             <h3
               className={clsx("text-sm text-gray-500", {
                 "sr-only": !isOpen,
@@ -170,7 +171,7 @@ export const Position = ({
             )}
           </div>
 
-          <div className="flex-1 flex flex-col justify-center">
+          <div className="flex flex-col justify-center">
             <h3
               className={clsx("text-sm text-gray-500", {
                 "sr-only": !isOpen,
@@ -227,7 +228,7 @@ export const Position = ({
       </div>
 
       {isOpen && (
-        <div className="border-t border-white/10">
+        <div className="bg-neutral-800/50 border-t border-white/10 rounded-b">
           <div className="p-4 flex gap-2">
             <div className="flex-1 flex flex-col">
               <h3 className="text-sm text-gray-500">Beschreibung</h3>
@@ -263,6 +264,14 @@ export const Position = ({
 
               {showManage && (
                 <div className="flex items-center justify-center gap-2">
+                  {groupLevel < 4 && (
+                    <CreateOrUpdateEventPosition
+                      eventId={position.eventId}
+                      parentPositionId={position.id}
+                      variants={variants}
+                      className="flex-none"
+                    />
+                  )}
                   <CreateOrUpdateEventPosition
                     position={position}
                     variants={variants}
@@ -276,6 +285,26 @@ export const Position = ({
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {position.childPositions && position.childPositions.length > 0 && (
+        <div className="flex flex-col gap-[1px] pl-4 lg:pl-8 mt-[1px]">
+          {position.childPositions
+            .toSorted((a, b) => a.name.localeCompare(b.name))
+            .map((position) => (
+              <Position
+                key={position.id}
+                position={position}
+                showManage={showManage}
+                variants={variants}
+                myShips={myShips}
+                allEventCitizens={allEventCitizens}
+                showActions={showActions}
+                showToggle={showToggle}
+                groupLevel={groupLevel + 1}
+              />
+            ))}
         </div>
       )}
     </div>

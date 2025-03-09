@@ -29,7 +29,8 @@ type BaseProps = Readonly<{
 }>;
 
 type CreateProps = Readonly<{
-  event: Event;
+  eventId: Event["id"];
+  parentPositionId?: EventPosition["id"] | null;
 }>;
 
 type UpdateProps = Readonly<{
@@ -68,7 +69,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
           return;
         }
 
-        toast.success(response.success);
+        toast.success(response.success!);
         if (formData.has("createAnother")) {
           nameInputRef.current?.focus();
           return;
@@ -107,15 +108,31 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
 
   return (
     <>
-      {"event" in props && (
+      {"eventId" in props && !("parentPositionId" in props) && (
         <Button
           onClick={handleClick}
           variant="primary"
           className={clsx(props.className)}
-          title="Posten hinzufügen"
+          title="Posten oder Gruppe hinzufügen"
         >
-          <span className="hidden md:inline">Posten hinzufügen</span>
+          <span className="hidden md:inline">Hinzufügen</span>
           {isOpen ? <FaSpinner className="animate-spin" /> : <FaPlus />}
+        </Button>
+      )}
+
+      {"eventId" in props && "parentPositionId" in props && (
+        <Button
+          onClick={handleClick}
+          variant="tertiary"
+          className={clsx("px-2 w-auto", props.className)}
+          title="Posten oder Gruppe hinzufügen"
+          iconOnly
+        >
+          {isOpen ? (
+            <FaSpinner className="animate-spin" />
+          ) : (
+            <FaPlus className="text-lg" />
+          )}
         </Button>
       )}
 
@@ -127,7 +144,11 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
           title="Posten bearbeiten"
           iconOnly
         >
-          {isOpen ? <FaSpinner className="animate-spin" /> : <FaPen />}
+          {isOpen ? (
+            <FaSpinner className="animate-spin" />
+          ) : (
+            <FaPen className="text-lg" />
+          )}
         </Button>
       )}
 
@@ -137,15 +158,22 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
         className="w-[480px]"
       >
         <h2 className="text-xl font-bold">
-          Posten {"position" in props ? "bearbeiten" : "hinzufügen"}
+          Posten oder Gruppe {"position" in props ? "bearbeiten" : "hinzufügen"}
         </h2>
 
         <form action={formAction} className="mt-6">
           {"position" in props && props.position && (
             <input type="hidden" name="positionId" value={props.position.id} />
           )}
-          {"event" in props && props.event && (
-            <input type="hidden" name="eventId" value={props.event.id} />
+          {"eventId" in props && props.eventId && (
+            <input type="hidden" name="eventId" value={props.eventId} />
+          )}
+          {"parentPositionId" in props && props.parentPositionId && (
+            <input
+              type="hidden"
+              name="parentPositionId"
+              value={props.parentPositionId}
+            />
           )}
 
           <label className="block" htmlFor={nameInputId}>
@@ -214,15 +242,13 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             ))}
           </select>
 
-          {/* TODO: Add input for selecting multiple roles */}
-
           <div className="flex flex-col gap-2 mt-8">
             <Button type="submit" disabled={isPending}>
               {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
               Speichern
             </Button>
 
-            {"event" in props && (
+            {"eventId" in props && (
               <Button
                 type="submit"
                 disabled={isPending}

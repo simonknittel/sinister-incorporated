@@ -6,6 +6,8 @@ import image20250302SilcOverview from "@/changelog/assets/2025-03-02-silc-overvi
 import image20250302SilcTransactions from "@/changelog/assets/2025-03-02-silc-transactions.png";
 import image20250303SilcAuecConversionRate from "@/changelog/assets/2025-03-03-silc-auec-conversion-rate.png";
 import image20250303SilcStatistics from "@/changelog/assets/2025-03-03-silc-statistics.png";
+import image20250309LineupCreateChild from "@/changelog/assets/2025-03-09-lineup-create-child.png";
+import image20250309LineupGroups from "@/changelog/assets/2025-03-09-lineup-groups.png";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 import Image from "next/image";
@@ -26,6 +28,35 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="9. März 2025">
+          <DayItem heading="Gruppen in der Eventaufstellung">
+            <p>Die Eventaufstellung kann nun in Gruppen unterteilt werden.</p>
+
+            <Image
+              src={image20250309LineupGroups}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+
+            <p>
+              Es kann bis zu vier Ebenen geben. In jeder Ebene ist eine
+              beliebige Kombination aus weiteren Gruppen und Posten möglich.
+            </p>
+
+            <p>
+              Zum Anlegen einer Kindgruppe, auf folgendes Plus-Icon klicken:
+            </p>
+
+            <Image
+              src={image20250309LineupCreateChild}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+          </DayItem>
+        </Day>
+
         <Day heading="8. März 2025">
           <DayItem heading="Rework: Discord-Synchronisation">
             <p>
