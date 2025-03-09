@@ -34,7 +34,9 @@ export const createEventPosition = async (formData: FormData) => {
         ? formData.get("description")
         : undefined,
       variantId: formData.get("variantId"),
-      parentPositionId: formData.get("parentPositionId"),
+      parentPositionId: formData.has("parentPositionId")
+        ? formData.get("parentPositionId")
+        : undefined,
     });
     if (!result.success)
       return {
@@ -78,11 +80,15 @@ export const createEventPosition = async (formData: FormData) => {
                 },
               }
             : {},
-        parentPosition: {
-          connect: {
-            id: result.data.parentPositionId,
-          },
-        },
+        ...(result.data.parentPositionId
+          ? {
+              parentPosition: {
+                connect: {
+                  id: result.data.parentPositionId,
+                },
+              },
+            }
+          : {}),
       },
     });
 
