@@ -62,6 +62,17 @@ export default async function Page() {
             <p>Bei neuen Events ist die Aufstellung initial deaktiviert.</p>
           </DayItem>
 
+          <DayItem heading="Laufende Events">
+            <p>
+              Aktuell laufende Events werden nun direkt im Dashboard gezeigt.
+            </p>
+
+            <p>
+              Hierzu muss das Event ein eingetragenes Enddatum (dies ist in
+              Discord optional).
+            </p>
+          </DayItem>
+
           <DayItem heading="Super Hornets">
             <p>
               Die beiden Varianten der F7C-M Super Hornet Mk II wurden zu einer

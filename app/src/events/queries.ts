@@ -129,9 +129,18 @@ export const getFutureEvents = cache(async () => {
 
       return await prisma.event.findMany({
         where: {
-          startTime: {
-            gte: now,
-          },
+          OR: [
+            {
+              startTime: {
+                gte: now,
+              },
+            },
+            {
+              endTime: {
+                gte: now,
+              },
+            },
+          ],
         },
         include: {
           discordParticipants: true,

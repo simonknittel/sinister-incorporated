@@ -33,11 +33,16 @@ type Props = Readonly<{
 export const Event = async ({ className, event, index }: Props) => {
   const authentication = await requireAuthentication();
 
+  const now = new Date();
+  const endTime = new Date(event.startTime);
+  endTime.setHours(endTime.getHours() + 4);
+  const isHappeningNow =
+    event.startTime <= now && (event.endTime || endTime) >= now;
   const isToday =
     event.startTime.toISOString().split("T")[0] ===
-    new Date().toISOString().split("T")[0];
+    now.toISOString().split("T")[0];
 
-  const startTime = event.startTime.toLocaleString("de-DE", {
+  const formattedStartTime = event.startTime.toLocaleString("de-DE", {
     timeZone: "Europe/Berlin",
     weekday: "short",
     month: "long",
@@ -55,7 +60,13 @@ export const Event = async ({ className, event, index }: Props) => {
 
   return (
     <article className={clsx("rounded-2xl overflow-hidden w-full", className)}>
-      {isToday && (
+      {isHappeningNow && (
+        <div className="bg-green-500/50 text-white font-bold text-center p-2">
+          Event läuft
+        </div>
+      )}
+
+      {isToday && !isHappeningNow && (
         <div className="bg-sinister-red-500/50 text-white font-bold text-center p-2">
           <TimeAgoContainer date={event.startTime} />
         </div>
@@ -84,11 +95,11 @@ export const Event = async ({ className, event, index }: Props) => {
 
           <div className="flex flex-wrap gap-2">
             <p
-              title={`Startzeit: ${startTime}`}
+              title={`Startzeit: ${formattedStartTime}`}
               className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
             >
               <FaClock className="text-xs text-neutral-500" />
-              {startTime}
+              {formattedStartTime}
             </p>
 
             <p
