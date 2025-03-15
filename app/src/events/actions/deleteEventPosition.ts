@@ -19,7 +19,7 @@ export const deleteEventPosition = async (formData: FormData) => {
     /**
      * Authenticate
      */
-    await authenticateAction("createEventPosition");
+    await authenticateAction("deleteEventPosition");
 
     /**
      * Validate the request
