@@ -33,7 +33,7 @@ export const AssignShip = ({ className, data = [] }: Props) => {
           toast.success(response.success);
           setIsOpen(false);
         } else {
-          toast.error(response.error);
+          toast.error(response.error!);
         }
       } catch (error) {
         toast.error(

@@ -38,7 +38,7 @@ export const DeleteEventPosition = ({ className, position }: Props) => {
           return;
         }
 
-        toast.success(response.success);
+        toast.success(response.success!);
       } catch (error) {
         unstable_rethrow(error);
         toast.error(

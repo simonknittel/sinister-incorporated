@@ -83,6 +83,8 @@ export const NotesTableTile = async ({ className, searchParams }: Props) => {
         )!,
         confirmationState: confirmed?.value as EntityLogConfirmationState,
         confirmedAt: confirmed?.createdAt,
+        // @ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         confirmedBy: confirmed?.createdBy,
         entityLog,
       };

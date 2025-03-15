@@ -24,6 +24,8 @@ const Game = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleLoad = () => {
+    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     window.createUnityInstance(canvasRef.current, config).catch((message) => {
       alert(message);
     });

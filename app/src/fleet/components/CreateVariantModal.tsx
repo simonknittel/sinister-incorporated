@@ -54,7 +54,7 @@ export const CreateVariantModal = ({
           toast.success(response.success);
           onRequestClose();
         } else {
-          toast.error(response.error);
+          toast.error(response.error!);
           console.error(response.error);
         }
       } catch (error) {

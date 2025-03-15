@@ -22,6 +22,8 @@ export const InstallPWA = ({ className }: Props) => {
 
   const handleClick = async () => {
     if (!installPrompt.current) return;
+    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     await installPrompt.current.prompt();
   };
 
