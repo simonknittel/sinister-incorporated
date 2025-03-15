@@ -3,6 +3,7 @@ import { DiscordNavigationButton } from "@/common/components/DiscordNavigationBu
 import { Link } from "@/common/components/Link";
 import TimeAgoContainer from "@/common/components/TimeAgoContainer";
 import type {
+  Entity,
   EventDiscordParticipant,
   Event as PrismaEvent,
 } from "@prisma/client";
@@ -10,11 +11,21 @@ import clsx from "clsx";
 import Image from "next/image";
 import { FaCheck, FaClock, FaUser } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
+import { isLineupVisible } from "../utils/isLineupVisible";
+
+/**
+ * Image size:
+ * Discord recommends 800x320px.
+ * Our maximum height should be 160px. Therefore, we calculate the width based
+ * on the aspect ratio.
+ * 800 / 320 * 160 = 400
+ */
 
 type Props = Readonly<{
   className?: string;
   event: PrismaEvent & {
     discordParticipants: EventDiscordParticipant[];
+    managers: Entity[];
   };
   index: number;
 }>;
@@ -22,11 +33,16 @@ type Props = Readonly<{
 export const Event = async ({ className, event, index }: Props) => {
   const authentication = await requireAuthentication();
 
+  const now = new Date();
+  const endTime = new Date(event.startTime);
+  endTime.setHours(endTime.getHours() + 4);
+  const isHappeningNow =
+    event.startTime <= now && (event.endTime || endTime) >= now;
   const isToday =
     event.startTime.toISOString().split("T")[0] ===
-    new Date().toISOString().split("T")[0];
+    now.toISOString().split("T")[0];
 
-  const startTime = event.startTime.toLocaleString("de-DE", {
+  const formattedStartTime = event.startTime.toLocaleString("de-DE", {
     timeZone: "Europe/Berlin",
     weekday: "short",
     month: "long",
@@ -40,17 +56,17 @@ export const Event = async ({ className, event, index }: Props) => {
       participant.discordUserId === authentication.session.discordId,
   );
 
-  /**
-   * Image size:
-   * Discord recommends 800x320px.
-   * Our maximum height should be 160px. Therefore, we calculate the width based
-   * on the aspect ratio.
-   * 800 / 320 * 160 = 400
-   */
+  const showLineupButton = await isLineupVisible(event);
 
   return (
     <article className={clsx("rounded-2xl overflow-hidden w-full", className)}>
-      {isToday && (
+      {isHappeningNow && (
+        <div className="bg-green-500/50 text-white font-bold text-center p-2">
+          Event läuft
+        </div>
+      )}
+
+      {isToday && !isHappeningNow && (
         <div className="bg-sinister-red-500/50 text-white font-bold text-center p-2">
           <TimeAgoContainer date={event.startTime} />
         </div>
@@ -79,11 +95,11 @@ export const Event = async ({ className, event, index }: Props) => {
 
           <div className="flex flex-wrap gap-2">
             <p
-              title={`Startzeit: ${startTime}`}
+              title={`Startzeit: ${formattedStartTime}`}
               className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
             >
               <FaClock className="text-xs text-neutral-500" />
-              {startTime}
+              {formattedStartTime}
             </p>
 
             <p
@@ -113,9 +129,7 @@ export const Event = async ({ className, event, index }: Props) => {
               Details
             </Link>
 
-            {/* TODO: Implement */}
-            {/* {event.lineupEnabled && ( */}
-            {true && (
+            {showLineupButton && (
               <Link
                 href={`/app/events/${event.id}/lineup`}
                 className="first:rounded-l border-[1px] border-sinister-red-700 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"

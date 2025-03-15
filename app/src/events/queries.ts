@@ -108,6 +108,7 @@ export const getEventById = cache(async (id: Event["id"]) => {
               },
             },
           },
+          managers: true,
         },
       });
     } catch (error) {
@@ -128,12 +129,22 @@ export const getFutureEvents = cache(async () => {
 
       return await prisma.event.findMany({
         where: {
-          startTime: {
-            gte: now,
-          },
+          OR: [
+            {
+              startTime: {
+                gte: now,
+              },
+            },
+            {
+              endTime: {
+                gte: now,
+              },
+            },
+          ],
         },
         include: {
           discordParticipants: true,
+          managers: true,
         },
         orderBy: {
           startTime: "asc",
@@ -163,6 +174,7 @@ export const getPastEvents = cache(async () => {
         },
         include: {
           discordParticipants: true,
+          managers: true,
         },
         orderBy: {
           startTime: "desc",

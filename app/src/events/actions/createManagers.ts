@@ -7,37 +7,27 @@ import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
-import { isAllowedToManagePositions } from "../utils/isAllowedToManagePositions";
+import { isAllowedToManageEvent } from "../utils/isAllowedToManageEvent";
 import { isEventUpdatable } from "../utils/isEventUpdatable";
 
 const schema = z.object({
   eventId: z.string().cuid(),
-  name: z.string().trim().max(256),
-  description: z.string().trim().max(512).optional(),
-  variantId: z.union([z.string().cuid(), z.literal("-")]),
-  parentPositionId: z.string().cuid().optional(),
+  managerIds: z.array(z.string().trim().cuid()),
 });
 
-export const createEventPosition = async (formData: FormData) => {
+export const createManagers = async (formData: FormData) => {
   try {
     /**
-     * Authenticate
+     * Authenticate and authorize the request
      */
-    await authenticateAction("createEventPosition");
+    await authenticateAction("createManagers");
 
     /**
      * Validate the request
      */
     const result = schema.safeParse({
       eventId: formData.get("eventId"),
-      name: formData.get("name"),
-      description: formData.has("description")
-        ? formData.get("description")
-        : undefined,
-      variantId: formData.get("variantId"),
-      parentPositionId: formData.has("parentPositionId")
-        ? formData.get("parentPositionId")
-        : undefined,
+      managerIds: formData.getAll("managerId[]"),
     });
     if (!result.success)
       return {
@@ -59,45 +49,29 @@ export const createEventPosition = async (formData: FormData) => {
     if (!event) return { error: "Event nicht gefunden" };
     if (!isEventUpdatable(event))
       return { error: "Das Event ist bereits vorbei." };
-    if (!(await isAllowedToManagePositions(event)))
+    if (!(await isAllowedToManageEvent(event)))
       return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
 
     /**
-     * Create entry
+     * Create managers
      */
-    await prisma.eventPosition.create({
+    await prisma.event.update({
+      where: {
+        id: event.id,
+      },
       data: {
-        event: {
-          connect: {
-            id: result.data.eventId,
-          },
+        managers: {
+          connect: result.data.managerIds.map((id) => ({
+            id,
+          })),
         },
-        name: result.data.name,
-        description: result.data.description,
-        requiredVariant:
-          result.data.variantId !== "-"
-            ? {
-                connect: {
-                  id: result.data.variantId,
-                },
-              }
-            : {},
-        ...(result.data.parentPositionId
-          ? {
-              parentPosition: {
-                connect: {
-                  id: result.data.parentPositionId,
-                },
-              },
-            }
-          : {}),
       },
     });
 
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/events/${event.id}/lineup`);
+    revalidatePath(`/app/events/${event.id}/participants`);
 
     /**
      * Respond with the result

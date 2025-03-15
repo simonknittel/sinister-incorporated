@@ -20,6 +20,12 @@ const EventsTab = ({ enableOperations }: Props) => {
       </div>
 
       <div className="py-2 flex justify-between items-center">
+        <h4 className="font-bold">Events verwalten</h4>
+
+        <YesNoCheckbox {...register("event;manage")} />
+      </div>
+
+      <div className="py-2 flex justify-between items-center">
         <h4 className="font-bold">Event-Flotte einsehen</h4>
 
         <YesNoCheckbox {...register("eventFleet;read")} />

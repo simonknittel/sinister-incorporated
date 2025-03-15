@@ -8,6 +8,8 @@ import image20250303SilcAuecConversionRate from "@/changelog/assets/2025-03-03-s
 import image20250303SilcStatistics from "@/changelog/assets/2025-03-03-silc-statistics.png";
 import image20250309LineupCreateChild from "@/changelog/assets/2025-03-09-lineup-create-child.png";
 import image20250309LineupGroups from "@/changelog/assets/2025-03-09-lineup-groups.png";
+import image20250315EventManagers from "@/changelog/assets/2025-03-15-event-managers.png";
+import image20250315LineupEnabled from "@/changelog/assets/2025-03-15-lineup-enabled.png";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 import Image from "next/image";
@@ -28,6 +30,57 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="15. März 2025">
+          <DayItem heading="Zusätzliche Eventmanager">
+            <p>
+              Events können nun zusätzliche Manager hinzugefügt werden. Diese
+              haben die gleichen Berechtigungen wie die Organisatoren.
+            </p>
+
+            <Image
+              src={image20250315EventManagers}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+          </DayItem>
+
+          <DayItem heading="Eventaufstellung de-/aktivieren">
+            <p>
+              Die Aufstellung eines Events kann nun de-/aktiviert werden. Solang
+              die Aufstellung deaktiviert ist, kann sie nur von einem
+              Eventorganisator eingesehen und bearbeitet werden.
+            </p>
+
+            <Image
+              src={image20250315LineupEnabled}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+
+            <p>Bei neuen Events ist die Aufstellung initial deaktiviert.</p>
+          </DayItem>
+
+          <DayItem heading="Laufende Events">
+            <p>
+              Aktuell laufende Events werden nun direkt im Dashboard gezeigt.
+            </p>
+
+            <p>
+              Hierzu muss das Event ein eingetragenes Enddatum (dies ist in
+              Discord optional).
+            </p>
+          </DayItem>
+
+          <DayItem heading="Super Hornets">
+            <p>
+              Die beiden Varianten der F7C-M Super Hornet Mk II wurden zu einer
+              zusammengeführt.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="9. März 2025">
           <DayItem heading="Gruppen in der Eventaufstellung">
             <p>Die Eventaufstellung kann nun in Gruppen unterteilt werden.</p>

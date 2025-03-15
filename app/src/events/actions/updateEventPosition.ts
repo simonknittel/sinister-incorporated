@@ -7,7 +7,8 @@ import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
-import { canEditEvent } from "../utils/canEditEvent";
+import { isAllowedToManagePositions } from "../utils/isAllowedToManagePositions";
+import { isEventUpdatable } from "../utils/isEventUpdatable";
 
 const schema = z.object({
   positionId: z.string().cuid(),
@@ -21,7 +22,7 @@ export const updateEventPosition = async (formData: FormData) => {
     /**
      * Authenticate
      */
-    const authentication = await authenticateAction("updateEventPosition");
+    await authenticateAction("updateEventPosition");
 
     /**
      * Validate the request
@@ -48,16 +49,17 @@ export const updateEventPosition = async (formData: FormData) => {
         id: result.data.positionId,
       },
       include: {
-        event: true,
+        event: {
+          include: {
+            managers: true,
+          },
+        },
       },
     });
     if (!position) return { error: "Posten nicht gefunden" };
-    if (!canEditEvent(position.event))
+    if (!isEventUpdatable(position.event))
       return { error: "Das Event ist bereits vorbei." };
-    if (
-      authentication.session.discordId !== position.event.discordCreatorId &&
-      !(await authentication.authorize("othersEventPosition", "update"))
-    )
+    if (!(await isAllowedToManagePositions(position.event)))
       return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
 
     /**
@@ -86,7 +88,7 @@ export const updateEventPosition = async (formData: FormData) => {
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/events/${position.event.discordId}/lineup`);
+    revalidatePath(`/app/events/${position.event.id}/lineup`);
 
     /**
      * Respond with the result

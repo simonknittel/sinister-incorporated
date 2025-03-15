@@ -17,6 +17,7 @@ model Entity {
   updatedSilcTransactions                      SilcTransaction[]                    @relation("updatedBy")
   deletedSilcTransactions                      SilcTransaction[]                    @relation("deletedBy")
   updatedSilcSettings                          SilcSetting[]                        @relation("updatedBy")
+  eventManagers                                Event[]                              @relation("eventManagers")
 
   // Holds the latest confirmed values
   spectrumId                String?
@@ -52,8 +53,8 @@ model EntityLog {
 
 model EntityLogAttribute {
   id          String    @id @default(cuid())
-  eneityLogId String
-  entityLog   EntityLog @relation(fields: [eneityLogId], references: [id], onDelete: Cascade)
+  entityLogId String    @map("eneityLogId")
+  entityLog   EntityLog @relation(fields: [entityLogId], references: [id], onDelete: Cascade)
   key         String // TODO: types.ts
   value       String
   createdAt   DateTime  @default(now())

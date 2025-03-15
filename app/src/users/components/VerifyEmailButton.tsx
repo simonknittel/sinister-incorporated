@@ -36,7 +36,7 @@ export const VerifyEmailButton = ({ className, userId }: Props) => {
         if (response.success) {
           toast.success(response.success);
         } else {
-          toast.error(response.error);
+          toast.error(response.error!);
           console.error(response);
         }
       } catch (error) {

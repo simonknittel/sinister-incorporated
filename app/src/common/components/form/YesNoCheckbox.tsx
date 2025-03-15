@@ -1,14 +1,24 @@
 "use client";
 
 import clsx from "clsx";
-import { type InputHTMLAttributes } from "react";
+import { type InputHTMLAttributes, type ReactNode } from "react";
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   hideLabel?: boolean;
+  yesLabel?: ReactNode;
+  noLabel?: ReactNode;
+  labelClassName?: string;
 };
 
 const YesNoCheckbox = (props: Props) => {
-  const { className, hideLabel = false, ...rest } = props;
+  const {
+    className,
+    hideLabel = false,
+    yesLabel = "Ja",
+    noLabel = "Nein",
+    labelClassName,
+    ...rest
+  } = props;
 
   return (
     <label
@@ -33,8 +43,16 @@ const YesNoCheckbox = (props: Props) => {
 
       {!hideLabel && (
         <>
-          <span className="w-8 block peer-checked:hidden">Nein</span>
-          <span className="w-8 hidden peer-checked:block">Ja</span>
+          <span
+            className={clsx("w-8 block peer-checked:hidden", labelClassName)}
+          >
+            {noLabel}
+          </span>
+          <span
+            className={clsx("w-8 hidden peer-checked:block", labelClassName)}
+          >
+            {yesLabel}
+          </span>
         </>
       )}
     </label>

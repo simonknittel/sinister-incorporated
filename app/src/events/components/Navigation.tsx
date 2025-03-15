@@ -1,19 +1,25 @@
 import { requireAuthentication } from "@/auth/server";
 import { Link } from "@/common/components/Link";
-import type { Event } from "@prisma/client";
+import type { Entity, Event } from "@prisma/client";
 import clsx from "clsx";
 import { FaHome, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
+import { isLineupVisible } from "../utils/isLineupVisible";
 
 type Props = Readonly<{
   className?: string;
-  event: Event;
+  event: Event & {
+    managers: Entity[];
+  };
   active: string;
 }>;
 
 export const Navigation = async ({ className, event, active }: Props) => {
   const authentication = await requireAuthentication();
-  const showFleetLink = await authentication.authorize("orgFleet", "read");
+  const [showLineup, showFleetLink] = await Promise.all([
+    isLineupVisible(event),
+    authentication.authorize("orgFleet", "read"),
+  ]);
 
   const pages = [
     {
@@ -21,11 +27,15 @@ export const Navigation = async ({ className, event, active }: Props) => {
       icon: FaHome,
       path: `/app/events/${event.id}`,
     },
-    {
-      name: "Aufstellung",
-      icon: MdWorkspaces,
-      path: `/app/events/${event.id}/lineup`,
-    },
+    ...(showLineup
+      ? [
+          {
+            name: "Aufstellung",
+            icon: MdWorkspaces,
+            path: `/app/events/${event.id}/lineup`,
+          },
+        ]
+      : []),
     {
       name: "Teilnehmer",
       icon: FaUsers,

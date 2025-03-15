@@ -3,12 +3,14 @@ import { prisma } from "@/db";
 import { LineupTab } from "@/events/components/LineupTab";
 import { Navigation } from "@/events/components/Navigation";
 import { getEventById } from "@/events/queries";
-import { canEditEvent } from "@/events/utils/canEditEvent";
 import { getEventCitizens } from "@/events/utils/getEventCitizens";
+import { isAllowedToManagePositions } from "@/events/utils/isAllowedToManagePositions";
+import { isEventUpdatable } from "@/events/utils/isEventUpdatable";
+import { isLineupVisible } from "@/events/utils/isLineupVisible";
 import { getMyFleet } from "@/fleet/queries";
 import { log } from "@/logging";
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { forbidden, notFound } from "next/navigation";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<{
@@ -51,14 +53,11 @@ export default async function Page({ params }: Props) {
   const event = await getEventById(eventId);
   if (!event) notFound();
 
-  const showActions = canEditEvent(event);
+  const showActions = isEventUpdatable(event);
+  const showManagePositions =
+    (await isAllowedToManagePositions(event)) && showActions;
 
-  const canManagePositions =
-    (event.discordCreatorId === authentication.session.discordId ||
-      (await authentication.authorize("othersEventPosition", "manage"))) &&
-    showActions;
-
-  // if (!event.lineupEnabled && !canManagePositions) forbidden();
+  if (!(await isLineupVisible(event))) forbidden();
 
   const [variants, myShips, allEventCitizens] = await Promise.all([
     prisma.manufacturer.findMany({
@@ -96,7 +95,7 @@ export default async function Page({ params }: Props) {
 
       <LineupTab
         event={event}
-        canManagePositions={canManagePositions}
+        canManagePositions={showManagePositions}
         variants={variants}
         myShips={myShips}
         allEventCitizens={allEventCitizens}

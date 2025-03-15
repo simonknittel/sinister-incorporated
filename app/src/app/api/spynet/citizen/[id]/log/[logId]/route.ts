@@ -95,13 +95,13 @@ export async function PATCH(request: Request, props: { params: Params }) {
     const item = await prisma.entityLogAttribute.createMany({
       data: [
         {
-          eneityLogId: paramsData.logId,
+          entityLogId: paramsData.logId,
           key: "noteTypeId",
           value: data.noteTypeId,
           createdById: authentication.session.user.id,
         },
         {
-          eneityLogId: paramsData.logId,
+          entityLogId: paramsData.logId,
           key: "classificationLevelId",
           value: data.classificationLevelId,
           createdById: authentication.session.user.id,

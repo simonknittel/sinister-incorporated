@@ -213,7 +213,7 @@ export const Flow = ({
         }
 
         setUnsaved(false);
-        toast.success(result.success);
+        toast.success(result.success!);
       } catch (error) {
         unstable_rethrow(error);
         toast.error(

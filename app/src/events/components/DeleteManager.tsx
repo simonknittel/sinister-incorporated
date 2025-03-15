@@ -11,26 +11,28 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/common/components/AlertDialog";
-import { type EventPosition } from "@prisma/client";
+import { type Entity, type Event } from "@prisma/client";
+import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
 import { useId, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
-import { deleteEventPosition } from "../actions/deleteEventPosition";
+import { deleteManager } from "../actions/deleteManager";
 
 type Props = Readonly<{
   className?: string;
-  position: EventPosition;
+  eventId: Event["id"];
+  managerId: Entity["id"];
 }>;
 
-export const DeleteEventPosition = ({ className, position }: Props) => {
+export const DeleteManager = ({ className, eventId, managerId }: Props) => {
   const [isPending, startTransition] = useTransition();
   const formId = useId();
 
   const formAction = (formData: FormData) => {
     startTransition(async () => {
       try {
-        const response = await deleteEventPosition(formData);
+        const response = await deleteManager(formData);
 
         if (response.error) {
           toast.error(response.error);
@@ -50,15 +52,16 @@ export const DeleteEventPosition = ({ className, position }: Props) => {
   };
 
   return (
-    <form action={formAction} id={formId} className={className}>
-      <input type="hidden" name="id" value={position.id} />
+    <form action={formAction} id={formId} className={clsx(className)}>
+      <input type="hidden" name="eventId" value={eventId} />
+      <input type="hidden" name="managerId" value={managerId} />
 
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <button
             disabled={isPending}
-            className="text-sinister-red-500 hover:text-sinister-red-300 flex items-center px-2"
-            title="Posten löschen"
+            className="text-sinister-red-500 hover:text-sinister-red-300 flex items-center px-2 h-full"
+            title="Manager entfernen"
           >
             {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}
           </button>
@@ -66,10 +69,9 @@ export const DeleteEventPosition = ({ className, position }: Props) => {
 
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Posten löschen?</AlertDialogTitle>
+            <AlertDialogTitle>Manager entfernen?</AlertDialogTitle>
             <AlertDialogDescription>
-              Willst du den Posten{" "}
-              <span className="font-bold">{position.name}</span> löschen?
+              Willst du diesen Manager vom Event entfernen?
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -77,7 +79,7 @@ export const DeleteEventPosition = ({ className, position }: Props) => {
             <AlertDialogCancel>Abbrechen</AlertDialogCancel>
 
             <AlertDialogAction type="submit" form={formId}>
-              Löschen
+              Entfernen
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

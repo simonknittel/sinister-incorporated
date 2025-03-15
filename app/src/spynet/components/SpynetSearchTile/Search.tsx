@@ -31,20 +31,24 @@ const searchClient = algoliasearch(
   env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY,
 );
 
+// @ts-expect-error
 function debouncePromise(fn, time: number) {
   let timerId: NodeJS.Timeout | undefined = undefined;
 
+  // @ts-expect-error
   return function debounced(...args) {
     if (timerId) {
       clearTimeout(timerId);
     }
 
     return new Promise((resolve) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       timerId = setTimeout(() => resolve(fn(...args)), time);
     });
   };
 }
 
+// @ts-expect-error
 const debounced = debouncePromise((items) => Promise.resolve(items), 300);
 
 export const Search = () => {
@@ -52,6 +56,7 @@ export const Search = () => {
     <div className="w-full">
       <Autocomplete
         openOnFocus={true}
+        // @ts-expect-error
         getSources={({ query }) => {
           return debounced([
             {

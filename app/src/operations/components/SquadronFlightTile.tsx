@@ -50,6 +50,7 @@ const SquadronFlightTile = ({ className, unit }: Readonly<Props>) => {
         {oneLeader ? (
           <SquadronFlightPosition
             unit={unit}
+            // @ts-expect-error
             member={oneLeader}
             type="squadron-flight-1-leader"
           />
@@ -63,6 +64,7 @@ const SquadronFlightTile = ({ className, unit }: Readonly<Props>) => {
         {oneWingman ? (
           <SquadronFlightPosition
             unit={unit}
+            // @ts-expect-error
             member={oneWingman}
             type="squadron-flight-1-wingman"
           />
@@ -76,6 +78,7 @@ const SquadronFlightTile = ({ className, unit }: Readonly<Props>) => {
         {two ? (
           <SquadronFlightPosition
             unit={unit}
+            // @ts-expect-error
             member={two}
             type="squadron-flight-2"
           />
@@ -86,6 +89,7 @@ const SquadronFlightTile = ({ className, unit }: Readonly<Props>) => {
         {twoWingman ? (
           <SquadronFlightPosition
             unit={unit}
+            // @ts-expect-error
             member={twoWingman}
             type="squadron-flight-2-wingman"
           />

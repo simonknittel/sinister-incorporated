@@ -9,6 +9,7 @@ export default async function isAllowedToRead(
 ) {
   if (["discord-id", "teamspeak-id"].includes(entityLog.type)) {
     const allowedToRead = await authentication.authorize(
+      // @ts-expect-error
       entityLog.type,
       "read",
     );
@@ -21,6 +22,7 @@ export default async function isAllowedToRead(
   );
 
   if (!confirmed || confirmed.value !== "confirmed") {
+    // @ts-expect-error
     return authentication.authorize(entityLog.type, "confirm");
   }
 
