@@ -10,6 +10,15 @@ import clsx from "clsx";
 import Image from "next/image";
 import { FaCheck, FaClock, FaUser } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
+import { isLineupVisible } from "../utils/isLineupVisible";
+
+/**
+ * Image size:
+ * Discord recommends 800x320px.
+ * Our maximum height should be 160px. Therefore, we calculate the width based
+ * on the aspect ratio.
+ * 800 / 320 * 160 = 400
+ */
 
 type Props = Readonly<{
   className?: string;
@@ -40,13 +49,7 @@ export const Event = async ({ className, event, index }: Props) => {
       participant.discordUserId === authentication.session.discordId,
   );
 
-  /**
-   * Image size:
-   * Discord recommends 800x320px.
-   * Our maximum height should be 160px. Therefore, we calculate the width based
-   * on the aspect ratio.
-   * 800 / 320 * 160 = 400
-   */
+  const showLineupButton = await isLineupVisible(event);
 
   return (
     <article className={clsx("rounded-2xl overflow-hidden w-full", className)}>
@@ -113,9 +116,7 @@ export const Event = async ({ className, event, index }: Props) => {
               Details
             </Link>
 
-            {/* TODO: Implement */}
-            {/* {event.lineupEnabled && ( */}
-            {true && (
+            {showLineupButton && (
               <Link
                 href={`/app/events/${event.id}/lineup`}
                 className="first:rounded-l border-[1px] border-sinister-red-700 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"

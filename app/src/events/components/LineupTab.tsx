@@ -14,6 +14,7 @@ import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import type { PositionType } from "./Position";
 import { PositionSkeleton } from "./PositionSkeleton";
 import { Unassigned } from "./Unassigned";
+import { UpdateEventLineupEnabled } from "./UpdateEventLineupEnabled";
 
 const Positions = dynamic(
   () => import("./Positions").then((mod) => mod.Positions),
@@ -52,7 +53,14 @@ export const LineupTab = ({
       <div className="flex justify-end">
         <h2 className="sr-only">Aufstellung</h2>
         {canManagePositions && (
-          <CreateOrUpdateEventPosition eventId={event.id} variants={variants} />
+          <div className="flex items-center gap-4">
+            <UpdateEventLineupEnabled event={event} />
+
+            <CreateOrUpdateEventPosition
+              eventId={event.id}
+              variants={variants}
+            />
+          </div>
         )}
       </div>
 

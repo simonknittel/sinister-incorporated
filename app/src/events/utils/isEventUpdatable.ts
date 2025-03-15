@@ -1,6 +1,6 @@
 import type { Event } from "@prisma/client";
 
-export const canEditEvent = (event: Event) => {
+export const isEventUpdatable = (event: Event) => {
   const now = new Date();
 
   if (!event.endTime) {

@@ -7,7 +7,8 @@ import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
-import { canEditEvent } from "../utils/canEditEvent";
+import { isAllowedToManagePositions } from "../utils/isAllowedToManagePositions";
+import { isEventUpdatable } from "../utils/isEventUpdatable";
 
 const schema = z.object({
   id: z.string().cuid(),
@@ -18,7 +19,7 @@ export const deleteEventPosition = async (formData: FormData) => {
     /**
      * Authenticate
      */
-    const authentication = await authenticateAction("createEventPosition");
+    await authenticateAction("createEventPosition");
 
     /**
      * Validate the request
@@ -44,12 +45,9 @@ export const deleteEventPosition = async (formData: FormData) => {
       },
     });
     if (!position) return { error: "Posten nicht gefunden" };
-    if (!canEditEvent(position.event))
+    if (!isEventUpdatable(position.event))
       return { error: "Das Event ist bereits vorbei." };
-    if (
-      authentication.session.discordId !== position.event.discordCreatorId &&
-      !(await authentication.authorize("othersEventPosition", "delete"))
-    )
+    if (!(await isAllowedToManagePositions(position.event)))
       return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
 
     /**
