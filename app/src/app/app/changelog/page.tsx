@@ -28,6 +28,15 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="15. März 2025">
+          <DayItem heading="Super Hornets">
+            <p>
+              Die beiden Varianten der F7C-M Super Hornet Mk II wurden zu einer
+              zusammengeführt.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="9. März 2025">
           <DayItem heading="Gruppen in der Eventaufstellung">
             <p>Die Eventaufstellung kann nun in Gruppen unterteilt werden.</p>
