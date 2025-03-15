@@ -8,6 +8,7 @@ import image20250303SilcAuecConversionRate from "@/changelog/assets/2025-03-03-s
 import image20250303SilcStatistics from "@/changelog/assets/2025-03-03-silc-statistics.png";
 import image20250309LineupCreateChild from "@/changelog/assets/2025-03-09-lineup-create-child.png";
 import image20250309LineupGroups from "@/changelog/assets/2025-03-09-lineup-groups.png";
+import image20250315EventManagers from "@/changelog/assets/2025-03-15-event-managers.png";
 import image20250315LineupEnabled from "@/changelog/assets/2025-03-15-lineup-enabled.png";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
@@ -30,6 +31,20 @@ export default async function Page() {
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
         <Day heading="15. März 2025">
+          <DayItem heading="Zusätzliche Eventmanager">
+            <p>
+              Events können nun zusätzliche Manager hinzugefügt werden. Diese
+              haben die gleichen Berechtigungen wie die Organisatoren.
+            </p>
+
+            <Image
+              src={image20250315EventManagers}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+          </DayItem>
+
           <DayItem heading="Eventaufstellung de-/aktivieren">
             <p>
               Die Aufstellung eines Events kann nun de-/aktiviert werden. Solang

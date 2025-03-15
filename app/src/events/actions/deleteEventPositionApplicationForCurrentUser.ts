@@ -72,7 +72,7 @@ export const deleteEventPositionApplicationForCurrentUser = async (
      * Revalidate cache(s)
      */
     revalidatePath(
-      `/app/events/${deletedApplication.position.event.discordId}/lineup`,
+      `/app/events/${deletedApplication.position.event.id}/lineup`,
     );
 
     /**

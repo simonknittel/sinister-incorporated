@@ -108,6 +108,7 @@ export const getEventById = cache(async (id: Event["id"]) => {
               },
             },
           },
+          managers: true,
         },
       });
     } catch (error) {
@@ -134,6 +135,7 @@ export const getFutureEvents = cache(async () => {
         },
         include: {
           discordParticipants: true,
+          managers: true,
         },
         orderBy: {
           startTime: "asc",
@@ -163,6 +165,7 @@ export const getPastEvents = cache(async () => {
         },
         include: {
           discordParticipants: true,
+          managers: true,
         },
         orderBy: {
           startTime: "desc",

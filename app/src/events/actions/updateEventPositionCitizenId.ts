@@ -43,7 +43,11 @@ export const updateEventPositionCitizenId = async (formData: FormData) => {
         id: result.data.positionId,
       },
       include: {
-        event: true,
+        event: {
+          include: {
+            managers: true,
+          },
+        },
       },
     });
     if (!position) return { error: "Posten nicht gefunden" };
@@ -71,7 +75,7 @@ export const updateEventPositionCitizenId = async (formData: FormData) => {
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/events/${position.event.discordId}/lineup`);
+    revalidatePath(`/app/events/${position.event.id}/lineup`);
 
     /**
      * Respond with the result

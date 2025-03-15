@@ -90,7 +90,7 @@ export const createEventPositionApplicationForCurrentUser = async (
      * Revalidate cache(s)
      */
     revalidatePath(
-      `/app/events/${createdApplication.position.event.discordId}/lineup`,
+      `/app/events/${createdApplication.position.event.id}/lineup`,
     );
 
     /**

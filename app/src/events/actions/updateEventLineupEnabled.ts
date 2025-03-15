@@ -42,6 +42,9 @@ export const updateEventLineupEnabled = async (formData: FormData) => {
       where: {
         id: result.data.eventId,
       },
+      include: {
+        managers: true,
+      },
     });
     if (!event) return { error: "Event nicht gefunden" };
     if (!isEventUpdatable(event))
@@ -64,7 +67,7 @@ export const updateEventLineupEnabled = async (formData: FormData) => {
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/events/${event.discordId}/lineup`);
+    revalidatePath(`/app/events/${event.id}/lineup`);
 
     /**
      * Respond with the result

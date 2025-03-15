@@ -3,6 +3,7 @@ import { DiscordNavigationButton } from "@/common/components/DiscordNavigationBu
 import { Link } from "@/common/components/Link";
 import TimeAgoContainer from "@/common/components/TimeAgoContainer";
 import type {
+  Entity,
   EventDiscordParticipant,
   Event as PrismaEvent,
 } from "@prisma/client";
@@ -24,6 +25,7 @@ type Props = Readonly<{
   className?: string;
   event: PrismaEvent & {
     discordParticipants: EventDiscordParticipant[];
+    managers: Entity[];
   };
   index: number;
 }>;

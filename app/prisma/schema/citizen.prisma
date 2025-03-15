@@ -17,6 +17,7 @@ model Entity {
   updatedSilcTransactions                      SilcTransaction[]                    @relation("updatedBy")
   deletedSilcTransactions                      SilcTransaction[]                    @relation("deletedBy")
   updatedSilcSettings                          SilcSetting[]                        @relation("updatedBy")
+  eventManagers                                Event[]                              @relation("eventManagers")
 
   // Holds the latest confirmed values
   spectrumId                String?

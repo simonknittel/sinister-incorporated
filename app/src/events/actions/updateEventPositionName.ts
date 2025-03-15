@@ -43,7 +43,11 @@ export const updateEventPositionName = async (formData: FormData) => {
         id: result.data.id,
       },
       include: {
-        event: true,
+        event: {
+          include: {
+            managers: true,
+          },
+        },
       },
     });
     if (!position) return { error: "Posten nicht gefunden" };

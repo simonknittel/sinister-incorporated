@@ -1,7 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import type { Entity, Event } from "@prisma/client";
 
-export const isAllowedToManagePositions = async (
+export const isAllowedToManageEvent = async (
   event: Pick<Event, "discordCreatorId"> & {
     managers: Entity[];
   },
@@ -17,8 +17,7 @@ export const isAllowedToManagePositions = async (
   )
     return true;
 
-  if (await authentication.authorize("othersEventPosition", "manage"))
-    return true;
+  if (await authentication.authorize("event", "manage")) return true;
 
   return false;
 };

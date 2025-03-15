@@ -1,6 +1,10 @@
-import type { Event } from "@prisma/client";
+import type { Entity, Event } from "@prisma/client";
 import { isAllowedToManagePositions } from "./isAllowedToManagePositions";
 
-export const isLineupVisible = async (event: Event) => {
+export const isLineupVisible = async (
+  event: Event & {
+    managers: Entity[];
+  },
+) => {
   return event.lineupEnabled || (await isAllowedToManagePositions(event));
 };

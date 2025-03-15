@@ -6,7 +6,7 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "@/common/utils/sorting";
-import type { Event, EventDiscordParticipant } from "@prisma/client";
+import type { Entity, Event, EventDiscordParticipant } from "@prisma/client";
 import clsx from "clsx";
 import { Suspense } from "react";
 import {
@@ -17,6 +17,9 @@ import {
   FaSortNumericUp,
 } from "react-icons/fa";
 import { getParticipants } from "../utils/getParticipants";
+import { isAllowedToManageEvent } from "../utils/isAllowedToManageEvent";
+import { CreateManagers } from "./CreateManagers";
+import { DeleteManager } from "./DeleteManager";
 
 const GRID_COLS = "grid-cols-[160px_160px_1fr]";
 
@@ -24,6 +27,7 @@ type Props = Readonly<{
   className?: string;
   event: Event & {
     discordParticipants: EventDiscordParticipant[];
+    managers: Entity[];
   };
   urlSearchParams: URLSearchParams;
 }>;
@@ -34,6 +38,8 @@ export const ParticipantsTab = async ({
   urlSearchParams,
 }: Props) => {
   const authentication = await requireAuthentication();
+  const showCreateManagersButton = await isAllowedToManageEvent(event);
+  const showDeleteManagerButton = showCreateManagersButton;
 
   const resolvedParticipants = await getParticipants(event);
 
@@ -85,7 +91,7 @@ export const ParticipantsTab = async ({
   return (
     <div className={clsx("flex flex-col gap-4", className)}>
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
-        <h2 className="font-bold mb-4 text-lg">Organisator</h2>
+        <h2 className="font-bold mb-2 text-lg">Organisator</h2>
         <Link
           href={`/app/spynet/citizen/${resolvedCreatorParticipant.citizen.id}`}
           className={clsx("mt-2 hover:underline self-start", {
@@ -101,6 +107,65 @@ export const ParticipantsTab = async ({
           {resolvedCreatorParticipant.citizen.handle ||
             resolvedCreatorParticipant.citizen.id}
         </Link>
+
+        <div className="flex items-center gap-2 mt-4 mb-2">
+          <h2 className="font-bold text-lg">Managers</h2>
+          {showCreateManagersButton && <CreateManagers event={event} />}
+        </div>
+        {event.managers.length > 0 ? (
+          <div className="flex gap-x-3 gap-y-1 flex-wrap">
+            {event.managers
+              .toSorted((a, b) =>
+                (a.handle || a.id).localeCompare(b.handle || b.id),
+              )
+              .map((manager) => {
+                if (showDeleteManagerButton) {
+                  return (
+                    <div
+                      key={manager.id}
+                      className="rounded bg-neutral-700/50 flex"
+                    >
+                      <Link
+                        href={`/app/spynet/citizen/${manager.id}`}
+                        className={clsx("hover:underline px-2 py-1", {
+                          "text-green-500":
+                            manager.id === authentication.session.entityId,
+                          "text-sinister-red-500":
+                            manager.id !== authentication.session.entityId,
+                        })}
+                        prefetch={false}
+                      >
+                        {manager.handle || manager.id}
+                      </Link>
+
+                      <DeleteManager
+                        eventId={event.id}
+                        managerId={manager.id}
+                      />
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={manager.id}
+                    href={`/app/spynet/citizen/${manager.id}`}
+                    className={clsx("hover:underline", {
+                      "text-green-500":
+                        manager.id === authentication.session.entityId,
+                      "text-sinister-red-500":
+                        manager.id !== authentication.session.entityId,
+                    })}
+                    prefetch={false}
+                  >
+                    {manager.handle || manager.id}
+                  </Link>
+                );
+              })}
+          </div>
+        ) : (
+          <span className="text-neutral-500">-</span>
+        )}
       </section>
 
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 overflow-auto">

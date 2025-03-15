@@ -143,7 +143,7 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
           )}
 
           {receiverIds.map((id, index) => (
-            <input key={index} type="hidden" name={`receiverId[]`} value={id} />
+            <input key={index} type="hidden" name="receiverId[]" value={id} />
           ))}
 
           <label className="block" htmlFor={receiverIdsInputId}>
