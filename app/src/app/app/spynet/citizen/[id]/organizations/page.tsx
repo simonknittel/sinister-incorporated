@@ -1,5 +1,6 @@
 import { authenticatePage } from "@/auth/server";
 import { CitizenNavigation } from "@/citizen/components/CitizenNavigation";
+import { OrganizationMembershipHistory } from "@/citizen/components/OrganizationMembershipHistory.tsx";
 import { OrganizationMembershipsTile } from "@/citizen/components/OrganizationMembershipsTile";
 import { Link } from "@/common/components/Link";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
@@ -92,6 +93,10 @@ export default async function Page(props: Props) {
 
       <Suspense fallback={<SkeletonTile className="mt-4" />}>
         <OrganizationMembershipsTile id={entity.id} className="mt-4" />
+      </Suspense>
+
+      <Suspense fallback={<SkeletonTile className="mt-4" />}>
+        <OrganizationMembershipHistory id={entity.id} className="mt-4" />
       </Suspense>
     </main>
   );
