@@ -1,6 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import { CopyToClipboard } from "@/common/components/CopyToClipboard";
 import { RSIButton } from "@/common/components/RSIButton";
+import { Tile } from "@/common/components/Tile";
 import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import { Suspense } from "react";
@@ -24,12 +25,8 @@ export const Overview = async ({ className, entity }: Props) => {
   const showLastSeen = await authentication.authorize("lastSeen", "read");
 
   return (
-    <section
-      className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
-    >
-      <h2 className="font-bold text-lg">Übersicht</h2>
-
-      <dl className="mt-4">
+    <Tile heading="Übersicht" className={clsx(className)}>
+      <dl>
         <dt className="text-neutral-500">Sinister ID</dt>
         <dd className="flex items-center gap-2">
           {entity.id}
@@ -92,6 +89,6 @@ export const Overview = async ({ className, entity }: Props) => {
           href={`https://robertsspaceindustries.com/citizens/${entity.handle}`}
         />
       )}
-    </section>
+    </Tile>
   );
 };

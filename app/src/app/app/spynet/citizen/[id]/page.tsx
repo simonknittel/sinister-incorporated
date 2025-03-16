@@ -2,11 +2,10 @@ import { authenticatePage } from "@/auth/server";
 import { CitizenNavigation } from "@/citizen/components/CitizenNavigation";
 import { DeleteCitizen } from "@/citizen/components/DeleteCitizen";
 import { Overview } from "@/citizen/components/Overview";
-import { OverviewSkeleton } from "@/citizen/components/OverviewSkeleton";
 import { Roles } from "@/citizen/components/roles/Roles";
-import { RolesSkeleton } from "@/citizen/components/roles/RolesSkeleton";
 import { getCitizenById } from "@/citizen/queries";
 import { Link } from "@/common/components/Link";
+import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -91,13 +90,13 @@ export default async function Page(props: Props) {
 
       <div className="mt-4 flex flex-col gap-4 md:flex-row">
         <Suspense
-          fallback={<OverviewSkeleton className="md:w-1/2 3xl:self-start" />}
+          fallback={<SkeletonTile className="md:w-1/2 3xl:self-start" />}
         >
           <Overview entity={entity} className="md:w-1/2 3xl:self-start" />
         </Suspense>
 
         <div className="flex flex-col gap-4 md:w-1/2">
-          <Suspense fallback={<RolesSkeleton />}>
+          <Suspense fallback={<SkeletonTile />}>
             <Roles entity={entity} />
           </Suspense>
         </div>

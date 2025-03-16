@@ -1,6 +1,5 @@
 import { authenticatePage } from "@/auth/server";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
-import { CreateManufacturereButton } from "@/fleet/components/CreateManufacturerButton";
 import { ManufacturersTile } from "@/fleet/components/ManufacturersTile";
 import { type Metadata } from "next";
 import { Suspense } from "react";
@@ -20,10 +19,6 @@ export default async function Page() {
 
   return (
     <main>
-      <div className="flex justify-end items-center">
-        <CreateManufacturereButton />
-      </div>
-
       <Suspense fallback={<SkeletonTile />}>
         <ManufacturersTile />
       </Suspense>

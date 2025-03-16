@@ -1,9 +1,11 @@
 import { Actions } from "@/common/components/Actions";
 import { Link } from "@/common/components/Link";
+import { Tile } from "@/common/components/Tile";
 import { env } from "@/env";
 import clsx from "clsx";
 import Image from "next/image";
 import { getManufacturers } from "../queries";
+import { CreateManufacturereButton } from "./CreateManufacturerButton";
 import { DeleteManufacturerButton } from "./DeleteManufacturerButton";
 
 const GRID_COLS = "grid-cols-[48px_192px_1fr_44px]";
@@ -12,7 +14,11 @@ export const ManufacturersTile = async () => {
   const rows = await getManufacturers();
 
   return (
-    <section className="p-8 pb-4 bg-neutral-800/50 mt-4 rounded-2xl overflow-auto">
+    <Tile
+      heading="Hersteller"
+      cta={<CreateManufacturereButton />}
+      childrenClassName="overflow-auto"
+    >
       <table className="w-full min-w-[320px]">
         <thead>
           <tr
@@ -93,6 +99,6 @@ export const ManufacturersTile = async () => {
           })}
         </tbody>
       </table>
-    </section>
+    </Tile>
   );
 };
