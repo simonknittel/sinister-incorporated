@@ -1,5 +1,6 @@
 import { Actions } from "@/common/components/Actions";
 import { Link } from "@/common/components/Link";
+import { Tile } from "@/common/components/Tile";
 import { type Manufacturer } from "@prisma/client";
 import clsx from "clsx";
 import { getSeriesByManufacturerId } from "../queries";
@@ -17,18 +18,12 @@ export const SeriesTile = async ({ className, manufacturerId }: Props) => {
   const series = await getSeriesByManufacturerId(manufacturerId);
 
   return (
-    <section
-      className={clsx(
-        className,
-        "p-8 pb-4 bg-neutral-800/50 rounded-2xl overflow-auto",
-      )}
+    <Tile
+      heading="Serien"
+      cta={<CreateSeriesButton manufacturerId={manufacturerId} />}
+      className={clsx(className)}
+      childrenClassName="overflow-auto"
     >
-      <div className="flex gap-4 mb-4 items-center">
-        <h2 className="font-bold">Serien</h2>
-
-        <CreateSeriesButton manufacturerId={manufacturerId} />
-      </div>
-
       <table className="w-full min-w-[320px]">
         <thead>
           <tr
@@ -80,6 +75,6 @@ export const SeriesTile = async ({ className, manufacturerId }: Props) => {
           })}
         </tbody>
       </table>
-    </section>
+    </Tile>
   );
 };

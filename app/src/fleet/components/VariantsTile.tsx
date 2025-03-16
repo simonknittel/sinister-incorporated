@@ -1,4 +1,5 @@
 import { Actions } from "@/common/components/Actions";
+import { Tile } from "@/common/components/Tile";
 import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import clsx from "clsx";
 import { FaRegCheckCircle } from "react-icons/fa";
@@ -25,21 +26,17 @@ export const VariantsTile = async ({
   const variants = await getVariantsBySeriesId(seriesId);
 
   return (
-    <section
-      className={clsx(
-        className,
-        "p-8 pb-4 bg-neutral-800/50 rounded-2xl overflow-auto",
-      )}
-    >
-      <div className="flex gap-4 mb-4 items-center">
-        <h2 className="font-bold">Varianten</h2>
-
+    <Tile
+      heading="Varianten"
+      cta={
         <CreateVariantButton
           manufacturerId={manufacturerId}
           seriesId={seriesId}
         />
-      </div>
-
+      }
+      className={clsx(className)}
+      childrenClassName="overflow-auto"
+    >
       <table className="w-full min-w-[320px]">
         <thead>
           <tr
@@ -115,6 +112,6 @@ export const VariantsTile = async ({
           })}
         </tbody>
       </table>
-    </section>
+    </Tile>
   );
 };

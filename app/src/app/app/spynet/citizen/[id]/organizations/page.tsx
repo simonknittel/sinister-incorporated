@@ -1,14 +1,23 @@
 import { authenticatePage } from "@/auth/server";
 import { CitizenNavigation } from "@/citizen/components/CitizenNavigation";
-import { getCitizenById } from "@/citizen/queries";
+import { OrganizationMembershipHistory } from "@/citizen/components/OrganizationMembershipHistory";
+import { OrganizationMembershipsTile } from "@/citizen/components/OrganizationMembershipsTile";
 import { Link } from "@/common/components/Link";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { prisma } from "@/db";
 import { log } from "@/logging";
-import { SilcTransactionsTable } from "@/silc/components/SilcTransactionsTable";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import { serializeError } from "serialize-error";
+
+const getEntity = cache(async (id: string) => {
+  return prisma.entity.findUnique({
+    where: {
+      id,
+    },
+  });
+});
 
 type Params = Promise<
   Readonly<{
@@ -20,15 +29,15 @@ export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
-    const entity = await getCitizenById((await props.params).id);
+    const entity = await getEntity((await props.params).id);
     if (!entity) return {};
 
     return {
-      title: `SILC - ${entity.handle || entity.id} - Spynet | S.A.M. - Sinister Incorporated`,
+      title: `Organisationen - ${entity.handle || entity.id} - Spynet | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
     void log.error(
-      "Error while generating metadata for /app/spynet/citizen/[id]/silc/page.tsx",
+      "Error while generating metadata for /app/spynet/citizen/[id]/organizations/page.tsx",
       {
         error: serializeError(error),
       },
@@ -46,20 +55,12 @@ type Props = Readonly<{
 
 export default async function Page(props: Props) {
   const authentication = await authenticatePage(
-    "/app/spynet/citizen/[id]/silc",
+    "/app/spynet/citizen/[id]/organizations",
   );
+  await authentication.authorizePage("organizationMembership", "read");
 
-  const entity = await getCitizenById((await props.params).id);
+  const entity = await getEntity((await props.params).id);
   if (!entity) notFound();
-
-  if (entity.id === authentication.session.entityId) {
-    await authentication.authorizePage(
-      "silcTransactionOfCurrentCitizen",
-      "read",
-    );
-  } else {
-    await authentication.authorizePage("silcTransactionOfOtherCitizen", "read");
-  }
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
@@ -85,13 +86,17 @@ export default async function Page(props: Props) {
       </div>
 
       <CitizenNavigation
-        active={`/app/spynet/citizen/${entity.id}/silc`}
+        active={`/app/spynet/citizen/${entity.id}/organizations`}
         citizenId={entity.id}
         className="mt-2"
       />
 
       <Suspense fallback={<SkeletonTile className="mt-4" />}>
-        <SilcTransactionsTable citizenId={entity.id} className="mt-4" />
+        <OrganizationMembershipsTile id={entity.id} className="mt-4" />
+      </Suspense>
+
+      <Suspense fallback={<SkeletonTile className="mt-4" />}>
+        <OrganizationMembershipHistory id={entity.id} className="mt-4" />
       </Suspense>
     </main>
   );

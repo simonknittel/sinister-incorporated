@@ -88,7 +88,7 @@ export const CreateOrganizationMembership = ({
     <>
       <Button
         className={className}
-        variant="tertiary"
+        variant="secondary"
         onClick={() => setIsOpen(true)}
         title="Organisation hinzufügen"
       >

@@ -1,9 +1,9 @@
 import { requireAuthentication } from "@/auth/server";
 import { SingleRole } from "@/common/components/SingleRole";
+import { Tile } from "@/common/components/Tile";
 import { getAssignableRoles, getAssignedRoles } from "@/roles/utils/getRoles";
 import { type Entity } from "@prisma/client";
 import clsx from "clsx";
-import { FaLock } from "react-icons/fa";
 import { AddRoles } from "./AddRoles";
 
 type Props = Readonly<{
@@ -44,21 +44,15 @@ export const Roles = async ({ className, entity }: Props) => {
   }
 
   return (
-    <section
-      className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
-    >
-      <h2 className="font-bold flex gap-2 items-center text-lg">
-        <FaLock className="text-neutral-500" /> Rollen
-      </h2>
-
+    <Tile heading="Rollen" className={clsx(className)}>
       {assignedAndVisibleRoles.length > 0 ? (
-        <div className="flex gap-2 flex-wrap mt-4">
+        <div className="flex gap-2 flex-wrap">
           {assignedAndVisibleRoles.map((role) => (
             <SingleRole key={role.id} role={role} />
           ))}
         </div>
       ) : (
-        <p className="text-neutral-500 italic mt-4">Keine Rollen</p>
+        <p className="text-neutral-500 italic">Keine Rollen</p>
       )}
 
       {showAddRoles && (
@@ -72,6 +66,6 @@ export const Roles = async ({ className, entity }: Props) => {
           {/* <ImpersonateRoles roles={visibleRoles} /> */}
         </div>
       )}
-    </section>
+    </Tile>
   );
 };

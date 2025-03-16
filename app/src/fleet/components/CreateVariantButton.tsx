@@ -27,7 +27,7 @@ export const CreateVariantButton = ({
   return (
     <div className={clsx(className, "flex justify-center")}>
       <Button
-        variant="tertiary"
+        variant="secondary"
         onClick={() => setIsOpen(true)}
         title="Variante anlegen"
       >

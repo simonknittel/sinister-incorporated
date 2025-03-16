@@ -1,4 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
+import { Tile } from "@/common/components/Tile";
 import type { Entity } from "@prisma/client";
 import clsx from "clsx";
 import { getSilcTransactionsOfCitizen } from "../queries";
@@ -24,22 +25,16 @@ export const SilcTransactionsTable = async ({
   ]);
 
   return (
-    <section className={clsx("rounded-2xl bg-neutral-800/50", className)}>
-      <h2 className="font-bold text-xl border-b border-white/5 p-4 lg:px-8">
-        Transaktionen
-      </h2>
-
-      <div className="p-4 lg:p-8">
-        {hasEntries ? (
-          <SilcTransactionsTableClient
-            rows={entries}
-            showEdit={showEdit}
-            showDelete={showDelete}
-          />
-        ) : (
-          <p className="italic">Bisher wurden keine SILC verteilt.</p>
-        )}
-      </div>
-    </section>
+    <Tile heading="Transaktionen" className={clsx(className)}>
+      {hasEntries ? (
+        <SilcTransactionsTableClient
+          rows={entries}
+          showEdit={showEdit}
+          showDelete={showDelete}
+        />
+      ) : (
+        <p className="italic">Bisher wurden keine SILC verteilt.</p>
+      )}
+    </Tile>
   );
 };

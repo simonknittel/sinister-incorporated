@@ -22,7 +22,7 @@ export const CreateSeriesButton = ({ className, manufacturerId }: Props) => {
     <>
       <Button
         className={className}
-        variant="tertiary"
+        variant="secondary"
         onClick={() => setIsOpen(true)}
         title="Serie anlegen"
       >

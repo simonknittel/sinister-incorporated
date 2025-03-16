@@ -16,7 +16,7 @@ export const CreateManufacturereButton = () => {
 
   return (
     <>
-      <Button variant="primary" onClick={() => setIsOpen(true)}>
+      <Button variant="secondary" onClick={() => setIsOpen(true)}>
         Neu {isOpen ? <FaSpinner className="animate-spin" /> : <FaPlus />}
       </Button>
 

@@ -30,6 +30,17 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="16. März 2025">
+          <DayItem heading="Organisationen von Citizen">
+            <p>
+              Für Citizen im Spynet gibt es nun den
+              &ldquo;Organisationen&rdquo;-Reiter. Dieser listet alle aktuellen
+              Organisationen sowie den Verlauf von Ein- und Austritten (sofern
+              eingetragen).
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="15. März 2025">
           <DayItem heading="Zusätzliche Eventmanager">
             <p>

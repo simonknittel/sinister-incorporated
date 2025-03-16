@@ -1,5 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
-import { getCitizen } from "@/citizen/queries";
+import { getCitizens } from "@/citizen/queries";
 import { getLastSeenAt } from "@/common/utils/getLastSeenAt";
 import {
   getCurrentPageFromSearchParams,
@@ -26,7 +26,7 @@ export const CitizenTableTile = async ({ className, searchParams }: Props) => {
 
   const currentPage = getCurrentPageFromSearchParams(searchParams);
 
-  const entities = await getCitizen();
+  const entities = await getCitizens();
 
   const filters = searchParams.get("filters")?.split(",");
 

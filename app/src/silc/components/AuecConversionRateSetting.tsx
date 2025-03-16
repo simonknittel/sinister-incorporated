@@ -1,3 +1,4 @@
+import { Tile } from "@/common/components/Tile";
 import { prisma } from "@/db";
 import { SilcSettingKey } from "@prisma/client";
 import clsx from "clsx";
@@ -15,15 +16,8 @@ export const AuecConversionRateSetting = async ({ className }: Props) => {
   });
 
   return (
-    <section className={clsx("rounded-2xl bg-neutral-800/50", className)}>
-      <h2 className="font-bold text-xl p-4 lg:px-8 border-b border-white/5">
-        aUEC Umrechnungskurs
-      </h2>
-
-      <AuecConversionRateSettingClient
-        setting={setting}
-        className="p-4 lg:p-8"
-      />
-    </section>
+    <Tile heading="aUEC Umrechnungskurs" className={clsx(className)}>
+      <AuecConversionRateSettingClient setting={setting} />
+    </Tile>
   );
 };
