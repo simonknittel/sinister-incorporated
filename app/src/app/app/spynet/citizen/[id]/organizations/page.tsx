@@ -1,6 +1,6 @@
 import { authenticatePage } from "@/auth/server";
 import { CitizenNavigation } from "@/citizen/components/CitizenNavigation";
-import { OrganizationMembershipHistory } from "@/citizen/components/OrganizationMembershipHistory.tsx";
+import { OrganizationMembershipHistory } from "@/citizen/components/OrganizationMembershipHistory";
 import { OrganizationMembershipsTile } from "@/citizen/components/OrganizationMembershipsTile";
 import { Link } from "@/common/components/Link";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
