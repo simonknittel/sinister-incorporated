@@ -15,6 +15,10 @@ export const CitizenNavigation = async ({
   citizenId,
 }: Props) => {
   const authentication = await requireAuthentication();
+  const showOrganizations = await authentication.authorize(
+    "organizationMembership",
+    "read",
+  );
   const showSilcTransactions =
     citizenId === authentication.session.entityId
       ? await authentication.authorize(
@@ -37,6 +41,15 @@ export const CitizenNavigation = async ({
       name: "Notizen",
       path: `/app/spynet/citizen/${citizenId}/notes`,
     },
+
+    ...(showOrganizations
+      ? [
+          {
+            name: "Organisationen",
+            path: `/app/spynet/citizen/${citizenId}/organizations`,
+          },
+        ]
+      : []),
 
     ...(showSilcTransactions
       ? [

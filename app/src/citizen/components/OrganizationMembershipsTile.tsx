@@ -1,11 +1,12 @@
 import { requireAuthentication } from "@/auth/server";
 import { Link } from "@/common/components/Link";
+import { Tile } from "@/common/components/Tile";
 import { prisma } from "@/db";
 import { DeleteOrganizationMembership } from "@/spynet/components/DeleteOrganizationMembership";
 import { OrganizationMembershipVisibility } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
-import { FaExternalLinkAlt, FaSitemap } from "react-icons/fa";
+import { FaExternalLinkAlt } from "react-icons/fa";
 import { CreateOrganizationMembership } from "./CreateOrganizationMembership";
 
 type Props = Readonly<{
@@ -63,15 +64,20 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
   );
 
   return (
-    <section
-      className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
+    <Tile
+      heading="Aktuell"
+      cta={
+        showCreateButton ? (
+          <CreateOrganizationMembership
+            citizenId={id}
+            showConfirmButton={showConfirmButton}
+          />
+        ) : null
+      }
+      className={clsx(className)}
     >
-      <h2 className="font-bold flex gap-2 items-center text-lg">
-        <FaSitemap className="text-neutral-500" /> Organisationen
-      </h2>
-
       {activeOrganizationMemberships.length > 0 ? (
-        <ul className="flex gap-2 flex-wrap mt-4">
+        <ul className="flex gap-2 flex-wrap">
           {activeOrganizationMemberships
             .sort((a, b) =>
               a.organization.name.localeCompare(b.organization.name),
@@ -116,16 +122,8 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
             ))}
         </ul>
       ) : (
-        <p className="mt-4 text-neutral-500">Keine Organisationen</p>
+        <p className="text-neutral-500">Keine Organisationen</p>
       )}
-
-      {showCreateButton && (
-        <CreateOrganizationMembership
-          className="mt-2"
-          citizenId={id}
-          showConfirmButton={showConfirmButton}
-        />
-      )}
-    </section>
+    </Tile>
   );
 };
