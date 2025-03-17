@@ -1,7 +1,7 @@
 import { authenticatePage } from "@/auth/server";
 import { log } from "@/logging";
-import { Navigation } from "@/roles/components/Navigation";
 import { OverviewTab } from "@/roles/components/OverviewTab";
+import { Template } from "@/roles/components/Template";
 import { getRoleById } from "@/roles/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -47,19 +47,8 @@ export default async function Page({ params }: Props) {
   if (!role) notFound();
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
-      <div className="flex gap-2 font-bold text-xl">
-        <span className="text-neutral-500">Rolle /</span>
-        <p>{role?.name}</p>
-      </div>
-
-      <Navigation
-        role={role}
-        active={`/app/roles/${roleId}`}
-        className="mt-2"
-      />
-
-      <OverviewTab role={role} className="mt-2" />
-    </main>
+    <Template role={role}>
+      <OverviewTab role={role} />
+    </Template>
   );
 }

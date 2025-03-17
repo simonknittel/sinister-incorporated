@@ -1,6 +1,6 @@
 import { authenticatePage } from "@/auth/server";
 import { FleetTab } from "@/events/components/FleetTab";
-import { Navigation } from "@/events/components/Navigation";
+import { Template } from "@/events/components/Template";
 import { getEventById } from "@/events/queries";
 import { log } from "@/logging";
 import { type Metadata } from "next";
@@ -49,19 +49,8 @@ export default async function Page({ params }: Props) {
   if (!event) notFound();
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
-      <div className="flex gap-2 font-bold text-xl">
-        <span className="text-neutral-500">Event /</span>
-        <p>{event.name}</p>
-      </div>
-
-      <Navigation
-        event={event}
-        active={`/app/events/${eventId}/fleet`}
-        className="mt-4"
-      />
-
-      <FleetTab event={event} className="mt-4" />
-    </main>
+    <Template event={event}>
+      <FleetTab event={event} />
+    </Template>
   );
 }

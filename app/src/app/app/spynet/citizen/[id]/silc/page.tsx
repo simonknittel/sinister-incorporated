@@ -1,7 +1,6 @@
 import { authenticatePage } from "@/auth/server";
-import { CitizenNavigation } from "@/citizen/components/CitizenNavigation";
+import { Template } from "@/citizen/components/Template";
 import { getCitizenById } from "@/citizen/queries";
-import { Link } from "@/common/components/Link";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { log } from "@/logging";
 import { SilcTransactionsTable } from "@/silc/components/SilcTransactionsTable";
@@ -62,37 +61,10 @@ export default async function Page(props: Props) {
   }
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
-      <div className="flex gap-2 font-bold text-xl">
-        <Link
-          href="/app/spynet"
-          className="text-neutral-500 flex gap-1 items-center hover:text-neutral-300"
-        >
-          Spynet
-        </Link>
-
-        <span className="text-neutral-500">/</span>
-
-        <span className="text-neutral-500 flex gap-1 items-center">
-          Citizen
-        </span>
-
-        <span className="text-neutral-500">/</span>
-
-        <h1 className="overflow-hidden text-ellipsis whitespace-nowrap">
-          {entity.handle || entity.id}
-        </h1>
-      </div>
-
-      <CitizenNavigation
-        active={`/app/spynet/citizen/${entity.id}/silc`}
-        citizenId={entity.id}
-        className="mt-2"
-      />
-
-      <Suspense fallback={<SkeletonTile className="mt-4" />}>
-        <SilcTransactionsTable citizenId={entity.id} className="mt-4" />
+    <Template citizen={entity}>
+      <Suspense fallback={<SkeletonTile />}>
+        <SilcTransactionsTable citizenId={entity.id} />
       </Suspense>
-    </main>
+    </Template>
   );
 }

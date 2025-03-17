@@ -1,7 +1,7 @@
 import { authenticatePage } from "@/auth/server";
 import { prisma } from "@/db";
 import { LineupTab } from "@/events/components/LineupTab";
-import { Navigation } from "@/events/components/Navigation";
+import { Template } from "@/events/components/Template";
 import { getEventById } from "@/events/queries";
 import { getEventCitizens } from "@/events/utils/getEventCitizens";
 import { isAllowedToManagePositions } from "@/events/utils/isAllowedToManagePositions";
@@ -81,28 +81,16 @@ export default async function Page({ params }: Props) {
   );
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
-      <div className="flex gap-2 font-bold text-xl">
-        <span className="text-neutral-500">Event /</span>
-        <p>{event.name}</p>
-      </div>
-
-      <Navigation
-        event={event}
-        active={`/app/events/${eventId}/lineup`}
-        className="mt-4"
-      />
-
+    <Template event={event}>
       <LineupTab
         event={event}
         canManagePositions={showManagePositions}
         variants={variants}
         myShips={myShips}
         allEventCitizens={allEventCitizens}
-        className="mt-4"
         showActions={showActions}
         showToggle={showToggle}
       />
-    </main>
+    </Template>
   );
 }
