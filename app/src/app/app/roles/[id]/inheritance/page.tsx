@@ -2,7 +2,7 @@ import { authenticatePage } from "@/auth/server";
 import { SingleRole } from "@/common/components/SingleRole";
 import { log } from "@/logging";
 import { InheritanceForm } from "@/roles/components/InheritanceForm";
-import { Navigation } from "@/roles/components/Navigation";
+import { Template } from "@/roles/components/Template";
 import { getRoleById, getRoles } from "@/roles/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -53,19 +53,8 @@ export default async function Page({ params }: Props) {
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
-      <div className="flex gap-2 font-bold text-xl">
-        <span className="text-neutral-500">Rolle /</span>
-        <p>{role?.name}</p>
-      </div>
-
-      <Navigation
-        role={role}
-        active={`/app/roles/${roleId}/inheritance`}
-        className="mt-2"
-      />
-
-      <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 mt-4">
+    <Template role={role}>
+      <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
         <h2 className="text-xl font-bold mb-2">Vererbungen</h2>
         <p className="max-w-prose">
           Die Rolle <SingleRole role={role} className="inline-flex align-sub" />{" "}
@@ -77,6 +66,6 @@ export default async function Page({ params }: Props) {
 
         <InheritanceForm currentRole={role} roles={_roles} className="mt-4" />
       </section>
-    </main>
+    </Template>
   );
 }

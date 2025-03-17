@@ -2,8 +2,8 @@ import { authenticatePage } from "@/auth/server";
 import { getAllFlows } from "@/career/queries";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { log } from "@/logging";
-import { Navigation } from "@/roles/components/Navigation";
 import { PermissionsTab } from "@/roles/components/PermissionsTab";
+import { Template } from "@/roles/components/Template";
 import { getRoleById, getRoles } from "@/roles/queries";
 import { getAllClassificationLevels, getAllNoteTypes } from "@/spynet/queries";
 import { type Metadata } from "next";
@@ -59,18 +59,7 @@ export default async function Page({ params }: Props) {
   const enableOperations = Boolean(await getUnleashFlag("EnableOperations"));
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
-      <div className="flex gap-2 font-bold text-xl">
-        <span className="text-neutral-500">Rolle /</span>
-        <p>{role?.name}</p>
-      </div>
-
-      <Navigation
-        role={role}
-        active={`/app/roles/${roleId}/permissions`}
-        className="mt-2"
-      />
-
+    <Template role={role}>
       <PermissionsTab
         role={role}
         allRoles={allRoles}
@@ -78,8 +67,7 @@ export default async function Page({ params }: Props) {
         classificationLevels={classificationLevels}
         enableOperations={enableOperations}
         flows={flows}
-        className="mt-4"
       />
-    </main>
+    </Template>
   );
 }

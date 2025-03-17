@@ -1,9 +1,8 @@
 import { authenticatePage } from "@/auth/server";
-import { Hero } from "@/common/components/Hero";
 import { SkeletonTile } from "@/common/components/SkeletonTile";
-import { Navigation } from "@/silc/components/Navigation";
 import { SilcBalancesTable } from "@/silc/components/SilcBalancesTable";
 import { SilcStatistics } from "@/silc/components/SilcStatistics";
+import { Template } from "@/silc/components/Template";
 import { type Metadata } from "next";
 import { Suspense } from "react";
 
@@ -16,20 +15,14 @@ export default async function Page() {
   await authentication.authorizePage("silcBalanceOfOtherCitizen", "read");
 
   return (
-    <main className="p-4 pb-20 lg:p-8">
-      <div className="flex justify-center">
-        <Hero text="SILC" withGlitch />
-      </div>
-
-      <Navigation active="/app/silc" className="mt-4" />
-
-      <Suspense fallback={<SkeletonTile className="mt-4" />}>
-        <SilcStatistics className="mt-4" />
+    <Template>
+      <Suspense fallback={<SkeletonTile />}>
+        <SilcStatistics />
       </Suspense>
 
       <Suspense fallback={<SkeletonTile className="mt-4" />}>
         <SilcBalancesTable className="mt-4" />
       </Suspense>
-    </main>
+    </Template>
   );
 }

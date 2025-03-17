@@ -79,8 +79,8 @@ export default async function Page() {
             </p>
 
             <p>
-              Hierzu muss das Event ein eingetragenes Enddatum (dies ist in
-              Discord optional).
+              Hierzu muss das Event ein eingetragenes Enddatum haben. FYI: Dies
+              ist in Discord optional.
             </p>
           </DayItem>
 

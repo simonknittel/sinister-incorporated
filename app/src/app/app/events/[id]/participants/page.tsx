@@ -3,8 +3,8 @@ import {
   searchParamsNextjsToURLSearchParams,
   type NextjsSearchParams,
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
-import { Navigation } from "@/events/components/Navigation";
 import { ParticipantsTab } from "@/events/components/ParticipantsTab";
+import { Template } from "@/events/components/Template";
 import { getEventById } from "@/events/queries";
 import { log } from "@/logging";
 import { type Metadata } from "next";
@@ -56,23 +56,8 @@ export default async function Page({ params, searchParams }: Props) {
     await searchParamsNextjsToURLSearchParams(searchParams);
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
-      <div className="flex gap-2 font-bold text-xl">
-        <span className="text-neutral-500">Event /</span>
-        <p>{event.name}</p>
-      </div>
-
-      <Navigation
-        event={event}
-        active={`/app/events/${eventId}/participants`}
-        className="mt-4"
-      />
-
-      <ParticipantsTab
-        event={event}
-        urlSearchParams={urlSearchParams}
-        className="mt-4"
-      />
-    </main>
+    <Template event={event}>
+      <ParticipantsTab event={event} urlSearchParams={urlSearchParams} />
+    </Template>
   );
 }

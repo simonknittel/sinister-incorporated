@@ -2,16 +2,18 @@
 
 import Button from "@/common/components/Button";
 import { type Entity } from "@prisma/client";
+import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 
 type Props = Readonly<{
+  className?: string;
   entity: Entity;
 }>;
 
-export const DeleteCitizen = ({ entity }: Props) => {
+export const DeleteCitizen = ({ className, entity }: Props) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,27 +49,14 @@ export const DeleteCitizen = ({ entity }: Props) => {
   };
 
   return (
-    <>
-      <Button
-        title="Löschen"
-        onClick={() => void handleClick()}
-        disabled={isLoading}
-        variant="tertiary"
-        className="sm:hidden"
-        iconOnly={true}
-      >
-        {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}
-      </Button>
-
-      <Button
-        onClick={() => void handleClick()}
-        disabled={isLoading}
-        variant="tertiary"
-        className="hidden sm:flex"
-      >
-        {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}{" "}
-        Löschen
-      </Button>
-    </>
+    <Button
+      onClick={() => void handleClick()}
+      disabled={isLoading}
+      variant="tertiary"
+      className={clsx(className)}
+    >
+      {isLoading ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+      Löschen
+    </Button>
   );
 };
