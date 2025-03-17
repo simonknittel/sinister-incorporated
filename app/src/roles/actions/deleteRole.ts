@@ -38,11 +38,21 @@ export const deleteRole = async (
     /**
      * Update role
      */
-    await prisma.role.delete({
-      where: {
-        id: result.data.id,
-      },
-    });
+    await prisma.$transaction([
+      prisma.role.delete({
+        where: {
+          id: result.data.id,
+        },
+      }),
+
+      prisma.permissionString.deleteMany({
+        where: {
+          permissionString: {
+            contains: result.data.id,
+          },
+        },
+      }),
+    ]);
 
     /**
      * Redirect
