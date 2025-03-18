@@ -21,7 +21,7 @@ export default function RootLayout({ children }: Readonly<Props>) {
         {children}
         <ToasterContainer />
         <AnalyticsLoader />
-        <SpeedInsights />
+        <SpeedInsights sampleRate={0.5} />
       </body>
     </html>
   );
