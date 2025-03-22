@@ -4,12 +4,14 @@ import {
   type Entity,
   type EventPosition,
   type EventPositionApplication,
+  type EventPositionRequiredVariant,
   type Manufacturer,
   type Series,
   type Ship,
   type Upload,
   type Variant,
 } from "@prisma/client";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
@@ -24,15 +26,15 @@ export type PositionType = EventPosition & {
   applications: (EventPositionApplication & {
     citizen: Entity;
   })[];
-  requiredVariant:
-    | (Variant & {
-        series: Series & {
-          manufacturer: Manufacturer & {
-            image: Upload | null;
-          };
+  requiredVariants: (EventPositionRequiredVariant & {
+    variant: Variant & {
+      series: Series & {
+        manufacturer: Manufacturer & {
+          image: Upload | null;
         };
-      })
-    | null;
+      };
+    };
+  })[];
   citizen: Entity | null;
   childPositions?: PositionType[];
 };
@@ -84,17 +86,23 @@ export const Position = ({
 
   let doesCurrentUserSatisfyRequirements = true;
   if (
-    position.requiredVariant &&
-    !myShips.find((ship) => ship.variantId === position.requiredVariantId)
+    position.requiredVariants.length > 0 &&
+    !myShips.some((ship) =>
+      position.requiredVariants.some(
+        (variant) => variant.id === ship.variantId,
+      ),
+    )
   )
     doesCurrentUserSatisfyRequirements = false;
 
   let citizensSatisfyingRequirements = allEventCitizens;
-  if (position.requiredVariant) {
+  if (position.requiredVariants.length > 0) {
     citizensSatisfyingRequirements = citizensSatisfyingRequirements.filter(
       (citizen) =>
-        citizen.ships.some(
-          (ship) => ship.variantId === position.requiredVariantId,
+        citizen.ships.some((ship) =>
+          position.requiredVariants.some(
+            (variant) => variant.id === ship.variantId,
+          ),
         ),
     );
   }
@@ -160,14 +168,57 @@ export const Position = ({
             >
               Erforderliches Schiff
             </h3>
-            {position.requiredVariant ? (
+            {position.requiredVariants.length <= 0 && (
+              <p className="text-neutral-500">-</p>
+            )}
+            {position.requiredVariants.length === 1 && (
               <VariantWithLogo
-                variant={position.requiredVariant}
-                manufacturer={position.requiredVariant.series.manufacturer}
+                key={position.requiredVariants[0].id}
+                variant={position.requiredVariants[0].variant}
+                manufacturer={
+                  position.requiredVariants[0].variant.series.manufacturer
+                }
                 size={32}
               />
-            ) : (
-              <p className="text-neutral-500">-</p>
+            )}
+            {position.requiredVariants.length > 1 && (
+              <Tooltip.Provider delayDuration={0}>
+                <Tooltip.Root>
+                  <Tooltip.Trigger className="cursor-default hover:bg-neutral-700 rounded flex gap-2 items-center">
+                    <VariantWithLogo
+                      key={position.requiredVariants[0].id}
+                      variant={position.requiredVariants[0].variant}
+                      manufacturer={
+                        position.requiredVariants[0].variant.series.manufacturer
+                      }
+                      size={32}
+                    />
+
+                    <span className="rounded-full bg-neutral-900 size-6 flex items-center justify-center text-xs border border-sinister-red-500">
+                      +{position.requiredVariants.length - 1}
+                    </span>
+                  </Tooltip.Trigger>
+
+                  <Tooltip.Content
+                    className="px-4 py-2 max-w-[320px] select-none rounded bg-neutral-950 border border-sinister-red-500 text-white font-normal"
+                    sideOffset={5}
+                  >
+                    <p className="text-sm text-gray-500">Alternativen</p>
+
+                    {position.requiredVariants.map((requiredVariant) => (
+                      <VariantWithLogo
+                        key={requiredVariant.id}
+                        variant={requiredVariant.variant}
+                        manufacturer={
+                          requiredVariant.variant.series.manufacturer
+                        }
+                        size={32}
+                      />
+                    ))}
+                    <Tooltip.Arrow className="fill-sinister-red-500" />
+                  </Tooltip.Content>
+                </Tooltip.Root>
+              </Tooltip.Provider>
             )}
           </div>
 

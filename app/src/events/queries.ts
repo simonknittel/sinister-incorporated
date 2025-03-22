@@ -24,13 +24,20 @@ export const getEventById = cache(async (id: Event["id"]) => {
                 },
               },
               citizen: true,
-              requiredVariant: {
+              requiredVariants: {
+                orderBy: {
+                  order: "asc",
+                },
                 include: {
-                  series: {
+                  variant: {
                     include: {
-                      manufacturer: {
+                      series: {
                         include: {
-                          image: true,
+                          manufacturer: {
+                            include: {
+                              image: true,
+                            },
+                          },
                         },
                       },
                     },
@@ -45,13 +52,20 @@ export const getEventById = cache(async (id: Event["id"]) => {
                     },
                   },
                   citizen: true,
-                  requiredVariant: {
+                  requiredVariants: {
+                    orderBy: {
+                      order: "asc",
+                    },
                     include: {
-                      series: {
+                      variant: {
                         include: {
-                          manufacturer: {
+                          series: {
                             include: {
-                              image: true,
+                              manufacturer: {
+                                include: {
+                                  image: true,
+                                },
+                              },
                             },
                           },
                         },
@@ -66,13 +80,20 @@ export const getEventById = cache(async (id: Event["id"]) => {
                         },
                       },
                       citizen: true,
-                      requiredVariant: {
+                      requiredVariants: {
+                        orderBy: {
+                          order: "asc",
+                        },
                         include: {
-                          series: {
+                          variant: {
                             include: {
-                              manufacturer: {
+                              series: {
                                 include: {
-                                  image: true,
+                                  manufacturer: {
+                                    include: {
+                                      image: true,
+                                    },
+                                  },
                                 },
                               },
                             },
@@ -87,13 +108,20 @@ export const getEventById = cache(async (id: Event["id"]) => {
                             },
                           },
                           citizen: true,
-                          requiredVariant: {
+                          requiredVariants: {
+                            orderBy: {
+                              order: "asc",
+                            },
                             include: {
-                              series: {
+                              variant: {
                                 include: {
-                                  manufacturer: {
+                                  series: {
                                     include: {
-                                      image: true,
+                                      manufacturer: {
+                                        include: {
+                                          image: true,
+                                        },
+                                      },
                                     },
                                   },
                                 },
