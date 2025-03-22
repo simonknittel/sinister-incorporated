@@ -109,7 +109,7 @@ export const ParticipantsTab = async ({
         </Link>
 
         <div className="flex items-center gap-2 mt-4 mb-2">
-          <h2 className="font-bold text-lg">Managers</h2>
+          <h2 className="font-bold text-lg">Manager</h2>
           {showCreateManagersButton && <CreateManagers event={event} />}
         </div>
         {event.managers.length > 0 ? (
