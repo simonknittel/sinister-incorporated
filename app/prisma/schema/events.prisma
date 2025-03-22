@@ -31,21 +31,20 @@ model EventDiscordParticipant {
 }
 
 model EventPosition {
-  id                String                         @id @default(cuid())
-  eventId           String
-  event             Event                          @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  name              String
-  description       String?
-  requiredVariantId String?
-  requiredVariants  EventPositionRequiredVariant[]
-  requiredRoles     Role[]
-  applications      EventPositionApplication[]     @relation("applications")
-  citizenId         String?
-  citizen           Entity?                        @relation("citizen", fields: [citizenId], references: [id], onDelete: SetNull)
-  parentPositionId  String?
-  parentPosition    EventPosition?                 @relation("parentPosition", fields: [parentPositionId], references: [id], onDelete: Cascade)
-  childPositions    EventPosition[]                @relation("parentPosition")
-  order             Int                            @default(0)
+  id               String                         @id @default(cuid())
+  eventId          String
+  event            Event                          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name             String
+  description      String?
+  requiredVariants EventPositionRequiredVariant[]
+  requiredRoles    Role[]
+  applications     EventPositionApplication[]     @relation("applications")
+  citizenId        String?
+  citizen          Entity?                        @relation("citizen", fields: [citizenId], references: [id], onDelete: SetNull)
+  parentPositionId String?
+  parentPosition   EventPosition?                 @relation("parentPosition", fields: [parentPositionId], references: [id], onDelete: Cascade)
+  childPositions   EventPosition[]                @relation("parentPosition")
+  order            Int                            @default(0)
 }
 
 model EventPositionRequiredVariant {
