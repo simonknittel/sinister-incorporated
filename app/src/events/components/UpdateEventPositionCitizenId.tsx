@@ -4,10 +4,7 @@ import type {
   Entity,
   EventPosition,
   EventPositionApplication,
-  Manufacturer,
-  Series,
   Ship,
-  Variant,
 } from "@prisma/client";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
@@ -18,15 +15,7 @@ import { updateEventPositionCitizenId } from "../actions/updateEventPositionCiti
 
 type Props = Readonly<{
   className?: string;
-  position: EventPosition & {
-    requiredVariant:
-      | (Variant & {
-          series: Series & {
-            manufacturer: Manufacturer;
-          };
-        })
-      | null;
-  };
+  position: EventPosition;
   citizensSatisfyingRequirements: { citizen: Entity; ships: Ship[] }[];
   citizensNotSatisfyingRequirements: { citizen: Entity; ships: Ship[] }[];
   applicationsSatisfyingRequirements: (EventPositionApplication & {

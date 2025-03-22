@@ -14,7 +14,7 @@ const schema = z.object({
   eventId: z.string().cuid(),
   name: z.string().trim().max(256),
   description: z.string().trim().max(512).optional(),
-  variantId: z.union([z.string().cuid(), z.literal("-")]),
+  variantIds: z.array(z.string().cuid()),
   parentPositionId: z.string().cuid().optional(),
 });
 
@@ -34,7 +34,7 @@ export const createEventPosition = async (formData: FormData) => {
       description: formData.has("description")
         ? formData.get("description")
         : undefined,
-      variantId: formData.get("variantId"),
+      variantIds: formData.getAll("variantId[]") || [],
       parentPositionId: formData.has("parentPositionId")
         ? formData.get("parentPositionId")
         : undefined,
@@ -74,14 +74,14 @@ export const createEventPosition = async (formData: FormData) => {
         },
         name: result.data.name,
         description: result.data.description,
-        requiredVariant:
-          result.data.variantId !== "-"
-            ? {
-                connect: {
-                  id: result.data.variantId,
-                },
-              }
-            : {},
+        requiredVariants: {
+          createMany: {
+            data: result.data.variantIds.map((id, index) => ({
+              variantId: id,
+              order: index,
+            })),
+          },
+        },
         ...(result.data.parentPositionId
           ? {
               parentPosition: {

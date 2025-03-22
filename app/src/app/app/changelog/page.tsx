@@ -10,6 +10,8 @@ import image20250309LineupCreateChild from "@/changelog/assets/2025-03-09-lineup
 import image20250309LineupGroups from "@/changelog/assets/2025-03-09-lineup-groups.png";
 import image20250315EventManagers from "@/changelog/assets/2025-03-15-event-managers.png";
 import image20250315LineupEnabled from "@/changelog/assets/2025-03-15-lineup-enabled.png";
+import image20250322RequiredVariantsEdit from "@/changelog/assets/2025-03-22-required-variants-edit.png";
+import image20250322RequiredVariantsTooltip from "@/changelog/assets/2025-03-22-required-variants-tooltip.png";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 import Image from "next/image";
@@ -30,6 +32,31 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="22. März 2025">
+          <DayItem heading="Alternativen zu erforderlichen Schiffen">
+            <p>
+              In der Eventaufstellung können nun mehrere Schiffe als
+              erforderliches Schiff hinzugefügt werden.
+            </p>
+
+            <Image
+              quality={100}
+              src={image20250322RequiredVariantsTooltip}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+
+            <Image
+              quality={100}
+              src={image20250322RequiredVariantsEdit}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+          </DayItem>
+        </Day>
+
         <Day heading="16. März 2025">
           <DayItem heading="Organisationen von Citizen">
             <p>
@@ -49,6 +76,7 @@ export default async function Page() {
             </p>
 
             <Image
+              quality={100}
               src={image20250315EventManagers}
               alt=""
               loading="lazy"
@@ -64,6 +92,7 @@ export default async function Page() {
             </p>
 
             <Image
+              quality={100}
               src={image20250315LineupEnabled}
               alt=""
               loading="lazy"
@@ -97,6 +126,7 @@ export default async function Page() {
             <p>Die Eventaufstellung kann nun in Gruppen unterteilt werden.</p>
 
             <Image
+              quality={100}
               src={image20250309LineupGroups}
               alt=""
               loading="lazy"
@@ -113,6 +143,7 @@ export default async function Page() {
             </p>
 
             <Image
+              quality={100}
               src={image20250309LineupCreateChild}
               alt=""
               loading="lazy"
@@ -225,6 +256,7 @@ export default async function Page() {
             </p>
 
             <Image
+              quality={100}
               src={image20250303SilcAuecConversionRate}
               alt=""
               loading="lazy"
@@ -232,6 +264,7 @@ export default async function Page() {
             />
 
             <Image
+              quality={100}
               src={image20250303SilcStatistics}
               alt=""
               loading="lazy"
@@ -265,6 +298,7 @@ export default async function Page() {
             </p>
 
             <Image
+              quality={100}
               src={image20250302SilcOverview}
               alt=""
               loading="lazy"
@@ -272,6 +306,7 @@ export default async function Page() {
             />
 
             <Image
+              quality={100}
               src={image20250302SilcTransactions}
               alt=""
               loading="lazy"
@@ -283,6 +318,7 @@ export default async function Page() {
             </p>
 
             <Image
+              quality={100}
               src={image20250302SilcDashboard}
               alt=""
               loading="lazy"
@@ -308,7 +344,12 @@ export default async function Page() {
               sie sichtbar wird.
             </p>
 
-            <Image src={image20250228PenaltyPoints} alt="" loading="lazy" />
+            <Image
+              quality={100}
+              src={image20250228PenaltyPoints}
+              alt=""
+              loading="lazy"
+            />
           </DayItem>
 
           <DayItem heading="Fix: Eventaufstellung">
@@ -327,7 +368,12 @@ export default async function Page() {
               nachdem, ob sie die Anforderungen erfüllen oder nicht.
             </p>
 
-            <Image src={image20250227Dropdown} alt="" loading="lazy" />
+            <Image
+              quality={100}
+              src={image20250227Dropdown}
+              alt=""
+              loading="lazy"
+            />
           </DayItem>
 
           <DayItem heading="Fix: Discord-Verlinkung">

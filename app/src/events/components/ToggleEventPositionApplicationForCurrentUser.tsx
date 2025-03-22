@@ -4,6 +4,7 @@ import Button from "@/common/components/Button";
 import { VariantWithLogo } from "@/fleet/components/VariantWithLogo";
 import type {
   EventPosition,
+  EventPositionRequiredVariant,
   Manufacturer,
   Series,
   Upload,
@@ -21,15 +22,15 @@ import { deleteEventPositionApplicationForCurrentUser } from "../actions/deleteE
 type Props = Readonly<{
   className?: string;
   position: EventPosition & {
-    requiredVariant:
-      | (Variant & {
-          series: Series & {
-            manufacturer: Manufacturer & {
-              image: Upload | null;
-            };
+    requiredVariants: (EventPositionRequiredVariant & {
+      variant: Variant & {
+        series: Series & {
+          manufacturer: Manufacturer & {
+            image: Upload | null;
           };
-        })
-      | null;
+        };
+      };
+    })[];
   };
   hasCurrentUserAlreadyApplied?: boolean;
   doesCurrentUserSatisfyRequirements?: boolean;
@@ -121,18 +122,21 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
                   Organisator, was du mitbringen sollst.
                 </p>
 
-                {position.requiredVariant && (
+                {position.requiredVariants.length > 0 && (
                   <>
                     <p className="text-sm text-gray-500 mt-4">
                       Erforderliches Schiff
                     </p>
-                    <VariantWithLogo
-                      variant={position.requiredVariant}
-                      manufacturer={
-                        position.requiredVariant.series.manufacturer
-                      }
-                      size={32}
-                    />
+                    {position.requiredVariants.map((requiredVariant) => (
+                      <VariantWithLogo
+                        key={requiredVariant.id}
+                        variant={requiredVariant.variant}
+                        manufacturer={
+                          requiredVariant.variant.series.manufacturer
+                        }
+                        size={32}
+                      />
+                    ))}
                   </>
                 )}
               </div>

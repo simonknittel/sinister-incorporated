@@ -14,7 +14,7 @@ const schema = z.object({
   positionId: z.string().cuid(),
   name: z.string().trim().max(256),
   description: z.string().trim().max(512).optional(),
-  variantId: z.union([z.string().cuid(), z.literal("-")]),
+  variantIds: z.array(z.string().cuid()),
 });
 
 export const updateEventPosition = async (formData: FormData) => {
@@ -33,7 +33,7 @@ export const updateEventPosition = async (formData: FormData) => {
       description: formData.has("description")
         ? formData.get("description")
         : undefined,
-      variantId: formData.get("variantId"),
+      variantIds: formData.getAll("variantId[]") || [],
     });
     if (!result.success)
       return {
@@ -54,6 +54,7 @@ export const updateEventPosition = async (formData: FormData) => {
             managers: true,
           },
         },
+        requiredVariants: true,
       },
     });
     if (!position) return { error: "Posten nicht gefunden" };
@@ -65,25 +66,31 @@ export const updateEventPosition = async (formData: FormData) => {
     /**
      * Update position
      */
-    await prisma.eventPosition.update({
-      where: {
-        id: result.data.positionId,
-      },
-      data: {
-        name: result.data.name,
-        description: result.data.description,
-        requiredVariant:
-          result.data.variantId === "-"
-            ? {
-                disconnect: true,
-              }
-            : {
-                connect: {
-                  id: result.data.variantId,
-                },
-              },
-      },
-    });
+    await prisma.$transaction([
+      prisma.eventPositionRequiredVariant.deleteMany({
+        where: {
+          positionId: position.id,
+        },
+      }),
+
+      prisma.eventPosition.update({
+        where: {
+          id: result.data.positionId,
+        },
+        data: {
+          name: result.data.name,
+          description: result.data.description,
+          requiredVariants: {
+            createMany: {
+              data: result.data.variantIds.map((id, index) => ({
+                variantId: id,
+                order: index,
+              })),
+            },
+          },
+        },
+      }),
+    ]);
 
     /**
      * Revalidate cache(s)
