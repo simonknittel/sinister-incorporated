@@ -129,16 +129,16 @@ export const Position = ({
   return (
     <div className={className}>
       <div
-        className={clsx(
+        className={clsx("flex items-stretch gap-2 bg-neutral-800/50", {
           "flex items-stretch gap-2 p-2 sm:pl-4 bg-neutral-800/50",
           {
             "bg-neutral-800/70 rounded-t": isOpen,
             "rounded-b": !isOpen,
-          },
+        })}
         )}
       >
         <div className="flex-1 flex flex-col xl:grid xl:grid-cols-[1fr_256px_256px] gap-2">
-          <div className="flex flex-col justify-center overflow-hidden">
+          <div className="flex flex-col justify-center overflow-hidden pl-2">
             <h3
               className={clsx("text-sm text-gray-500", {
                 "sr-only": !isOpen,
@@ -160,7 +160,7 @@ export const Position = ({
             )}
           </div>
 
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center py-1">
             <h3
               className={clsx("text-sm text-gray-500", {
                 "sr-only": !isOpen,
@@ -222,7 +222,7 @@ export const Position = ({
             )}
           </div>
 
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center py-1">
             <h3
               className={clsx("text-sm text-gray-500", {
                 "sr-only": !isOpen,
@@ -267,6 +267,7 @@ export const Position = ({
 
         <button
           onClick={handleToggleOpen}
+          type="button"
           title={isOpen ? "Details schließen" : "Details öffnen"}
           className="flex-none p-3 flex items-center justify-center border-l border-white/10 hover:bg-neutral-800 rounded"
         >
