@@ -71,7 +71,7 @@ export const updateEventPositionName = async (formData: FormData) => {
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/events/${position.event.discordId}/lineup`);
+    revalidatePath(`/app/events/${position.event.id}/lineup`);
 
     /**
      * Respond with the result

@@ -1,12 +1,12 @@
 import clsx from "clsx";
-import { useLineup } from "./LineupContext";
+import { useLineupVisibility } from "./LineupVisibilityContext";
 
 type Props = Readonly<{
   className?: string;
 }>;
 
 export const OpenAndCloseAll = ({ className }: Props) => {
-  const { openAll, closeAll } = useLineup();
+  const { openAll, closeAll } = useLineupVisibility();
 
   return (
     <div className={clsx("flex gap-2", className)}>
