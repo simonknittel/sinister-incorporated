@@ -54,6 +54,7 @@ export const createEventPosition = async (formData: FormData) => {
       },
       include: {
         managers: true,
+        positions: true,
       },
     });
     if (!event) return { error: "Event nicht gefunden" };
@@ -74,6 +75,7 @@ export const createEventPosition = async (formData: FormData) => {
         },
         name: result.data.name,
         description: result.data.description,
+        order: event.positions.length,
         requiredVariants: {
           createMany: {
             data: result.data.variantIds.map((id, index) => ({

@@ -7,9 +7,10 @@ import type {
   Ship,
   Variant,
 } from "@prisma/client";
+import { LineupOrderProvider } from "./LineupOrderContext/Context";
 import { LineupVisibilityProvider } from "./LineupVisibilityContext";
 import { OpenAndCloseAll } from "./OpenAndCloseAll";
-import { Position, type PositionType } from "./Position";
+import { type PositionType } from "./Position";
 
 type Props = Readonly<{
   className?: string;
@@ -39,23 +40,16 @@ export const Positions = ({
     <LineupVisibilityProvider positions={positions}>
       <OpenAndCloseAll className="ml-auto" />
 
-      <div className="flex flex-col gap-[1px]">
-        {positions
-          .toSorted((a, b) => a.name.localeCompare(b.name))
-          .map((position) => (
-            <Position
-              key={position.id}
-              position={position}
-              showManage={canManagePositions}
-              variants={variants}
-              myShips={myShips}
-              allEventCitizens={allEventCitizens}
-              showActions={showActions}
-              showToggle={showToggle}
-              groupLevel={1}
-            />
-          ))}
-      </div>
+      <LineupOrderProvider
+        positions={positions}
+        showManage={canManagePositions}
+        variants={variants}
+        myShips={myShips}
+        allEventCitizens={allEventCitizens}
+        showActions={showActions}
+        showToggle={showToggle}
+        className="flex flex-col gap-[1px]"
+      />
     </LineupVisibilityProvider>
   );
 };

@@ -12,6 +12,7 @@ import image20250315EventManagers from "@/changelog/assets/2025-03-15-event-mana
 import image20250315LineupEnabled from "@/changelog/assets/2025-03-15-lineup-enabled.png";
 import image20250322RequiredVariantsEdit from "@/changelog/assets/2025-03-22-required-variants-edit.png";
 import image20250322RequiredVariantsTooltip from "@/changelog/assets/2025-03-22-required-variants-tooltip.png";
+import image20250323LineupDragNDrop from "@/changelog/assets/2025-03-23-lineup-dragndrop.png";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 import Image from "next/image";
@@ -32,6 +33,33 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="23. März 2025">
+          <DayItem heading="Drag'n'Drop in der Eventaufstellung">
+            <p>
+              Die Posten in der Eventaufstellung können nun per
+              Drag&apos;n&apos;Drop verschoben werden.
+            </p>
+
+            <p>
+              Dazu einfach an den 6 Punkten an der linken Seite ziehen und den
+              Posten dahin verschieben, wo er hin soll. Ablageflächen werden
+              grün hervorgehoben. Wird ein Posten an die obere bzw. untere Kante
+              eines anderen Posten gezogen, wird dieser davor bzw. danach
+              eingeordnet. Wird ein Posten auf die untere rechte Ecke eines
+              anderen Postens gezogen, wird dieser Posten als Kindposten
+              eingeordnet.
+            </p>
+
+            <Image
+              quality={100}
+              src={image20250323LineupDragNDrop}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+          </DayItem>
+        </Day>
+
         <Day heading="22. März 2025">
           <DayItem heading="Alternativen zu erforderlichen Schiffen">
             <p>

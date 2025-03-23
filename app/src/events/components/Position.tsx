@@ -18,6 +18,9 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { DeleteEventPosition } from "./DeleteEventPosition";
 import { EditablePositionName } from "./EditablePositionName";
+import { useLineupOrder } from "./LineupOrderContext/Context";
+import { DragHandle } from "./LineupOrderContext/DragHandle";
+import { DragTarget } from "./LineupOrderContext/DragTarget";
 import { useLineupVisibility } from "./LineupVisibilityContext";
 import { ToggleEventPositionApplicationForCurrentUser } from "./ToggleEventPositionApplicationForCurrentUser";
 import { UpdateEventPositionCitizenId } from "./UpdateEventPositionCitizenId";
@@ -53,6 +56,7 @@ type Props = Readonly<{
   showActions?: boolean;
   showToggle?: boolean;
   groupLevel: number;
+  parentPositions: PositionType["id"][];
 }>;
 
 export const Position = ({
@@ -65,9 +69,12 @@ export const Position = ({
   showActions,
   showToggle,
   groupLevel,
+  parentPositions,
 }: Props) => {
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
+
+  const { isDragging } = useLineupOrder();
 
   const { openPositions, open, close } = useLineupVisibility();
   const isOpen = openPositions.includes(position.id);
@@ -126,17 +133,34 @@ export const Position = ({
       ),
   );
 
+  const newParentPositions = [...parentPositions, position.id];
+
   return (
-    <div className={className}>
+    <div
+      className={clsx(
+        {
+          "opacity-50": isDragging?.id === position.id,
+        },
+        className,
+      )}
+    >
+      {showActions && showManage && (
+        <DragTarget
+          position={position}
+          order="before"
+          parentPositions={newParentPositions}
+          groupLevel={groupLevel}
+        />
+      )}
+
       <div
         className={clsx("flex items-stretch gap-2 bg-neutral-800/50", {
-          "flex items-stretch gap-2 p-2 sm:pl-4 bg-neutral-800/50",
-          {
-            "bg-neutral-800/70 rounded-t": isOpen,
-            "rounded-b": !isOpen,
+          "bg-neutral-800/70 rounded-t": isOpen,
+          "rounded-b": !isOpen,
         })}
-        )}
       >
+        {showActions && showManage && <DragHandle position={position} />}
+
         <div className="flex-1 flex flex-col xl:grid xl:grid-cols-[1fr_256px_256px] gap-2">
           <div className="flex flex-col justify-center overflow-hidden pl-2">
             <h3
@@ -340,23 +364,31 @@ export const Position = ({
         </div>
       )}
 
+      {showActions && showManage && (
+        <DragTarget
+          position={position}
+          order="after"
+          parentPositions={newParentPositions}
+          groupLevel={groupLevel}
+        />
+      )}
+
       {position.childPositions && position.childPositions.length > 0 && (
         <div className="flex flex-col gap-[1px] pl-4 lg:pl-8 mt-[1px]">
-          {position.childPositions
-            .toSorted((a, b) => a.name.localeCompare(b.name))
-            .map((position) => (
-              <Position
-                key={position.id}
-                position={position}
-                showManage={showManage}
-                variants={variants}
-                myShips={myShips}
-                allEventCitizens={allEventCitizens}
-                showActions={showActions}
-                showToggle={showToggle}
-                groupLevel={groupLevel + 1}
-              />
-            ))}
+          {position.childPositions.map((position) => (
+            <Position
+              key={position.id}
+              position={position}
+              showManage={showManage}
+              variants={variants}
+              myShips={myShips}
+              allEventCitizens={allEventCitizens}
+              showActions={showActions}
+              showToggle={showToggle}
+              groupLevel={groupLevel + 1}
+              parentPositions={newParentPositions}
+            />
+          ))}
         </div>
       )}
     </div>

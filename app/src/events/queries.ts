@@ -17,6 +17,9 @@ export const getEventById = cache(async (id: Event["id"]) => {
             where: {
               parentPositionId: null,
             },
+            orderBy: {
+              order: "asc",
+            },
             include: {
               applications: {
                 include: {
@@ -45,6 +48,9 @@ export const getEventById = cache(async (id: Event["id"]) => {
                 },
               },
               childPositions: {
+                orderBy: {
+                  order: "asc",
+                },
                 include: {
                   applications: {
                     include: {
@@ -73,6 +79,9 @@ export const getEventById = cache(async (id: Event["id"]) => {
                     },
                   },
                   childPositions: {
+                    orderBy: {
+                      order: "asc",
+                    },
                     include: {
                       applications: {
                         include: {
@@ -101,6 +110,9 @@ export const getEventById = cache(async (id: Event["id"]) => {
                         },
                       },
                       childPositions: {
+                        orderBy: {
+                          order: "asc",
+                        },
                         include: {
                           applications: {
                             include: {
