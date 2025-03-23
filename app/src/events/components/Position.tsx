@@ -18,7 +18,7 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { DeleteEventPosition } from "./DeleteEventPosition";
 import { EditablePositionName } from "./EditablePositionName";
-import { useLineup } from "./LineupContext";
+import { useLineupVisibility } from "./LineupVisibilityContext";
 import { ToggleEventPositionApplicationForCurrentUser } from "./ToggleEventPositionApplicationForCurrentUser";
 import { UpdateEventPositionCitizenId } from "./UpdateEventPositionCitizenId";
 
@@ -69,7 +69,7 @@ export const Position = ({
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
 
-  const { openPositions, open, close } = useLineup();
+  const { openPositions, open, close } = useLineupVisibility();
   const isOpen = openPositions.includes(position.id);
 
   const hasCurrentUserAlreadyApplied = position.applications.some(

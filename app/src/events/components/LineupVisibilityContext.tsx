@@ -11,7 +11,7 @@ import {
   useMemo,
 } from "react";
 
-interface LineupContext {
+interface LineupVisibilityContext {
   openPositions: EventPosition["id"][];
   open: (positionIds: EventPosition["id"]) => void;
   close: (positionId: EventPosition["id"]) => void;
@@ -19,7 +19,9 @@ interface LineupContext {
   openAll: () => void;
 }
 
-const FlowContext = createContext<LineupContext | undefined>(undefined);
+const LineupVisibilityContext = createContext<
+  LineupVisibilityContext | undefined
+>(undefined);
 
 type Props = Readonly<{
   children: ReactNode;
@@ -32,7 +34,7 @@ type Props = Readonly<{
   })[];
 }>;
 
-export const LineupProvider = ({ children, positions }: Props) => {
+export const LineupVisibilityProvider = ({ children, positions }: Props) => {
   const [openPositions, setOpenPositions] = useLocalStorage<
     EventPosition["id"][]
   >(`open_positions`, []);
@@ -98,15 +100,19 @@ export const LineupProvider = ({ children, positions }: Props) => {
     [openPositions, open, openAll, close, closeAll],
   );
 
-  return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;
+  return (
+    <LineupVisibilityContext.Provider value={value}>
+      {children}
+    </LineupVisibilityContext.Provider>
+  );
 };
 
 /**
  * Check for undefined since the defaultValue of the context is undefined. If
  * it's still undefined, the provider component is missing.
  */
-export function useLineup() {
-  const context = useContext(FlowContext);
+export function useLineupVisibility() {
+  const context = useContext(LineupVisibilityContext);
   if (!context) throw new Error("Provider missing!");
   return context;
 }

@@ -7,7 +7,7 @@ import type {
   Ship,
   Variant,
 } from "@prisma/client";
-import { LineupProvider } from "./LineupContext";
+import { LineupVisibilityProvider } from "./LineupVisibilityContext";
 import { OpenAndCloseAll } from "./OpenAndCloseAll";
 import { Position, type PositionType } from "./Position";
 
@@ -36,7 +36,7 @@ export const Positions = ({
   showToggle,
 }: Props) => {
   return (
-    <LineupProvider positions={positions}>
+    <LineupVisibilityProvider positions={positions}>
       <OpenAndCloseAll className="ml-auto" />
 
       <div className="flex flex-col gap-[1px]">
@@ -56,6 +56,6 @@ export const Positions = ({
             />
           ))}
       </div>
-    </LineupProvider>
+    </LineupVisibilityProvider>
   );
 };
