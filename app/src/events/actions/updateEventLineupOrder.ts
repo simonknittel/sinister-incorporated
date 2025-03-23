@@ -10,6 +10,7 @@ import { z } from "zod";
 import { isAllowedToManagePositions } from "../utils/isAllowedToManagePositions";
 import { isEventUpdatable } from "../utils/isEventUpdatable";
 
+// TODO: Simplify recursion
 const schema = z.object({
   eventId: z.string().cuid(),
   order: z.array(
@@ -43,6 +44,12 @@ const schema = z.object({
     }),
   ),
 });
+
+export interface MappedPosition {
+  id: string;
+  order: number;
+  childPositions?: MappedPosition[];
+}
 
 export const updateEventLineupOrder = async (formData: FormData) => {
   try {
@@ -84,76 +91,32 @@ export const updateEventLineupOrder = async (formData: FormData) => {
     /**
      * Update lineup order
      */
-    const transactions = [];
-    for (const position of result.data.order) {
-      transactions.push(
-        prisma.eventPosition.update({
-          where: {
-            id: position.id,
-          },
-          data: {
-            order: position.order,
-            parentPositionId: {
-              set: null,
+    const transactions: ReturnType<typeof prisma.eventPosition.update>[] = [];
+    const loop = (
+      positions: MappedPosition[],
+      parentPosition?: MappedPosition,
+    ) => {
+      for (const position of positions) {
+        transactions.push(
+          prisma.eventPosition.update({
+            where: {
+              id: position.id,
             },
-          },
-        }),
-      );
-
-      if (position.childPositions) {
-        for (const childPosition of position.childPositions) {
-          transactions.push(
-            prisma.eventPosition.update({
-              where: {
-                id: childPosition.id,
+            data: {
+              order: position.order,
+              parentPositionId: {
+                set: parentPosition ? parentPosition.id : null,
               },
-              data: {
-                order: childPosition.order,
-                parentPositionId: {
-                  set: position.id,
-                },
-              },
-            }),
-          );
+            },
+          }),
+        );
 
-          if (childPosition.childPositions) {
-            for (const grandChildPosition of childPosition.childPositions) {
-              transactions.push(
-                prisma.eventPosition.update({
-                  where: {
-                    id: grandChildPosition.id,
-                  },
-                  data: {
-                    order: grandChildPosition.order,
-                    parentPositionId: {
-                      set: childPosition.id,
-                    },
-                  },
-                }),
-              );
-
-              if (grandChildPosition.childPositions) {
-                for (const grandGrandChildPosition of grandChildPosition.childPositions) {
-                  transactions.push(
-                    prisma.eventPosition.update({
-                      where: {
-                        id: grandGrandChildPosition.id,
-                      },
-                      data: {
-                        order: grandGrandChildPosition.order,
-                        parentPositionId: {
-                          set: grandChildPosition.id,
-                        },
-                      },
-                    }),
-                  );
-                }
-              }
-            }
-          }
+        if (position.childPositions) {
+          loop(position.childPositions, position);
         }
       }
-    }
+    };
+    loop(result.data.order);
     await prisma.$transaction(transactions);
 
     /**

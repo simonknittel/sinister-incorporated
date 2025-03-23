@@ -1,6 +1,9 @@
 "use client";
 
-import { updateEventLineupOrder } from "@/events/actions/updateEventLineupOrder";
+import {
+  updateEventLineupOrder,
+  type MappedPosition,
+} from "@/events/actions/updateEventLineupOrder";
 import type {
   Entity,
   Manufacturer,
@@ -99,245 +102,73 @@ export const LineupOrderProvider = ({
         const clonedPositions = structuredClone(positions);
 
         // Remove dragged position from old order
-        outerLoop: for (const [index, position] of clonedPositions.entries()) {
-          if (position.id === clonedDraggedPosition.id) {
-            clonedPositions.splice(index, 1);
-            break outerLoop;
-          }
+        const removeLoop = (positions: PositionType[]) => {
+          for (const [index, position] of positions.entries()) {
+            if (position.id === clonedDraggedPosition.id) {
+              positions.splice(index, 1);
+              return true;
+            }
 
-          if (position.childPositions) {
-            for (const [
-              index,
-              childPosition,
-            ] of position.childPositions.entries()) {
-              if (childPosition.id === clonedDraggedPosition.id) {
-                position.childPositions.splice(index, 1);
-                break outerLoop;
-              }
-
-              if (childPosition.childPositions) {
-                for (const [
-                  index,
-                  grandChildPosition,
-                ] of childPosition.childPositions.entries()) {
-                  if (grandChildPosition.id === clonedDraggedPosition.id) {
-                    childPosition.childPositions.splice(index, 1);
-                    break outerLoop;
-                  }
-
-                  if (grandChildPosition.childPositions) {
-                    for (const [
-                      index,
-                      grandGrandChildPosition,
-                    ] of grandChildPosition.childPositions.entries()) {
-                      if (
-                        grandGrandChildPosition.id === clonedDraggedPosition.id
-                      ) {
-                        grandChildPosition.childPositions.splice(index, 1);
-                        break outerLoop;
-                      }
-                    }
-                  }
-                }
-              }
+            if (position.childPositions) {
+              if (removeLoop(position.childPositions)) return true;
             }
           }
-        }
+        };
+        removeLoop(clonedPositions);
 
         // Insert dragged position into new order
         if (order === "before") {
-          outerLoop: for (const [
-            index,
-            position,
-          ] of clonedPositions.entries()) {
-            if (position.id === targetPosition.id) {
-              clonedPositions.splice(index, 0, clonedDraggedPosition);
-              clonedPositions.forEach(
-                (position, index) => (position.order = index),
-              );
-              break outerLoop;
-            }
+          const beforeLoop = (positions: PositionType[]) => {
+            for (const [index, position] of positions.entries()) {
+              if (position.id === targetPosition.id) {
+                positions.splice(index, 0, clonedDraggedPosition);
+                positions.forEach(
+                  (position, index) => (position.order = index),
+                );
+                return true;
+              }
 
-            if (position.childPositions) {
-              for (const [
-                index,
-                childPosition,
-              ] of position.childPositions.entries()) {
-                if (childPosition.id === targetPosition.id) {
-                  position.childPositions.splice(
-                    index,
-                    0,
-                    clonedDraggedPosition,
-                  );
-                  position.childPositions.forEach(
-                    (position, index) => (position.order = index),
-                  );
-                  break outerLoop;
-                }
-
-                if (childPosition.childPositions) {
-                  for (const [
-                    index,
-                    grandChildPosition,
-                  ] of childPosition.childPositions.entries()) {
-                    if (grandChildPosition.id === targetPosition.id) {
-                      childPosition.childPositions.splice(
-                        index,
-                        0,
-                        clonedDraggedPosition,
-                      );
-                      childPosition.childPositions.forEach(
-                        (position, index) => (position.order = index),
-                      );
-                      break outerLoop;
-                    }
-
-                    if (grandChildPosition.childPositions) {
-                      for (const [
-                        index,
-                        grandGrandChildPosition,
-                      ] of grandChildPosition.childPositions.entries()) {
-                        if (grandGrandChildPosition.id === targetPosition.id) {
-                          grandChildPosition.childPositions.splice(
-                            index,
-                            0,
-                            clonedDraggedPosition,
-                          );
-                          grandChildPosition.childPositions.forEach(
-                            (position, index) => (position.order = index),
-                          );
-                          break outerLoop;
-                        }
-                      }
-                    }
-                  }
-                }
+              if (position.childPositions) {
+                if (beforeLoop(position.childPositions)) return true;
               }
             }
-          }
+          };
+          beforeLoop(clonedPositions);
         } else if (order === "after") {
-          outerLoop: for (const [
-            index,
-            position,
-          ] of clonedPositions.entries()) {
-            if (position.id === targetPosition.id) {
-              clonedPositions.splice(index + 1, 0, clonedDraggedPosition);
-              clonedPositions.forEach(
-                (position, index) => (position.order = index),
-              );
-              break outerLoop;
-            }
+          const afterLoop = (positions: PositionType[]) => {
+            for (const [index, position] of positions.entries()) {
+              if (position.id === targetPosition.id) {
+                positions.splice(index + 1, 0, clonedDraggedPosition);
+                positions.forEach(
+                  (position, index) => (position.order = index),
+                );
+                return true;
+              }
 
-            if (position.childPositions) {
-              for (const [
-                index,
-                childPosition,
-              ] of position.childPositions.entries()) {
-                if (childPosition.id === targetPosition.id) {
-                  position.childPositions.splice(
-                    index + 1,
-                    0,
-                    clonedDraggedPosition,
-                  );
-                  position.childPositions.forEach(
-                    (position, index) => (position.order = index),
-                  );
-                  break outerLoop;
-                }
-
-                if (childPosition.childPositions) {
-                  for (const [
-                    index,
-                    grandChildPosition,
-                  ] of childPosition.childPositions.entries()) {
-                    if (grandChildPosition.id === targetPosition.id) {
-                      childPosition.childPositions.splice(
-                        index + 1,
-                        0,
-                        clonedDraggedPosition,
-                      );
-                      childPosition.childPositions.forEach(
-                        (position, index) => (position.order = index),
-                      );
-                      break outerLoop;
-                    }
-
-                    if (grandChildPosition.childPositions) {
-                      for (const [
-                        index,
-                        grandGrandChildPosition,
-                      ] of grandChildPosition.childPositions.entries()) {
-                        if (grandGrandChildPosition.id === targetPosition.id) {
-                          grandChildPosition.childPositions.splice(
-                            index + 1,
-                            0,
-                            clonedDraggedPosition,
-                          );
-                          grandChildPosition.childPositions.forEach(
-                            (position, index) => (position.order = index),
-                          );
-                          break outerLoop;
-                        }
-                      }
-                    }
-                  }
-                }
+              if (position.childPositions) {
+                if (afterLoop(position.childPositions)) return true;
               }
             }
-          }
+          };
+          afterLoop(clonedPositions);
         } else if (order === "inside") {
-          outerLoop: for (const [, position] of clonedPositions.entries()) {
-            if (position.id === targetPosition.id) {
-              if (!position.childPositions) position.childPositions = [];
-              position.childPositions.splice(0, 0, clonedDraggedPosition);
-              position.childPositions.forEach(
-                (position, index) => (position.order = index),
-              );
-              break outerLoop;
-            }
+          const insertLoop = (positions: PositionType[]) => {
+            for (const [, position] of positions.entries()) {
+              if (position.id === targetPosition.id) {
+                if (!position.childPositions) position.childPositions = [];
+                position.childPositions.splice(0, 0, clonedDraggedPosition);
+                position.childPositions.forEach(
+                  (position, index) => (position.order = index),
+                );
+                return true;
+              }
 
-            if (position.childPositions) {
-              for (const [
-                ,
-                childPosition,
-              ] of position.childPositions.entries()) {
-                if (childPosition.id === targetPosition.id) {
-                  if (!childPosition.childPositions)
-                    childPosition.childPositions = [];
-                  childPosition.childPositions.splice(
-                    0,
-                    0,
-                    clonedDraggedPosition,
-                  );
-                  childPosition.childPositions.forEach(
-                    (position, index) => (position.order = index),
-                  );
-                  break outerLoop;
-                }
-
-                if (childPosition.childPositions) {
-                  for (const [
-                    ,
-                    grandChildPosition,
-                  ] of childPosition.childPositions.entries()) {
-                    if (grandChildPosition.id === targetPosition.id) {
-                      if (!grandChildPosition.childPositions)
-                        grandChildPosition.childPositions = [];
-                      grandChildPosition.childPositions.splice(
-                        0,
-                        0,
-                        clonedDraggedPosition,
-                      );
-                      grandChildPosition.childPositions.forEach(
-                        (position, index) => (position.order = index),
-                      );
-                      break outerLoop;
-                    }
-                  }
-                }
+              if (position.childPositions) {
+                if (insertLoop(position.childPositions)) return true;
               }
             }
-          }
+          };
+          insertLoop(clonedPositions);
         }
 
         /**
@@ -345,30 +176,14 @@ export const LineupOrderProvider = ({
          */
         const formData = new FormData();
         formData.append("eventId", positions[0].eventId);
+        const mapPosition = (position: MappedPosition): MappedPosition => ({
+          id: position.id,
+          order: position.order,
+          childPositions: position.childPositions?.map(mapPosition),
+        });
         formData.append(
           "order",
-          JSON.stringify(
-            clonedPositions.map((position) => ({
-              id: position.id,
-              order: position.order,
-              childPositions: position.childPositions?.map((childPosition) => ({
-                id: childPosition.id,
-                order: childPosition.order,
-                childPositions: childPosition.childPositions?.map(
-                  (grandChildPosition) => ({
-                    id: grandChildPosition.id,
-                    order: grandChildPosition.order,
-                    childPositions: grandChildPosition.childPositions?.map(
-                      (greatGrandChildPosition) => ({
-                        id: greatGrandChildPosition.id,
-                        order: greatGrandChildPosition.order,
-                      }),
-                    ),
-                  }),
-                ),
-              })),
-            })),
-          ),
+          JSON.stringify(clonedPositions.map(mapPosition)),
         );
 
         try {
