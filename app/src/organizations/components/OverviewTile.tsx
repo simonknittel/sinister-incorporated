@@ -1,4 +1,3 @@
-import { requireAuthentication } from "@/auth/server";
 import { RSIButton } from "@/common/components/RSIButton";
 import { getOrganizationById } from "@/organizations/queries";
 import clsx from "clsx";
@@ -10,10 +9,6 @@ type Props = Readonly<{
 }>;
 
 export const OverviewTile = async ({ className, id }: Props) => {
-  const authentication = await requireAuthentication();
-  if (!(await authentication.authorize("organization", "read")))
-    throw new Error("Forbidden");
-
   const organization = await getOrganizationById(id);
   if (!organization) throw new Error("Organization not found");
 

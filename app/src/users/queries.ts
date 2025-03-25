@@ -1,3 +1,4 @@
+import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
@@ -6,6 +7,10 @@ import type { User } from "@prisma/client";
 export const getUsersWithEntities = async () => {
   return getTracer().startActiveSpan("getUsersWithEntities", async (span) => {
     try {
+      const authentication = await requireAuthentication();
+      if (!(await authentication.authorize("user", "read")))
+        throw new Error("Forbidden");
+
       const [users, entities] = await Promise.all([
         prisma.user.findMany({
           include: {

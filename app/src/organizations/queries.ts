@@ -1,3 +1,4 @@
+import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
@@ -7,6 +8,10 @@ import { cache } from "react";
 export const getOrganizationById = cache(async (id: Organization["id"]) => {
   return getTracer().startActiveSpan("getOrganizationById", async (span) => {
     try {
+      const authentication = await requireAuthentication();
+      if (!(await authentication.authorize("organization", "read")))
+        throw new Error("Forbidden");
+
       return await prisma.organization.findUnique({
         where: {
           id,

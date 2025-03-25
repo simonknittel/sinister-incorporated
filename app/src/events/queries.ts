@@ -1,3 +1,4 @@
+import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
@@ -7,6 +8,10 @@ import { cache } from "react";
 export const getEventById = cache(async (id: Event["id"]) => {
   return getTracer().startActiveSpan("getEventById", async (span) => {
     try {
+      const authentication = await requireAuthentication();
+      if (!(await authentication.authorize("event", "read")))
+        throw new Error("Forbidden");
+
       return await prisma.event.findUnique({
         where: {
           id,
@@ -165,6 +170,10 @@ export const getEventById = cache(async (id: Event["id"]) => {
 export const getFutureEvents = cache(async () => {
   return getTracer().startActiveSpan("getFutureEvents", async (span) => {
     try {
+      const authentication = await requireAuthentication();
+      if (!(await authentication.authorize("event", "read")))
+        throw new Error("Forbidden");
+
       const now = new Date();
 
       return await prisma.event.findMany({
@@ -204,6 +213,10 @@ export const getFutureEvents = cache(async () => {
 export const getPastEvents = cache(async () => {
   return getTracer().startActiveSpan("getPastEvents", async (span) => {
     try {
+      const authentication = await requireAuthentication();
+      if (!(await authentication.authorize("event", "read")))
+        throw new Error("Forbidden");
+
       const now = new Date();
 
       return await prisma.event.findMany({

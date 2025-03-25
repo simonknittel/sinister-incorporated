@@ -76,6 +76,16 @@ export const getEntriesGroupedByCitizen = async () => {
 export const getEntriesOfCitizen = async (citizenId: Entity["id"]) => {
   return getTracer().startActiveSpan("getEntriesOfCitizen", async (span) => {
     try {
+      const authentication = await requireAuthentication();
+      if (
+        !(await authentication.authorize("penaltyEntry", "read")) &&
+        !(
+          citizenId === authentication.session.entityId &&
+          (await authentication.authorize("ownPenaltyEntry", "read"))
+        )
+      )
+        throw new Error("Forbidden");
+
       const now = new Date();
 
       const entries = await prisma.penaltyEntry.findMany({
