@@ -13,6 +13,7 @@ import image20250315LineupEnabled from "@/changelog/assets/2025-03-15-lineup-ena
 import image20250322RequiredVariantsEdit from "@/changelog/assets/2025-03-22-required-variants-edit.png";
 import image20250322RequiredVariantsTooltip from "@/changelog/assets/2025-03-22-required-variants-tooltip.png";
 import image20250323LineupDragNDrop from "@/changelog/assets/2025-03-23-lineup-dragndrop.png";
+import image20250329CitizenHandle from "@/changelog/assets/2025-03-29-citizen-handle.png";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 import Image from "next/image";
@@ -34,6 +35,22 @@ export default async function Page() {
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
         <Day heading="29. März 2025">
+          <DayItem heading="Suche nach Handle anstatt Sinister ID">
+            <p>
+              In diversen Formularen (Strafpunkteeintrag, Eventmanager, SILC
+              Transaktion) kann nun ein Citizen durch seinen Handle gesucht und
+              hinzugefügt werden anstatt der Sinister ID.
+            </p>
+
+            <Image
+              quality={100}
+              src={image20250329CitizenHandle}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
+          </DayItem>
+
           <DayItem heading="Bug: Korrekte Einordnung je nach Voraussetzung">
             <p>
               Es wurde ein Fehler in der Eventaufstellung behoben, welcher dazu

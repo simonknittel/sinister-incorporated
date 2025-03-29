@@ -2,17 +2,11 @@
 
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
+import { CitizenInput } from "@/spynet/components/CitizenInput";
 import type { Event } from "@prisma/client";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
-import {
-  startTransition,
-  useId,
-  useRef,
-  useState,
-  useTransition,
-  type FormEventHandler,
-} from "react";
+import { useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createManagers } from "../actions/createManagers";
@@ -25,9 +19,6 @@ type Props = Readonly<{
 export const CreateManagers = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [submitIsPending, startSubmitTransition] = useTransition();
-  const managerIdsInputId = useId();
-  const managerIdsInputRef = useRef<HTMLTextAreaElement>(null);
-  const [managerIds, setManagerIds] = useState<string[]>([]);
 
   const handleClick = () => {
     setIsOpen(true);
@@ -60,20 +51,6 @@ export const CreateManagers = (props: Props) => {
     });
   };
 
-  const handleManagerIdsChange: FormEventHandler<HTMLTextAreaElement> = (
-    event,
-  ) => {
-    startTransition(() => {
-      const value = event.currentTarget.value;
-      setManagerIds(
-        value
-          .split("\n")
-          .map((id) => id.trim())
-          .filter(Boolean),
-      );
-    });
-  };
-
   return (
     <>
       <Button
@@ -95,25 +72,7 @@ export const CreateManagers = (props: Props) => {
         <form action={formAction} className="mt-6">
           <input type="hidden" name="eventId" value={props.event.id} />
 
-          {managerIds.map((id, index) => (
-            <input key={index} type="hidden" name="managerId[]" value={id} />
-          ))}
-
-          <label className="block" htmlFor={managerIdsInputId}>
-            Citizen (Sinister ID)
-          </label>
-          <textarea
-            autoFocus
-            className="p-2 rounded bg-neutral-900 w-full mt-2 disabled:opacity-50 align-baseline h-32"
-            name="citizenIds"
-            required
-            id={managerIdsInputId}
-            ref={managerIdsInputRef}
-            onChange={handleManagerIdsChange}
-            readOnly={"transaction" in props}
-            disabled={"transaction" in props}
-          />
-          <p className="text-xs mt-1">Eine ID pro Zeile, ohne Komma</p>
+          <CitizenInput name="managerId" multiple />
 
           <div className="flex flex-col gap-2 mt-4">
             <Button type="submit" disabled={submitIsPending}>

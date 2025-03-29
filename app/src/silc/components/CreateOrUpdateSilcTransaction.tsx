@@ -2,17 +2,11 @@
 
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
+import { CitizenInput } from "@/spynet/components/CitizenInput";
 import type { Event, SilcTransaction } from "@prisma/client";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
-import {
-  startTransition,
-  useId,
-  useRef,
-  useState,
-  useTransition,
-  type FormEventHandler,
-} from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaPen, FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createSilcTransaction } from "../actions/createSilcTransaction";
@@ -35,15 +29,9 @@ type Props = (CreateProps | UpdateProps) & BaseProps;
 export const CreateOrUpdateSilcTransaction = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [submitIsPending, startSubmitTransition] = useTransition();
-  const receiverIdsInputId = useId();
   const valueInputId = useId();
   const descriptionInputId = useId();
   const receiverIdsInputRef = useRef<HTMLTextAreaElement>(null);
-  const [receiverIds, setReceiverIds] = useState<string[]>(
-    "transaction" in props && props.transaction
-      ? [props.transaction.receiverId]
-      : [],
-  );
 
   const handleClick = () => {
     setIsOpen(true);
@@ -81,20 +69,6 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
         );
         console.error(error);
       }
-    });
-  };
-
-  const handleReceiverIdsChange: FormEventHandler<HTMLTextAreaElement> = (
-    event,
-  ) => {
-    startTransition(() => {
-      const value = event.currentTarget.value;
-      setReceiverIds(
-        value
-          .split("\n")
-          .map((id) => id.trim())
-          .filter(Boolean),
-      );
     });
   };
 
@@ -142,28 +116,15 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
             />
           )}
 
-          {receiverIds.map((id, index) => (
-            <input key={index} type="hidden" name="receiverId[]" value={id} />
-          ))}
-
-          <label className="block" htmlFor={receiverIdsInputId}>
-            Citizen (Sinister ID)
-          </label>
-          <textarea
-            autoFocus
-            className="p-2 rounded bg-neutral-900 w-full mt-2 disabled:opacity-50 align-baseline h-32"
-            name="citizenIds"
-            required
-            defaultValue={
-              ("transaction" in props && props.transaction?.receiverId) || ""
-            }
-            id={receiverIdsInputId}
-            ref={receiverIdsInputRef}
-            onChange={handleReceiverIdsChange}
-            readOnly={"transaction" in props}
-            disabled={"transaction" in props}
-          />
-          <p className="text-xs mt-1">Eine ID pro Zeile, ohne Komma</p>
+          {"transaction" in props && props.transaction ? (
+            <CitizenInput
+              name="receiverId"
+              defaultValue={props.transaction.receiverId}
+              disabled
+            />
+          ) : (
+            <CitizenInput name="receiverId" multiple />
+          )}
 
           <label className="block mt-4" htmlFor={valueInputId}>
             Wert
