@@ -33,6 +33,17 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="29. März 2025">
+          <DayItem heading="Bug: Korrekte Einordnung je nach Voraussetzung">
+            <p>
+              Es wurde ein Fehler in der Eventaufstellung behoben, welcher dazu
+              führte, dass Citizen nicht korrekt eingeordnet wurden je nachdem,
+              ob die Voraussetzungen (erforderliches Schiff) eines Posten
+              erfüllt wurden oder nicht.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="23. März 2025">
           <DayItem heading="Drag'n'Drop in der Eventaufstellung">
             <p>
