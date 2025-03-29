@@ -2,7 +2,7 @@
 
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
-import { CitizenInput } from "@/spynet/components/CitzenInput";
+import { CitizenInput } from "@/spynet/components/CitizenInput";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
 import { useState, useTransition } from "react";
