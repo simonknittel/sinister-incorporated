@@ -2,6 +2,7 @@
 
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
+import { CitizenInput } from "@/spynet/components/CitzenInput";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -68,14 +69,7 @@ export const CreatePenaltyEntry = ({ className }: Props) => {
         <h2 className="text-xl font-bold">Strafpunkte eintragen</h2>
 
         <form action={formAction} className="mt-6">
-          <label className="block">Citizen (Sinister ID)</label>
-          <input
-            autoFocus
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
-            name="sinisterId"
-            required
-            type="text"
-          />
+          <CitizenInput name="sinisterId" />
 
           <label className="block mt-4">Strafpunkte</label>
           <input
