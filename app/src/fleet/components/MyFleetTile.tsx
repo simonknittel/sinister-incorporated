@@ -1,6 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import clsx from "clsx";
+import { getMyFleet } from "../queries";
 import { AssignShip } from "./AssignShip";
 import { MyShipTile } from "./MyShipTile";
 
@@ -13,27 +14,8 @@ export const MyFleetTile = async ({ className }: Props) => {
   if (!(await authentication.authorize("ship", "manage")))
     throw new Error("Forbidden");
 
-  const [myShips, allVariants] = await prisma.$transaction([
-    prisma.ship.findMany({
-      where: {
-        ownerId: authentication.session.user.id,
-      },
-      include: {
-        variant: {
-          include: {
-            series: {
-              include: {
-                manufacturer: {
-                  include: {
-                    image: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    }),
+  const [myShips, allVariants] = await Promise.all([
+    getMyFleet(),
 
     prisma.manufacturer.findMany({
       include: {

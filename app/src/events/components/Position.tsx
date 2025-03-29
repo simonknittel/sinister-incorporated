@@ -15,6 +15,7 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import Link from "next/link";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { checkRequirements } from "../utils/checkRequirements";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { DeleteEventPosition } from "./DeleteEventPosition";
 import { EditablePositionName } from "./EditablePositionName";
@@ -91,47 +92,13 @@ export const Position = ({
     }
   };
 
-  let doesCurrentUserSatisfyRequirements = true;
-  if (
-    position.requiredVariants.length > 0 &&
-    !myShips.some((ship) =>
-      position.requiredVariants.some(
-        (variant) => variant.id === ship.variantId,
-      ),
-    )
-  )
-    doesCurrentUserSatisfyRequirements = false;
-
-  let citizensSatisfyingRequirements = allEventCitizens;
-  if (position.requiredVariants.length > 0) {
-    citizensSatisfyingRequirements = citizensSatisfyingRequirements.filter(
-      (citizen) =>
-        citizen.ships.some((ship) =>
-          position.requiredVariants.some(
-            (variant) => variant.id === ship.variantId,
-          ),
-        ),
-    );
-  }
-  const citizensNotSatisfyingRequirements = allEventCitizens.filter(
-    (citizen) =>
-      !citizensSatisfyingRequirements.some(
-        (c) => c.citizen.id === citizen.citizen.id,
-      ),
-  );
-
-  const applicationsSatisfyingRequirements = position.applications.filter(
-    (application) =>
-      citizensSatisfyingRequirements.some(
-        (citizen) => citizen.citizen.id === application.citizen.id,
-      ),
-  );
-  const applicationsNotSatisfyingRequirements = position.applications.filter(
-    (application) =>
-      citizensNotSatisfyingRequirements.some(
-        (citizen) => citizen.citizen.id === application.citizen.id,
-      ),
-  );
+  const {
+    doesCurrentUserSatisfyRequirements,
+    citizensSatisfyingRequirements,
+    citizensNotSatisfyingRequirements,
+    applicationsSatisfyingRequirements,
+    applicationsNotSatisfyingRequirements,
+  } = checkRequirements(position, myShips, allEventCitizens);
 
   const newParentPositions = [...parentPositions, position.id];
 

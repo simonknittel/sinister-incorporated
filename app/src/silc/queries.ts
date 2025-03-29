@@ -47,6 +47,12 @@ export const getSilcBalanceOfAllCitizens = cache(async () => {
     "getSilcBalanceOfAllCitizens",
     async (span) => {
       try {
+        const authentication = await requireAuthentication();
+        if (
+          !(await authentication.authorize("silcBalanceOfOtherCitizen", "read"))
+        )
+          throw new Error("Forbidden");
+
         return await prisma.entity.findMany({
           where: {
             totalEarnedSilc: {
@@ -82,6 +88,15 @@ export const getSilcTransactionsOfAllCitizens = cache(async () => {
     "getSilcTransactionsOfAllCitizens",
     async (span) => {
       try {
+        const authentication = await requireAuthentication();
+        if (
+          !(await authentication.authorize(
+            "silcTransactionOfOtherCitizen",
+            "read",
+          ))
+        )
+          throw new Error("Forbidden");
+
         return await prisma.silcTransaction.findMany({
           where: {
             deletedAt: null,
@@ -128,6 +143,22 @@ export const getSilcTransactionsOfCitizen = cache(
       "getSilcTransactionsOfCitizen",
       async (span) => {
         try {
+          const authentication = await requireAuthentication();
+          if (
+            !(await authentication.authorize(
+              "silcTransactionOfOtherCitizen",
+              "read",
+            )) &&
+            !(
+              citizenId === authentication.session.entityId &&
+              (await authentication.authorize(
+                "silcTransactionOfCurrentCitizen",
+                "read",
+              ))
+            )
+          )
+            throw new Error("Forbidden");
+
           return await prisma.silcTransaction.findMany({
             where: {
               receiverId: citizenId,

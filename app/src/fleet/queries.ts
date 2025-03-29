@@ -5,55 +5,55 @@ import { SpanStatusCode } from "@opentelemetry/api";
 import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
 import { cache } from "react";
 
-export const getOrgFleet = async ({
-  onlyFlightReady = false,
-}: {
-  onlyFlightReady?: boolean;
-}) => {
-  return getTracer().startActiveSpan("getOrgFleet", async (span) => {
-    try {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("orgFleet", "read")))
-        throw new Error("Forbidden");
+export const getOrgFleet = cache(
+  async ({ onlyFlightReady = false }: { onlyFlightReady?: boolean }) => {
+    return getTracer().startActiveSpan("getOrgFleet", async (span) => {
+      try {
+        const authentication = await requireAuthentication();
+        if (!(await authentication.authorize("orgFleet", "read")))
+          throw new Error("Forbidden");
 
-      return await prisma.ship.findMany({
-        where: {
-          variant: {
-            status: onlyFlightReady ? VariantStatus.FLIGHT_READY : undefined,
+        return await prisma.ship.findMany({
+          where: {
+            variant: {
+              status: onlyFlightReady ? VariantStatus.FLIGHT_READY : undefined,
+            },
           },
-        },
-        include: {
-          variant: {
-            include: {
-              series: {
-                include: {
-                  manufacturer: {
-                    include: {
-                      image: true,
+          include: {
+            variant: {
+              include: {
+                series: {
+                  include: {
+                    manufacturer: {
+                      include: {
+                        image: true,
+                      },
                     },
                   },
                 },
+                tags: true,
               },
-              tags: true,
             },
           },
-        },
-      });
-    } catch (error) {
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-      });
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
-};
+        });
+      } catch (error) {
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+        });
+        throw error;
+      } finally {
+        span.end();
+      }
+    });
+  },
+);
 
-export const getMyFleet = async () => {
+export const getMyFleet = cache(async () => {
   return getTracer().startActiveSpan("getMyFleet", async (span) => {
     try {
       const authentication = await requireAuthentication();
+      if (!(await authentication.authorize("ship", "read")))
+        throw new Error("Forbidden");
 
       return await prisma.ship.findMany({
         where: {
@@ -84,7 +84,7 @@ export const getMyFleet = async () => {
       span.end();
     }
   });
-};
+});
 
 export const getVariantsBySeriesId = (seriesId: Series["id"]) => {
   return getTracer().startActiveSpan("getVariantsBySeriesId", async (span) => {
