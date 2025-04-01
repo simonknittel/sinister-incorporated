@@ -64,11 +64,10 @@ const EditOperationModal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       className="w-[480px]"
+      heading={<h2>Unit bearbeiten</h2>}
     >
-      <h2 className="text-xl font-bold">Unit bearbeiten</h2>
-
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="mt-6 block" htmlFor={inputId}>
+        <label className="block" htmlFor={inputId}>
           Titel
         </label>
 

@@ -23,7 +23,10 @@ export const createPenaltyEntry = async (formData: FormData) => {
     const authentication = await authenticateAction("createPenaltyEntry");
     await authentication.authorizeAction("penaltyEntry", "create");
     if (!authentication.session.entityId)
-      return { error: "Du bist nicht berechtigt, diese Aktion durchzuführen." };
+      return {
+        error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
+        requestPayload: formData,
+      };
 
     /**
      * Validate the request
@@ -41,6 +44,7 @@ export const createPenaltyEntry = async (formData: FormData) => {
       return {
         error: "Ungültige Anfrage",
         errorDetails: result.error,
+        requestPayload: formData,
       };
 
     /**
@@ -84,6 +88,7 @@ export const createPenaltyEntry = async (formData: FormData) => {
     return {
       error:
         "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+      requestPayload: formData,
     };
   }
 };

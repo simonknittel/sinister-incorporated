@@ -55,11 +55,10 @@ export const CreateOperationModal = ({ isOpen, onRequestClose }: Props) => {
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       className="w-[480px]"
+      heading={<h2>Neue Operation anlegen</h2>}
     >
-      <h2 className="text-xl font-bold">Neue Operation anlegen</h2>
-
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="mt-6 block" htmlFor={inputId}>
+        <label className="block" htmlFor={inputId}>
           Titel
         </label>
 

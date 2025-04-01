@@ -139,11 +139,10 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Readonly<Props>) => {
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
+        heading={<h2>Position besetzen</h2>}
       >
-        <h2 className="text-xl font-bold">Position besetzen</h2>
-
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label className="mt-6 block" htmlFor={selectUserId}>
+          <label className="block" htmlFor={selectUserId}>
             Spieler
           </label>
 

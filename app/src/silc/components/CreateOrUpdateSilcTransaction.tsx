@@ -2,11 +2,12 @@
 
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
+import Note from "@/common/components/Note";
 import { CitizenInput } from "@/spynet/components/CitizenInput";
 import type { Event, SilcTransaction } from "@prisma/client";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
-import { useId, useRef, useState, useTransition } from "react";
+import { useActionState, useId, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { FaPen, FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createSilcTransaction } from "../actions/createSilcTransaction";
@@ -28,7 +29,43 @@ type Props = (CreateProps | UpdateProps) & BaseProps;
 
 export const CreateOrUpdateSilcTransaction = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [submitIsPending, startSubmitTransition] = useTransition();
+  const [state, formAction, isPending] = useActionState(
+    async (previousState: unknown, formData: FormData) => {
+      try {
+        const response =
+          "transaction" in props
+            ? await updateSilcTransaction(formData)
+            : await createSilcTransaction(formData);
+
+        if (response.error) {
+          toast.error(response.error);
+          console.error(response);
+          return response;
+        }
+
+        toast.success(response.success!);
+        if (formData.has("createAnother")) {
+          receiverIdsInputRef.current?.focus();
+          return response;
+        }
+
+        setIsOpen(false);
+        return response;
+      } catch (error) {
+        unstable_rethrow(error);
+        toast.error(
+          "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+        );
+        console.error(error);
+        return {
+          error:
+            "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+          requestPayload: formData,
+        };
+      }
+    },
+    null,
+  );
   const valueInputId = useId();
   const descriptionInputId = useId();
   const receiverIdsInputRef = useRef<HTMLTextAreaElement>(null);
@@ -39,37 +76,6 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
 
   const handleRequestClose = () => {
     setIsOpen(false);
-  };
-
-  const formAction = (formData: FormData) => {
-    startSubmitTransition(async () => {
-      try {
-        const response =
-          "transaction" in props
-            ? await updateSilcTransaction(formData)
-            : await createSilcTransaction(formData);
-
-        if (response.error) {
-          toast.error(response.error);
-          console.error(response);
-          return;
-        }
-
-        toast.success(response.success!);
-        if (formData.has("createAnother")) {
-          receiverIdsInputRef.current?.focus();
-          return;
-        } else {
-          setIsOpen(false);
-        }
-      } catch (error) {
-        unstable_rethrow(error);
-        toast.error(
-          "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-        );
-        console.error(error);
-      }
-    });
   };
 
   return (
@@ -100,14 +106,15 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
         isOpen={isOpen}
         onRequestClose={handleRequestClose}
         className="w-[480px]"
+        heading={
+          <h2>
+            {"transaction" in props
+              ? "Transaktion bearbeiten"
+              : "Transaktion erstellen"}
+          </h2>
+        }
       >
-        <h2 className="text-xl font-bold">
-          {"transaction" in props
-            ? "Transaktion bearbeiten"
-            : "Transaktion erstellen"}
-        </h2>
-
-        <form action={formAction} className="mt-6">
+        <form action={formAction}>
           {"transaction" in props && props.transaction && (
             <input
               type="hidden"
@@ -135,7 +142,9 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
             required
             type="number"
             defaultValue={
-              ("transaction" in props && props.transaction?.value) || 1
+              state?.requestPayload?.has("value")
+                ? (state.requestPayload.get("value") as string)
+                : ("transaction" in props && props.transaction?.value) || 1
             }
             id={valueInputId}
           />
@@ -151,30 +160,29 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
             name="description"
             maxLength={512}
             defaultValue={
-              ("transaction" in props && props.transaction?.description) || ""
+              state?.requestPayload?.has("description")
+                ? (state.requestPayload.get("description") as string)
+                : ("transaction" in props && props.transaction?.description) ||
+                  ""
             }
             id={descriptionInputId}
           />
           <p className="text-xs mt-1">optional</p>
 
           <div className="flex flex-col gap-2 mt-4">
-            <Button type="submit" disabled={submitIsPending}>
-              {submitIsPending ? (
-                <FaSpinner className="animate-spin" />
-              ) : (
-                <FaSave />
-              )}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
               Speichern
             </Button>
 
             {!("transaction" in props) && (
               <Button
                 type="submit"
-                disabled={submitIsPending}
+                disabled={isPending}
                 variant="tertiary"
                 name="createAnother"
               >
-                {submitIsPending ? (
+                {isPending ? (
                   <FaSpinner className="animate-spin" />
                 ) : (
                   <FaSave />
@@ -183,6 +191,10 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
               </Button>
             )}
           </div>
+
+          {state?.error && (
+            <Note type="error" message={state.error} className="mt-4" />
+          )}
         </form>
       </Modal>
     </>

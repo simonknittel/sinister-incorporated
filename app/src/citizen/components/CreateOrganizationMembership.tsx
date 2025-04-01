@@ -99,11 +99,10 @@ export const CreateOrganizationMembership = ({
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
+        heading={<h2>Organisation hinzufügen</h2>}
       >
-        <h2 className="text-xl font-bold">Organisation hinzufügen</h2>
-
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label className="mt-6 block" htmlFor={organizationIdInputId}>
+          <label className="block" htmlFor={organizationIdInputId}>
             Organisation (Sinister ID)
           </label>
 

@@ -48,11 +48,14 @@ export const CreateManufacturerModal = ({ onRequestClose }: Props) => {
   };
 
   return (
-    <Modal isOpen={true} onRequestClose={onRequestClose} className="w-[480px]">
-      <h2 className="text-xl font-bold">Hersteller anlegen</h2>
-
+    <Modal
+      isOpen={true}
+      onRequestClose={onRequestClose}
+      className="w-[480px]"
+      heading={<h2>Hersteller anlegen</h2>}
+    >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="mt-6 block" htmlFor="name">
+        <label className="block" htmlFor="name">
           Name
         </label>
 

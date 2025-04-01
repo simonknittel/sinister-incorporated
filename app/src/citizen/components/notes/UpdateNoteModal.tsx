@@ -95,11 +95,10 @@ export const UpdateNoteModal = ({
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
+        heading={<h2>Bearbeiten</h2>}
       >
-        <h2 className="text-xl font-bold">Bearbeiten</h2>
-
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label className="mt-6 block" htmlFor={noteTypeSelectId}>
+          <label className="block" htmlFor={noteTypeSelectId}>
             Notizart
           </label>
 

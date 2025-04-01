@@ -72,11 +72,10 @@ const Update = ({ className, noteType }: Readonly<Props>) => {
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
+        heading={<h2>Bearbeiten</h2>}
       >
-        <h2 className="text-xl font-bold">Bearbeiten</h2>
-
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label className="mt-6 block" htmlFor={inputId}>
+          <label className="block" htmlFor={inputId}>
             Name
           </label>
 

@@ -58,7 +58,7 @@ export const Create = ({ type, entity }: Readonly<Props>) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex mt-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex">
       <input
         className="p-2 rounded-l bg-neutral-900 flex-1"
         id={inputId}

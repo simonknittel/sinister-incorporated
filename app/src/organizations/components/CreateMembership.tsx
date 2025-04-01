@@ -100,11 +100,10 @@ export const CreateMembership = ({
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
+        heading={<h2>Citizen hinzufügen</h2>}
       >
-        <h2 className="text-xl font-bold">Citizen hinzufügen</h2>
-
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label className="mt-6 block" htmlFor={citizenIdInputId}>
+          <label className="block" htmlFor={citizenIdInputId}>
             Citizen (Sinister ID)
           </label>
 

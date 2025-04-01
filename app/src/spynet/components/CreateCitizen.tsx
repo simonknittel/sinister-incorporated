@@ -61,11 +61,10 @@ export const CreateCitizen = () => {
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
+        heading={<h2>Neuen Citizen anlegen</h2>}
       >
-        <h2 className="text-xl font-bold">Neuen Citizen anlegen</h2>
-
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label className="mt-6 block" htmlFor={inputId}>
+          <label className="block" htmlFor={inputId}>
             Spectrum ID
           </label>
 

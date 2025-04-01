@@ -64,11 +64,10 @@ const CreateUnitModal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       className="w-[480px]"
+      heading={<h2>Flight hinzufügen</h2>}
     >
-      <h2 className="text-xl font-bold">Flight hinzufügen</h2>
-
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="mt-6 block" htmlFor={inputId}>
+        <label className="block" htmlFor={inputId}>
           Titel
         </label>
 
