@@ -63,11 +63,14 @@ export const CreateSeriesModal = ({
   };
 
   return (
-    <Modal isOpen={true} onRequestClose={onRequestClose} className="w-[480px]">
-      <h2 className="text-xl font-bold">Add series</h2>
-
+    <Modal
+      isOpen={true}
+      onRequestClose={onRequestClose}
+      className="w-[480px]"
+      heading={<h2>Serie anlegen</h2>}
+    >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="block mt-4" htmlFor="manufacturerId">
+        <label className="block" htmlFor="manufacturerId">
           Hersteller
         </label>
 

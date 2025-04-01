@@ -51,8 +51,6 @@ export const ModalContent = ({
 
   return (
     <>
-      <h2 className="text-xl font-bold">History</h2>
-
       {showCreate && <Create type={type} entity={entity} />}
 
       {entries}

@@ -72,11 +72,10 @@ const EditShipModal = ({ isOpen, onRequestClose, ship }: Readonly<Props>) => {
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       className="w-[480px]"
+      heading={<h2>Schiff bearbeiten</h2>}
     >
-      <h2 className="text-xl font-bold">Schiff bearbeiten</h2>
-
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="mt-6 block" htmlFor={selectId}>
+        <label className="block" htmlFor={selectId}>
           Schiff
         </label>
 

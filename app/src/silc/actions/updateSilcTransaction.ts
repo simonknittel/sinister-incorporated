@@ -26,7 +26,10 @@ export const updateSilcTransaction = async (formData: FormData) => {
       "update",
     );
     if (!authentication.session.entityId)
-      return { error: "Du bist nicht berechtigt, diese Aktion durchzuführen." };
+      return {
+        error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
+        requestPayload: formData,
+      };
 
     /**
      * Validate the request
@@ -42,6 +45,7 @@ export const updateSilcTransaction = async (formData: FormData) => {
       return {
         error: "Ungültige Anfrage",
         errorDetails: result.error,
+        requestPayload: formData,
       };
 
     /**
@@ -87,6 +91,7 @@ export const updateSilcTransaction = async (formData: FormData) => {
     return {
       error:
         "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+      requestPayload: formData,
     };
   }
 };

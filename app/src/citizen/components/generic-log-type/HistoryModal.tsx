@@ -41,6 +41,7 @@ export const HistoryModal = ({
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         className="w-[768px]"
+        heading={<h2>History</h2>}
       >
         <ModalContent
           type={type}

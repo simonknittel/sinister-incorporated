@@ -58,13 +58,16 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
   };
 
   return (
-    <Modal isOpen={true} onRequestClose={onRequestClose} className="w-[480px]">
-      <h2 className="text-xl font-bold">Variante bearbeiten</h2>
-
+    <Modal
+      isOpen={true}
+      onRequestClose={onRequestClose}
+      className="w-[480px]"
+      heading={<h2>Variante bearbeiten</h2>}
+    >
       <form action={_action}>
         <input type="hidden" name="id" value={variant.id} />
 
-        <label className="mt-6 block" htmlFor={nameId}>
+        <label className="block" htmlFor={nameId}>
           Name
         </label>
         {_variant.isFetching ? (

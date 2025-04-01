@@ -68,11 +68,14 @@ export const CreateVariantModal = ({
   };
 
   return (
-    <Modal isOpen={true} onRequestClose={onRequestClose} className="w-[480px]">
-      <h2 className="text-xl font-bold">Variante anlegen</h2>
-
+    <Modal
+      isOpen={true}
+      onRequestClose={onRequestClose}
+      className="w-[480px]"
+      heading={<h2>Variante anlegen</h2>}
+    >
       <form action={formAction}>
-        <label className="mt-6 block">Hersteller</label>
+        <label className="block">Hersteller</label>
         {manufacturer.isFetching ? (
           <div className="rounded bg-neutral-900 mt-2 animate-pulse h-10" />
         ) : (

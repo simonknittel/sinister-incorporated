@@ -63,11 +63,10 @@ export const CreateOrganization = () => {
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
+        heading={<h2>Neue Organisation anlegen</h2>}
       >
-        <h2 className="text-xl font-bold">Neue Organisation anlegen</h2>
-
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label className="mt-6 block" htmlFor={spectrumIdInputId}>
+          <label className="block" htmlFor={spectrumIdInputId}>
             Spectrum ID
           </label>
 

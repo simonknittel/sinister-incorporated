@@ -65,11 +65,10 @@ const CreateUnitModal = ({
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       className="w-[480px]"
+      heading={<h2>Unit hinzufügen</h2>}
     >
-      <h2 className="text-xl font-bold">Unit hinzufügen</h2>
-
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label className="mt-6 block" htmlFor={selectId}>
+        <label className="block" htmlFor={selectId}>
           Typ
         </label>
 

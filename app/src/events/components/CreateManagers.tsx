@@ -66,10 +66,9 @@ export const CreateManagers = (props: Props) => {
         isOpen={isOpen}
         onRequestClose={handleRequestClose}
         className="w-[480px]"
+        heading={<h2>Manager hinzufügen</h2>}
       >
-        <h2 className="text-xl font-bold">Manager hinzufügen</h2>
-
-        <form action={formAction} className="mt-6">
+        <form action={formAction}>
           <input type="hidden" name="eventId" value={props.event.id} />
 
           <CitizenInput name="managerId" multiple />

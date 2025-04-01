@@ -81,12 +81,9 @@ export const CreateOrUpdateNodeModal = ({
       isOpen={true}
       onRequestClose={onRequestClose}
       className={clsx("w-[480px]", className)}
+      heading={<h2>Element {initialData ? "bearbeiten" : "hinzufügen"}</h2>}
     >
-      <h2 className="text-xl font-bold">
-        Element {initialData ? "bearbeiten" : "hinzufügen"}
-      </h2>
-
-      <form onSubmit={onSubmit} className="mt-6">
+      <form onSubmit={onSubmit}>
         <input
           name="id"
           type="hidden"

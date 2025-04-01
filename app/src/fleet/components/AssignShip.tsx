@@ -78,11 +78,10 @@ export const AssignShip = ({ className, data = [] }: Props) => {
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
+        heading={<h2>Schiff hinzufügen</h2>}
       >
-        <h2 className="text-xl font-bold">Schiff hinzufügen</h2>
-
         <form action={formAction}>
-          <label className="mt-6 block" htmlFor={selectId}>
+          <label className="block" htmlFor={selectId}>
             Schiff
           </label>
           <select

@@ -51,9 +51,8 @@ export const AddRoles = ({
         isOpen={isOpen}
         onRequestClose={handleRequestClose}
         className="w-[480px]"
+        heading={<h2>Bearbeiten</h2>}
       >
-        <h2 className="text-xl font-bold mb-4">Bearbeiten</h2>
-
         {allRoles.map((role) => (
           <div key={role.id} className="py-2 flex justify-between items-center">
             <span className="flex gap-2 items-center">

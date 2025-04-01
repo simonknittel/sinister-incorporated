@@ -153,12 +153,14 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
         isOpen={isOpen}
         onRequestClose={handleRequestClose}
         className="w-[480px]"
+        heading={
+          <h2>
+            Posten oder Gruppe{" "}
+            {"position" in props ? "bearbeiten" : "hinzufügen"}
+          </h2>
+        }
       >
-        <h2 className="text-xl font-bold">
-          Posten oder Gruppe {"position" in props ? "bearbeiten" : "hinzufügen"}
-        </h2>
-
-        <form action={formAction} className="mt-6">
+        <form action={formAction}>
           {"position" in props && props.position && (
             <input type="hidden" name="positionId" value={props.position.id} />
           )}
