@@ -18,6 +18,13 @@ model Entity {
   deletedSilcTransactions                      SilcTransaction[]                    @relation("deletedBy")
   updatedSilcSettings                          SilcSetting[]                        @relation("updatedBy")
   eventManagers                                Event[]                              @relation("eventManagers")
+  createdTasks                                 Task[]                               @relation("createdBy")
+  cancelledTasks                               Task[]                               @relation("cancelledBy")
+  deletedTasks                                 Task[]                               @relation("deletedBy")
+  assignedTasks                                TaskAssignment[]                     @relation("citizen")
+  completedTasks                               Task[]                               @relation("completedBy")
+  createdTaskAssignments                       TaskAssignment[]                     @relation("createdBy")
+  completionistsTask                           Task[]                               @relation("completionists")
 
   // Holds the latest confirmed values
   spectrumId                String?
