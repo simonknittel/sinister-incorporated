@@ -1,6 +1,9 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { DateTimeInput } from "@/common/components/form/DateTimeInput";
+import { NumberInput } from "@/common/components/form/NumberInput";
+import { Textarea } from "@/common/components/form/Textarea";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
 import { CitizenInput } from "@/spynet/components/CitizenInput";
@@ -76,24 +79,23 @@ export const CreatePenaltyEntry = ({ className }: Props) => {
         <form action={formAction}>
           <CitizenInput name="sinisterId" />
 
-          <label className="block mt-4">Strafpunkte</label>
-          <input
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+          <NumberInput
             name="points"
-            required
-            type="number"
+            label="Strafpunkte"
             min={1}
             defaultValue={
               state?.requestPayload?.has("points")
                 ? (state.requestPayload.get("points") as string)
                 : 1
             }
+            required
+            className="mt-4"
           />
 
-          <label className="block mt-4">Begründung (optional)</label>
-          <textarea
-            className="p-2 rounded bg-neutral-900 w-full h-32 mt-2"
+          <Textarea
             name="reason"
+            label="Begründung"
+            hint="optional"
             maxLength={512}
             defaultValue={
               state?.requestPayload?.has("reason")
@@ -102,11 +104,10 @@ export const CreatePenaltyEntry = ({ className }: Props) => {
             }
           />
 
-          <label className="block mt-4">Verfällt am (optional)</label>
-          <input
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+          <DateTimeInput
             name="expiresAt"
-            type="datetime-local"
+            label="Verfällt am"
+            hint="optional"
             defaultValue={
               state?.requestPayload?.has("expiresAt")
                 ? (state.requestPayload.get("expiresAt") as string)
