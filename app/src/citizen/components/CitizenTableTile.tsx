@@ -137,9 +137,7 @@ export const CitizenTableTile = async ({ className, searchParams }: Props) => {
         className,
       )}
     >
-      <div className="mb-8">
-        <CitizenTableFilters />
-      </div>
+      <CitizenTableFilters className="mb-8" />
 
       <CitizenTable
         rows={limitedRows}

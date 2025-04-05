@@ -1,18 +1,11 @@
 "use client";
 
-import Button from "@/common/components/Button";
 import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import { env } from "@/env";
-import { useFilter } from "@/spynet/components/Filter";
 import { type Role, type Upload } from "@prisma/client";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { FaSave } from "react-icons/fa";
-
-interface FormValues {
-  values: string[];
-}
+import type { ChangeEventHandler } from "react";
 
 type Props = Readonly<{
   roles: (Role & {
@@ -24,47 +17,31 @@ export const RoleFilter = ({ roles }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { setIsOpen } = useFilter();
 
-  const { register, handleSubmit } = useForm<FormValues>({
-    defaultValues: {
-      values: (searchParams.get("filters")?.split(",") || []).filter(
-        (filter) => {
-          if (filter.startsWith("role-")) return true;
-          return false;
-        },
-      ),
-    },
-  });
+  const defaultValues =
+    searchParams
+      .get("filters")
+      ?.split(",")
+      .filter((filter) => filter.startsWith("role-")) || [];
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const newSearchParams = new URLSearchParams(window.location.search);
 
     let filters = newSearchParams.get("filters")?.split(",") || [];
-    filters = filters.filter((filter) => {
-      if (filter === "") return false;
-      if (filter.startsWith("role-")) return false;
-      return true;
-    });
 
-    data.values.forEach((filter) => {
-      filters.push(filter);
-    });
+    if (event.target.checked) {
+      filters.push(event.target.value);
+    } else {
+      filters = filters.filter((filter) => filter !== event.target.value);
+    }
 
     newSearchParams.set("filters", filters.join(","));
 
     router.push(`${pathname}?${newSearchParams.toString()}`);
-
-    setIsOpen(false);
   };
 
   return (
-    <form
-      className={
-        "flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800 max-h-96 overflow-auto"
-      }
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <div className="flex flex-col gap-2 px-4 py-2 rounded bg-neutral-800 max-h-96 overflow-auto">
       {roles.map((role) => (
         <div
           key={role.id}
@@ -91,18 +68,13 @@ export const RoleFilter = ({ roles }: Props) => {
           </label>
 
           <YesNoCheckbox
-            {...register("values")}
             id={role.id}
             value={`role-${role.id}`}
+            onChange={handleChange}
+            defaultChecked={defaultValues.includes(`role-${role.id}`)}
           />
         </div>
       ))}
-
-      <div className="flex justify-end w-full">
-        <Button type="submit" variant="primary">
-          <FaSave /> Speichern
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 };
