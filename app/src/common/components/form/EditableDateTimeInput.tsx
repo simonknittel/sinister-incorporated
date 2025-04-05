@@ -6,16 +6,26 @@ import { useOutsideClick } from "../../utils/useOutsideClick";
 
 type Props = Readonly<{
   className?: string;
+  rowId: string;
+  columnName: string;
+  initialValue?: Date | null;
   action: (formData: FormData) => Promise<
     | {
         success: string;
       }
     | { error: string; errorDetails?: unknown }
   >;
-  initialValue: string;
+  required?: boolean;
 }>;
 
-export const EditableTextV2 = ({ className, action, initialValue }: Props) => {
+export const EditableDateTimeInput = ({
+  className,
+  rowId,
+  columnName,
+  initialValue,
+  action,
+  required,
+}: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [value, setValue] = useState(initialValue);
@@ -52,7 +62,8 @@ export const EditableTextV2 = ({ className, action, initialValue }: Props) => {
         }
 
         toast.success(response.success);
-        setValue(formData.get("value")?.toString() || "");
+        const date = new Date(formData.get(columnName) as string);
+        setValue(isNaN(date.getTime()) ? null : date);
         setIsEditing(false);
       } catch (error) {
         /**
@@ -79,16 +90,18 @@ export const EditableTextV2 = ({ className, action, initialValue }: Props) => {
           className="flex gap-2 items-center mx-1"
           ref={outsideRef}
         >
+          <input type="hidden" name="id" value={rowId} />
+
           <input
-            type="text"
-            name="value"
-            defaultValue={value}
+            type="datetime-local"
+            name={columnName}
+            defaultValue={value?.toISOString().slice(0, 16)}
             disabled={isPending}
             className={clsx("rounded bg-neutral-700 px-1 w-full", {
               "animate-pulse": isPending,
             })}
             autoFocus
-            required
+            required={required}
             ref={inputRef}
           />
 
@@ -107,7 +120,14 @@ export const EditableTextV2 = ({ className, action, initialValue }: Props) => {
           className="flex gap-2 items-center group"
           title="Klicken, um zu bearbeiten"
         >
-          {value}{" "}
+          {value?.toLocaleDateString("de-DE", {
+            timeZone: "Europe/Berlin",
+            weekday: "short",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }) || "-"}
           <FaPen className="text-sinister-red-500 group-hover:text-sinister-red-300 text-sm" />
         </button>
       )}

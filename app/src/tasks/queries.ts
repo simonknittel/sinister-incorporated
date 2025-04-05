@@ -1,0 +1,141 @@
+import { requireAuthentication } from "@/auth/server";
+import { prisma } from "@/db";
+import { getTracer } from "@/tracing/utils/getTracer";
+import { SpanStatusCode } from "@opentelemetry/api";
+import { TaskVisibility, type Task } from "@prisma/client";
+import { cache } from "react";
+
+export const getTasks = cache(async () => {
+  return getTracer().startActiveSpan("getTasks", async (span) => {
+    try {
+      const authentication = await requireAuthentication();
+      if (!authentication.session.entityId) throw new Error("Forbidden");
+      if (
+        !(await authentication.authorize("task", "read", [
+          {
+            key: "taskState",
+            value: "OPEN",
+          },
+        ]))
+      )
+        throw new Error("Forbidden");
+
+      return await prisma.task.findMany({
+        where: {
+          cancelledAt: null,
+          deletedAt: null,
+          AND: [
+            {
+              OR: [
+                {
+                  expiresAt: {
+                    gte: new Date(),
+                  },
+                },
+                {
+                  expiresAt: null,
+                },
+              ],
+            },
+            {
+              OR: [
+                {
+                  visibility: TaskVisibility.PUBLIC,
+                },
+                {
+                  visibility: TaskVisibility.PERSONALIZED,
+                  assignments: {
+                    some: {
+                      citizenId: authentication.session.entityId,
+                    },
+                  },
+                },
+                {
+                  visibility: TaskVisibility.PERSONALIZED,
+                  createdById: authentication.session.entityId,
+                },
+                {
+                  completionists: {
+                    some: {
+                      id: authentication.session.entityId,
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        include: {
+          createdBy: true,
+          assignments: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
+});
+
+export const getTaskById = cache(async (id: Task["id"]) => {
+  return getTracer().startActiveSpan("getTaskById", async (span) => {
+    try {
+      const authentication = await requireAuthentication();
+      if (!authentication.session.entityId) throw new Error("Forbidden");
+      if (
+        !(await authentication.authorize("task", "read", [
+          {
+            key: "taskState",
+            value: "OPEN",
+          },
+        ]))
+      )
+        throw new Error("Forbidden");
+
+      return await prisma.task.findUnique({
+        where: {
+          id,
+          deletedAt: null,
+          OR: [
+            {
+              visibility: TaskVisibility.PUBLIC,
+            },
+            {
+              visibility: TaskVisibility.PERSONALIZED,
+              assignments: {
+                some: {
+                  citizenId: authentication.session.entityId,
+                },
+              },
+            },
+            {
+              visibility: TaskVisibility.PERSONALIZED,
+              createdById: authentication.session.entityId,
+            },
+            {
+              completionists: {
+                some: {
+                  id: authentication.session.entityId,
+                },
+              },
+            },
+          ],
+        },
+      });
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
+});

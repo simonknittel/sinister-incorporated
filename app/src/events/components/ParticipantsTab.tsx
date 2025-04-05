@@ -1,5 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { RolesCell } from "@/citizen/components/RolesCell";
+import { CitizenLink } from "@/common/components/CitizenLink";
 import { Link } from "@/common/components/Link";
 import { Tooltip } from "@/common/components/Tooltip";
 import {
@@ -92,21 +93,7 @@ export const ParticipantsTab = async ({
     <div className={clsx("flex flex-col gap-4", className)}>
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
         <h2 className="font-bold mb-2 text-lg">Organisator</h2>
-        <Link
-          href={`/app/spynet/citizen/${resolvedCreatorParticipant.citizen.id}`}
-          className={clsx("mt-2 hover:underline self-start", {
-            "text-green-500":
-              resolvedCreatorParticipant.citizen.id ===
-              authentication.session.entityId,
-            "text-sinister-red-500":
-              resolvedCreatorParticipant.citizen.id !==
-              authentication.session.entityId,
-          })}
-          prefetch={false}
-        >
-          {resolvedCreatorParticipant.citizen.handle ||
-            resolvedCreatorParticipant.citizen.id}
-        </Link>
+        <CitizenLink citizen={resolvedCreatorParticipant.citizen} />
 
         <div className="flex items-center gap-2 mt-4 mb-2">
           <h2 className="font-bold text-lg">Manager</h2>
@@ -146,21 +133,7 @@ export const ParticipantsTab = async ({
                   );
                 }
 
-                return (
-                  <Link
-                    key={manager.id}
-                    href={`/app/spynet/citizen/${manager.id}`}
-                    className={clsx("hover:underline", {
-                      "text-green-500":
-                        manager.id === authentication.session.entityId,
-                      "text-sinister-red-500":
-                        manager.id !== authentication.session.entityId,
-                    })}
-                    prefetch={false}
-                  >
-                    {manager.handle || manager.id}
-                  </Link>
-                );
+                return <CitizenLink key={manager.id} citizen={manager} />;
               })}
           </div>
         ) : (

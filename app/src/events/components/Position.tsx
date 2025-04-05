@@ -1,4 +1,6 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
+import { CitizenLink } from "@/common/components/CitizenLink";
+import { EditableInput } from "@/common/components/form/EditableInput";
 import { VariantWithLogo } from "@/fleet/components/VariantWithLogo";
 import {
   type Entity,
@@ -13,12 +15,11 @@ import {
 } from "@prisma/client";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
-import Link from "next/link";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { updateEventPositionName } from "../actions/updateEventPositionName";
 import { checkRequirements } from "../utils/checkRequirements";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { DeleteEventPosition } from "./DeleteEventPosition";
-import { EditablePositionName } from "./EditablePositionName";
 import { useLineupOrder } from "./LineupOrderContext/Context";
 import { DragHandle } from "./LineupOrderContext/DragHandle";
 import { DragTarget } from "./LineupOrderContext/DragTarget";
@@ -139,9 +140,11 @@ export const Position = ({
             </h3>
 
             {showManage ? (
-              <EditablePositionName
-                positionId={position.id}
-                name={position.name}
+              <EditableInput
+                rowId={position.id}
+                columnName="name"
+                initialValue={position.name}
+                action={updateEventPositionName}
                 className="font-bold"
               />
             ) : (
@@ -238,18 +241,7 @@ export const Position = ({
                 }
               />
             ) : position.citizen ? (
-              <Link
-                href={`/app/spynet/citizen/${position.citizen.id}`}
-                className={clsx("hover:underline self-start", {
-                  "text-green-500":
-                    position.citizen.id === authentication.session.entityId,
-                  "text-sinister-red-500":
-                    position.citizen.id !== authentication.session.entityId,
-                })}
-                prefetch={false}
-              >
-                {position.citizen.handle}
-              </Link>
+              <CitizenLink citizen={position.citizen} />
             ) : (
               <p className="text-neutral-500">-</p>
             )}
