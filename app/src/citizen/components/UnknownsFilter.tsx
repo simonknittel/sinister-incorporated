@@ -1,15 +1,8 @@
 "use client";
 
-import Button from "@/common/components/Button";
 import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
-import { useFilter } from "@/spynet/components/Filter";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { FaSave } from "react-icons/fa";
-
-interface FormValues {
-  values: string[];
-}
+import type { ChangeEventHandler } from "react";
 
 type Props = Readonly<{
   showDiscordId?: boolean;
@@ -23,47 +16,31 @@ export const UnknownsFilter = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { setIsOpen } = useFilter();
 
-  const { register, handleSubmit } = useForm<FormValues>({
-    defaultValues: {
-      values: (searchParams.get("filters")?.split(",") || []).filter(
-        (filter) => {
-          if (filter.startsWith("unknown-")) return true;
-          return false;
-        },
-      ),
-    },
-  });
+  const defaultValues =
+    searchParams
+      .get("filters")
+      ?.split(",")
+      .filter((filter) => filter.startsWith("unknown-")) || [];
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const newSearchParams = new URLSearchParams(window.location.search);
 
     let filters = newSearchParams.get("filters")?.split(",") || [];
-    filters = filters.filter((filter) => {
-      if (filter === "") return false;
-      if (filter.startsWith("unknown-")) return false;
-      return true;
-    });
 
-    data.values.forEach((filter) => {
-      filters.push(filter);
-    });
+    if (event.target.checked) {
+      filters.push(event.target.value);
+    } else {
+      filters = filters.filter((filter) => filter !== event.target.value);
+    }
 
     newSearchParams.set("filters", filters.join(","));
 
     router.push(`${pathname}?${newSearchParams.toString()}`);
-
-    setIsOpen(false);
   };
 
   return (
-    <form
-      className={
-        "flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800"
-      }
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <div className="flex flex-col items-start gap-2 px-4 py-2 rounded bg-neutral-800">
       <div className="flex justify-between items-center w-full gap-4">
         <label
           className="whitespace-nowrap cursor-pointer"
@@ -72,9 +49,10 @@ export const UnknownsFilter = ({
           Handles
         </label>
         <YesNoCheckbox
-          {...register("values")}
           id="unknown-handle"
           value="unknown-handle"
+          onChange={handleChange}
+          defaultChecked={defaultValues.includes(`unknown-handle`)}
         />
       </div>
 
@@ -87,9 +65,10 @@ export const UnknownsFilter = ({
             Discord IDs
           </label>
           <YesNoCheckbox
-            {...register("values")}
             id="unknown-discord-id"
             value="unknown-discord-id"
+            onChange={handleChange}
+            defaultChecked={defaultValues.includes(`unknown-discord-id`)}
           />
         </div>
       )}
@@ -103,18 +82,13 @@ export const UnknownsFilter = ({
             TeamSpeak IDs
           </label>
           <YesNoCheckbox
-            {...register("values")}
             id="unknown-teamspeak-id"
             value="unknown-teamspeak-id"
+            onChange={handleChange}
+            defaultChecked={defaultValues.includes(`unknown-teamspeak-id`)}
           />
         </div>
       )}
-
-      <div className="flex justify-end w-full">
-        <Button type="submit" variant="primary">
-          <FaSave /> Speichern
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 };

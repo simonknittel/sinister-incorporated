@@ -34,6 +34,15 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="5. April 2025">
+          <DayItem heading="Filter">
+            <p>
+              In den Filtern für die Spynet-Listen muss nun nicht mehr auf
+              Speichern geklickt werden.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="29. März 2025">
           <DayItem heading="Suche nach Handle anstatt Sinister ID">
             <p>

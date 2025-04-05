@@ -28,7 +28,7 @@ export const OtherFilters = ({ rows }: Props) => {
     }
   }
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex gap-2 items-center">
       {confirmationStates.size > 0 && (
         <Filter name="Bestätigungsstatus">
           <ConfirmationStateFilter

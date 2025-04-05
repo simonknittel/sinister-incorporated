@@ -34,7 +34,7 @@ export const NotesTableFilters = ({ rows }: Props) => {
   }
 
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex gap-2 items-center">
       {noteTypes.size > 0 && (
         <Filter name="Notizarten">
           <NoteTypeFilter noteTypes={Array.from(noteTypes.values())} />
