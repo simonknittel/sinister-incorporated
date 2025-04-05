@@ -27,7 +27,7 @@ export const OrgFleetTile = async ({ className, urlSearchParams }: Props) => {
 
   return (
     <section className={className}>
-      <h2 className="font-bold">Sinister Incorporated</h2>
+      <h2 className="font-thin text-2xl">Sinister Incorporated</h2>
       <p className="text-neutral-500 text-sm">
         Schiffe von {Object.keys(groupedByUser).length} Citizen
       </p>

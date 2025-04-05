@@ -62,7 +62,8 @@ export interface PermissionSet {
     | "silcBalanceOfCurrentCitizen"
     | "silcTransactionOfOtherCitizen"
     | "silcTransactionOfCurrentCitizen"
-    | "silcSetting";
+    | "silcSetting"
+    | "task";
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   operation:
     | "create"
@@ -87,6 +88,9 @@ export interface PermissionSetAttribute {
     | "alsoUnconfirmed"
     | "roleId"
     | "alsoVisibilityRedacted"
-    | "flowId";
+    | "flowId"
+    | "taskVisibility"
+    | "taskRewardType"
+    | "taskDeleted";
   value: string | boolean;
 }

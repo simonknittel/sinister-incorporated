@@ -1,5 +1,6 @@
 "use client";
 
+import { formatDate } from "@/common/utils/formatDate";
 import type { Entity, SilcTransaction } from "@prisma/client";
 import {
   createColumnHelper,
@@ -51,14 +52,7 @@ export const SilcTransactionsTableClient = ({
         id: "createdAt",
         cell: (row) => (
           <span className="flex items-center h-10 whitespace-nowrap">
-            {row.getValue().toLocaleDateString("de-DE", {
-              timeZone: "Europe/Berlin",
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {formatDate(row.getValue())}
           </span>
         ),
       }),
@@ -86,7 +80,16 @@ export const SilcTransactionsTableClient = ({
         header: "Wert",
         id: "value",
         enableSorting: false,
-        cell: (row) => <span className="font-bold">{row.getValue()}</span>,
+        cell: (row) => (
+          <span
+            className={clsx("font-bold", {
+              "text-green-500": row.getValue() > 0,
+              "text-red-500": row.getValue() < 0,
+            })}
+          >
+            {row.getValue()}
+          </span>
+        ),
       }),
 
       columnHelper.accessor("description", {

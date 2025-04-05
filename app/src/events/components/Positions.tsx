@@ -8,8 +8,7 @@ import type {
   Variant,
 } from "@prisma/client";
 import { LineupOrderProvider } from "./LineupOrderContext/Context";
-import { LineupVisibilityProvider } from "./LineupVisibilityContext";
-import { OpenAndCloseAll } from "./OpenAndCloseAll";
+import { LineupVisibilityProvider, ToggleAll } from "./LineupVisibilityContext";
 import { type PositionType } from "./Position";
 
 type Props = Readonly<{
@@ -37,8 +36,8 @@ export const Positions = ({
   showToggle,
 }: Props) => {
   return (
-    <LineupVisibilityProvider positions={positions}>
-      <OpenAndCloseAll className="ml-auto" />
+    <LineupVisibilityProvider items={positions}>
+      <ToggleAll className="ml-auto" />
 
       <LineupOrderProvider
         positions={positions}

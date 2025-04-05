@@ -57,7 +57,12 @@ export const SilcBalancesTableClient = ({ className, rows }: Props) => {
         id: "silcBalance",
         sortDescFirst: true,
         cell: (row) => (
-          <span className="flex items-center h-10 font-bold">
+          <span
+            className={clsx("flex items-center h-10 font-bold", {
+              "text-green-500": row.getValue() > 0,
+              "text-red-500": row.getValue() < 0,
+            })}
+          >
             {row.getValue()}
           </span>
         ),

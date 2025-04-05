@@ -1,13 +1,15 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { NumberInput } from "@/common/components/form/NumberInput";
+import { Textarea } from "@/common/components/form/Textarea";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
 import { CitizenInput } from "@/spynet/components/CitizenInput";
 import type { Event, SilcTransaction } from "@prisma/client";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
-import { useActionState, useId, useRef, useState } from "react";
+import { useActionState, useState } from "react";
 import toast from "react-hot-toast";
 import { FaPen, FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createSilcTransaction } from "../actions/createSilcTransaction";
@@ -45,7 +47,6 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
 
         toast.success(response.success!);
         if (formData.has("createAnother")) {
-          receiverIdsInputRef.current?.focus();
           return response;
         }
 
@@ -66,9 +67,6 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
     },
     null,
   );
-  const valueInputId = useId();
-  const descriptionInputId = useId();
-  const receiverIdsInputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleClick = () => {
     setIsOpen(true);
@@ -128,36 +126,28 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
               name="receiverId"
               defaultValue={props.transaction.receiverId}
               disabled
+              autofocus
             />
           ) : (
-            <CitizenInput name="receiverId" multiple />
+            <CitizenInput name="receiverId" multiple autofocus />
           )}
 
-          <label className="block mt-4" htmlFor={valueInputId}>
-            Wert
-          </label>
-          <input
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+          <NumberInput
             name="value"
+            label="Wert"
+            hint="Kann negativ sein, um Guthaben zu entziehen."
             required
-            type="number"
             defaultValue={
               state?.requestPayload?.has("value")
                 ? (state.requestPayload.get("value") as string)
                 : ("transaction" in props && props.transaction?.value) || 1
             }
-            id={valueInputId}
           />
-          <p className="text-xs mt-1">
-            Kann negativ sein, um Guthaben zu entziehen.
-          </p>
 
-          <label className="block mt-4" htmlFor={descriptionInputId}>
-            Beschreibung
-          </label>
-          <textarea
-            className="p-2 rounded bg-neutral-900 w-full h-32 mt-2 align-middle"
+          <Textarea
             name="description"
+            label="Beschreibung"
+            hint="optional"
             maxLength={512}
             defaultValue={
               state?.requestPayload?.has("description")
@@ -165,9 +155,8 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
                 : ("transaction" in props && props.transaction?.description) ||
                   ""
             }
-            id={descriptionInputId}
+            className="mt-4"
           />
-          <p className="text-xs mt-1">optional</p>
 
           <div className="flex flex-col gap-2 mt-4">
             <Button type="submit" disabled={isPending}>

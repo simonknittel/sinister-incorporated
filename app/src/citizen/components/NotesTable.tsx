@@ -1,5 +1,6 @@
 import { Actions } from "@/common/components/Actions";
 import { Link } from "@/common/components/Link";
+import { formatDate } from "@/common/utils/formatDate";
 import { type EntityLogConfirmationState } from "@/types";
 import {
   type ClassificationLevel,
@@ -154,19 +155,9 @@ export const NotesTable = ({ rows, searchParams }: Props) => {
 
               <td
                 className="overflow-hidden text-ellipsis"
-                title={row.confirmedAt?.toLocaleDateString("de-DE", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  timeZone: "Europe/Berlin",
-                })}
+                title={formatDate(row.confirmedAt) || ""}
               >
-                {row.confirmedAt?.toLocaleDateString("de-DE", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  timeZone: "Europe/Berlin",
-                })}
+                {formatDate(row.confirmedAt)}
               </td>
 
               <td
@@ -178,19 +169,9 @@ export const NotesTable = ({ rows, searchParams }: Props) => {
 
               <td
                 className="overflow-hidden text-ellipsis"
-                title={row.entityLog.createdAt?.toLocaleDateString("de-DE", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  timeZone: "Europe/Berlin",
-                })}
+                title={formatDate(row.entityLog.createdAt) || ""}
               >
-                {row.entityLog.createdAt?.toLocaleDateString("de-DE", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  timeZone: "Europe/Berlin",
-                })}
+                {formatDate(row.entityLog.createdAt)}
               </td>
 
               <td

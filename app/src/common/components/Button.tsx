@@ -23,7 +23,8 @@ const Button = (props: Props) => {
     <button
       className={clsx(
         {
-          "flex items-center justify-center rounded uppercase": true,
+          "flex items-center justify-center rounded uppercase disabled:grayscale disabled:opacity-50":
+            true,
           "gap-2": ["primary", "secondary"].includes(variant || ""),
           "min-h-11 py-2 text-base font-bold": variant === "primary",
           "min-h-11 py-2 border text-base": variant === "secondary",

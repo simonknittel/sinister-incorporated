@@ -1,5 +1,4 @@
 import { requireAuthentication } from "@/auth/server";
-import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import clsx from "clsx";
 import {
   FaCog,
@@ -11,11 +10,10 @@ import {
 } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
-import { MdWorkspaces } from "react-icons/md";
-import { RiSpyFill, RiSwordFill } from "react-icons/ri";
+import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
+import { RiSpyFill } from "react-icons/ri";
 import { RxActivityLog } from "react-icons/rx";
 import { TbMilitaryRank } from "react-icons/tb";
-import { Chip } from "../Chip";
 import { Footer } from "../Footer";
 import { Link } from "../Link";
 import { Account } from "./Account";
@@ -32,9 +30,6 @@ export const MobileActionBar = async ({ className }: Props) => {
   const showSpynet =
     (await authentication.authorize("citizen", "read")) ||
     (await authentication.authorize("organization", "read"));
-  const showOperations =
-    (await getUnleashFlag("EnableOperations")) &&
-    (await authentication.authorize("operation", "manage"));
   const showCareer =
     (await authentication.authorize("career", "read", [
       {
@@ -64,14 +59,11 @@ export const MobileActionBar = async ({ className }: Props) => {
     showSpynetCitizen ||
     showSpynetNotes ||
     showSpynetOther;
-  const showPenaltyPoints = await authentication.authorize(
-    "penaltyEntry",
-    "create",
-  );
-  const showSilc = await authentication.authorize(
-    "silcBalanceOfOtherCitizen",
-    "read",
-  );
+  const [showPenaltyPoints, showSilc, showTasks] = await Promise.all([
+    authentication.authorize("penaltyEntry", "create"),
+    authentication.authorize("silcBalanceOfOtherCitizen", "read"),
+    authentication.authorize("task", "read"),
+  ]);
 
   return (
     <div
@@ -92,6 +84,18 @@ export const MobileActionBar = async ({ className }: Props) => {
             </Link>
           </li>
 
+          {showTasks && (
+            <li className="h-full py-1">
+              <Link
+                href="/app/tasks"
+                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
+              >
+                <MdTaskAlt className="text-xl text-neutral-500" />
+                <span className="text-xs">Tasks</span>
+              </Link>
+            </li>
+          )}
+
           {showSpynet && (
             <li className="h-full py-1">
               <Link
@@ -100,19 +104,6 @@ export const MobileActionBar = async ({ className }: Props) => {
               >
                 <RiSpyFill className="text-xl text-neutral-500" />
                 <span className="text-xs">Spynet</span>
-              </Link>
-            </li>
-          )}
-
-          {showOperations && (
-            <li className="h-full py-1">
-              <Link
-                href="/app/operations"
-                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
-              >
-                <RiSwordFill className="text-xl text-neutral-500" />
-                <span className="text-xs">Operationen</span>
-                <Chip title="Proof of Concept">PoC</Chip>
               </Link>
             </li>
           )}
@@ -129,16 +120,6 @@ export const MobileActionBar = async ({ className }: Props) => {
               </Link>
             </li>
           )}
-
-          <li className="h-full py-1">
-            <Link
-              href="/app/documents"
-              className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
-            >
-              <IoDocuments className="text-xl text-neutral-500" />
-              <span className="text-xs">Dokumente</span>
-            </Link>
-          </li>
 
           {showCareer && (
             <li className="h-full py-1">
@@ -172,6 +153,18 @@ export const MobileActionBar = async ({ className }: Props) => {
                     </Link>
                   </li>
 
+                  {showTasks && (
+                    <li>
+                      <Link
+                        href="/app/tasks"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                      >
+                        <MdTaskAlt className="text-neutral-500" />
+                        Tasks
+                      </Link>
+                    </li>
+                  )}
+
                   {showSpynet && (
                     <li>
                       <Link
@@ -180,19 +173,6 @@ export const MobileActionBar = async ({ className }: Props) => {
                       >
                         <RiSpyFill className="text-neutral-500" />
                         Spynet
-                      </Link>
-                    </li>
-                  )}
-
-                  {showOperations && (
-                    <li>
-                      <Link
-                        href="/app/operations"
-                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
-                      >
-                        <RiSwordFill className="text-neutral-500" />
-                        Operationen
-                        <Chip title="Proof of Concept">PoC</Chip>
                       </Link>
                     </li>
                   )}

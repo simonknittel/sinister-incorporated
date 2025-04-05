@@ -10,11 +10,10 @@ import {
 } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
-import { MdWorkspaces } from "react-icons/md";
-import { RiSpyFill, RiSwordFill } from "react-icons/ri";
+import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
+import { RiSpyFill } from "react-icons/ri";
 import { RxActivityLog } from "react-icons/rx";
 import { TbMilitaryRank } from "react-icons/tb";
-import { Chip } from "../Chip";
 import { CmdKLoader } from "../CmdK/CmdKLoader";
 import { Footer } from "../Footer";
 import { Link } from "../Link";
@@ -27,9 +26,6 @@ export const DesktopSidebar = async () => {
   const showSpynet =
     (await authentication.authorize("citizen", "read")) ||
     (await authentication.authorize("organization", "read"));
-  const showOperations =
-    (await getUnleashFlag("EnableOperations")) &&
-    (await authentication.authorize("operation", "manage"));
   const showCareer =
     (await authentication.authorize("career", "read", [
       {
@@ -58,6 +54,7 @@ export const DesktopSidebar = async () => {
     showPenaltyPoints,
     showSilc,
     showSpynetActivity,
+    showTasks,
   ] = await Promise.all([
     authentication.authorize("ship", "manage"),
     authentication.authorize("orgFleet", "read"),
@@ -72,6 +69,7 @@ export const DesktopSidebar = async () => {
     authentication.authorize("penaltyEntry", "create"),
     authentication.authorize("silcBalanceOfOtherCitizen", "read"),
     authentication.authorize("spynetActivity", "read"),
+    authentication.authorize("task", "read"),
   ]);
 
   const showSpynetCitizen =
@@ -132,6 +130,18 @@ export const DesktopSidebar = async () => {
                 </Link>
               </li>
 
+              {showTasks && (
+                <li>
+                  <Link
+                    href="/app/tasks"
+                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
+                  >
+                    <MdTaskAlt className="text-neutral-500" />
+                    Tasks
+                  </Link>
+                </li>
+              )}
+
               {showSpynet && (
                 <li>
                   <Link
@@ -140,19 +150,6 @@ export const DesktopSidebar = async () => {
                   >
                     <RiSpyFill className="text-neutral-500" />
                     Spynet
-                  </Link>
-                </li>
-              )}
-
-              {showOperations && (
-                <li>
-                  <Link
-                    href="/app/operations"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <RiSwordFill className="text-neutral-500" />
-                    Operationen
-                    <Chip title="Proof of Concept">PoC</Chip>
                   </Link>
                 </li>
               )}

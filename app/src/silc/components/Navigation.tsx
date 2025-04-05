@@ -21,7 +21,7 @@ export const Navigation = async ({ className }: Props) => {
       ? [
           {
             name: "Übersicht",
-            path: `/app/silc`,
+            path: "/app/silc",
           },
         ]
       : []),
@@ -29,7 +29,7 @@ export const Navigation = async ({ className }: Props) => {
       ? [
           {
             name: "Transaktionen",
-            path: `/app/silc/transactions`,
+            path: "/app/silc/transactions",
           },
         ]
       : []),
@@ -37,7 +37,7 @@ export const Navigation = async ({ className }: Props) => {
       ? [
           {
             name: "Einstellungen",
-            path: `/app/silc/settings`,
+            path: "/app/silc/settings",
           },
         ]
       : []),

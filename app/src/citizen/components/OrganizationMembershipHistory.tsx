@@ -1,4 +1,5 @@
 import { Tile } from "@/common/components/Tile";
+import { formatDate } from "@/common/utils/formatDate";
 import { prisma } from "@/db";
 import { mapOrganizationMembershipHistoryEntries } from "@/spynet/components/ActivityTile/mapOrganizationMembershipHistoryEntries";
 import { ConfirmationStatus } from "@prisma/client";
@@ -50,12 +51,7 @@ export const OrganizationMembershipHistory = async ({
               <div className="text-sm flex gap-2 border-b pb-2 mb-2 items-center border-neutral-800/50 flex-wrap text-neutral-500">
                 <p>
                   <time dateTime={entry.date.toISOString()}>
-                    {entry.date.toLocaleDateString("de-DE", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      timeZone: "Europe/Berlin",
-                    })}
+                    {formatDate(entry.date)}
                   </time>
                 </p>
               </div>

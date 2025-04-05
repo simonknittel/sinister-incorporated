@@ -53,7 +53,7 @@ export default async function Page({ searchParams }: Props) {
         )}
 
         <section className="flex flex-col gap-4 xl:w-[400px] flex-none">
-          <h2 className="font-bold text-xl self-start">Spynet</h2>
+          <h2 className="font-thin text-2xl self-start">Spynet</h2>
           {showSpynetSearchTile && <SpynetSearchTile />}
           <Suspense fallback={<SkeletonTile />}>
             <ProfileTile />

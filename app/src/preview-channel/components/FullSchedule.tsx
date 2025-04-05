@@ -1,6 +1,7 @@
 "use client";
 
 import { Link } from "@/common/components/Link";
+import { formatDate } from "@/common/utils/formatDate";
 import clsx from "clsx";
 import { getNow } from "../utils/getNow";
 import type { Schedule } from "../utils/schedule";
@@ -26,23 +27,12 @@ const FullSchedule = ({ schedule }: Readonly<Props>) => {
               "text-green-500 font-bold": time === currentlyLive,
             })}
           >
-            {time.start.toLocaleDateString(undefined, {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-              timeZone: "Europe/Berlin",
-            })}{" "}
+            {formatDate(time.start, "short")}{" "}
             {time.start.toLocaleTimeString(undefined, {
               timeStyle: "short",
               timeZone: "Europe/Berlin",
             })}{" "}
-            -{" "}
-            {time.end.toLocaleDateString(undefined, {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-              timeZone: "Europe/Berlin",
-            })}{" "}
+            - {formatDate(time.end, "short")}{" "}
             {time.end.toLocaleTimeString(undefined, {
               timeStyle: "short",
               timeZone: "Europe/Berlin",

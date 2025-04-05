@@ -2,6 +2,7 @@ import { type PermissionSet } from "@/auth/PermissionSet";
 import { requireAuthentication } from "@/auth/server";
 import styles from "@/common/components/ConfirmationGradient.module.css";
 import { Link } from "@/common/components/Link";
+import { formatDate } from "@/common/utils/formatDate";
 import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import { prisma } from "@/db";
 import {
@@ -214,12 +215,7 @@ export const SingleNote = async ({ note }: Props) => {
           <div className="text-sm flex gap-2 border-b pb-2 items-center border-neutral-800/50 flex-wrap text-neutral-500">
             <p>
               <time dateTime={note.createdAt.toISOString()}>
-                {note.createdAt.toLocaleDateString("de-DE", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  timeZone: "Europe/Berlin",
-                })}
+                {formatDate(note.createdAt)}
               </time>
             </p>
 

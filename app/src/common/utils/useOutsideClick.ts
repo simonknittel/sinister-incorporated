@@ -1,12 +1,25 @@
-import { useEffect, type RefObject } from "react";
+import { useEffect, useState } from "react";
 
-export const useOutsideClick = <T extends HTMLElement>(
-  ref: RefObject<T | null>,
-  handler: (event: MouseEvent) => void,
-) => {
+/**
+ * **Example usage**
+ * ```tsx
+ * const { ref } = useOutsideClick(() => {
+ *   console.log("clicked outside of div")
+ * })
+ *
+ * return (
+ *   <div ref={ref}>
+ *     Lorem ipsum
+ *   </div>
+ * )
+ * ```
+ */
+export const useOutsideClick = (handler: (event: MouseEvent) => void) => {
+  const [current, ref] = useState<HTMLElement | null>(null);
+
   useEffect(() => {
     const listener = (event: MouseEvent) => {
-      if (!ref.current || ref.current.contains(event.target as Node)) return;
+      if (!current || current.contains(event.target as Node)) return;
 
       handler(event);
     };
@@ -16,5 +29,7 @@ export const useOutsideClick = <T extends HTMLElement>(
     return () => {
       document.removeEventListener("mousedown", listener);
     };
-  }, [ref, handler]);
+  }, [current, handler]);
+
+  return { ref };
 };

@@ -1,4 +1,5 @@
 import { Link } from "@/common/components/Link";
+import { formatDate } from "@/common/utils/formatDate";
 import type { Entity, PenaltyEntry as PenaltyEntryType } from "@prisma/client";
 import clsx from "clsx";
 import { DeletePenaltyEntry } from "./DeletePenaltyEntry";
@@ -24,14 +25,7 @@ export const PenaltyEntry = ({ className, entry, showDelete }: Props) => {
         <p>
           Am:{" "}
           <time dateTime={entry.createdAt.toISOString()}>
-            {entry.createdAt.toLocaleDateString("de-DE", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              timeZone: "Europe/Berlin",
-            })}
+            {formatDate(entry.createdAt)}
           </time>
         </p>
 
@@ -54,14 +48,7 @@ export const PenaltyEntry = ({ className, entry, showDelete }: Props) => {
           Verfällt:{" "}
           {entry.expiresAt ? (
             <time dateTime={entry.expiresAt.toISOString()}>
-              {entry.expiresAt.toLocaleDateString("de-DE", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                timeZone: "Europe/Berlin",
-              })}
+              {formatDate(entry.expiresAt)}
             </time>
           ) : (
             "-"

@@ -68,7 +68,7 @@ export const createSilcTransaction = async (formData: FormData) => {
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/silc`);
+    revalidatePath("/app/silc");
     revalidatePath("/app/silc/transactions");
     revalidatePath("/app/dashboard");
 

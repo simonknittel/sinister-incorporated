@@ -33,6 +33,7 @@ import { OrganizationsTab } from "./tabs/OrganizationsTab";
 import OtherTab from "./tabs/OtherTab";
 import { PenaltyPointsTab } from "./tabs/PenaltyPointsTab";
 import { SilcTab } from "./tabs/SilcTab";
+import { TasksTab } from "./tabs/TasksTab";
 
 type Props = Readonly<{
   role: Role;
@@ -90,6 +91,10 @@ export const Permissions = ({
             <FaScaleBalanced /> Strafpunkte
           </Tab>
 
+          <Tab id="tasks">
+            <FaScaleBalanced /> Tasks
+          </Tab>
+
           <Tab id="other">
             <FaCog /> Sonstiges
           </Tab>
@@ -105,6 +110,7 @@ export const Permissions = ({
         <DocumentsTab />
         <SilcTab />
         <PenaltyPointsTab />
+        <TasksTab />
         <OtherTab roles={allRoles} flows={flows} />
       </TabsProvider>
 

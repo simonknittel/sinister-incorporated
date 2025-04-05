@@ -1,6 +1,7 @@
 import { authenticatePage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
+import { Tile } from "@/common/components/Tile";
 import srcA1 from "@/documents/assets/a1.svg";
 import srcA2 from "@/documents/assets/a2.svg";
 import srcA3 from "@/documents/assets/a3.svg";
@@ -252,32 +253,32 @@ export default async function Page() {
 
       <div className="flex flex-col gap-4 mt-4 lg:mt-8">
         {categoriesWithAuthorizedDocuments.map(({ name, documents }) => (
-          <section key={name} className="bg-neutral-800/50 rounded">
-            <h2 className="font-bold text-lg p-4">{name}</h2>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-2 p-4 border-t border-neutral-800">
-              {documents.map(({ name, src, href }) => (
-                <div key={name} className="flex items-center justify-center">
-                  <Link
-                    href={href}
-                    className="block"
-                    rel="noreferrer"
-                    title={name}
-                    prefetch={false}
-                  >
-                    <Image
-                      src={src}
-                      alt=""
-                      width={391}
-                      height={219}
-                      unoptimized
-                      loading="lazy"
-                    />
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </section>
+          <Tile
+            key={name}
+            heading={name}
+            childrenClassName="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-2 p-4 border-t border-neutral-800"
+          >
+            {documents.map(({ name, src, href }) => (
+              <div key={name} className="flex items-center justify-center">
+                <Link
+                  href={href}
+                  className="block"
+                  rel="noreferrer"
+                  title={name}
+                  prefetch={false}
+                >
+                  <Image
+                    src={src}
+                    alt=""
+                    width={391}
+                    height={219}
+                    unoptimized
+                    loading="lazy"
+                  />
+                </Link>
+              </div>
+            ))}
+          </Tile>
         ))}
       </div>
     </main>

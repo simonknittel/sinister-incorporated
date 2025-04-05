@@ -1,7 +1,9 @@
 import { requireAuthentication } from "@/auth/server";
+import { Badge } from "@/common/components/Badge";
 import { DiscordNavigationButton } from "@/common/components/DiscordNavigationButton";
 import { Link } from "@/common/components/Link";
 import TimeAgoContainer from "@/common/components/TimeAgoContainer";
+import { formatDate } from "@/common/utils/formatDate";
 import type {
   Entity,
   EventDiscordParticipant,
@@ -42,14 +44,7 @@ export const Event = async ({ className, event, index }: Props) => {
     event.startTime.toISOString().split("T")[0] ===
     now.toISOString().split("T")[0];
 
-  const formattedStartTime = event.startTime.toLocaleString("de-DE", {
-    timeZone: "Europe/Berlin",
-    weekday: "short",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const formattedStartTime = formatDate(event.startTime, "long");
 
   const isCurrentCitizenParticipating = event.discordParticipants.some(
     (participant) =>
@@ -94,30 +89,25 @@ export const Event = async ({ className, event, index }: Props) => {
           </h2>
 
           <div className="flex flex-wrap gap-2">
-            <p
-              title={`Startzeit: ${formattedStartTime}`}
-              className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
-            >
-              <FaClock className="text-xs text-neutral-500" />
-              {formattedStartTime}
-            </p>
+            <Badge
+              label="Startzeit"
+              value={formattedStartTime!}
+              icon={<FaClock />}
+            />
 
-            <p
-              title={`Teilnehmer: ${event.discordParticipants.length}`}
-              className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center"
-            >
-              <FaUser className="text-xs text-neutral-500" />
-              {event.discordParticipants.length}
-            </p>
+            <Badge
+              label="Teilnehmer"
+              value={event.discordParticipants.length.toString()}
+              icon={<FaUser />}
+            />
 
             {isCurrentCitizenParticipating && (
-              <p
-                title={"Du hast dem Event zugesagt"}
-                className="rounded-full bg-neutral-700/50 px-3 flex gap-2 items-center text-green-500"
-              >
-                <FaCheck className="text-xs text-neutral-500" />
-                Zugesagt
-              </p>
+              <Badge
+                label="Eigene Teilnahme"
+                value="Zugesagt"
+                icon={<FaCheck />}
+                className="text-green-500"
+              />
             )}
           </div>
 

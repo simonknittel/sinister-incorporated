@@ -1,6 +1,6 @@
 import { Actions } from "@/common/components/Actions";
+import { Tile } from "@/common/components/Tile";
 import { getAllNoteTypes } from "@/spynet/queries";
-import clsx from "clsx";
 import Create from "./Create";
 import Delete from "./Delete";
 import Update from "./Update";
@@ -17,15 +17,8 @@ const NoteTypesTile = async ({ className }: Readonly<Props>) => {
   );
 
   return (
-    <section
-      className={clsx(
-        className,
-        "max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50 ",
-      )}
-    >
-      <h2 className="font-bold text-xl">Notizarten</h2>
-
-      <p className="mt-4 mb-4 text-sm">
+    <Tile heading="Notizarten" cta={<Create />} className={className}>
+      <p className="mb-4 text-sm">
         Jeder Notiz kann eine Art zugewiesen werden. Anhand dieser können
         Berechtigungen vergeben werden.
       </p>
@@ -52,9 +45,7 @@ const NoteTypesTile = async ({ className }: Readonly<Props>) => {
       {sortedNoteTypes.length <= 0 && (
         <p className="text-neutral-500 italic">Keine Notizarten vorhanden</p>
       )}
-
-      <Create className="mt-4" />
-    </section>
+    </Tile>
   );
 };
 
