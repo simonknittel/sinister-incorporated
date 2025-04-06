@@ -1,5 +1,6 @@
 "use client";
 
+import { Tile } from "@/common/components/Tile";
 import type {
   ClassificationLevel,
   Flow,
@@ -7,7 +8,6 @@ import type {
   PermissionString,
   Role,
 } from "@prisma/client";
-import clsx from "clsx";
 import { Permissions } from "./Permissions";
 import { PermissionsProvider } from "./PermissionsContext";
 
@@ -33,11 +33,7 @@ export const PermissionsTab = ({
   flows,
 }: Props) => {
   return (
-    <section
-      className={clsx("rounded-2xl bg-neutral-800/50 p-4 lg:p-8", className)}
-    >
-      <h2 className="text-xl font-bold mb-4">Berechtigungen</h2>
-
+    <Tile heading="Berechtigungen" className={className}>
       <PermissionsProvider role={role}>
         <Permissions
           role={role}
@@ -48,6 +44,6 @@ export const PermissionsTab = ({
           flows={flows}
         />
       </PermissionsProvider>
-    </section>
+    </Tile>
   );
 };

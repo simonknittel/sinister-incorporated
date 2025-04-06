@@ -1,0 +1,14 @@
+import { requireAuthentication } from "@/auth/server";
+import type { Task } from "@prisma/client";
+
+export const isAllowedToManageTask = async (
+  task: Pick<Task, "createdById">,
+) => {
+  const authentication = await requireAuthentication();
+
+  if (task.createdById === authentication.session.entityId) return true;
+
+  if (await authentication.authorize("task", "manage")) return true;
+
+  return false;
+};

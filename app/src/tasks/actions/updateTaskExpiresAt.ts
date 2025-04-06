@@ -7,24 +7,21 @@ import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
-import { updateCitizensSilcBalances } from "../utils/updateCitizensSilcBalances";
+import { getTaskById } from "../queries";
+import { isAllowedToManageTask } from "../utils/isAllowedToManageTask";
+import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
-  receiverIds: z.array(z.string().trim().cuid()).min(1),
-  value: z.coerce.number().int(),
-  description: z.string().trim().max(512).optional(),
+  id: z.string().cuid(),
+  expiresAt: z.coerce.date().nullable(),
 });
 
-export const createSilcTransaction = async (formData: FormData) => {
+export const updateTaskExpiresAt = async (formData: FormData) => {
   try {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("createSilcTransaction");
-    await authentication.authorizeAction(
-      "silcTransactionOfOtherCitizen",
-      "create",
-    );
+    const authentication = await authenticateAction("updateTaskExpiresAt");
     if (!authentication.session.entityId)
       return {
         error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
@@ -35,11 +32,11 @@ export const createSilcTransaction = async (formData: FormData) => {
      * Validate the request
      */
     const result = schema.safeParse({
-      receiverIds: formData.getAll("receiverId[]"),
-      value: formData.get("value"),
-      description: formData.has("description")
-        ? formData.get("description")
-        : undefined,
+      id: formData.get("id"),
+      expiresAt:
+        formData.get("expiresAt") && formData.get("expiresAt") !== ""
+          ? formData.get("expiresAt")
+          : null,
     });
     if (!result.success)
       return {
@@ -49,28 +46,36 @@ export const createSilcTransaction = async (formData: FormData) => {
       };
 
     /**
-     * Create transaction
+     * Authorize the request
      */
-    await prisma.silcTransaction.createMany({
-      data: result.data.receiverIds.map((receiverId) => ({
-        receiverId,
-        value: result.data.value,
-        description: result.data.description,
-        createdById: authentication.session.entityId,
-      })),
-    });
+    const task = await getTaskById(result.data.id);
+    if (!task)
+      return { error: "Task nicht gefunden", requestPayload: formData };
+    if (!isTaskUpdatable(task))
+      return {
+        error: "Der Task ist bereits abgeschlossen.",
+        requestPayload: formData,
+      };
+    if (!(await isAllowedToManageTask(task)))
+      return {
+        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        requestPayload: formData,
+      };
 
     /**
-     * Update citizens' balances
+     * Update task
      */
-    await updateCitizensSilcBalances(result.data.receiverIds);
+    await prisma.task.update({
+      where: { id: result.data.id },
+      data: {
+        expiresAt: result.data.expiresAt,
+      },
+    });
 
     /**
      * Revalidate cache(s)
      */
-    revalidatePath("/app/silc");
-    revalidatePath("/app/silc/transactions");
-    revalidatePath("/app/dashboard");
+    revalidatePath("/app/tasks");
 
     /**
      * Respond with the result
