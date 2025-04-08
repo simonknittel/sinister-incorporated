@@ -34,6 +34,16 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="8. April 2025">
+          <DayItem heading="Bug: Keinem Posten zugeordnet">
+            <p>
+              Es wurde ein Fehler behoben, welcher dazu führte, dass die Citizen
+              in der Liste &ldquo;Keinem Posten zugeordnet&rdquo; nicht korrekt
+              berechnet wurden.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="5. April 2025">
           <DayItem heading="Filter">
             <p>
