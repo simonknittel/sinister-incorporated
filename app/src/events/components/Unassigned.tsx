@@ -4,20 +4,14 @@ import Note from "@/common/components/Note";
 import type { Entity, EventPosition, Ship } from "@prisma/client";
 import clsx from "clsx";
 
+type Position = EventPosition & {
+  citizen: Entity | null;
+  childPositions?: Position[];
+};
+
 type Props = Readonly<{
   className?: string;
-  positions: (EventPosition & {
-    citizen: Entity | null;
-    childPositions?: (EventPosition & {
-      citizen: Entity | null;
-      childPositions?: (EventPosition & {
-        citizen: Entity | null;
-        childPositions?: (EventPosition & {
-          citizen: Entity | null;
-        })[];
-      })[];
-    })[];
-  })[];
+  positions: Position[];
   allEventCitizens: { citizen: Entity; ships: Ship[] }[];
 }>;
 
@@ -32,17 +26,16 @@ export const Unassigned = ({
   const allPositions: (EventPosition & {
     citizen: Entity | null;
   })[] = [];
-  for (const position of positions) {
-    allPositions.push(position);
-    if (position.childPositions) {
-      allPositions.push(...position.childPositions);
-      for (const childPosition of position.childPositions) {
-        if (childPosition.childPositions) {
-          allPositions.push(...childPosition.childPositions);
-        }
+  const loop = (positions: Position[]) => {
+    for (const position of positions) {
+      allPositions.push(position);
+
+      if (position.childPositions) {
+        loop(position.childPositions);
       }
     }
-  }
+  };
+  loop(positions);
 
   const unassignedCitizen = allEventCitizens
     .filter((citizen) => {
