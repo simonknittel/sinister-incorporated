@@ -1,7 +1,9 @@
 "use client";
 
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
+import { Tooltip } from "@/common/components/Tooltip";
 import type { ComponentProps } from "react";
+import { FaInfoCircle } from "react-icons/fa";
 import { CreateTask } from "./CreateTask";
 import { Task } from "./Task";
 import { TaskVisibilityProvider, ToggleAll } from "./TaskVisibilityContext";
@@ -42,7 +44,13 @@ export const OpenTasksList = ({ tasks }: Props) => {
         {groupedByVisibility.PERSONALIZED &&
           groupedByVisibility.PERSONALIZED.length > 0 && (
             <section>
-              <h3 className="font-thin text-2xl">An mich personalisiert</h3>
+              <div className="flex gap-2 items-baseline">
+                <h3 className="font-thin text-2xl">An mich personalisiert</h3>
+                <Tooltip triggerChildren={<FaInfoCircle />}>
+                  Diese Aufgaben wurden an dich adressiert und müssen von dir
+                  erledigt werden.
+                </Tooltip>
+              </div>
 
               <div className="flex flex-col gap-[1px] mt-4">
                 {groupedByVisibility.PERSONALIZED?.map((task) => (
@@ -55,7 +63,12 @@ export const OpenTasksList = ({ tasks }: Props) => {
         {groupedByVisibility.PUBLIC &&
           groupedByVisibility.PUBLIC.length > 0 && (
             <section>
-              <h3 className="font-thin text-2xl">Öffentlich</h3>
+              <div className="flex gap-2 items-baseline">
+                <h3 className="font-thin text-2xl">Öffentlich</h3>
+                <Tooltip triggerChildren={<FaInfoCircle />}>
+                  Diese Aufgaben können von jedem angenommen und erfüllt werden.
+                </Tooltip>
+              </div>
 
               <div className="flex flex-col gap-[1px] mt-4">
                 {groupedByVisibility.PUBLIC?.map((task) => (
