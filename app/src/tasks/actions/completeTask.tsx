@@ -1,13 +1,10 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { createAuthenticatedAction } from "@/common/actions/createAction";
 import { prisma } from "@/db";
-import { log } from "@/logging";
 import { updateCitizensSilcBalances } from "@/silc/utils/updateCitizensSilcBalances";
 import { TaskRewardType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { getTaskById } from "../queries";
 import { isAllowedToManageTask } from "../utils/isAllowedToTask";
@@ -17,12 +14,10 @@ const schema = z.object({
   id: z.string().cuid(),
 });
 
-export const completeTask = async (formData: FormData) => {
-  try {
-    /**
-     * Authenticate
-     */
-    const authentication = await authenticateAction("completeTask");
+export const completeTask = createAuthenticatedAction(
+  "completeTask",
+  schema,
+  async (formData: FormData, authentication, data) => {
     if (!authentication.session.entityId)
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
@@ -30,22 +25,9 @@ export const completeTask = async (formData: FormData) => {
       };
 
     /**
-     * Validate the request
-     */
-    const result = schema.safeParse({
-      id: formData.get("id"),
-    });
-    if (!result.success)
-      return {
-        error: "Ungültige Anfrage",
-        errorDetails: result.error,
-        requestPayload: formData,
-      };
-
-    /**
      * Authorize the request
      */
-    const task = await getTaskById(result.data.id);
+    const task = await getTaskById(data.id);
     if (!task)
       return { error: "Task nicht gefunden", requestPayload: formData };
     if (!isTaskUpdatable(task))
@@ -71,7 +53,7 @@ export const completeTask = async (formData: FormData) => {
      */
     await prisma.task.update({
       where: {
-        id: result.data.id,
+        id: data.id,
       },
       data: {
         completedAt: new Date(),
@@ -164,12 +146,5 @@ export const completeTask = async (formData: FormData) => {
     return {
       success: "Erfolgreich gelöscht.",
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error("Internal Server Error", { error: serializeError(error) });
-    return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-    };
-  }
-};
+  },
+);

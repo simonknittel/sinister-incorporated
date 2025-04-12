@@ -1,12 +1,9 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { createAuthenticatedAction } from "@/common/actions/createAction";
 import { prisma } from "@/db";
-import { log } from "@/logging";
 import { TaskVisibility } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { getTaskById } from "../queries";
 import { isTaskUpdatable } from "../utils/isTaskUpdatable";
@@ -15,36 +12,17 @@ const schema = z.object({
   taskId: z.string().cuid(),
 });
 
-export const deleteTaskAssignmentForCurrentUser = async (
-  formData: FormData,
-) => {
-  try {
-    /**
-     * Authenticate and authorize the request
-     */
-    const authentication = await authenticateAction(
-      "deleteTaskAssignmentForCurrentUser",
-    );
+export const deleteTaskAssignmentForCurrentUser = createAuthenticatedAction(
+  "deleteTaskAssignmentForCurrentUser",
+  schema,
+  async (formData: FormData, authentication, data) => {
     if (!authentication.session.entityId)
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
         requestPayload: formData,
       };
 
-    /**
-     * Validate the request
-     */
-    const result = schema.safeParse({
-      taskId: formData.get("taskId"),
-    });
-    if (!result.success)
-      return {
-        error: "Ungültige Anfrage",
-        errorDetails: result.error,
-        requestPayload: formData,
-      };
-
-    const task = await getTaskById(result.data.taskId);
+    const task = await getTaskById(data.taskId);
     if (!task)
       return { error: "Task nicht gefunden", requestPayload: formData };
     if (!isTaskUpdatable(task))
@@ -66,7 +44,7 @@ export const deleteTaskAssignmentForCurrentUser = async (
     await prisma.taskAssignment.delete({
       where: {
         taskId_citizenId: {
-          taskId: result.data.taskId,
+          taskId: data.taskId,
           citizenId: authentication.session.entityId,
         },
       },
@@ -83,12 +61,5 @@ export const deleteTaskAssignmentForCurrentUser = async (
     return {
       success: "Erfolgreich gespeichert.",
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error("Internal Server Error", { error: serializeError(error) });
-    return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-    };
-  }
-};
+  },
+);
