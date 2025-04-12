@@ -43,12 +43,17 @@ export const createAuthenticatedAction = <T extends z.ZodTypeAny>(
           const result = zodSchema.safeParse(
             Object.fromEntries(formData.entries()),
           );
-          if (!result.success)
+          if (!result.success) {
+            void log.warn("Invalid Zod schema", {
+              error: serializeError(result.error),
+            });
+
             return {
               error: "Ungültige Anfrage",
               errorDetails: result.error,
               requestPayload: formData,
             };
+          }
 
           return await action(
             formData,
