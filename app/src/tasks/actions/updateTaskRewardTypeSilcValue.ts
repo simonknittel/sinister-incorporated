@@ -1,11 +1,8 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { createAuthenticatedAction } from "@/common/actions/createAction";
 import { prisma } from "@/db";
-import { log } from "@/logging";
 import { revalidatePath } from "next/cache";
-import { unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { getTaskById } from "../queries";
 import { isAllowedToManageTask } from "../utils/isAllowedToTask";
@@ -16,15 +13,10 @@ const schema = z.object({
   rewardTypeSilcValue: z.number().min(1),
 });
 
-export const updateTaskRewardTypeSilcValue = async (formData: FormData) => {
-  try {
-    /**
-     * Authenticate and authorize the request
-     */
-    const authentication = await authenticateAction(
-      "updateTaskRewardTypeSilcValue",
-    );
-
+export const updateTaskRewardTypeSilcValue = createAuthenticatedAction(
+  "updateTaskRewardTypeSilcValue",
+  schema,
+  async (formData: FormData, authentication, data) => {
     if (!authentication.session.entityId)
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
@@ -32,23 +24,9 @@ export const updateTaskRewardTypeSilcValue = async (formData: FormData) => {
       };
 
     /**
-     * Validate the request
-     */
-    const result = schema.safeParse({
-      id: formData.get("id"),
-      rewardTypeSilcValue: formData.get("rewardTypeSilcValue"),
-    });
-    if (!result.success)
-      return {
-        error: "Ungültige Anfrage",
-        errorDetails: result.error,
-        requestPayload: formData,
-      };
-
-    /**
      * Authorize the request
      */
-    const task = await getTaskById(result.data.id);
+    const task = await getTaskById(data.id);
     if (!task)
       return { error: "Task nicht gefunden", requestPayload: formData };
     if (!isTaskUpdatable(task))
@@ -66,9 +44,9 @@ export const updateTaskRewardTypeSilcValue = async (formData: FormData) => {
      * Update task
      */
     await prisma.task.update({
-      where: { id: result.data.id },
+      where: { id: data.id },
       data: {
-        rewardTypeSilcValue: result.data.rewardTypeSilcValue,
+        rewardTypeSilcValue: data.rewardTypeSilcValue,
       },
     });
 
@@ -83,13 +61,5 @@ export const updateTaskRewardTypeSilcValue = async (formData: FormData) => {
     return {
       success: "Erfolgreich gespeichert.",
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error("Internal Server Error", { error: serializeError(error) });
-    return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-      requestPayload: formData,
-    };
-  }
-};
+  },
+);

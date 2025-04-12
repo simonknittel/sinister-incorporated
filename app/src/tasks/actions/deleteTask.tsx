@@ -1,11 +1,8 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { createAuthenticatedAction } from "@/common/actions/createAction";
 import { prisma } from "@/db";
-import { log } from "@/logging";
 import { revalidatePath } from "next/cache";
-import { unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { getTaskById } from "../queries";
 import {
@@ -18,12 +15,10 @@ const schema = z.object({
   id: z.string().cuid(),
 });
 
-export const deleteTask = async (formData: FormData) => {
-  try {
-    /**
-     * Authenticate
-     */
-    const authentication = await authenticateAction("deleteTask");
+export const deleteTask = createAuthenticatedAction(
+  "deleteTask",
+  schema,
+  async (formData: FormData, authentication, data) => {
     if (!authentication.session.entityId || !(await isAllowedToDeleteTask()))
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
@@ -31,22 +26,9 @@ export const deleteTask = async (formData: FormData) => {
       };
 
     /**
-     * Validate the request
-     */
-    const result = schema.safeParse({
-      id: formData.get("id"),
-    });
-    if (!result.success)
-      return {
-        error: "Ungültige Anfrage",
-        errorDetails: result.error,
-        requestPayload: formData,
-      };
-
-    /**
      * Authorize the request
      */
-    const task = await getTaskById(result.data.id);
+    const task = await getTaskById(data.id);
     if (!task)
       return { error: "Task nicht gefunden", requestPayload: formData };
     if (!isTaskUpdatable(task))
@@ -65,7 +47,7 @@ export const deleteTask = async (formData: FormData) => {
      */
     await prisma.task.update({
       where: {
-        id: result.data.id,
+        id: data.id,
       },
       data: {
         deletedAt: new Date(),
@@ -88,12 +70,5 @@ export const deleteTask = async (formData: FormData) => {
     return {
       success: "Erfolgreich gelöscht.",
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error("Internal Server Error", { error: serializeError(error) });
-    return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-    };
-  }
-};
+  },
+);

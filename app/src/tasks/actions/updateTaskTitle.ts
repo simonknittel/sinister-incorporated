@@ -1,11 +1,8 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { createAuthenticatedAction } from "@/common/actions/createAction";
 import { prisma } from "@/db";
-import { log } from "@/logging";
 import { revalidatePath } from "next/cache";
-import { unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { getTaskById } from "../queries";
 import { isAllowedToManageTask } from "../utils/isAllowedToTask";
@@ -16,31 +13,14 @@ const schema = z.object({
   title: z.string().trim().max(64),
 });
 
-export const updateTaskTitle = async (formData: FormData) => {
-  try {
-    /**
-     * Authenticate and authorize the request
-     */
-    await authenticateAction("updateTaskTitle");
-
-    /**
-     * Validate the request
-     */
-    const result = schema.safeParse({
-      id: formData.get("id"),
-      title: formData.get("title"),
-    });
-    if (!result.success)
-      return {
-        error: "Ungültige Anfrage",
-        errorDetails: result.error,
-        requestPayload: formData,
-      };
-
+export const updateTaskTitle = createAuthenticatedAction(
+  "updateTaskTitle",
+  schema,
+  async (formData: FormData, authentication, data) => {
     /**
      * Authorize the request
      */
-    const task = await getTaskById(result.data.id);
+    const task = await getTaskById(data.id);
     if (!task)
       return { error: "Task nicht gefunden", requestPayload: formData };
     if (!isTaskUpdatable(task))
@@ -58,9 +38,9 @@ export const updateTaskTitle = async (formData: FormData) => {
      * Update task
      */
     await prisma.task.update({
-      where: { id: result.data.id },
+      where: { id: data.id },
       data: {
-        title: result.data.title,
+        title: data.title,
       },
     });
 
@@ -75,13 +55,5 @@ export const updateTaskTitle = async (formData: FormData) => {
     return {
       success: "Erfolgreich gespeichert.",
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error("Internal Server Error", { error: serializeError(error) });
-    return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-      requestPayload: formData,
-    };
-  }
-};
+  },
+);

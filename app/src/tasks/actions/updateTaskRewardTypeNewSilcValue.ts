@@ -1,12 +1,9 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { createAuthenticatedAction } from "@/common/actions/createAction";
 import { prisma } from "@/db";
-import { log } from "@/logging";
 import { TaskRewardType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { getTaskById } from "../queries";
 import { isAllowedToManageTask } from "../utils/isAllowedToTask";
@@ -17,15 +14,10 @@ const schema = z.object({
   rewardTypeNewSilcValue: z.number().min(1),
 });
 
-export const updateTaskRewardTypeNewSilcValue = async (formData: FormData) => {
-  try {
-    /**
-     * Authenticate and authorize the request
-     */
-    const authentication = await authenticateAction(
-      "updateTaskRewardTypeNewSilcValue",
-    );
-
+export const updateTaskRewardTypeNewSilcValue = createAuthenticatedAction(
+  "updateTaskRewardTypeNewSilcValue",
+  schema,
+  async (formData: FormData, authentication, data) => {
     if (!authentication.session.entityId)
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
@@ -33,23 +25,9 @@ export const updateTaskRewardTypeNewSilcValue = async (formData: FormData) => {
       };
 
     /**
-     * Validate the request
-     */
-    const result = schema.safeParse({
-      id: formData.get("id"),
-      rewardTypeNewSilcValue: formData.get("rewardTypeNewSilcValue"),
-    });
-    if (!result.success)
-      return {
-        error: "Ungültige Anfrage",
-        errorDetails: result.error,
-        requestPayload: formData,
-      };
-
-    /**
      * Authorize the request
      */
-    const task = await getTaskById(result.data.id);
+    const task = await getTaskById(data.id);
     if (!task)
       return { error: "Task nicht gefunden", requestPayload: formData };
     if (!isTaskUpdatable(task))
@@ -79,9 +57,9 @@ export const updateTaskRewardTypeNewSilcValue = async (formData: FormData) => {
      * Update task
      */
     await prisma.task.update({
-      where: { id: result.data.id },
+      where: { id: data.id },
       data: {
-        rewardTypeNewSilcValue: result.data.rewardTypeNewSilcValue,
+        rewardTypeNewSilcValue: data.rewardTypeNewSilcValue,
       },
     });
 
@@ -96,13 +74,5 @@ export const updateTaskRewardTypeNewSilcValue = async (formData: FormData) => {
     return {
       success: "Erfolgreich gespeichert.",
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error("Internal Server Error", { error: serializeError(error) });
-    return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-      requestPayload: formData,
-    };
-  }
-};
+  },
+);
