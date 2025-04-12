@@ -1,5 +1,6 @@
 import { Algolia } from "@/algolia/components/Algolia";
 import { authenticatePage } from "@/auth/server";
+import { Tile } from "@/common/components/Tile";
 import { log } from "@/logging";
 import { AnalyticsCheckboxLoader } from "@/settings/components/AnalyticsCheckboxLoader";
 import { RefreshSilcBalances } from "@/silc/components/RefreshSilcBalances";
@@ -45,7 +46,7 @@ export default async function Page() {
 
   return (
     <main className="p-4 pb-20 lg:p-8">
-      <h1 className="text-xl font-bold">Einstellungen</h1>
+      <h1 className="font-thin text-2xl">Einstellungen</h1>
 
       {showNoteTypes && <NoteTypesTile className="mt-4" />}
 
@@ -54,27 +55,25 @@ export default async function Page() {
       )}
 
       {showAnalytics && (
-        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50">
-          <h2 className="font-bold text-xl">Disable analytics</h2>
-
+        <Tile heading="Disable analytics" className="mt-4">
           <p className="mt-4 mb-4">
             Disables Vercel Analytics for this browser.
           </p>
 
           <AnalyticsCheckboxLoader />
-        </section>
+        </Tile>
       )}
 
       {showAlgolia && (
-        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50 flex flex-col gap-4">
+        <Tile heading="Algolia" className="mt-4">
           <Algolia />
-        </section>
+        </Tile>
       )}
 
       {showRefreshBalance && (
-        <section className="mt-4 max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50">
+        <Tile heading="Other" className="mt-4">
           <RefreshSilcBalances />
-        </section>
+        </Tile>
       )}
     </main>
   );

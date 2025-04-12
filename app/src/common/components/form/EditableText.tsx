@@ -16,9 +16,8 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
   const [isPending, startTransition] = useTransition();
   const [value, setValue] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
-  const outsideRef = useRef<HTMLFormElement>(null);
 
-  useOutsideClick(outsideRef, () => {
+  const { ref: outsideRef } = useOutsideClick(() => {
     setIsEditing(false);
   });
 

@@ -1,5 +1,6 @@
 import { Actions } from "@/common/components/Actions";
 import { Link } from "@/common/components/Link";
+import { formatDate } from "@/common/utils/formatDate";
 import { type Entity, type Role, type Upload } from "@prisma/client";
 import { Suspense } from "react";
 import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
@@ -230,12 +231,7 @@ export const CitizenTable = ({
               </td>
 
               <td className="overflow-hidden text-ellipsis">
-                {row.entity.createdAt?.toLocaleDateString("de-DE", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  timeZone: "Europe/Berlin",
-                })}
+                {formatDate(row.entity.createdAt)}
               </td>
 
               {showLastSeenAtColumn && (

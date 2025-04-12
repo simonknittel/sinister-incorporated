@@ -31,7 +31,7 @@ export const MyFleetTile = async ({ className }: Props) => {
   return (
     <section className={clsx("flex flex-col gap-4 overflow-hidden", className)}>
       <div>
-        <h2 className="font-bold">Meine Schiffe ({myShips.length})</h2>
+        <h2 className="font-thin text-2xl">Meine Schiffe ({myShips.length})</h2>
         <p className="hidden xl:block text-neutral-500 text-sm">&nbsp;</p>
       </div>
 

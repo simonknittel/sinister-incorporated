@@ -2,6 +2,7 @@
 
 import Avatar from "@/common/components/Avatar";
 import { Link } from "@/common/components/Link";
+import { formatDate } from "@/common/utils/formatDate";
 import { VerifyEmailButton } from "@/users/components/VerifyEmailButton";
 import { type Entity, type User } from "@prisma/client";
 import {
@@ -77,14 +78,7 @@ export const Table = ({ users }: Props) => {
           if (!props.getValue())
             return <VerifyEmailButton userId={props.row.original.user.id} />;
 
-          return (
-            <span>
-              {props.getValue()?.toLocaleDateString("de-DE", {
-                timeZone: "Europe/Berlin",
-                dateStyle: "medium",
-              })}
-            </span>
-          );
+          return <span>{formatDate(props.getValue())}</span>;
         },
       }),
       columnHelper.accessor("user.name", {

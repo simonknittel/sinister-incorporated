@@ -1,6 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import styles from "@/common/components/ConfirmationGradient.module.css";
 import { Link } from "@/common/components/Link";
+import { formatDate } from "@/common/utils/formatDate";
 import { prisma } from "@/db";
 import {
   ConfirmationStatus,
@@ -239,12 +240,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
                   <div className="text-sm flex gap-2 border-b pb-2 mb-2 items-center border-neutral-800/50 flex-wrap text-neutral-500">
                     <p>
                       <time dateTime={entry.date.toISOString()}>
-                        {entry.date.toLocaleDateString("de-DE", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          timeZone: "Europe/Berlin",
-                        })}
+                        {formatDate(entry.date)}
                       </time>
                     </p>
                   </div>

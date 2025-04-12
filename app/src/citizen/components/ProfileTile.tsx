@@ -49,7 +49,7 @@ export const ProfileTile = async ({ className }: Props) => {
       >
         <Avatar name={name} image={image} size={128} />
 
-        <h2 className="font-bold">{name}</h2>
+        <h2 className="font-thin">{name}</h2>
 
         {roles.length > 0 && (
           <div className="flex gap-2 flex-wrap justify-center">
@@ -68,7 +68,14 @@ export const ProfileTile = async ({ className }: Props) => {
               title="Übersicht öffnen"
               className="flex-1 rounded-2xl bg-neutral-800/50 hover:bg-neutral-600/50 focus-visible:bg-neutral-600/50 flex flex-col justify-center items-center p-4"
             >
-              <span className="font-black text-4xl">{silcBalance}</span>
+              <span
+                className={clsx("font-black text-4xl", {
+                  "text-green-500": silcBalance && silcBalance > 0,
+                  "text-red-500": silcBalance && silcBalance < 0,
+                })}
+              >
+                {silcBalance}
+              </span>
               <p className="text-neutral-500 flex gap-2 items-center">
                 <FaPiggyBank className="text-neutral-500" />
                 SILC
@@ -82,7 +89,13 @@ export const ProfileTile = async ({ className }: Props) => {
               title="Übersicht öffnen"
               className="flex-1 rounded-2xl bg-neutral-800/50 hover:bg-neutral-600/50 focus-visible:bg-neutral-600/50 flex flex-col justify-center items-center p-4"
             >
-              <span className="font-black text-4xl">{penaltyPoints}</span>
+              <span
+                className={clsx("font-black text-4xl", {
+                  "text-red-500": penaltyPoints && penaltyPoints > 0,
+                })}
+              >
+                {penaltyPoints}
+              </span>
               <p className="text-neutral-500 flex gap-2 items-center">
                 <FaScaleBalanced className="text-neutral-500" />
                 Strafpunkte

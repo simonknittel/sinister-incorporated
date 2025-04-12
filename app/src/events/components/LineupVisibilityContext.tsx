@@ -2,6 +2,7 @@
 
 import type { EventPosition } from "@prisma/client";
 import { useLocalStorage } from "@uidotdev/usehooks";
+import clsx from "clsx";
 import type { ReactNode } from "react";
 import {
   createContext,
@@ -12,9 +13,9 @@ import {
 } from "react";
 
 interface LineupVisibilityContext {
-  openPositions: EventPosition["id"][];
-  open: (positionIds: EventPosition["id"]) => void;
-  close: (positionId: EventPosition["id"]) => void;
+  openItems: EventPosition["id"][];
+  open: (itemId: EventPosition["id"]) => void;
+  close: (itemId: EventPosition["id"]) => void;
   closeAll: () => void;
   openAll: () => void;
 }
@@ -23,81 +24,69 @@ const LineupVisibilityContext = createContext<
   LineupVisibilityContext | undefined
 >(undefined);
 
+type PositionType = EventPosition & {
+  childPositions?: PositionType[];
+};
+
 type Props = Readonly<{
   children: ReactNode;
-  positions: (EventPosition & {
-    childPositions?: (EventPosition & {
-      childPositions?: (EventPosition & {
-        childPositions?: EventPosition[];
-      })[];
-    })[];
-  })[];
+  items: PositionType[];
 }>;
 
-export const LineupVisibilityProvider = ({ children, positions }: Props) => {
-  const [openPositions, setOpenPositions] = useLocalStorage<
-    EventPosition["id"][]
-  >(`open_positions`, []);
+export const LineupVisibilityProvider = ({ children, items }: Props) => {
+  const [openItems, setOpenItems] = useLocalStorage<EventPosition["id"][]>(
+    "open_positions",
+    [],
+  );
 
   const open = useCallback(
-    (positionId: EventPosition["id"]) => {
-      setOpenPositions((prev) => [...prev, positionId]);
+    (itemId: EventPosition["id"]) => {
+      setOpenItems((prev) => [...prev, itemId]);
     },
-    [setOpenPositions],
+    [setOpenItems],
   );
 
   const openAll = useCallback(() => {
-    const allPositionIds: EventPosition["id"][] = [];
+    const allItemIds: EventPosition["id"][] = [];
 
-    for (const position of positions) {
-      allPositionIds.push(position.id);
+    const loop = (items: PositionType[]) => {
+      for (const item of items) {
+        allItemIds.push(item.id);
 
-      if (position.childPositions) {
-        for (const childPosition of position.childPositions) {
-          allPositionIds.push(childPosition.id);
-
-          if (childPosition.childPositions) {
-            for (const grandChildPosition of childPosition.childPositions) {
-              allPositionIds.push(grandChildPosition.id);
-
-              if (grandChildPosition.childPositions) {
-                for (const greatGrandChildPosition of grandChildPosition.childPositions) {
-                  allPositionIds.push(greatGrandChildPosition.id);
-                }
-              }
-            }
-          }
+        if (item.childPositions) {
+          loop(item.childPositions);
         }
       }
-    }
+    };
+    loop(items);
 
     startTransition(() => {
-      setOpenPositions(allPositionIds);
+      setOpenItems(allItemIds);
     });
-  }, [setOpenPositions, positions]);
+  }, [setOpenItems, items]);
 
   const close = useCallback(
-    (positionId: EventPosition["id"]) => {
-      setOpenPositions((prev) => prev.filter((id) => id !== positionId));
+    (itemId: EventPosition["id"]) => {
+      setOpenItems((prev) => prev.filter((id) => id !== itemId));
     },
-    [setOpenPositions],
+    [setOpenItems],
   );
 
   const closeAll = useCallback(() => {
     startTransition(() => {
-      setOpenPositions([]);
+      setOpenItems([]);
     });
-  }, [setOpenPositions]);
+  }, [setOpenItems]);
 
   const value = useMemo(
     () => ({
-      openPositions,
+      openItems,
       open,
       openAll,
       close,
       closeAll,
     }),
-    [openPositions, open, openAll, close, closeAll],
+    [openItems, open, openAll, close, closeAll],
   );
 
   return (
@@ -116,3 +105,29 @@ export function useLineupVisibility() {
   if (!context) throw new Error("Provider missing!");
   return context;
 }
+
+type ToggleAllProps = Readonly<{
+  className?: string;
+}>;
+
+export const ToggleAll = ({ className }: ToggleAllProps) => {
+  const { openAll, closeAll } = useLineupVisibility();
+
+  return (
+    <div className={clsx("flex gap-2", className)}>
+      <button
+        onClick={openAll}
+        className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 hover:underline focus-visible:underline"
+      >
+        Alle öffnen
+      </button>
+      /
+      <button
+        onClick={closeAll}
+        className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 hover:underline focus-visible:underline"
+      >
+        schließen
+      </button>
+    </div>
+  );
+};

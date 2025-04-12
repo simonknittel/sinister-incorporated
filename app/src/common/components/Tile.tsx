@@ -7,6 +7,7 @@ type Props = Readonly<{
   cta?: ReactNode;
   children: ReactNode;
   childrenClassName?: string;
+  transparent?: boolean;
 }>;
 
 export const Tile = ({
@@ -15,16 +16,41 @@ export const Tile = ({
   heading,
   children,
   childrenClassName,
+  transparent,
 }: Props) => {
   return (
-    <section className={clsx("rounded-2xl bg-neutral-800/50", className)}>
-      <div className="flex justify-between items-center border-b border-white/5">
-        <h2 className="font-bold text-xl p-4 lg:px-8">{heading}</h2>
+    <section
+      className={clsx(
+        { "rounded-2xl bg-neutral-800/50": !transparent },
+        className,
+      )}
+    >
+      <div
+        className={clsx("flex justify-between items-center", {
+          "border-b border-white/5": !transparent,
+        })}
+      >
+        <h2
+          className={clsx("font-thin text-2xl", {
+            "p-4 lg:px-8": !transparent,
+          })}
+        >
+          {heading}
+        </h2>
 
-        {cta && <div className="pr-4 lg:pr-8">{cta}</div>}
+        {cta && (
+          <div className={clsx({ "pr-4 lg:pr-8": !transparent })}>{cta}</div>
+        )}
       </div>
 
-      <div className={clsx("p-4 lg:p-8", childrenClassName)}>{children}</div>
+      <div
+        className={clsx(
+          { "mt-4 lg:mt-4": transparent, "p-4 lg:p-8": !transparent },
+          childrenClassName,
+        )}
+      >
+        {children}
+      </div>
     </section>
   );
 };

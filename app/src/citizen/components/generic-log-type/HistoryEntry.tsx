@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "@/common/components/ConfirmationGradient.module.css";
+import { formatDate } from "@/common/utils/formatDate";
 import {
   type EntityLog,
   type EntityLogAttribute,
@@ -75,12 +76,7 @@ export const HistoryEntry = ({
           <div className="text-sm flex gap-2 border-b pb-1 items-baseline border-neutral-700">
             <p>
               <time dateTime={log.createdAt.toISOString()}>
-                {log.createdAt.toLocaleDateString("de-DE", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  timeZone: "Europe/Berlin",
-                })}
+                {formatDate(log.createdAt)}
               </time>
             </p>
 

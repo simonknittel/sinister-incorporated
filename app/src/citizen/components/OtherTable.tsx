@@ -1,6 +1,7 @@
 import { Actions } from "@/common/components/Actions";
 import { Link } from "@/common/components/Link";
 import { entityLogTypeTranslations } from "@/common/utils/entityLogTypeTranslations";
+import { formatDate } from "@/common/utils/formatDate";
 import type { EntityLogConfirmationState } from "@/types";
 import {
   type Entity,
@@ -140,12 +141,7 @@ export const OtherTable = ({ rows, searchParams }: Props) => {
               </td>
 
               <td className="overflow-hidden text-ellipsis">
-                {row.confirmedAt?.toLocaleDateString("de-DE", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  timeZone: "Europe/Berlin",
-                })}
+                {formatDate(row.confirmedAt)}
               </td>
 
               <td
@@ -156,12 +152,7 @@ export const OtherTable = ({ rows, searchParams }: Props) => {
               </td>
 
               <td className="overflow-hidden text-ellipsis">
-                {row.entityLog.createdAt?.toLocaleDateString("de-DE", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  timeZone: "Europe/Berlin",
-                })}
+                {formatDate(row.entityLog.createdAt)}
               </td>
 
               <td

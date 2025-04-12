@@ -19,7 +19,7 @@ export const CalendarTile = async ({ className }: Props) => {
       )}
     >
       <div className="w-full flex gap-2 items-center">
-        <h2 className="font-bold text-xl">Discord-Events</h2>
+        <h2 className="font-thin text-2xl">Discord-Events</h2>
         <NotificationsTooltip />
       </div>
 

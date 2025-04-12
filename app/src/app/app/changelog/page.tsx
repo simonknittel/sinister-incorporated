@@ -34,6 +34,46 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="12. April 2025">
+          <DayItem heading="Tasks">
+            <p>Die erste Version des Tasks System wurde implementiert.</p>
+
+            <p>
+              <strong>Öffentliche Tasks</strong>
+            </p>
+            <p>
+              Erstelle eine Aufgabe, die von jemand beliebigen angenommen und
+              erfüllt werden kann.
+            </p>
+
+            <p>
+              <strong>Personalisierte Tasks</strong>
+            </p>
+            <p>
+              Erstelle eine Aufgabe und weise sie einem bestimmten Citizen zu.
+              Diese Aufgabe kann nur von ihm gesehen und erfüllt werden.
+            </p>
+
+            <p>
+              <strong>Belohnungen</strong>
+            </p>
+            <p>
+              Wähle zwischen SILC vom eigenen Konto, generieren von neuen SILC
+              oder einem Freitext als Belohnung für das Erfüllen eines Tasks.
+            </p>
+          </DayItem>
+        </Day>
+
+        <Day heading="8. April 2025">
+          <DayItem heading="Bug: Keinem Posten zugeordnet">
+            <p>
+              Es wurde ein Fehler behoben, welcher dazu führte, dass die Citizen
+              in der Liste &ldquo;Keinem Posten zugeordnet&rdquo; nicht korrekt
+              berechnet wurden.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="5. April 2025">
           <DayItem heading="Filter">
             <p>
@@ -689,8 +729,8 @@ type DayProps = Readonly<{
 const Day = ({ heading, children }: DayProps) => {
   return (
     <article className="bg-neutral-800/50 rounded-2xl p-4 lg:p-8">
-      <h2 className="font-bold text-xl flex gap-3 items-center">
-        <FaCalendar className="text-neutral-500" />
+      <h2 className="font-thin text-2xl flex gap-3 items-center">
+        <FaCalendar className="text-neutral-500 text-base" />
         {heading}
       </h2>
 

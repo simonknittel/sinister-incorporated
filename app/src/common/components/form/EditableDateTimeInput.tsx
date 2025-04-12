@@ -1,3 +1,4 @@
+import { formatDate } from "@/common/utils/formatDate";
 import clsx from "clsx";
 import { useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
@@ -6,23 +7,32 @@ import { useOutsideClick } from "../../utils/useOutsideClick";
 
 type Props = Readonly<{
   className?: string;
+  rowId: string;
+  columnName: string;
+  initialValue?: Date | null;
   action: (formData: FormData) => Promise<
     | {
         success: string;
       }
     | { error: string; errorDetails?: unknown }
   >;
-  initialValue: string;
+  required?: boolean;
 }>;
 
-export const EditableTextV2 = ({ className, action, initialValue }: Props) => {
+export const EditableDateTimeInput = ({
+  className,
+  rowId,
+  columnName,
+  initialValue,
+  action,
+  required,
+}: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [value, setValue] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
-  const outsideRef = useRef<HTMLFormElement>(null);
 
-  useOutsideClick(outsideRef, () => {
+  const { ref: outsideRef } = useOutsideClick(() => {
     setIsEditing(false);
   });
 
@@ -52,7 +62,8 @@ export const EditableTextV2 = ({ className, action, initialValue }: Props) => {
         }
 
         toast.success(response.success);
-        setValue(formData.get("value")?.toString() || "");
+        const date = new Date(formData.get(columnName) as string);
+        setValue(isNaN(date.getTime()) ? null : date);
         setIsEditing(false);
       } catch (error) {
         /**
@@ -72,23 +83,34 @@ export const EditableTextV2 = ({ className, action, initialValue }: Props) => {
   };
 
   return (
-    <span className={clsx(className)}>
+    <span
+      className={clsx(
+        {
+          "w-full": isEditing,
+        },
+        className,
+      )}
+    >
       {isEditing ? (
         <form
           action={formAction}
           className="flex gap-2 items-center mx-1"
           ref={outsideRef}
         >
+          <input type="hidden" name="id" value={rowId} />
+
           <input
-            type="text"
-            name="value"
-            defaultValue={value}
+            type="datetime-local"
+            name={columnName}
+            defaultValue={value?.toLocaleString("sv-SE", {
+              timeZone: "Europe/Berlin",
+            })}
             disabled={isPending}
             className={clsx("rounded bg-neutral-700 px-1 w-full", {
               "animate-pulse": isPending,
             })}
             autoFocus
-            required
+            required={required}
             ref={inputRef}
           />
 
@@ -104,11 +126,11 @@ export const EditableTextV2 = ({ className, action, initialValue }: Props) => {
         <button
           type="button"
           onClick={handleClick}
-          className="flex gap-2 items-center group"
+          className="flex gap-2 items-center group text-left"
           title="Klicken, um zu bearbeiten"
         >
-          {value}{" "}
-          <FaPen className="text-sinister-red-500 group-hover:text-sinister-red-300 text-sm" />
+          {formatDate(value) || "-"}
+          <FaPen className="flex-1 text-sinister-red-500 group-hover:text-sinister-red-300 text-sm" />
         </button>
       )}
     </span>

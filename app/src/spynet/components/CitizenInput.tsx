@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
-import { Link } from "@/common/components/Link";
+import { CitizenLink } from "@/common/components/CitizenLink";
 import { api } from "@/trpc/react";
 import {
   Combobox,
@@ -18,6 +18,7 @@ type BaseProps = Readonly<{
   className?: string;
   name: string;
   disabled?: boolean;
+  autofocus?: boolean;
 }>;
 
 type SingleProps = BaseProps &
@@ -40,6 +41,7 @@ export const CitizenInput = ({
   disabled,
   multiple,
   defaultValue,
+  autofocus,
 }: Props) => {
   const [query, setQuery] = useState("");
 
@@ -70,6 +72,14 @@ export const CitizenInput = ({
         setQuery={setQuery}
         isPending={isPending}
         filteredCitizens={filteredCitizens}
+        defaultValue={
+          defaultValue
+            ? (defaultValue
+                .map((id) => allCitizens?.find((citizen) => citizen.id === id))
+                .filter(Boolean) as Entity[])
+            : undefined
+        }
+        autofocus={autofocus}
       />
     );
   return (
@@ -85,6 +95,7 @@ export const CitizenInput = ({
           ? allCitizens?.find((citizen) => citizen.id === defaultValue)
           : undefined
       }
+      autofocus={autofocus}
     />
   );
 };
@@ -97,6 +108,7 @@ type SingleComponentProps = Readonly<{
   filteredCitizens: Entity[];
   defaultValue?: Entity;
   disabled?: boolean;
+  autofocus?: boolean;
 }>;
 
 const Single = ({
@@ -107,6 +119,7 @@ const Single = ({
   filteredCitizens,
   defaultValue,
   disabled,
+  autofocus,
 }: SingleComponentProps) => {
   const [selectedCitizen, setSelectedCitizen] = useState<Entity | null>(
     defaultValue || null,
@@ -127,7 +140,7 @@ const Single = ({
           onClose={() => setQuery("")}
         >
           <ComboboxInput
-            autoFocus
+            autoFocus={autofocus}
             aria-label="Citizen"
             displayValue={(citizen: Entity) => citizen?.handle || ""}
             onChange={(event) => setQuery(event.target.value)}
@@ -171,6 +184,7 @@ type MultipleComponentProps = Readonly<{
   isPending: boolean;
   filteredCitizens: Entity[];
   defaultValue?: Entity[];
+  autofocus?: boolean;
 }>;
 
 const Multiple = ({
@@ -181,6 +195,7 @@ const Multiple = ({
   isPending,
   filteredCitizens,
   defaultValue,
+  autofocus,
 }: MultipleComponentProps) => {
   const [selectedCitizens, setSelectedCitizens] = useState<Entity[]>(
     defaultValue || [],
@@ -205,7 +220,7 @@ const Multiple = ({
           onClose={() => setQuery("")}
         >
           <ComboboxInput
-            autoFocus
+            autoFocus={autofocus}
             aria-label="Citizens"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -233,46 +248,37 @@ const Multiple = ({
         </Combobox>
       )}
 
-      <p className="text-xs mt-1">Mehrfachauswahl möglich</p>
+      <p className="text-xs mt-1 text-gray-400">Mehrfachauswahl möglich</p>
 
-      <ul className="mt-2 flex gap-x-3 gap-y-1 flex-wrap">
-        {selectedCitizens.map((citizen) => (
-          <li key={citizen.id} className="flex items-baseline gap-1">
-            <Link
-              href={`/app/spynet/citizen/${citizen.id}`}
-              className={clsx("hover:underline", {
-                "text-green-500":
-                  citizen.id === authentication.session.entityId,
-                "text-sinister-red-500":
-                  citizen.id !== authentication.session.entityId,
-              })}
-              prefetch={false}
-            >
-              {citizen.handle}
-            </Link>
+      {selectedCitizens.length > 0 && (
+        <ul className="mt-2 flex gap-x-3 gap-y-1 flex-wrap">
+          {selectedCitizens.map((citizen) => (
+            <li key={citizen.id} className="flex items-baseline gap-1">
+              <CitizenLink citizen={citizen} />
 
-            <button
-              type="button"
-              onClick={() =>
-                setSelectedCitizens((prev) =>
-                  prev.filter((c) => c.id !== citizen.id),
-                )
-              }
-              title="Entfernen"
-              className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300"
-            >
-              <FaTrash className="text-xs" />
-            </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setSelectedCitizens((prev) =>
+                    prev.filter((c) => c.id !== citizen.id),
+                  )
+                }
+                title="Entfernen"
+                className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300"
+              >
+                <FaTrash className="text-xs" />
+              </button>
 
-            <input
-              key={citizen.id}
-              type="hidden"
-              name={`${name}[]`}
-              value={citizen.id}
-            />
-          </li>
-        ))}
-      </ul>
+              <input
+                key={citizen.id}
+                type="hidden"
+                name={`${name}[]`}
+                value={citizen.id}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

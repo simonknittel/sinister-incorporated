@@ -1,5 +1,5 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
-import { Link } from "@/common/components/Link";
+import { CitizenLink } from "@/common/components/CitizenLink";
 import Note from "@/common/components/Note";
 import type { Entity, EventPosition, Ship } from "@prisma/client";
 import clsx from "clsx";
@@ -61,18 +61,7 @@ export const Unassigned = ({
           <ul className="mt-2 flex gap-x-3 gap-y-1 flex-wrap">
             {unassignedCitizen.map((citizen) => (
               <li key={citizen.citizen.id}>
-                <Link
-                  href={`/app/spynet/citizen/${citizen.citizen.id}`}
-                  className={clsx("hover:underline self-start", {
-                    "text-green-500":
-                      citizen.citizen.id === authentication.session.entityId,
-                    "text-sinister-red-500":
-                      citizen.citizen.id !== authentication.session.entityId,
-                  })}
-                  prefetch={false}
-                >
-                  {citizen.citizen.handle || citizen.citizen.id}
-                </Link>
+                <CitizenLink citizen={citizen.citizen} />
               </li>
             ))}
           </ul>
