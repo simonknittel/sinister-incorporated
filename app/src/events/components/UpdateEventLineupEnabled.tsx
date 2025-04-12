@@ -21,13 +21,13 @@ export const UpdateEventLineupEnabled = ({ className, event }: Props) => {
       try {
         const response = await updateEventLineupEnabled(formData);
 
-        if (response.error) {
+        if ("error" in response) {
           toast.error(response.error);
           console.error(response);
           return;
         }
 
-        toast.success(response.success!);
+        toast.success(response.success);
       } catch (error) {
         unstable_rethrow(error);
         toast.error(

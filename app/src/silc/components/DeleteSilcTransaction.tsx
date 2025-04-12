@@ -32,13 +32,13 @@ export const DeleteSilcTransaction = ({ className, id }: Props) => {
       try {
         const response = await deleteSilcTransaction(formData);
 
-        if (response.error) {
+        if ("error" in response) {
           toast.error(response.error);
           console.error(response);
           return;
         }
 
-        toast.success(response.success!);
+        toast.success(response.success);
       } catch (error) {
         unstable_rethrow(error);
         toast.error(
