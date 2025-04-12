@@ -22,7 +22,7 @@ import {
 } from "react-icons/fa";
 import { FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
-import { MdWorkspaces } from "react-icons/md";
+import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
 import { updateRolePermissions } from "../actions/updateRolePermissions";
 import { CitizenTab } from "./tabs/CitizenTab";
@@ -92,7 +92,7 @@ export const Permissions = ({
           </Tab>
 
           <Tab id="tasks">
-            <FaScaleBalanced /> Tasks
+            <MdTaskAlt /> Tasks
           </Tab>
 
           <Tab id="other">
