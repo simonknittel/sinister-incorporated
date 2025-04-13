@@ -47,6 +47,14 @@ export default async function Page() {
             </p>
 
             <p>
+              <strong>Task erstellen</strong>
+            </p>
+            <p>
+              Bei Mehrfachauswahl von Citizen kann nun eine Rolle ausgewählt
+              werden um direkt alle Citizen mit dieser Rolle hinzuzufügen.
+            </p>
+
+            <p>
               <strong>Task abschließen</strong>
             </p>
             <p>
