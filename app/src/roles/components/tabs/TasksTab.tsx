@@ -52,9 +52,7 @@ export const TasksTab = () => {
             </p>
           </div>
 
-          <YesNoCheckbox
-            {...register(`task;create;taskVisibility=${TaskVisibility.PUBLIC}`)}
-          />
+          <YesNoCheckbox {...register("task;create")} />
         </div>
 
         <div className="py-2 flex justify-between items-center gap-2 mt-2">
