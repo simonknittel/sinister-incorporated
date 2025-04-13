@@ -34,6 +34,28 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="13. April 2025">
+          <DayItem heading="Tasks">
+            <p>Weiterentwicklung des neuen Tasks System</p>
+
+            <p>
+              <strong>Gruppen-Tasks</strong>
+            </p>
+            <p>
+              Erstelle eine Aufgabe und weise sie einer Gruppen von Citizen zu.
+              Diese Aufgabe kann nur von ihnen gesehen und erfüllt werden.
+            </p>
+
+            <p>
+              <strong>Task abschließen</strong>
+            </p>
+            <p>
+              Im Bestätigungsdialog wird nun zusätzlich abgefragt wer den Task
+              erfüllt hat.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="12. April 2025">
           <DayItem heading="Tasks">
             <p>Die erste Version des Tasks System wurde implementiert.</p>
@@ -60,6 +82,13 @@ export default async function Page() {
             <p>
               Wähle zwischen SILC vom eigenen Konto, generieren von neuen SILC
               oder einem Freitext als Belohnung für das Erfüllen eines Tasks.
+            </p>
+
+            <p>
+              <em>
+                Das System befindet sich aktuell im Test und wird die nächsten
+                Tage weiter ausgerollt.
+              </em>
             </p>
           </DayItem>
         </Day>

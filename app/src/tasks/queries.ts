@@ -45,7 +45,19 @@ export const getTasks = cache(async () => {
                   },
                 },
                 {
+                  visibility: TaskVisibility.GROUP,
+                  assignments: {
+                    some: {
+                      citizenId: authentication.session.entityId,
+                    },
+                  },
+                },
+                {
                   visibility: TaskVisibility.PERSONALIZED,
+                  createdById: authentication.session.entityId,
+                },
+                {
+                  visibility: TaskVisibility.GROUP,
                   createdById: authentication.session.entityId,
                 },
               ],
@@ -100,7 +112,19 @@ export const getTaskById = cache(async (id: Task["id"]) => {
               },
             },
             {
+              visibility: TaskVisibility.GROUP,
+              assignments: {
+                some: {
+                  citizenId: authentication.session.entityId,
+                },
+              },
+            },
+            {
               visibility: TaskVisibility.PERSONALIZED,
+              createdById: authentication.session.entityId,
+            },
+            {
+              visibility: TaskVisibility.GROUP,
               createdById: authentication.session.entityId,
             },
             {

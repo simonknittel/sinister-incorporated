@@ -1,95 +1,118 @@
 "use client";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/common/components/AlertDialog";
-import { TaskRewardType, type Task } from "@prisma/client";
+import Button from "@/common/components/Button";
+import Modal from "@/common/components/Modal";
+import Note from "@/common/components/Note";
+import { CitizenInput } from "@/spynet/components/CitizenInput";
+import { TaskRewardType, type Task, type TaskAssignment } from "@prisma/client";
+import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
-import { useId, useTransition } from "react";
+import { useActionState, useState } from "react";
 import toast from "react-hot-toast";
-import { FaCheck, FaSpinner } from "react-icons/fa";
+import { FaCheck, FaSave, FaSpinner } from "react-icons/fa";
 import { completeTask } from "../actions/completeTask";
 
 type Props = Readonly<{
   className?: string;
-  task: Task;
+  task: Task & {
+    assignments: TaskAssignment[];
+  };
 }>;
 
 export const CompleteTask = ({ className, task }: Props) => {
-  const [isPending, startTransition] = useTransition();
-  const formId = useId();
-
-  const formAction = (formData: FormData) => {
-    startTransition(async () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [state, formAction, isPending] = useActionState(
+    async (previousState: unknown, formData: FormData) => {
       try {
         const response = await completeTask(formData);
 
-        if ("error" in response) {
+        if (response.error) {
           toast.error(response.error);
           console.error(response);
-          return;
+          return response;
         }
 
-        toast.success(response.success);
+        toast.success(response.success!);
+        setIsOpen(false);
+        return response;
       } catch (error) {
         unstable_rethrow(error);
         toast.error(
           "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
         );
         console.error(error);
+        return {
+          error:
+            "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+          requestPayload: formData,
+        };
       }
-    });
+    },
+    null,
+  );
+
+  const handleClick = () => {
+    setIsOpen(true);
+  };
+
+  const handleRequestClose = () => {
+    setIsOpen(false);
   };
 
   return (
-    <form action={formAction} id={formId} className={className}>
-      <input type="hidden" name="id" value={task.id} />
+    <>
+      <button
+        onClick={handleClick}
+        title="Task abschließen"
+        className={clsx(
+          "text-sinister-red-500 hover:text-sinister-red-300 flex items-center px-2",
+          className,
+        )}
+      >
+        <FaCheck />
+      </button>
 
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <button
-            disabled={isPending}
-            className="text-sinister-red-500 hover:text-sinister-red-300 flex items-center px-2"
-            title="Task abschließen"
-          >
-            {isPending ? <FaSpinner className="animate-spin" /> : <FaCheck />}
-          </button>
-        </AlertDialogTrigger>
+      <Modal
+        isOpen={isOpen}
+        onRequestClose={handleRequestClose}
+        className="w-[480px]"
+        heading={<h2>Task abschließen</h2>}
+      >
+        <form action={formAction}>
+          <input type="hidden" name="id" value={task.id} />
 
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Task abschließen?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {task.rewardType === TaskRewardType.TEXT && (
-                <>Bitte denke daran den Citizen ihre Belohnung zu geben.</>
-              )}
-              {(task.rewardType === TaskRewardType.SILC ||
-                task.rewardType === TaskRewardType.NEW_SILC) && (
-                <>
-                  SILC-Belohnungen werden automatisiert denen zugeschrieben, die
-                  den Task angenommen haben.
-                </>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+          <CitizenInput
+            name="completionistId"
+            multiple
+            autoFocus
+            defaultValue={task.assignments.map(
+              (assignment) => assignment.citizenId,
+            )}
+          />
 
-          <AlertDialogFooter>
-            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+          {task.rewardType === TaskRewardType.TEXT && (
+            <p className="mt-4">
+              Bitte denke daran den Citizen ihre Belohnung zu geben.
+            </p>
+          )}
+          {(task.rewardType === TaskRewardType.SILC ||
+            task.rewardType === TaskRewardType.NEW_SILC) && (
+            <p className="mt-4">
+              SILC-Belohnungen werden automatisiert denen zugeschrieben, die den
+              Task angenommen haben.
+            </p>
+          )}
 
-            <AlertDialogAction type="submit" form={formId}>
-              Abschließen
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </form>
+          <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
+            {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
+            Speichern
+          </Button>
+
+          {state?.error && (
+            <Note type="error" message={state.error} className="mt-4" />
+          )}
+        </form>
+      </Modal>
+    </>
   );
 };

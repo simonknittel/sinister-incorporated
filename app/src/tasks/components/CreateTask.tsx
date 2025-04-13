@@ -26,10 +26,10 @@ type Props = Readonly<{
 export const CreateTask = ({ className, cta }: Props) => {
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Forbidden");
-  const showPersonalized = authentication.authorize("task", "create", [
+  const showPersonalizedAndGroup = authentication.authorize("task", "create", [
     {
       key: "taskVisibility",
-      value: TaskVisibility.PERSONALIZED,
+      value: `${TaskVisibility.PERSONALIZED},${TaskVisibility.GROUP}`,
     },
   ]);
   const showNewSilc = authentication.authorize("task", "create", [
@@ -109,6 +109,7 @@ export const CreateTask = ({ className, cta }: Props) => {
                 : ""
             }
             required
+            autoFocus
           />
 
           <Textarea
@@ -214,12 +215,19 @@ export const CreateTask = ({ className, cta }: Props) => {
               {
                 value: TaskVisibility.PUBLIC,
                 label: "Öffentlich",
+                hint: "Diese Tasks können von jedem angenommen und erfüllt werden.",
               },
-              ...(showPersonalized
+              ...(showPersonalizedAndGroup
                 ? [
                     {
                       value: TaskVisibility.PERSONALIZED,
                       label: "Personalisiert",
+                      hint: "Diese Tasks werden an einen Citizen adressiert und müssen von diesem erfüllt werden. Werden mehrere Citizen angegeben, wird dieser Task für jeden Citizen dupliziert.",
+                    },
+                    {
+                      value: TaskVisibility.GROUP,
+                      label: "Gruppe",
+                      hint: "Diese Tasks werden an eine Gruppe von Citizen adressiert und müssen von dieser erfüllt werden.",
                     },
                   ]
                 : []),
@@ -230,22 +238,26 @@ export const CreateTask = ({ className, cta }: Props) => {
           />
 
           {visibility === TaskVisibility.PUBLIC && (
-            <NumberInput
-              name="assignmentLimit"
-              label="Von wie vielen Citizen kann der Task angenommen werden?"
-              hint="optional"
-              defaultValue={
-                state?.requestPayload?.has("assignmentLimit")
-                  ? (state.requestPayload.get("assignmentLimit") as string)
-                  : 1
-              }
-              min={1}
-              className="mt-4"
-            />
+              <NumberInput
+                name="assignmentLimit"
+                label="Von wie vielen Citizen kann der Task angenommen werden?"
+                hint="optional"
+                defaultValue={
+                  state?.requestPayload?.has("assignmentLimit")
+                    ? (state.requestPayload.get("assignmentLimit") as string)
+                    : 1
+                }
+                min={1}
+                className="mt-4"
+              />
           )}
 
           {visibility === TaskVisibility.PERSONALIZED && (
-            <CitizenInput name="assignedToId" multiple className="mt-4" />
+              <CitizenInput name="assignedToId" multiple className="mt-4" />
+          )}
+
+          {visibility === TaskVisibility.GROUP && (
+              <CitizenInput name="assignedToId" multiple className="mt-4" />
           )}
 
           <DateTimeInput

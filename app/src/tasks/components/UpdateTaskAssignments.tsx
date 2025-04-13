@@ -95,7 +95,7 @@ export const UpdateTaskAssignments = ({ className, task }: Props) => {
           <CitizenInput
             name="assignedToId"
             multiple
-            autofocus
+            autoFocus
             defaultValue={task.assignments.map(
               (assignment) => assignment.citizenId,
             )}

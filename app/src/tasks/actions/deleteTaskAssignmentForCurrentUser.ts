@@ -9,7 +9,7 @@ import { getTaskById } from "../queries";
 import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
-  taskId: z.string().cuid(),
+  taskId: z.union([z.string().cuid(), z.string().cuid2()]),
 });
 
 export const deleteTaskAssignmentForCurrentUser = createAuthenticatedAction(
@@ -31,7 +31,10 @@ export const deleteTaskAssignmentForCurrentUser = createAuthenticatedAction(
         requestPayload: formData,
       };
 
-    if (task.visibility === TaskVisibility.PERSONALIZED)
+    if (
+      task.visibility === TaskVisibility.PERSONALIZED ||
+      task.visibility === TaskVisibility.GROUP
+    )
       return {
         error:
           "Du kannst deine Teilnahme an einem personalisierten Task nicht selbstständig ändern.",

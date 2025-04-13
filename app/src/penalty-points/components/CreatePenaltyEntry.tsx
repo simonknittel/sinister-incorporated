@@ -77,7 +77,7 @@ export const CreatePenaltyEntry = ({ className }: Props) => {
         heading={<h2>Strafpunkte eintragen</h2>}
       >
         <form action={formAction}>
-          <CitizenInput name="sinisterId" autofocus />
+          <CitizenInput name="sinisterId" autoFocus />
 
           <NumberInput
             name="points"

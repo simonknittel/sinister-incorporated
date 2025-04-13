@@ -12,7 +12,7 @@ import { isAllowedToManageTask } from "../utils/isAllowedToTask";
 import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
-  id: z.string().cuid(),
+  id: z.union([z.string().cuid(), z.string().cuid2()]),
   assignmentLimit: z.coerce.number().min(1).optional(),
   assignedToIds: z.array(z.string().cuid()).optional(),
 });
