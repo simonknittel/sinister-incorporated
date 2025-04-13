@@ -3,6 +3,7 @@
 import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
+import { createId } from "@paralleldrive/cuid2";
 import { TaskRewardType, TaskVisibility } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
@@ -88,6 +89,19 @@ export const createTask = async (formData: FormData) => {
         requestPayload: formData,
       };
     if (
+      result.data.visibility === TaskVisibility.GROUP &&
+      !(await authentication.authorize("task", "create", [
+        {
+          key: "taskVisibility",
+          value: TaskVisibility.GROUP,
+        },
+      ]))
+    )
+      return {
+        error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
+        requestPayload: formData,
+      };
+    if (
       result.data.rewardType === TaskRewardType.NEW_SILC &&
       !(await authentication.authorize("task", "create", [
         {
@@ -104,35 +118,76 @@ export const createTask = async (formData: FormData) => {
     /**
      * Create task
      */
-    await prisma.task.create({
-      data: {
-        visibility: result.data.visibility,
-        assignmentLimit: result.data.assignmentLimit,
-        title: result.data.title,
-        description: result.data.description,
-        createdBy: {
-          connect: {
-            id: authentication.session.entityId,
-          },
-        },
-        expiresAt: result.data.expiresAt,
-        rewardType: result.data.rewardType,
-        rewardTypeTextValue: result.data.rewardTypeTextValue,
-        rewardTypeSilcValue: result.data.rewardTypeSilcValue,
-        rewardTypeNewSilcValue: result.data.rewardTypeNewSilcValue,
-        ...(result.data.visibility === TaskVisibility.PERSONALIZED && {
-          assignments: {
-            createMany: {
-              data:
-                result.data.assignedToIds?.map((id) => ({
-                  citizenId: id,
-                  createdById: authentication.session.entityId,
-                })) || [],
+    switch (result.data.visibility) {
+      case TaskVisibility.PUBLIC:
+      case TaskVisibility.GROUP:
+        await prisma.task.create({
+          data: {
+            visibility: result.data.visibility,
+            assignmentLimit: result.data.assignmentLimit,
+            title: result.data.title,
+            description: result.data.description,
+            createdBy: {
+              connect: {
+                id: authentication.session.entityId,
+              },
+            },
+            expiresAt: result.data.expiresAt,
+            rewardType: result.data.rewardType,
+            rewardTypeTextValue: result.data.rewardTypeTextValue,
+            rewardTypeSilcValue: result.data.rewardTypeSilcValue,
+            rewardTypeNewSilcValue: result.data.rewardTypeNewSilcValue,
+            assignments: {
+              createMany: {
+                data:
+                  result.data.assignedToIds?.map((id) => ({
+                    citizenId: id,
+                    createdById: authentication.session.entityId,
+                  })) || [],
+              },
             },
           },
-        }),
-      },
-    });
+        });
+        break;
+      case TaskVisibility.PERSONALIZED:
+        await prisma.$transaction([
+          ...result.data.assignedToIds!.flatMap((assignedToId) => {
+            const id = createId();
+            return [
+              prisma.task.create({
+                data: {
+                  id,
+                  visibility: result.data.visibility,
+                  assignmentLimit: result.data.assignmentLimit,
+                  title: result.data.title,
+                  description: result.data.description,
+                  createdById: authentication.session.entityId,
+                  expiresAt: result.data.expiresAt,
+                  rewardType: result.data.rewardType,
+                  rewardTypeTextValue: result.data.rewardTypeTextValue,
+                  rewardTypeSilcValue: result.data.rewardTypeSilcValue,
+                  rewardTypeNewSilcValue: result.data.rewardTypeNewSilcValue,
+                },
+              }),
+
+              prisma.taskAssignment.create({
+                data: {
+                  taskId: id,
+                  citizenId: assignedToId,
+                  createdById: authentication.session.entityId,
+                },
+              }),
+            ];
+          }),
+        ]);
+        break;
+
+      default:
+        return {
+          error: "Ungültige Anfrage",
+          requestPayload: formData,
+        };
+    }
 
     /**
      * Revalidate cache(s)

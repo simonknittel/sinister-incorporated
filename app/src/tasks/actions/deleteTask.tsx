@@ -12,7 +12,7 @@ import {
 import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
-  id: z.string().cuid(),
+  id: z.union([z.string().cuid(), z.string().cuid2()]),
 });
 
 export const deleteTask = createAuthenticatedAction(

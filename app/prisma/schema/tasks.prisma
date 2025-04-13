@@ -7,6 +7,7 @@ enum TaskRewardType {
 enum TaskVisibility {
   PUBLIC
   PERSONALIZED
+  GROUP
 }
 
 model Task {

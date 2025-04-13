@@ -47,7 +47,7 @@ export const OpenTasksList = ({ tasks }: Props) => {
               <div className="flex gap-2 items-baseline">
                 <h3 className="font-thin text-2xl">An mich personalisiert</h3>
                 <Tooltip triggerChildren={<FaInfoCircle />}>
-                  Diese Aufgaben wurden an dich adressiert und müssen von dir
+                  Diese Tasks wurden an dich adressiert und müssen von dir
                   erledigt werden.
                 </Tooltip>
               </div>
@@ -66,7 +66,7 @@ export const OpenTasksList = ({ tasks }: Props) => {
               <div className="flex gap-2 items-baseline">
                 <h3 className="font-thin text-2xl">Öffentlich</h3>
                 <Tooltip triggerChildren={<FaInfoCircle />}>
-                  Diese Aufgaben können von jedem angenommen und erfüllt werden.
+                  Diese Tasks können von jedem angenommen und erfüllt werden.
                 </Tooltip>
               </div>
 
