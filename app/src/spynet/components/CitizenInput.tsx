@@ -1,7 +1,9 @@
 "use client";
 
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
+import Button from "@/common/components/Button";
 import { CitizenLink } from "@/common/components/CitizenLink";
+import { SingleRole } from "@/common/components/SingleRole";
 import { api } from "@/trpc/react";
 import {
   Combobox,
@@ -10,9 +12,10 @@ import {
   ComboboxOptions,
 } from "@headlessui/react";
 import type { Entity } from "@prisma/client";
+import * as Popover from "@radix-ui/react-popover";
 import clsx from "clsx";
-import { useState } from "react";
-import { FaCheck, FaTrash } from "react-icons/fa";
+import { useRef, useState } from "react";
+import { FaCheck, FaTrash, FaUsers } from "react-icons/fa";
 
 type BaseProps = Readonly<{
   className?: string;
@@ -45,17 +48,15 @@ export const CitizenInput = ({
 }: Props) => {
   const [query, setQuery] = useState("");
 
-  const { isPending, data: allCitizens } = api.citizens.getAllCitizens.useQuery(
-    undefined,
-    {
+  const { isPending: isPendingAllCitizens, data: dataAllCitizens } =
+    api.citizens.getAllCitizens.useQuery(undefined, {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-    },
-  );
+    });
 
   const filteredCitizens =
-    allCitizens && query.trim()
-      ? allCitizens
+    dataAllCitizens && query.trim()
+      ? dataAllCitizens
           .filter((citizen) =>
             citizen.handle!.toLowerCase().includes(query.trim().toLowerCase()),
           )
@@ -70,12 +71,14 @@ export const CitizenInput = ({
         name={name}
         query={query}
         setQuery={setQuery}
-        isPending={isPending}
+        isPendingAllCitizens={isPendingAllCitizens}
         filteredCitizens={filteredCitizens}
         defaultValue={
           defaultValue
             ? (defaultValue
-                .map((id) => allCitizens?.find((citizen) => citizen.id === id))
+                .map((id) =>
+                  dataAllCitizens?.find((citizen) => citizen.id === id),
+                )
                 .filter(Boolean) as Entity[])
             : undefined
         }
@@ -87,12 +90,12 @@ export const CitizenInput = ({
       className={className}
       name={name}
       setQuery={setQuery}
-      isPending={isPending}
+      isPending={isPendingAllCitizens}
       filteredCitizens={filteredCitizens}
       disabled={disabled}
       defaultValue={
         defaultValue
-          ? allCitizens?.find((citizen) => citizen.id === defaultValue)
+          ? dataAllCitizens?.find((citizen) => citizen.id === defaultValue)
           : undefined
       }
       autoFocus={autoFocus}
@@ -181,7 +184,7 @@ type MultipleComponentProps = Readonly<{
   name: string;
   query: string;
   setQuery: (query: string) => void;
-  isPending: boolean;
+  isPendingAllCitizens: boolean;
   filteredCitizens: Entity[];
   defaultValue?: Entity[];
   autoFocus?: boolean;
@@ -192,16 +195,39 @@ const Multiple = ({
   name,
   query,
   setQuery,
-  isPending,
+  isPendingAllCitizens,
   filteredCitizens,
   defaultValue,
   autoFocus,
 }: MultipleComponentProps) => {
+  const authentication = useAuthentication();
+  if (!authentication) throw new Error("Forbidden");
+
+  const {
+    isPending: isPendingCitizensGroupedByVisibleRoles,
+    data: dataCitizensGroupedByVisibleRoles,
+  } = api.citizens.getCitizensGroupedByVisibleRoles.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+
   const [selectedCitizens, setSelectedCitizens] = useState<Entity[]>(
     defaultValue || [],
   );
-  const authentication = useAuthentication();
-  if (!authentication) throw new Error("Forbidden");
+
+  const isPending =
+    isPendingAllCitizens || isPendingCitizensGroupedByVisibleRoles;
+
+  const handleSelectRole = (roleId: string) => {
+    if (!dataCitizensGroupedByVisibleRoles) return;
+
+    setSelectedCitizens(
+      dataCitizensGroupedByVisibleRoles.get(roleId)?.citizens || [],
+    );
+  };
+  const [isOpen, setIsOpen] = useState(false);
+
+  const popoverPortalRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <div className={clsx(className)}>
@@ -210,42 +236,89 @@ const Multiple = ({
       {isPending ? (
         <div className="h-10 animate-pulse rounded bg-neutral-900" />
       ) : (
-        <Combobox
-          multiple
-          value={selectedCitizens}
-          onChange={(citizens) => {
-            setSelectedCitizens(citizens);
-            setQuery("");
-          }}
-          onClose={() => setQuery("")}
-        >
-          <ComboboxInput
-            autoFocus={autoFocus}
-            aria-label="Citizens"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            className="w-full rounded bg-neutral-900 py-2 pr-8 pl-2 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25"
-          />
-
-          <ComboboxOptions
-            anchor="bottom"
-            className="w-[var(--input-width)] rounded-b border border-sinister-red-500 bg-black p-1 [--anchor-gap:var(--spacing-1)] empty:invisible transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0 z-50"
+        <div className="flex gap-2">
+          <Combobox
+            multiple
+            value={selectedCitizens}
+            onChange={(citizens) => {
+              setSelectedCitizens(citizens);
+              setQuery("");
+            }}
+            onClose={() => setQuery("")}
           >
-            {filteredCitizens.map((citizen) => (
-              <ComboboxOption
-                key={citizen.id}
-                value={citizen}
-                className="group flex cursor-pointer items-center gap-2 rounded py-1 px-2 select-none data-[focus]:bg-white/20"
+            <ComboboxInput
+              autoFocus={autoFocus}
+              aria-label="Citizens"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              className="w-full rounded bg-neutral-900 py-2 pr-8 pl-2 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25"
+            />
+
+            <ComboboxOptions
+              anchor="bottom"
+              className="w-[var(--input-width)] rounded-b border border-sinister-red-500 bg-black p-1 [--anchor-gap:var(--spacing-1)] empty:invisible transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0 z-50"
+            >
+              {filteredCitizens.map((citizen) => (
+                <ComboboxOption
+                  key={citizen.id}
+                  value={citizen}
+                  className="group flex cursor-pointer items-center gap-2 rounded py-1 px-2 select-none data-[focus]:bg-white/20"
+                >
+                  <FaCheck className="invisible group-data-[selected]:visible text-sm text-sinister-red-500" />
+
+                  <div className="text-white text-sm">{citizen.handle!}</div>
+
+                  <div className="text-xs text-neutral-500">{citizen.id}</div>
+                </ComboboxOption>
+              ))}
+            </ComboboxOptions>
+          </Combobox>
+
+          <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+            <Popover.Trigger asChild>
+              <Button
+                type="button"
+                title="Rolle auswählen"
+                variant="secondary"
+                iconOnly
+                className="flex-none"
               >
-                <FaCheck className="invisible group-data-[selected]:visible text-sm text-sinister-red-500" />
+                <FaUsers />
+              </Button>
+            </Popover.Trigger>
 
-                <div className="text-white text-sm">{citizen.handle!}</div>
+            {/* eslint-disable-next-line react-compiler/react-compiler */}
+            <Popover.Portal container={popoverPortalRef.current}>
+              <Popover.Content sideOffset={4} side="top">
+                <div className="flex flex-col gap-2 p-4 rounded bg-neutral-800 border border-sinister-red-500 max-h-96 overflow-auto">
+                  {dataCitizensGroupedByVisibleRoles
+                    ? Array.from(dataCitizensGroupedByVisibleRoles.values())
+                        .toSorted((a, b) =>
+                          a.role.name.localeCompare(b.role.name),
+                        )
+                        .map(({ role }) => (
+                          <button
+                            key={role.id}
+                            type="button"
+                            onClick={() => handleSelectRole(role.id)}
+                            className="group"
+                          >
+                            <SingleRole
+                              role={role}
+                              showPlaceholder
+                              className="bg-transparent group-hover:bg-neutral-700/50 group-focus-visible:bg-neutral-700/50"
+                            />
+                          </button>
+                        ))
+                    : null}
+                </div>
 
-                <div className="text-xs text-neutral-500">{citizen.id}</div>
-              </ComboboxOption>
-            ))}
-          </ComboboxOptions>
-        </Combobox>
+                <Popover.Arrow className="fill-neutral-800" />
+              </Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
+          <div ref={popoverPortalRef} className="z-10" />
+        </div>
       )}
 
       <p className="text-xs mt-1 text-gray-400">Mehrfachauswahl möglich</p>
