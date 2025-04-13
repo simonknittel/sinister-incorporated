@@ -1,10 +1,13 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/common/actions/createAction";
+import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
+import { log } from "@/logging";
 import { updateCitizensSilcBalances } from "@/silc/utils/updateCitizensSilcBalances";
 import { TaskRewardType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { unstable_rethrow } from "next/navigation";
+import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { getTaskById } from "../queries";
 import { isAllowedToManageTask } from "../utils/isAllowedToTask";
@@ -12,22 +15,39 @@ import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
   id: z.union([z.string().cuid(), z.string().cuid2()]),
+  completionistIds: z.array(z.string().cuid()),
 });
 
-export const completeTask = createAuthenticatedAction(
-  "completeTask",
-  schema,
-  async (formData: FormData, authentication, data) => {
+export const completeTask = async (formData: FormData) => {
+  try {
+    /**
+     * Authenticate and authorize the request
+     */
+    const authentication = await authenticateAction("completeTask");
     if (!authentication.session.entityId)
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
+        requestPayload: formData,
+      };
+
+    /**
+     * Validate the request
+     */
+    const result = schema.safeParse({
+      id: formData.get("id"),
+      completionistIds: formData.getAll("completionistId[]"),
+    });
+    if (!result.success)
+      return {
+        error: "Ungültige Anfrage",
+        errorDetails: result.error,
         requestPayload: formData,
       };
 
     /**
      * Authorize the request
      */
-    const task = await getTaskById(data.id);
+    const task = await getTaskById(result.data.id);
     if (!task)
       return { error: "Task nicht gefunden", requestPayload: formData };
     if (!isTaskUpdatable(task))
@@ -41,10 +61,10 @@ export const completeTask = createAuthenticatedAction(
         requestPayload: formData,
       };
 
-    if (task.assignments.length <= 0)
+    if (result.data.completionistIds.length <= 0)
       return {
         error:
-          "Der Task kann nicht abgeschlossen werden, ohne dass ihn jemand angenommen hat.",
+          "Der Task kann nicht abgeschlossen werden, ohne dass ihn jemand erfüllt hat.",
         requestPayload: formData,
       };
 
@@ -53,7 +73,7 @@ export const completeTask = createAuthenticatedAction(
      */
     await prisma.task.update({
       where: {
-        id: data.id,
+        id: result.data.id,
       },
       data: {
         completedAt: new Date(),
@@ -63,8 +83,8 @@ export const completeTask = createAuthenticatedAction(
           },
         },
         completionists: {
-          connect: task.assignments.map((assignment) => ({
-            id: assignment.citizenId,
+          connect: result.data.completionistIds.map((id) => ({
+            id,
           })),
         },
       },
@@ -80,8 +100,8 @@ export const completeTask = createAuthenticatedAction(
       if (task.rewardType === TaskRewardType.SILC) {
         await prisma.$transaction([
           prisma.silcTransaction.createMany({
-            data: task.assignments.map((assignment) => ({
-              receiverId: assignment.citizenId,
+            data: result.data.completionistIds.map((receiverId) => ({
+              receiverId,
               value: task.rewardTypeSilcValue!,
               description: `Task erfüllt: ${task.title}`,
               createdById: authentication.session.entityId,
@@ -94,7 +114,8 @@ export const completeTask = createAuthenticatedAction(
                   data: {
                     receiverId: task.createdById,
                     value: -(
-                      task.rewardTypeSilcValue! * task.assignments.length
+                      task.rewardTypeSilcValue! *
+                      result.data.completionistIds.length
                     ),
                     description: `Task abgeschlossen: ${task.title}`,
                     createdById: authentication.session.entityId,
@@ -111,8 +132,8 @@ export const completeTask = createAuthenticatedAction(
           await updateCitizensSilcBalances([task.createdById]);
       } else if (task.rewardType === TaskRewardType.NEW_SILC) {
         await prisma.silcTransaction.createMany({
-          data: task.assignments.map((assignment) => ({
-            receiverId: assignment.citizenId,
+          data: result.data.completionistIds.map((receiverId) => ({
+            receiverId,
             value: task.rewardTypeNewSilcValue!,
             description: `Task erfüllt: ${task.title}`,
             createdById: authentication.session.entityId,
@@ -123,9 +144,7 @@ export const completeTask = createAuthenticatedAction(
       /**
        * Update citizens' balances
        */
-      await updateCitizensSilcBalances(
-        task.assignments.map((assignment) => assignment.citizenId),
-      );
+      await updateCitizensSilcBalances(result.data.completionistIds);
 
       /**
        * Revalidate cache(s)
@@ -144,7 +163,15 @@ export const completeTask = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gelöscht.",
+      success: "Erfolgreich abgeschlossen.",
     };
-  },
-);
+  } catch (error) {
+    unstable_rethrow(error);
+    void log.error("Internal Server Error", { error: serializeError(error) });
+    return {
+      error:
+        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+      requestPayload: formData,
+    };
+  }
+};

@@ -45,6 +45,14 @@ export default async function Page() {
               Erstelle eine Aufgabe und weise sie einer Gruppen von Citizen zu.
               Diese Aufgabe kann nur von ihnen gesehen und erfüllt werden.
             </p>
+
+            <p>
+              <strong>Task abschließen</strong>
+            </p>
+            <p>
+              Im Bestätigungsdialog wird nun zusätzlich abgefragt wer den Task
+              erfüllt hat.
+            </p>
           </DayItem>
         </Day>
 
