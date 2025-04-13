@@ -71,7 +71,7 @@ export const CreateManagers = (props: Props) => {
         <form action={formAction}>
           <input type="hidden" name="eventId" value={props.event.id} />
 
-          <CitizenInput name="managerId" multiple autofocus />
+          <CitizenInput name="managerId" multiple autoFocus />
 
           <div className="flex flex-col gap-2 mt-4">
             <Button type="submit" disabled={submitIsPending}>

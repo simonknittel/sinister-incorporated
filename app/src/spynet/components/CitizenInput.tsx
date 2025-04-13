@@ -18,7 +18,7 @@ type BaseProps = Readonly<{
   className?: string;
   name: string;
   disabled?: boolean;
-  autofocus?: boolean;
+  autoFocus?: boolean;
 }>;
 
 type SingleProps = BaseProps &
@@ -41,7 +41,7 @@ export const CitizenInput = ({
   disabled,
   multiple,
   defaultValue,
-  autofocus,
+  autoFocus,
 }: Props) => {
   const [query, setQuery] = useState("");
 
@@ -79,7 +79,7 @@ export const CitizenInput = ({
                 .filter(Boolean) as Entity[])
             : undefined
         }
-        autofocus={autofocus}
+        autoFocus={autoFocus}
       />
     );
   return (
@@ -95,7 +95,7 @@ export const CitizenInput = ({
           ? allCitizens?.find((citizen) => citizen.id === defaultValue)
           : undefined
       }
-      autofocus={autofocus}
+      autoFocus={autoFocus}
     />
   );
 };
@@ -108,7 +108,7 @@ type SingleComponentProps = Readonly<{
   filteredCitizens: Entity[];
   defaultValue?: Entity;
   disabled?: boolean;
-  autofocus?: boolean;
+  autoFocus?: boolean;
 }>;
 
 const Single = ({
@@ -119,7 +119,7 @@ const Single = ({
   filteredCitizens,
   defaultValue,
   disabled,
-  autofocus,
+  autoFocus,
 }: SingleComponentProps) => {
   const [selectedCitizen, setSelectedCitizen] = useState<Entity | null>(
     defaultValue || null,
@@ -140,7 +140,7 @@ const Single = ({
           onClose={() => setQuery("")}
         >
           <ComboboxInput
-            autoFocus={autofocus}
+            autoFocus={autoFocus}
             aria-label="Citizen"
             displayValue={(citizen: Entity) => citizen?.handle || ""}
             onChange={(event) => setQuery(event.target.value)}
@@ -184,7 +184,7 @@ type MultipleComponentProps = Readonly<{
   isPending: boolean;
   filteredCitizens: Entity[];
   defaultValue?: Entity[];
-  autofocus?: boolean;
+  autoFocus?: boolean;
 }>;
 
 const Multiple = ({
@@ -195,7 +195,7 @@ const Multiple = ({
   isPending,
   filteredCitizens,
   defaultValue,
-  autofocus,
+  autoFocus,
 }: MultipleComponentProps) => {
   const [selectedCitizens, setSelectedCitizens] = useState<Entity[]>(
     defaultValue || [],
@@ -220,7 +220,7 @@ const Multiple = ({
           onClose={() => setQuery("")}
         >
           <ComboboxInput
-            autoFocus={autofocus}
+            autoFocus={autoFocus}
             aria-label="Citizens"
             value={query}
             onChange={(event) => setQuery(event.target.value)}

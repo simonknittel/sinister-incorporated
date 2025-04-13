@@ -84,7 +84,7 @@ export const CompleteTask = ({ className, task }: Props) => {
           <CitizenInput
             name="completionistId"
             multiple
-            autofocus
+            autoFocus
             defaultValue={task.assignments.map(
               (assignment) => assignment.citizenId,
             )}

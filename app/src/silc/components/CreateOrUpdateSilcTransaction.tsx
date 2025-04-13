@@ -126,10 +126,10 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
               name="receiverId"
               defaultValue={props.transaction.receiverId}
               disabled
-              autofocus
+              autoFocus
             />
           ) : (
-            <CitizenInput name="receiverId" multiple autofocus />
+            <CitizenInput name="receiverId" multiple autoFocus />
           )}
 
           <NumberInput
