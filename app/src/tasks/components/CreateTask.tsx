@@ -29,7 +29,7 @@ export const CreateTask = ({ className, cta }: Props) => {
   const showPersonalizedAndGroup = authentication.authorize("task", "create", [
     {
       key: "taskVisibility",
-      value: `${TaskVisibility.PERSONALIZED},${TaskVisibility.GROUP}`,
+      value: `${TaskVisibility.PERSONALIZED}`,
     },
   ]);
   const showNewSilc = authentication.authorize("task", "create", [

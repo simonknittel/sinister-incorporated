@@ -79,18 +79,18 @@ function hasMatchingAttributes(
       if (hasMatchingAttribute) continue;
 
       return false;
-    } else {
-      const hasMatchingAttribute = givenAttributes.find(
-        (givenAttribute) =>
-          givenAttribute.key === requiredAttribute.key &&
-          (givenAttribute.value === requiredAttribute.value ||
-            givenAttribute.value === "*"),
-      );
-
-      if (hasMatchingAttribute) continue;
-
-      return false;
     }
+
+    const hasMatchingAttribute = givenAttributes.find(
+      (givenAttribute) =>
+        givenAttribute.key === requiredAttribute.key &&
+        (givenAttribute.value === requiredAttribute.value ||
+          givenAttribute.value === "*"),
+    );
+
+    if (hasMatchingAttribute) continue;
+
+    return false;
   }
 
   return true;

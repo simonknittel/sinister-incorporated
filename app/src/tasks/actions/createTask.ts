@@ -29,6 +29,7 @@ export const createTask = async (formData: FormData) => {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("createTask");
+    await authentication.authorizeAction("task", "create");
     if (!authentication.session.entityId)
       return {
         error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
@@ -76,24 +77,12 @@ export const createTask = async (formData: FormData) => {
      * Authorize the request
      */
     if (
-      result.data.visibility === TaskVisibility.PERSONALIZED &&
+      (result.data.visibility === TaskVisibility.PERSONALIZED ||
+        result.data.visibility === TaskVisibility.GROUP) &&
       !(await authentication.authorize("task", "create", [
         {
           key: "taskVisibility",
           value: TaskVisibility.PERSONALIZED,
-        },
-      ]))
-    )
-      return {
-        error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
-        requestPayload: formData,
-      };
-    if (
-      result.data.visibility === TaskVisibility.GROUP &&
-      !(await authentication.authorize("task", "create", [
-        {
-          key: "taskVisibility",
-          value: TaskVisibility.GROUP,
         },
       ]))
     )
@@ -149,6 +138,7 @@ export const createTask = async (formData: FormData) => {
           },
         });
         break;
+
       case TaskVisibility.PERSONALIZED:
         await prisma.$transaction([
           ...result.data.assignedToIds!.flatMap((assignedToId) => {

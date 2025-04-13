@@ -15,6 +15,7 @@ type Props = Readonly<{
 export const OpenTasksList = ({ tasks }: Props) => {
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
+  const showCreateTask = authentication.authorize("task", "create");
 
   const createdBy = Object.groupBy(tasks, (task) =>
     task.createdById === authentication.session.entityId ? "me" : "others",
@@ -26,9 +27,9 @@ export const OpenTasksList = ({ tasks }: Props) => {
 
   return (
     <TaskVisibilityProvider items={tasks}>
-      <CreateTask cta className="mx-auto" />
+      {showCreateTask && <CreateTask cta className="mx-auto mb-4" />}
 
-      <ToggleAll className="justify-center mt-4" />
+      <ToggleAll className="justify-center" />
 
       <div className="flex flex-col gap-6">
         {createdBy.me && createdBy.me.length > 0 && (
