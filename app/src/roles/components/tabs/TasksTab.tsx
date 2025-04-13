@@ -53,25 +53,7 @@ export const TasksTab = () => {
           </div>
 
           <YesNoCheckbox
-            {...register(
-              `task;create;taskVisibility=${TaskVisibility.PUBLIC};taskRewardType=other`,
-            )}
-          />
-        </div>
-
-        <div className="py-2 flex justify-between items-center gap-2 mt-2">
-          <div>
-            <h4 className="font-bold">Öffentlich mit neuen SILC</h4>
-            <p className="text-sm text-neutral-400">
-              Citizen mit dieser Berechtigung können einen öffentlichen Task
-              erstellen, welcher neue SILC als Belohnung hat.
-            </p>
-          </div>
-
-          <YesNoCheckbox
-            {...register(
-              `task;create;taskVisibility=${TaskVisibility.PUBLIC};taskRewardType=${TaskRewardType.NEW_SILC}`,
-            )}
+            {...register(`task;create;taskVisibility=${TaskVisibility.PUBLIC}`)}
           />
         </div>
 
@@ -86,16 +68,14 @@ export const TasksTab = () => {
 
           <YesNoCheckbox
             {...register(
-              `task;create;taskVisibility=${TaskVisibility.PERSONALIZED},${TaskVisibility.GROUP};taskRewardType=other`,
+              `task;create;taskVisibility=${TaskVisibility.PERSONALIZED}`,
             )}
           />
         </div>
 
         <div className="py-2 flex justify-between items-center gap-2 mt-2">
           <div>
-            <h4 className="font-bold">
-              Personalisiert oder Gruppe mit neuen SILC
-            </h4>
+            <h4 className="font-bold">Mit neuen SILC</h4>
             <p className="text-sm text-neutral-400">
               Citizen mit dieser Berechtigung können einen personalisierten oder
               Gruppen-Task erstellen, welcher neue SILC als Belohnung hat.
@@ -104,7 +84,7 @@ export const TasksTab = () => {
 
           <YesNoCheckbox
             {...register(
-              `task;create;taskVisibility=${TaskVisibility.PERSONALIZED},${TaskVisibility.GROUP};taskRewardType=${TaskRewardType.NEW_SILC}`,
+              `task;create;taskVisibility=${TaskVisibility.PERSONALIZED};taskRewardType=${TaskRewardType.NEW_SILC}`,
             )}
           />
         </div>
