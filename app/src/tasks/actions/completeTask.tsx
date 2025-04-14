@@ -4,7 +4,8 @@ import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { updateCitizensSilcBalances } from "@/silc/utils/updateCitizensSilcBalances";
-import { TaskRewardType } from "@prisma/client";
+import { createId } from "@paralleldrive/cuid2";
+import { TaskRewardType, TaskVisibility } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
@@ -152,6 +153,106 @@ export const completeTask = async (formData: FormData) => {
       revalidatePath("/app/silc");
       revalidatePath("/app/silc/transactions");
       revalidatePath("/app/dashboard");
+    }
+
+    if (task.repeatable && task.repeatable > 1) {
+      /**
+       * Create task
+       */
+      switch (task.visibility) {
+        case TaskVisibility.PUBLIC:
+          await prisma.task.create({
+            data: {
+              visibility: task.visibility,
+              assignmentLimit: task.assignmentLimit,
+              title: task.title,
+              description: task.description,
+              createdBy: {
+                connect: {
+                  id: authentication.session.entityId,
+                },
+              },
+              expiresAt: task.expiresAt,
+              rewardType: task.rewardType,
+              rewardTypeTextValue: task.rewardTypeTextValue,
+              rewardTypeSilcValue: task.rewardTypeSilcValue,
+              rewardTypeNewSilcValue: task.rewardTypeNewSilcValue,
+              repeatable: task.repeatable - 1,
+            },
+          });
+          break;
+
+        case TaskVisibility.GROUP:
+          await prisma.task.create({
+            data: {
+              visibility: task.visibility,
+              assignmentLimit: task.assignmentLimit,
+              title: task.title,
+              description: task.description,
+              createdBy: {
+                connect: {
+                  id: authentication.session.entityId,
+                },
+              },
+              expiresAt: task.expiresAt,
+              rewardType: task.rewardType,
+              rewardTypeTextValue: task.rewardTypeTextValue,
+              rewardTypeSilcValue: task.rewardTypeSilcValue,
+              rewardTypeNewSilcValue: task.rewardTypeNewSilcValue,
+              assignments: {
+                createMany: {
+                  data:
+                    task.assignments.map((assignment) => ({
+                      citizenId: assignment.citizenId,
+                      createdById: authentication.session.entityId,
+                    })) || [],
+                },
+              },
+              repeatable: task.repeatable - 1,
+            },
+          });
+          break;
+
+        case TaskVisibility.PERSONALIZED:
+          await prisma.$transaction([
+            ...task.assignments.flatMap((assignment) => {
+              const id = createId();
+              return [
+                prisma.task.create({
+                  data: {
+                    id,
+                    visibility: task.visibility,
+                    assignmentLimit: task.assignmentLimit,
+                    title: task.title,
+                    description: task.description,
+                    createdById: authentication.session.entityId,
+                    expiresAt: task.expiresAt,
+                    rewardType: task.rewardType,
+                    rewardTypeTextValue: task.rewardTypeTextValue,
+                    rewardTypeSilcValue: task.rewardTypeSilcValue,
+                    rewardTypeNewSilcValue: task.rewardTypeNewSilcValue,
+                    repeatable: task.repeatable! - 1,
+                  },
+                }),
+
+                prisma.taskAssignment.create({
+                  data: {
+                    taskId: id,
+                    citizenId: assignment.citizenId,
+                    createdById: authentication.session.entityId,
+                  },
+                }),
+              ];
+            }),
+          ]);
+          break;
+
+        default:
+          return {
+            error: "Ungültige Anfrage",
+            requestPayload: formData,
+          };
+      }
     }
 
     /**

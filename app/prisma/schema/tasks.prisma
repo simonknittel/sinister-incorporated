@@ -34,6 +34,7 @@ model Task {
   completedById          String?
   completedBy            Entity?        @relation("completedBy", fields: [completedById], references: [id], onDelete: SetNull)
   completionists         Entity[]       @relation("completionists")
+  repeatable             Int            @default(1)
 
   assignments TaskAssignment[]
 }

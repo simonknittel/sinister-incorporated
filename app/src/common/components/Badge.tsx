@@ -7,9 +7,17 @@ type Props = Readonly<{
   value: string;
   showLabel?: boolean;
   icon?: ReactNode;
+  cta?: ReactNode;
 }>;
 
-export const Badge = ({ className, label, value, showLabel, icon }: Props) => {
+export const Badge = ({
+  className,
+  label,
+  value,
+  showLabel,
+  icon,
+  cta,
+}: Props) => {
   return (
     <div
       className={clsx(
@@ -36,6 +44,8 @@ export const Badge = ({ className, label, value, showLabel, icon }: Props) => {
           {value}
         </span>
       </div>
+
+      {cta && <span className="text-xs">{cta}</span>}
     </div>
   );
 };
