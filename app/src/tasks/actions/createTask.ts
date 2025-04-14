@@ -21,6 +21,7 @@ const schema = z.object({
   rewardTypeTextValue: z.string().trim().max(128).optional(),
   rewardTypeSilcValue: z.coerce.number().min(1).optional(),
   rewardTypeNewSilcValue: z.coerce.number().min(1).optional(),
+  repeatable: z.coerce.number().min(1),
 });
 
 export const createTask = async (formData: FormData) => {
@@ -65,6 +66,7 @@ export const createTask = async (formData: FormData) => {
       rewardTypeNewSilcValue: formData.has("rewardTypeNewSilcValue")
         ? formData.get("rewardTypeNewSilcValue")
         : undefined,
+      repeatable: formData.get("repeatable"),
     });
     if (!result.success)
       return {
@@ -109,6 +111,27 @@ export const createTask = async (formData: FormData) => {
      */
     switch (result.data.visibility) {
       case TaskVisibility.PUBLIC:
+        await prisma.task.create({
+          data: {
+            visibility: result.data.visibility,
+            assignmentLimit: result.data.assignmentLimit,
+            title: result.data.title,
+            description: result.data.description,
+            createdBy: {
+              connect: {
+                id: authentication.session.entityId,
+              },
+            },
+            expiresAt: result.data.expiresAt,
+            rewardType: result.data.rewardType,
+            rewardTypeTextValue: result.data.rewardTypeTextValue,
+            rewardTypeSilcValue: result.data.rewardTypeSilcValue,
+            rewardTypeNewSilcValue: result.data.rewardTypeNewSilcValue,
+            repeatable: result.data.repeatable,
+          },
+        });
+        break;
+
       case TaskVisibility.GROUP:
         await prisma.task.create({
           data: {
@@ -129,12 +152,13 @@ export const createTask = async (formData: FormData) => {
             assignments: {
               createMany: {
                 data:
-                  result.data.assignedToIds?.map((id) => ({
+                  result.data.assignedToIds!.map((id) => ({
                     citizenId: id,
                     createdById: authentication.session.entityId,
                   })) || [],
               },
             },
+            repeatable: result.data.repeatable,
           },
         });
         break;
@@ -157,6 +181,7 @@ export const createTask = async (formData: FormData) => {
                   rewardTypeTextValue: result.data.rewardTypeTextValue,
                   rewardTypeSilcValue: result.data.rewardTypeSilcValue,
                   rewardTypeNewSilcValue: result.data.rewardTypeNewSilcValue,
+                  repeatable: result.data.repeatable,
                 },
               }),
 

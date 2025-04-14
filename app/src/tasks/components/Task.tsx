@@ -7,6 +7,7 @@ import { CitizenLink } from "@/common/components/CitizenLink";
 import { EditableDateTimeInput } from "@/common/components/form/EditableDateTimeInput";
 import { EditableInput } from "@/common/components/form/EditableInput";
 import { EditableTextarea } from "@/common/components/form/EditableTextarea";
+import { Tooltip } from "@/common/components/Tooltip";
 import { formatDate } from "@/common/utils/formatDate";
 import {
   TaskRewardType,
@@ -17,7 +18,7 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import type { ReactNode } from "react";
-import { FaClock } from "react-icons/fa";
+import { FaClock, FaInfoCircle } from "react-icons/fa";
 import { updateTaskDescription } from "../actions/updateTaskDescription";
 import { updateTaskExpiresAt } from "../actions/updateTaskExpiresAt";
 import { updateTaskRewardTypeNewSilcValue } from "../actions/updateTaskRewardTypeNewSilcValue";
@@ -35,6 +36,7 @@ import { DeleteTask } from "./DeleteTask";
 import { useTaskVisibility } from "./TaskVisibilityContext";
 import { ToggleAssignmentForCurrentUser } from "./ToggleAssignmentForCurrentUser";
 import { UpdateTaskAssignments } from "./UpdateTaskAssignments";
+import { UpdateTaskRepeatable } from "./UpdateTaskRepeatable";
 
 type Props = Readonly<{
   className?: string;
@@ -77,6 +79,15 @@ export const Task = ({ className, task }: Props) => {
         value={formatDate(task.expiresAt)!}
         icon={<FaClock />}
         className="text-sm"
+      />,
+    );
+  }
+  if (task.repeatable && task.repeatable > 1) {
+    badges.push(
+      <Badge
+        key="repeatable"
+        label="Wiederholbar"
+        value={`${task.repeatable}x`}
       />,
     );
   }
@@ -189,7 +200,7 @@ export const Task = ({ className, task }: Props) => {
               )}
               <div className="flex gap-3 items-center">
                 {task.assignments.length > 0 ? (
-                  <div className="flex gap-x-3 gap-y-1">
+                  <div className="flex flex-wrap gap-x-3 gap-y-1">
                     {task.assignments.map((assignment) => (
                       <CitizenLink
                         key={assignment.id}
@@ -258,6 +269,23 @@ export const Task = ({ className, task }: Props) => {
               ) : (
                 formatDate(task.expiresAt) || "-"
               )}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex flex-col items-start p-2">
+              <span className="text-neutral-400 text-sm flex items-center gap-1">
+                Wiederholungen
+                <Tooltip triggerChildren={<FaInfoCircle />}>
+                  Wie häufig kann dieser Task abgeschlossen werden?
+                </Tooltip>
+              </span>
+              <div className="flex gap-2 items-center">
+                {task.repeatable}x
+                {isTaskUpdatable && isAllowedToManageTask && (
+                  <UpdateTaskRepeatable task={task} />
+                )}
+              </div>
             </div>
           </div>
 

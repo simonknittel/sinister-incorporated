@@ -34,6 +34,21 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="14. April 2025">
+          <DayItem heading="Tasks">
+            <p>Weiterentwicklung des neuen Tasks System</p>
+
+            <p>
+              <strong>Wiederholungen</strong>
+            </p>
+            <p>
+              Für Tasks kann nun eingestellt werden wie häufig dieser wiederholt
+              werden kann. Wenn ein wiederholbarer Task abgeschlossen, wird
+              dieser automatisiert dupliziert und neu erstellt.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="13. April 2025">
           <DayItem heading="Tasks">
             <p>Weiterentwicklung des neuen Tasks System</p>

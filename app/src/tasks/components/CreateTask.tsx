@@ -272,6 +272,19 @@ export const CreateTask = ({ className, cta }: Props) => {
             className="mt-4"
           />
 
+          <NumberInput
+            name="repeatable"
+            label="Wie häufig kann dieser Task abgeschlossen werden?"
+            defaultValue={
+              state?.requestPayload?.has("repeatable")
+                ? (state.requestPayload.get("repeatable") as string)
+                : 1
+            }
+            required
+            min={1}
+            className="mt-4"
+          />
+
           <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
             {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Speichern
