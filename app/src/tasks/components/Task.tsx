@@ -200,7 +200,7 @@ export const Task = ({ className, task }: Props) => {
               )}
               <div className="flex gap-3 items-center">
                 {task.assignments.length > 0 ? (
-                  <div className="flex gap-x-3 gap-y-1">
+                  <div className="flex flex-wrap gap-x-3 gap-y-1">
                     {task.assignments.map((assignment) => (
                       <CitizenLink
                         key={assignment.id}
