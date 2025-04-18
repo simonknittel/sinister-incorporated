@@ -1,6 +1,5 @@
 {
   "name": "app",
-  "version": "0.1.0",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -8,9 +7,7 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
-    "test": "vitest run --coverage",
-    "db:push": "prisma db push",
-    "db:generate": "prisma generate"
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@algolia/autocomplete-js": "1.18.1",
@@ -109,5 +106,6 @@
   "overrides": {
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1"
-  }
+  },
+  "packageManager": "pnpm@10.8.1"
 }
