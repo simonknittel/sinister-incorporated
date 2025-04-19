@@ -8,15 +8,14 @@
 ## Setup
 
 1. Clone the repository
-2. (Optional) Append `./git-hooks/post-merge` to [.git/hooks/post-merge](../.git/hooks/post-merge)
-3. Configure environment variables: Duplicate [app/.env.example](../app/.env.example) to [app/.env](../app/.env) and fill in the blanks.
-4. Start up the database: `docker compose up`
-5. Open a second terminal and change to `app` directory: `cd app`
-6. Install required Node.js version: `nvm install`
-7. Install dependencies: `npm ci`
-8. Update the database's schema: `npx prisma migrate dev`
-9. Run the app: `npm run dev`
-10. Access the app at: <http://localhost:3000>
+2. Configure environment variables: Duplicate [app/.env.example](../app/.env.example) to [app/.env](../app/.env) and fill in the blanks.
+3. Start up the database: `docker compose up`
+4. Open a second terminal and change to `app` directory: `cd app`
+5. Install required Node.js version: `nvm install`
+6. Install dependencies: `npm ci`
+7. Update the database's schema: `npx prisma migrate dev`
+8. Run the app: `npm run dev`
+9. Access the app at: <http://localhost:3000>
 
 ### (Experimental) Dev Container
 
