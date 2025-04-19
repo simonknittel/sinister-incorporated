@@ -3,12 +3,12 @@ import { getAllClassificationLevels } from "@/spynet/queries";
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
 import clsx from "clsx";
 
-type Props = Readonly<{
-  className?: string;
-  note: EntityLog & {
-    attributes: EntityLogAttribute[];
+interface Props {
+  readonly className?: string;
+  readonly note: EntityLog & {
+    readonly attributes: EntityLogAttribute[];
   };
-}>;
+}
 
 export const ClassificationLevel = async ({ className, note }: Props) => {
   const allClassificationLevels = await getAllClassificationLevels();

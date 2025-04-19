@@ -8,9 +8,9 @@ import { useEffect, useState, type FormEventHandler } from "react";
 import toast from "react-hot-toast";
 import { FaBell } from "react-icons/fa";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const NotificationsTooltip = ({ className }: Props) => {
   const { interests, setInterests } = useBeamsContext();

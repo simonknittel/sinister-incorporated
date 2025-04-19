@@ -12,12 +12,12 @@ import toast from "react-hot-toast";
 import { FaCheck, FaSave, FaSpinner } from "react-icons/fa";
 import { completeTask } from "../actions/completeTask";
 
-type Props = Readonly<{
-  className?: string;
-  task: Task & {
+interface Props {
+  readonly className?: string;
+  readonly task: Task & {
     assignments: TaskAssignment[];
   };
-}>;
+}
 
 export const CompleteTask = ({ className, task }: Props) => {
   const [isOpen, setIsOpen] = useState(false);

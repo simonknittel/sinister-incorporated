@@ -5,10 +5,10 @@ import { useState } from "react";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { usePermissionsContext } from "../../PermissionsContext";
 
-type Props = Readonly<{
-  className?: string;
-  roles: Role[];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly roles: Role[];
+}
 
 export const RoleSection = ({ className, roles }: Props) => {
   const { permissionStrings } = usePermissionsContext();

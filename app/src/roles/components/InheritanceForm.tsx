@@ -9,15 +9,15 @@ import { useActionState } from "react";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import { updateRoleInheritance } from "../actions/updateRoleInheritance";
 
-type Props = Readonly<{
-  className?: string;
-  currentRole: Role & {
-    inherits: Role[];
+interface Props {
+  readonly className?: string;
+  readonly currentRole: Role & {
+    readonly inherits: Role[];
   };
-  roles: (Role & {
-    icon: Upload | null;
+  readonly roles: (Role & {
+    readonly icon: Upload | null;
   })[];
-}>;
+}
 
 export const InheritanceForm = ({ className, currentRole, roles }: Props) => {
   const [state, formAction, isPending] = useActionState(

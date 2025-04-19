@@ -28,10 +28,10 @@ type PositionType = EventPosition & {
   childPositions?: PositionType[];
 };
 
-type Props = Readonly<{
-  children: ReactNode;
-  items: PositionType[];
-}>;
+interface Props {
+  readonly children: ReactNode;
+  readonly items: PositionType[];
+}
 
 export const LineupVisibilityProvider = ({ children, items }: Props) => {
   const [openItems, setOpenItems] = useLocalStorage<EventPosition["id"][]>(

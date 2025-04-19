@@ -28,10 +28,10 @@ export type Row = Readonly<{
   };
 }>;
 
-type Props = Readonly<{
-  rows: Row[];
-  searchParams: URLSearchParams;
-}>;
+interface Props {
+  readonly rows: Row[];
+  readonly searchParams: URLSearchParams;
+}
 
 export const NotesTable = ({ rows, searchParams }: Props) => {
   const createdAtSearchParams = new URLSearchParams(searchParams);

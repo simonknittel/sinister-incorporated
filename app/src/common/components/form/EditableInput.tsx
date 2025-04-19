@@ -6,19 +6,19 @@ import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
 import { useOutsideClick } from "../../utils/useOutsideClick";
 
-type Props = Readonly<{
-  className?: string;
-  rowId: string;
-  columnName: string;
-  initialValue: string | number;
-  action: (formData: FormData) => Promise<
+interface Props {
+  readonly className?: string;
+  readonly rowId: string;
+  readonly columnName: string;
+  readonly initialValue: string | number;
+  readonly action: (formData: FormData) => Promise<
     | {
         success: string;
       }
     | { error: string; errorDetails?: unknown }
   >;
-  type?: Exclude<ComponentProps<"input">["type"], "datetime-local">;
-}>;
+  readonly type?: Exclude<ComponentProps<"input">["type"], "datetime-local">;
+}
 
 export const EditableInput = ({
   className,

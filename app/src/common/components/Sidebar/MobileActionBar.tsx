@@ -20,9 +20,9 @@ import { Account } from "./Account";
 import { MobileActionBarFlyout } from "./MobileActionBarFlyout";
 import { RedBar } from "./RedBar";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const MobileActionBar = async ({ className }: Props) => {
   const authentication = await requireAuthentication();

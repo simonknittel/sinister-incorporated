@@ -18,12 +18,12 @@ import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteShipAction } from "../actions/deleteShipAction";
 
-type Props = Readonly<{
-  className?: string;
-  ship: Ship & {
+interface Props {
+  readonly className?: string;
+  readonly ship: Ship & {
     variant: Variant;
   };
-}>;
+}
 
 export const DeleteShip = ({ className, ship }: Props) => {
   const [isPending, startTransition] = useTransition();

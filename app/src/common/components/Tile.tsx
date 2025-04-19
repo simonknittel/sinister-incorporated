@@ -1,14 +1,14 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
-type Props = Readonly<{
-  className?: string;
-  heading: ReactNode;
-  cta?: ReactNode;
-  children: ReactNode;
-  childrenClassName?: string;
-  transparent?: boolean;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly heading: ReactNode;
+  readonly cta?: ReactNode;
+  readonly children: ReactNode;
+  readonly childrenClassName?: string;
+  readonly transparent?: boolean;
+}
 
 export const Tile = ({
   className,

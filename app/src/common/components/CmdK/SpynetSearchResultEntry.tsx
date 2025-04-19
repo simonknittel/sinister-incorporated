@@ -2,10 +2,10 @@ import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
 import { type Hit } from "../../../spynet/components/SpynetSearchTile/Search";
 
-type Props = Readonly<{
-  hit: Hit;
-  onSelect?: () => void;
-}>;
+interface Props {
+  readonly hit: Hit;
+  readonly onSelect?: () => void;
+}
 
 export const SpynetSearchResultEntry = ({ hit, onSelect }: Props) => {
   const router = useRouter();

@@ -3,10 +3,10 @@
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 
-type Props = Readonly<{
-  className?: string;
-  enabled?: boolean;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly enabled?: boolean;
+}
 
 export const AdminEnabler = ({ className, enabled = false }: Props) => {
   const router = useRouter();

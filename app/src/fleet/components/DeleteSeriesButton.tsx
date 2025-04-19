@@ -19,10 +19,10 @@ import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteSeries } from "../actions/deleteSeries";
 
-type Props = Readonly<{
-  className?: string;
-  series: Pick<Series, "id" | "name">;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly series: Pick<Series, "id" | "name">;
+}
 
 export const DeleteSeriesButton = ({ className, series }: Props) => {
   const [isPending, startTransition] = useTransition();

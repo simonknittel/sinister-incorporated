@@ -16,12 +16,12 @@ const PermissionsContext = createContext<
   PermissionsContextInterface | undefined
 >(undefined);
 
-type Props = Readonly<{
-  children: ReactNode;
-  role: Role & {
+interface Props {
+  readonly children: ReactNode;
+  readonly role: Role & {
     permissionStrings: PermissionString[];
   };
-}>;
+}
 
 export const PermissionsProvider = ({ children, role }: Props) => {
   const permissionStrings = useMemo(

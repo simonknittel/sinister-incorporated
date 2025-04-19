@@ -4,9 +4,9 @@ import clsx from "clsx";
 import { getSilcTransactionsOfAllCitizens } from "../queries";
 import { SilcTransactionsTableClient } from "./SilcTransactionsTableClient";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const AllSilcTransactionsTable = async ({ className }: Props) => {
   const authentication = await requireAuthentication();

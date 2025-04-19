@@ -13,18 +13,21 @@ import toast from "react-hot-toast";
 import { resetEventPositionCitizenId } from "../actions/resetEventPositionCitizenId";
 import { updateEventPositionCitizenId } from "../actions/updateEventPositionCitizenId";
 
-type Props = Readonly<{
-  className?: string;
-  position: EventPosition;
-  citizensSatisfyingRequirements: { citizen: Entity; ships: Ship[] }[];
-  citizensNotSatisfyingRequirements: { citizen: Entity; ships: Ship[] }[];
-  applicationsSatisfyingRequirements: (EventPositionApplication & {
+interface Props {
+  readonly className?: string;
+  readonly position: EventPosition;
+  readonly citizensSatisfyingRequirements: { citizen: Entity; ships: Ship[] }[];
+  readonly citizensNotSatisfyingRequirements: {
+    citizen: Entity;
+    ships: Ship[];
+  }[];
+  readonly applicationsSatisfyingRequirements: (EventPositionApplication & {
     citizen: Entity;
   })[];
-  applicationsNotSatisfyingRequirements: (EventPositionApplication & {
+  readonly applicationsNotSatisfyingRequirements: (EventPositionApplication & {
     citizen: Entity;
   })[];
-}>;
+}
 
 export const UpdateEventPositionCitizenId = ({
   className,

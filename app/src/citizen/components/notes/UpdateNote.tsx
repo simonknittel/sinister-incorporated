@@ -4,11 +4,11 @@ import { getCreatableClassificationLevelsDeduped } from "@/spynet/utils/getAllCl
 import { type EntityLog, type EntityLogAttribute } from "@prisma/client";
 import { UpdateNoteModal } from "./UpdateNoteModal";
 
-type Props = Readonly<{
-  note: EntityLog & {
+interface Props {
+  readonly note: EntityLog & {
     attributes: EntityLogAttribute[];
   };
-}>;
+}
 
 export const UpdateNote = async ({ note }: Props) => {
   const { noteTypeId } = getLatestNoteAttributes(note);

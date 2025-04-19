@@ -3,14 +3,14 @@ import type { Manufacturer, Upload, Variant } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 
-type Props = Readonly<{
-  className?: string;
-  variant: Variant;
-  manufacturer: Manufacturer & {
+interface Props {
+  readonly className?: string;
+  readonly variant: Variant;
+  readonly manufacturer: Manufacturer & {
     image: Upload | null;
   };
-  size?: 32 | 48;
-}>;
+  readonly size?: 32 | 48;
+}
 
 export const VariantWithLogo = ({
   className,

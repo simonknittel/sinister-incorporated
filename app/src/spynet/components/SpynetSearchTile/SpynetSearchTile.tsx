@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { Search } from "./Search";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const SpynetSearchTile = ({ className }: Props) => {
   return (

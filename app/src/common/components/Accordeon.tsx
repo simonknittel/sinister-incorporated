@@ -2,10 +2,9 @@ import clsx from "clsx";
 import type { ComponentProps } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
-type Props = ComponentProps<"button"> &
-  Readonly<{
-    isOpen: boolean;
-  }>;
+interface Props extends ComponentProps<"button"> {
+  readonly isOpen: boolean;
+}
 
 export const AccordeonToggle = (props: Props) => {
   const { className, isOpen, ...rest } = props;

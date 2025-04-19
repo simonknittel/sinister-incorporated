@@ -4,13 +4,13 @@ import { type Role } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
 
-type Props = Readonly<{
-  className?: string;
-  role: Role & {
+interface Props {
+  readonly className?: string;
+  readonly role: Role & {
     icon: Upload | null;
   };
-  showPlaceholder?: boolean;
-}>;
+  readonly showPlaceholder?: boolean;
+}
 
 export const SingleRole = ({
   className,

@@ -4,13 +4,13 @@ import type { Entity, PenaltyEntry as PenaltyEntryType } from "@prisma/client";
 import clsx from "clsx";
 import { DeletePenaltyEntry } from "./DeletePenaltyEntry";
 
-type Props = Readonly<{
-  className?: string;
-  entry: PenaltyEntryType & {
+interface Props {
+  readonly className?: string;
+  readonly entry: PenaltyEntryType & {
     createdBy: Entity;
   };
-  showDelete?: boolean;
-}>;
+  readonly showDelete?: boolean;
+}
 
 export const PenaltyEntry = ({ className, entry, showDelete }: Props) => {
   return (

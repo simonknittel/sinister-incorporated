@@ -18,10 +18,10 @@ import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteTask } from "../actions/deleteTask";
 
-type Props = Readonly<{
-  className?: string;
-  task: Task;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly task: Task;
+}
 
 export const DeleteTask = ({ className, task }: Props) => {
   const [isPending, startTransition] = useTransition();

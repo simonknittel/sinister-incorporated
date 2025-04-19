@@ -34,9 +34,9 @@ const quotes = [
   ],
 ] as const;
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const QuotesTile = ({ className }: Props) => {
   unstable_noStore();

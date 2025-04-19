@@ -2,9 +2,9 @@ import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import clsx from "clsx";
 import { usePermissionsContext } from "../../PermissionsContext";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const OrganizationSection = ({ className }: Props) => {
   const { register } = usePermissionsContext();

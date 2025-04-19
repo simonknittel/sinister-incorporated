@@ -39,10 +39,10 @@ export async function generateMetadata(props: {
   }
 }
 
-type Props = Readonly<{
-  params: Params;
-  searchParams: NextjsSearchParams;
-}>;
+interface Props {
+  readonly params: Params;
+  readonly searchParams: NextjsSearchParams;
+}
 
 export default async function Page({ params, searchParams }: Props) {
   const authentication = await authenticatePage("/app/events/[id]");

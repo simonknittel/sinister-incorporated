@@ -6,9 +6,9 @@ import { FaSpinner } from "react-icons/fa";
 import { RiLoginCircleLine } from "react-icons/ri";
 import Button from "./Button";
 
-type Props = Readonly<{
-  activeProviders: string[];
-}>;
+interface Props {
+  readonly activeProviders: string[];
+}
 
 export const LoginButtons = ({ activeProviders }: Props) => {
   const [isLoggingIn, setIsLoggingIn] = useState<

@@ -2,13 +2,13 @@ import * as RadixRadioGroup from "@radix-ui/react-radio-group";
 import clsx from "clsx";
 import { useEffect, useId, useState } from "react";
 
-type Props = Readonly<{
-  className?: string;
-  name: string;
-  items: { value: string; label: string; hint?: string }[];
-  value: string;
-  onChange: (value: string) => void;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly name: string;
+  readonly items: { value: string; label: string; hint?: string }[];
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+}
 
 export const RadioGroup = ({
   className,

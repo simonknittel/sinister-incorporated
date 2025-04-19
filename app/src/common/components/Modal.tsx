@@ -7,14 +7,14 @@ import { createPortal } from "react-dom";
 import { useHotkeys } from "react-hotkeys-hook";
 import { FaRegTimesCircle } from "react-icons/fa";
 
-type Props = Readonly<{
-  className?: string;
-  isOpen?: boolean | null;
-  onRequestClose?: () => void;
-  children?: ReactNode;
-  keepChildrenInDom?: boolean;
-  heading: ReactNode;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly isOpen?: boolean | null;
+  readonly onRequestClose?: () => void;
+  readonly children?: ReactNode;
+  readonly keepChildrenInDom?: boolean;
+  readonly heading: ReactNode;
+}
 
 export default function Modal({
   className,

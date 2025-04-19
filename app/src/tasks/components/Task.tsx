@@ -38,15 +38,15 @@ import { ToggleAssignmentForCurrentUser } from "./ToggleAssignmentForCurrentUser
 import { UpdateTaskAssignments } from "./UpdateTaskAssignments";
 import { UpdateTaskRepeatable } from "./UpdateTaskRepeatable";
 
-type Props = Readonly<{
-  className?: string;
-  task: TaskType & {
+interface Props {
+  readonly className?: string;
+  readonly task: TaskType & {
     createdBy: Entity | null;
     assignments: (TaskAssignment & {
       citizen: Entity;
     })[];
   };
-}>;
+}
 
 export const Task = ({ className, task }: Props) => {
   const { openItems, open, close } = useTaskVisibility();

@@ -5,9 +5,9 @@ import { getMyFleet } from "../queries";
 import { AssignShip } from "./AssignShip";
 import { MyShipTile } from "./MyShipTile";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const MyFleetTile = async ({ className }: Props) => {
   const authentication = await requireAuthentication();

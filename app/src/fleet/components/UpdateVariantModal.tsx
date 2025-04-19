@@ -9,10 +9,10 @@ import { toast } from "react-hot-toast";
 import { FaPlus, FaSave, FaSpinner, FaTrash } from "react-icons/fa";
 import { updateVariant } from "../actions/updateVariant";
 
-type Props = Readonly<{
-  onRequestClose: () => void;
-  variant: Pick<Variant & { tags: VariantTag[] }, "id" | "tags">;
-}>;
+interface Props {
+  readonly onRequestClose: () => void;
+  readonly variant: Pick<Variant & { tags: VariantTag[] }, "id" | "tags">;
+}
 
 export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
   const _variant = api.variant.getById.useQuery(

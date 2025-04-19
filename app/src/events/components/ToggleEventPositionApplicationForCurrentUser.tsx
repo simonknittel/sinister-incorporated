@@ -19,9 +19,9 @@ import { FaMinus, FaPlus, FaSpinner } from "react-icons/fa";
 import { createEventPositionApplicationForCurrentUser } from "../actions/createEventPositionApplicationForCurrentUser";
 import { deleteEventPositionApplicationForCurrentUser } from "../actions/deleteEventPositionApplicationForCurrentUser";
 
-type Props = Readonly<{
-  className?: string;
-  position: EventPosition & {
+interface Props {
+  readonly className?: string;
+  readonly position: EventPosition & {
     requiredVariants: (EventPositionRequiredVariant & {
       variant: Variant & {
         series: Series & {
@@ -32,9 +32,9 @@ type Props = Readonly<{
       };
     })[];
   };
-  hasCurrentUserAlreadyApplied?: boolean;
-  doesCurrentUserSatisfyRequirements?: boolean;
-}>;
+  readonly hasCurrentUserAlreadyApplied?: boolean;
+  readonly doesCurrentUserSatisfyRequirements?: boolean;
+}
 
 export const ToggleEventPositionApplicationForCurrentUser = ({
   className,

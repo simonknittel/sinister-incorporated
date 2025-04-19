@@ -2,12 +2,12 @@ import * as RadixUiTooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
-type Props = Readonly<{
-  className?: string;
-  contentClassName?: string;
-  triggerChildren: ReactNode;
-  children: ReactNode;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly contentClassName?: string;
+  readonly triggerChildren: ReactNode;
+  readonly children: ReactNode;
+}
 
 export const Tooltip = ({
   className,

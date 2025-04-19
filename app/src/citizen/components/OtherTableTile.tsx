@@ -16,10 +16,10 @@ import clsx from "clsx";
 import { OtherFilters } from "./OtherFilters";
 import { type Row, OtherTable } from "./OtherTable";
 
-type Props = Readonly<{
-  className?: string;
-  searchParams: URLSearchParams;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly searchParams: URLSearchParams;
+}
 
 const OtherTableTile = async ({ className, searchParams }: Props) => {
   const authentication = await requireAuthentication();

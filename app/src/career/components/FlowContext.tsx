@@ -14,14 +14,14 @@ interface FlowContext {
 
 const FlowContext = createContext<FlowContext | undefined>(undefined);
 
-type Props = Readonly<{
-  children: ReactNode;
-  roles: (Role & {
+interface Props {
+  readonly children: ReactNode;
+  readonly roles: (Role & {
     icon: Upload | null;
     thumbnail: Upload | null;
   })[];
-  isUpdating: boolean;
-}>;
+  readonly isUpdating: boolean;
+}
 
 export const FlowProvider = ({ children, roles, isUpdating }: Props) => {
   const value = useMemo(

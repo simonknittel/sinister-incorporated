@@ -12,9 +12,9 @@ const FullSchedule = dynamic(
   },
 );
 
-type Props = Readonly<{
-  schedule: Schedule;
-}>;
+interface Props {
+  readonly schedule: Schedule;
+}
 
 export const FullScheduleLoader = ({ schedule }: Props) => {
   return <FullSchedule schedule={schedule} />;

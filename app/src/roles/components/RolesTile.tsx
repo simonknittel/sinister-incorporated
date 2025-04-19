@@ -6,9 +6,9 @@ import { getRoles } from "../queries";
 
 const GRID_COLS = "grid-cols-[1fr_128px]";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const RolesTile = async ({ className }: Props) => {
   const roles = await getRoles(true);

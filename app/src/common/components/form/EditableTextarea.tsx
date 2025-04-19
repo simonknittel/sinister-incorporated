@@ -4,18 +4,18 @@ import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
 import { useOutsideClick } from "../../utils/useOutsideClick";
 
-type Props = Readonly<{
-  className?: string;
-  rowId: string;
-  columnName: string;
-  initialValue?: string | null;
-  action: (formData: FormData) => Promise<
+interface Props {
+  readonly className?: string;
+  readonly rowId: string;
+  readonly columnName: string;
+  readonly initialValue?: string | null;
+  readonly action: (formData: FormData) => Promise<
     | {
         success: string;
       }
     | { error: string; errorDetails?: unknown }
   >;
-}>;
+}
 
 export const EditableTextarea = ({
   className,

@@ -2,9 +2,9 @@ import clsx from "clsx";
 import { getUsersWithEntities } from "../queries";
 import { Table } from "./Table";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const Tile = async ({ className }: Props) => {
   const users = await getUsersWithEntities();

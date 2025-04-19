@@ -9,9 +9,9 @@ type Params = Promise<
   }>
 >;
 
-type Props = Readonly<{
-  params: Params;
-}>;
+interface Props {
+  readonly params: Params;
+}
 
 export default async function Page(props: Props) {
   const params = await props.params;

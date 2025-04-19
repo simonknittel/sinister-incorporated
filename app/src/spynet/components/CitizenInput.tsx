@@ -17,24 +17,22 @@ import clsx from "clsx";
 import { useRef, useState } from "react";
 import { FaCheck, FaTrash, FaUsers } from "react-icons/fa";
 
-type BaseProps = Readonly<{
-  className?: string;
-  name: string;
-  disabled?: boolean;
-  autoFocus?: boolean;
-}>;
+interface BaseProps {
+  readonly className?: string;
+  readonly name: string;
+  readonly disabled?: boolean;
+  readonly autoFocus?: boolean;
+}
 
-type SingleProps = BaseProps &
-  Readonly<{
-    multiple?: false;
-    defaultValue?: Entity["id"];
-  }>;
+interface SingleProps extends BaseProps {
+  readonly multiple?: false;
+  readonly defaultValue?: Entity["id"];
+}
 
-type MultipleProps = BaseProps &
-  Readonly<{
-    multiple: true;
-    defaultValue?: Entity["id"][];
-  }>;
+interface MultipleProps extends BaseProps {
+  readonly multiple: true;
+  readonly defaultValue?: Entity["id"][];
+}
 
 type Props = SingleProps | MultipleProps;
 

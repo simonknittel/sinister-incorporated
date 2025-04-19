@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import { useId, type ComponentProps } from "react";
 
-type Props = ComponentProps<"input"> & {
+interface Props extends ComponentProps<"input"> {
   label: string;
   hint?: string;
-};
+}
 
 export const DateTimeInput = (props: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

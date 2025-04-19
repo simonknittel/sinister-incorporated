@@ -8,10 +8,10 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 
-type Props = Readonly<{
-  className?: string;
-  entity: Entity;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly entity: Entity;
+}
 
 export const DeleteCitizen = ({ className, entity }: Props) => {
   const router = useRouter();

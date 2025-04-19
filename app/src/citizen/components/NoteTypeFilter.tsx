@@ -5,9 +5,9 @@ import { type NoteType } from "@prisma/client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ChangeEventHandler } from "react";
 
-type Props = Readonly<{
-  noteTypes: NoteType[];
-}>;
+interface Props {
+  readonly noteTypes: NoteType[];
+}
 
 export const NoteTypeFilter = ({ noteTypes }: Props) => {
   const router = useRouter();

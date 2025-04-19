@@ -12,9 +12,9 @@ const CurrentStatus = dynamic(
   },
 );
 
-type Props = Readonly<{
-  schedule: Schedule;
-}>;
+interface Props {
+  readonly schedule: Schedule;
+}
 
 export const CurrentStatusLoader = ({ schedule }: Props) => {
   return <CurrentStatus schedule={schedule} />;

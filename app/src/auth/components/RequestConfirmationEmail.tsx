@@ -6,10 +6,10 @@ import { type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { FaEnvelope, FaSpinner } from "react-icons/fa";
 
-type Props = Readonly<{
-  className?: string;
-  children?: ReactNode;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly children?: ReactNode;
+}
 
 export const RequestConfirmationEmailButton = ({
   className,

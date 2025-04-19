@@ -1,9 +1,9 @@
 import { Link } from "@/common/components/Link";
 import { type ReactNode } from "react";
 
-type Props = Readonly<{
-  children?: ReactNode;
-}>;
+interface Props {
+  readonly children?: ReactNode;
+}
 
 export default function Layout({ children }: Props) {
   return (

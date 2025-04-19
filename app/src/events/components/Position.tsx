@@ -44,22 +44,22 @@ export type PositionType = EventPosition & {
   childPositions?: PositionType[];
 };
 
-type Props = Readonly<{
-  className?: string;
-  position: PositionType;
-  showManage?: boolean;
-  variants: (Manufacturer & {
+interface Props {
+  readonly className?: string;
+  readonly position: PositionType;
+  readonly showManage?: boolean;
+  readonly variants: (Manufacturer & {
     series: (Series & {
       variants: Variant[];
     })[];
   })[];
-  myShips: Ship[];
-  allEventCitizens: { citizen: Entity; ships: Ship[] }[];
-  showActions?: boolean;
-  showToggle?: boolean;
-  groupLevel: number;
-  parentPositions: PositionType["id"][];
-}>;
+  readonly myShips: Ship[];
+  readonly allEventCitizens: { citizen: Entity; ships: Ship[] }[];
+  readonly showActions?: boolean;
+  readonly showToggle?: boolean;
+  readonly groupLevel: number;
+  readonly parentPositions: PositionType["id"][];
+}
 
 export const Position = ({
   className,

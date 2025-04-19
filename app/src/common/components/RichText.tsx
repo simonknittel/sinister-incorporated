@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import { type ReactNode } from "react";
 
-type Props = Readonly<{
-  className?: string;
-  children: ReactNode;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly children: ReactNode;
+}
 
 export const RichText = ({ className, children }: Props) => {
   return (

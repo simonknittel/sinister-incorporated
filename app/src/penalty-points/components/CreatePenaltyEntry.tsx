@@ -14,9 +14,9 @@ import toast from "react-hot-toast";
 import { FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createPenaltyEntry } from "../actions/createPenaltyEntry";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const CreatePenaltyEntry = ({ className }: Props) => {
   const [isOpen, setIsOpen] = useState(false);

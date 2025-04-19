@@ -9,18 +9,18 @@ import toast from "react-hot-toast";
 import { FaSpinner } from "react-icons/fa";
 import useUpload from "../utils/useUpload";
 
-type Props = Readonly<{
-  className?: string;
-  imageClassName?: string;
-  pendingClassName?: string;
-  resourceType: string;
-  resourceId: string;
-  resourceAttribute: string;
-  imageId?: string | null;
-  imageMimeType?: string;
-  width: number;
-  height: number;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly imageClassName?: string;
+  readonly pendingClassName?: string;
+  readonly resourceType: string;
+  readonly resourceId: string;
+  readonly resourceAttribute: string;
+  readonly imageId?: string | null;
+  readonly imageMimeType?: string;
+  readonly width: number;
+  readonly height: number;
+}
 
 export const ImageUpload = ({
   className,

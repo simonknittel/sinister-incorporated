@@ -14,12 +14,12 @@ import { OverviewTile } from "./OverviewTile";
 import { RolesTable } from "./RolesTable";
 import { VariantTagsTable } from "./VariantTagsTable";
 
-type Props = Readonly<{
-  className?: string;
-  event: Event & {
-    discordParticipants: EventDiscordParticipant[];
+interface Props {
+  readonly className?: string;
+  readonly event: Event & {
+    readonly discordParticipants: EventDiscordParticipant[];
   };
-}>;
+}
 
 export const OverviewTab = async ({ className, event }: Props) => {
   const authentication = await requireAuthentication();

@@ -5,10 +5,10 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import Image from "next/image";
 import { DownloadEventButton } from "./DownloadEventButton";
 
-type Props = Readonly<{
-  className?: string;
-  event: Event;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly event: Event;
+}
 
 export const OverviewTile = ({ className, event }: Props) => {
   const showActions = event.startTime > new Date();

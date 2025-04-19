@@ -8,9 +8,9 @@ import { CreateTask } from "./CreateTask";
 import { Task } from "./Task";
 import { TaskVisibilityProvider, ToggleAll } from "./TaskVisibilityContext";
 
-type Props = Readonly<{
-  tasks: ComponentProps<typeof Task>["task"][];
-}>;
+interface Props {
+  readonly tasks: ComponentProps<typeof Task>["task"][];
+}
 
 export const OpenTasksList = ({ tasks }: Props) => {
   const authentication = useAuthentication();

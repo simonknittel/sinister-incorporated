@@ -16,11 +16,11 @@ interface BeamsContext {
 
 const BeamsContext = createContext<BeamsContext | undefined>(undefined);
 
-type Props = Readonly<{
-  children: ReactNode;
-  instanceId?: string;
-  userId: User["id"];
-}>;
+interface Props {
+  readonly children: ReactNode;
+  readonly instanceId?: string;
+  readonly userId: User["id"];
+}
 
 export const BeamsProvider = ({ children, instanceId, userId }: Props) => {
   const [interests, setInterests] = useState<string[] | undefined>(undefined);

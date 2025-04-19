@@ -4,10 +4,10 @@ import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaCheckCircle, FaInfoCircle } from "react-icons/fa";
 import ConfirmLog from "./ConfirmLog";
 
-type Props = Readonly<{
-  confirmationState?: EntityLogConfirmationState;
-  entityLog: EntityLog;
-}>;
+interface Props {
+  readonly confirmationState?: EntityLogConfirmationState;
+  readonly entityLog: EntityLog;
+}
 
 export const ConfirmationState = ({ confirmationState, entityLog }: Props) => {
   switch (confirmationState) {

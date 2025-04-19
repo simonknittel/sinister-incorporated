@@ -4,9 +4,9 @@ import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import TabPanel from "@/common/components/tabs/TabPanel";
 import { usePermissionsContext } from "../PermissionsContext";
 
-type Props = Readonly<{
-  enableOperations: boolean;
-}>;
+interface Props {
+  readonly enableOperations: boolean;
+}
 
 const EventsTab = ({ enableOperations }: Props) => {
   const { register } = usePermissionsContext();

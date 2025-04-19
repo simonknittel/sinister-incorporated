@@ -13,21 +13,21 @@ import { FaSortDown, FaSortUp } from "react-icons/fa";
 import { ConfirmationState } from "./ConfirmationState";
 import { OtherTableDelete } from "./OtherTableDelete";
 
-export type Row = Readonly<{
-  entity: Entity;
-  confirmationState?: EntityLogConfirmationState;
-  confirmedAt?: Date;
-  confirmedBy?: User;
-  entityLog: EntityLog & {
+export interface Row {
+  readonly entity: Entity;
+  readonly confirmationState?: EntityLogConfirmationState;
+  readonly confirmedAt?: Date;
+  readonly confirmedBy?: User;
+  readonly entityLog: EntityLog & {
     attributes: EntityLogAttribute[];
     submittedBy: User;
   };
-}>;
+}
 
-type Props = Readonly<{
-  rows: Row[];
-  searchParams: URLSearchParams;
-}>;
+interface Props {
+  readonly rows: Row[];
+  readonly searchParams: URLSearchParams;
+}
 
 export const OtherTable = ({ rows, searchParams }: Props) => {
   const createdAtSearchParams = new URLSearchParams(searchParams);

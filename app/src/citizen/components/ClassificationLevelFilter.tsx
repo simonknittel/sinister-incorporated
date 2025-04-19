@@ -5,9 +5,9 @@ import { type ClassificationLevel } from "@prisma/client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ChangeEventHandler } from "react";
 
-type Props = Readonly<{
-  classificationLevels: ClassificationLevel[];
-}>;
+interface Props {
+  readonly classificationLevels: ClassificationLevel[];
+}
 
 export const ClassificationLevelFilter = ({ classificationLevels }: Props) => {
   const router = useRouter();

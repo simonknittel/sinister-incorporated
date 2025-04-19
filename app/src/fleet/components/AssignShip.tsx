@@ -9,14 +9,14 @@ import toast from "react-hot-toast";
 import { FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createShipAction } from "../actions/createShipAction";
 
-type Props = Readonly<{
-  className?: string;
-  data?: (Manufacturer & {
+interface Props {
+  readonly className?: string;
+  readonly data?: (Manufacturer & {
     series: (Series & {
       variants: Variant[];
     })[];
   })[];
-}>;
+}
 
 export const AssignShip = ({ className, data = [] }: Props) => {
   const [isOpen, setIsOpen] = useState(false);

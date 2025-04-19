@@ -1,9 +1,9 @@
 import { Tooltip } from "@/common/components/Tooltip";
 import clsx from "clsx";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const Formatting = ({ className }: Props) => {
   return (

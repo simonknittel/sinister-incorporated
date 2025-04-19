@@ -24,10 +24,10 @@ const columnHelper = createColumnHelper<Row>();
 const TABLE_MIN_WIDTH = "min-w-[320px]";
 const GRID_COLS = "grid-cols-[256px_56px]";
 
-type Props = Readonly<{
-  className?: string;
-  rows: Row[];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly rows: Row[];
+}
 
 export const VariantTagsTable = ({ className, rows }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([

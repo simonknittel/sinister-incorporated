@@ -2,12 +2,12 @@ import type { Entity, Event } from "@prisma/client";
 import type { ReactNode } from "react";
 import { Navigation } from "./Navigation";
 
-type Props = Readonly<{
-  event: Event & {
+interface Props {
+  readonly event: Event & {
     managers: Entity[];
   };
-  children: ReactNode;
-}>;
+  readonly children: ReactNode;
+}
 
 export const Template = ({ event, children }: Props) => {
   return (

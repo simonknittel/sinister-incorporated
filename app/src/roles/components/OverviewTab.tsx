@@ -10,12 +10,12 @@ import { FaSave, FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteRole } from "../actions/deleteRole";
 import { updateRoleName } from "../actions/updateRoleName";
 
-type Props = Readonly<{
-  className?: string;
-  role: Role & {
+interface Props {
+  readonly className?: string;
+  readonly role: Role & {
     icon: Upload | null;
   };
-}>;
+}
 
 export const OverviewTab = ({ className, role }: Props) => {
   const [updateNameState, updateNameFormAction, updateNameIsPending] =

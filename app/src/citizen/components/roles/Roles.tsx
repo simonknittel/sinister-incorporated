@@ -6,10 +6,10 @@ import { type Entity } from "@prisma/client";
 import clsx from "clsx";
 import { AddRoles } from "./AddRoles";
 
-type Props = Readonly<{
-  className?: string;
-  entity: Entity;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly entity: Entity;
+}
 
 export const Roles = async ({ className, entity }: Props) => {
   const authentication = await requireAuthentication();

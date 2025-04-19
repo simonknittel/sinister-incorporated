@@ -8,9 +8,9 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 
-type Props = Readonly<{
-  log: EntityLog;
-}>;
+interface Props {
+  readonly log: EntityLog;
+}
 
 export const DeleteLog = ({ log }: Props) => {
   const router = useRouter();

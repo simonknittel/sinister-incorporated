@@ -3,11 +3,11 @@
 import clsx from "clsx";
 import type { ButtonHTMLAttributes } from "react";
 
-type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "tertiary" | null;
   colorScheme?: "sinister-red" | null;
   iconOnly?: boolean | null;
-};
+}
 
 const Button = (props: Props) => {
   const {

@@ -18,10 +18,10 @@ import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteEventPosition } from "../actions/deleteEventPosition";
 
-type Props = Readonly<{
-  className?: string;
-  position: EventPosition;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly position: EventPosition;
+}
 
 export const DeleteEventPosition = ({ className, position }: Props) => {
   const [isPending, startTransition] = useTransition();

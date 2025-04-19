@@ -20,13 +20,13 @@ import {
   FaSortAlphaUpAlt,
 } from "react-icons/fa";
 
-type Props = Readonly<{
-  users: {
-    user: User;
-    discordId: string;
-    entity?: Entity;
+interface Props {
+  readonly users: {
+    readonly user: User;
+    readonly discordId: string;
+    readonly entity?: Entity;
   }[];
-}>;
+}
 
 type Row = Readonly<{
   user: User;

@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import { useId, type ComponentProps, type ReactNode } from "react";
 
-type Props = ComponentProps<"input"> & {
+interface Props extends ComponentProps<"input"> {
   label: ReactNode;
   hint?: ReactNode;
-};
+}
 
 export const TextInput = (props: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

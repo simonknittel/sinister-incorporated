@@ -6,12 +6,12 @@ import { FaHome, FaUsers } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";
 import { isLineupVisible } from "../utils/isLineupVisible";
 
-type Props = Readonly<{
-  className?: string;
-  event: Event & {
-    managers: Entity[];
+interface Props {
+  readonly className?: string;
+  readonly event: Event & {
+    readonly managers: Entity[];
   };
-}>;
+}
 
 export const Navigation = async ({ className, event }: Props) => {
   const authentication = await requireAuthentication();

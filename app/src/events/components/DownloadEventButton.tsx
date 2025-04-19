@@ -9,10 +9,10 @@ import { getGoogleCalendarUrl } from "../utils/getGoogleCalendarUrl";
 import { getIcsFile } from "../utils/getIcsFile";
 import { getOutlookUrl } from "../utils/getOutlookUrl";
 
-type Props = Readonly<{
-  className?: string;
-  event: Event;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly event: Event;
+}
 
 export const DownloadEventButton = ({ className, event }: Props) => {
   const googleCalendarUrl = getGoogleCalendarUrl(event);

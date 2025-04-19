@@ -2,9 +2,9 @@ import { requireAuthentication } from "@/auth/server";
 import { SubNavigation } from "@/common/components/SubNavigation";
 import clsx from "clsx";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const Navigation = async ({ className }: Props) => {
   const authentication = await requireAuthentication();

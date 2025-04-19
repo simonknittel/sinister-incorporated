@@ -2,9 +2,9 @@ import clsx from "clsx";
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const DragPlaceholder = ({ className }: Props) => {
   const ref = useRef<HTMLDivElement>(null);

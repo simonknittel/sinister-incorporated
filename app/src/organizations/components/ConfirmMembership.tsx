@@ -10,10 +10,10 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaCheck, FaSpinner, FaTimes } from "react-icons/fa";
 
-type Props = Readonly<{
-  entry: OrganizationMembershipHistoryEntry;
-  compact?: boolean;
-}>;
+interface Props {
+  readonly entry: OrganizationMembershipHistoryEntry;
+  readonly compact?: boolean;
+}
 
 export const ConfirmMembership = ({ entry, compact }: Props) => {
   const router = useRouter();

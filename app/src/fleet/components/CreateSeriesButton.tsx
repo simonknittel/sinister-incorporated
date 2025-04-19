@@ -10,10 +10,10 @@ const CreateSeriesModal = dynamic(() =>
   import("./CreateSeriesModal").then((mod) => mod.CreateSeriesModal),
 );
 
-type Props = Readonly<{
-  className?: string;
-  manufacturerId?: Manufacturer["id"];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly manufacturerId?: Manufacturer["id"];
+}
 
 export const CreateSeriesButton = ({ className, manufacturerId }: Props) => {
   const [isOpen, setIsOpen] = useState(false);

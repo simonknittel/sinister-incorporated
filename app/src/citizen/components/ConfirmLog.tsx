@@ -8,10 +8,10 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaCheck, FaSpinner, FaTimes } from "react-icons/fa";
 
-type Props = Readonly<{
-  log: EntityLog;
-  compact?: boolean;
-}>;
+interface Props {
+  readonly log: EntityLog;
+  readonly compact?: boolean;
+}
 
 const ConfirmLog = ({ log, compact }: Props) => {
   const router = useRouter();

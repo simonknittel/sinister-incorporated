@@ -13,17 +13,17 @@ type Row = Readonly<{
   entity: Entity;
 }>;
 
-type Props = Readonly<{
-  rows: Row[];
-  assignableRoles: (Role & {
+interface Props {
+  readonly rows: Row[];
+  readonly assignableRoles: (Role & {
     icon: Upload | null;
   })[];
-  showDiscordIdColumn?: boolean;
-  showTeamspeakIdColumn?: boolean;
-  showLastSeenAtColumn?: boolean;
-  showDeleteEntityButton?: boolean;
-  searchParams: URLSearchParams;
-}>;
+  readonly showDiscordIdColumn?: boolean;
+  readonly showTeamspeakIdColumn?: boolean;
+  readonly showLastSeenAtColumn?: boolean;
+  readonly showDeleteEntityButton?: boolean;
+  readonly searchParams: URLSearchParams;
+}
 
 export const CitizenTable = ({
   rows,

@@ -4,12 +4,12 @@ import clsx from "clsx";
 import { FaHome, FaLock, FaUsers } from "react-icons/fa";
 import { TbHierarchy3 } from "react-icons/tb";
 
-type Props = Readonly<{
-  className?: string;
-  role: Role & {
+interface Props {
+  readonly className?: string;
+  readonly role: Role & {
     inherits: Role[];
   };
-}>;
+}
 
 export const Navigation = ({ className, role }: Props) => {
   const pages = [

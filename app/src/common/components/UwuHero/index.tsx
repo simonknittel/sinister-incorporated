@@ -2,9 +2,9 @@ import clsx from "clsx";
 import Image from "next/image";
 import image from "./sam-sinister-transparent.png";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const UwuHero = ({ className }: Props) => {
   return (

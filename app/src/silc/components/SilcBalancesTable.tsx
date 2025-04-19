@@ -5,9 +5,9 @@ import { getSilcBalanceOfAllCitizens } from "../queries";
 import { CreateOrUpdateSilcTransaction } from "./CreateOrUpdateSilcTransaction";
 import { SilcBalancesTableClient } from "./SilcBalancesTableClient";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const SilcBalancesTable = async ({ className }: Props) => {
   const authentication = await requireAuthentication();

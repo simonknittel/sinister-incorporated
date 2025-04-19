@@ -5,11 +5,11 @@ import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
 import type { ServerAction } from "../../actions/types";
 import { useOutsideClick } from "../../utils/useOutsideClick";
 
-type Props = Readonly<{
-  className?: string;
-  action: ServerAction;
-  initialValue: string;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly action: ServerAction;
+  readonly initialValue: string;
+}
 
 export const EditableText = ({ className, action, initialValue }: Props) => {
   const [isEditing, setIsEditing] = useState(false);

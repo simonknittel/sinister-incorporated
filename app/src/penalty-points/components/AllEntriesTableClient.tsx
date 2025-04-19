@@ -28,11 +28,11 @@ const columnHelper = createColumnHelper<Row>();
 const TABLE_MIN_WIDTH = "min-w-[640px]";
 const GRID_COLS = "grid-cols-[160px_88px_1fr]";
 
-type Props = Readonly<{
-  className?: string;
-  rows: Row[];
-  showDelete?: boolean;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly rows: Row[];
+  readonly showDelete?: boolean;
+}
 
 export const AllEntriesTableClient = ({
   className,

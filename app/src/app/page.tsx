@@ -18,9 +18,9 @@ export const metadata: Metadata = {
     "Sinister Administration Module (S.A.M.) of the Star Citizen organization Sinister Incorporated",
 };
 
-type Props = Readonly<{
-  searchParams: NextjsSearchParams;
-}>;
+interface Props {
+  readonly searchParams: NextjsSearchParams;
+}
 
 export default async function Page({ searchParams }: Props) {
   const authentication = await authenticate();

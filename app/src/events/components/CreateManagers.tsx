@@ -11,10 +11,10 @@ import toast from "react-hot-toast";
 import { FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createManagers } from "../actions/createManagers";
 
-type Props = Readonly<{
-  className?: string;
-  event: Event;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly event: Event;
+}
 
 export const CreateManagers = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);

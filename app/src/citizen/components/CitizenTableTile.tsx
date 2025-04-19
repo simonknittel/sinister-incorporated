@@ -16,10 +16,10 @@ import clsx from "clsx";
 import { CitizenTable } from "./CitizenTable";
 import { CitizenTableFilters } from "./CitizenTableFilters";
 
-type Props = Readonly<{
-  className?: string;
-  searchParams: URLSearchParams;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly searchParams: URLSearchParams;
+}
 
 export const CitizenTableTile = async ({ className, searchParams }: Props) => {
   const authentication = await requireAuthentication();

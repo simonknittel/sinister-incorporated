@@ -19,11 +19,11 @@ import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteManager } from "../actions/deleteManager";
 
-type Props = Readonly<{
-  className?: string;
-  eventId: Event["id"];
-  managerId: Entity["id"];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly eventId: Event["id"];
+  readonly managerId: Entity["id"];
+}
 
 export const DeleteManager = ({ className, eventId, managerId }: Props) => {
   const [isPending, startTransition] = useTransition();

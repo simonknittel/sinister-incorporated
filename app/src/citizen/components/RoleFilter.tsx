@@ -7,11 +7,11 @@ import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ChangeEventHandler } from "react";
 
-type Props = Readonly<{
-  roles: (Role & {
+interface Props {
+  readonly roles: (Role & {
     icon: Upload | null;
   })[];
-}>;
+}
 
 export const RoleFilter = ({ roles }: Props) => {
   const router = useRouter();

@@ -5,13 +5,13 @@ import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
-type Props = Readonly<{
-  page: {
-    path: string;
-    name: string;
-    icon?: ReactNode;
+interface Props {
+  readonly page: {
+    readonly path: string;
+    readonly name: string;
+    readonly icon?: ReactNode;
   };
-}>;
+}
 
 export const Item = ({ page }: Props) => {
   const pathname = usePathname();

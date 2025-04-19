@@ -4,10 +4,10 @@ import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ChangeEventHandler } from "react";
 
-type Props = Readonly<{
-  showDiscordId?: boolean;
-  showTeamspeakId?: boolean;
-}>;
+interface Props {
+  readonly showDiscordId?: boolean;
+  readonly showTeamspeakId?: boolean;
+}
 
 export const UnknownsFilter = ({
   showDiscordId = false,

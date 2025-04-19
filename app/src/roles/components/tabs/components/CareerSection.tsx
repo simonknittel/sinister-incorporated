@@ -6,10 +6,10 @@ import { Fragment } from "react";
 import { FaInfoCircle } from "react-icons/fa";
 import { usePermissionsContext } from "../../PermissionsContext";
 
-type Props = Readonly<{
-  className?: string;
-  flows: Flow[];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly flows: Flow[];
+}
 
 export const CareerSection = ({ className, flows }: Props) => {
   const { register } = usePermissionsContext();

@@ -11,17 +11,17 @@ import type {
 import { Permissions } from "./Permissions";
 import { PermissionsProvider } from "./PermissionsContext";
 
-type Props = Readonly<{
-  className?: string;
-  role: Role & {
+interface Props {
+  readonly className?: string;
+  readonly role: Role & {
     permissionStrings: PermissionString[];
   };
-  noteTypes: NoteType[];
-  classificationLevels: ClassificationLevel[];
-  allRoles: Role[];
-  enableOperations: boolean;
-  flows: Flow[];
-}>;
+  readonly noteTypes: NoteType[];
+  readonly classificationLevels: ClassificationLevel[];
+  readonly allRoles: Role[];
+  readonly enableOperations: boolean;
+  readonly flows: Flow[];
+}
 
 export const PermissionsTab = ({
   className,

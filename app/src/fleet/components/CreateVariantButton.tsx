@@ -11,11 +11,11 @@ const CreateVariantModal = dynamic(() =>
   import("./CreateVariantModal").then((mod) => mod.CreateVariantModal),
 );
 
-type Props = Readonly<{
-  className?: string;
-  manufacturerId: Manufacturer["id"];
-  seriesId: Series["id"];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly manufacturerId: Manufacturer["id"];
+  readonly seriesId: Series["id"];
+}
 
 export const CreateVariantButton = ({
   className,

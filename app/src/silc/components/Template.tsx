@@ -2,9 +2,9 @@ import { Hero } from "@/common/components/Hero";
 import type { ReactNode } from "react";
 import { Navigation } from "./Navigation";
 
-type Props = Readonly<{
-  children: ReactNode;
-}>;
+interface Props {
+  readonly children: ReactNode;
+}
 
 export const Template = ({ children }: Props) => {
   return (

@@ -15,9 +15,9 @@ export const metadata: Metadata = {
   title: "Citizen - Spynet | S.A.M. - Sinister Incorporated",
 };
 
-type Props = Readonly<{
-  searchParams: NextjsSearchParams;
-}>;
+interface Props {
+  readonly searchParams: NextjsSearchParams;
+}
 
 export default async function Page({ searchParams }: Props) {
   const authentication = await authenticatePage("/app/spynet/citizen");

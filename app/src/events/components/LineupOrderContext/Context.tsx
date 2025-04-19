@@ -43,20 +43,20 @@ const LineupOrderContext = createContext<LineupOrderContext | undefined>(
   undefined,
 );
 
-type Props = Readonly<{
-  className?: string;
-  positions: PositionType[];
-  showManage?: boolean;
-  variants: (Manufacturer & {
+interface Props {
+  readonly className?: string;
+  readonly positions: PositionType[];
+  readonly showManage?: boolean;
+  readonly variants: (Manufacturer & {
     series: (Series & {
       variants: Variant[];
     })[];
   })[];
-  myShips: Ship[];
-  allEventCitizens: { citizen: Entity; ships: Ship[] }[];
-  showActions?: boolean;
-  showToggle?: boolean;
-}>;
+  readonly myShips: Ship[];
+  readonly allEventCitizens: { citizen: Entity; ships: Ship[] }[];
+  readonly showActions?: boolean;
+  readonly showToggle?: boolean;
+}
 
 export const LineupOrderProvider = ({
   className,

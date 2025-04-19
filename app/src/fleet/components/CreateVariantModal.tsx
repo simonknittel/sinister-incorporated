@@ -9,11 +9,11 @@ import { toast } from "react-hot-toast";
 import { FaPlus, FaSave, FaSpinner, FaTrash } from "react-icons/fa";
 import { createVariant } from "../actions/createVariant";
 
-type Props = Readonly<{
-  onRequestClose: () => void;
-  manufacturerId: Manufacturer["id"];
-  seriesId: Series["id"];
-}>;
+interface Props {
+  readonly onRequestClose: () => void;
+  readonly manufacturerId: Manufacturer["id"];
+  readonly seriesId: Series["id"];
+}
 
 export const CreateVariantModal = ({
   onRequestClose,

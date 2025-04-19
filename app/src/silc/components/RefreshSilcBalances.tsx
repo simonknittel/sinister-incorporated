@@ -8,9 +8,9 @@ import { FaSpinner } from "react-icons/fa";
 import { TbRestore } from "react-icons/tb";
 import { refreshSilcBalances } from "../actions/refreshSilcBalances";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const RefreshSilcBalances = ({ className }: Props) => {
   const [state, formAction, isPending] = useActionState(

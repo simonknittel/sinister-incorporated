@@ -20,11 +20,11 @@ import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteVariant } from "../actions/deleteVariant";
 
-type Props = Readonly<{
-  className?: string;
-  variant: Pick<Variant, "id" | "name">;
-  shipCount: number;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly variant: Pick<Variant, "id" | "name">;
+  readonly shipCount: number;
+}
 
 export const DeleteVariantButton = ({
   className,

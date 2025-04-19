@@ -11,10 +11,10 @@ import {
 } from "react";
 import { FaChevronDown } from "react-icons/fa";
 
-type Props = Readonly<{
-  name: string;
-  children?: ReactNode;
-}>;
+interface Props {
+  readonly name: string;
+  readonly children?: ReactNode;
+}
 
 export const Filter = ({ name, children }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
