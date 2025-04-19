@@ -4,6 +4,7 @@
 		"dbname",
 		"fileb",
 		"hashicorp",
+		"nvmrc",
 		"oidc",
 		"OIDC",
 		"postgres",
@@ -11,6 +12,7 @@
 		"prisma",
 		"psql",
 		"tfbackend",
-		"tfvars"
+		"tfvars",
+		"VERCEL"
 	]
 }
