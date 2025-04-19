@@ -1,0 +1,4 @@
+publicHoistPattern:
+  - "*prisma*"
+  - "*import-in-the-middle*"
+  - "*require-in-the-middle*"
