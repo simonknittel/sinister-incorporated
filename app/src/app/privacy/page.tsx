@@ -175,7 +175,8 @@ export default function Page() {
             <h2>2. Hosting</h2>
 
             <p>
-              Wir hosten die Inhalte unserer Website bei folgendem Anbieter:{" "}
+              Wir hosten die Inhalte unserer Website bei folgendem
+              Anbieter:{" "}
             </p>
 
             <h3>Hetzner</h3>

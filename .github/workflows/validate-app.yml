@@ -36,23 +36,7 @@ jobs:
         working-directory: app
         continue-on-error: true
         env:
-          DATABASE_URL: "mysql://foo"
-          NEXTAUTH_SECRET: "foo"
-          NEXTAUTH_URL: "https://foo"
-          DISCORD_CLIENT_ID: "foo"
-          DISCORD_CLIENT_SECRET: "foo"
-          DISCORD_GUILD_ID: "foo"
-          DISCORD_TOKEN: "foo"
-          NEXT_PUBLIC_ALGOLIA_APP_ID: "foo"
-          ALGOLIA_ADMIN_API_KEY: "foo"
-          NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY: "foo"
-          R2_ACCOUNT_ID: "foo"
-          R2_ACCESS_KEY_ID: "foo"
-          R2_SECRET_ACCESS_KEY: "foo"
-          R2_BUCKET_NAME: "foo"
-          NEXT_PUBLIC_R2_PUBLIC_URL: "foo"
-          UNLEASH_SERVER_API_URL: "https://foo"
-          UNLEASH_SERVER_API_TOKEN: "foo"
+          SKIP_VALIDATION: "1"
 
   prettier:
     runs-on: ubuntu-24.04

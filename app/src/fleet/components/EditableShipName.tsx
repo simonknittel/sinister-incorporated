@@ -14,7 +14,7 @@ export const EditableShipName = ({ className, shipId, name }: Props) => {
   const action = (formData: FormData) => {
     const _formData = new FormData();
     _formData.set("id", shipId);
-    _formData.set("name", formData.get("value")?.toString() || "");
+    _formData.set("name", (formData.get("value") as string) || "");
 
     return updateShipAction(_formData);
   };

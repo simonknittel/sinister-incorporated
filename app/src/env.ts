@@ -147,4 +147,6 @@ export const env = createEnv({
   },
 
   emptyStringAsUndefined: true,
+
+  skipValidation: process.env.SKIP_VALIDATION === "1",
 });
