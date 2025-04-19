@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx";
 import { useRef, useState, useTransition, type ComponentProps } from "react";
 import toast from "react-hot-toast";

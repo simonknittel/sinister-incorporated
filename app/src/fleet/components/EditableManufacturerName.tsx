@@ -16,7 +16,7 @@ export const EditableManufacturerName = ({
   const action = (formData: FormData) => {
     const _formData = new FormData();
     _formData.set("id", manufacturer.id);
-    _formData.set("name", formData.get("value")?.toString() || "");
+    _formData.set("name", (formData.get("value") as string) || "");
 
     return updateManufacturerAction(_formData);
   };

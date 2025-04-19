@@ -231,7 +231,7 @@ export const completeTask = async (formData: FormData) => {
                     rewardTypeTextValue: task.rewardTypeTextValue,
                     rewardTypeSilcValue: task.rewardTypeSilcValue,
                     rewardTypeNewSilcValue: task.rewardTypeNewSilcValue,
-                    repeatable: task.repeatable! - 1,
+                    repeatable: task.repeatable - 1,
                   },
                 }),
 
