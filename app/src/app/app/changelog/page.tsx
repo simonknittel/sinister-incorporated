@@ -39,6 +39,14 @@ export default async function Page() {
             <p>Weiterentwicklung des neuen Tasks System</p>
 
             <p>
+              <strong>Geschlossene Tasks</strong>
+            </p>
+            <p>
+              Es gibt nun eine separate Ansicht für geschlossene Tasks (erfüllt,
+              abgebrochen, abgelaufen).
+            </p>
+
+            <p>
               <strong>Tasks verwalten</strong>
             </p>
             <p>

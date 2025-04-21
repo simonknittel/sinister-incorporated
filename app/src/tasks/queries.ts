@@ -122,6 +122,132 @@ export const getTasks = cache(async () => {
   });
 });
 
+export const getClosedTasks = cache(async () => {
+  return getTracer().startActiveSpan("getClosedTasks", async (span) => {
+    try {
+      const authentication = await requireAuthentication();
+      if (!authentication.session.entityId) throw new Error("Forbidden");
+      if (!(await authentication.authorize("task", "read")))
+        throw new Error("Forbidden");
+
+      if (await authentication.authorize("task", "manage")) {
+        return await prisma.task.findMany({
+          where: {
+            deletedAt: null,
+            OR: [
+              {
+                cancelledAt: {
+                  not: null,
+                },
+              },
+              {
+                completedAt: {
+                  not: null,
+                },
+              },
+              {
+                expiresAt: {
+                  lt: new Date(),
+                },
+              },
+            ],
+          },
+          include: {
+            createdBy: true,
+            assignments: {
+              include: {
+                citizen: true,
+              },
+            },
+            completedBy: true,
+            completionists: true,
+            cancelledBy: true,
+            deletedBy: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+      }
+
+      return await prisma.task.findMany({
+        where: {
+          OR: [
+            {
+              cancelledAt: {
+                not: null,
+              },
+            },
+            {
+              completedAt: {
+                not: null,
+              },
+            },
+            {
+              expiresAt: {
+                lt: new Date(),
+              },
+            },
+          ],
+          AND: [
+            {
+              OR: [
+                {
+                  visibility: TaskVisibility.PUBLIC,
+                },
+                {
+                  visibility: TaskVisibility.PERSONALIZED,
+                  assignments: {
+                    some: {
+                      citizenId: authentication.session.entityId,
+                    },
+                  },
+                },
+                {
+                  visibility: TaskVisibility.GROUP,
+                  assignments: {
+                    some: {
+                      citizenId: authentication.session.entityId,
+                    },
+                  },
+                },
+                {
+                  visibility: TaskVisibility.PERSONALIZED,
+                  createdById: authentication.session.entityId,
+                },
+                {
+                  visibility: TaskVisibility.GROUP,
+                  createdById: authentication.session.entityId,
+                },
+              ],
+            },
+          ],
+        },
+        include: {
+          createdBy: true,
+          assignments: {
+            include: {
+              citizen: true,
+            },
+          },
+          completedBy: true,
+          completionists: true,
+          cancelledBy: true,
+          deletedBy: true,
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    } catch (error) {
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+      });
+      throw error;
+    } finally {
+      span.end();
+    }
+  });
+});
+
 export const getTaskById = cache(async (id: Task["id"]) => {
   return getTracer().startActiveSpan("getTaskById", async (span) => {
     try {

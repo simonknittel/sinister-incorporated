@@ -46,7 +46,7 @@ export const TaskVisibilityProvider = ({ children, items }: Props) => {
     const allItemIds = items.map((task) => task.id);
 
     startTransition(() => {
-      setOpenItems(allItemIds);
+      setOpenItems((prev) => [...prev, ...allItemIds]);
     });
   }, [setOpenItems, items]);
 

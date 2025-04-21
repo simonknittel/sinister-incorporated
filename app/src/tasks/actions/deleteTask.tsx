@@ -9,7 +9,6 @@ import {
   isAllowedToDeleteTask,
   isAllowedToManageTask,
 } from "../utils/isAllowedToTask";
-import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
   id: z.union([z.string().cuid(), z.string().cuid2()]),
@@ -31,11 +30,6 @@ export const deleteTask = createAuthenticatedAction(
     const task = await getTaskById(data.id);
     if (!task)
       return { error: "Task nicht gefunden", requestPayload: formData };
-    if (!isTaskUpdatable(task))
-      return {
-        error: "Der Task ist bereits abgeschlossen.",
-        requestPayload: formData,
-      };
     if (!(await isAllowedToManageTask(task)))
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",

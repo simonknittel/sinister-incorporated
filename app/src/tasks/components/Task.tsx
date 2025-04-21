@@ -18,7 +18,8 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import type { ReactNode } from "react";
-import { FaClock, FaEye, FaInfoCircle } from "react-icons/fa";
+import { BsExclamationOctagonFill } from "react-icons/bs";
+import { FaCheckSquare, FaClock, FaEye, FaInfoCircle } from "react-icons/fa";
 import { TbRepeatOnce } from "react-icons/tb";
 import { updateTaskDescription } from "../actions/updateTaskDescription";
 import { updateTaskExpiresAt } from "../actions/updateTaskExpiresAt";
@@ -39,14 +40,20 @@ import { ToggleAssignmentForCurrentUser } from "./ToggleAssignmentForCurrentUser
 import { UpdateTaskAssignments } from "./UpdateTaskAssignments";
 import { UpdateTaskRepeatable } from "./UpdateTaskRepeatable";
 
+interface TaskWithIncludes extends TaskType {
+  createdBy: Entity | null;
+  assignments: (TaskAssignment & {
+    citizen: Entity;
+  })[];
+  completedBy?: Entity | null;
+  completionists?: Entity[];
+  cancelledBy?: Entity | null;
+  deletedBy?: Entity | null;
+}
+
 interface Props {
   readonly className?: string;
-  readonly task: TaskType & {
-    createdBy: Entity | null;
-    assignments: (TaskAssignment & {
-      citizen: Entity;
-    })[];
-  };
+  readonly task: TaskWithIncludes;
 }
 
 export const Task = ({ className, task }: Props) => {
@@ -82,6 +89,21 @@ export const Task = ({ className, task }: Props) => {
         className="text-sm"
       />,
     );
+    if (
+      task.expiresAt < new Date() &&
+      task.completionists &&
+      task.completionists.length <= 0
+    ) {
+      badges.push(
+        <Badge
+          key="status"
+          label="Status"
+          value="Abgelaufen"
+          icon={<BsExclamationOctagonFill />}
+          className="text-sm text-red-500"
+        />,
+      );
+    }
   }
   if (task.repeatable && task.repeatable > 1) {
     badges.push(
@@ -127,6 +149,39 @@ export const Task = ({ className, task }: Props) => {
         />,
       );
       break;
+  }
+  if (task.completionists && task.completionists.length > 0) {
+    badges.push(
+      <Badge
+        key="status"
+        label="Status"
+        value="Erfüllt"
+        icon={<FaCheckSquare />}
+        className="text-sm text-green-500"
+      />,
+    );
+  }
+  if (task.cancelledAt) {
+    badges.push(
+      <Badge
+        key="status"
+        label="Status"
+        value="Abgebrochen"
+        icon={<FaInfoCircle />}
+        className="text-sm text-blue-500"
+      />,
+    );
+  }
+  if (task.deletedAt) {
+    badges.push(
+      <Badge
+        key="deleted"
+        label="Gelöscht"
+        value="Gelöscht"
+        icon={<FaInfoCircle />}
+        className="text-sm text-blue-500"
+      />,
+    );
   }
 
   return (
@@ -277,10 +332,27 @@ export const Task = ({ className, task }: Props) => {
                 action={updateTaskDescription}
               />
             ) : (
-              <pre className="font-bold overflow-hidden whitespace-nowrap text-ellipsis font-[inherit]">
+              <pre className="overflow-hidden whitespace-nowrap text-ellipsis font-[inherit]">
                 {task.description || "-"}
               </pre>
             )}
+          </div>
+
+          <div className="flex gap-2">
+            <div className="flex flex-col items-start p-2">
+              <span className="text-neutral-400 text-sm flex items-center gap-1">
+                Wiederholungen
+                <Tooltip triggerChildren={<FaInfoCircle />}>
+                  Wie häufig kann dieser Task abgeschlossen werden?
+                </Tooltip>
+              </span>
+              <div className="flex gap-2 items-center">
+                {task.repeatable}x
+                {isTaskUpdatable && isAllowedToManageTask && (
+                  <UpdateTaskRepeatable task={task} />
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="flex gap-2">
@@ -309,53 +381,115 @@ export const Task = ({ className, task }: Props) => {
             </div>
           </div>
 
-          <div>
-            <div className="flex flex-col items-start p-2">
-              <span className="text-neutral-400 text-sm flex items-center gap-1">
-                Wiederholungen
-                <Tooltip triggerChildren={<FaInfoCircle />}>
-                  Wie häufig kann dieser Task abgeschlossen werden?
-                </Tooltip>
-              </span>
-              <div className="flex gap-2 items-center">
-                {task.repeatable}x
-                {isTaskUpdatable && isAllowedToManageTask && (
-                  <UpdateTaskRepeatable task={task} />
-                )}
-              </div>
-            </div>
-          </div>
-
-          {isTaskUpdatable &&
-            (task.visibility === TaskVisibility.PUBLIC ||
-              isAllowedToManageTask) && (
-              <div
-                className={clsx(
-                  "flex justify-between items-center border-t border-white/10 px-2 h-16",
-                  {
-                    "flex-row-reverse":
-                      task.visibility === TaskVisibility.PUBLIC,
-                  },
-                )}
-              >
-                {task.visibility === TaskVisibility.PUBLIC && (
-                  <ToggleAssignmentForCurrentUser
-                    task={task}
-                    isCurrentUserAssigned={isCurrentUserAssigned}
-                  />
-                )}
-
-                {isAllowedToManageTask && (
-                  <div className="flex flex-row-reverse items-center justify-center gap-2">
-                    <CompleteTask task={task} className="flex-none" />
-                    <CancelTask task={task} className="flex-none" />
-                    {isAllowedToDeleteTask && (
-                      <DeleteTask task={task} className="flex-none" />
-                    )}
+          <div className="flex gap-2">
+            {task.completedBy && (
+              <>
+                <div className="flex flex-col items-start p-2">
+                  <span className="text-neutral-400 text-sm">
+                    Abgeschlossen von
+                  </span>
+                  <div className="flex gap-2 items-center">
+                    <CitizenLink citizen={task.completedBy} />
                   </div>
-                )}
+                </div>
+
+                <div className="flex flex-col items-start p-2">
+                  <span className="text-neutral-400 text-sm">
+                    Abgeschlossen am
+                  </span>
+                  <div className="flex gap-2 items-center">
+                    {formatDate(task.completedAt)}
+                  </div>
+                </div>
+              </>
+            )}
+            {task.cancelledBy && (
+              <>
+                <div className="flex flex-col items-start p-2">
+                  <span className="text-neutral-400 text-sm">
+                    Abgebrochen von
+                  </span>
+                  <div className="flex gap-2 items-center">
+                    <CitizenLink citizen={task.cancelledBy} />
+                  </div>
+                </div>
+                <div className="flex flex-col items-start p-2">
+                  <span className="text-neutral-400 text-sm">
+                    Abgebrochen am
+                  </span>
+                  <div className="flex gap-2 items-center">
+                    {formatDate(task.cancelledAt)}
+                  </div>
+                </div>
+              </>
+            )}
+            {task.deletedBy && (
+              <>
+                <div className="flex flex-col items-start p-2">
+                  <span className="text-neutral-400 text-sm">Gelöscht von</span>
+                  <div className="flex gap-2 items-center">
+                    <CitizenLink citizen={task.deletedBy} />
+                  </div>
+                </div>
+                <div className="flex flex-col items-start p-2">
+                  <span className="text-neutral-400 text-sm">Gelöscht am</span>
+                  <div className="flex gap-2 items-center">
+                    {formatDate(task.deletedAt)}
+                  </div>
+                </div>
+              </>
+            )}
+            {task.completionists && task.completionists.length > 0 && (
+              <div className="flex flex-col items-start p-2">
+                <span className="text-neutral-400 text-sm">Erfüllt durch</span>
+
+                <div className="flex flex-wrap gap-x-3 gap-y-1">
+                  {task.completionists.map((completionist) => (
+                    <CitizenLink
+                      key={completionist.id}
+                      citizen={completionist}
+                    />
+                  ))}
+                </div>
               </div>
             )}
+          </div>
+
+          {((isTaskUpdatable && task.visibility === TaskVisibility.PUBLIC) ||
+            (isTaskUpdatable && isAllowedToManageTask) ||
+            isAllowedToDeleteTask) && (
+            <div
+              className={clsx(
+                "flex justify-between items-center border-t border-white/10 px-2 h-16",
+                {
+                  "flex-row-reverse":
+                    isTaskUpdatable &&
+                    task.visibility === TaskVisibility.PUBLIC,
+                },
+              )}
+            >
+              {isTaskUpdatable && task.visibility === TaskVisibility.PUBLIC && (
+                <ToggleAssignmentForCurrentUser
+                  task={task}
+                  isCurrentUserAssigned={isCurrentUserAssigned}
+                />
+              )}
+
+              {isAllowedToManageTask && (
+                <div className="flex flex-row-reverse items-center justify-center gap-2">
+                  {isTaskUpdatable && (
+                    <>
+                      <CompleteTask task={task} className="flex-none" />
+                      <CancelTask task={task} className="flex-none" />
+                    </>
+                  )}
+                  {isAllowedToDeleteTask && (
+                    <DeleteTask task={task} className="flex-none" />
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </article>
