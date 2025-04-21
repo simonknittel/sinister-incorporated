@@ -24,6 +24,19 @@ export const OpenTasksList = ({ tasks }: Props) => {
     createdBy.others || [],
     (task) => task.visibility,
   );
+  const groupedByVisibilityAssignment = Object.groupBy(
+    [
+      ...(groupedByVisibility.PERSONALIZED || []),
+      ...(groupedByVisibility.GROUP || []),
+    ],
+    (task) =>
+      task.assignments?.some(
+        (assignment) =>
+          assignment.citizenId === authentication.session.entityId,
+      )
+        ? "personalizedToMe"
+        : "personbalizedToOthers",
+  );
 
   return (
     <TaskVisibilityProvider items={tasks}>
@@ -42,8 +55,8 @@ export const OpenTasksList = ({ tasks }: Props) => {
           </section>
         )}
 
-        {groupedByVisibility.PERSONALIZED &&
-          groupedByVisibility.PERSONALIZED.length > 0 && (
+        {groupedByVisibilityAssignment.personalizedToMe &&
+          groupedByVisibilityAssignment.personalizedToMe.length > 0 && (
             <section>
               <div className="flex gap-2 items-baseline">
                 <h3 className="font-thin text-2xl">An mich personalisiert</h3>
@@ -54,9 +67,29 @@ export const OpenTasksList = ({ tasks }: Props) => {
               </div>
 
               <div className="flex flex-col gap-[1px] mt-4">
-                {groupedByVisibility.PERSONALIZED?.map((task) => (
+                {groupedByVisibilityAssignment.personalizedToMe.map((task) => (
                   <Task key={task.id} task={task} />
                 ))}
+              </div>
+            </section>
+          )}
+        {groupedByVisibilityAssignment.personbalizedToOthers &&
+          groupedByVisibilityAssignment.personbalizedToOthers.length > 0 && (
+            <section>
+              <div className="flex gap-2 items-baseline">
+                <h3 className="font-thin text-2xl">An andere personalisiert</h3>
+                <Tooltip triggerChildren={<FaInfoCircle />}>
+                  Diese Tasks wurden an andere adressiert. Diese Auflistung ist
+                  nur mit der Berechtigung <em>Tasks verwalten</em> sichtbar.
+                </Tooltip>
+              </div>
+
+              <div className="flex flex-col gap-[1px] mt-4">
+                {groupedByVisibilityAssignment.personbalizedToOthers.map(
+                  (task) => (
+                    <Task key={task.id} task={task} />
+                  ),
+                )}
               </div>
             </section>
           )}
@@ -72,7 +105,7 @@ export const OpenTasksList = ({ tasks }: Props) => {
               </div>
 
               <div className="flex flex-col gap-[1px] mt-4">
-                {groupedByVisibility.PUBLIC?.map((task) => (
+                {groupedByVisibility.PUBLIC.map((task) => (
                   <Task key={task.id} task={task} />
                 ))}
               </div>

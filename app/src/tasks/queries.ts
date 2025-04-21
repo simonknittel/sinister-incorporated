@@ -13,6 +13,41 @@ export const getTasks = cache(async () => {
       if (!(await authentication.authorize("task", "read")))
         throw new Error("Forbidden");
 
+      if (await authentication.authorize("task", "manage")) {
+        return await prisma.task.findMany({
+          where: {
+            cancelledAt: null,
+            deletedAt: null,
+            completedAt: null,
+            AND: [
+              {
+                OR: [
+                  {
+                    expiresAt: {
+                      gte: new Date(),
+                    },
+                  },
+                  {
+                    expiresAt: null,
+                  },
+                ],
+              },
+            ],
+          },
+          include: {
+            createdBy: true,
+            assignments: {
+              include: {
+                citizen: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+      }
+
       return await prisma.task.findMany({
         where: {
           cancelledAt: null,
@@ -94,6 +129,19 @@ export const getTaskById = cache(async (id: Task["id"]) => {
       if (!authentication.session.entityId) throw new Error("Forbidden");
       if (!(await authentication.authorize("task", "read")))
         throw new Error("Forbidden");
+
+      if (await authentication.authorize("task", "manage")) {
+        return await prisma.task.findUnique({
+          where: {
+            id,
+            deletedAt: null,
+          },
+          include: {
+            assignments: true,
+            completionists: true,
+          },
+        });
+      }
 
       return await prisma.task.findUnique({
         where: {

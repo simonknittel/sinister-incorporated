@@ -18,7 +18,8 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import type { ReactNode } from "react";
-import { FaClock, FaInfoCircle } from "react-icons/fa";
+import { FaClock, FaEye, FaInfoCircle } from "react-icons/fa";
+import { TbRepeatOnce } from "react-icons/tb";
 import { updateTaskDescription } from "../actions/updateTaskDescription";
 import { updateTaskExpiresAt } from "../actions/updateTaskExpiresAt";
 import { updateTaskRewardTypeNewSilcValue } from "../actions/updateTaskRewardTypeNewSilcValue";
@@ -88,8 +89,44 @@ export const Task = ({ className, task }: Props) => {
         key="repeatable"
         label="Wiederholbar"
         value={`${task.repeatable}x`}
+        icon={<TbRepeatOnce />}
       />,
     );
+  }
+  switch (task.visibility) {
+    case TaskVisibility.PUBLIC:
+      badges.push(
+        <Badge
+          key="visibility"
+          label="Sichtbarkeit"
+          value="Öffentlich"
+          icon={<FaEye />}
+          className="text-sm"
+        />,
+      );
+      break;
+    case TaskVisibility.PERSONALIZED:
+      badges.push(
+        <Badge
+          key="visibility"
+          label="Sichtbarkeit"
+          value="Personalisiert"
+          icon={<FaEye />}
+          className="text-sm"
+        />,
+      );
+      break;
+    case TaskVisibility.GROUP:
+      badges.push(
+        <Badge
+          key="visibility"
+          label="Sichtbarkeit"
+          value="Gruppe"
+          icon={<FaEye />}
+          className="text-sm"
+        />,
+      );
+      break;
   }
 
   return (

@@ -34,6 +34,21 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="21. April 2025">
+          <DayItem heading="Tasks">
+            <p>Weiterentwicklung des neuen Tasks System</p>
+
+            <p>
+              <strong>Tasks verwalten</strong>
+            </p>
+            <p>
+              Citizen mit der Berechtigung <em>Tasks verwalten</em> sehen nun
+              auch personalisierte Tasks, welche nicht von ihnen selber erstellt
+              wurden.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="14. April 2025">
           <DayItem heading="Tasks">
             <p>Weiterentwicklung des neuen Tasks System</p>
