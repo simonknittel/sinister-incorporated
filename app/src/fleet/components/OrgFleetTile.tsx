@@ -3,10 +3,10 @@ import { getOrgFleet } from "../queries";
 import { Filters } from "./Filters";
 import { FleetTable } from "./FleetTable";
 
-type Props = Readonly<{
-  className?: string;
-  urlSearchParams: URLSearchParams;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly urlSearchParams: URLSearchParams;
+}
 
 export const OrgFleetTile = async ({ className, urlSearchParams }: Props) => {
   const fleet = await getOrgFleet({

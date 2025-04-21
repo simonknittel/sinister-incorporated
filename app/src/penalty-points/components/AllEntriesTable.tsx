@@ -5,9 +5,9 @@ import { getEntriesGroupedByCitizen } from "../queries";
 import { AllEntriesTableClient } from "./AllEntriesTableClient";
 import { CreatePenaltyEntry } from "./CreatePenaltyEntry";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const AllEntriesTable = async ({ className }: Props) => {
   const authentication = await requireAuthentication();

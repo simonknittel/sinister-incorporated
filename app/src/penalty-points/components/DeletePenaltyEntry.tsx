@@ -18,10 +18,10 @@ import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deletePenaltyEntry } from "../actions/deletePenaltyEntry";
 
-type Props = Readonly<{
-  className?: string;
-  entry: PenaltyEntry;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly entry: PenaltyEntry;
+}
 
 export const DeletePenaltyEntry = ({ className, entry }: Props) => {
   const [isPending, startTransition] = useTransition();

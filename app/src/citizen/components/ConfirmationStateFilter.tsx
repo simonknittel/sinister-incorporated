@@ -4,9 +4,9 @@ import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ChangeEventHandler } from "react";
 
-type Props = Readonly<{
-  confirmationStates: string[];
-}>;
+interface Props {
+  readonly confirmationStates: string[];
+}
 
 export const ConfirmationStateFilter = ({ confirmationStates }: Props) => {
   const router = useRouter();

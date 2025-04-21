@@ -19,10 +19,10 @@ import { FaSpinner } from "react-icons/fa";
 import { TbCancel } from "react-icons/tb";
 import { cancelTask } from "../actions/cancelTask";
 
-type Props = Readonly<{
-  className?: string;
-  task: Task;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly task: Task;
+}
 
 export const CancelTask = ({ className, task }: Props) => {
   const [isPending, startTransition] = useTransition();

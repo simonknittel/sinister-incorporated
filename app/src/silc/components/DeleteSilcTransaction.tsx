@@ -18,10 +18,10 @@ import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteSilcTransaction } from "../actions/deleteSilcTransaction";
 
-type Props = Readonly<{
-  className?: string;
-  id: SilcTransaction["id"];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly id: SilcTransaction["id"];
+}
 
 export const DeleteSilcTransaction = ({ className, id }: Props) => {
   const [isPending, startTransition] = useTransition();

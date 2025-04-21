@@ -5,10 +5,10 @@ import type { Flow } from "@prisma/client";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 
-type Props = Readonly<{
-  className?: string;
-  flows: Flow[];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly flows: Flow[];
+}
 
 export const Navigation = ({ className, flows }: Props) => {
   const pathname = usePathname();

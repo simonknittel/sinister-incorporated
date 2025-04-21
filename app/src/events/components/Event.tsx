@@ -23,14 +23,14 @@ import { isLineupVisible } from "../utils/isLineupVisible";
  * 800 / 320 * 160 = 400
  */
 
-type Props = Readonly<{
-  className?: string;
-  event: PrismaEvent & {
+interface Props {
+  readonly className?: string;
+  readonly event: PrismaEvent & {
     discordParticipants: EventDiscordParticipant[];
     managers: Entity[];
   };
-  index: number;
-}>;
+  readonly index: number;
+}
 
 export const Event = async ({ className, event, index }: Props) => {
   const authentication = await requireAuthentication();

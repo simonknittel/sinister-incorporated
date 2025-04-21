@@ -23,11 +23,11 @@ import { ClassificationLevel } from "./ClassificationLevel";
 import ClassificationLevelSkeleton from "./ClassificationLevelSkeleton";
 import { UpdateNote } from "./UpdateNote";
 
-type Props = Readonly<{
-  note: EntityLog & {
+interface Props {
+  readonly note: EntityLog & {
     attributes: EntityLogAttribute[];
   };
-}>;
+}
 
 export const SingleNote = async ({ note }: Props) => {
   const authentication = await requireAuthentication();

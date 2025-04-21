@@ -12,10 +12,10 @@ const UpdateVariantModal = dynamic(() =>
   import("./UpdateVariantModal").then((mod) => mod.UpdateVariantModal),
 );
 
-type Props = Readonly<{
-  className?: string;
-  variant: Pick<Variant & { tags: VariantTag[] }, "id" | "tags">;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly variant: Pick<Variant & { tags: VariantTag[] }, "id" | "tags">;
+}
 
 export const UpdateVariantButton = ({ className, variant }: Props) => {
   const [isOpen, setIsOpen] = useState(false);

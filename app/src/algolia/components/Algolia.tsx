@@ -8,9 +8,9 @@ import { useActionState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { TbRestore } from "react-icons/tb";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const Algolia = ({ className }: Props) => {
   const [state, formAction, isPending] = useActionState(updateIndices, null);

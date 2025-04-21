@@ -35,25 +35,25 @@ import {
 import { createEventPosition } from "../actions/createEventPosition";
 import { updateEventPosition } from "../actions/updateEventPosition";
 
-type BaseProps = Readonly<{
-  className?: string;
-  variants: (Manufacturer & {
+interface BaseProps {
+  readonly className?: string;
+  readonly variants: (Manufacturer & {
     series: (Series & {
       variants: Variant[];
     })[];
   })[];
-}>;
+}
 
-type CreateProps = Readonly<{
-  eventId: Event["id"];
-  parentPositionId?: EventPosition["id"] | null;
-}>;
+interface CreateProps {
+  readonly eventId: Event["id"];
+  readonly parentPositionId?: EventPosition["id"] | null;
+}
 
-type UpdateProps = Readonly<{
-  position: EventPosition & {
+interface UpdateProps {
+  readonly position: EventPosition & {
     requiredVariants: EventPositionRequiredVariant[];
   };
-}>;
+}
 
 type Props = (CreateProps | UpdateProps) & BaseProps;
 
@@ -243,15 +243,15 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
   );
 };
 
-type RequiredVariantsProps = Readonly<{
-  className?: string;
-  variants: (Manufacturer & {
+interface RequiredVariantsProps {
+  readonly className?: string;
+  readonly variants: (Manufacturer & {
     series: (Series & {
       variants: Variant[];
     })[];
   })[];
-  defaultValue?: Variant["id"][];
-}>;
+  readonly defaultValue?: Variant["id"][];
+}
 
 const RequiredVariants = ({
   className,

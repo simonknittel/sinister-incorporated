@@ -4,9 +4,9 @@ import clsx from "clsx";
 import { Event } from "./Event";
 import { NotificationsTooltip } from "./NotificationsTooltip";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const CalendarTile = async ({ className }: Props) => {
   const events = await getFutureEvents();

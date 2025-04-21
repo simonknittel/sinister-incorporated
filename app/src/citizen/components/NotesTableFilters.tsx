@@ -5,9 +5,9 @@ import { ConfirmationStateFilter } from "./ConfirmationStateFilter";
 import { NoteTypeFilter } from "./NoteTypeFilter";
 import { type Row } from "./NotesTable";
 
-type Props = Readonly<{
-  rows: Row[];
-}>;
+interface Props {
+  readonly rows: Row[];
+}
 
 export const NotesTableFilters = ({ rows }: Props) => {
   const noteTypes = new Map<string, NoteType>();

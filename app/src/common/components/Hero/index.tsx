@@ -1,13 +1,13 @@
 import clsx from "clsx";
 import styles from "./Hero.module.css";
 
-type Props = Readonly<{
-  className?: string;
-  text: string;
-  size?: "md" | "lg";
-  withGlitch?: boolean;
-  asSpan?: boolean;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly text: string;
+  readonly size?: "md" | "lg";
+  readonly withGlitch?: boolean;
+  readonly asSpan?: boolean;
+}
 
 export const Hero = ({
   className,

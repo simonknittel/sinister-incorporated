@@ -6,11 +6,11 @@ import { useState } from "react";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { usePermissionsContext } from "../../PermissionsContext";
 
-type Props = Readonly<{
-  className?: string;
-  noteTypes: NoteType[];
-  classificationLevels: ClassificationLevel[];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly noteTypes: NoteType[];
+  readonly classificationLevels: ClassificationLevel[];
+}
 
 export const NoteSection = ({
   className,

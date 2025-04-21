@@ -9,8 +9,8 @@ import { RoleSection } from "./components/RoleSection";
 import { SpynetSection } from "./components/SpynetSection";
 
 interface Props {
-  roles: Role[];
-  flows: Flow[];
+  readonly roles: Role[];
+  readonly flows: Flow[];
 }
 
 const OtherTab = ({ roles, flows }: Readonly<Props>) => {

@@ -16,14 +16,14 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
 
-type Props = Readonly<{
-  className?: string;
-  note: EntityLog & {
+interface Props {
+  readonly className?: string;
+  readonly note: EntityLog & {
     attributes: EntityLogAttribute[];
   };
-  noteTypes: NoteType[];
-  classificationLevels: ClassificationLevel[];
-}>;
+  readonly noteTypes: NoteType[];
+  readonly classificationLevels: ClassificationLevel[];
+}
 
 interface FormValues {
   noteTypeId: string;

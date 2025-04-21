@@ -18,10 +18,10 @@ import isAllowedToRead from "../utils/isAllowedToRead";
 import { type Row, NotesTable } from "./NotesTable";
 import { NotesTableFilters } from "./NotesTableFilters";
 
-type Props = Readonly<{
-  className?: string;
-  searchParams: URLSearchParams;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly searchParams: URLSearchParams;
+}
 
 export const NotesTableTile = async ({ className, searchParams }: Props) => {
   const authentication = await requireAuthentication();

@@ -19,10 +19,10 @@ import toast from "react-hot-toast";
 import { FaSpinner } from "react-icons/fa";
 import { verifyEmailAction } from "../actions/verifyEmail";
 
-type Props = Readonly<{
-  className?: string;
-  userId: User["id"];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly userId: User["id"];
+}
 
 export const VerifyEmailButton = ({ className, userId }: Props) => {
   const [isPending, startTransition] = useTransition();

@@ -5,9 +5,9 @@ import clsx from "clsx";
 import { RoleFilter } from "./RoleFilter";
 import { UnknownsFilter } from "./UnknownsFilter";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const CitizenTableFilters = async ({ className }: Props) => {
   const authentication = await requireAuthentication();

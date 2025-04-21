@@ -19,14 +19,14 @@ const fetcher = async (key: string) => {
   return res.json();
 };
 
-type AlgoliaResponse = Readonly<{
-  hits: Hit[];
-}>;
+interface AlgoliaResponse {
+  readonly hits: Hit[];
+}
 
-type Props = Readonly<{
-  search: string;
-  onSelect?: () => void;
-}>;
+interface Props {
+  readonly search: string;
+  readonly onSelect?: () => void;
+}
 
 export const SpynetSearchPage = ({ search, onSelect }: Props) => {
   const [debouncedSearch, setDebouncedSearch] = useState(search);

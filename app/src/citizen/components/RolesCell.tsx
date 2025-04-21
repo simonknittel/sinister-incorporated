@@ -5,13 +5,13 @@ import { getAssignedRoles } from "@/roles/utils/getRoles";
 import { type Entity, type Role, type Upload } from "@prisma/client";
 import clsx from "clsx";
 
-type Props = Readonly<{
-  className?: string;
-  entity: Entity;
-  assignableRoles: (Role & {
+interface Props {
+  readonly className?: string;
+  readonly entity: Entity;
+  readonly assignableRoles: (Role & {
     icon: Upload | null;
   })[];
-}>;
+}
 
 export const RolesCell = async ({
   className,

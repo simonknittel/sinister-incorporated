@@ -8,9 +8,9 @@ import { mapOrganizationAttributeHistoryEntries } from "./mapOrganizationAttribu
 import { mapOrganizationEntries } from "./mapOrganizationEntries";
 import { mapOrganizationMembershipHistoryEntries } from "./mapOrganizationMembershipHistoryEntries";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const ActivityTile = async ({ className }: Props) => {
   await requireAuthentication();

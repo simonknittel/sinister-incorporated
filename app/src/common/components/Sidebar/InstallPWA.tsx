@@ -7,9 +7,9 @@ import {
   MdOutlineInstallMobile,
 } from "react-icons/md";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const InstallPWA = ({ className }: Props) => {
   const installPrompt = useRef<Event | null>(null);

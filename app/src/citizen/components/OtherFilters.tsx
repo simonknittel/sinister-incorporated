@@ -5,9 +5,9 @@ import { ConfirmationStateFilter } from "./ConfirmationStateFilter";
 import { EntityLogTypeFilter } from "./EntityLogTypeFilter";
 import { type Row } from "./OtherTable";
 
-type Props = Readonly<{
-  rows: Row[];
-}>;
+interface Props {
+  readonly rows: Row[];
+}
 
 export const OtherFilters = ({ rows }: Props) => {
   const confirmationStates = new Set<string>();

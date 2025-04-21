@@ -8,10 +8,10 @@ import { useActionState, useId } from "react";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import { updateSilcSetting } from "../actions/updateSilcSetting";
 
-type Props = Readonly<{
-  className?: string;
-  setting?: SilcSetting | null;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly setting?: SilcSetting | null;
+}
 
 export const AuecConversionRateSettingClient = ({
   className,

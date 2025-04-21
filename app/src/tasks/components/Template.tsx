@@ -1,9 +1,10 @@
 import { Hero } from "@/common/components/Hero";
 import type { ReactNode } from "react";
+import { Navigation } from "./Navigation";
 
-type Props = Readonly<{
-  children: ReactNode;
-}>;
+interface Props {
+  readonly children: ReactNode;
+}
 
 export const Template = ({ children }: Props) => {
   return (
@@ -12,8 +13,7 @@ export const Template = ({ children }: Props) => {
         <Hero text="Tasks" withGlitch />
       </div>
 
-      {/* TODO: Reenable once history is implemented */}
-      {/* <Navigation className="my-4" /> */}
+      <Navigation className="my-4" />
 
       {children}
     </main>

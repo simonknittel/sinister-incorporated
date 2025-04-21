@@ -5,10 +5,10 @@ import clsx from "clsx";
 import { getSilcTransactionsOfCitizen } from "../queries";
 import { SilcTransactionsTableClient } from "./SilcTransactionsTableClient";
 
-type Props = Readonly<{
-  className?: string;
-  citizenId: Entity["id"];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly citizenId: Entity["id"];
+}
 
 export const SilcTransactionsTable = async ({
   className,

@@ -7,10 +7,10 @@ import { getSeriesByManufacturerId } from "../queries";
 import { CreateSeriesButton } from "./CreateSeriesButton";
 import { DeleteSeriesButton } from "./DeleteSeriesButton";
 
-type Props = Readonly<{
-  className?: string;
-  manufacturerId: Manufacturer["id"];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly manufacturerId: Manufacturer["id"];
+}
 
 const GRID_COLS = "grid-cols-[128px_1fr_44px]";
 

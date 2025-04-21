@@ -1,9 +1,9 @@
 import { Link } from "@/common/components/Link";
 import { type CitizenHit } from "./Search";
 
-type Props = Readonly<{
-  hit: CitizenHit;
-}>;
+interface Props {
+  readonly hit: CitizenHit;
+}
 
 export const Citizen = ({ hit }: Props) => {
   return (

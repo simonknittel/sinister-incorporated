@@ -21,11 +21,11 @@ interface FormValues {
   confirmed?: "CONFIRMED";
 }
 
-type Props = Readonly<{
-  className?: string;
-  organizationId: string;
-  showConfirmButton?: boolean;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly organizationId: string;
+  readonly showConfirmButton?: boolean;
+}
 
 export const CreateMembership = ({
   className,

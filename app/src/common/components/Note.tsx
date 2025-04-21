@@ -3,12 +3,12 @@ import { type ReactNode } from "react";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaCheckSquare, FaInfoCircle } from "react-icons/fa";
 
-type Props = Readonly<{
-  className?: string;
-  message: ReactNode;
-  type?: "info" | "success" | "error";
-  error?: Error;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly message: ReactNode;
+  readonly type?: "info" | "success" | "error";
+  readonly error?: Error;
+}
 
 const Note = ({ className, message, type = "info", error }: Props) => {
   return (

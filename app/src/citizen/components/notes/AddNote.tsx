@@ -14,11 +14,11 @@ import toast from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import { Formatting } from "./Formatting";
 
-type Props = Readonly<{
-  entityId: Entity["id"];
-  noteTypeId: NoteType["id"];
-  classificationLevels: ClassificationLevel[];
-}>;
+interface Props {
+  readonly entityId: Entity["id"];
+  readonly noteTypeId: NoteType["id"];
+  readonly classificationLevels: ClassificationLevel[];
+}
 
 interface FormValues {
   content: string;

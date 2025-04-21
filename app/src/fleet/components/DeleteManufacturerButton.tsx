@@ -19,10 +19,10 @@ import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteManufacturerAction } from "../actions/deleteManufacturer";
 
-type Props = Readonly<{
-  className?: string;
-  manufacturer: Pick<Manufacturer, "id" | "name">;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly manufacturer: Pick<Manufacturer, "id" | "name">;
+}
 
 export const DeleteManufacturerButton = ({
   className,

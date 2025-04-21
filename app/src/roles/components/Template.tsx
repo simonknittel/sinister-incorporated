@@ -2,12 +2,12 @@ import type { Role } from "@prisma/client";
 import type { ReactNode } from "react";
 import { Navigation } from "./Navigation";
 
-type Props = Readonly<{
-  role: Role & {
+interface Props {
+  readonly role: Role & {
     inherits: Role[];
   };
-  children: ReactNode;
-}>;
+  readonly children: ReactNode;
+}
 
 export const Template = ({ role, children }: Props) => {
   return (

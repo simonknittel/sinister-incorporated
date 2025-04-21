@@ -20,11 +20,11 @@ interface FormValues {
   visibility: OrganizationMembershipVisibility;
 }
 
-type Props = Readonly<{
-  className?: string;
-  citizenId: string;
-  showConfirmButton?: boolean;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly citizenId: string;
+  readonly showConfirmButton?: boolean;
+}
 
 export const CreateOrganizationMembership = ({
   className,

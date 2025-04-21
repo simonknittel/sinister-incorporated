@@ -11,16 +11,16 @@ import { AddNote } from "./AddNote";
 import { SingleNote } from "./SingleNote";
 import SingleNoteRedacted from "./SingleNoteRedacted";
 
-type Props = Readonly<{
-  noteType: NoteType;
-  notes: (
+interface Props {
+  readonly noteType: NoteType;
+  readonly notes: (
     | (EntityLog & {
         attributes: EntityLogAttribute[];
       })
     | { id: EntityLog["id"]; redacted: true }
   )[];
-  entityId: Entity["id"];
-}>;
+  readonly entityId: Entity["id"];
+}
 
 export const NoteTypePanel = async ({ noteType, notes, entityId }: Props) => {
   const [authentication, classificationLevels] = await Promise.all([

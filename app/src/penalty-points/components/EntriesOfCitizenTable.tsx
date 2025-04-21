@@ -6,10 +6,10 @@ import { getEntriesOfCitizen } from "../queries";
 import { AllEntriesTableClient } from "./AllEntriesTableClient";
 import { CreatePenaltyEntry } from "./CreatePenaltyEntry";
 
-type Props = Readonly<{
-  className?: string;
-  citizenId: Entity["id"];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly citizenId: Entity["id"];
+}
 
 export const EntriesOfCitizenTable = async ({
   className,

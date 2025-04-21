@@ -4,9 +4,9 @@ import clsx from "clsx";
 import { FaInfoCircle } from "react-icons/fa";
 import { usePermissionsContext } from "../../PermissionsContext";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const OrganizationMembershipSection = ({ className }: Props) => {
   const { register } = usePermissionsContext();

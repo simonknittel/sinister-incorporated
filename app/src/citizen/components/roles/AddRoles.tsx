@@ -11,15 +11,15 @@ import { useState } from "react";
 import { FaPen } from "react-icons/fa";
 import RoleCheckbox from "./RoleCheckbox";
 
-type Props = Readonly<{
-  className?: string;
-  entity: Entity;
-  allRoles: (Role & {
+interface Props {
+  readonly className?: string;
+  readonly entity: Entity;
+  readonly allRoles: (Role & {
     icon: Upload | null;
   })[];
-  assignedRoleIds: Role["id"][];
-  iconOnly?: boolean;
-}>;
+  readonly assignedRoleIds: Role["id"][];
+  readonly iconOnly?: boolean;
+}
 
 export const AddRoles = ({
   className,

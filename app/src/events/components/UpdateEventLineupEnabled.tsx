@@ -8,10 +8,10 @@ import { useTransition } from "react";
 import toast from "react-hot-toast";
 import { updateEventLineupEnabled } from "../actions/updateEventLineupEnabled";
 
-type Props = Readonly<{
-  className?: string;
-  event: Event;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly event: Event;
+}
 
 export const UpdateEventLineupEnabled = ({ className, event }: Props) => {
   const [isPending, startTransition] = useTransition();

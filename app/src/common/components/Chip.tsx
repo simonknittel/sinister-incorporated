@@ -1,9 +1,9 @@
 import { type ReactNode } from "react";
 
-type Props = Readonly<{
-  children: ReactNode;
-  title?: string;
-}>;
+interface Props {
+  readonly children: ReactNode;
+  readonly title?: string;
+}
 
 export const Chip = ({ children, title }: Props) => {
   return (

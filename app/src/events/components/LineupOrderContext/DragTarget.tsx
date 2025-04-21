@@ -2,13 +2,13 @@ import clsx from "clsx";
 import type { PositionType } from "../Position";
 import { useLineupOrder } from "./Context";
 
-type Props = Readonly<{
-  className?: string;
-  position: PositionType;
-  order: "before" | "after";
-  parentPositions: PositionType["id"][];
-  groupLevel: number;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly position: PositionType;
+  readonly order: "before" | "after";
+  readonly parentPositions: PositionType["id"][];
+  readonly groupLevel: number;
+}
 
 export const DragTarget = ({
   className,

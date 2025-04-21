@@ -5,9 +5,9 @@ import type { EntityLogType } from "@/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ChangeEventHandler } from "react";
 
-type Props = Readonly<{
-  entityLogTypes: Map<EntityLogType, string>;
-}>;
+interface Props {
+  readonly entityLogTypes: Map<EntityLogType, string>;
+}
 
 export const EntityLogTypeFilter = ({ entityLogTypes }: Props) => {
   const router = useRouter();

@@ -12,12 +12,12 @@ import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
 import { updateTaskRepeatable } from "../actions/updateTaskRepeatable";
 
-type Props = Readonly<{
-  className?: string;
-  task: Task & {
+interface Props {
+  readonly className?: string;
+  readonly task: Task & {
     assignments: TaskAssignment[];
   };
-}>;
+}
 
 export const UpdateTaskRepeatable = ({ className, task }: Props) => {
   const [isOpen, setIsOpen] = useState(false);

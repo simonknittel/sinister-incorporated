@@ -8,10 +8,10 @@ import { FiRefreshCcw } from "react-icons/fi";
 import { RiBardFill } from "react-icons/ri";
 import { api } from "../../trpc/react";
 
-type Props = Readonly<{
-  className?: string;
-  onClick?: (roleName: string) => void;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly onClick?: (roleName: string) => void;
+}
 
 export const Suggestions = ({ className, onClick }: Props) => {
   const suggestions = api.ai.getRoleNameSuggestions.useQuery(undefined, {

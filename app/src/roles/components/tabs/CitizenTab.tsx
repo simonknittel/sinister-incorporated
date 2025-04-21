@@ -13,10 +13,10 @@ import LastSeenSection from "./components/LastSeenSection";
 import { NoteSection } from "./components/NoteSection";
 import TeamspeakIdSection from "./components/TeamspeakIdSection";
 
-type Props = Readonly<{
-  noteTypes: NoteType[];
-  classificationLevels: ClassificationLevel[];
-}>;
+interface Props {
+  readonly noteTypes: NoteType[];
+  readonly classificationLevels: ClassificationLevel[];
+}
 
 export const CitizenTab = ({ noteTypes, classificationLevels }: Props) => {
   const { register } = usePermissionsContext();

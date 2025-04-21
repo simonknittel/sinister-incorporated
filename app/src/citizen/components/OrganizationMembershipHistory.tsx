@@ -5,10 +5,10 @@ import { mapOrganizationMembershipHistoryEntries } from "@/spynet/components/Act
 import { ConfirmationStatus } from "@prisma/client";
 import clsx from "clsx";
 
-type Props = Readonly<{
-  className?: string;
-  id: string;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly id: string;
+}
 
 export const OrganizationMembershipHistory = async ({
   className,

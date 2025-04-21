@@ -3,10 +3,10 @@ import { getOrganizationById } from "@/organizations/queries";
 import clsx from "clsx";
 import Image from "next/image";
 
-type Props = Readonly<{
-  className?: string;
-  id: string;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly id: string;
+}
 
 export const OverviewTile = async ({ className, id }: Props) => {
   const organization = await getOrganizationById(id);

@@ -8,21 +8,21 @@ import { RiSpyFill } from "react-icons/ri";
 import "./CmdK.css";
 import { SpynetSearchPage } from "./SpynetSearchPage";
 
-type Props = Readonly<{
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  disableAlgolia: boolean;
-  showCitizenRead: boolean;
-  showOrganizationRead: boolean;
-  showOrgFleetRead: boolean;
-  showShipManage: boolean;
-  showUserRead: boolean;
-  showRoleManage: boolean;
-  showClassificationLevelManage: boolean;
-  showNoteTypeManage: boolean;
-  showAnalyticsManage: boolean;
-  showManufacturersSeriesAndVariantsManage: boolean;
-}>;
+interface Props {
+  readonly open: boolean;
+  readonly setOpen: Dispatch<SetStateAction<boolean>>;
+  readonly disableAlgolia: boolean;
+  readonly showCitizenRead: boolean;
+  readonly showOrganizationRead: boolean;
+  readonly showOrgFleetRead: boolean;
+  readonly showShipManage: boolean;
+  readonly showUserRead: boolean;
+  readonly showRoleManage: boolean;
+  readonly showClassificationLevelManage: boolean;
+  readonly showNoteTypeManage: boolean;
+  readonly showAnalyticsManage: boolean;
+  readonly showManufacturersSeriesAndVariantsManage: boolean;
+}
 
 export const CmdK = ({
   open,

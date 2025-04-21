@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import { useId, type ComponentProps } from "react";
 
-type Props = ComponentProps<"textarea"> & {
-  label: string;
-  hint?: string;
-};
+interface Props extends ComponentProps<"textarea"> {
+  readonly label: string;
+  readonly hint?: string;
+}
 
 export const Textarea = (props: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

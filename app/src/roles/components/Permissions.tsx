@@ -35,14 +35,15 @@ import { PenaltyPointsTab } from "./tabs/PenaltyPointsTab";
 import { SilcTab } from "./tabs/SilcTab";
 import { TasksTab } from "./tabs/TasksTab";
 
-type Props = Readonly<{
-  role: Role;
-  noteTypes: NoteType[];
-  classificationLevels: ClassificationLevel[];
-  allRoles: Role[];
-  enableOperations: boolean;
-  flows: Flow[];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly role: Role;
+  readonly noteTypes: NoteType[];
+  readonly classificationLevels: ClassificationLevel[];
+  readonly allRoles: Role[];
+  readonly enableOperations: boolean;
+  readonly flows: Flow[];
+}
 
 export const Permissions = ({
   role,

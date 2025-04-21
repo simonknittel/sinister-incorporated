@@ -1,14 +1,14 @@
 import clsx from "clsx";
 import { type ReactNode } from "react";
 
-type Props = Readonly<{
-  className?: string;
-  label: string;
-  value: string;
-  showLabel?: boolean;
-  icon?: ReactNode;
-  cta?: ReactNode;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly label: string;
+  readonly value: string;
+  readonly showLabel?: boolean;
+  readonly icon?: ReactNode;
+  readonly cta?: ReactNode;
+}
 
 export const Badge = ({
   className,

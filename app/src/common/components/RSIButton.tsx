@@ -2,10 +2,10 @@ import clsx from "clsx";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { Link } from "./Link";
 
-type Props = Readonly<{
-  className?: string;
-  href: string;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly href: string;
+}
 
 export const RSIButton = ({ className, href }: Props) => {
   return (

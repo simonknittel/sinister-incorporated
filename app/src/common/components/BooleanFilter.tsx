@@ -5,11 +5,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useId, type ComponentProps, type ReactNode } from "react";
 import YesNoCheckbox from "./form/YesNoCheckbox";
 
-type Props = Readonly<{
-  className?: string;
-  identifier: string;
-  children: ReactNode;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly identifier: string;
+  readonly children: ReactNode;
+}
 
 export const BooleanFilter = ({ className, identifier, children }: Props) => {
   const router = useRouter();

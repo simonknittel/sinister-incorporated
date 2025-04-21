@@ -3,10 +3,10 @@ import type { Entity } from "@prisma/client";
 import type { ReactNode } from "react";
 import { CitizenNavigation } from "./CitizenNavigation";
 
-type Props = Readonly<{
-  citizen: Entity;
-  children: ReactNode;
-}>;
+interface Props {
+  readonly citizen: Entity;
+  readonly children: ReactNode;
+}
 
 export const Template = ({ citizen, children }: Props) => {
   return (

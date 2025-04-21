@@ -6,20 +6,20 @@ import { Suspense, useState } from "react";
 
 const CmdK = dynamic(() => import("./CmdK"), { ssr: false });
 
-type Props = Readonly<{
-  className?: string;
-  disableAlgolia: boolean;
-  showCitizenRead: boolean;
-  showOrganizationRead: boolean;
-  showOrgFleetRead: boolean;
-  showShipManage: boolean;
-  showUserRead: boolean;
-  showRoleManage: boolean;
-  showClassificationLevelManage: boolean;
-  showNoteTypeManage: boolean;
-  showAnalyticsManage: boolean;
-  showManufacturersSeriesAndVariantsManage: boolean;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly disableAlgolia: boolean;
+  readonly showCitizenRead: boolean;
+  readonly showOrganizationRead: boolean;
+  readonly showOrgFleetRead: boolean;
+  readonly showShipManage: boolean;
+  readonly showUserRead: boolean;
+  readonly showRoleManage: boolean;
+  readonly showClassificationLevelManage: boolean;
+  readonly showNoteTypeManage: boolean;
+  readonly showAnalyticsManage: boolean;
+  readonly showManufacturersSeriesAndVariantsManage: boolean;
+}
 
 export const CmdKLoader = ({
   className,

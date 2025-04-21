@@ -4,11 +4,11 @@ import { EditableText } from "@/common/components/form/EditableText";
 import { type Ship } from "@prisma/client";
 import { updateShipAction } from "../actions/updateShipAction";
 
-type Props = Readonly<{
-  className?: string;
-  shipId: Ship["id"];
-  name: string;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly shipId: Ship["id"];
+  readonly name: string;
+}
 
 export const EditableShipName = ({ className, shipId, name }: Props) => {
   const action = (formData: FormData) => {

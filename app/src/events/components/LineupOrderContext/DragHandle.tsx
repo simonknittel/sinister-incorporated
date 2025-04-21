@@ -3,10 +3,10 @@ import { MdDragIndicator } from "react-icons/md";
 import type { PositionType } from "../Position";
 import { useLineupOrder } from "./Context";
 
-type Props = Readonly<{
-  className?: string;
-  position: PositionType;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly position: PositionType;
+}
 
 export const DragHandle = ({ className, position }: Props) => {
   const { handleDragStart } = useLineupOrder();

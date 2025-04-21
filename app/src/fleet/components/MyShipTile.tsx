@@ -10,9 +10,9 @@ import { DeleteShip } from "./DeleteShip";
 import { EditableShipName } from "./EditableShipName";
 import { VariantWithLogo } from "./VariantWithLogo";
 
-type Props = Readonly<{
-  className?: string;
-  ship: Ship & {
+interface Props {
+  readonly className?: string;
+  readonly ship: Ship & {
     variant: Variant & {
       series: Series & {
         manufacturer: Manufacturer & {
@@ -21,7 +21,7 @@ type Props = Readonly<{
       };
     };
   };
-}>;
+}
 
 export const MyShipTile = ({ className, ship }: Props) => {
   return (

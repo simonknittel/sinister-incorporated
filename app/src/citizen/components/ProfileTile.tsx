@@ -9,9 +9,9 @@ import clsx from "clsx";
 import { FaExternalLinkAlt, FaPiggyBank } from "react-icons/fa";
 import { FaScaleBalanced } from "react-icons/fa6";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const ProfileTile = async ({ className }: Props) => {
   const authentication = await requireAuthentication();

@@ -14,10 +14,10 @@ import { FaInfoCircle, FaListAlt } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
 import { ConfirmMembership } from "./ConfirmMembership";
 
-type Props = Readonly<{
-  className?: string;
-  id: string;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly id: string;
+}
 
 export const ActivityTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();

@@ -11,10 +11,10 @@ interface FormValues {
   title: string;
 }
 
-type Props = Readonly<{
-  isOpen: boolean;
-  onRequestClose: () => void;
-}>;
+interface Props {
+  readonly isOpen: boolean;
+  readonly onRequestClose: () => void;
+}
 
 export const CreateOperationModal = ({ isOpen, onRequestClose }: Props) => {
   const router = useRouter();

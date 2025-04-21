@@ -44,26 +44,26 @@ import { nodeTypes } from "../utils/nodeTypes";
 import { CreateOrUpdateNodeModal, schema } from "./CreateOrUpdateNodeModal";
 import { FlowProvider } from "./FlowContext";
 
-type Props = Readonly<{
-  className?: string;
-  flow: FlowPrisma & {
+interface Props {
+  readonly className?: string;
+  readonly flow: FlowPrisma & {
     nodes: (FlowNode & {
       sources: FlowEdge[];
       targets: FlowEdge[];
     })[];
   };
-  roles: (Role & {
+  readonly roles: (Role & {
     icon: Upload | null;
     thumbnail: Upload | null;
   })[];
-  assignedRoles: (Role & {
+  readonly assignedRoles: (Role & {
     inherits: Role[];
     icon: Upload | null;
     thumbnail: Upload | null;
   })[];
-  canUpdate?: boolean;
-  isUpdating?: boolean;
-}>;
+  readonly canUpdate?: boolean;
+  readonly isUpdating?: boolean;
+}
 
 export const Flow = ({
   className,

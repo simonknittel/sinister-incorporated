@@ -2,10 +2,10 @@ import clsx from "clsx";
 import { FaDiscord } from "react-icons/fa";
 import { Link } from "./Link";
 
-type Props = Readonly<{
-  className?: string;
-  path: string;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly path: string;
+}
 
 export const DiscordButton = ({ className, path }: Props) => {
   const href = `https://discord.com/${path}`;

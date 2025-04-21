@@ -25,14 +25,14 @@ import { DeleteManager } from "./DeleteManager";
 
 const GRID_COLS = "grid-cols-[160px_160px_1fr]";
 
-type Props = Readonly<{
-  className?: string;
-  event: Event & {
-    discordParticipants: EventDiscordParticipant[];
-    managers: Entity[];
+interface Props {
+  readonly className?: string;
+  readonly event: Event & {
+    readonly discordParticipants: EventDiscordParticipant[];
+    readonly managers: Entity[];
   };
-  urlSearchParams: URLSearchParams;
-}>;
+  readonly urlSearchParams: URLSearchParams;
+}
 
 export const ParticipantsTab = async ({
   className,

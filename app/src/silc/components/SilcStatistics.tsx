@@ -3,9 +3,9 @@ import { SilcSettingKey } from "@prisma/client";
 import clsx from "clsx";
 import { getSilcBalanceOfAllCitizens } from "../queries";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const SilcStatistics = async ({ className }: Props) => {
   const [silcBalances, auecConversionRateSetting] = await Promise.all([

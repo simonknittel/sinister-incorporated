@@ -24,10 +24,10 @@ const TaskVisibilityContext = createContext<TaskVisibilityContext | undefined>(
   undefined,
 );
 
-type Props = Readonly<{
-  children: ReactNode;
-  items: Pick<Task, "id">[];
-}>;
+interface Props {
+  readonly children: ReactNode;
+  readonly items: Pick<Task, "id">[];
+}
 
 export const TaskVisibilityProvider = ({ children, items }: Props) => {
   const [openItems, setOpenItems] = useLocalStorage<Task["id"][]>(
@@ -46,7 +46,7 @@ export const TaskVisibilityProvider = ({ children, items }: Props) => {
     const allItemIds = items.map((task) => task.id);
 
     startTransition(() => {
-      setOpenItems(allItemIds);
+      setOpenItems((prev) => [...prev, ...allItemIds]);
     });
   }, [setOpenItems, items]);
 

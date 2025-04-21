@@ -18,10 +18,10 @@ import toast from "react-hot-toast";
 import { FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createTask } from "../actions/createTask";
 
-type Props = Readonly<{
-  className?: string;
-  cta?: boolean;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly cta?: boolean;
+}
 
 export const CreateTask = ({ className, cta }: Props) => {
   const authentication = useAuthentication();

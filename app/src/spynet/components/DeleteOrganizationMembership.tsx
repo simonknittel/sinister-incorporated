@@ -8,11 +8,11 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 
-type Props = Readonly<{
-  className?: string;
-  organizationId: Organization["id"];
-  citizenId: Entity["id"];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly organizationId: Organization["id"];
+  readonly citizenId: Entity["id"];
+}
 
 export const DeleteOrganizationMembership = ({
   className,

@@ -3,10 +3,10 @@ import { SubNavigation } from "@/common/components/SubNavigation";
 import type { Entity } from "@prisma/client";
 import clsx from "clsx";
 
-type Props = Readonly<{
-  className?: string;
-  citizenId: Entity["id"];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly citizenId: Entity["id"];
+}
 
 export const CitizenNavigation = async ({ className, citizenId }: Props) => {
   const authentication = await requireAuthentication();

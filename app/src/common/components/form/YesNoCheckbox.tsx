@@ -3,12 +3,12 @@
 import clsx from "clsx";
 import { type InputHTMLAttributes, type ReactNode } from "react";
 
-type Props = InputHTMLAttributes<HTMLInputElement> & {
+interface Props extends InputHTMLAttributes<HTMLInputElement> {
   hideLabel?: boolean;
   yesLabel?: ReactNode;
   noLabel?: ReactNode;
   labelClassName?: string;
-};
+}
 
 const YesNoCheckbox = (props: Props) => {
   const {

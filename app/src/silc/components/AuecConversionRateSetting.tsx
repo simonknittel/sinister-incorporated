@@ -4,9 +4,9 @@ import { SilcSettingKey } from "@prisma/client";
 import clsx from "clsx";
 import { AuecConversionRateSettingClient } from "./AuecConversionRateSettingClient";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const AuecConversionRateSetting = async ({ className }: Props) => {
   const setting = await prisma.silcSetting.findUnique({

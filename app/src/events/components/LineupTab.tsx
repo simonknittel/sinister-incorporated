@@ -21,22 +21,22 @@ const Positions = dynamic(
   { ssr: false, loading: () => <PositionSkeleton /> },
 );
 
-type Props = Readonly<{
-  className?: string;
-  event: Event & {
+interface Props {
+  readonly className?: string;
+  readonly event: Event & {
     positions: PositionType[];
   };
-  canManagePositions?: boolean;
-  variants: (Manufacturer & {
+  readonly canManagePositions?: boolean;
+  readonly variants: (Manufacturer & {
     series: (Series & {
       variants: Variant[];
     })[];
   })[];
-  myShips: Ship[];
-  allEventCitizens: { citizen: Entity; ships: Ship[] }[];
-  showActions?: boolean;
-  showToggle?: boolean;
-}>;
+  readonly myShips: Ship[];
+  readonly allEventCitizens: { citizen: Entity; ships: Ship[] }[];
+  readonly showActions?: boolean;
+  readonly showToggle?: boolean;
+}
 
 export const LineupTab = ({
   className,

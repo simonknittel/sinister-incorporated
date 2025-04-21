@@ -6,10 +6,10 @@ import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useBeamsContext } from "./BeamsContext";
 
-type Props = Readonly<{
-  instanceId: string;
-  userId: User["id"];
-}>;
+interface Props {
+  readonly instanceId: string;
+  readonly userId: User["id"];
+}
 
 export const Client = ({ instanceId, userId }: Props) => {
   const { interests } = useBeamsContext();

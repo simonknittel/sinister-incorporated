@@ -4,9 +4,9 @@ import { getTasks } from "../queries";
 import { CreateTask } from "./CreateTask";
 import { OpenTasksClient } from "./OpenTasksClient";
 
-type Props = Readonly<{
-  className?: string;
-}>;
+interface Props {
+  readonly className?: string;
+}
 
 export const OpenTasksTile = async ({ className }: Props) => {
   const authentication = await requireAuthentication();

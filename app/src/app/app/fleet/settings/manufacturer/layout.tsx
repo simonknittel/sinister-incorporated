@@ -1,9 +1,9 @@
 import { type ReactNode } from "react";
 
-type Props = Readonly<{
-  children?: ReactNode;
-  breadcrumbs?: ReactNode;
-}>;
+interface Props {
+  readonly children?: ReactNode;
+  readonly breadcrumbs?: ReactNode;
+}
 
 export default function Layout({ children, breadcrumbs }: Props) {
   return (

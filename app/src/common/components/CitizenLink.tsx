@@ -5,11 +5,11 @@ import type { Entity } from "@prisma/client";
 import clsx from "clsx";
 import { Link } from "./Link";
 
-type Props = Readonly<{
-  className?: string;
-  citizen: Entity;
-  page?: string;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly citizen: Entity;
+  readonly page?: string;
+}
 
 export const CitizenLink = ({ className, citizen, page = "" }: Props) => {
   const authentication = useAuthentication();

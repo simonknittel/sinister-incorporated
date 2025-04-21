@@ -27,9 +27,9 @@ import { FaRegCircleXmark } from "react-icons/fa6";
 import { VariantTagBadge } from "./VariantTagBadge";
 import { VariantWithLogo } from "./VariantWithLogo";
 
-type Props = Readonly<{
-  className?: string;
-  fleet: {
+interface Props {
+  readonly className?: string;
+  readonly fleet: {
     variant: Variant & {
       series: Series & {
         manufacturer: Manufacturer & {
@@ -40,7 +40,7 @@ type Props = Readonly<{
     };
     count: number;
   }[];
-}>;
+}
 
 type Row = Props["fleet"][number];
 

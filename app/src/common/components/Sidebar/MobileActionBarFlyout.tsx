@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 
-type Props = Readonly<{
-  children?: ReactNode;
-}>;
+interface Props {
+  readonly children?: ReactNode;
+}
 
 export const MobileActionBarFlyout = ({ children }: Props) => {
   const pathname = usePathname();

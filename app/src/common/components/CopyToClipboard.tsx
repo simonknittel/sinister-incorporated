@@ -4,10 +4,10 @@ import clsx from "clsx";
 import { useRef, useState, type MouseEventHandler } from "react";
 import { FaCheck, FaCopy } from "react-icons/fa";
 
-type Props = Readonly<{
-  className?: string;
-  value: string;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly value: string;
+}
 
 export const CopyToClipboard = ({ className, value }: Props) => {
   const [showTooltip, setShowTooltip] = useState(false);

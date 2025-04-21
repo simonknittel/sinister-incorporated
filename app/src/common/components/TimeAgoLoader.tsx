@@ -12,9 +12,9 @@ const TimeAgoContainer = dynamic(
   },
 );
 
-type Props = Readonly<{
-  date: Date | string;
-}>;
+interface Props {
+  readonly date: Date | string;
+}
 
 export const TimeAgoLoader = ({ date }: Props) => {
   return <TimeAgoContainer date={date} />;

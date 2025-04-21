@@ -23,11 +23,11 @@ export const schema = z.discriminatedUnion("nodeType", [
   markdownSchema,
 ]);
 
-type Props = Readonly<{
-  className?: string;
-  onRequestClose: () => void;
-  onSubmit: FormEventHandler<HTMLFormElement>;
-  initialData?: {
+interface Props {
+  readonly className?: string;
+  readonly onRequestClose: () => void;
+  readonly onSubmit: FormEventHandler<HTMLFormElement>;
+  readonly initialData?: {
     id: string;
     backgroundColor: string;
     backgroundTransparency: number;
@@ -43,7 +43,7 @@ type Props = Readonly<{
         markdownPosition: FlowNodeMarkdownPosition;
       }
   );
-}>;
+}
 
 export const CreateOrUpdateNodeModal = ({
   className,

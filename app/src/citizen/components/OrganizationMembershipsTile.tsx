@@ -9,10 +9,10 @@ import Image from "next/image";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { CreateOrganizationMembership } from "./CreateOrganizationMembership";
 
-type Props = Readonly<{
-  className?: string;
-  id: string;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly id: string;
+}
 
 export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();

@@ -7,10 +7,10 @@ import clsx from "clsx";
 import { FaExternalLinkAlt, FaUsers } from "react-icons/fa";
 import { CreateMembership } from "./CreateMembership";
 
-type Props = Readonly<{
-  className?: string;
-  id: string;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly id: string;
+}
 
 export const MembershipsTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();

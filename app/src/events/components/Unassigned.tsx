@@ -9,11 +9,11 @@ type Position = EventPosition & {
   childPositions?: Position[];
 };
 
-type Props = Readonly<{
-  className?: string;
-  positions: Position[];
-  allEventCitizens: { citizen: Entity; ships: Ship[] }[];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly positions: Position[];
+  readonly allEventCitizens: { citizen: Entity; ships: Ship[] }[];
+}
 
 export const Unassigned = ({
   className,

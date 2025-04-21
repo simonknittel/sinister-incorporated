@@ -7,9 +7,9 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { FaSave, FaSpinner } from "react-icons/fa";
 
-type Props = Readonly<{
-  onRequestClose: () => void;
-}>;
+interface Props {
+  readonly onRequestClose: () => void;
+}
 
 interface FormValues {
   name: Manufacturer["name"];

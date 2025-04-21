@@ -46,9 +46,9 @@ export async function generateMetadata(props: {
   }
 }
 
-type Props = Readonly<{
-  params: Params;
-}>;
+interface Props {
+  readonly params: Params;
+}
 
 export default async function Page({ params }: Props) {
   const { flowId } = await params;

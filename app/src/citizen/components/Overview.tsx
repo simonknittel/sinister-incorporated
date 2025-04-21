@@ -11,10 +11,10 @@ import { DeleteCitizen } from "./DeleteCitizen";
 import { LastSeenAt } from "./LastSeenAt";
 import { OverviewSection } from "./generic-log-type/OverviewSection";
 
-type Props = Readonly<{
-  className?: string;
-  entity: Entity;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly entity: Entity;
+}
 
 export const Overview = async ({ className, entity }: Props) => {
   const authentication = await requireAuthentication();

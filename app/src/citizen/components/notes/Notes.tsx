@@ -15,10 +15,10 @@ import { NoteTypePanel } from "./NoteTypePanel";
 import isAllowedToRead from "./lib/isAllowedToRead";
 import isAllowedToReadRedacted from "./lib/isAllowedToReadRedacted";
 
-type Props = Readonly<{
-  className?: string;
-  entity: Entity;
-}>;
+interface Props {
+  readonly className?: string;
+  readonly entity: Entity;
+}
 
 export const Notes = async ({ className, entity }: Props) => {
   const authentication = await requireAuthentication();

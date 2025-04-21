@@ -10,11 +10,11 @@ import { DeleteVariantButton } from "./DeleteVariantButton";
 import { UpdateVariantButton } from "./UpdateVariantButton";
 import { VariantTagBadge } from "./VariantTagBadge";
 
-type Props = Readonly<{
-  className?: string;
-  manufacturerId: Manufacturer["id"];
-  seriesId: Series["id"];
-}>;
+interface Props {
+  readonly className?: string;
+  readonly manufacturerId: Manufacturer["id"];
+  readonly seriesId: Series["id"];
+}
 
 const GRID_COLS = "grid-cols-[256px_1fr_56px_44px]";
 

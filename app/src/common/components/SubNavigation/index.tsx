@@ -2,14 +2,14 @@ import clsx from "clsx";
 import type { ReactNode } from "react";
 import { Item } from "./Item";
 
-type Props = Readonly<{
-  className?: string;
-  pages: {
+interface Props {
+  readonly className?: string;
+  readonly pages: {
     path: string;
     name: string;
     icon?: ReactNode;
   }[];
-}>;
+}
 
 export const SubNavigation = ({ className, pages }: Props) => {
   return (

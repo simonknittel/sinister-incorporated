@@ -10,13 +10,13 @@ import { FaMinus, FaPlus, FaSpinner } from "react-icons/fa";
 import { createTaskAssignmentForCurrentUser } from "../actions/createTaskAssignmentForCurrentUser";
 import { deleteTaskAssignmentForCurrentUser } from "../actions/deleteTaskAssignmentForCurrentUser";
 
-type Props = Readonly<{
-  className?: string;
-  task: Task & {
-    assignments: TaskAssignment[];
+interface Props {
+  readonly className?: string;
+  readonly task: Task & {
+    readonly assignments: TaskAssignment[];
   };
-  isCurrentUserAssigned?: boolean;
-}>;
+  readonly isCurrentUserAssigned?: boolean;
+}
 
 export const ToggleAssignmentForCurrentUser = ({
   className,
