@@ -238,9 +238,9 @@ export const Task = ({ className, task }: Props) => {
                       "overflow-hidden whitespace-nowrap text-ellipsis":
                         !isOpen,
                     })}
-                    title={task.rewardTypeTextValue || ""}
+                    title={task.rewardTypeTextValue || "-"}
                   >
-                    {task.rewardTypeTextValue}
+                    {task.rewardTypeTextValue || "-"}
                   </span>
                 ))}
               {task.rewardType === TaskRewardType.SILC &&

@@ -1,11 +1,11 @@
 import * as RadixRadioGroup from "@radix-ui/react-radio-group";
 import clsx from "clsx";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 
 interface Props {
   readonly className?: string;
   readonly name: string;
-  readonly items: { value: string; label: string; hint?: string }[];
+  readonly items: { value: string; label: string; hint?: ReactNode }[];
   readonly value: string;
   readonly onChange: (value: string) => void;
 }
