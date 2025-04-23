@@ -8,6 +8,7 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "@/common/utils/sorting";
+import { CreateOrUpdateSilcTransaction } from "@/silc/components/CreateOrUpdateSilcTransaction";
 import type { Entity, Event, EventDiscordParticipant } from "@prisma/client";
 import clsx from "clsx";
 import { Suspense } from "react";
@@ -19,7 +20,7 @@ import {
   FaSortNumericUp,
 } from "react-icons/fa";
 import { getParticipants } from "../utils/getParticipants";
-import { isAllowedToManageEvent } from "../utils/isAllowedToManageEvent";
+import { isAllowedToManageEvent as _isAllowedToManageEvent } from "../utils/isAllowedToManageEvent";
 import { CreateManagers } from "./CreateManagers";
 import { DeleteManager } from "./DeleteManager";
 
@@ -40,8 +41,11 @@ export const ParticipantsTab = async ({
   urlSearchParams,
 }: Props) => {
   const authentication = await requireAuthentication();
-  const showCreateManagersButton = await isAllowedToManageEvent(event);
-  const showDeleteManagerButton = showCreateManagersButton;
+  const isAllowedToManageEvent = await _isAllowedToManageEvent(event);
+  const showCreateSilcTransactionButton = await authentication.authorize(
+    "silcTransactionOfOtherCitizen",
+    "create",
+  );
 
   const resolvedParticipants = await getParticipants(event);
 
@@ -98,7 +102,7 @@ export const ParticipantsTab = async ({
 
         <div className="flex items-center gap-2 mt-4 mb-2">
           <h2 className="font-bold text-lg">Manager</h2>
-          {showCreateManagersButton && <CreateManagers event={event} />}
+          {isAllowedToManageEvent && <CreateManagers event={event} />}
         </div>
         {event.managers.length > 0 ? (
           <div className="flex gap-x-3 gap-y-1 flex-wrap">
@@ -107,7 +111,7 @@ export const ParticipantsTab = async ({
                 (a.handle || a.id).localeCompare(b.handle || b.id),
               )
               .map((manager) => {
-                if (showDeleteManagerButton) {
+                if (isAllowedToManageEvent) {
                   return (
                     <div
                       key={manager.id}
@@ -141,6 +145,18 @@ export const ParticipantsTab = async ({
           <span className="text-neutral-500">-</span>
         )}
       </section>
+
+      {showCreateSilcTransactionButton && (
+        <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
+          <h2 className="font-bold text-lg">SILC-Belohnung</h2>
+          <CreateOrUpdateSilcTransaction
+            initialReceiverIds={resolvedParticipants.map(
+              (participant) => participant.citizen.id,
+            )}
+            className="mt-4"
+          />
+        </section>
+      )}
 
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 overflow-auto">
         <h2 className="font-bold mb-4 flex items-center gap-2 text-lg">
