@@ -7,14 +7,17 @@ import { CitizenLink } from "@/common/components/CitizenLink";
 import { EditableDateTimeInput } from "@/common/components/form/EditableDateTimeInput";
 import { EditableInput } from "@/common/components/form/EditableInput";
 import { EditableTextarea } from "@/common/components/form/EditableTextarea";
+import { SingleRole } from "@/common/components/SingleRole";
 import { Tooltip } from "@/common/components/Tooltip";
 import { formatDate } from "@/common/utils/formatDate";
 import {
   TaskRewardType,
   TaskVisibility,
   type Entity,
+  type Role,
   type TaskAssignment,
   type Task as TaskType,
+  type Upload,
 } from "@prisma/client";
 import clsx from "clsx";
 import type { ReactNode } from "react";
@@ -37,6 +40,7 @@ import { CompleteTask } from "./CompleteTask";
 import { DeleteTask } from "./DeleteTask";
 import { useTaskVisibility } from "./TaskVisibilityContext";
 import { ToggleAssignmentForCurrentUser } from "./ToggleAssignmentForCurrentUser";
+import { UpdateRequiredRoles } from "./UpdateRequiredRoles";
 import { UpdateTaskAssignments } from "./UpdateTaskAssignments";
 import { UpdateTaskRepeatable } from "./UpdateTaskRepeatable";
 
@@ -49,6 +53,9 @@ interface TaskWithIncludes extends TaskType {
   completionists?: Entity[];
   cancelledBy?: Entity | null;
   deletedBy?: Entity | null;
+  requiredRoles: (Role & {
+    icon: Upload | null;
+  })[];
 }
 
 interface Props {
@@ -454,6 +461,30 @@ export const Task = ({ className, task }: Props) => {
               </div>
             )}
           </div>
+
+          {task.visibility === TaskVisibility.PUBLIC && (
+            <div className="flex flex-col items-start p-2">
+              <span className="text-neutral-400 text-sm">
+                Erforderliche Rolle(n)
+              </span>
+
+              <div className="flex gap-2 items-center">
+                {task.requiredRoles.length > 0 ? (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {task.requiredRoles.map((role) => (
+                      <SingleRole key={role.id} role={role} showPlaceholder />
+                    ))}
+                  </div>
+                ) : (
+                  "-"
+                )}
+
+                {isTaskUpdatable && isAllowedToManageTask && (
+                  <UpdateRequiredRoles task={task} className="flex-none" />
+                )}
+              </div>
+            </div>
+          )}
 
           {((isTaskUpdatable && task.visibility === TaskVisibility.PUBLIC) ||
             (isTaskUpdatable && isAllowedToManageTask) ||

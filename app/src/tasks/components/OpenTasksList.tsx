@@ -40,9 +40,9 @@ export const OpenTasksList = ({ tasks }: Props) => {
 
   return (
     <TaskVisibilityProvider items={tasks}>
-      {showCreateTask && <CreateTask cta className="mx-auto mb-4" />}
+      {showCreateTask && <CreateTask cta className="mx-auto" />}
 
-      <ToggleAll className="justify-center" />
+      <ToggleAll className="justify-center mt-4" />
 
       <div className="flex flex-col gap-6">
         {createdBy.me && createdBy.me.length > 0 && (

@@ -7,6 +7,7 @@ import { NumberInput } from "@/common/components/form/NumberInput";
 import { RadioGroup } from "@/common/components/form/RadioGroup";
 import { Textarea } from "@/common/components/form/Textarea";
 import { TextInput } from "@/common/components/form/TextInput";
+import { YesNoCheckbox } from "@/common/components/form/YesNoCheckbox";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
 import { CitizenInput } from "@/spynet/components/CitizenInput";
@@ -15,8 +16,9 @@ import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
 import { useActionState, useState } from "react";
 import toast from "react-hot-toast";
-import { FaPlus, FaSave, FaSpinner } from "react-icons/fa";
-import { createTask } from "../actions/createTask";
+import { FaChevronRight, FaPlus, FaSave, FaSpinner } from "react-icons/fa";
+import { createTask } from "../../actions/createTask";
+import { RequiredRoles } from "./RequiredRoles";
 
 enum Step {
   Description = "Description",
@@ -80,18 +82,10 @@ export const CreateTask = ({ className, cta }: Props) => {
   const [visibility, setVisibility] = useState<string>(TaskVisibility.PUBLIC);
   const [rewardType, setRewardType] = useState<string>(TaskRewardType.TEXT);
 
-  const handleClick = () => {
-    setIsOpen(true);
-  };
-
-  const handleRequestClose = () => {
-    setIsOpen(false);
-  };
-
   return (
     <>
       <Button
-        onClick={handleClick}
+        onClick={() => setIsOpen(true)}
         variant={cta ? "primary" : "secondary"}
         className={clsx(className)}
         title="Task erstellen"
@@ -102,7 +96,7 @@ export const CreateTask = ({ className, cta }: Props) => {
 
       <Modal
         isOpen={isOpen}
-        onRequestClose={handleRequestClose}
+        onRequestClose={() => setIsOpen(false)}
         className="w-[768px]"
         heading={<h2>Task erstellen</h2>}
       >
@@ -200,6 +194,15 @@ export const CreateTask = ({ className, cta }: Props) => {
               }
               className="mt-4"
             />
+
+            <Button
+              type="button"
+              onClick={() => setStep(Step.Visibility)}
+              className="mt-4 ml-auto"
+            >
+              <FaChevronRight />
+              Weiter
+            </Button>
           </div>
 
           <div
@@ -238,18 +241,27 @@ export const CreateTask = ({ className, cta }: Props) => {
             />
 
             {visibility === TaskVisibility.PUBLIC && (
-              <NumberInput
-                name="assignmentLimit"
-                label="Von wie vielen Citizen kann der Task angenommen werden?"
-                hint="optional"
-                defaultValue={
-                  state?.requestPayload?.has("assignmentLimit")
-                    ? (state.requestPayload.get("assignmentLimit") as string)
-                    : 1
-                }
-                min={1}
-                className="mt-4"
-              />
+              <>
+                <NumberInput
+                  name="assignmentLimit"
+                  label="Von wie vielen Citizen kann der Task angenommen werden?"
+                  hint="optional"
+                  defaultValue={
+                    state?.requestPayload?.has("assignmentLimit")
+                      ? (state.requestPayload.get("assignmentLimit") as string)
+                      : 1
+                  }
+                  min={1}
+                  className="mt-4"
+                />
+
+                <RequiredRoles className="mt-4" />
+
+                <label className="mt-4 mb-2 block">
+                  Soll dieser Task für die anderen Rollen versteckt werden?
+                </label>
+                <YesNoCheckbox name="hiddenForOtherRoles" />
+              </>
             )}
 
             {visibility === TaskVisibility.PERSONALIZED && (
@@ -259,6 +271,15 @@ export const CreateTask = ({ className, cta }: Props) => {
             {visibility === TaskVisibility.GROUP && (
               <CitizenInput name="assignedToId" multiple className="mt-4" />
             )}
+
+            <Button
+              type="button"
+              onClick={() => setStep(Step.Reward)}
+              className="mt-4 ml-auto"
+            >
+              <FaChevronRight />
+              Weiter
+            </Button>
           </div>
 
           <div
@@ -341,6 +362,7 @@ export const CreateTask = ({ className, cta }: Props) => {
               <TextInput
                 name="rewardTypeTextValue"
                 label="Text"
+                hint="optional"
                 maxLength={128}
                 defaultValue={
                   state?.requestPayload?.has("rewardTypeTextValue")
@@ -352,6 +374,15 @@ export const CreateTask = ({ className, cta }: Props) => {
                 className="mt-4"
               />
             )}
+
+            <Button
+              type="button"
+              onClick={() => setStep(Step.Other)}
+              className="mt-4 ml-auto"
+            >
+              <FaChevronRight />
+              Weiter
+            </Button>
           </div>
 
           <div
@@ -384,12 +415,12 @@ export const CreateTask = ({ className, cta }: Props) => {
               min={1}
               className="mt-4"
             />
-          </div>
 
-          <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
-            {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
-            Speichern
-          </Button>
+            <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
+              {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
+              Speichern
+            </Button>
+          </div>
 
           {state?.error && (
             <Note type="error" message={state.error} className="mt-4" />

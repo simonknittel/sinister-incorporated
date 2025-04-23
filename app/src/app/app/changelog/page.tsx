@@ -34,6 +34,21 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="23. April 2025">
+          <DayItem heading="Tasks">
+            <p>Weiterentwicklung des neuen Tasks System</p>
+
+            <p>
+              <strong>Sichtbarkeit auf Rollen einschränken</strong>
+            </p>
+            <p>
+              Tasks können nun optional auf Rolle eingeschränkt werden. Hierbei
+              gibt es die Möglichkeit den Task vollständig zu verstecken oder
+              auf &ldquo;nicht-annehmbar&rdquo; zu schalten.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="21. April 2025">
           <DayItem heading="Tasks">
             <p>Weiterentwicklung des neuen Tasks System</p>

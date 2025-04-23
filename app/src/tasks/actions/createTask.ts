@@ -22,6 +22,8 @@ const schema = z.object({
   rewardTypeSilcValue: z.coerce.number().min(1).optional(),
   rewardTypeNewSilcValue: z.coerce.number().min(1).optional(),
   repeatable: z.coerce.number().min(1),
+  requiredRoles: z.array(z.string().cuid()).optional(),
+  hiddenForOtherRoles: z.coerce.boolean().optional(),
 });
 
 export const createTask = async (formData: FormData) => {
@@ -67,6 +69,10 @@ export const createTask = async (formData: FormData) => {
         ? formData.get("rewardTypeNewSilcValue")
         : undefined,
       repeatable: formData.get("repeatable"),
+      requiredRoles: formData.getAll("requiredRole[]"),
+      hiddenForOtherRoles: formData.get("hiddenForOtherRoles")
+        ? formData.get("hiddenForOtherRoles")
+        : undefined,
     });
     if (!result.success)
       return {
@@ -128,6 +134,14 @@ export const createTask = async (formData: FormData) => {
             rewardTypeSilcValue: result.data.rewardTypeSilcValue,
             rewardTypeNewSilcValue: result.data.rewardTypeNewSilcValue,
             repeatable: result.data.repeatable,
+            requiredRoles: {
+              connect: result.data.requiredRoles
+                ? result.data.requiredRoles.map((roleId) => ({
+                    id: roleId,
+                  }))
+                : [],
+            },
+            hiddenForOtherRoles: result.data.hiddenForOtherRoles,
           },
         });
         break;

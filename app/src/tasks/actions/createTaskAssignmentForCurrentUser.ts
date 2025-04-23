@@ -47,6 +47,17 @@ export const createTaskAssignmentForCurrentUser = createAuthenticatedAction(
         requestPayload: formData,
       };
 
+    if (
+      task.requiredRoles.length > 0 &&
+      !task.requiredRoles.some((role) =>
+        authentication.session.entity!.roles?.split(",").includes(role.id),
+      )
+    )
+      return {
+        error: "Du erfüllst nicht die Voraussetzungen für diesen Task.",
+        requestPayload: formData,
+      };
+
     /**
      * Create
      */

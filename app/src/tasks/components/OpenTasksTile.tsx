@@ -16,10 +16,11 @@ export const OpenTasksTile = async ({ className }: Props) => {
 
   if (tasks.length <= 0)
     return (
-      <section className={clsx("flex justify-center", className)}>
-        <div className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 flex flex-col items-center gap-4">
+      <section className={clsx(className)}>
+        {showCreateTask && <CreateTask className="mx-auto" cta />}
+
+        <div className="rounded-2xl bg-neutral-800/50 p-4 flex flex-col items-center gap-4 mt-4">
           <p>Es gibt keine offenen Tasks.</p>
-          {showCreateTask && <CreateTask cta />}
         </div>
       </section>
     );
