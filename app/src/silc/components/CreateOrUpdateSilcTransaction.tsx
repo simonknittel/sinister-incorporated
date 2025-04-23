@@ -21,6 +21,7 @@ interface BaseProps {
 
 interface CreateProps extends BaseProps {
   initialReceiverIds?: Entity["id"][];
+  initialDescription?: string;
 }
 
 interface UpdateProps extends BaseProps {
@@ -152,8 +153,11 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
             defaultValue={
               state?.requestPayload?.has("description")
                 ? (state.requestPayload.get("description") as string)
-                : ("transaction" in props && props.transaction?.description) ||
-                  ""
+                : "transaction" in props && props.transaction?.description
+                  ? props.transaction?.description
+                  : "initialDescription" in props
+                    ? props.initialDescription
+                    : ""
             }
             className="mt-4"
           />
