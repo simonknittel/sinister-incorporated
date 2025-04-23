@@ -47,6 +47,15 @@ export default async function Page() {
               auf &ldquo;nicht-annehmbar&rdquo; zu schalten.
             </p>
           </DayItem>
+
+          <DayItem heading="Eventbelohnung">
+            <p>
+              Im Teilnehmer-Reiter der Events gibt es nun eine Möglichkeit eine
+              SILC-Transaktion zu starten, welche alle Teilnehmer vorausgefüllt
+              hat. Vor dem Speichern können die Empfänger noch bearbeitet
+              werden.
+            </p>
+          </DayItem>
         </Day>
 
         <Day heading="21. April 2025">

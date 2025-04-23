@@ -35,7 +35,7 @@ export const RequiredRoles = ({ className, defaultValue }: Props) => {
 
   return (
     <div className={clsx(className)}>
-      <p className="mb-2">Sichtbarkeit auf Rollen einschränken</p>
+      <p className="mb-2">Erforderliche Rolle(n)</p>
 
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Trigger asChild>
@@ -81,7 +81,10 @@ export const RequiredRoles = ({ className, defaultValue }: Props) => {
 
       <div ref={popoverPortalRef} className="z-10" />
 
-      <p className="text-xs mt-1 text-gray-400">optional</p>
+      <p className="text-xs mt-1 text-gray-400">
+        Dieser Task kann nur von den ausgewählten Rollen angenommen werden.
+        optional
+      </p>
 
       {data && selectedRoles.length > 0 && (
         <div className="flex gap-1 flex-wrap mt-2">

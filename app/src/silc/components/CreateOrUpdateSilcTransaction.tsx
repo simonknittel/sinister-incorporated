@@ -6,7 +6,7 @@ import { Textarea } from "@/common/components/form/Textarea";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
 import { CitizenInput } from "@/spynet/components/CitizenInput";
-import type { Event, SilcTransaction } from "@prisma/client";
+import type { Entity, SilcTransaction } from "@prisma/client";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
 import { useActionState, useState } from "react";
@@ -15,19 +15,19 @@ import { FaPen, FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createSilcTransaction } from "../actions/createSilcTransaction";
 import { updateSilcTransaction } from "../actions/updateSilcTransaction";
 
-type BaseProps = Readonly<{
+interface BaseProps {
   className?: string;
-}>;
+}
 
-type CreateProps = Readonly<{
-  event: Event;
-}>;
+interface CreateProps extends BaseProps {
+  initialReceiverIds?: Entity["id"][];
+}
 
-type UpdateProps = Readonly<{
-  transaction?: SilcTransaction;
-}>;
+interface UpdateProps extends BaseProps {
+  transaction: SilcTransaction;
+}
 
-type Props = (CreateProps | UpdateProps) & BaseProps;
+type Props = CreateProps | UpdateProps;
 
 export const CreateOrUpdateSilcTransaction = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,19 +68,11 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
     null,
   );
 
-  const handleClick = () => {
-    setIsOpen(true);
-  };
-
-  const handleRequestClose = () => {
-    setIsOpen(false);
-  };
-
   return (
     <>
       {"transaction" in props ? (
         <Button
-          onClick={handleClick}
+          onClick={() => setIsOpen(true)}
           variant="tertiary"
           className={clsx("px-2 w-auto", props.className)}
           title="Transaktion bearbeiten"
@@ -90,7 +82,7 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
         </Button>
       ) : (
         <Button
-          onClick={handleClick}
+          onClick={() => setIsOpen(true)}
           variant="secondary"
           className={clsx(props.className)}
           title="Transaktion erstellen"
@@ -102,7 +94,7 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
 
       <Modal
         isOpen={isOpen}
-        onRequestClose={handleRequestClose}
+        onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
         heading={
           <h2>
@@ -129,7 +121,14 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
               autoFocus
             />
           ) : (
-            <CitizenInput name="receiverId" multiple autoFocus />
+            <CitizenInput
+              name="receiverId"
+              multiple
+              autoFocus
+              defaultValue={
+                "initialReceiverIds" in props ? props.initialReceiverIds : []
+              }
+            />
           )}
 
           <NumberInput
