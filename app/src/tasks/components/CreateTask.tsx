@@ -15,7 +15,7 @@ import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
 import { useActionState, useState } from "react";
 import toast from "react-hot-toast";
-import { FaPlus, FaSave, FaSpinner } from "react-icons/fa";
+import { FaChevronRight, FaPlus, FaSave, FaSpinner } from "react-icons/fa";
 import { createTask } from "../actions/createTask";
 
 enum Step {
@@ -200,6 +200,15 @@ export const CreateTask = ({ className, cta }: Props) => {
               }
               className="mt-4"
             />
+
+            <Button
+              type="button"
+              onClick={() => setStep(Step.Visibility)}
+              className="mt-4 ml-auto"
+            >
+              <FaChevronRight />
+              Weiter
+            </Button>
           </div>
 
           <div
@@ -259,6 +268,15 @@ export const CreateTask = ({ className, cta }: Props) => {
             {visibility === TaskVisibility.GROUP && (
               <CitizenInput name="assignedToId" multiple className="mt-4" />
             )}
+
+            <Button
+              type="button"
+              onClick={() => setStep(Step.Reward)}
+              className="mt-4 ml-auto"
+            >
+              <FaChevronRight />
+              Weiter
+            </Button>
           </div>
 
           <div
@@ -341,6 +359,7 @@ export const CreateTask = ({ className, cta }: Props) => {
               <TextInput
                 name="rewardTypeTextValue"
                 label="Text"
+                hint="optional"
                 maxLength={128}
                 defaultValue={
                   state?.requestPayload?.has("rewardTypeTextValue")
@@ -352,6 +371,15 @@ export const CreateTask = ({ className, cta }: Props) => {
                 className="mt-4"
               />
             )}
+
+            <Button
+              type="button"
+              onClick={() => setStep(Step.Other)}
+              className="mt-4 ml-auto"
+            >
+              <FaChevronRight />
+              Weiter
+            </Button>
           </div>
 
           <div
@@ -384,12 +412,12 @@ export const CreateTask = ({ className, cta }: Props) => {
               min={1}
               className="mt-4"
             />
-          </div>
 
-          <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
-            {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
-            Speichern
-          </Button>
+            <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
+              {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
+              Speichern
+            </Button>
+          </div>
 
           {state?.error && (
             <Note type="error" message={state.error} className="mt-4" />
