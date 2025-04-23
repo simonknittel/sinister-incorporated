@@ -10,7 +10,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   labelClassName?: string;
 }
 
-const YesNoCheckbox = (props: Props) => {
+export const YesNoCheckbox = (props: Props) => {
   const {
     className,
     hideLabel = false,

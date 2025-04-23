@@ -8,6 +8,7 @@ import { env } from "@/env";
 import { log } from "@/logging";
 import { getUserById } from "@/users/queries";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import type { Entity } from "@prisma/client";
 import {
   getServerSession,
   type DefaultSession,
@@ -34,6 +35,7 @@ declare module "next-auth" {
     discordId: string;
     givenPermissionSets: PermissionSet[];
     entityId: string | null;
+    entity: Entity | null;
   }
 
   interface User {
@@ -124,6 +126,7 @@ export const authOptions: NextAuthOptions = {
         discordId: discordAccount!.providerAccountId,
         givenPermissionSets,
         entityId: entity?.id,
+        entity,
       };
     },
 

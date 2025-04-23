@@ -178,6 +178,12 @@ export const completeTask = async (formData: FormData) => {
               rewardTypeSilcValue: task.rewardTypeSilcValue,
               rewardTypeNewSilcValue: task.rewardTypeNewSilcValue,
               repeatable: task.repeatable - 1,
+              requiredRoles: {
+                connect: task.requiredRoles.map((role) => ({
+                  id: role.id,
+                })),
+              },
+              hiddenForOtherRoles: task.hiddenForOtherRoles,
             },
           });
           break;

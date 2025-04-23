@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import Button from "@/common/components/Button";
 import { CitizenLink } from "@/common/components/CitizenLink";
 import { SingleRole } from "@/common/components/SingleRole";
@@ -192,9 +191,6 @@ const Multiple = ({
   defaultValue,
   autoFocus,
 }: MultipleComponentProps) => {
-  const authentication = useAuthentication();
-  if (!authentication) throw new Error("Forbidden");
-
   const { isPending, data: dataCitizensGroupedByVisibleRoles } =
     api.citizens.getCitizensGroupedByVisibleRoles.useQuery(undefined, {
       refetchOnWindowFocus: false,

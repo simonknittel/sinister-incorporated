@@ -2,6 +2,7 @@ import { aiRouter } from "./routers/ai";
 import { citizensRouter } from "./routers/citizens";
 import { entityLogRouter } from "./routers/entityLog";
 import { manufacturerRouter } from "./routers/manufacturer";
+import { rolesRouter } from "./routers/roles";
 import { variantRouter } from "./routers/variant";
 import { createCallerFactory, createTRPCRouter } from "./trpc";
 
@@ -12,10 +13,11 @@ import { createCallerFactory, createTRPCRouter } from "./trpc";
  */
 export const appRouter = createTRPCRouter({
   ai: aiRouter,
+  citizens: citizensRouter,
   entityLog: entityLogRouter,
   manufacturer: manufacturerRouter,
+  roles: rolesRouter,
   variant: variantRouter,
-  citizens: citizensRouter,
 });
 
 // export type definition of API
