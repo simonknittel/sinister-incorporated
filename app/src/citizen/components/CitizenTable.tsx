@@ -68,7 +68,17 @@ export const CitizenTable = ({
   }
 
   // Tailwind CSS can't detect dynamic CSS classes. Therefore we are using an inline style here.
-  const gridTemplateColumns = `1fr 100px ${showDiscordIdColumn ? "200px" : ""} ${showTeamspeakIdColumn ? "300px" : ""} 140px ${showLastSeenAtColumn ? "140px" : ""} 44px`;
+  const gridTemplateColumns = [
+    "1fr",
+    "100px",
+    showDiscordIdColumn && "200px",
+    showTeamspeakIdColumn && "300px",
+    "140px",
+    showLastSeenAtColumn && "140px",
+    "44px",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <table className="w-full min-w-[1200px]">
