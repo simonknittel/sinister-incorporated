@@ -1,12 +1,11 @@
 import { Actions } from "@/common/components/Actions";
 import { Link } from "@/common/components/Link";
 import { formatDate } from "@/common/utils/formatDate";
-import { type Entity, type Role, type Upload } from "@prisma/client";
+import { type Entity } from "@prisma/client";
 import { Suspense } from "react";
 import { FaExternalLinkAlt, FaSortDown, FaSortUp } from "react-icons/fa";
 import { CitizenTableDelete } from "./CitizenTableDelete";
 import { LastSeenAt } from "./LastSeenAt";
-import { RolesCell } from "./RolesCell";
 import { HistoryModal } from "./generic-log-type/HistoryModal";
 
 type Row = Readonly<{
@@ -15,9 +14,6 @@ type Row = Readonly<{
 
 interface Props {
   readonly rows: Row[];
-  readonly assignableRoles: (Role & {
-    icon: Upload | null;
-  })[];
   readonly showDiscordIdColumn?: boolean;
   readonly showTeamspeakIdColumn?: boolean;
   readonly showLastSeenAtColumn?: boolean;
@@ -27,7 +23,6 @@ interface Props {
 
 export const CitizenTable = ({
   rows,
-  assignableRoles,
   showDiscordIdColumn = false,
   showTeamspeakIdColumn = false,
   showLastSeenAtColumn = false,
@@ -72,18 +67,16 @@ export const CitizenTable = ({
     lastSeenAtSearchParams.set("sort", "last-seen-at-desc");
   }
 
-  let columnCount = 4;
-  if (showDiscordIdColumn) columnCount++;
-  if (showTeamspeakIdColumn) columnCount++;
-  if (showLastSeenAtColumn) columnCount++;
+  // Tailwind CSS can't detect dynamic CSS classes. Therefore we are using an inline style here.
+  const gridTemplateColumns = `1fr 100px ${showDiscordIdColumn ? "200px" : ""} ${showTeamspeakIdColumn ? "300px" : ""} 140px ${showLastSeenAtColumn ? "140px" : ""} 44px`;
 
   return (
-    <table className="w-full min-w-[1100px]">
+    <table className="w-full min-w-[1200px]">
       <thead>
         <tr
           className="grid items-center gap-4 text-left text-neutral-500"
           style={{
-            gridTemplateColumns: `repeat(${columnCount}, 1fr) 44px`, // Tailwind CSS can't detect dynamic CSS classes. Therefore we are using an inline style here.
+            gridTemplateColumns,
           }}
         >
           <th>
@@ -106,13 +99,6 @@ export const CitizenTable = ({
           {showTeamspeakIdColumn && (
             <th className="whitespace-nowrap">TeamSpeak ID</th>
           )}
-
-          <th
-            className="overflow-hidden text-ellipsis whitespace-nowrap"
-            title="Rollen/Zertifikate"
-          >
-            Rollen/Zertifikate
-          </th>
 
           <th>
             <Link
@@ -154,7 +140,7 @@ export const CitizenTable = ({
               key={row.entity.id}
               className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
               style={{
-                gridTemplateColumns: `repeat(${columnCount}, 1fr) 44px`, // Tailwind CSS can't detect dynamic CSS classes. Therefore we are using an inline style here.
+                gridTemplateColumns,
               }}
             >
               <td className="overflow-hidden flex gap-4 items-center justify-between">
@@ -216,19 +202,6 @@ export const CitizenTable = ({
                   />
                 </td>
               )}
-
-              <td className="overflow-hidden flex gap-4 items-center justify-between">
-                <Suspense
-                  fallback={
-                    <div className="bg-neutral-800 animate-pulse rounded h-8 w-20" />
-                  }
-                >
-                  <RolesCell
-                    entity={row.entity}
-                    assignableRoles={assignableRoles}
-                  />
-                </Suspense>
-              </td>
 
               <td className="overflow-hidden text-ellipsis">
                 {formatDate(row.entity.createdAt)}

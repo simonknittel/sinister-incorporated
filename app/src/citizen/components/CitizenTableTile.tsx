@@ -10,7 +10,7 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "@/common/utils/sorting";
-import { getAssignableRoles, getAssignedRoles } from "@/roles/utils/getRoles";
+import { getAssignedRoles } from "@/roles/utils/getRoles";
 import Pagination from "@/spynet/components/Pagination";
 import clsx from "clsx";
 import { CitizenTable } from "./CitizenTable";
@@ -111,7 +111,6 @@ export const CitizenTableTile = async ({ className, searchParams }: Props) => {
     }
   });
   const limitedRows = limitRows(sortedRows, currentPage);
-  const assignableRoles = await getAssignableRoles();
 
   const showLastSeenAtColumn = await authentication.authorize(
     "lastSeen",
@@ -141,7 +140,6 @@ export const CitizenTableTile = async ({ className, searchParams }: Props) => {
 
       <CitizenTable
         rows={limitedRows}
-        assignableRoles={assignableRoles}
         showDiscordIdColumn={showDiscordIdAtColumn}
         showTeamspeakIdColumn={showTeamspeakIdAtColumn}
         showLastSeenAtColumn={showLastSeenAtColumn}
