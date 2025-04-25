@@ -33,14 +33,14 @@ export default function Modal({
   return createPortal(
     <div
       className="fixed inset-0 z-30 flex cursor-pointer items-start lg:items-center justify-center bg-neutral-800/50 p-4 backdrop-blur"
-      onClick={onRequestClose || (() => router.back())}
+      onMouseDown={onRequestClose || (() => router.back())}
     >
       <div
         className={clsx(
           "max-h-full max-w-full cursor-auto overflow-auto rounded-2xl bg-neutral-800 text-neutral-50",
           className,
         )}
-        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="px-4 py-4 lg:px-8 lg:py-4 border-b border-white/5 flex justify-between items-center">
           <span className="text-xl font-bold">{heading}</span>
