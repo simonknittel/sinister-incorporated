@@ -33,28 +33,28 @@ export default function Modal({
   return createPortal(
     <div
       className="fixed inset-0 z-30 flex cursor-pointer items-start lg:items-center justify-center bg-neutral-800/50 p-4 backdrop-blur"
-      onClick={onRequestClose || (() => router.back())}
+      onMouseDown={onRequestClose || (() => router.back())}
     >
       <div
         className={clsx(
-          "max-h-full max-w-full cursor-auto overflow-auto rounded-2xl bg-neutral-800 text-neutral-50 relative",
+          "max-h-full max-w-full cursor-auto overflow-auto rounded-2xl bg-neutral-800 text-neutral-50",
           className,
         )}
-        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="px-4 py-4 lg:px-8 lg:py-4 text-xl font-bold border-b border-white/5">
-          {heading}
+        <div className="px-4 py-4 lg:px-8 lg:py-4 border-b border-white/5 flex justify-between items-center">
+          <span className="text-xl font-bold">{heading}</span>
+
+          <button
+            title="Schließen"
+            className="px-2 text-2xl text-sinister-red-500 hover:text-sinister-red-300 active:text-sinister-red-300 flex-initial"
+            onClick={onRequestClose || (() => router.back())}
+          >
+            <FaRegTimesCircle />
+          </button>
         </div>
 
         <div className="p-4 lg:p-8">{children}</div>
-
-        <button
-          title="Schließen"
-          className="absolute right-2 lg:right-4 top-1 px-2 py-[14px] text-2xl text-sinister-red-500 hover:text-sinister-red-300 active:text-sinister-red-300"
-          onClick={onRequestClose || (() => router.back())}
-        >
-          <FaRegTimesCircle />
-        </button>
       </div>
     </div>,
     document.body,
