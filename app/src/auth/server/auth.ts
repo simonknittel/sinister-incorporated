@@ -34,7 +34,6 @@ declare module "next-auth" {
     } & DefaultSession["user"];
     discordId: string;
     givenPermissionSets: PermissionSet[];
-    entityId: string | null;
     entity: Entity | null;
   }
 

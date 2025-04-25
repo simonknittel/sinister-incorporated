@@ -22,7 +22,7 @@ export const createPenaltyEntry = async (formData: FormData) => {
      */
     const authentication = await authenticateAction("createPenaltyEntry");
     await authentication.authorizeAction("penaltyEntry", "create");
-    if (!authentication.session.entityId)
+    if (!authentication.session.entity)
       return {
         error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
         requestPayload: formData,
@@ -54,7 +54,7 @@ export const createPenaltyEntry = async (formData: FormData) => {
       data: {
         createdBy: {
           connect: {
-            id: authentication.session.entityId,
+            id: authentication.session.entity.id,
           },
         },
         citizen: {

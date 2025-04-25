@@ -11,6 +11,7 @@ import {
 import { CreateOrUpdateSilcTransaction } from "@/silc/components/CreateOrUpdateSilcTransaction";
 import type { Entity, Event, EventDiscordParticipant } from "@prisma/client";
 import clsx from "clsx";
+import { forbidden } from "next/navigation";
 import { Suspense } from "react";
 import {
   FaInfoCircle,
@@ -41,6 +42,7 @@ export const ParticipantsTab = async ({
   urlSearchParams,
 }: Props) => {
   const authentication = await requireAuthentication();
+  if (!authentication.session.entity) forbidden();
   const isAllowedToManageEvent = await _isAllowedToManageEvent(event);
   const showCreateSilcTransactionButton = await authentication.authorize(
     "silcTransactionOfOtherCitizen",
@@ -121,9 +123,9 @@ export const ParticipantsTab = async ({
                         href={`/app/spynet/citizen/${manager.id}`}
                         className={clsx("hover:underline px-2 py-1", {
                           "text-green-500":
-                            manager.id === authentication.session.entityId,
+                            manager.id === authentication.session.entity!.id,
                           "text-sinister-red-500":
-                            manager.id !== authentication.session.entityId,
+                            manager.id !== authentication.session.entity!.id,
                         })}
                         prefetch={false}
                       >
@@ -239,10 +241,10 @@ export const ParticipantsTab = async ({
                           {
                             "text-green-500":
                               resolvedParticipant.citizen.id ===
-                              authentication.session.entityId,
+                              authentication.session.entity!.id,
                             "text-sinister-red-500":
                               resolvedParticipant.citizen.id !==
-                              authentication.session.entityId,
+                              authentication.session.entity!.id,
                           },
                         )}
                         prefetch={false}

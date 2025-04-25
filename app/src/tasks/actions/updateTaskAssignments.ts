@@ -23,7 +23,7 @@ export const updateTaskAssignments = async (formData: FormData) => {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("updateTaskAssignments");
-    if (!authentication.session.entityId)
+    if (!authentication.session.entity)
       return {
         error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
         requestPayload: formData,
@@ -89,7 +89,7 @@ export const updateTaskAssignments = async (formData: FormData) => {
             data:
               result.data.assignedToIds?.map((assignedToId) => ({
                 citizenId: assignedToId,
-                createdById: authentication.session.entityId,
+                createdById: authentication.session.entity!.id,
               })) || [],
             skipDuplicates: true,
           },

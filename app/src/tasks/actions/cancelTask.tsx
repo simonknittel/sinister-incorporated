@@ -16,7 +16,7 @@ export const cancelTask = createAuthenticatedAction(
   "cancelTask",
   schema,
   async (formData: FormData, authentication, data) => {
-    if (!authentication.session.entityId)
+    if (!authentication.session.entity)
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
         requestPayload: formData,
@@ -50,7 +50,7 @@ export const cancelTask = createAuthenticatedAction(
         cancelledAt: new Date(),
         cancelledBy: {
           connect: {
-            id: authentication.session.entityId,
+            id: authentication.session.entity.id,
           },
         },
       },

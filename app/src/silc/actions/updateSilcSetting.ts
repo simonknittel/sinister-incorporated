@@ -27,7 +27,7 @@ export const updateSilcSetting = async (
      */
     const authentication = await authenticateAction("updateSilcSetting");
     await authentication.authorizeAction("silcSetting", "update");
-    if (!authentication.session.entityId)
+    if (!authentication.session.entity)
       return { error: "Du bist nicht berechtigt, diese Aktion durchzuführen." };
 
     /**
@@ -58,7 +58,7 @@ export const updateSilcSetting = async (
         value: result.data.value,
         updatedBy: {
           connect: {
-            id: authentication.session.entityId,
+            id: authentication.session.entity.id,
           },
         },
       },
@@ -67,7 +67,7 @@ export const updateSilcSetting = async (
         value: result.data.value,
         updatedBy: {
           connect: {
-            id: authentication.session.entityId,
+            id: authentication.session.entity.id,
           },
         },
       },

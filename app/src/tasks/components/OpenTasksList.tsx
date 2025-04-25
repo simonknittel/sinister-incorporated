@@ -18,7 +18,7 @@ export const OpenTasksList = ({ tasks }: Props) => {
   const showCreateTask = authentication.authorize("task", "create");
 
   const createdBy = Object.groupBy(tasks, (task) =>
-    task.createdById === authentication.session.entityId ? "me" : "others",
+    task.createdById === authentication.session.entity?.id ? "me" : "others",
   );
   const groupedByVisibility = Object.groupBy(
     createdBy.others || [],
@@ -32,10 +32,10 @@ export const OpenTasksList = ({ tasks }: Props) => {
     (task) =>
       task.assignments?.some(
         (assignment) =>
-          assignment.citizenId === authentication.session.entityId,
+          assignment.citizenId === authentication.session.entity?.id,
       )
         ? "personalizedToMe"
-        : "personbalizedToOthers",
+        : "personalizedToOthers",
   );
 
   return (
@@ -73,8 +73,8 @@ export const OpenTasksList = ({ tasks }: Props) => {
               </div>
             </section>
           )}
-        {groupedByVisibilityAssignment.personbalizedToOthers &&
-          groupedByVisibilityAssignment.personbalizedToOthers.length > 0 && (
+        {groupedByVisibilityAssignment.personalizedToOthers &&
+          groupedByVisibilityAssignment.personalizedToOthers.length > 0 && (
             <section>
               <div className="flex gap-2 items-baseline">
                 <h3 className="font-thin text-2xl">An andere personalisiert</h3>
@@ -85,7 +85,7 @@ export const OpenTasksList = ({ tasks }: Props) => {
               </div>
 
               <div className="flex flex-col gap-[1px] mt-4">
-                {groupedByVisibilityAssignment.personbalizedToOthers.map(
+                {groupedByVisibilityAssignment.personalizedToOthers.map(
                   (task) => (
                     <Task key={task.id} task={task} />
                   ),

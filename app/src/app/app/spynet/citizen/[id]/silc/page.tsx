@@ -5,7 +5,7 @@ import { SkeletonTile } from "@/common/components/SkeletonTile";
 import { log } from "@/logging";
 import { SilcTransactionsTable } from "@/silc/components/SilcTransactionsTable";
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { forbidden, notFound } from "next/navigation";
 import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 
@@ -47,11 +47,12 @@ export default async function Page(props: Props) {
   const authentication = await authenticatePage(
     "/app/spynet/citizen/[id]/silc",
   );
+  if (!authentication.session.entity) forbidden();
 
   const entity = await getCitizenById((await props.params).id);
   if (!entity) notFound();
 
-  if (entity.id === authentication.session.entityId) {
+  if (entity.id === authentication.session.entity.id) {
     await authentication.authorizePage(
       "silcTransactionOfCurrentCitizen",
       "read",

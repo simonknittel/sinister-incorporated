@@ -82,7 +82,8 @@ export const Position = ({
   const isOpen = openItems.includes(position.id);
 
   const hasCurrentUserAlreadyApplied = position.applications.some(
-    (application) => application.citizen.id === authentication.session.entityId,
+    (application) =>
+      application.citizen.id === authentication.session.entity?.id,
   );
 
   const handleToggleOpen = () => {

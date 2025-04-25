@@ -11,7 +11,7 @@ export const getSilcBalanceOfCurrentCitizen = cache(async () => {
     async (span) => {
       try {
         const authentication = await requireAuthentication();
-        if (!authentication.session.entityId) throw new Error("Forbidden");
+        if (!authentication.session.entity) throw new Error("Forbidden");
         if (
           !(await authentication.authorize(
             "silcBalanceOfCurrentCitizen",
@@ -22,7 +22,7 @@ export const getSilcBalanceOfCurrentCitizen = cache(async () => {
 
         const entity = await prisma.entity.findUniqueOrThrow({
           where: {
-            id: authentication.session.entityId,
+            id: authentication.session.entity.id,
           },
           select: {
             silcBalance: true,
@@ -144,13 +144,14 @@ export const getSilcTransactionsOfCitizen = cache(
       async (span) => {
         try {
           const authentication = await requireAuthentication();
+          if (!authentication.session.entity) throw new Error("Forbidden");
           if (
             !(await authentication.authorize(
               "silcTransactionOfOtherCitizen",
               "read",
             )) &&
             !(
-              citizenId === authentication.session.entityId &&
+              citizenId === authentication.session.entity.id &&
               (await authentication.authorize(
                 "silcTransactionOfCurrentCitizen",
                 "read",

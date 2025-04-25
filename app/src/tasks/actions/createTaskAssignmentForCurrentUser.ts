@@ -16,7 +16,7 @@ export const createTaskAssignmentForCurrentUser = createAuthenticatedAction(
   "createTaskAssignmentForCurrentUser",
   schema,
   async (formData: FormData, authentication, data) => {
-    if (!authentication.session.entityId)
+    if (!authentication.session.entity)
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
         requestPayload: formData,
@@ -70,7 +70,7 @@ export const createTaskAssignmentForCurrentUser = createAuthenticatedAction(
         },
         citizen: {
           connect: {
-            id: authentication.session.entityId,
+            id: authentication.session.entity.id,
           },
         },
       },

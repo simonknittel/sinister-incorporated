@@ -14,7 +14,6 @@ export const getTasks = cache(async () => {
   return getTracer().startActiveSpan("getTasks", async (span) => {
     try {
       const authentication = await requireAuthentication();
-      if (!authentication.session.entityId) throw new Error("Forbidden");
       if (!(await authentication.authorize("task", "read")))
         throw new Error("Forbidden");
 
@@ -83,7 +82,6 @@ export const getClosedTasks = cache(async () => {
   return getTracer().startActiveSpan("getClosedTasks", async (span) => {
     try {
       const authentication = await requireAuthentication();
-      if (!authentication.session.entityId) throw new Error("Forbidden");
       if (!(await authentication.authorize("task", "read")))
         throw new Error("Forbidden");
 
@@ -158,7 +156,6 @@ export const getTaskById = cache(async (id: Task["id"]) => {
   return getTracer().startActiveSpan("getTaskById", async (span) => {
     try {
       const authentication = await requireAuthentication();
-      if (!authentication.session.entityId) throw new Error("Forbidden");
       if (!(await authentication.authorize("task", "read")))
         throw new Error("Forbidden");
 

@@ -24,6 +24,7 @@ export async function POST(request: Request) {
       "/api/spynet/organization",
       "POST",
     );
+    if (!authentication.session.entity) throw new Error("Forbidden");
     await authentication.authorizeApi("organization", "create");
 
     /**
@@ -64,14 +65,14 @@ export async function POST(request: Request) {
              * rejected above.
              * The only exception is with the `adminEnabled` cookie.
              */
-            id: authentication.session.entityId!,
+            id: authentication.session.entity.id,
           },
         },
         attributeHistoryEntries: {
           create: {
             createdBy: {
               connect: {
-                id: authentication.session.entityId!,
+                id: authentication.session.entity.id,
               },
             },
             attributeKey: "name",
@@ -80,7 +81,7 @@ export async function POST(request: Request) {
             confirmedAt: new Date(),
             confirmedBy: {
               connect: {
-                id: authentication.session.entityId!,
+                id: authentication.session.entity.id,
               },
             },
           },

@@ -25,7 +25,7 @@ export const completeTask = async (formData: FormData) => {
      * Authenticate and authorize the request
      */
     const authentication = await authenticateAction("completeTask");
-    if (!authentication.session.entityId)
+    if (!authentication.session.entity)
       return {
         error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
         requestPayload: formData,
@@ -80,7 +80,7 @@ export const completeTask = async (formData: FormData) => {
         completedAt: new Date(),
         completedBy: {
           connect: {
-            id: authentication.session.entityId,
+            id: authentication.session.entity.id,
           },
         },
         completionists: {
@@ -105,7 +105,7 @@ export const completeTask = async (formData: FormData) => {
               receiverId,
               value: task.rewardTypeSilcValue!,
               description: `Task erfüllt: ${task.title}`,
-              createdById: authentication.session.entityId,
+              createdById: authentication.session.entity!.id,
             })),
           }),
 
@@ -119,7 +119,7 @@ export const completeTask = async (formData: FormData) => {
                       result.data.completionistIds.length
                     ),
                     description: `Task abgeschlossen: ${task.title}`,
-                    createdById: authentication.session.entityId,
+                    createdById: authentication.session.entity.id,
                   },
                 }),
               ]
@@ -137,7 +137,7 @@ export const completeTask = async (formData: FormData) => {
             receiverId,
             value: task.rewardTypeNewSilcValue!,
             description: `Task erfüllt: ${task.title}`,
-            createdById: authentication.session.entityId,
+            createdById: authentication.session.entity!.id,
           })),
         });
       }
@@ -169,7 +169,7 @@ export const completeTask = async (formData: FormData) => {
               description: task.description,
               createdBy: {
                 connect: {
-                  id: authentication.session.entityId,
+                  id: authentication.session.entity.id,
                 },
               },
               expiresAt: task.expiresAt,
@@ -197,7 +197,7 @@ export const completeTask = async (formData: FormData) => {
               description: task.description,
               createdBy: {
                 connect: {
-                  id: authentication.session.entityId,
+                  id: authentication.session.entity.id,
                 },
               },
               expiresAt: task.expiresAt,
@@ -210,7 +210,7 @@ export const completeTask = async (formData: FormData) => {
                   data:
                     task.assignments.map((assignment) => ({
                       citizenId: assignment.citizenId,
-                      createdById: authentication.session.entityId,
+                      createdById: authentication.session.entity!.id,
                     })) || [],
                 },
               },
@@ -231,7 +231,7 @@ export const completeTask = async (formData: FormData) => {
                     assignmentLimit: task.assignmentLimit,
                     title: task.title,
                     description: task.description,
-                    createdById: authentication.session.entityId,
+                    createdById: authentication.session.entity!.id,
                     expiresAt: task.expiresAt,
                     rewardType: task.rewardType,
                     rewardTypeTextValue: task.rewardTypeTextValue,
@@ -245,7 +245,7 @@ export const completeTask = async (formData: FormData) => {
                   data: {
                     taskId: id,
                     citizenId: assignment.citizenId,
-                    createdById: authentication.session.entityId,
+                    createdById: authentication.session.entity!.id,
                   },
                 }),
               ];

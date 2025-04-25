@@ -7,7 +7,7 @@ export const useIsAllowedToManageTask = (task: Pick<Task, "createdById">) => {
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Unauthorized");
 
-  if (task.createdById === authentication.session.entityId) return true;
+  if (task.createdById === authentication.session.entity?.id) return true;
 
   if (authentication.authorize("task", "manage")) return true;
 

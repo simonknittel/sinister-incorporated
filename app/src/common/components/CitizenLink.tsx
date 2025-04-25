@@ -14,7 +14,7 @@ interface Props {
 export const CitizenLink = ({ className, citizen, page = "" }: Props) => {
   const authentication = useAuthentication();
   const isCitizenCurrentUser = authentication
-    ? citizen.id === authentication.session.entityId
+    ? citizen.id === authentication.session.entity?.id
     : false;
 
   return (

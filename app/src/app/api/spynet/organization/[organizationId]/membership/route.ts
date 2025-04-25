@@ -37,6 +37,7 @@ export async function POST(request: Request, props: { params: Params }) {
       "/api/spynet/organization/[organizationId]/membership",
       "POST",
     );
+    if (!authentication.session.entity) throw new Error("Forbidden");
     await authentication.authorizeApi("organizationMembership", "create");
 
     /**
@@ -96,14 +97,14 @@ export async function POST(request: Request, props: { params: Params }) {
                  * rejected above.
                  * The only exception is with the `adminEnabled` cookie.
                  */
-                id: authentication.session.entityId!,
+                id: authentication.session.entity.id,
               },
             },
             confirmed: ConfirmationStatus.CONFIRMED,
             confirmedAt: new Date(),
             confirmedBy: {
               connect: {
-                id: authentication.session.entityId!,
+                id: authentication.session.entity.id,
               },
             },
           },
@@ -138,7 +139,7 @@ export async function POST(request: Request, props: { params: Params }) {
                * rejected above.
                * The only exception is with the `adminEnabled` cookie.
                */
-              id: authentication.session.entityId!,
+              id: authentication.session.entity.id,
             },
           },
         },

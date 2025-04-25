@@ -40,6 +40,8 @@ export const CmdK = ({
   showManufacturersSeriesAndVariantsManage,
 }: Props) => {
   const authentication = useAuthentication();
+  if (!authentication || !authentication.session.entity)
+    throw new Error("Forbidden");
   const [search, setSearch] = useState("");
   const router = useRouter();
   const [pages, setPages] = useState<string[]>([]);
@@ -147,7 +149,7 @@ export const CmdK = ({
                   keywords={["Spynet"]}
                   onSelect={() => {
                     router.push(
-                      `/app/spynet/citizen/${authentication.session.entityId}`,
+                      `/app/spynet/citizen/${authentication.session.entity!.id}`,
                     );
                     setOpen(false);
                     setSearch("");

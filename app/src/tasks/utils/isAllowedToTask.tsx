@@ -6,7 +6,7 @@ export const isAllowedToManageTask = async (
 ) => {
   const authentication = await requireAuthentication();
 
-  if (task.createdById === authentication.session.entityId) return true;
+  if (task.createdById === authentication.session.entity?.id) return true;
 
   if (await authentication.authorize("task", "manage")) return true;
 
