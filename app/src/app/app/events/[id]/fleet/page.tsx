@@ -1,4 +1,5 @@
 import { authenticatePage } from "@/auth/server";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile.tsx";
 import { FleetTab } from "@/events/components/FleetTab";
 import { Template } from "@/events/components/Template";
 import { getEventById } from "@/events/queries";
@@ -50,7 +51,9 @@ export default async function Page({ params }: Props) {
 
   return (
     <Template event={event}>
-      <FleetTab event={event} />
+      <SuspenseWithErrorBoundaryTile>
+        <FleetTab event={event} />
+      </SuspenseWithErrorBoundaryTile>
     </Template>
   );
 }

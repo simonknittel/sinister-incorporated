@@ -1,4 +1,5 @@
 import { authenticatePage } from "@/auth/server";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile.tsx";
 import {
   searchParamsNextjsToURLSearchParams,
   type NextjsSearchParams,
@@ -57,7 +58,9 @@ export default async function Page({ params, searchParams }: Props) {
 
   return (
     <Template event={event}>
-      <ParticipantsTab event={event} urlSearchParams={urlSearchParams} />
+      <SuspenseWithErrorBoundaryTile>
+        <ParticipantsTab event={event} urlSearchParams={urlSearchParams} />
+      </SuspenseWithErrorBoundaryTile>
     </Template>
   );
 }
