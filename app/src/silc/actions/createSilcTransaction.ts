@@ -25,7 +25,7 @@ export const createSilcTransaction = async (formData: FormData) => {
       "silcTransactionOfOtherCitizen",
       "create",
     );
-    if (!authentication.session.entityId)
+    if (!authentication.session.entity)
       return {
         error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
         requestPayload: formData,
@@ -56,7 +56,7 @@ export const createSilcTransaction = async (formData: FormData) => {
         receiverId,
         value: result.data.value,
         description: result.data.description,
-        createdById: authentication.session.entityId,
+        createdById: authentication.session.entity!.id,
       })),
     });
 

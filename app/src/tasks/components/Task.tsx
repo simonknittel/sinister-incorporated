@@ -82,7 +82,7 @@ export const Task = ({ className, task }: Props) => {
   if (!authentication) throw new Error("Unauthorized");
 
   const isCurrentUserAssigned = task.assignments.some(
-    (assignment) => assignment.citizenId === authentication.session.entityId,
+    (assignment) => assignment.citizenId === authentication.session.entity?.id,
   );
 
   const badges: ReactNode[] = [];

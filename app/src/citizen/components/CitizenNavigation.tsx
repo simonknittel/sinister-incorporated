@@ -2,6 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import { SubNavigation } from "@/common/components/SubNavigation";
 import type { Entity } from "@prisma/client";
 import clsx from "clsx";
+import { forbidden } from "next/navigation";
 
 interface Props {
   readonly className?: string;
@@ -10,19 +11,20 @@ interface Props {
 
 export const CitizenNavigation = async ({ className, citizenId }: Props) => {
   const authentication = await requireAuthentication();
+  if (!authentication.session.entity) forbidden();
   const showOrganizations = await authentication.authorize(
     "organizationMembership",
     "read",
   );
   const showSilcTransactions =
-    citizenId === authentication.session.entityId
+    citizenId === authentication.session.entity.id
       ? await authentication.authorize(
           "silcTransactionOfCurrentCitizen",
           "read",
         )
       : await authentication.authorize("silcTransactionOfOtherCitizen", "read");
   const showPenaltyPoints =
-    citizenId === authentication.session.entityId
+    citizenId === authentication.session.entity.id
       ? await authentication.authorize("ownPenaltyEntry", "read")
       : await authentication.authorize("penaltyEntry", "read");
 

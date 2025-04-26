@@ -16,7 +16,7 @@ export const deleteTaskAssignmentForCurrentUser = createAuthenticatedAction(
   "deleteTaskAssignmentForCurrentUser",
   schema,
   async (formData: FormData, authentication, data) => {
-    if (!authentication.session.entityId)
+    if (!authentication.session.entity)
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
         requestPayload: formData,
@@ -48,7 +48,7 @@ export const deleteTaskAssignmentForCurrentUser = createAuthenticatedAction(
       where: {
         taskId_citizenId: {
           taskId: data.taskId,
-          citizenId: authentication.session.entityId,
+          citizenId: authentication.session.entity.id,
         },
       },
     });

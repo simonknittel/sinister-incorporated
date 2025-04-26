@@ -77,10 +77,11 @@ export const getEntriesOfCitizen = async (citizenId: Entity["id"]) => {
   return getTracer().startActiveSpan("getEntriesOfCitizen", async (span) => {
     try {
       const authentication = await requireAuthentication();
+      if (!authentication.session.entity) throw new Error("Forbidden");
       if (
         !(await authentication.authorize("penaltyEntry", "read")) &&
         !(
-          citizenId === authentication.session.entityId &&
+          citizenId === authentication.session.entity.id &&
           (await authentication.authorize("ownPenaltyEntry", "read"))
         )
       )
@@ -151,7 +152,7 @@ export const getPenaltyEntriesOfCurrentUser = cache(async () => {
     async (span) => {
       try {
         const authentication = await requireAuthentication();
-        if (!authentication.session.entityId) throw new Error("Forbidden");
+        if (!authentication.session.entity) throw new Error("Forbidden");
         if (!(await authentication.authorize("ownPenaltyEntry", "read")))
           throw new Error("Forbidden");
 
@@ -170,7 +171,7 @@ export const getPenaltyEntriesOfCurrentUser = cache(async () => {
                 expiresAt: null,
               },
             ],
-            citizenId: authentication.session.entityId,
+            citizenId: authentication.session.entity.id,
           },
         });
       } catch (error) {

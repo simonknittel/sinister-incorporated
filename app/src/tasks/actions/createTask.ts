@@ -33,7 +33,7 @@ export const createTask = async (formData: FormData) => {
      */
     const authentication = await authenticateAction("createTask");
     await authentication.authorizeAction("task", "create");
-    if (!authentication.session.entityId)
+    if (!authentication.session.entity)
       return {
         error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
         requestPayload: formData,
@@ -125,7 +125,7 @@ export const createTask = async (formData: FormData) => {
             description: result.data.description,
             createdBy: {
               connect: {
-                id: authentication.session.entityId,
+                id: authentication.session.entity.id,
               },
             },
             expiresAt: result.data.expiresAt,
@@ -155,7 +155,7 @@ export const createTask = async (formData: FormData) => {
             description: result.data.description,
             createdBy: {
               connect: {
-                id: authentication.session.entityId,
+                id: authentication.session.entity.id,
               },
             },
             expiresAt: result.data.expiresAt,
@@ -168,7 +168,7 @@ export const createTask = async (formData: FormData) => {
                 data:
                   result.data.assignedToIds!.map((id) => ({
                     citizenId: id,
-                    createdById: authentication.session.entityId,
+                    createdById: authentication.session.entity!.id,
                   })) || [],
               },
             },
@@ -189,7 +189,7 @@ export const createTask = async (formData: FormData) => {
                   assignmentLimit: result.data.assignmentLimit,
                   title: result.data.title,
                   description: result.data.description,
-                  createdById: authentication.session.entityId,
+                  createdById: authentication.session.entity!.id,
                   expiresAt: result.data.expiresAt,
                   rewardType: result.data.rewardType,
                   rewardTypeTextValue: result.data.rewardTypeTextValue,
@@ -203,7 +203,7 @@ export const createTask = async (formData: FormData) => {
                 data: {
                   taskId: id,
                   citizenId: assignedToId,
-                  createdById: authentication.session.entityId,
+                  createdById: authentication.session.entity!.id,
                 },
               }),
             ];

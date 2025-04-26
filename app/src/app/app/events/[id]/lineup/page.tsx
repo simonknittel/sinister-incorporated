@@ -47,6 +47,7 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const authentication = await authenticatePage("/app/events/[id]");
+  if (!authentication.session.entity) forbidden();
   await authentication.authorizePage("event", "read");
 
   const eventId = (await params).id;
@@ -77,7 +78,7 @@ export default async function Page({ params }: Props) {
   ]);
 
   const showToggle = allEventCitizens.some(
-    (citizen) => citizen.citizen.id === authentication.session.entityId,
+    (citizen) => citizen.citizen.id === authentication.session.entity!.id,
   );
 
   return (

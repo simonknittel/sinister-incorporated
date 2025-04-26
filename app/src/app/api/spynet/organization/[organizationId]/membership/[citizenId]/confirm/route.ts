@@ -23,6 +23,7 @@ export async function PATCH(request: Request) {
       "/api/spynet/organization/[organizationId]/membership/[citizenId]/confirm",
       "PATCH",
     );
+    if (!authentication.session.entity) throw new Error("Forbidden");
     await authentication.authorizeApi("organizationMembership", "confirm");
 
     /**
@@ -51,7 +52,7 @@ export async function PATCH(request: Request) {
         confirmedAt: new Date(),
         confirmedBy: {
           connect: {
-            id: authentication.session.entityId!,
+            id: authentication.session.entity.id,
           },
         },
       },

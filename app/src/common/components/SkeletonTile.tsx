@@ -8,8 +8,8 @@ export const SkeletonTile = ({ className }: Props) => {
   return (
     <div
       className={clsx(
-        className,
         "bg-neutral-800/50 rounded-2xl animate-pulse min-h-[22.5rem]",
+        className,
       )}
     />
   );

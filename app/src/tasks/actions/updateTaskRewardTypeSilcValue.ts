@@ -17,12 +17,6 @@ export const updateTaskRewardTypeSilcValue = createAuthenticatedAction(
   "updateTaskRewardTypeSilcValue",
   schema,
   async (formData: FormData, authentication, data) => {
-    if (!authentication.session.entityId)
-      return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
-        requestPayload: formData,
-      };
-
     /**
      * Authorize the request
      */

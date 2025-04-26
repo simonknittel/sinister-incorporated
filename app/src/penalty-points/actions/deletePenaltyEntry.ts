@@ -18,7 +18,7 @@ export const deletePenaltyEntry = createAuthenticatedAction(
         error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
         requestPayload: formData,
       };
-    if (!authentication.session.entityId)
+    if (!authentication.session.entity)
       return {
         error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
         requestPayload: formData,
@@ -35,7 +35,7 @@ export const deletePenaltyEntry = createAuthenticatedAction(
         deletedAt: new Date(),
         deletedBy: {
           connect: {
-            id: authentication.session.entityId,
+            id: authentication.session.entity.id,
           },
         },
       },

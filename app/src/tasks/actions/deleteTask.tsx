@@ -18,7 +18,7 @@ export const deleteTask = createAuthenticatedAction(
   "deleteTask",
   schema,
   async (formData: FormData, authentication, data) => {
-    if (!authentication.session.entityId || !(await isAllowedToDeleteTask()))
+    if (!authentication.session.entity || !(await isAllowedToDeleteTask()))
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
         requestPayload: formData,
@@ -47,7 +47,7 @@ export const deleteTask = createAuthenticatedAction(
         deletedAt: new Date(),
         deletedBy: {
           connect: {
-            id: authentication.session.entityId,
+            id: authentication.session.entity.id,
           },
         },
       },

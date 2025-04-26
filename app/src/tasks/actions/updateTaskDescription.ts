@@ -21,12 +21,7 @@ export const updateTaskDescription = async (formData: FormData) => {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("updateTaskDescription");
-    if (!authentication.session.entityId)
-      return {
-        error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
-        requestPayload: formData,
-      };
+    await authenticateAction("updateTaskDescription");
 
     /**
      * Validate the request

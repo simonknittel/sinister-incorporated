@@ -48,33 +48,33 @@ export default async function Page() {
     <main className="p-4 pb-20 lg:p-8">
       <h1 className="font-thin text-2xl">Einstellungen</h1>
 
-      {showNoteTypes && <NoteTypesTile className="mt-4" />}
+      <div className="flex flex-col gap-4 mt-4">
+        {showNoteTypes && <NoteTypesTile />}
 
-      {showClassificationLevels && (
-        <ClassificationLevelsTile className="mt-4" />
-      )}
+        {showClassificationLevels && <ClassificationLevelsTile />}
 
-      {showAnalytics && (
-        <Tile heading="Disable analytics" className="mt-4">
-          <p className="mt-4 mb-4">
-            Disables Vercel Analytics for this browser.
-          </p>
+        {showAnalytics && (
+          <Tile heading="Disable analytics">
+            <p className="mt-4 mb-4">
+              Disables Vercel Analytics for this browser.
+            </p>
 
-          <AnalyticsCheckboxLoader />
-        </Tile>
-      )}
+            <AnalyticsCheckboxLoader />
+          </Tile>
+        )}
 
-      {showAlgolia && (
-        <Tile heading="Algolia" className="mt-4">
-          <Algolia />
-        </Tile>
-      )}
+        {showAlgolia && (
+          <Tile heading="Algolia">
+            <Algolia />
+          </Tile>
+        )}
 
-      {showRefreshBalance && (
-        <Tile heading="Other" className="mt-4">
-          <RefreshSilcBalances />
-        </Tile>
-      )}
+        {showRefreshBalance && (
+          <Tile heading="Other">
+            <RefreshSilcBalances />
+          </Tile>
+        )}
+      </div>
     </main>
   );
 }

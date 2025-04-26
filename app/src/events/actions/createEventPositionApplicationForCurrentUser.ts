@@ -23,7 +23,7 @@ export const createEventPositionApplicationForCurrentUser = async (
     const authentication = await authenticateAction(
       "createEventPositionApplicationForCurrentUser",
     );
-    if (!authentication.session.entityId)
+    if (!authentication.session.entity)
       return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
 
     /**
@@ -73,7 +73,7 @@ export const createEventPositionApplicationForCurrentUser = async (
         },
         citizen: {
           connect: {
-            id: authentication.session.entityId,
+            id: authentication.session.entity.id,
           },
         },
       },

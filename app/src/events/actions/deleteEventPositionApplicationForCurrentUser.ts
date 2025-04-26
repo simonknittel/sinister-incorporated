@@ -23,7 +23,7 @@ export const deleteEventPositionApplicationForCurrentUser = async (
     const authentication = await authenticateAction(
       "deleteEventPositionApplicationForCurrentUser",
     );
-    if (!authentication.session.entityId) throw new Error("Forbidden");
+    if (!authentication.session.entity) throw new Error("Forbidden");
 
     /**
      * Validate the request
@@ -55,7 +55,7 @@ export const deleteEventPositionApplicationForCurrentUser = async (
     const deletedApplication = await prisma.eventPositionApplication.delete({
       where: {
         positionId_citizenId: {
-          citizenId: authentication.session.entityId,
+          citizenId: authentication.session.entity.id,
           positionId: result.data.positionId,
         },
       },
