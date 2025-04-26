@@ -1,7 +1,7 @@
 import { Tile } from "@/common/components/Tile";
-import { prisma } from "@/db";
 import { SilcSettingKey } from "@prisma/client";
 import clsx from "clsx";
+import { getSilcSetting } from "../queries";
 import { AuecConversionRateSettingClient } from "./AuecConversionRateSettingClient";
 
 interface Props {
@@ -9,11 +9,7 @@ interface Props {
 }
 
 export const AuecConversionRateSetting = async ({ className }: Props) => {
-  const setting = await prisma.silcSetting.findUnique({
-    where: {
-      key: SilcSettingKey.AUEC_CONVERSION_RATE,
-    },
-  });
+  const setting = await getSilcSetting(SilcSettingKey.AUEC_CONVERSION_RATE);
 
   return (
     <Tile heading="aUEC Umrechnungskurs" className={clsx(className)}>

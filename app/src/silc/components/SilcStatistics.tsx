@@ -1,7 +1,6 @@
-import { prisma } from "@/db";
 import { SilcSettingKey } from "@prisma/client";
 import clsx from "clsx";
-import { getSilcBalanceOfAllCitizens } from "../queries";
+import { getSilcBalanceOfAllCitizens, getSilcSetting } from "../queries";
 
 interface Props {
   readonly className?: string;
@@ -10,11 +9,7 @@ interface Props {
 export const SilcStatistics = async ({ className }: Props) => {
   const [silcBalances, auecConversionRateSetting] = await Promise.all([
     getSilcBalanceOfAllCitizens(),
-    prisma.silcSetting.findUnique({
-      where: {
-        key: SilcSettingKey.AUEC_CONVERSION_RATE,
-      },
-    }),
+    getSilcSetting(SilcSettingKey.AUEC_CONVERSION_RATE),
   ]);
 
   const totalSilc = silcBalances.reduce(
