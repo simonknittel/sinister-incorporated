@@ -1,5 +1,5 @@
 import { authenticatePage } from "@/auth/server";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile.tsx";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { FleetTab } from "@/events/components/FleetTab";
 import { Template } from "@/events/components/Template";
 import { getEventById } from "@/events/queries";
