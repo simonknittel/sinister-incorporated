@@ -2,12 +2,12 @@ import { authenticatePage } from "@/auth/server";
 import { OrganizationMembershipHistory } from "@/citizen/components/OrganizationMembershipHistory";
 import { OrganizationMembershipsTile } from "@/citizen/components/OrganizationMembershipsTile";
 import { Template } from "@/citizen/components/Template";
-import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Suspense, cache } from "react";
+import { cache } from "react";
 import { serializeError } from "serialize-error";
 
 const getEntity = cache(async (id: string) => {
@@ -63,13 +63,15 @@ export default async function Page(props: Props) {
 
   return (
     <Template citizen={entity}>
-      <Suspense fallback={<SkeletonTile />}>
-        <OrganizationMembershipsTile id={entity.id} />
-      </Suspense>
+      <div className="flex flex-col gap-4">
+        <SuspenseWithErrorBoundaryTile>
+          <OrganizationMembershipsTile id={entity.id} />
+        </SuspenseWithErrorBoundaryTile>
 
-      <Suspense fallback={<SkeletonTile className="mt-4" />}>
-        <OrganizationMembershipHistory id={entity.id} className="mt-4" />
-      </Suspense>
+        <SuspenseWithErrorBoundaryTile>
+          <OrganizationMembershipHistory id={entity.id} />
+        </SuspenseWithErrorBoundaryTile>
+      </div>
     </Template>
   );
 }

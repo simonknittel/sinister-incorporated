@@ -3,14 +3,13 @@ import { Flow } from "@/career/components/Flow";
 import { Navigation } from "@/career/components/Navigation";
 import { getMyReadableFlows } from "@/career/queries";
 import { Hero } from "@/common/components/Hero";
-import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { log } from "@/logging";
 import { getRoles } from "@/roles/queries";
 import { getMyAssignedRoles, getVisibleRoles } from "@/roles/utils/getRoles";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<
@@ -88,7 +87,7 @@ export default async function Page({ params }: Props) {
 
       <Navigation flows={flows} className="mt-2" />
 
-      <Suspense fallback={<SkeletonTile className="h-[1080px] mt-3" />}>
+      <SuspenseWithErrorBoundaryTile className="h-[1080px] mt-3">
         <div className="h-[1080px] bg-neutral-800/50 rounded-2xl overflow-hidden text-black mt-3 relative">
           <Flow
             flow={flow}
@@ -98,7 +97,7 @@ export default async function Page({ params }: Props) {
             isUpdating={isUpdating}
           />
         </div>
-      </Suspense>
+      </SuspenseWithErrorBoundaryTile>
     </main>
   );
 }

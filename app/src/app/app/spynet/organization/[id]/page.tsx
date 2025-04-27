@@ -1,6 +1,6 @@
 import { authenticatePage } from "@/auth/server";
 import { Link } from "@/common/components/Link";
-import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { ActivityTile } from "@/organizations/components/ActivityTile";
@@ -8,7 +8,7 @@ import { MembershipsTile } from "@/organizations/components/MembershipsTile";
 import { OverviewTile } from "@/organizations/components/OverviewTile";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Suspense, cache } from "react";
+import { cache } from "react";
 import { serializeError } from "serialize-error";
 
 const getOrganization = cache(async (id: string) => {
@@ -94,25 +94,21 @@ export default async function Page(props: Props) {
 
       <div className="mt-4 flex flex-col 3xl:flex-row-reverse gap-8">
         <div className="flex flex-col gap-4 md:flex-row 3xl:w-[720px]">
-          <Suspense
-            fallback={<SkeletonTile className="md:w-1/2 3xl:self-start" />}
-          >
+          <SuspenseWithErrorBoundaryTile className="md:w-1/2 3xl:self-start">
             <OverviewTile className="md:w-1/2 3xl:self-start" id={params.id} />
-          </Suspense>
+          </SuspenseWithErrorBoundaryTile>
 
-          <Suspense
-            fallback={<SkeletonTile className="md:w-1/2 3xl:self-start" />}
-          >
+          <SuspenseWithErrorBoundaryTile className="md:w-1/2 3xl:self-start">
             <MembershipsTile
               className="md:w-1/2 3xl:self-start"
               id={params.id}
             />
-          </Suspense>
+          </SuspenseWithErrorBoundaryTile>
         </div>
 
-        <Suspense fallback={<SkeletonTile className="flex-1" />}>
+        <SuspenseWithErrorBoundaryTile className="flex-1">
           <ActivityTile className="flex-1 3xl:self-start" id={params.id} />
-        </Suspense>
+        </SuspenseWithErrorBoundaryTile>
       </div>
     </main>
   );

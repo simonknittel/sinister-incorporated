@@ -1,11 +1,10 @@
-import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { EditableSeriesName } from "@/fleet/components/EditableSeriesName";
 import { VariantsTile } from "@/fleet/components/VariantsTile";
 import { getSeriesAndManufacturerById } from "@/fleet/queries";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<
@@ -70,13 +69,13 @@ export default async function Page(props: Props) {
         </dl>
       </section>
 
-      <Suspense fallback={<SkeletonTile className="w-full flex-1" />}>
+      <SuspenseWithErrorBoundaryTile className="w-full flex-1">
         <VariantsTile
           manufacturerId={manufacturer.id}
           seriesId={series.id}
           className="w-full flex-1"
         />
-      </Suspense>
+      </SuspenseWithErrorBoundaryTile>
     </main>
   );
 }

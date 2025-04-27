@@ -1,12 +1,11 @@
 import { authenticatePage } from "@/auth/server";
 import { Template } from "@/citizen/components/Template";
 import { getCitizenById } from "@/citizen/queries";
-import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { log } from "@/logging";
 import { EntriesOfCitizenTable } from "@/penalty-points/components/EntriesOfCitizenTable";
 import { type Metadata } from "next";
 import { forbidden, notFound } from "next/navigation";
-import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<
@@ -60,9 +59,9 @@ export default async function Page(props: Props) {
 
   return (
     <Template citizen={entity}>
-      <Suspense fallback={<SkeletonTile />}>
+      <SuspenseWithErrorBoundaryTile>
         <EntriesOfCitizenTable citizenId={entity.id} />
-      </Suspense>
+      </SuspenseWithErrorBoundaryTile>
     </Template>
   );
 }

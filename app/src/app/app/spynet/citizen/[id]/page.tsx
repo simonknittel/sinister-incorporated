@@ -3,11 +3,10 @@ import { Overview } from "@/citizen/components/Overview";
 import { Roles } from "@/citizen/components/roles/Roles";
 import { Template } from "@/citizen/components/Template";
 import { getCitizenById } from "@/citizen/queries";
-import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<
@@ -54,16 +53,14 @@ export default async function Page(props: Props) {
   return (
     <Template citizen={entity}>
       <div className="flex flex-col gap-4 md:flex-row">
-        <Suspense
-          fallback={<SkeletonTile className="md:w-1/2 3xl:self-start" />}
-        >
+        <SuspenseWithErrorBoundaryTile className="md:w-1/2 3xl:self-start">
           <Overview entity={entity} className="md:w-1/2 3xl:self-start" />
-        </Suspense>
+        </SuspenseWithErrorBoundaryTile>
 
         <div className="flex flex-col gap-4 md:w-1/2">
-          <Suspense fallback={<SkeletonTile />}>
+          <SuspenseWithErrorBoundaryTile>
             <Roles entity={entity} />
-          </Suspense>
+          </SuspenseWithErrorBoundaryTile>
         </div>
       </div>
     </Template>

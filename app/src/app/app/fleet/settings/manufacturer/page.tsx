@@ -1,8 +1,7 @@
 import { authenticatePage } from "@/auth/server";
-import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { ManufacturersTile } from "@/fleet/components/ManufacturersTile";
 import { type Metadata } from "next";
-import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Hersteller - Schiffe | S.A.M. - Sinister Incorporated",
@@ -19,9 +18,9 @@ export default async function Page() {
 
   return (
     <main>
-      <Suspense fallback={<SkeletonTile />}>
+      <SuspenseWithErrorBoundaryTile>
         <ManufacturersTile />
-      </Suspense>
+      </SuspenseWithErrorBoundaryTile>
     </main>
   );
 }
