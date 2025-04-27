@@ -1,9 +1,8 @@
 import { authenticatePage } from "@/auth/server";
 import { Link } from "@/common/components/Link";
-import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { ActivityTile } from "@/spynet/components/ActivityTile/ActivityTile";
 import { type Metadata } from "next";
-import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Aktivität - Spynet | S.A.M. - Sinister Incorporated",
@@ -28,9 +27,9 @@ export default async function Page() {
         <h1>Aktivität</h1>
       </div>
 
-      <Suspense fallback={<SkeletonTile />}>
+      <SuspenseWithErrorBoundaryTile>
         <ActivityTile />
-      </Suspense>
+      </SuspenseWithErrorBoundaryTile>
     </main>
   );
 }

@@ -1,6 +1,6 @@
 import { authenticatePage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
-import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import {
   searchParamsNextjsToURLSearchParams,
   type NextjsSearchParams,
@@ -8,7 +8,6 @@ import {
 import { MyFleetTile } from "@/fleet/components/MyFleetTile";
 import { OrgFleetTile } from "@/fleet/components/OrgFleetTile";
 import { type Metadata } from "next";
-import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Flotte | S.A.M. - Sinister Incorporated",
@@ -34,20 +33,18 @@ export default async function Page({ searchParams }: Props) {
 
       <div className="flex flex-col-reverse xl:flex-row gap-8 items-start mt-8">
         {showOrgFleetTile && (
-          <Suspense fallback={<SkeletonTile className="w-full 2xl:flex-1" />}>
+          <SuspenseWithErrorBoundaryTile className="w-full 2xl:flex-1">
             <OrgFleetTile
               urlSearchParams={urlSearchParams}
               className="w-full 2xl:flex-1"
             />
-          </Suspense>
+          </SuspenseWithErrorBoundaryTile>
         )}
 
         {showMyFleetTile && (
-          <Suspense
-            fallback={<SkeletonTile className="w-full 2xl:w-[480px]" />}
-          >
+          <SuspenseWithErrorBoundaryTile className="w-full 2xl:w-[480px]">
             <MyFleetTile className="w-full 2xl:w-[480px]" />
-          </Suspense>
+          </SuspenseWithErrorBoundaryTile>
         )}
       </div>
     </main>

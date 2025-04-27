@@ -1,5 +1,5 @@
 import { ImageUpload } from "@/common/components/ImageUpload";
-import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { EditableManufacturerName } from "@/fleet/components/EditableManufacturerName";
 import { SeriesTile } from "@/fleet/components/SeriesTile";
 import { getManufacturerById } from "@/fleet/queries";
@@ -7,7 +7,6 @@ import { log } from "@/logging";
 import clsx from "clsx";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<
@@ -86,12 +85,12 @@ export default async function Page(props: Props) {
         </div>
       </section>
 
-      <Suspense fallback={<SkeletonTile className="w-full flex-1" />}>
+      <SuspenseWithErrorBoundaryTile className="w-full flex-1">
         <SeriesTile
           manufacturerId={manufacturer.id}
           className="w-full flex-1"
         />
-      </Suspense>
+      </SuspenseWithErrorBoundaryTile>
     </main>
   );
 }

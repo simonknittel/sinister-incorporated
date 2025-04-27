@@ -1,7 +1,7 @@
 import { authenticatePage } from "@/auth/server";
 import { ProfileTile } from "@/citizen/components/ProfileTile";
 import { Hero } from "@/common/components/Hero";
-import { SkeletonTile } from "@/common/components/SkeletonTile";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { UwuHero } from "@/common/components/UwuHero";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import {
@@ -55,9 +55,9 @@ export default async function Page({ searchParams }: Props) {
         <section className="flex flex-col gap-4 xl:w-[400px] flex-none">
           <h2 className="font-thin text-2xl self-start">Spynet</h2>
           {showSpynetSearchTile && <SpynetSearchTile />}
-          <Suspense fallback={<SkeletonTile />}>
+          <SuspenseWithErrorBoundaryTile>
             <ProfileTile />
-          </Suspense>
+          </SuspenseWithErrorBoundaryTile>
         </section>
       </div>
 
