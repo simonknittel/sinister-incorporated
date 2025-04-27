@@ -1,5 +1,6 @@
 "use client";
 
+import { useAction } from "@/actions/utils/useAction";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,9 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/common/components/AlertDialog";
 import { type SilcTransaction } from "@prisma/client";
-import { unstable_rethrow } from "next/navigation";
-import { useId, useTransition } from "react";
-import toast from "react-hot-toast";
+import { useId } from "react";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteSilcTransaction } from "../actions/deleteSilcTransaction";
 
@@ -24,30 +23,8 @@ interface Props {
 }
 
 export const DeleteSilcTransaction = ({ className, id }: Props) => {
-  const [isPending, startTransition] = useTransition();
+  const { isPending, formAction } = useAction(deleteSilcTransaction);
   const formId = useId();
-
-  const formAction = (formData: FormData) => {
-    startTransition(async () => {
-      try {
-        const response = await deleteSilcTransaction(formData);
-
-        if ("error" in response) {
-          toast.error(response.error);
-          console.error(response);
-          return;
-        }
-
-        toast.success(response.success);
-      } catch (error) {
-        unstable_rethrow(error);
-        toast.error(
-          "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-        );
-        console.error(error);
-      }
-    });
-  };
 
   return (
     <form action={formAction} id={formId} className={className}>
@@ -60,7 +37,7 @@ export const DeleteSilcTransaction = ({ className, id }: Props) => {
             className="text-sinister-red-500 hover:text-sinister-red-300 flex items-center text-xs"
             title="Löschen"
           >
-            {isPending ? <FaSpinner className="animate-spin" /> : <FaTrash />}
+            <FaTrash />
           </button>
         </AlertDialogTrigger>
 
@@ -76,6 +53,7 @@ export const DeleteSilcTransaction = ({ className, id }: Props) => {
             <AlertDialogCancel>Abbrechen</AlertDialogCancel>
 
             <AlertDialogAction type="submit" form={formId}>
+              {isPending && <FaSpinner className="animate-spin" />}
               Löschen
             </AlertDialogAction>
           </AlertDialogFooter>

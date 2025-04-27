@@ -1,5 +1,6 @@
 "use client";
 
+import { useAction } from "@/actions/utils/useAction";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,9 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/common/components/AlertDialog";
 import { type PenaltyEntry } from "@prisma/client";
-import { unstable_rethrow } from "next/navigation";
-import { useId, useTransition } from "react";
-import toast from "react-hot-toast";
+import { useId } from "react";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deletePenaltyEntry } from "../actions/deletePenaltyEntry";
 
@@ -24,30 +23,8 @@ interface Props {
 }
 
 export const DeletePenaltyEntry = ({ className, entry }: Props) => {
-  const [isPending, startTransition] = useTransition();
+  const { isPending, formAction } = useAction(deletePenaltyEntry);
   const id = useId();
-
-  const formAction = (formData: FormData) => {
-    startTransition(async () => {
-      try {
-        const response = await deletePenaltyEntry(formData);
-
-        if ("error" in response) {
-          toast.error(response.error);
-          console.error(response);
-          return;
-        }
-
-        toast.success(response.success);
-      } catch (error) {
-        unstable_rethrow(error);
-        toast.error(
-          "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-        );
-        console.error(error);
-      }
-    });
-  };
 
   return (
     <form action={formAction} id={id} className={className}>

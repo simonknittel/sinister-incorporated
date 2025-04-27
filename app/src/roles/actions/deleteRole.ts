@@ -1,39 +1,26 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { createAuthenticatedAction } from "@/actions/utils/createAction";
 import { prisma } from "@/db";
-import { log } from "@/logging";
-import { redirect, unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 const schema = z.object({
   id: z.string().cuid(),
 });
 
-export const deleteRole = async (
-  previousState: unknown,
-  formData: FormData,
-) => {
-  try {
+export const deleteRole = createAuthenticatedAction(
+  "deleteRole",
+  schema,
+  async (formData, authentication, data) => {
     /**
-     * Authenticate and authorize the request
+     * Authorize the request
      */
-    const authentication = await authenticateAction("deleteRole");
-    await authentication.authorizeAction("role", "manage");
-
-    /**
-     * Validate the request
-     */
-    const result = schema.safeParse({
-      id: formData.get("id"),
-    });
-    if (!result.success) {
-      void log.warn("Bad Request", { error: serializeError(result.error) });
+    if (!(await authentication.authorize("role", "manage")))
       return {
-        error: "Ungültige Anfrage",
+        error: "Du bist nicht berechtigt diese Aktion auszuführen.",
+        requestPayload: formData,
       };
-    }
 
     /**
      * Update role
@@ -41,14 +28,14 @@ export const deleteRole = async (
     await prisma.$transaction([
       prisma.role.delete({
         where: {
-          id: result.data.id,
+          id: data.id,
         },
       }),
 
       prisma.permissionString.deleteMany({
         where: {
           permissionString: {
-            contains: result.data.id,
+            contains: data.id,
           },
         },
       }),
@@ -58,12 +45,5 @@ export const deleteRole = async (
      * Redirect
      */
     redirect("/app/roles");
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error("Internal Server Error", { error: serializeError(error) });
-    return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-    };
-  }
-};
+  },
+);

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAction } from "@/actions/utils/useAction";
 import Button from "@/common/components/Button";
 import { ImageUpload } from "@/common/components/ImageUpload";
 import Note from "@/common/components/Note";
@@ -20,10 +21,11 @@ interface Props {
 export const OverviewTab = ({ className, role }: Props) => {
   const [updateNameState, updateNameFormAction, updateNameIsPending] =
     useActionState(updateRoleName, null);
-  const [deleteState, deleteFormAction, deleteIsPending] = useActionState(
-    deleteRole,
-    null,
-  );
+  const {
+    state: deleteState,
+    formAction: deleteFormAction,
+    isPending: deleteIsPending,
+  } = useAction(deleteRole);
   const nameInputId = useId();
 
   return (
@@ -143,7 +145,7 @@ export const OverviewTab = ({ className, role }: Props) => {
             Löschen
           </Button>
 
-          {deleteState && (
+          {deleteState && "error" in deleteState && (
             <Note
               type="error"
               message={deleteState.error}

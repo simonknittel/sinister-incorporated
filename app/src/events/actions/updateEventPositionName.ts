@@ -1,6 +1,6 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/common/actions/createAction";
+import { createAuthenticatedAction } from "@/actions/utils/createAction";
 import { prisma } from "@/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";

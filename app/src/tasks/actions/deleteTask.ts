@@ -1,22 +1,24 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/common/actions/createAction";
+import { createAuthenticatedAction } from "@/actions/utils/createAction";
 import { prisma } from "@/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getTaskById } from "../queries";
-import { isAllowedToManageTask } from "../utils/isAllowedToTask";
-import { isTaskUpdatable } from "../utils/isTaskUpdatable";
+import {
+  isAllowedToDeleteTask,
+  isAllowedToManageTask,
+} from "../utils/isAllowedToTask";
 
 const schema = z.object({
   id: z.union([z.string().cuid(), z.string().cuid2()]),
 });
 
-export const cancelTask = createAuthenticatedAction(
-  "cancelTask",
+export const deleteTask = createAuthenticatedAction(
+  "deleteTask",
   schema,
   async (formData: FormData, authentication, data) => {
-    if (!authentication.session.entity)
+    if (!authentication.session.entity || !(await isAllowedToDeleteTask()))
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
         requestPayload: formData,
@@ -28,11 +30,6 @@ export const cancelTask = createAuthenticatedAction(
     const task = await getTaskById(data.id);
     if (!task)
       return { error: "Task nicht gefunden", requestPayload: formData };
-    if (!isTaskUpdatable(task))
-      return {
-        error: "Der Task ist bereits abgeschlossen.",
-        requestPayload: formData,
-      };
     if (!(await isAllowedToManageTask(task)))
       return {
         error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
@@ -47,8 +44,8 @@ export const cancelTask = createAuthenticatedAction(
         id: data.id,
       },
       data: {
-        cancelledAt: new Date(),
-        cancelledBy: {
+        deletedAt: new Date(),
+        deletedBy: {
           connect: {
             id: authentication.session.entity.id,
           },
@@ -65,7 +62,7 @@ export const cancelTask = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich abgebrochen.",
+      success: "Erfolgreich gelöscht.",
     };
   },
 );
