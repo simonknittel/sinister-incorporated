@@ -1,14 +1,13 @@
 "use client";
 
+import { useAction } from "@/actions/utils/useAction";
 import Button from "@/common/components/Button";
 import { NumberInput } from "@/common/components/form/NumberInput";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
 import { type Task, type TaskAssignment } from "@prisma/client";
 import clsx from "clsx";
-import { unstable_rethrow } from "next/navigation";
-import { useActionState, useState } from "react";
-import toast from "react-hot-toast";
+import { useState } from "react";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
 import { updateTaskRepeatable } from "../actions/updateTaskRepeatable";
 
@@ -21,35 +20,9 @@ interface Props {
 
 export const UpdateTaskRepeatable = ({ className, task }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [state, formAction, isPending] = useActionState(
-    async (previousState: unknown, formData: FormData) => {
-      try {
-        const response = await updateTaskRepeatable(formData);
-
-        if ("error" in response) {
-          toast.error(response.error);
-          console.error(response);
-          return response;
-        }
-
-        toast.success(response.success);
-        setIsOpen(false);
-        return response;
-      } catch (error) {
-        unstable_rethrow(error);
-        toast.error(
-          "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-        );
-        console.error(error);
-        return {
-          error:
-            "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-          requestPayload: formData,
-        };
-      }
-    },
-    null,
-  );
+  const { state, formAction, isPending } = useAction(updateTaskRepeatable, {
+    onSuccess: () => setIsOpen(false),
+  });
 
   const handleClick = () => {
     setIsOpen(true);

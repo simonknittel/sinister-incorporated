@@ -1,5 +1,6 @@
 "use client";
 
+import { useAction } from "@/actions/utils/useAction";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,9 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/common/components/AlertDialog";
 import { type Task } from "@prisma/client";
-import { unstable_rethrow } from "next/navigation";
-import { useId, useTransition } from "react";
-import toast from "react-hot-toast";
+import { useId } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { TbCancel } from "react-icons/tb";
 import { cancelTask } from "../actions/cancelTask";
@@ -25,30 +24,8 @@ interface Props {
 }
 
 export const CancelTask = ({ className, task }: Props) => {
-  const [isPending, startTransition] = useTransition();
+  const { formAction, isPending } = useAction(cancelTask);
   const formId = useId();
-
-  const formAction = (formData: FormData) => {
-    startTransition(async () => {
-      try {
-        const response = await cancelTask(formData);
-
-        if ("error" in response) {
-          toast.error(response.error);
-          console.error(response);
-          return;
-        }
-
-        toast.success(response.success);
-      } catch (error) {
-        unstable_rethrow(error);
-        toast.error(
-          "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-        );
-        console.error(error);
-      }
-    });
-  };
 
   return (
     <form action={formAction} id={formId} className={className}>
@@ -61,7 +38,7 @@ export const CancelTask = ({ className, task }: Props) => {
             className="text-sinister-red-500 hover:text-sinister-red-300 flex items-center px-2"
             title="Task abbrechen"
           >
-            {isPending ? <FaSpinner className="animate-spin" /> : <TbCancel />}
+            <TbCancel />
           </button>
         </AlertDialogTrigger>
 
@@ -78,6 +55,7 @@ export const CancelTask = ({ className, task }: Props) => {
             <AlertDialogCancel>Abbrechen</AlertDialogCancel>
 
             <AlertDialogAction type="submit" form={formId}>
+              {isPending && <FaSpinner className="animate-spin" />}
               Speichern
             </AlertDialogAction>
           </AlertDialogFooter>
