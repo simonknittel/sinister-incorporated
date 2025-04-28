@@ -14,7 +14,7 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "pnpm",
       "runtimeArgs": ["run", "dev"],
       "runtimeVersion": "22.14.0",
       "skipFiles": ["<node_internals>/**"],

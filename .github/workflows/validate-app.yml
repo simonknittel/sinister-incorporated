@@ -16,23 +16,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
-      - uses: actions/setup-node@v4.4.0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.1.0
+        with:
+          package_json_file: "app/package.json"
+
+      - uses: actions/setup-node@v4.1.0
         with:
           node-version-file: "app/.nvmrc"
-
-      - uses: actions/cache@v4.2.3
-        id: node-modules-cache
-        with:
-          path: app/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('app/.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
+          cache: 'pnpm'
+          cache-dependency-path: 'app/pnpm-lock.yaml'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
         working-directory: app
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
         working-directory: app
         continue-on-error: true
         env:
@@ -44,23 +44,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
-      - uses: actions/setup-node@v4.4.0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.1.0
+        with:
+          package_json_file: "app/package.json"
+
+      - uses: actions/setup-node@v4.1.0
         with:
           node-version-file: "app/.nvmrc"
-
-      - uses: actions/cache@v4.2.3
-        id: node-modules-cache
-        with:
-          path: app/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('app/.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
+          cache: 'pnpm'
+          cache-dependency-path: 'app/pnpm-lock.yaml'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
         working-directory: app
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
 
       - name: Prettier
-        run: npx prettier --check .
+        run: pnpm exec prettier --check .
         working-directory: app
         continue-on-error: true
 
@@ -70,21 +70,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
-      - uses: actions/setup-node@v4.4.0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.1.0
+        with:
+          package_json_file: "app/package.json"
+
+      - uses: actions/setup-node@v4.1.0
         with:
           node-version-file: "app/.nvmrc"
-
-      - uses: actions/cache@v4.2.3
-        id: node-modules-cache
-        with:
-          path: app/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('app/.nvmrc', 'app/package-lock.json', 'app/prisma/prisma.schema') }}
+          cache: 'pnpm'
+          cache-dependency-path: 'app/pnpm-lock.yaml'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
         working-directory: app
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
 
       - name: Test
-        run: npm run test
+        run: pnpm run test
         working-directory: app

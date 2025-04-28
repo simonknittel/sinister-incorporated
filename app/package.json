@@ -7,9 +7,7 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
-    "test": "vitest run --coverage",
-    "db:push": "prisma db push",
-    "db:generate": "prisma generate"
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@algolia/autocomplete-js": "1.18.1",
@@ -106,11 +104,8 @@
     "vercel": "41.6.0",
     "vitest": "3.1.1"
   },
-  "overrides": {
-    "@types/react": "19.1.2",
-    "@types/react-dom": "19.1.2"
-  },
   "prisma": {
     "schema": "./prisma/schema"
-  }
+  },
+  "packageManager": "pnpm@10.10.0"
 }
