@@ -7,9 +7,7 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
-    "test": "vitest run --coverage",
-    "db:push": "prisma db push",
-    "db:generate": "prisma generate"
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@algolia/autocomplete-js": "1.18.1",
