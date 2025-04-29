@@ -2,6 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { withTrace } from "@/tracing/utils/withTrace";
 import { VariantStatus, type Manufacturer, type Series } from "@prisma/client";
+import { forbidden } from "next/navigation";
 import { cache } from "react";
 
 export const getOrgFleet = cache(
@@ -9,8 +10,7 @@ export const getOrgFleet = cache(
     "getOrgFleet",
     async ({ onlyFlightReady = false }: { onlyFlightReady?: boolean }) => {
       const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("orgFleet", "read")))
-        throw new Error("Forbidden");
+      if (!(await authentication.authorize("orgFleet", "read"))) forbidden();
 
       return prisma.ship.findMany({
         where: {
@@ -42,8 +42,7 @@ export const getOrgFleet = cache(
 export const getMyFleet = cache(
   withTrace("getMyFleet", async () => {
     const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("ship", "read")))
-      throw new Error("Forbidden");
+    if (!(await authentication.authorize("ship", "read"))) forbidden();
 
     return prisma.ship.findMany({
       where: {

@@ -1,6 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import clsx from "clsx";
+import { forbidden } from "next/navigation";
 import { getMyFleet } from "../queries";
 import { AssignShip } from "./AssignShip";
 import { MyShipTile } from "./MyShipTile";
@@ -11,8 +12,7 @@ interface Props {
 
 export const MyFleetTile = async ({ className }: Props) => {
   const authentication = await requireAuthentication();
-  if (!(await authentication.authorize("ship", "manage")))
-    throw new Error("Forbidden");
+  if (!(await authentication.authorize("ship", "manage"))) forbidden();
 
   const [myShips, allVariants] = await Promise.all([
     getMyFleet(),

@@ -6,6 +6,7 @@ import { getPenaltyEntriesOfCurrentUser } from "@/penalty-points/queries";
 import { getMyAssignedRoles } from "@/roles/utils/getRoles";
 import { getSilcBalanceOfCurrentCitizen } from "@/silc/queries";
 import clsx from "clsx";
+import { forbidden } from "next/navigation";
 import { FaExternalLinkAlt, FaPiggyBank } from "react-icons/fa";
 import { FaScaleBalanced } from "react-icons/fa6";
 
@@ -15,7 +16,7 @@ interface Props {
 
 export const ProfileTile = async ({ className }: Props) => {
   const authentication = await requireAuthentication();
-  if (!authentication.session.entity) throw new Error("Forbidden");
+  if (!authentication.session.entity) forbidden();
 
   const name =
     authentication.session.user.name || authentication.session.discordId;

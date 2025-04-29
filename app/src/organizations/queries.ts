@@ -2,13 +2,22 @@ import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { withTrace } from "@/tracing/utils/withTrace";
 import type { Organization } from "@prisma/client";
+import { forbidden } from "next/navigation";
 import { cache } from "react";
+
+export const getOrganizations = cache(
+  withTrace("getOrganizations", async () => {
+    const authentication = await requireAuthentication();
+    if (!(await authentication.authorize("organization", "read"))) forbidden();
+
+    return prisma.organization.findMany();
+  }),
+);
 
 export const getOrganizationById = cache(
   withTrace("getOrganizationById", async (id: Organization["id"]) => {
     const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("organization", "read")))
-      throw new Error("Forbidden");
+    if (!(await authentication.authorize("organization", "read"))) forbidden();
 
     return prisma.organization.findUnique({
       where: {

@@ -4,6 +4,7 @@ import { prisma } from "@/db";
 import { DeleteOrganizationMembership } from "@/spynet/components/DeleteOrganizationMembership";
 import { OrganizationMembershipVisibility } from "@prisma/client";
 import clsx from "clsx";
+import { forbidden } from "next/navigation";
 import { FaExternalLinkAlt, FaUsers } from "react-icons/fa";
 import { CreateMembership } from "./CreateMembership";
 
@@ -15,7 +16,7 @@ interface Props {
 export const MembershipsTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();
   if (!(await authentication.authorize("organizationMembership", "read")))
-    throw new Error("Forbidden");
+    forbidden();
 
   const alsoVisibilityRedacted = await authentication.authorize(
     "organizationMembership",

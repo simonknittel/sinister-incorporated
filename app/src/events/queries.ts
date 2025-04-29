@@ -2,13 +2,13 @@ import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { withTrace } from "@/tracing/utils/withTrace";
 import type { Event } from "@prisma/client";
+import { forbidden } from "next/navigation";
 import { cache } from "react";
 
 export const getEventById = cache(
   withTrace("getEventById", async (id: Event["id"]) => {
     const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("event", "read")))
-      throw new Error("Forbidden");
+    if (!(await authentication.authorize("event", "read"))) forbidden();
 
     return prisma.event.findUnique({
       where: {
@@ -160,8 +160,7 @@ export const getEventById = cache(
 export const getFutureEvents = cache(
   withTrace("getFutureEvents", async () => {
     const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("event", "read")))
-      throw new Error("Forbidden");
+    if (!(await authentication.authorize("event", "read"))) forbidden();
 
     const now = new Date();
 
@@ -194,8 +193,7 @@ export const getFutureEvents = cache(
 export const getPastEvents = cache(
   withTrace("getPastEvents", async () => {
     const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("event", "read")))
-      throw new Error("Forbidden");
+    if (!(await authentication.authorize("event", "read"))) forbidden();
 
     const now = new Date();
 
