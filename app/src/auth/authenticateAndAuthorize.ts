@@ -5,8 +5,7 @@ import {
   requireConfirmedEmailForPage,
 } from "@/auth/utils/emailConfirmation";
 import { log } from "@/logging";
-import { getTracer } from "@/tracing/utils/getTracer";
-import { SpanStatusCode } from "@opentelemetry/api";
+import { withTrace } from "@/tracing/utils/withTrace";
 import { getServerSession, type Session } from "next-auth";
 import { cookies } from "next/headers";
 import { forbidden, redirect } from "next/navigation";
@@ -14,30 +13,21 @@ import { cache } from "react";
 import { type PermissionSet } from "./PermissionSet";
 import comparePermissionSets from "./comparePermissionSets";
 
-export const authenticate = cache(async () => {
-  return getTracer().startActiveSpan("authenticate", async (span) => {
-    try {
-      const session = await getServerSession(authOptions);
-      if (!session) return false;
+export const authenticate = cache(
+  withTrace("authenticate", async () => {
+    const session = await getServerSession(authOptions);
+    if (!session) return false;
 
-      return {
-        session,
-        authorize: (
-          resource: PermissionSet["resource"],
-          operation: PermissionSet["operation"],
-          attributes?: PermissionSet["attributes"],
-        ) => authorize(session, resource, operation, attributes),
-      };
-    } catch (error) {
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-      });
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
-});
+    return {
+      session,
+      authorize: (
+        resource: PermissionSet["resource"],
+        operation: PermissionSet["operation"],
+        attributes?: PermissionSet["attributes"],
+      ) => authorize(session, resource, operation, attributes),
+    };
+  }),
+);
 
 export async function authenticatePage(requestPath?: string) {
   const authentication = await authenticate();

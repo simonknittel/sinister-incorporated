@@ -1,59 +1,36 @@
 import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
-import { getTracer } from "@/tracing/utils/getTracer";
-import { SpanStatusCode } from "@opentelemetry/api";
+import { withTrace } from "@/tracing/utils/withTrace";
 import type { Organization } from "@prisma/client";
 import { cache } from "react";
 
-export const getOrganizationById = cache(async (id: Organization["id"]) => {
-  return getTracer().startActiveSpan("getOrganizationById", async (span) => {
-    try {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("organization", "read")))
-        throw new Error("Forbidden");
+export const getOrganizationById = cache(
+  withTrace("getOrganizationById", async (id: Organization["id"]) => {
+    const authentication = await requireAuthentication();
+    if (!(await authentication.authorize("organization", "read")))
+      throw new Error("Forbidden");
 
-      return await prisma.organization.findUnique({
-        where: {
-          id,
-        },
-        select: {
-          id: true,
-          spectrumId: true,
-          name: true,
-          logo: true,
-        },
-      });
-    } catch (error) {
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-      });
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
-});
+    return prisma.organization.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        spectrumId: true,
+        name: true,
+        logo: true,
+      },
+    });
+  }),
+);
 
-export const getOrganizationBySpectrumId = async (
-  spectrumId: Organization["spectrumId"],
-) => {
-  return getTracer().startActiveSpan(
-    "getOrganizationBySpectrumId",
-    async (span) => {
-      try {
-        return await prisma.organization.findFirst({
-          where: {
-            spectrumId,
-          },
-        });
-      } catch (error) {
-        span.setStatus({
-          code: SpanStatusCode.ERROR,
-        });
-        throw error;
-      } finally {
-        span.end();
-      }
-    },
-  );
-};
+export const getOrganizationBySpectrumId = withTrace(
+  "getOrganizationBySpectrumId",
+  async (spectrumId: Organization["spectrumId"]) => {
+    return prisma.organization.findFirst({
+      where: {
+        spectrumId,
+      },
+    });
+  },
+);
