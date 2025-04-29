@@ -2,6 +2,7 @@
 
 import { prisma } from "@/db";
 import { log } from "@/logging";
+import { getOrganizations } from "@/organizations/queries";
 import { getTracer } from "@/tracing/utils/getTracer";
 import { SpanStatusCode } from "@opentelemetry/api";
 import { unstable_rethrow } from "next/navigation";
@@ -10,8 +11,8 @@ import { getIndex } from "..";
 
 export const updateIndices = async () => {
   try {
-    const [organizations, citizen] = await prisma.$transaction([
-      prisma.organization.findMany(),
+    const [organizations, citizen] = await Promise.all([
+      getOrganizations(),
 
       prisma.entity.findMany({
         include: {

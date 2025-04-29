@@ -2,13 +2,13 @@ import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { withTrace } from "@/tracing/utils/withTrace";
 import type { User } from "@prisma/client";
+import { forbidden } from "next/navigation";
 
 export const getUsersWithEntities = withTrace(
   "getUsersWithEntities",
   async () => {
     const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("user", "read")))
-      throw new Error("Forbidden");
+    if (!(await authentication.authorize("user", "read"))) forbidden();
 
     const [users, entities] = await Promise.all([
       prisma.user.findMany({

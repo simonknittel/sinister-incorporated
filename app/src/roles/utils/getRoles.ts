@@ -1,7 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
-import { prisma } from "@/db";
 import { withTrace } from "@/tracing/utils/withTrace";
 import type { Entity } from "@prisma/client";
+import { forbidden } from "next/navigation";
 import { cache } from "react";
 import { getRoles } from "../queries";
 
@@ -48,15 +48,9 @@ export const getAssignedRoles = cache(async (entity: Entity) => {
 export const getMyAssignedRoles = cache(
   withTrace("getMyAssignedRoles", async () => {
     const authentication = await requireAuthentication();
+    if (!authentication.session.entity) forbidden();
 
-    const entity = await prisma.entity.findUnique({
-      where: {
-        discordId: authentication.session.discordId,
-      },
-    });
-    if (!entity) throw new Error("Forbidden");
-
-    return getAssignedRoles(entity);
+    return getAssignedRoles(authentication.session.entity);
   }),
 );
 

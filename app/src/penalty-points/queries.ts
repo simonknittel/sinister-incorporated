@@ -2,14 +2,14 @@ import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { withTrace } from "@/tracing/utils/withTrace";
 import { type Entity, type PenaltyEntry } from "@prisma/client";
+import { forbidden } from "next/navigation";
 import { cache } from "react";
 
 export const getEntriesGroupedByCitizen = withTrace(
   "getEntriesGroupedByCitizen",
   async () => {
     const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("penaltyEntry", "read")))
-      throw new Error("Forbidden");
+    if (!(await authentication.authorize("penaltyEntry", "read"))) forbidden();
 
     const now = new Date();
 

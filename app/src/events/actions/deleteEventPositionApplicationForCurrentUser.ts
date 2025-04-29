@@ -4,7 +4,7 @@ import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { revalidatePath } from "next/cache";
-import { unstable_rethrow } from "next/navigation";
+import { forbidden, unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { isEventUpdatable } from "../utils/isEventUpdatable";
@@ -23,7 +23,7 @@ export const deleteEventPositionApplicationForCurrentUser = async (
     const authentication = await authenticateAction(
       "deleteEventPositionApplicationForCurrentUser",
     );
-    if (!authentication.session.entity) throw new Error("Forbidden");
+    if (!authentication.session.entity) forbidden();
 
     /**
      * Validate the request
@@ -35,6 +35,7 @@ export const deleteEventPositionApplicationForCurrentUser = async (
       return {
         error: "Ungültige Anfrage",
         errorDetails: result.error,
+        requestPayload: formData,
       };
 
     const position = await prisma.eventPosition.findUnique({
@@ -47,7 +48,10 @@ export const deleteEventPositionApplicationForCurrentUser = async (
     });
     if (!position) return { error: "Posten nicht gefunden" };
     if (!isEventUpdatable(position.event))
-      return { error: "Das Event ist bereits vorbei." };
+      return {
+        error: "Das Event ist bereits vorbei.",
+        requestPayload: formData,
+      };
 
     /**
      * Delete application

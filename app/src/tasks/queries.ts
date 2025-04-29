@@ -7,13 +7,13 @@ import {
   type Task,
   type TaskAssignment,
 } from "@prisma/client";
+import { forbidden } from "next/navigation";
 import { cache } from "react";
 
 export const getTasks = cache(
   withTrace("getTasks", async () => {
     const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("task", "read")))
-      throw new Error("Forbidden");
+    if (!(await authentication.authorize("task", "read"))) forbidden();
 
     let tasks = await prisma.task.findMany({
       where: {
@@ -71,8 +71,7 @@ export const getTasks = cache(
 export const getClosedTasks = cache(
   withTrace("getClosedTasks", async () => {
     const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("task", "read")))
-      throw new Error("Forbidden");
+    if (!(await authentication.authorize("task", "read"))) forbidden();
 
     let tasks = await prisma.task.findMany({
       where: {
@@ -136,8 +135,7 @@ export const getClosedTasks = cache(
 export const getTaskById = cache(
   withTrace("getTaskById", async (id: Task["id"]) => {
     const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("task", "read")))
-      throw new Error("Forbidden");
+    if (!(await authentication.authorize("task", "read"))) forbidden();
 
     const task = await prisma.task.findUnique({
       where: {

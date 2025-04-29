@@ -2,21 +2,12 @@ import { authenticatePage } from "@/auth/server";
 import { OrganizationMembershipHistory } from "@/citizen/components/OrganizationMembershipHistory";
 import { OrganizationMembershipsTile } from "@/citizen/components/OrganizationMembershipsTile";
 import { Template } from "@/citizen/components/Template";
+import { getCitizenById } from "@/citizen/queries";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { prisma } from "@/db";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { cache } from "react";
 import { serializeError } from "serialize-error";
-
-const getEntity = cache(async (id: string) => {
-  return prisma.entity.findUnique({
-    where: {
-      id,
-    },
-  });
-});
 
 type Params = Promise<
   Readonly<{
@@ -28,7 +19,7 @@ export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   try {
-    const entity = await getEntity((await props.params).id);
+    const entity = await getCitizenById((await props.params).id);
     if (!entity) return {};
 
     return {
@@ -58,7 +49,7 @@ export default async function Page(props: Props) {
   );
   await authentication.authorizePage("organizationMembership", "read");
 
-  const entity = await getEntity((await props.params).id);
+  const entity = await getCitizenById((await props.params).id);
   if (!entity) notFound();
 
   return (

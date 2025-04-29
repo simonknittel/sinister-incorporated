@@ -9,6 +9,7 @@ import {
   OrganizationMembershipVisibility,
 } from "@prisma/client";
 import clsx from "clsx";
+import { forbidden } from "next/navigation";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaInfoCircle, FaListAlt } from "react-icons/fa";
 import { TbCircleDot } from "react-icons/tb";
@@ -21,8 +22,7 @@ interface Props {
 
 export const ActivityTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();
-  if (!(await authentication.authorize("organization", "read")))
-    throw new Error("Forbidden");
+  if (!(await authentication.authorize("organization", "read"))) forbidden();
 
   const alsoVisibilityRedacted = await authentication.authorize(
     "organizationMembership",
