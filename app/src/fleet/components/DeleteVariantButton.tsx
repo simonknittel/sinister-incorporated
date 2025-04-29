@@ -1,5 +1,6 @@
 "use client";
 
+import { useAction } from "@/actions/utils/useAction";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,9 +15,7 @@ import {
 import Button from "@/common/components/Button";
 import Note from "@/common/components/Note";
 import { type Variant } from "@prisma/client";
-import { unstable_rethrow } from "next/navigation";
-import { useId, useTransition } from "react";
-import toast from "react-hot-toast";
+import { useId } from "react";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteVariant } from "../actions/deleteVariant";
 
@@ -31,29 +30,8 @@ export const DeleteVariantButton = ({
   variant,
   shipCount,
 }: Props) => {
-  const [isPending, startTransition] = useTransition();
+  const { isPending, formAction } = useAction(deleteVariant);
   const id = useId();
-
-  const formAction = (formData: FormData) => {
-    startTransition(async () => {
-      try {
-        const response = await deleteVariant(formData);
-
-        if (response.status === 200) {
-          toast.success("Erfolgreich gelöscht");
-        } else {
-          toast.error(
-            response.errorMessage || "Beim Löschen ist ein Fehler aufgetreten.",
-          );
-          console.error(response);
-        }
-      } catch (error) {
-        unstable_rethrow(error);
-        toast.error("Beim Löschen ist ein Fehler aufgetreten.");
-        console.error(error);
-      }
-    });
-  };
 
   return (
     <form action={formAction} id={id} className={className}>

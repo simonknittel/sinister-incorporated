@@ -1,5 +1,6 @@
 "use client";
 
+import { useAction } from "@/actions/utils/useAction";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,11 +14,9 @@ import {
 } from "@/common/components/AlertDialog";
 import Button from "@/common/components/Button";
 import { type Manufacturer } from "@prisma/client";
-import { unstable_rethrow } from "next/navigation";
-import { useId, useTransition } from "react";
-import toast from "react-hot-toast";
+import { useId } from "react";
 import { FaSpinner, FaTrash } from "react-icons/fa";
-import { deleteManufacturerAction } from "../actions/deleteManufacturer";
+import { deleteManufacturer } from "../actions/deleteManufacturer";
 
 interface Props {
   readonly className?: string;
@@ -28,29 +27,8 @@ export const DeleteManufacturerButton = ({
   className,
   manufacturer,
 }: Props) => {
-  const [isPending, startTransition] = useTransition();
+  const { isPending, formAction } = useAction(deleteManufacturer);
   const id = useId();
-
-  const formAction = (formData: FormData) => {
-    startTransition(async () => {
-      try {
-        const response = await deleteManufacturerAction(formData);
-
-        if (response.status === 200) {
-          toast.success("Erfolgreich gelöscht");
-        } else {
-          toast.error(
-            response.errorMessage || "Beim Löschen ist ein Fehler aufgetreten.",
-          );
-          console.error(response);
-        }
-      } catch (error) {
-        unstable_rethrow(error);
-        toast.error("Beim Löschen ist ein Fehler aufgetreten.");
-        console.error(error);
-      }
-    });
-  };
 
   return (
     <form action={formAction} id={id} className={className}>
