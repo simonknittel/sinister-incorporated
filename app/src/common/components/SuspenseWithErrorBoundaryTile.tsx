@@ -42,7 +42,7 @@ const Fallback = ({ className }: FallbackProps) => {
       <div className="p-4 lg:p-8">
         Ein unerwarteter Fehler ist aufgetreten. Bitte probiere es später
         erneut. Wenn der Fehler weiterhin auftritt, wende dich bitte an den
-        Support.
+        Support (<em>ind3x</em>).
       </div>
     </section>
   );

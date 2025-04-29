@@ -1,6 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { getTracer } from "@/tracing/utils/getTracer";
+import { withTrace } from "@/tracing/utils/withTrace";
 import { SpanStatusCode } from "@opentelemetry/api";
 import type { Entity, SilcSettingKey } from "@prisma/client";
 import { cache } from "react";
@@ -138,85 +139,62 @@ export const getSilcTransactionsOfAllCitizens = cache(async () => {
 });
 
 export const getSilcTransactionsOfCitizen = cache(
-  async (citizenId: Entity["id"]) => {
-    return getTracer().startActiveSpan(
-      "getSilcTransactionsOfCitizen",
-      async (span) => {
-        try {
-          const authentication = await requireAuthentication();
-          if (!authentication.session.entity) throw new Error("Forbidden");
-          if (
-            !(await authentication.authorize(
-              "silcTransactionOfOtherCitizen",
-              "read",
-            )) &&
-            !(
-              citizenId === authentication.session.entity.id &&
-              (await authentication.authorize(
-                "silcTransactionOfCurrentCitizen",
-                "read",
-              ))
-            )
-          )
-            throw new Error("Forbidden");
+  withTrace("getSilcTransactionsOfCitizen", async (citizenId: Entity["id"]) => {
+    const authentication = await requireAuthentication();
+    if (!authentication.session.entity) throw new Error("Forbidden");
+    if (
+      !(await authentication.authorize(
+        "silcTransactionOfOtherCitizen",
+        "read",
+      )) &&
+      !(
+        citizenId === authentication.session.entity.id &&
+        (await authentication.authorize(
+          "silcTransactionOfCurrentCitizen",
+          "read",
+        ))
+      )
+    )
+      throw new Error("Forbidden");
 
-          return await prisma.silcTransaction.findMany({
-            where: {
-              receiverId: citizenId,
-              deletedAt: null,
-            },
-            orderBy: {
-              createdAt: "asc",
-            },
-            include: {
-              receiver: {
-                select: {
-                  id: true,
-                  handle: true,
-                },
-              },
-              createdBy: {
-                select: {
-                  id: true,
-                  handle: true,
-                },
-              },
-              updatedBy: {
-                select: {
-                  id: true,
-                  handle: true,
-                },
-              },
-            },
-          });
-        } catch (error) {
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-          });
-          throw error;
-        } finally {
-          span.end();
-        }
+    return prisma.silcTransaction.findMany({
+      where: {
+        receiverId: citizenId,
+        deletedAt: null,
       },
-    );
-  },
+      orderBy: {
+        createdAt: "asc",
+      },
+      include: {
+        receiver: {
+          select: {
+            id: true,
+            handle: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            handle: true,
+          },
+        },
+        updatedBy: {
+          select: {
+            id: true,
+            handle: true,
+          },
+        },
+      },
+    });
+  }),
 );
 
-export const getSilcSetting = cache(async (key: SilcSettingKey) => {
-  return getTracer().startActiveSpan("getSilcSetting", async (span) => {
-    try {
-      return await prisma.silcSetting.findUnique({
-        where: {
-          key,
-        },
-      });
-    } catch (error) {
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-      });
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
-});
+export const getSilcSetting = cache(
+  withTrace("getSilcSetting", async (key: SilcSettingKey) => {
+    return prisma.silcSetting.findUnique({
+      where: {
+        key,
+      },
+    });
+  }),
+);

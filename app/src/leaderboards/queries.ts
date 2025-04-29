@@ -1,6 +1,5 @@
 import { prisma } from "@/db";
-import { getTracer } from "@/tracing/utils/getTracer";
-import { SpanStatusCode } from "@opentelemetry/api";
+import { withTrace } from "@/tracing/utils/withTrace";
 import { unstable_cache } from "next/cache";
 import { z } from "zod";
 
@@ -37,74 +36,63 @@ const schema = z.object({
 
 export const getLeaderboard = (mode: "SB", season: string, pages: number) => {
   return unstable_cache(
-    async (mode: "SB", season: string) => {
-      return getTracer().startActiveSpan("getLeaderboard", async (span) => {
-        try {
-          const ranks: z.infer<typeof schema>["data"]["resultset"] = [];
+    withTrace("getLeaderboard", async (mode: "SB", season: string) => {
+      const ranks: z.infer<typeof schema>["data"]["resultset"] = [];
 
-          for (let page = 1; page <= pages; page++) {
-            const response = await fetch(
-              "https://robertsspaceindustries.com/api/leaderboards/getLeaderboard",
-              {
-                method: "POST",
-                body: JSON.stringify({
-                  mode,
-                  map: "MAP-ANY",
-                  type: "Account",
-                  season,
-                  page,
-                  pagesize: "100",
-                }),
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              },
-            );
+      for (let page = 1; page <= pages; page++) {
+        const response = await fetch(
+          "https://robertsspaceindustries.com/api/leaderboards/getLeaderboard",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              mode,
+              map: "MAP-ANY",
+              type: "Account",
+              season,
+              page,
+              pagesize: "100",
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
 
-            const json = (await response.json()) as unknown;
-            const result = schema.parse(json);
-            ranks.push(...result.data.resultset);
-          }
+        const json = (await response.json()) as unknown;
+        const result = schema.parse(json);
+        ranks.push(...result.data.resultset);
+      }
 
-          // Get entities from all Sinister members
-          const discordIds = await prisma.user.findMany({
+      // Get entities from all Sinister members
+      const discordIds = await prisma.user.findMany({
+        select: {
+          accounts: {
             select: {
-              accounts: {
-                select: {
-                  providerAccountId: true,
-                },
-              },
+              providerAccountId: true,
             },
-          });
-          const entities = await prisma.entity.findMany({
-            where: {
-              discordId: {
-                in: discordIds.flatMap(({ accounts }) =>
-                  accounts.map(({ providerAccountId }) => providerAccountId),
-                ),
-              },
-            },
-            select: {
-              id: true,
-              handle: true,
-            },
-          });
-
-          const filteredRanks = ranks.filter((rank) =>
-            entities.some((entity) => entity.handle === rank.nickname),
-          );
-          const sortedRanks = filteredRanks.toSorted((a, b) => a.rank - b.rank);
-          return sortedRanks;
-        } catch (error) {
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-          });
-          throw error;
-        } finally {
-          span.end();
-        }
+          },
+        },
       });
-    },
+      const entities = await prisma.entity.findMany({
+        where: {
+          discordId: {
+            in: discordIds.flatMap(({ accounts }) =>
+              accounts.map(({ providerAccountId }) => providerAccountId),
+            ),
+          },
+        },
+        select: {
+          id: true,
+          handle: true,
+        },
+      });
+
+      const filteredRanks = ranks.filter((rank) =>
+        entities.some((entity) => entity.handle === rank.nickname),
+      );
+      const sortedRanks = filteredRanks.toSorted((a, b) => a.rank - b.rank);
+      return sortedRanks;
+    }),
     [`mode=${mode}`, `season=${season}`],
     {
       revalidate: 60 * 60, // 1 hour

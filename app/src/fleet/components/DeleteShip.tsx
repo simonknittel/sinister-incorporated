@@ -1,5 +1,6 @@
 "use client";
 
+import { useAction } from "@/actions/utils/useAction";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,9 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/common/components/AlertDialog";
 import { type Ship, type Variant } from "@prisma/client";
-import { unstable_rethrow } from "next/navigation";
-import { useId, useTransition } from "react";
-import toast from "react-hot-toast";
+import { useId } from "react";
 import { FaSpinner, FaTrash } from "react-icons/fa";
 import { deleteShipAction } from "../actions/deleteShipAction";
 
@@ -26,29 +25,8 @@ interface Props {
 }
 
 export const DeleteShip = ({ className, ship }: Props) => {
-  const [isPending, startTransition] = useTransition();
+  const { isPending, formAction } = useAction(deleteShipAction);
   const id = useId();
-
-  const formAction = (formData: FormData) => {
-    startTransition(async () => {
-      try {
-        const response = await deleteShipAction(formData);
-
-        if (response.status === 200) {
-          toast.success("Erfolgreich gelöscht");
-        } else {
-          toast.error(
-            response.errorMessage || "Beim Löschen ist ein Fehler aufgetreten.",
-          );
-          console.error(response);
-        }
-      } catch (error) {
-        unstable_rethrow(error);
-        toast.error("Beim Löschen ist ein Fehler aufgetreten.");
-        console.error(error);
-      }
-    });
-  };
 
   return (
     <form action={formAction} id={id} className={className}>

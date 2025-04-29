@@ -1,7 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
-import { getTracer } from "@/tracing/utils/getTracer";
-import { SpanStatusCode } from "@opentelemetry/api";
+import { withTrace } from "@/tracing/utils/withTrace";
 import {
   type Entity,
   type Role,
@@ -10,186 +9,159 @@ import {
 } from "@prisma/client";
 import { cache } from "react";
 
-export const getTasks = cache(async () => {
-  return getTracer().startActiveSpan("getTasks", async (span) => {
-    try {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("task", "read")))
-        throw new Error("Forbidden");
+export const getTasks = cache(
+  withTrace("getTasks", async () => {
+    const authentication = await requireAuthentication();
+    if (!(await authentication.authorize("task", "read")))
+      throw new Error("Forbidden");
 
-      let tasks = await prisma.task.findMany({
-        where: {
-          cancelledAt: null,
-          deletedAt: null,
-          completedAt: null,
-          OR: [
-            {
-              expiresAt: {
-                gte: new Date(),
-              },
-            },
-            {
-              expiresAt: null,
-            },
-          ],
-        },
-        include: {
-          createdBy: true,
-          assignments: {
-            include: {
-              citizen: true,
+    let tasks = await prisma.task.findMany({
+      where: {
+        cancelledAt: null,
+        deletedAt: null,
+        completedAt: null,
+        OR: [
+          {
+            expiresAt: {
+              gte: new Date(),
             },
           },
-          requiredRoles: {
-            include: {
-              icon: true,
-            },
+          {
+            expiresAt: null,
+          },
+        ],
+      },
+      include: {
+        createdBy: true,
+        assignments: {
+          include: {
+            citizen: true,
           },
         },
-        orderBy: {
-          createdAt: "desc",
+        requiredRoles: {
+          include: {
+            icon: true,
+          },
         },
-      });
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-      tasks = (
-        await Promise.all(
-          tasks.map(async (task) => {
-            const include = await isVisibleForCurrentUser(task);
+    tasks = (
+      await Promise.all(
+        tasks.map(async (task) => {
+          const include = await isVisibleForCurrentUser(task);
 
-            return {
-              include,
-              task,
-            };
-          }),
-        )
+          return {
+            include,
+            task,
+          };
+        }),
       )
-        .filter(({ include }) => include)
-        .map(({ task }) => task);
+    )
+      .filter(({ include }) => include)
+      .map(({ task }) => task);
 
-      return tasks;
-    } catch (error) {
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-      });
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
-});
+    return tasks;
+  }),
+);
 
-export const getClosedTasks = cache(async () => {
-  return getTracer().startActiveSpan("getClosedTasks", async (span) => {
-    try {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("task", "read")))
-        throw new Error("Forbidden");
+export const getClosedTasks = cache(
+  withTrace("getClosedTasks", async () => {
+    const authentication = await requireAuthentication();
+    if (!(await authentication.authorize("task", "read")))
+      throw new Error("Forbidden");
 
-      let tasks = await prisma.task.findMany({
-        where: {
-          OR: [
-            {
-              cancelledAt: {
-                not: null,
-              },
-            },
-            {
-              completedAt: {
-                not: null,
-              },
-            },
-            {
-              expiresAt: {
-                lt: new Date(),
-              },
-            },
-          ],
-        },
-        include: {
-          createdBy: true,
-          assignments: {
-            include: {
-              citizen: true,
+    let tasks = await prisma.task.findMany({
+      where: {
+        OR: [
+          {
+            cancelledAt: {
+              not: null,
             },
           },
-          completedBy: true,
-          completionists: true,
-          cancelledBy: true,
-          deletedBy: true,
-          requiredRoles: {
-            include: {
-              icon: true,
+          {
+            completedAt: {
+              not: null,
             },
           },
+          {
+            expiresAt: {
+              lt: new Date(),
+            },
+          },
+        ],
+      },
+      include: {
+        createdBy: true,
+        assignments: {
+          include: {
+            citizen: true,
+          },
         },
-        orderBy: { createdAt: "desc" },
-      });
+        completedBy: true,
+        completionists: true,
+        cancelledBy: true,
+        deletedBy: true,
+        requiredRoles: {
+          include: {
+            icon: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
 
-      tasks = (
-        await Promise.all(
-          tasks.map(async (task) => {
-            const include = await isVisibleForCurrentUser(task);
+    tasks = (
+      await Promise.all(
+        tasks.map(async (task) => {
+          const include = await isVisibleForCurrentUser(task);
 
-            return {
-              include,
-              task,
-            };
-          }),
-        )
+          return {
+            include,
+            task,
+          };
+        }),
       )
-        .filter(({ include }) => include)
-        .map(({ task }) => task);
+    )
+      .filter(({ include }) => include)
+      .map(({ task }) => task);
 
-      return tasks;
-    } catch (error) {
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-      });
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
-});
+    return tasks;
+  }),
+);
 
-export const getTaskById = cache(async (id: Task["id"]) => {
-  return getTracer().startActiveSpan("getTaskById", async (span) => {
-    try {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("task", "read")))
-        throw new Error("Forbidden");
+export const getTaskById = cache(
+  withTrace("getTaskById", async (id: Task["id"]) => {
+    const authentication = await requireAuthentication();
+    if (!(await authentication.authorize("task", "read")))
+      throw new Error("Forbidden");
 
-      const task = await prisma.task.findUnique({
-        where: {
-          id,
-          deletedAt: null,
-        },
-        include: {
-          assignments: true,
-          completionists: true,
-          requiredRoles: {
-            include: {
-              icon: true,
-            },
+    const task = await prisma.task.findUnique({
+      where: {
+        id,
+        deletedAt: null,
+      },
+      include: {
+        assignments: true,
+        completionists: true,
+        requiredRoles: {
+          include: {
+            icon: true,
           },
         },
-      });
+      },
+    });
 
-      if (!task) return null;
+    if (!task) return null;
 
-      if (!(await isVisibleForCurrentUser(task))) return null;
+    if (!(await isVisibleForCurrentUser(task))) return null;
 
-      return task;
-    } catch (error) {
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-      });
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
-});
+    return task;
+  }),
+);
 
 const isVisibleForCurrentUser = async (
   task: Task & {
