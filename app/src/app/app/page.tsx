@@ -60,8 +60,6 @@ export default async function Page({ searchParams }: Props) {
           </SuspenseWithErrorBoundaryTile>
         </section>
       </div>
-
-      {/* <QuotesTile className="mt-4" /> */}
     </main>
   );
 }
