@@ -8,6 +8,9 @@ on:
     paths:
       - .github/workflows/terraform-validate.yml
       - terraform/**
+  push:
+    branches:
+      - develop
 
 jobs:
   validate:
