@@ -16,7 +16,7 @@ const schema = z.object({
 export const updateTaskRepeatable = createAuthenticatedAction(
   "updateTaskRepeatable",
   schema,
-  async (formData: FormData, authentication, data) => {
+  async (formData: FormData, authentication, data, t) => {
     /**
      * Authorize the request
      */
@@ -30,7 +30,7 @@ export const updateTaskRepeatable = createAuthenticatedAction(
       };
     if (!(await isAllowedToManageTask(task)))
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -53,7 +53,7 @@ export const updateTaskRepeatable = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert.",
+      success: t("Common.successfullySaved"),
     };
   },
 );

@@ -12,7 +12,7 @@ const schema = z.object({
 export const deleteSeries = createAuthenticatedAction(
   "deleteSeries",
   schema,
-  async (formData, authentication, data) => {
+  async (formData, authentication, data, t) => {
     if (
       !(await authentication.authorize(
         "manufacturersSeriesAndVariants",
@@ -20,7 +20,7 @@ export const deleteSeries = createAuthenticatedAction(
       ))
     )
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -46,7 +46,7 @@ export const deleteSeries = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gelöscht",
+      success: t("Common.successfullyDeleted"),
     };
   },
 );

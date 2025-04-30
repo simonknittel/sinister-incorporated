@@ -15,10 +15,10 @@ const schema = z.object({
 export const deleteTaskAssignmentForCurrentUser = createAuthenticatedAction(
   "deleteTaskAssignmentForCurrentUser",
   schema,
-  async (formData: FormData, authentication, data) => {
+  async (formData: FormData, authentication, data, t) => {
     if (!authentication.session.entity)
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -62,7 +62,7 @@ export const deleteTaskAssignmentForCurrentUser = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert.",
+      success: t("Common.successfullySaved"),
     };
   },
 );

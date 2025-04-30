@@ -17,10 +17,10 @@ const schema = z.object({
 export const deleteTask = createAuthenticatedAction(
   "deleteTask",
   schema,
-  async (formData: FormData, authentication, data) => {
+  async (formData: FormData, authentication, data, t) => {
     if (!authentication.session.entity || !(await isAllowedToDeleteTask()))
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -32,7 +32,7 @@ export const deleteTask = createAuthenticatedAction(
       return { error: "Task nicht gefunden", requestPayload: formData };
     if (!(await isAllowedToManageTask(task)))
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -62,7 +62,7 @@ export const deleteTask = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gelöscht.",
+      success: t("Common.successfullyDeleted"),
     };
   },
 );

@@ -13,7 +13,7 @@ const schema = z.object({
 export const deleteSilcTransaction = createAuthenticatedAction(
   "deleteSilcTransaction",
   schema,
-  async (formData: FormData, authentication, data) => {
+  async (formData: FormData, authentication, data, t) => {
     if (
       !(await authentication.authorize(
         "silcTransactionOfOtherCitizen",
@@ -21,12 +21,12 @@ export const deleteSilcTransaction = createAuthenticatedAction(
       ))
     )
       return {
-        error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
     if (!authentication.session.entity)
       return {
-        error: "Du bist nicht berechtigt, diese Aktion durchzuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -63,7 +63,7 @@ export const deleteSilcTransaction = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gelöscht.",
+      success: t("Common.successfullyDeleted"),
     };
   },
 );

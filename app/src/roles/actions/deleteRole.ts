@@ -12,13 +12,13 @@ const schema = z.object({
 export const deleteRole = createAuthenticatedAction(
   "deleteRole",
   schema,
-  async (formData, authentication, data) => {
+  async (formData, authentication, data, t) => {
     /**
      * Authorize the request
      */
     if (!(await authentication.authorize("role", "manage")))
       return {
-        error: "Du bist nicht berechtigt diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 

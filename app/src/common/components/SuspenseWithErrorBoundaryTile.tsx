@@ -1,5 +1,6 @@
 import { SkeletonTile } from "@/common/components/SkeletonTile";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import { Suspense, type ReactNode } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { BsExclamationOctagonFill } from "react-icons/bs";
@@ -27,6 +28,8 @@ interface FallbackProps {
 }
 
 const Fallback = ({ className }: FallbackProps) => {
+  const t = useTranslations();
+
   return (
     <section
       className={clsx(
@@ -39,11 +42,7 @@ const Fallback = ({ className }: FallbackProps) => {
         <h2 className="font-thin text-2xl text-red-500">Fehler</h2>
       </div>
 
-      <div className="p-4 lg:p-8">
-        Ein unerwarteter Fehler ist aufgetreten. Bitte probiere es später
-        erneut. Wenn der Fehler weiterhin auftritt, wende dich bitte an den
-        Support (<em>ind3x</em>).
-      </div>
+      <div className="p-4 lg:p-8">{t("Common.internalServerError")}</div>
     </section>
   );
 };

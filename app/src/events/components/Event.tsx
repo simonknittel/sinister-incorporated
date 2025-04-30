@@ -2,7 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import { Badge } from "@/common/components/Badge";
 import { DiscordNavigationButton } from "@/common/components/DiscordNavigationButton";
 import { Link } from "@/common/components/Link";
-import TimeAgoContainer from "@/common/components/TimeAgoContainer";
+import { RelativeDate } from "@/common/components/RelativeDate";
 import { formatDate } from "@/common/utils/formatDate";
 import type {
   Entity,
@@ -63,7 +63,7 @@ export const Event = async ({ className, event, index }: Props) => {
 
       {isToday && !isHappeningNow && (
         <div className="bg-sinister-red-500/50 text-white font-bold text-center p-2">
-          <TimeAgoContainer date={event.startTime} />
+          <RelativeDate date={event.startTime} />
         </div>
       )}
 

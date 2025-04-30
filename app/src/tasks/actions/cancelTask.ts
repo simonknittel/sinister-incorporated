@@ -15,10 +15,10 @@ const schema = z.object({
 export const cancelTask = createAuthenticatedAction(
   "cancelTask",
   schema,
-  async (formData: FormData, authentication, data) => {
+  async (formData: FormData, authentication, data, t) => {
     if (!authentication.session.entity)
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -35,7 +35,7 @@ export const cancelTask = createAuthenticatedAction(
       };
     if (!(await isAllowedToManageTask(task)))
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -65,7 +65,7 @@ export const cancelTask = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich abgebrochen.",
+      success: "Erfolgreich abgebrochen",
     };
   },
 );

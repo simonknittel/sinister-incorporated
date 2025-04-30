@@ -17,7 +17,7 @@ const schema = z.object({
 export const updateTaskRewardTypeNewSilcValue = createAuthenticatedAction(
   "updateTaskRewardTypeNewSilcValue",
   schema,
-  async (formData: FormData, authentication, data) => {
+  async (formData: FormData, authentication, data, t) => {
     /**
      * Authorize the request
      */
@@ -31,7 +31,7 @@ export const updateTaskRewardTypeNewSilcValue = createAuthenticatedAction(
       };
     if (!(await isAllowedToManageTask(task)))
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
     if (
@@ -43,7 +43,7 @@ export const updateTaskRewardTypeNewSilcValue = createAuthenticatedAction(
       ]))
     )
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -66,7 +66,7 @@ export const updateTaskRewardTypeNewSilcValue = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert.",
+      success: t("Common.successfullySaved"),
     };
   },
 );

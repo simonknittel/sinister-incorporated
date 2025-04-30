@@ -15,10 +15,10 @@ const schema = z.object({
 export const createTaskAssignmentForCurrentUser = createAuthenticatedAction(
   "createTaskAssignmentForCurrentUser",
   schema,
-  async (formData: FormData, authentication, data) => {
+  async (formData: FormData, authentication, data, t) => {
     if (!authentication.session.entity)
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -85,7 +85,7 @@ export const createTaskAssignmentForCurrentUser = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert.",
+      success: t("Common.successfullySaved"),
     };
   },
 );
