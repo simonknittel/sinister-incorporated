@@ -9,6 +9,9 @@ on:
       - .github/workflows/validate-email-function.yml
       - bun-packages/packages/email-function/**
       - bun-packages/biome.json
+  push:
+    branches:
+      - develop
 
 jobs:
   biome:

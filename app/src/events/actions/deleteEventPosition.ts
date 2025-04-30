@@ -14,7 +14,7 @@ const schema = z.object({
 export const deleteEventPosition = createAuthenticatedAction(
   "deleteEventPosition",
   schema,
-  async (formData: FormData, authentication, data) => {
+  async (formData: FormData, authentication, data, t) => {
     /**
      * Authorize the request
      */
@@ -39,7 +39,7 @@ export const deleteEventPosition = createAuthenticatedAction(
       };
     if (!(await isAllowedToManagePositions(position.event)))
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -61,7 +61,7 @@ export const deleteEventPosition = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gelöscht.",
+      success: t("Common.successfullyDeleted"),
     };
   },
 );

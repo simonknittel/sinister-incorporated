@@ -3,6 +3,7 @@ import ToasterContainer from "@/common/components/ToasterContainer";
 import { env } from "@/env";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { type Metadata } from "next";
+import { getLocale } from "next-intl/server";
 import { type ReactNode } from "react";
 import "../styles/globals.css";
 
@@ -14,9 +15,11 @@ interface Props {
   children: ReactNode;
 }
 
-export default function RootLayout({ children }: Readonly<Props>) {
+export default async function RootLayout({ children }: Readonly<Props>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="de">
+    <html lang={locale}>
       <body className="bg-neutral-800 text-neutral-50">
         {children}
         <ToasterContainer />

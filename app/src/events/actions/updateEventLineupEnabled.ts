@@ -15,7 +15,7 @@ const schema = z.object({
 export const updateEventLineupEnabled = createAuthenticatedAction(
   "updateEventLineupEnabled",
   schema,
-  async (formData: FormData, authentication, data) => {
+  async (formData: FormData, authentication, data, t) => {
     /**
      * Authorize the request
      */
@@ -36,7 +36,7 @@ export const updateEventLineupEnabled = createAuthenticatedAction(
       };
     if (!(await isAllowedToManagePositions(event)))
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -61,7 +61,7 @@ export const updateEventLineupEnabled = createAuthenticatedAction(
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert.",
+      success: t("Common.successfullySaved"),
     };
   },
 );

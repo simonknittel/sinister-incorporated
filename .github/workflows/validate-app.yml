@@ -8,6 +8,9 @@ on:
     paths:
       - .github/workflows/validate-app.yml
       - app/**
+  push:
+    branches:
+      - develop
 
 jobs:
   lint:
