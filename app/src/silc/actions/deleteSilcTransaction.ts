@@ -13,7 +13,7 @@ const schema = z.object({
 export const deleteSilcTransaction = createAuthenticatedAction(
   "deleteSilcTransaction",
   schema,
-  async (formData: FormData, authentication, data, t) => {
+  async (formData, authentication, data, t) => {
     if (
       !(await authentication.authorize(
         "silcTransactionOfOtherCitizen",

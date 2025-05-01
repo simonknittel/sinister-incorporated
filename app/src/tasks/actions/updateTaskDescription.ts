@@ -1,11 +1,8 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { createAuthenticatedAction } from "@/actions/utils/createAction";
 import { prisma } from "@/db";
-import { log } from "@/logging";
 import { revalidatePath } from "next/cache";
-import { unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { getTaskById } from "../queries";
 import { isAllowedToManageTask } from "../utils/isAllowedToTask";
@@ -16,31 +13,14 @@ const schema = z.object({
   description: z.string().trim().max(512),
 });
 
-export const updateTaskDescription = async (formData: FormData) => {
-  try {
-    /**
-     * Authenticate and authorize the request
-     */
-    await authenticateAction("updateTaskDescription");
-
-    /**
-     * Validate the request
-     */
-    const result = schema.safeParse({
-      id: formData.get("id"),
-      description: formData.get("description"),
-    });
-    if (!result.success)
-      return {
-        error: "Ungültige Anfrage",
-        errorDetails: result.error,
-        requestPayload: formData,
-      };
-
+export const updateTaskDescription = createAuthenticatedAction(
+  "updateTaskDescription",
+  schema,
+  async (formData, authentication, data, t) => {
     /**
      * Authorize the request
      */
-    const task = await getTaskById(result.data.id);
+    const task = await getTaskById(data.id);
     if (!task)
       return { error: "Task nicht gefunden", requestPayload: formData };
     if (!isTaskUpdatable(task))
@@ -50,7 +30,7 @@ export const updateTaskDescription = async (formData: FormData) => {
       };
     if (!(await isAllowedToManageTask(task)))
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -58,9 +38,9 @@ export const updateTaskDescription = async (formData: FormData) => {
      * Update task
      */
     await prisma.task.update({
-      where: { id: result.data.id },
+      where: { id: data.id },
       data: {
-        description: result.data.description,
+        description: data.description,
       },
     });
 
@@ -73,15 +53,7 @@ export const updateTaskDescription = async (formData: FormData) => {
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert.",
+      success: t("Common.successfullySaved"),
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error("Internal Server Error", { error: serializeError(error) });
-    return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-      requestPayload: formData,
-    };
-  }
-};
+  },
+);

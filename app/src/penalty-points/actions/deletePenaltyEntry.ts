@@ -12,7 +12,7 @@ const schema = z.object({
 export const deletePenaltyEntry = createAuthenticatedAction(
   "deletePenaltyEntry",
   schema,
-  async (formData: FormData, authentication, data, t) => {
+  async (formData, authentication, data, t) => {
     if (!(await authentication.authorize("penaltyEntry", "delete")))
       return {
         error: t("Common.forbidden"),

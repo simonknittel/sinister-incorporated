@@ -15,7 +15,7 @@ const schema = z.object({
 export const updateEventLineupEnabled = createAuthenticatedAction(
   "updateEventLineupEnabled",
   schema,
-  async (formData: FormData, authentication, data, t) => {
+  async (formData, authentication, data, t) => {
     /**
      * Authorize the request
      */

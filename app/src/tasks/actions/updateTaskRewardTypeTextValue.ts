@@ -16,7 +16,7 @@ const schema = z.object({
 export const updateTaskRewardTypeTextValue = createAuthenticatedAction(
   "updateTaskRewardTypeTextValue",
   schema,
-  async (formData: FormData, authentication, data, t) => {
+  async (formData, authentication, data, t) => {
     /**
      * Authorize the request
      */

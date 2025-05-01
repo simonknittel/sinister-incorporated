@@ -3,6 +3,7 @@
 import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
+import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
@@ -18,6 +19,8 @@ const schema = z.object({
 });
 
 export const updateRequiredRoles = async (formData: FormData) => {
+  const t = await getTranslations();
+
   try {
     /**
      * Authenticate and authorize the request
@@ -36,7 +39,7 @@ export const updateRequiredRoles = async (formData: FormData) => {
     });
     if (!result.success)
       return {
-        error: "Ungültige Anfrage",
+        error: t("Common.badRequest"),
         errorDetails: result.error,
         requestPayload: formData,
       };
@@ -54,7 +57,7 @@ export const updateRequiredRoles = async (formData: FormData) => {
       };
     if (!(await isAllowedToManageTask(task)))
       return {
-        error: "Du bist nicht berechtigt, diese Aktion auszuführen.",
+        error: t("Common.forbidden"),
         requestPayload: formData,
       };
 
@@ -88,8 +91,7 @@ export const updateRequiredRoles = async (formData: FormData) => {
     unstable_rethrow(error);
     void log.error("Internal Server Error", { error: serializeError(error) });
     return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+      error: t("Common.internalServerError"),
       requestPayload: formData,
     };
   }

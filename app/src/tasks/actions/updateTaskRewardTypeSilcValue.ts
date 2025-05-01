@@ -16,7 +16,7 @@ const schema = z.object({
 export const updateTaskRewardTypeSilcValue = createAuthenticatedAction(
   "updateTaskRewardTypeSilcValue",
   schema,
-  async (formData: FormData, authentication, data, t) => {
+  async (formData, authentication, data, t) => {
     /**
      * Authorize the request
      */

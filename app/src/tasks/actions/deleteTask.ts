@@ -17,7 +17,7 @@ const schema = z.object({
 export const deleteTask = createAuthenticatedAction(
   "deleteTask",
   schema,
-  async (formData: FormData, authentication, data, t) => {
+  async (formData, authentication, data, t) => {
     if (!authentication.session.entity || !(await isAllowedToDeleteTask()))
       return {
         error: t("Common.forbidden"),
