@@ -15,7 +15,7 @@ const schema = z.object({
 export const cancelTask = createAuthenticatedAction(
   "cancelTask",
   schema,
-  async (formData: FormData, authentication, data, t) => {
+  async (formData, authentication, data, t) => {
     if (!authentication.session.entity)
       return {
         error: t("Common.forbidden"),

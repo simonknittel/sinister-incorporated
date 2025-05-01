@@ -1,36 +1,23 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { createAuthenticatedAction } from "@/actions/utils/createAction";
 import { prisma } from "@/db";
-import { log } from "@/logging";
 import { revalidatePath } from "next/cache";
-import { unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
 import { z } from "zod";
 
 const schema = z.object({
   userId: z.string().cuid(),
 });
 
-export const verifyEmailAction = async (formData: FormData) => {
-  try {
-    /**
-     * Authenticate and authorize the request
-     */
-    const authentication = await authenticateAction("verifyEmail");
-    await authentication.authorizeAction("user", "manage");
-
-    /**
-     * Validate the request
-     */
-    const result = schema.safeParse({
-      userId: formData.get("userId"),
-    });
-    if (!result.success) {
+export const verifyEmailAction = createAuthenticatedAction(
+  "verifyEmail",
+  schema,
+  async (formData, authentication, data, t) => {
+    if (!(await authentication.authorize("user", "manage")))
       return {
-        error: "Ungültige Anfrage",
+        error: t("Common.forbidden"),
+        requestPayload: formData,
       };
-    }
 
     /**
      * Verify the email address
@@ -38,13 +25,13 @@ export const verifyEmailAction = async (formData: FormData) => {
     await prisma.$transaction([
       prisma.emailConfirmationToken.deleteMany({
         where: {
-          userId: result.data.userId,
+          userId: data.userId,
         },
       }),
 
       prisma.user.update({
         where: {
-          id: result.data.userId,
+          id: data.userId,
         },
         data: {
           emailVerified: new Date(),
@@ -61,14 +48,7 @@ export const verifyEmailAction = async (formData: FormData) => {
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert",
+      success: t("Common.successfullySaved"),
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error("Internal Server Error", { error: serializeError(error) });
-    return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-    };
-  }
-};
+  },
+);

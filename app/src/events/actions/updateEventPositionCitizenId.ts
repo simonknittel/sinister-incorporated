@@ -1,11 +1,8 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { createAuthenticatedAction } from "@/actions/utils/createAction";
 import { prisma } from "@/db";
-import { log } from "@/logging";
 import { revalidatePath } from "next/cache";
-import { unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { isAllowedToManagePositions } from "../utils/isAllowedToManagePositions";
 import { isEventUpdatable } from "../utils/isEventUpdatable";
@@ -15,32 +12,16 @@ const schema = z.object({
   citizenId: z.string().cuid(),
 });
 
-export const updateEventPositionCitizenId = async (formData: FormData) => {
-  try {
-    /**
-     * Authenticate
-     */
-    await authenticateAction("updateEventPositionCitizenId");
-
-    /**
-     * Validate the request
-     */
-    const result = schema.safeParse({
-      positionId: formData.get("positionId"),
-      citizenId: formData.get("citizenId"),
-    });
-    if (!result.success)
-      return {
-        error: "Ungültige Anfrage",
-        errorDetails: result.error,
-      };
-
+export const updateEventPositionCitizenId = createAuthenticatedAction(
+  "updateEventPositionCitizenId",
+  schema,
+  async (formData, authentication, data, t) => {
     /**
      * Authorize the request
      */
     const position = await prisma.eventPosition.findUnique({
       where: {
-        id: result.data.positionId,
+        id: data.positionId,
       },
       include: {
         event: {
@@ -50,23 +31,30 @@ export const updateEventPositionCitizenId = async (formData: FormData) => {
         },
       },
     });
-    if (!position) return { error: "Posten nicht gefunden" };
+    if (!position)
+      return { error: "Posten nicht gefunden", requestPayload: formData };
     if (!isEventUpdatable(position.event))
-      return { error: "Das Event ist bereits vorbei." };
+      return {
+        error: "Das Event ist bereits vorbei.",
+        requestPayload: formData,
+      };
     if (!(await isAllowedToManagePositions(position.event)))
-      return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
+      return {
+        error: t("Common.forbidden"),
+        requestPayload: formData,
+      };
 
     /**
      * Update position
      */
     await prisma.eventPosition.update({
       where: {
-        id: result.data.positionId,
+        id: data.positionId,
       },
       data: {
         citizen: {
           connect: {
-            id: result.data.citizenId,
+            id: data.citizenId,
           },
         },
       },
@@ -81,14 +69,7 @@ export const updateEventPositionCitizenId = async (formData: FormData) => {
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert.",
+      success: t("Common.successfullySaved"),
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error("Internal Server Error", { error: serializeError(error) });
-    return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
-    };
-  }
-};
+  },
+);

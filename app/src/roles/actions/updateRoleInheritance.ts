@@ -3,6 +3,7 @@
 import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
+import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
@@ -17,6 +18,8 @@ export const updateRoleInheritance = async (
   previousState: unknown,
   formData: FormData,
 ) => {
+  const t = await getTranslations();
+
   try {
     /**
      * Authenticate and authorize the request
@@ -34,7 +37,8 @@ export const updateRoleInheritance = async (
     if (!result.success) {
       void log.warn("Bad Request", { error: serializeError(result.error) });
       return {
-        error: "Ungültige Anfrage",
+        error: t("Common.badRequest"),
+        requestPayload: formData,
       };
     }
 
@@ -61,14 +65,14 @@ export const updateRoleInheritance = async (
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert.",
+      success: t("Common.successfullySaved"),
     };
   } catch (error) {
     unstable_rethrow(error);
     void log.error("Internal Server Error", { error: serializeError(error) });
     return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+      error: t("Common.internalServerError"),
+      requestPayload: formData,
     };
   }
 };

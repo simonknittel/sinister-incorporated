@@ -4,6 +4,7 @@ import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { SilcSettingKey } from "@prisma/client";
+import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
@@ -21,6 +22,8 @@ export const updateSilcSetting = async (
   previousState: unknown,
   formData: FormData,
 ) => {
+  const t = await getTranslations();
+
   try {
     /**
      * Authenticate and authorize the request
@@ -28,7 +31,10 @@ export const updateSilcSetting = async (
     const authentication = await authenticateAction("updateSilcSetting");
     await authentication.authorizeAction("silcSetting", "update");
     if (!authentication.session.entity)
-      return { error: "Du bist nicht berechtigt, diese Aktion durchzuführen." };
+      return {
+        error: t("Common.forbidden"),
+        requestPayload: formData,
+      };
 
     /**
      * Validate the request
@@ -42,8 +48,9 @@ export const updateSilcSetting = async (
         error: serializeError(result.error),
       });
       return {
-        error: "Ungültige Anfrage",
+        error: t("Common.badRequest"),
         errorDetails: result.error,
+        requestPayload: formData,
       };
     }
 
@@ -76,21 +83,21 @@ export const updateSilcSetting = async (
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/silc/settings`);
+    revalidatePath("/app/silc/settings");
     revalidatePath("/app/silc");
 
     /**
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert.",
+      success: t("Common.successfullySaved"),
     };
   } catch (error) {
     unstable_rethrow(error);
     void log.error("Internal Server Error", { error: serializeError(error) });
     return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+      error: t("Common.internalServerError"),
+      requestPayload: formData,
     };
   }
 };

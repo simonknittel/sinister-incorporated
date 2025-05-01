@@ -3,6 +3,7 @@
 import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
+import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
@@ -52,6 +53,8 @@ export interface MappedPosition {
 }
 
 export const updateEventLineupOrder = async (formData: FormData) => {
+  const t = await getTranslations();
+
   try {
     /**
      * Authenticate
@@ -67,8 +70,9 @@ export const updateEventLineupOrder = async (formData: FormData) => {
     });
     if (!result.success)
       return {
-        error: "Ungültige Anfrage",
+        error: t("Common.badRequest"),
         errorDetails: result.error,
+        requestPayload: formData,
       };
 
     /**
@@ -82,11 +86,15 @@ export const updateEventLineupOrder = async (formData: FormData) => {
         managers: true,
       },
     });
-    if (!event) return { error: "Event nicht gefunden" };
+    if (!event)
+      return { error: "Event nicht gefunden", requestPayload: formData };
     if (!isEventUpdatable(event))
-      return { error: "Das Event ist bereits vorbei." };
+      return {
+        error: "Das Event ist bereits vorbei.",
+        requestPayload: formData,
+      };
     if (!(await isAllowedToManagePositions(event)))
-      return { error: "Du bist nicht berechtigt, diese Aktion auszuführen." };
+      return { error: t("Common.forbidden"), requestPayload: formData };
 
     /**
      * Update lineup order
@@ -134,8 +142,8 @@ export const updateEventLineupOrder = async (formData: FormData) => {
     unstable_rethrow(error);
     void log.error("Internal Server Error", { error: serializeError(error) });
     return {
-      error:
-        "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+      error: t("Common.internalServerError"),
+      requestPayload: formData,
     };
   }
 };

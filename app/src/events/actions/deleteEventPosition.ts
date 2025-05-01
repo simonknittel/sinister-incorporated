@@ -14,7 +14,7 @@ const schema = z.object({
 export const deleteEventPosition = createAuthenticatedAction(
   "deleteEventPosition",
   schema,
-  async (formData: FormData, authentication, data, t) => {
+  async (formData, authentication, data, t) => {
     /**
      * Authorize the request
      */
