@@ -1,6 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
-import { SingleRole } from "@/common/components/SingleRole";
 import { Tile } from "@/common/components/Tile";
+import { SingleRole } from "@/roles/components/SingleRole";
 import { getAssignableRoles, getAssignedRoles } from "@/roles/utils/getRoles";
 import { type Entity } from "@prisma/client";
 import clsx from "clsx";

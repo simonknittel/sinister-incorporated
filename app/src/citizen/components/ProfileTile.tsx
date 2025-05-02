@@ -1,8 +1,8 @@
 import { requireAuthentication } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
 import { Link } from "@/common/components/Link";
-import { SingleRole } from "@/common/components/SingleRole";
 import { getPenaltyEntriesOfCurrentUser } from "@/penalty-points/queries";
+import { SingleRole } from "@/roles/components/SingleRole";
 import { getMyAssignedRoles } from "@/roles/utils/getRoles";
 import { getSilcBalanceOfCurrentCitizen } from "@/silc/queries";
 import clsx from "clsx";

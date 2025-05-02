@@ -2,7 +2,7 @@
 
 import Button from "@/common/components/Button";
 import Note from "@/common/components/Note";
-import { SingleRole } from "@/common/components/SingleRole";
+import { SingleRole } from "@/roles/components/SingleRole";
 import type { Role, Upload } from "@prisma/client";
 import clsx from "clsx";
 import { useActionState } from "react";

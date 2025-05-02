@@ -7,9 +7,9 @@ import { CitizenLink } from "@/common/components/CitizenLink";
 import { EditableDateTimeInput } from "@/common/components/form/EditableDateTimeInput";
 import { EditableInput } from "@/common/components/form/EditableInput";
 import { EditableTextarea } from "@/common/components/form/EditableTextarea";
-import { SingleRole } from "@/common/components/SingleRole";
 import { Tooltip } from "@/common/components/Tooltip";
 import { formatDate } from "@/common/utils/formatDate";
+import { SingleRole } from "@/roles/components/SingleRole";
 import {
   TaskRewardType,
   TaskVisibility,

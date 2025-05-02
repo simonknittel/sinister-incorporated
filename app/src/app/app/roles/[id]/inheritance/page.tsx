@@ -1,7 +1,7 @@
 import { authenticatePage } from "@/auth/server";
-import { SingleRole } from "@/common/components/SingleRole";
 import { log } from "@/logging";
 import { InheritanceForm } from "@/roles/components/InheritanceForm";
+import { SingleRole } from "@/roles/components/SingleRole";
 import { Template } from "@/roles/components/Template";
 import { getRoleById, getRoles } from "@/roles/queries";
 import { type Metadata } from "next";

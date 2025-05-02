@@ -1,6 +1,6 @@
 "use client";
 
-import { SingleRole } from "@/common/components/SingleRole";
+import { SingleRole } from "@/roles/components/SingleRole";
 import type { Role, Upload } from "@prisma/client";
 import {
   createColumnHelper,

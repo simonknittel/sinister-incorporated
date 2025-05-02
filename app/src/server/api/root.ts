@@ -3,6 +3,7 @@ import { citizensRouter } from "./routers/citizens";
 import { entityLogRouter } from "./routers/entityLog";
 import { manufacturerRouter } from "./routers/manufacturer";
 import { rolesRouter } from "./routers/roles";
+import { silcRouter } from "./routers/silc";
 import { variantRouter } from "./routers/variant";
 import { createCallerFactory, createTRPCRouter } from "./trpc";
 
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   entityLog: entityLogRouter,
   manufacturer: manufacturerRouter,
   roles: rolesRouter,
+  silc: silcRouter,
   variant: variantRouter,
 });
 
