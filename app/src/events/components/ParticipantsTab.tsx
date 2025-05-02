@@ -155,7 +155,7 @@ export const ParticipantsTab = async ({
             initialReceiverIds={resolvedParticipants.map(
               (participant) => participant.citizen.id,
             )}
-            initialDescription={event.name}
+            initialDescription={`Event: ${event.name}`}
             className="mt-4"
           />
         </section>
