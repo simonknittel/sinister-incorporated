@@ -78,6 +78,7 @@ model Role {
   inheritedBy       Role[]             @relation("inheritance")
   eventPositions    EventPosition[]
   tasksRequiredIn   Task[]             @relation("requiredRoles")
+  silcSalaries      SilcRoleSalary[]
 }
 
 model PermissionString {

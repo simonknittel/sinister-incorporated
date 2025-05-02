@@ -34,6 +34,15 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="2. Mai 2025">
+          <DayItem heading="Neu: SILC-Gehälter">
+            <p>
+              Über SILC-Gehälter können Rollen einen monatlichen SILC-Betrag
+              überwiesen werden.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="23. April 2025">
           <DayItem heading="Tasks">
             <p>Weiterentwicklung des neuen Tasks System</p>

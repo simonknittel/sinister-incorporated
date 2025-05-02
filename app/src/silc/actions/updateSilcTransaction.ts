@@ -78,7 +78,7 @@ export const updateSilcTransaction = async (formData: FormData) => {
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/silc`);
+    revalidatePath("/app/silc");
     revalidatePath("/app/silc/transactions");
     revalidatePath("/app/dashboard");
 
@@ -86,7 +86,7 @@ export const updateSilcTransaction = async (formData: FormData) => {
      * Respond with the result
      */
     return {
-      success: "Erfolgreich gespeichert.",
+      success: t("Common.successfullySaved"),
     };
   } catch (error) {
     unstable_rethrow(error);

@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useId, type ComponentProps } from "react";
 
 interface Props extends ComponentProps<"input"> {
-  label: string;
+  label?: string;
   hint?: string;
 }
 
@@ -15,13 +15,15 @@ export const NumberInput = (props: Props) => {
 
   return (
     <>
-      <label className={clsx("block", className)} htmlFor={id}>
-        {label}
-      </label>
+      {label && (
+        <label className={clsx("block mb-2", className)} htmlFor={id}>
+          {label}
+        </label>
+      )}
 
       <input
         type="number"
-        className="p-2 rounded bg-neutral-900 w-full mt-2"
+        className="p-2 rounded bg-neutral-900 w-full"
         id={id}
         {...rest}
       />

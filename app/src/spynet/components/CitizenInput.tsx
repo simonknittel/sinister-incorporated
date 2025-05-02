@@ -2,7 +2,7 @@
 
 import Button from "@/common/components/Button";
 import { CitizenLink } from "@/common/components/CitizenLink";
-import { SingleRole } from "@/common/components/SingleRole";
+import { SingleRole } from "@/roles/components/SingleRole";
 import { api } from "@/trpc/react";
 import {
   Combobox,

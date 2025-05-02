@@ -1,6 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { AddRoles } from "@/citizen/components/roles/AddRoles";
-import { SingleRole } from "@/common/components/SingleRole";
+import { SingleRole } from "@/roles/components/SingleRole";
 import { getAssignedRoles } from "@/roles/utils/getRoles";
 import { type Entity, type Role, type Upload } from "@prisma/client";
 import clsx from "clsx";

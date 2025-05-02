@@ -2,7 +2,7 @@
 
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import Button from "@/common/components/Button";
-import { SingleRole } from "@/common/components/SingleRole";
+import { SingleRole } from "@/roles/components/SingleRole";
 import type { Role, Task, TaskAssignment, Upload } from "@prisma/client";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";

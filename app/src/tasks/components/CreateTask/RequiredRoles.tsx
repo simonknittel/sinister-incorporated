@@ -1,6 +1,6 @@
 import Button from "@/common/components/Button";
-import { SingleRole } from "@/common/components/SingleRole";
 import { api } from "@/common/utils/api";
+import { SingleRole } from "@/roles/components/SingleRole";
 import type { Role } from "@prisma/client";
 import * as Popover from "@radix-ui/react-popover";
 import clsx from "clsx";

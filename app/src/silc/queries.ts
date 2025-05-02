@@ -153,3 +153,9 @@ export const getSilcSetting = cache(
     });
   }),
 );
+
+export const getRoleSalaries = cache(
+  withTrace("getRoleSalaries", async () => {
+    return prisma.silcRoleSalary.findMany();
+  }),
+);
