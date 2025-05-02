@@ -1,7 +1,7 @@
 import { authenticatePage } from "@/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { AuecConversionRateSetting } from "@/silc/components/AuecConversionRateSetting";
-import { RoleSalaries } from "@/silc/components/RoleSalarySetting";
+import { RoleSalaries } from "@/silc/components/RoleSalaries";
 import { Template } from "@/silc/components/Template";
 import { type Metadata } from "next";
 

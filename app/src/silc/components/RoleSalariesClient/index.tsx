@@ -149,8 +149,8 @@ export const RoleSalariesClient = ({
                   <div className="flex flex-col gap-1">
                     <div className="text-sm text-gray-500">Gesamt</div>
                     <div className="font-bold">
-                      {data.find((role) => role.role.id === salary.roleId)
-                        ?.citizenCount || 0 * (salary.value || 0)}{" "}
+                      {(data.find((role) => role.role.id === salary.roleId)
+                        ?.citizenCount || 0) * (salary.value || 0)}{" "}
                       SILC /{" "}
                       {(
                         auecConversionRate *
