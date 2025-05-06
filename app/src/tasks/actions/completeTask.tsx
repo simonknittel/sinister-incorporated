@@ -180,6 +180,21 @@ export const completeTask = async (formData: FormData) => {
               rewardTypeTextValue: task.rewardTypeTextValue,
               rewardTypeSilcValue: task.rewardTypeSilcValue,
               rewardTypeNewSilcValue: task.rewardTypeNewSilcValue,
+              assignments: {
+                createMany: {
+                  data: task.assignments
+                    .filter(
+                      (assignment) =>
+                        !result.data.completionistIds.includes(
+                          assignment.citizenId,
+                        ),
+                    )
+                    .map((assignment) => ({
+                      citizenId: assignment.citizenId,
+                      createdById: authentication.session.entity!.id,
+                    })),
+                },
+              },
               repeatable: task.repeatable - 1,
               requiredRoles: {
                 connect: task.requiredRoles.map((role) => ({
@@ -210,11 +225,10 @@ export const completeTask = async (formData: FormData) => {
               rewardTypeNewSilcValue: task.rewardTypeNewSilcValue,
               assignments: {
                 createMany: {
-                  data:
-                    task.assignments.map((assignment) => ({
-                      citizenId: assignment.citizenId,
-                      createdById: authentication.session.entity!.id,
-                    })) || [],
+                  data: task.assignments.map((assignment) => ({
+                    citizenId: assignment.citizenId,
+                    createdById: authentication.session.entity!.id,
+                  })),
                 },
               },
               repeatable: task.repeatable - 1,
