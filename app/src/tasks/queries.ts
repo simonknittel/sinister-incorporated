@@ -2,6 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import { prisma } from "@/db";
 import { withTrace } from "@/tracing/utils/withTrace";
 import {
+  TaskVisibility,
   type Entity,
   type Role,
   type Task,
@@ -196,5 +197,7 @@ const isVisibleForCurrentUser = async (
     );
   }
 
-  return true;
+  if (task.visibility === TaskVisibility.PUBLIC) return true;
+
+  return false;
 };
