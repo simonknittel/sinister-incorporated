@@ -65,6 +65,11 @@ export const ToggleAssignmentForCurrentUser = ({
     });
   };
 
+  let disabled = false;
+  if (isPending) disabled = true;
+  if (task.assignmentLimit && task.assignments.length >= task.assignmentLimit) disabled = true;
+  if (!doesCurrentUserSatisfyRequirements) disabled = true;
+
   return (
     <form action={formAction} id={formId} className={clsx(className)}>
       <input type="hidden" name="taskId" value={task.id} />
@@ -77,13 +82,7 @@ export const ToggleAssignmentForCurrentUser = ({
       ) : doesCurrentUserSatisfyRequirements ? (
         <Button
           type="submit"
-          disabled={
-            isPending ||
-            (task.assignmentLimit &&
-            task.assignments.length >= task.assignmentLimit
-              ? true
-              : false)
-          }
+          disabled={disabled}
           variant="primary"
         >
           Annehmen
@@ -94,14 +93,7 @@ export const ToggleAssignmentForCurrentUser = ({
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
               <Button
-                disabled={
-                  isPending ||
-                  ((task.assignmentLimit &&
-                    task.assignments.length >= task.assignmentLimit) ||
-                  !doesCurrentUserSatisfyRequirements
-                    ? true
-                    : false)
-                }
+                disabled={disabled}
                 variant="primary"
               >
                 Annehmen
