@@ -36,10 +36,10 @@ export const ToggleAssignmentForCurrentUser = ({
   if (!authentication || !authentication.session?.entity)
     throw new Error("Unauthorized");
   const doesCurrentUserSatisfyRequirements =
-    task.requiredRoles.length > 0 &&
+    task.requiredRoles.length > 0 ?
     task.requiredRoles.some((role) =>
       authentication.session.entity!.roles?.split(",").includes(role.id),
-    );
+    ) : true;
 
   const formAction = (formData: FormData) => {
     startTransition(async () => {
