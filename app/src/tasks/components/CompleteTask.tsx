@@ -1,9 +1,9 @@
 "use client";
 
+import { CitizenInput } from "@/citizen/components/CitizenInput";
 import Button from "@/common/components/Button";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
-import { CitizenInput } from "@/spynet/components/CitizenInput";
 import { TaskRewardType, type Task, type TaskAssignment } from "@prisma/client";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";

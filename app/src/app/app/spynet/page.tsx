@@ -1,7 +1,7 @@
 import { authenticatePage } from "@/auth/server";
+import { CreateCitizen } from "@/citizen/components/CreateCitizen";
 import { Hero } from "@/common/components/Hero";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { CreateCitizen } from "@/spynet/components/CreateCitizen";
 import { CreateOrganization } from "@/spynet/components/CreateOrganization";
 import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
 import { type Metadata } from "next";
