@@ -4,24 +4,27 @@ import Button from "@/common/components/Button";
 import Note from "@/common/components/Note";
 import { SilcSettingKey, type SilcSetting } from "@prisma/client";
 import clsx from "clsx";
-import { useActionState, useId } from "react";
+import { useActionState, useId, useState } from "react";
 import { FaSave, FaSpinner } from "react-icons/fa";
 import { updateSilcSetting } from "../actions/updateSilcSetting";
 
 interface Props {
   readonly className?: string;
-  readonly setting?: SilcSetting | null;
+  readonly conversionRate?: SilcSetting | null;
+  readonly totalSilc: number;
 }
 
 export const AuecConversionRateSettingClient = ({
   className,
-  setting,
+  conversionRate,
+  totalSilc,
 }: Props) => {
   const [state, formAction, isPending] = useActionState(
     updateSilcSetting,
     null,
   );
   const inputId = useId();
+  const [value, setValue] = useState(conversionRate?.value || "");
 
   return (
     <form action={formAction} className={clsx(className)}>
@@ -39,11 +42,38 @@ export const AuecConversionRateSettingClient = ({
         name="value"
         required
         type="number"
-        defaultValue={setting?.value || ""}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
         id={inputId}
         disabled={isPending}
         min={1}
       />
+
+      <div className="flex items-center gap-4 mt-2">
+        <div className="flex flex-col gap-1">
+          <div className="text-sm text-gray-500">aUEC</div>
+          {Number.parseInt(value).toLocaleString("de-de")}
+        </div>
+
+        <div className="text-sm text-gray-500">x</div>
+
+        <div className="flex flex-col gap-1">
+          <div className="text-sm text-gray-500">SILC</div>
+          {totalSilc}
+        </div>
+
+        <div className="text-sm text-gray-500">=</div>
+
+        <div className="flex flex-col gap-1">
+          <div className="text-sm text-gray-500">Gesamt</div>
+          <div className="font-bold">
+            {(totalSilc * Number.parseInt(value || "1")).toLocaleString(
+              "de-de",
+            )}{" "}
+            aUEC
+          </div>
+        </div>
+      </div>
 
       <Button type="submit" className="mt-4 ml-auto">
         {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
