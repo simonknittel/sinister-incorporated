@@ -8,14 +8,18 @@ export const getParticipants = cache(
       discordParticipants: EventDiscordParticipant[];
     },
   ) => {
-    const discordUserIds = event.discordParticipants.map(
-      (user) => user.discordUserId,
-    );
+    const discordUserIds = new Set<string>();
+
+    for (const user of event.discordParticipants) {
+      discordUserIds.add(user.discordUserId);
+    }
+
+    discordUserIds.add(event.discordCreatorId);
 
     const citizens = await prisma.entity.findMany({
       where: {
         discordId: {
-          in: discordUserIds,
+          in: Array.from(discordUserIds),
         },
       },
     });

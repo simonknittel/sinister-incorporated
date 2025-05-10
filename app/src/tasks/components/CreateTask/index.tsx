@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
+import { CitizenInput } from "@/citizen/components/CitizenInput";
 import Button from "@/common/components/Button";
 import { DateTimeInput } from "@/common/components/form/DateTimeInput";
 import { NumberInput } from "@/common/components/form/NumberInput";
@@ -10,7 +11,6 @@ import { TextInput } from "@/common/components/form/TextInput";
 import { YesNoCheckbox } from "@/common/components/form/YesNoCheckbox";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
-import { CitizenInput } from "@/spynet/components/CitizenInput";
 import { TaskRewardType, TaskVisibility } from "@prisma/client";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";

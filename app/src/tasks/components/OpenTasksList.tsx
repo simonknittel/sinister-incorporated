@@ -73,6 +73,25 @@ export const OpenTasksList = ({ tasks }: Props) => {
               </div>
             </section>
           )}
+
+        {groupedByVisibility.PUBLIC &&
+          groupedByVisibility.PUBLIC.length > 0 && (
+            <section>
+              <div className="flex gap-2 items-baseline">
+                <h3 className="font-thin text-2xl">Öffentlich</h3>
+                <Tooltip triggerChildren={<FaInfoCircle />}>
+                  Diese Tasks können von jedem angenommen und erfüllt werden.
+                </Tooltip>
+              </div>
+
+              <div className="flex flex-col gap-[1px] mt-4">
+                {groupedByVisibility.PUBLIC.map((task) => (
+                  <Task key={task.id} task={task} />
+                ))}
+              </div>
+            </section>
+          )}
+
         {groupedByVisibilityAssignment.personalizedToOthers &&
           groupedByVisibilityAssignment.personalizedToOthers.length > 0 && (
             <section>
@@ -90,24 +109,6 @@ export const OpenTasksList = ({ tasks }: Props) => {
                     <Task key={task.id} task={task} />
                   ),
                 )}
-              </div>
-            </section>
-          )}
-
-        {groupedByVisibility.PUBLIC &&
-          groupedByVisibility.PUBLIC.length > 0 && (
-            <section>
-              <div className="flex gap-2 items-baseline">
-                <h3 className="font-thin text-2xl">Öffentlich</h3>
-                <Tooltip triggerChildren={<FaInfoCircle />}>
-                  Diese Tasks können von jedem angenommen und erfüllt werden.
-                </Tooltip>
-              </div>
-
-              <div className="flex flex-col gap-[1px] mt-4">
-                {groupedByVisibility.PUBLIC.map((task) => (
-                  <Task key={task.id} task={task} />
-                ))}
               </div>
             </section>
           )}

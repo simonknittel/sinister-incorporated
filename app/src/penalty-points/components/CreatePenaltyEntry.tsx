@@ -1,12 +1,12 @@
 "use client";
 
+import { CitizenInput } from "@/citizen/components/CitizenInput";
 import Button from "@/common/components/Button";
 import { DateTimeInput } from "@/common/components/form/DateTimeInput";
 import { NumberInput } from "@/common/components/form/NumberInput";
 import { Textarea } from "@/common/components/form/Textarea";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
-import { CitizenInput } from "@/spynet/components/CitizenInput";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
 import { useActionState, useState } from "react";
