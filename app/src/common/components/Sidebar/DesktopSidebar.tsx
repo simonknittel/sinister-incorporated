@@ -91,7 +91,7 @@ export const DesktopSidebar = async () => {
     <div className="overflow-auto pl-8 py-8">
       {/* <GlobalAlert /> */}
 
-      <div className="bg-neutral-800/50 flex flex-col justify-between rounded-2xl">
+      <div className="background-secondary flex flex-col justify-between rounded-2xl">
         <div>
           <Account />
 

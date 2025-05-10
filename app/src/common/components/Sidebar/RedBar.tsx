@@ -38,7 +38,7 @@ export const RedBar = () => {
   return (
     <div
       className={clsx(
-        "w-[2px] h-[2em] bg-sinister-red-500 absolute left-4 before:rounded pointer-events-none top-3",
+        "w-[2px] h-[2em] bg-interaction-500 absolute left-4 before:rounded pointer-events-none top-3",
         {
           "opacity-100": isVisible,
           "opacity-0": !isVisible,

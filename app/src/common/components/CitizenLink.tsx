@@ -23,8 +23,8 @@ export const CitizenLink = ({ className, citizen, page = "" }: Props) => {
       className={clsx(
         "hover:underline",
         {
-          "text-green-500": isCitizenCurrentUser,
-          "text-sinister-red-500": !isCitizenCurrentUser,
+          "text-me": isCitizenCurrentUser,
+          "text-interaction-500": !isCitizenCurrentUser,
         },
         className,
       )}

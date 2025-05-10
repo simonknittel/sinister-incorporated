@@ -10,7 +10,7 @@ export const SpynetSearchTile = ({ className }: Props) => {
     <section
       className={clsx(
         className,
-        "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col gap-4 lg:gap-8 items-center w-full",
+        "rounded-primary p-4 lg:p-8 background-secondary flex flex-col gap-4 lg:gap-8 items-center w-full",
       )}
     >
       <h2 className="sr-only">Suche</h2>

@@ -28,7 +28,7 @@ export default async function AppLayout({ children }: Readonly<Props>) {
             userId={authentication.session.user.id}
           >
             <NextIntlClientProvider>
-              <div className="min-h-dvh bg-sinister-radial-gradient">
+              <div className="min-h-dvh background-primary">
                 <MobileActionBarContainer />
                 <DesktopSidebarContainer />
 

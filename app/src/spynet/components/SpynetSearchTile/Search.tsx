@@ -88,7 +88,7 @@ export const Search = () => {
           ]);
         }}
         classNames={{
-          form: "!bg-neutral-800 !border-transparent !shadow-none !outline-none focus-within:!border-white !rounded",
+          form: "!bg-neutral-800 !border-transparent !shadow-none !outline-none focus-within:!border-white !rounded-secondary",
           input: "!text-white placeholder:!text-neutral-500",
           panel: "!bg-neutral-800 [&>.aa-GradientBottom]:!hidden",
           panelLayout: "!p-0",
