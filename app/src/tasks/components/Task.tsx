@@ -96,21 +96,6 @@ export const Task = ({ className, task }: Props) => {
         className="text-sm"
       />,
     );
-    if (
-      task.expiresAt < new Date() &&
-      task.completionists &&
-      task.completionists.length <= 0
-    ) {
-      badges.push(
-        <Badge
-          key="status"
-          label="Status"
-          value="Abgelaufen"
-          icon={<BsExclamationOctagonFill />}
-          className="text-sm text-red-500"
-        />,
-      );
-    }
   }
   if (task.repeatable && task.repeatable > 1) {
     badges.push(
@@ -167,8 +152,7 @@ export const Task = ({ className, task }: Props) => {
         className="text-sm text-green-500"
       />,
     );
-  }
-  if (task.cancelledAt) {
+  } else if (task.cancelledAt) {
     badges.push(
       <Badge
         key="status"
@@ -178,8 +162,7 @@ export const Task = ({ className, task }: Props) => {
         className="text-sm text-blue-500"
       />,
     );
-  }
-  if (task.deletedAt) {
+  } else if (task.deletedAt) {
     badges.push(
       <Badge
         key="deleted"
@@ -187,6 +170,21 @@ export const Task = ({ className, task }: Props) => {
         value="Gelöscht"
         icon={<FaInfoCircle />}
         className="text-sm text-blue-500"
+      />,
+    );
+  } else if (
+    task.expiresAt &&
+    task.expiresAt < new Date() &&
+    task.completionists &&
+    task.completionists.length <= 0
+  ) {
+    badges.push(
+      <Badge
+        key="status"
+        label="Status"
+        value="Abgelaufen"
+        icon={<BsExclamationOctagonFill />}
+        className="text-sm text-red-500"
       />,
     );
   }
