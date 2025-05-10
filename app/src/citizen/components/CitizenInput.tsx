@@ -2,6 +2,7 @@
 
 import Button from "@/common/components/Button";
 import { CitizenLink } from "@/common/components/CitizenLink";
+import { underlineCharacters } from "@/common/utils/underlineCharacters";
 import { SingleRole } from "@/roles/components/SingleRole";
 import { api } from "@/trpc/react";
 import {
@@ -13,6 +14,7 @@ import {
 import type { Entity } from "@prisma/client";
 import * as Popover from "@radix-ui/react-popover";
 import clsx from "clsx";
+import Fuse, { type FuseResult } from "fuse.js";
 import { useRef, useState } from "react";
 import { FaCheck, FaTrash, FaUsers } from "react-icons/fa";
 
@@ -51,23 +53,20 @@ export const CitizenInput = ({
       refetchOnReconnect: false,
     });
 
-  const filteredCitizens =
-    dataAllCitizens && query.trim()
-      ? dataAllCitizens
-          .filter((citizen) =>
-            citizen.handle!.toLowerCase().includes(query.trim().toLowerCase()),
-          )
-          .sort((a, b) => a.handle!.localeCompare(b.handle!))
-          .slice(0, 10)
-      : [];
-
-  if (isPending)
+  if (isPending || !dataAllCitizens)
     return (
       <div className={clsx(className)}>
         <label className="block mb-1">Citizen (Handle)</label>
         <div className="h-10 animate-pulse rounded bg-neutral-900" />
       </div>
     );
+
+  const fuse = new Fuse(dataAllCitizens, {
+    keys: ["handle"],
+    includeMatches: true,
+  });
+
+  const filteredCitizens = fuse.search(query, { limit: 10 });
 
   return (
     <div className={clsx(className)}>
@@ -78,7 +77,7 @@ export const CitizenInput = ({
           name={name}
           query={query}
           setQuery={setQuery}
-          filteredCitizens={filteredCitizens}
+          filterResult={filteredCitizens}
           defaultValue={
             defaultValue
               ? (defaultValue
@@ -94,7 +93,7 @@ export const CitizenInput = ({
         <Single
           name={name}
           setQuery={setQuery}
-          filteredCitizens={filteredCitizens}
+          filterResult={filteredCitizens}
           disabled={disabled}
           defaultValue={
             defaultValue
@@ -108,10 +107,33 @@ export const CitizenInput = ({
   );
 };
 
+interface ComboboxOptionProps {
+  readonly result: FuseResult<Entity>;
+}
+
+const ComboboxOptionItem = ({ result }: ComboboxOptionProps) => {
+  const { item: citizen, matches } = result;
+
+  return (
+    <ComboboxOption
+      value={citizen}
+      className="group flex cursor-pointer items-center gap-2 rounded py-1 px-2 select-none data-[focus]:bg-white/20"
+    >
+      <FaCheck className="invisible group-data-[selected]:visible text-sm text-sinister-red-500" />
+
+      <div className="text-white text-sm">
+        {underlineCharacters(citizen.handle!, matches?.[0].indices)}
+      </div>
+
+      <div className="text-xs text-neutral-500">{citizen.id}</div>
+    </ComboboxOption>
+  );
+};
+
 type SingleComponentProps = Readonly<{
   name: string;
   setQuery: (query: string) => void;
-  filteredCitizens: Entity[];
+  filterResult: FuseResult<Entity>[];
   defaultValue?: Entity;
   disabled?: boolean;
   autoFocus?: boolean;
@@ -120,7 +142,7 @@ type SingleComponentProps = Readonly<{
 const Single = ({
   name,
   setQuery,
-  filteredCitizens,
+  filterResult,
   defaultValue,
   disabled,
   autoFocus,
@@ -151,18 +173,8 @@ const Single = ({
           anchor="bottom"
           className="w-[var(--input-width)] rounded-b border border-sinister-red-500 bg-black p-1 [--anchor-gap:var(--spacing-1)] empty:invisible transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0 z-50"
         >
-          {filteredCitizens.map((citizen) => (
-            <ComboboxOption
-              key={citizen.id}
-              value={citizen}
-              className="group flex cursor-pointer items-center gap-2 rounded py-1 px-2 select-none data-[focus]:bg-white/20"
-            >
-              <FaCheck className="invisible group-data-[selected]:visible text-sm text-sinister-red-500" />
-
-              <div className="text-white text-sm">{citizen.handle!}</div>
-
-              <div className="text-xs text-neutral-500">{citizen.id}</div>
-            </ComboboxOption>
+          {filterResult.map((result) => (
+            <ComboboxOptionItem key={result.item.id} result={result} />
           ))}
         </ComboboxOptions>
       </Combobox>
@@ -178,7 +190,7 @@ type MultipleComponentProps = Readonly<{
   name: string;
   query: string;
   setQuery: (query: string) => void;
-  filteredCitizens: Entity[];
+  filterResult: FuseResult<Entity>[];
   defaultValue?: Entity[];
   autoFocus?: boolean;
 }>;
@@ -187,7 +199,7 @@ const Multiple = ({
   name,
   query,
   setQuery,
-  filteredCitizens,
+  filterResult,
   defaultValue,
   autoFocus,
 }: MultipleComponentProps) => {
@@ -236,18 +248,8 @@ const Multiple = ({
             anchor="bottom"
             className="w-[var(--input-width)] rounded-b border border-sinister-red-500 bg-black p-1 [--anchor-gap:var(--spacing-1)] empty:invisible transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0 z-50"
           >
-            {filteredCitizens.map((citizen) => (
-              <ComboboxOption
-                key={citizen.id}
-                value={citizen}
-                className="group flex cursor-pointer items-center gap-2 rounded py-1 px-2 select-none data-[focus]:bg-white/20"
-              >
-                <FaCheck className="invisible group-data-[selected]:visible text-sm text-sinister-red-500" />
-
-                <div className="text-white text-sm">{citizen.handle!}</div>
-
-                <div className="text-xs text-neutral-500">{citizen.id}</div>
-              </ComboboxOption>
+            {filterResult.map((result) => (
+              <ComboboxOptionItem key={result.item.id} result={result} />
             ))}
           </ComboboxOptions>
         </Combobox>
