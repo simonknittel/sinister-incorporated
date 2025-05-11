@@ -1,5 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
+import { Suspense } from "react";
 import {
   FaCog,
   FaHome,
@@ -19,6 +20,7 @@ import { Footer } from "../Footer";
 import { Link } from "../Link";
 import { Account } from "./Account";
 import { RedBar } from "./RedBar";
+import { TasksBadge } from "./TasksBadge";
 
 export const DesktopSidebar = async () => {
   const authentication = await requireAuthentication();
@@ -138,6 +140,9 @@ export const DesktopSidebar = async () => {
                   >
                     <MdTaskAlt className="text-neutral-500" />
                     Tasks
+                    <Suspense>
+                      <TasksBadge />
+                    </Suspense>
                   </Link>
                 </li>
               )}
@@ -153,16 +158,6 @@ export const DesktopSidebar = async () => {
                   </Link>
                 </li>
               )}
-
-              {/* <li>
-              <Link
-                href="/app/preview-channel"
-                className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-              >
-                <FaClock className="text-neutral-500" />
-                Preview Channel
-              </Link>
-            </li> */}
 
               {(showOrgFleetRead || showShipManage) && (
                 <li>

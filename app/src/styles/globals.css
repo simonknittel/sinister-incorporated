@@ -10,6 +10,7 @@
       #000
     );
     --background-secondary: hsla(0, 0%, 15%, 0.5);
+    --background-tertiary: hsla(0, 0%, 25%, 0.5);
 
     --color-text-primary: hsl(0, 0%, 95%);
 
@@ -31,6 +32,7 @@
       #000
     );
     --background-secondary: hsla(0, 0%, 15%, 0.5);
+    --background-tertiary: hsla(0, 0%, 25%, 0.5);
 
     --text-primary: white;
 
@@ -51,5 +53,9 @@
 
   .background-secondary {
     background: var(--background-secondary);
+  }
+
+  .background-tertiary {
+    background: var(--background-tertiary);
   }
 }
