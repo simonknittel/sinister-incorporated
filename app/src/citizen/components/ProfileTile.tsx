@@ -45,7 +45,7 @@ export const ProfileTile = async ({ className }: Props) => {
       <section
         className={clsx(
           className,
-          "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 flex flex-col gap-4 items-center",
+          "rounded-primary p-4 lg:p-8 background-secondary flex flex-col gap-4 items-center",
         )}
       >
         <Avatar name={name} image={image} size={128} />
@@ -67,7 +67,7 @@ export const ProfileTile = async ({ className }: Props) => {
             <Link
               href={`/app/spynet/citizen/${authentication.session.entity.id}/silc`}
               title="Übersicht öffnen"
-              className="flex-1 rounded-2xl bg-neutral-800/50 hover:bg-neutral-600/50 focus-visible:bg-neutral-600/50 flex flex-col justify-center items-center p-4"
+              className="flex-1 rounded-primary background-secondary hover:bg-neutral-600/50 focus-visible:bg-neutral-600/50 flex flex-col justify-center items-center p-4"
             >
               <span
                 className={clsx("font-black text-4xl", {
@@ -88,7 +88,7 @@ export const ProfileTile = async ({ className }: Props) => {
             <Link
               href={`/app/spynet/citizen/${authentication.session.entity.id}/penalty-points`}
               title="Übersicht öffnen"
-              className="flex-1 rounded-2xl bg-neutral-800/50 hover:bg-neutral-600/50 focus-visible:bg-neutral-600/50 flex flex-col justify-center items-center p-4"
+              className="flex-1 rounded-primary background-secondary hover:bg-neutral-600/50 focus-visible:bg-neutral-600/50 flex flex-col justify-center items-center p-4"
             >
               <span
                 className={clsx("font-black text-4xl", {
@@ -109,7 +109,7 @@ export const ProfileTile = async ({ className }: Props) => {
       {showSpynetLink && (
         <Link
           href={`/app/spynet/citizen/${authentication.session.entity.id}`}
-          className="text-sinister-red-500 hover:text-sinister-red-300 flex gap-2 items-center"
+          className="text-interaction-500 hover:text-interaction-300 flex gap-2 items-center"
         >
           Vollständiges Profil
           <FaExternalLinkAlt />

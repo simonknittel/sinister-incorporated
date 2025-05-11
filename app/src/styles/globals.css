@@ -1,3 +1,61 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    --background-primary: radial-gradient(
+      circle farthest-side at bottom center,
+      hsl(0 69% 10% / 1),
+      #000
+    );
+    --background-secondary: hsla(0, 0%, 15%, 0.5);
+    --background-tertiary: hsla(0, 0%, 25%, 0.5);
+
+    --color-text-primary: hsl(0, 0%, 95%);
+
+    --color-interaction-300: hsl(0, 69%, 60%);
+    --color-interaction-500: hsl(0, 69%, 45%);
+    --color-interaction-700: hsl(0, 69%, 30%);
+    --color-interaction-900: hsl(0, 69%, 10%);
+
+    --color-me: hsl(142, 71%, 45%);
+
+    --radius-primary: 1rem;
+    --radius-secondary: 0.25rem;
+  }
+
+  html[data-theme="halloween"] {
+    --background: radial-gradient(
+      circle farthest-side at bottom center,
+      hsl(14 69% 10% / 1),
+      #000
+    );
+    --background-secondary: hsla(0, 0%, 15%, 0.5);
+    --background-tertiary: hsla(0, 0%, 25%, 0.5);
+
+    --text-primary: white;
+
+    --color-interaction-300: hsl(14, 69%, 60%);
+    --color-interaction-500: hsl(14, 69%, 45%);
+    --color-interaction-700: hsl(14, 69%, 30%);
+    --color-interaction-900: hsl(14, 69%, 10%);
+
+    --radius-primary: 1rem;
+    --radius-secondary: 0.25rem;
+  }
+}
+
+@layer utilities {
+  .background-primary {
+    background: var(--background-primary);
+  }
+
+  .background-secondary {
+    background: var(--background-secondary);
+  }
+
+  .background-tertiary {
+    background: var(--background-tertiary);
+  }
+}

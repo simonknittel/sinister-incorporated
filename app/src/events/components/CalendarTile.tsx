@@ -28,14 +28,14 @@ export const CalendarTile = async ({ className }: Props) => {
           <Event key={event.id} event={event} index={index} />
         ))
       ) : (
-        <div className="bg-neutral-800/50 rounded-2xl p-4 lg:p-8 w-full">
+        <div className="background-secondary rounded-primary p-4 lg:p-8 w-full">
           <p>Aktuell sind keine Events geplant.</p>
         </div>
       )}
 
       <Link
         href="/app/events/history"
-        className="text-sinister-red-500 hover:underline focus-visible:underline"
+        className="text-interaction-500 hover:underline focus-visible:underline"
       >
         Vergangene Events
       </Link>

@@ -49,7 +49,7 @@ export default async function Page(props: Readonly<Props>) {
       : searchParams["new-user"]) === "true";
 
   return (
-    <div className="min-h-dvh flex justify-center items-center flex-col py-8 bg-sinister-radial-gradient">
+    <div className="min-h-dvh flex justify-center items-center flex-col py-8 background-primary">
       <main className="w-full max-w-3xl">
         <h1 className="mb-4 text-center text-xl text-sinister-red font-bold mx-8">
           <RiInformationLine className="text-sky-500 text-2xl inline align-text-bottom" />{" "}

@@ -20,7 +20,7 @@ export default async function RootLayout({ children }: Readonly<Props>) {
 
   return (
     <html lang={locale}>
-      <body className="bg-neutral-800 text-neutral-50">
+      <body className="bg-neutral-800 text-text-primary">
         {children}
         <ToasterContainer />
         <AnalyticsLoader />

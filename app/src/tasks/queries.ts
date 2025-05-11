@@ -201,3 +201,60 @@ const isVisibleForCurrentUser = async (
 
   return false;
 };
+
+export const getAssignedTasks = cache(
+  withTrace("getAssignedTasks", async () => {
+    const authentication = await requireAuthentication();
+    if (!authentication.session.entity) forbidden();
+    if (!(await authentication.authorize("task", "read"))) forbidden();
+
+    let tasks = await prisma.task.findMany({
+      where: {
+        assignments: {
+          some: {
+            citizenId: authentication.session.entity.id,
+          },
+        },
+        cancelledAt: null,
+        deletedAt: null,
+        completedAt: null,
+        OR: [
+          {
+            expiresAt: {
+              gte: new Date(),
+            },
+          },
+          {
+            expiresAt: null,
+          },
+        ],
+      },
+      include: {
+        assignments: true,
+        completionists: true,
+        requiredRoles: {
+          include: {
+            icon: true,
+          },
+        },
+      },
+    });
+
+    tasks = (
+      await Promise.all(
+        tasks.map(async (task) => {
+          const include = await isVisibleForCurrentUser(task);
+
+          return {
+            include,
+            task,
+          };
+        }),
+      )
+    )
+      .filter(({ include }) => include)
+      .map(({ task }) => task);
+
+    return tasks;
+  }),
+);

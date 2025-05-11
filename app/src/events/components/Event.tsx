@@ -54,22 +54,24 @@ export const Event = async ({ className, event, index }: Props) => {
   const showLineupButton = await isLineupVisible(event);
 
   return (
-    <article className={clsx("rounded-2xl overflow-hidden w-full", className)}>
+    <article
+      className={clsx("rounded-primary overflow-hidden w-full", className)}
+    >
       {isHappeningNow && (
-        <div className="bg-green-500/50 text-white font-bold text-center p-2">
+        <div className="bg-green-500/50 text-text-primary font-bold text-center p-2">
           Event läuft
         </div>
       )}
 
       {isToday && !isHappeningNow && (
-        <div className="bg-sinister-red-500/50 text-white font-bold text-center p-2">
+        <div className="bg-interaction-500/50 text-text-primary font-bold text-center p-2">
           <RelativeDate date={event.startTime} />
         </div>
       )}
 
-      <div className="flex flex-col 3xl:flex-row bg-neutral-800/50">
+      <div className="flex flex-col 3xl:flex-row background-secondary">
         {event.discordImage && (
-          <div className="3xl:flex-grow-0 3xl:flex-shrink-0 3xl:basis-[400px] max-h-[160px] flex justify-center rounded-r-2xl rounded-b-2xl overflow-hidden">
+          <div className="3xl:flex-grow-0 3xl:flex-shrink-0 3xl:basis-[400px] max-h-[160px] flex justify-center rounded-r-primary rounded-b-primary overflow-hidden">
             <Image
               src={`https://cdn.discordapp.com/guild-events/${event.discordId}/${event.discordImage}.webp?size=1024`}
               alt=""
@@ -114,7 +116,7 @@ export const Event = async ({ className, event, index }: Props) => {
           <div className="flex flex-wrap">
             <Link
               href={`/app/events/${event.id}`}
-              className="first:rounded-l border-[1px] border-sinister-red-700 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"
+              className="first:rounded-l-secondary border-[1px] border-interaction-700 last:rounded-r-secondary h-8 flex items-center justify-center px-3 gap-2 uppercase text-interaction-500 hover:text-interaction-300 hover:border-interaction-300"
             >
               Details
             </Link>
@@ -122,7 +124,7 @@ export const Event = async ({ className, event, index }: Props) => {
             {showLineupButton && (
               <Link
                 href={`/app/events/${event.id}/lineup`}
-                className="first:rounded-l border-[1px] border-sinister-red-700 last:rounded-r h-8 flex items-center justify-center px-3 gap-2 uppercase text-sinister-red-500 hover:text-sinister-red-300 hover:border-sinister-red-300"
+                className="first:rounded-l-secondary border-[1px] border-interaction-700 last:rounded-r-secondary h-8 flex items-center justify-center px-3 gap-2 uppercase text-interaction-500 hover:text-interaction-300 hover:border-interaction-300"
               >
                 <MdWorkspaces />
                 Aufstellung

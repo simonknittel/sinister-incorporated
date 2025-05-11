@@ -33,7 +33,7 @@ export default async function Page({ searchParams }: Props) {
   const showUwuHero = urlSearchParams.has("uwu");
 
   return (
-    <div className="min-h-dvh flex-col flex justify-center items-center bg-sinister-radial-gradient">
+    <div className="min-h-dvh flex-col flex justify-center items-center background-primary">
       <main className="w-full max-w-md py-8 flex flex-col justify-center items-center gap-4 flex-1">
         {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." withGlitch />}
 

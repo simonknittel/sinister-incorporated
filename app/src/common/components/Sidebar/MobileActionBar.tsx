@@ -19,6 +19,7 @@ import { Link } from "../Link";
 import { Account } from "./Account";
 import { MobileActionBarFlyout } from "./MobileActionBarFlyout";
 import { RedBar } from "./RedBar";
+import { TasksBadge } from "./TasksBadge";
 
 interface Props {
   readonly className?: string;
@@ -90,20 +91,11 @@ export const MobileActionBar = async ({ className }: Props) => {
                 href="/app/tasks"
                 className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
               >
-                <MdTaskAlt className="text-xl text-neutral-500" />
+                <div className="flex">
+                  <MdTaskAlt className="text-xl text-neutral-500" />
+                  <TasksBadge className="scale-75" />
+                </div>
                 <span className="text-xs">Tasks</span>
-              </Link>
-            </li>
-          )}
-
-          {showSpynet && (
-            <li className="h-full py-1">
-              <Link
-                href="/app/spynet"
-                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
-              >
-                <RiSpyFill className="text-xl text-neutral-500" />
-                <span className="text-xs">Spynet</span>
               </Link>
             </li>
           )}
@@ -161,6 +153,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                       >
                         <MdTaskAlt className="text-neutral-500" />
                         Tasks
+                        <TasksBadge />
                       </Link>
                     </li>
                   )}
@@ -176,16 +169,6 @@ export const MobileActionBar = async ({ className }: Props) => {
                       </Link>
                     </li>
                   )}
-
-                  {/* <li>
-              <Link
-                href="/app/preview-channel"
-                className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
-              >
-                <FaClock />
-                Preview Channel
-              </Link>
-            </li> */}
 
                   {((await authentication.authorize("orgFleet", "read")) ||
                     (await authentication.authorize("ship", "manage"))) && (
