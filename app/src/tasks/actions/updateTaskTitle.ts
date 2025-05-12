@@ -48,6 +48,7 @@ export const updateTaskTitle = createAuthenticatedAction(
      * Revalidate cache(s)
      */
     revalidatePath("/app/tasks");
+    revalidatePath(`/app/tasks/${task.id}`);
 
     /**
      * Respond with the result
