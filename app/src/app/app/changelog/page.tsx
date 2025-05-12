@@ -34,6 +34,19 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="12. Mai 2025">
+          <DayItem heading="Tasks">
+            <p>
+              Die Details zu einem Task sind nun auf einer separaten Seiten zu
+              finden.
+            </p>
+            <p>
+              Beschreibung und Freitext-Belohnung können nun 2048 Zeichen lang
+              sein.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="2. Mai 2025">
           <DayItem heading="Neu: SILC-Gehälter">
             <p>

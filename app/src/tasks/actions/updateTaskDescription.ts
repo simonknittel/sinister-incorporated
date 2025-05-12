@@ -10,7 +10,7 @@ import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
   id: z.union([z.string().cuid(), z.string().cuid2()]),
-  description: z.string().trim().max(512),
+  description: z.string().trim().max(2048),
 });
 
 export const updateTaskDescription = createAuthenticatedAction(

@@ -1,12 +1,12 @@
 import clsx from "clsx";
 import type { ComponentProps } from "react";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaChevronDown, FaChevronRight, FaChevronUp } from "react-icons/fa";
 
-interface Props extends ComponentProps<"button"> {
+interface AccordeonToggleProps extends ComponentProps<"button"> {
   readonly isOpen: boolean;
 }
 
-export const AccordeonToggle = (props: Props) => {
+export const AccordeonToggle = (props: AccordeonToggleProps) => {
   const { className, isOpen, ...rest } = props;
 
   return (
@@ -25,5 +25,24 @@ export const AccordeonToggle = (props: Props) => {
         <FaChevronDown className="text-sinister-red-500" />
       )}
     </button>
+  );
+};
+
+type AccordeonLinkProps = ComponentProps<"div">;
+
+export const AccordeonLink = (props: AccordeonLinkProps) => {
+  const { className, ...rest } = props;
+
+  return (
+    <div
+      title="Details öffnen"
+      className={clsx(
+        "flex-none p-3 flex items-center justify-center border-l border-white/10",
+        className,
+      )}
+      {...rest}
+    >
+      <FaChevronRight className="text-sinister-red-500" />
+    </div>
   );
 };

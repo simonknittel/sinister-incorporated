@@ -43,8 +43,7 @@ export default async function Page({ params }: Props) {
   const authentication = await authenticatePage("/app/events/[id]");
   await authentication.authorizePage("event", "read");
 
-  const eventId = (await params).id;
-  const event = await getEventById(eventId);
+  const event = await getEventById((await params).id);
   if (!event) notFound();
 
   return (

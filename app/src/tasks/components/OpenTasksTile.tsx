@@ -2,7 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import clsx from "clsx";
 import { getTasks } from "../queries";
 import { CreateTask } from "./CreateTask";
-import { OpenTasksClient } from "./OpenTasksClient";
+import { OpenTasksList } from "./OpenTasksList";
 
 interface Props {
   readonly className?: string;
@@ -25,5 +25,5 @@ export const OpenTasksTile = async ({ className }: Props) => {
       </section>
     );
 
-  return <OpenTasksClient tasks={tasks} />;
+  return <OpenTasksList tasks={tasks} />;
 };
