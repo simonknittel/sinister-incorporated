@@ -2,7 +2,7 @@
 
 import { createAuthenticatedAction } from "@/actions/utils/createAction";
 import { prisma } from "@/db";
-import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getTaskById } from "../queries";
 import {
@@ -56,7 +56,7 @@ export const deleteTask = createAuthenticatedAction(
     /**
      * Revalidate cache(s)
      */
-    revalidatePath("/app/tasks");
+    redirect("/app/tasks");
 
     /**
      * Respond with the result

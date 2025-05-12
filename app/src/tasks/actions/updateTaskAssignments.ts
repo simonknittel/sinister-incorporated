@@ -104,6 +104,7 @@ export const updateTaskAssignments = async (formData: FormData) => {
      * Revalidate cache(s)
      */
     revalidatePath("/app/tasks");
+    revalidatePath(`/app/tasks/${task.id}`);
 
     /**
      * Respond with the result
