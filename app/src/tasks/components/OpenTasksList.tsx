@@ -1,21 +1,17 @@
-"use client";
-
-import { useAuthentication } from "@/auth/hooks/useAuthentication";
+import { requireAuthentication } from "@/auth/server";
 import { Tooltip } from "@/common/components/Tooltip";
 import type { ComponentProps } from "react";
 import { FaInfoCircle } from "react-icons/fa";
 import { CreateTask } from "./CreateTask";
 import { Task } from "./Task";
-import { TaskVisibilityProvider, ToggleAll } from "./TaskVisibilityContext";
 
 interface Props {
   readonly tasks: ComponentProps<typeof Task>["task"][];
 }
 
-export const OpenTasksList = ({ tasks }: Props) => {
-  const authentication = useAuthentication();
-  if (!authentication) throw new Error("Unauthorized");
-  const showCreateTask = authentication.authorize("task", "create");
+export const OpenTasksList = async ({ tasks }: Props) => {
+  const authentication = await requireAuthentication();
+  const showCreateTask = await authentication.authorize("task", "create");
 
   const createdBy = Object.groupBy(tasks, (task) =>
     task.createdById === authentication.session.entity?.id ? "me" : "others",
@@ -39,10 +35,8 @@ export const OpenTasksList = ({ tasks }: Props) => {
   );
 
   return (
-    <TaskVisibilityProvider items={tasks}>
+    <>
       {showCreateTask && <CreateTask cta className="mx-auto" />}
-
-      <ToggleAll className="justify-center mt-4" />
 
       <div className="flex flex-col gap-6">
         {createdBy.me && createdBy.me.length > 0 && (
@@ -113,6 +107,6 @@ export const OpenTasksList = ({ tasks }: Props) => {
             </section>
           )}
       </div>
-    </TaskVisibilityProvider>
+    </>
   );
 };

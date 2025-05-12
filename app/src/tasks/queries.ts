@@ -144,13 +144,18 @@ export const getTaskById = cache(
         deletedAt: null,
       },
       include: {
-        assignments: true,
+        assignments: {
+          include: {
+            citizen: true,
+          },
+        },
         completionists: true,
         requiredRoles: {
           include: {
             icon: true,
           },
         },
+        createdBy: true,
       },
     });
 

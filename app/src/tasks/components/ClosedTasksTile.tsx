@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { getClosedTasks } from "../queries";
-import { ClosedTasksClient } from "./ClosedTasksClient";
+import { ClosedTasksList } from "./ClosedTasksList";
 
 interface Props {
   readonly className?: string;
@@ -18,5 +18,5 @@ export const ClosedTasksTile = async ({ className }: Props) => {
       </section>
     );
 
-  return <ClosedTasksClient tasks={tasks} />;
+  return <ClosedTasksList tasks={tasks} />;
 };

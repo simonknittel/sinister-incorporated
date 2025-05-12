@@ -185,8 +185,8 @@ export const CreateTask = ({ className, cta }: Props) => {
             <Textarea
               name="description"
               label="Beschreibung"
-              hint="optional"
-              maxLength={512}
+              hint="optional, max. 2048 Zeichen"
+              maxLength={2048}
               defaultValue={
                 state?.requestPayload?.has("description")
                   ? (state.requestPayload.get("description") as string)
@@ -359,11 +359,11 @@ export const CreateTask = ({ className, cta }: Props) => {
             )}
 
             {rewardType === TaskRewardType.TEXT && (
-              <TextInput
+              <Textarea
                 name="rewardTypeTextValue"
                 label="Text"
-                hint="optional"
-                maxLength={128}
+                hint="optional, max. 2048 Zeichen"
+                maxLength={2048}
                 defaultValue={
                   state?.requestPayload?.has("rewardTypeTextValue")
                     ? (state.requestPayload.get(

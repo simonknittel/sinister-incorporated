@@ -106,7 +106,6 @@ export const EditableTextarea = ({
               },
             )}
             autoFocus
-            required
             ref={inputRef}
           />
 
@@ -125,7 +124,9 @@ export const EditableTextarea = ({
           className="flex gap-2 items-center group text-left"
           title="Klicken, um zu bearbeiten"
         >
-          <pre className="font-[inherit]">{value || "-"}</pre>
+          <pre className="font-[inherit] whitespace-pre-wrap">
+            {value || "-"}
+          </pre>
           <FaPen className="flex-1 text-sinister-red-500 group-hover:text-sinister-red-300 text-sm" />
         </button>
       )}
