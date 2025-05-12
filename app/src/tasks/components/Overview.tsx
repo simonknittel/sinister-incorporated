@@ -21,6 +21,7 @@ import {
   type Upload,
 } from "@prisma/client";
 import clsx from "clsx";
+import { forbidden } from "next/navigation";
 import { FaChevronLeft, FaEye, FaInfoCircle } from "react-icons/fa";
 import { updateTaskDescription } from "../actions/updateTaskDescription";
 import { updateTaskExpiresAt } from "../actions/updateTaskExpiresAt";
@@ -28,11 +29,6 @@ import { updateTaskRewardTypeNewSilcValue } from "../actions/updateTaskRewardTyp
 import { updateTaskRewardTypeSilcValue } from "../actions/updateTaskRewardTypeSilcValue";
 import { updateTaskRewardTypeTextValue } from "../actions/updateTaskRewardTypeTextValue";
 import { updateTaskTitle } from "../actions/updateTaskTitle";
-import { isTaskUpdatable as _isTaskUpdateable } from "../utils/isTaskUpdatable";
-import {
-  useIsAllowedToDeleteTask,
-  useIsAllowedToManageTask,
-} from "../utils/useIsAllowedToTask";
 import { CancelTask } from "./CancelTask";
 import { CompleteTask } from "./CompleteTask";
 import { DeleteTask } from "./DeleteTask";
@@ -63,15 +59,20 @@ interface Props {
 interface Props {
   readonly className?: string;
   readonly task: TaskWithIncludes;
+  readonly isAllowedToManageTask: boolean;
+  readonly isAllowedToDeleteTask: boolean;
+  readonly isTaskUpdatable: boolean;
 }
 
-export const Overview = ({ className, task }: Props) => {
-  const isAllowedToManageTask = useIsAllowedToManageTask(task);
-  const isAllowedToDeleteTask = useIsAllowedToDeleteTask();
-  const isTaskUpdatable = _isTaskUpdateable(task);
-
+export const Overview = ({
+  className,
+  task,
+  isAllowedToManageTask,
+  isAllowedToDeleteTask,
+  isTaskUpdatable,
+}: Props) => {
   const authentication = useAuthentication();
-  if (!authentication) throw new Error("Unauthorized");
+  if (!authentication) forbidden();
 
   const isCurrentUserAssigned = task.assignments.some(
     (assignment) => assignment.citizenId === authentication.session.entity?.id,

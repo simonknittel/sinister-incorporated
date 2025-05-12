@@ -2,6 +2,11 @@ import { authenticatePage } from "@/auth/server";
 import { log } from "@/logging";
 import { Overview } from "@/tasks/components/Overview";
 import { getTaskById } from "@/tasks/queries";
+import {
+  isAllowedToDeleteTask,
+  isAllowedToManageTask,
+} from "@/tasks/utils/isAllowedToTask";
+import { isTaskUpdatable } from "@/tasks/utils/isTaskUpdatable";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";
@@ -47,7 +52,12 @@ export default async function Page({ params }: Props) {
 
   return (
     <main className="p-4 pb-20 lg:p-8">
-      <Overview task={task} />
+      <Overview
+        task={task}
+        isAllowedToManageTask={await isAllowedToManageTask(task)}
+        isAllowedToDeleteTask={await isAllowedToDeleteTask()}
+        isTaskUpdatable={isTaskUpdatable(task)}
+      />
     </main>
   );
 }
