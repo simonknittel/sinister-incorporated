@@ -58,4 +58,13 @@
   .background-tertiary {
     background: var(--background-tertiary);
   }
+
+  .prose a {
+    color: var(--color-interaction-500);
+  }
+
+  .prose a:hover,
+  .prose a:focus-visible {
+    color: var(--color-interaction-300);
+  }
 }

@@ -2,10 +2,12 @@ import clsx from "clsx";
 import { useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
+import Markdown from "react-markdown";
 import { useOutsideClick } from "../../utils/useOutsideClick";
 
 interface Props {
   readonly className?: string;
+  readonly classNameTextarea?: string;
   readonly rowId: string;
   readonly columnName: string;
   readonly initialValue?: string | null;
@@ -19,6 +21,7 @@ interface Props {
 
 export const EditableTextarea = ({
   className,
+  classNameTextarea,
   rowId,
   columnName,
   initialValue,
@@ -104,12 +107,17 @@ export const EditableTextarea = ({
               {
                 "animate-pulse": isPending,
               },
+              classNameTextarea,
             )}
             autoFocus
             ref={inputRef}
           />
 
-          <button disabled={isPending} className="group" title="Speichern">
+          <button
+            disabled={isPending}
+            className="group flex-none"
+            title="Speichern"
+          >
             {isPending ? (
               <FaSpinner className="text-sinister-red-500 animate-spin" />
             ) : (
@@ -121,13 +129,13 @@ export const EditableTextarea = ({
         <button
           type="button"
           onClick={handleClick}
-          className="flex gap-2 items-center group text-left"
+          className="flex gap-2 items-center group text-left w-full"
           title="Klicken, um zu bearbeiten"
         >
-          <pre className="font-[inherit] whitespace-pre-wrap">
-            {value || "-"}
-          </pre>
-          <FaPen className="flex-1 text-sinister-red-500 group-hover:text-sinister-red-300 text-sm" />
+          <div className="prose prose-invert flex-1 w-full max-w-none break-all">
+            <Markdown>{value || "-"}</Markdown>
+          </div>
+          <FaPen className="flex-none text-sinister-red-500 group-hover:text-sinister-red-300 text-sm" />
         </button>
       )}
     </span>

@@ -9,6 +9,7 @@ import { RadioGroup } from "@/common/components/form/RadioGroup";
 import { Textarea } from "@/common/components/form/Textarea";
 import { TextInput } from "@/common/components/form/TextInput";
 import { YesNoCheckbox } from "@/common/components/form/YesNoCheckbox";
+import { Link } from "@/common/components/Link";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
 import { TaskRewardType, TaskVisibility } from "@prisma/client";
@@ -185,7 +186,18 @@ export const CreateTask = ({ className, cta }: Props) => {
             <Textarea
               name="description"
               label="Beschreibung"
-              hint="optional, max. 2048 Zeichen"
+              hint={
+                <>
+                  optional, max. 2048 Zeichen,{" "}
+                  <Link
+                    href="https://commonmark.org/help/"
+                    target="_blank"
+                    className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300"
+                  >
+                    Markdown-Support
+                  </Link>
+                </>
+              }
               maxLength={2048}
               defaultValue={
                 state?.requestPayload?.has("description")
@@ -193,6 +205,7 @@ export const CreateTask = ({ className, cta }: Props) => {
                   : ""
               }
               className="mt-4"
+              classNameTextarea="h-64"
             />
 
             <Button
@@ -362,7 +375,18 @@ export const CreateTask = ({ className, cta }: Props) => {
               <Textarea
                 name="rewardTypeTextValue"
                 label="Text"
-                hint="optional, max. 2048 Zeichen"
+                hint={
+                  <>
+                    optional, max. 2048 Zeichen,{" "}
+                    <Link
+                      href="https://commonmark.org/help/"
+                      target="_blank"
+                      className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300"
+                    >
+                      Markdown-Support
+                    </Link>
+                  </>
+                }
                 maxLength={2048}
                 defaultValue={
                   state?.requestPayload?.has("rewardTypeTextValue")
@@ -372,6 +396,7 @@ export const CreateTask = ({ className, cta }: Props) => {
                     : ""
                 }
                 className="mt-4"
+                classNameTextarea="h-64"
               />
             )}
 
