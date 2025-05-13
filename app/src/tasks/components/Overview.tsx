@@ -23,6 +23,7 @@ import {
 import clsx from "clsx";
 import { forbidden } from "next/navigation";
 import { FaChevronLeft, FaEye, FaInfoCircle } from "react-icons/fa";
+import Markdown from "react-markdown";
 import { updateTaskDescription } from "../actions/updateTaskDescription";
 import { updateTaskExpiresAt } from "../actions/updateTaskExpiresAt";
 import { updateTaskRewardTypeNewSilcValue } from "../actions/updateTaskRewardTypeNewSilcValue";
@@ -108,11 +109,12 @@ export const Overview = ({
             columnName="description"
             initialValue={task.description}
             action={updateTaskDescription}
+            classNameTextarea="h-64"
           />
         ) : (
-          <pre className="font-[inherit] whitespace-pre-wrap">
-            {task.description || "-"}
-          </pre>
+          <div className="prose prose-invert max-w-none">
+            <Markdown>{task.description || "-"}</Markdown>
+          </div>
         )}
       </Tile>
 
@@ -214,11 +216,12 @@ export const Overview = ({
               columnName="rewardTypeTextValue"
               initialValue={task.rewardTypeTextValue || ""}
               action={updateTaskRewardTypeTextValue}
+              classNameTextarea="h-64"
             />
           ) : (
-            <pre className="font-[inherit] whitespace-pre-wrap">
-              {task.rewardTypeTextValue || "-"}
-            </pre>
+            <div className="prose prose-invert max-w-none">
+              <Markdown>{task.rewardTypeTextValue || "-"}</Markdown>
+            </div>
           ))}
         {task.rewardType === TaskRewardType.SILC &&
           (isTaskUpdatable && isAllowedToManageTask ? (

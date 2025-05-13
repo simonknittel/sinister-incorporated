@@ -34,6 +34,15 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="13. Mai 2025">
+          <DayItem heading="Tasks">
+            <p>
+              Die Beschreibung und der Belohungstext unterstützen nun
+              Markdown-Formatierung.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="12. Mai 2025">
           <DayItem heading="Tasks">
             <p>
