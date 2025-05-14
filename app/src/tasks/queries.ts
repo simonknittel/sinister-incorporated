@@ -76,6 +76,7 @@ export const getClosedTasks = cache(
 
     let tasks = await prisma.task.findMany({
       where: {
+        deletedAt: null,
         OR: [
           {
             cancelledAt: {
