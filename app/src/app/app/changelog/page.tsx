@@ -34,6 +34,15 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="15. Mai 2025">
+          <DayItem heading="Tasks">
+            <p>
+              Es gibt nun die Möglichkeit sich benachrichtigen zu lassen, wenn
+              einem ein Task zugewiesen wird.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="13. Mai 2025">
           <DayItem heading="Tasks">
             <p>
