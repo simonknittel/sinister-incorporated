@@ -3,7 +3,7 @@
 import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
-import { createId } from "@paralleldrive/cuid2";
+import { publishNotification } from "@/pusher/utils/publishNotification";
 import { TaskRewardType, TaskVisibility } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
@@ -115,6 +115,8 @@ export const createTask = async (formData: FormData) => {
         requestPayload: formData,
       };
 
+    const notifications = [];
+
     /**
      * Create task
      */
@@ -150,7 +152,7 @@ export const createTask = async (formData: FormData) => {
         break;
 
       case TaskVisibility.GROUP:
-        await prisma.task.create({
+        const createdTask = await prisma.task.create({
           data: {
             visibility: result.data.visibility,
             assignmentLimit: result.data.assignmentLimit,
@@ -177,17 +179,34 @@ export const createTask = async (formData: FormData) => {
             },
             repeatable: result.data.repeatable,
           },
+          select: {
+            id: true,
+            title: true,
+            assignments: {
+              select: {
+                citizenId: true,
+              },
+            },
+          },
         });
+
+        for (const assignment of createdTask.assignments) {
+          notifications.push({
+            interests: [`task_assigned;citizen_id=${assignment.citizenId}`],
+            message: "Dir wurde ein Task zugewiesen",
+            title: createdTask.title,
+            url: `/app/tasks/${createdTask.id}`,
+          });
+        }
+
         break;
 
       case TaskVisibility.PERSONALIZED:
-        await prisma.$transaction([
+        const createdTasks = await prisma.$transaction([
           ...result.data.assignedToIds!.flatMap((assignedToId) => {
-            const id = createId();
             return [
               prisma.task.create({
                 data: {
-                  id,
                   visibility: result.data.visibility,
                   assignmentLimit: result.data.assignmentLimit,
                   title: result.data.title,
@@ -199,19 +218,38 @@ export const createTask = async (formData: FormData) => {
                   rewardTypeSilcValue: result.data.rewardTypeSilcValue,
                   rewardTypeNewSilcValue: result.data.rewardTypeNewSilcValue,
                   repeatable: result.data.repeatable,
+                  assignments: {
+                    create: {
+                      citizenId: assignedToId,
+                      createdById: authentication.session.entity!.id,
+                    },
+                  },
                 },
-              }),
-
-              prisma.taskAssignment.create({
-                data: {
-                  taskId: id,
-                  citizenId: assignedToId,
-                  createdById: authentication.session.entity!.id,
+                select: {
+                  id: true,
+                  title: true,
+                  assignments: {
+                    select: {
+                      citizenId: true,
+                    },
+                  },
                 },
               }),
             ];
           }),
         ]);
+
+        for (const createdTask of createdTasks) {
+          for (const assignment of createdTask.assignments) {
+            notifications.push({
+              interests: [`task_assigned;citizen_id=${assignment.citizenId}`],
+              message: "Dir wurde ein Task zugewiesen",
+              title: createdTask.title,
+              url: `/app/tasks/${createdTask.id}`,
+            });
+          }
+        }
+
         break;
 
       default:
@@ -219,6 +257,22 @@ export const createTask = async (formData: FormData) => {
           error: t("Common.badRequest"),
           requestPayload: formData,
         };
+    }
+
+    /**
+     * Publish notifications
+     */
+    if (notifications.length > 0) {
+      await Promise.all(
+        notifications.map((notification) =>
+          publishNotification(
+            notification.interests,
+            notification.message,
+            notification.title,
+            notification.url,
+          ),
+        ),
+      );
     }
 
     /**

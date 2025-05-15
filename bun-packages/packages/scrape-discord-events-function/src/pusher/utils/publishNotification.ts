@@ -12,7 +12,7 @@ export const publishNotification = async (
 	await beamsClient.publishToInterests(interests, {
 		web: {
 			notification: {
-				title: `${title} | Sinister Incorporated`,
+				title: `${title} | S.A.M.`,
 				body,
 				deep_link: deep_link ? `${env.BASE_URL}${deep_link}` : undefined,
 				icon: `${env.BASE_URL}/logo-white-on-black.png`,
