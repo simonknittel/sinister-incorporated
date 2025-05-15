@@ -3,6 +3,7 @@
 import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
+import { publishNotification } from "@/pusher/utils/publishNotification";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
@@ -73,32 +74,69 @@ export const updateTaskAssignments = async (formData: FormData) => {
     /**
      * Update task
      */
-    await prisma.task.update({
+    const assignmentsToDelete = task.assignments.filter(
+      (assignment) =>
+        !result.data.assignedToIds?.includes(assignment.citizenId),
+    );
+    const assignmentsToCreate =
+      result.data.assignedToIds?.filter(
+        (assignedToId) =>
+          !task.assignments
+            .map((assignment) => assignment.citizenId)
+            .includes(assignedToId),
+      ) || [];
+    const updatedTask = await prisma.task.update({
       where: { id: result.data.id },
       data: {
         assignmentLimit: result.data.assignmentLimit,
         assignments: {
           deleteMany: {
             citizenId: {
-              in: task.assignments
-                .filter(
-                  (assignment) =>
-                    !result.data.assignedToIds?.includes(assignment.citizenId),
-                )
-                .map((assignment) => assignment.citizenId),
+              in: assignmentsToDelete.map((assignment) => assignment.citizenId),
             },
           },
           createMany: {
-            data:
-              result.data.assignedToIds?.map((assignedToId) => ({
-                citizenId: assignedToId,
-                createdById: authentication.session.entity!.id,
-              })) || [],
-            skipDuplicates: true,
+            data: assignmentsToCreate?.map((assignedToId) => ({
+              citizenId: assignedToId,
+            })),
+          },
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        assignments: {
+          select: {
+            citizenId: true,
           },
         },
       },
     });
+
+    /**
+     * Publish notifications
+     */
+    const notifications = [];
+    for (const assignment of updatedTask.assignments) {
+      notifications.push({
+        interests: [`task_assigned;citizen_id=${assignment.citizenId}`],
+        message: "Dir wurde ein Task zugewiesen",
+        title: updatedTask.title,
+        url: `/app/tasks/${updatedTask.id}`,
+      });
+    }
+    if (notifications.length > 0) {
+      await Promise.all(
+        notifications.map((notification) =>
+          publishNotification(
+            notification.interests,
+            notification.message,
+            notification.title,
+            notification.url,
+          ),
+        ),
+      );
+    }
 
     /**
      * Revalidate cache(s)

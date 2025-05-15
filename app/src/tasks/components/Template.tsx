@@ -1,6 +1,7 @@
 import { Hero } from "@/common/components/Hero";
 import type { ReactNode } from "react";
 import { Navigation } from "./Navigation";
+import { NotificationsTooltip } from "./NotificationsTooltip";
 
 interface Props {
   readonly children: ReactNode;
@@ -13,7 +14,10 @@ export const Template = ({ children }: Props) => {
         <Hero text="Tasks" withGlitch />
       </div>
 
-      <Navigation className="my-4" />
+      <div className="flex gap-2 justify-center items-center">
+        <Navigation className="my-4" />
+        <NotificationsTooltip />
+      </div>
 
       {children}
     </main>
