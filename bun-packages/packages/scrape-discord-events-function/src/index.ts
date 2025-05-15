@@ -54,7 +54,7 @@ export const handler: ScheduledHandler = async () => {
 							startTime: futureEventFromDiscord.scheduled_start_time,
 							endTime: futureEventFromDiscord.scheduled_end_time,
 							description: futureEventFromDiscord.description,
-							location: futureEventFromDiscord.entity_metadata.location,
+							location: futureEventFromDiscord.entity_metadata.location || null,
 							discordImage: futureEventFromDiscord.image,
 						},
 					});
@@ -91,7 +91,7 @@ export const handler: ScheduledHandler = async () => {
 						startTime: futureEventFromDiscord.scheduled_start_time,
 						endTime: futureEventFromDiscord.scheduled_end_time,
 						description: futureEventFromDiscord.description,
-						location: futureEventFromDiscord.entity_metadata.location,
+						location: futureEventFromDiscord.entity_metadata.location || null,
 						discordImage: futureEventFromDiscord.image,
 						discordGuildId: futureEventFromDiscord.guild_id,
 					},
