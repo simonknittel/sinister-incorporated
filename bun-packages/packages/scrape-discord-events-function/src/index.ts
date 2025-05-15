@@ -74,14 +74,14 @@ export const handler: ScheduledHandler = async () => {
 					existingEventFromDatabase.location !=
 						futureEventFromDiscord.entity_metadata.location;
 
-				if (hasChangesForNotification) {
+				/*if (hasChangesForNotification) {
 					await publishNotification(
 						["updatedDiscordEvent"],
 						"Event aktualisiert",
 						futureEventFromDiscord.name,
 						`/app/events/${existingEventFromDatabase.id}`,
 					);
-				}
+				}*/
 			} else {
 				const newEvent = await prisma.event.create({
 					data: {
