@@ -5,7 +5,7 @@ import Button from "@/common/components/Button";
 import { useBeamsContext } from "@/pusher/components/BeamsContext";
 import * as Popover from "@radix-ui/react-popover";
 import clsx from "clsx";
-import { useEffect, useState, type FormEventHandler } from "react";
+import { useEffect, useMemo, useState, type FormEventHandler } from "react";
 import toast from "react-hot-toast";
 import { FaBell } from "react-icons/fa";
 
@@ -19,7 +19,10 @@ export const NotificationsTooltip = ({ className }: Props) => {
     throw new Error("Unauthorized");
   const { interests, setInterests } = useBeamsContext();
   const [isOpen, setIsOpen] = useState(false);
-  const taskAssignedInterest = `task_assigned;citizen_id=${authentication.session.entity.id}`;
+  const taskAssignedInterest = useMemo(() => {
+    if (!authentication?.session.entity) return "";
+    return `task_assigned;citizen_id=${authentication.session.entity.id}`;
+  }, [authentication]);
   const [taskAssigned, setTaskAssigned] = useState<boolean | undefined>(
     undefined,
   );
