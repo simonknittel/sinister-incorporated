@@ -35,6 +35,15 @@ export default async function Page() {
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
         <Day heading="16. Mai 2025">
+          <DayItem heading="Cornerstone Image Browser">
+            <p>
+              Unter dem Navigationspunkt <strong>Tools</strong> gibt es nun den
+              <strong>Cornerstone Image Browser</strong>. Hier können die Bilder
+              von Cornerstone nebeneinander dargestellt werden, um sie visuell
+              einfach vergleichen zu können.
+            </p>
+          </DayItem>
+
           <DayItem heading="Tasks">
             <p>
               Es wurde ein Fehler behoben, durch den das Teilnehmerlimit nicht
