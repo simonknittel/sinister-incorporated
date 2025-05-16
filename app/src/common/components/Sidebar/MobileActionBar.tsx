@@ -6,6 +6,7 @@ import {
   FaLock,
   FaPiggyBank,
   FaTable,
+  FaTools,
   FaUsers,
 } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
@@ -228,6 +229,16 @@ export const MobileActionBar = async ({ className }: Props) => {
                       </Link>
                     </li>
                   )}
+
+                  <li>
+                    <Link
+                      href="/app/tools"
+                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                    >
+                      <FaTools className="text-neutral-500" />
+                      Tools
+                    </Link>
+                  </li>
 
                   <li>
                     <Link
