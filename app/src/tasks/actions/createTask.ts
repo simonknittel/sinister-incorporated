@@ -13,15 +13,15 @@ import { z } from "zod";
 
 const schema = z.object({
   visibility: z.nativeEnum(TaskVisibility),
-  assignmentLimit: z.coerce.number().min(1).optional(),
+  assignmentLimit: z.coerce.number().min(1).nullable(),
   assignedToIds: z.array(z.string().cuid()).optional(),
   title: z.string().trim().max(64),
   description: z.string().trim().max(2048).optional(),
   expiresAt: z.coerce.date().optional(),
   rewardType: z.nativeEnum(TaskRewardType),
   rewardTypeTextValue: z.string().trim().max(2048).optional(),
-  rewardTypeSilcValue: z.coerce.number().min(1).optional(),
-  rewardTypeNewSilcValue: z.coerce.number().min(1).optional(),
+  rewardTypeSilcValue: z.coerce.number().optional(),
+  rewardTypeNewSilcValue: z.coerce.number().optional(),
   repeatable: z.coerce.number().min(1),
   requiredRoles: z.array(z.string().cuid()).optional(),
   hiddenForOtherRoles: z.coerce.boolean().optional(),
@@ -51,7 +51,7 @@ export const createTask = async (formData: FormData) => {
         formData.has("assignmentLimit") &&
         formData.get("assignmentLimit") !== ""
           ? formData.get("assignmentLimit")
-          : undefined,
+          : null,
       assignedToIds: formData.getAll("assignedToId[]"),
       title: formData.get("title"),
       description: formData.has("description")

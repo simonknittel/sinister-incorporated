@@ -52,18 +52,10 @@ export const UpdateTaskAssignments = ({ className, task }: Props) => {
     null,
   );
 
-  const handleClick = () => {
-    setIsOpen(true);
-  };
-
-  const handleRequestClose = () => {
-    setIsOpen(false);
-  };
-
   return (
     <>
       <Button
-        onClick={handleClick}
+        onClick={() => setIsOpen(true)}
         variant="tertiary"
         className={clsx("h-auto", className)}
         title="Zuordnung bearbeiten"
@@ -73,7 +65,7 @@ export const UpdateTaskAssignments = ({ className, task }: Props) => {
 
       <Modal
         isOpen={isOpen}
-        onRequestClose={handleRequestClose}
+        onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
         heading={<h2>Zuordnung bearbeiten</h2>}
       >
@@ -89,7 +81,7 @@ export const UpdateTaskAssignments = ({ className, task }: Props) => {
                 ? (state.requestPayload.get("assignmentLimit") as string)
                 : task.assignmentLimit || undefined
             }
-            min={1}
+            min={0}
           />
 
           <CitizenInput

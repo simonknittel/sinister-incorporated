@@ -3,7 +3,13 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import Button from "@/common/components/Button";
 import { SingleRole } from "@/roles/components/SingleRole";
-import type { Role, Task, TaskAssignment, Upload } from "@prisma/client";
+import {
+  TaskVisibility,
+  type Role,
+  type Task,
+  type TaskAssignment,
+  type Upload,
+} from "@prisma/client";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { unstable_rethrow } from "next/navigation";
@@ -35,11 +41,6 @@ export const ToggleAssignmentForCurrentUser = ({
   const authentication = useAuthentication();
   if (!authentication || !authentication.session?.entity)
     throw new Error("Unauthorized");
-  const doesCurrentUserSatisfyRequirements =
-    task.requiredRoles.length > 0 ?
-    task.requiredRoles.some((role) =>
-      authentication.session.entity!.roles?.split(",").includes(role.id),
-    ) : true;
 
   const formAction = (formData: FormData) => {
     startTransition(async () => {
@@ -65,70 +66,100 @@ export const ToggleAssignmentForCurrentUser = ({
     });
   };
 
-  let disabled = false;
-  if (isPending) disabled = true;
-  if (task.assignmentLimit && task.assignments.length >= task.assignmentLimit) disabled = true;
-  if (!doesCurrentUserSatisfyRequirements) disabled = true;
+  const doesCurrentUserSatisfyRequirements =
+    task.requiredRoles.length > 0
+      ? task.requiredRoles.some((role) =>
+          authentication.session.entity!.roles?.split(",").includes(role.id),
+        )
+      : true;
+  const isAssignmentLimitReached =
+    task.assignmentLimit && task.assignments.length >= task.assignmentLimit;
+  const isPersonalizedOrGroupTask =
+    task.visibility === TaskVisibility.PERSONALIZED ||
+    task.visibility === TaskVisibility.GROUP;
+  const disabled =
+    (isCurrentUserAssigned && isPersonalizedOrGroupTask) ||
+    (!isCurrentUserAssigned && isPersonalizedOrGroupTask) ||
+    (!isCurrentUserAssigned && isAssignmentLimitReached) ||
+    (!isCurrentUserAssigned && !doesCurrentUserSatisfyRequirements);
+
+  const button = (
+    <Button disabled={disabled} variant="primary">
+      {isCurrentUserAssigned ? "Aufgeben" : "Annehmen"}
+      {isPending ? (
+        <FaSpinner className="animate-spin" />
+      ) : isCurrentUserAssigned ? (
+        <FaMinus />
+      ) : (
+        <FaPlus />
+      )}
+    </Button>
+  );
 
   return (
     <form action={formAction} id={formId} className={clsx(className)}>
       <input type="hidden" name="taskId" value={task.id} />
 
-      {isCurrentUserAssigned ? (
-        <Button type="submit" disabled={isPending} variant="primary">
-          Aufgeben
-          {isPending ? <FaSpinner className="animate-spin" /> : <FaMinus />}
-        </Button>
-      ) : doesCurrentUserSatisfyRequirements ? (
-        <Button
-          type="submit"
-          disabled={disabled}
-          variant="primary"
-        >
-          Annehmen
-          {isPending ? <FaSpinner className="animate-spin" /> : <FaPlus />}
-        </Button>
-      ) : (
+      {disabled ? (
         <Tooltip.Provider delayDuration={0}>
           <Tooltip.Root>
-            <Tooltip.Trigger asChild>
-              <Button
-                disabled={disabled}
-                variant="primary"
-              >
-                Annehmen
-                {isPending ? (
-                  <FaSpinner className="animate-spin" />
-                ) : (
-                  <FaPlus />
-                )}
-              </Button>
-            </Tooltip.Trigger>
+            <Tooltip.Trigger asChild>{button}</Tooltip.Trigger>
 
             <Tooltip.Content
               className="p-4 max-w-[320px] select-none rounded bg-neutral-950 border border-sinister-red-500 text-white font-normal"
               sideOffset={5}
             >
-              <div>
-                <p>Du erfüllst nicht die Voraussetzungen für diesen Task.</p>
-
-                {task.requiredRoles.length > 0 && (
-                  <>
-                    <p className="text-sm text-gray-500 mt-4">
-                      Erforderliche Rolle(n)
-                    </p>
-                    <div className="flex flex-col items-start gap-1 mt-1">
-                      {task.requiredRoles.map((role) => (
-                        <SingleRole key={role.id} role={role} />
-                      ))}
-                    </div>
-                  </>
+              <div className="flex flex-col gap-4">
+                {isCurrentUserAssigned && isPersonalizedOrGroupTask && (
+                  <p>
+                    Du kannst personalisierte und Gruppen-Tasks nicht
+                    selbstständig aufgeben.
+                  </p>
                 )}
+
+                {!isCurrentUserAssigned && isPersonalizedOrGroupTask && (
+                  <p>
+                    Du kannst personalisierte und Gruppen-Tasks von anderen
+                    nicht annehmen.
+                  </p>
+                )}
+
+                {!isCurrentUserAssigned && isAssignmentLimitReached && (
+                  <p>
+                    Du kannst diesen Task nicht annehmen, da das Teilnehmerlimit
+                    erreicht ist.
+                  </p>
+                )}
+
+                {!isCurrentUserAssigned &&
+                  !doesCurrentUserSatisfyRequirements && (
+                    <div className="flex flex-col gap-1">
+                      <p>
+                        Du kannst diesen Task nicht annehmen, da dir die
+                        folgenden Rollen fehlen:
+                      </p>
+
+                      {task.requiredRoles.length > 0 && (
+                        <div>
+                          <p className="text-sm text-gray-500">
+                            Erforderliche Rollen
+                          </p>
+                          <div className="flex flex-col items-start gap-1 mt-1">
+                            {task.requiredRoles.map((role) => (
+                              <SingleRole key={role.id} role={role} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
               </div>
               <Tooltip.Arrow className="fill-sinister-red-500" />
             </Tooltip.Content>
           </Tooltip.Root>
         </Tooltip.Provider>
+      ) : (
+        button
       )}
     </form>
   );

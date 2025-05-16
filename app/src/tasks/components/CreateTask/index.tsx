@@ -210,6 +210,7 @@ export const CreateTask = ({ className, cta }: Props) => {
 
             <Button
               type="button"
+              variant="secondary"
               onClick={() => setStep(Step.Visibility)}
               className="mt-4 ml-auto"
             >
@@ -257,12 +258,12 @@ export const CreateTask = ({ className, cta }: Props) => {
               <>
                 <NumberInput
                   name="assignmentLimit"
-                  label="Von wie vielen Citizen kann der Task angenommen werden?"
+                  label="Teilnehmerlimit"
                   hint="optional"
                   defaultValue={
                     state?.requestPayload?.has("assignmentLimit")
                       ? (state.requestPayload.get("assignmentLimit") as string)
-                      : 1
+                      : undefined
                   }
                   min={1}
                   className="mt-4"
@@ -287,6 +288,7 @@ export const CreateTask = ({ className, cta }: Props) => {
 
             <Button
               type="button"
+              variant="secondary"
               onClick={() => setStep(Step.Reward)}
               className="mt-4 ml-auto"
             >
@@ -348,7 +350,6 @@ export const CreateTask = ({ className, cta }: Props) => {
                       ) as string)
                     : 1
                 }
-                min={1}
                 required
                 className="mt-4"
               />
@@ -365,7 +366,6 @@ export const CreateTask = ({ className, cta }: Props) => {
                       ) as string)
                     : 1
                 }
-                min={1}
                 required
                 className="mt-4"
               />
@@ -402,6 +402,7 @@ export const CreateTask = ({ className, cta }: Props) => {
 
             <Button
               type="button"
+              variant="secondary"
               onClick={() => setStep(Step.Other)}
               className="mt-4 ml-auto"
             >

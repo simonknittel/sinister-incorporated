@@ -34,6 +34,34 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="16. Mai 2025">
+          <DayItem heading="Tasks">
+            <p>
+              Es wurde ein Fehler behoben, durch den das Teilnehmerlimit nicht
+              auf unbegrenzt gestellt werden konnte.
+            </p>
+            <p>
+              Es wurde ein Fehler behoben, durch den eine SILC-Belohnung nicht
+              nachträglich verändert werden konnte.
+            </p>
+            <p>
+              Es ist nun möglich eine negative SILC-Belohnung zu erstellen. Dies
+              kann u.a. zum Verkauf von Gegenständen genutzt werden.
+            </p>
+            <p>
+              Es wird nun in jedem Fall ein Hinweis angezeigt, wenn das Annehmen
+              oder Aufgeben eines Tasks deaktiviert ist.
+            </p>
+            <p>
+              Es wurden ein paar Texte verändert zur besseren Verständlichkeit.
+            </p>
+            <p>
+              Es wurden ein paar visuelle Veränderungen vorgenommen zur besseren
+              Verständlichkeit.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="15. Mai 2025">
           <DayItem heading="Tasks">
             <p>
