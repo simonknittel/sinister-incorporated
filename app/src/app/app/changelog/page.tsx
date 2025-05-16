@@ -14,6 +14,7 @@ import image20250322RequiredVariantsEdit from "@/changelog/assets/2025-03-22-req
 import image20250322RequiredVariantsTooltip from "@/changelog/assets/2025-03-22-required-variants-tooltip.png";
 import image20250323LineupDragNDrop from "@/changelog/assets/2025-03-23-lineup-dragndrop.png";
 import image20250329CitizenHandle from "@/changelog/assets/2025-03-29-citizen-handle.png";
+import image20250516CornerstoneImageBrowser from "@/changelog/assets/2025-05-16-cornerstone-image-browser.png";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 import Image from "next/image";
@@ -42,6 +43,14 @@ export default async function Page() {
               von Cornerstone nebeneinander dargestellt werden, um sie visuell
               einfach vergleichen zu können.
             </p>
+
+            <Image
+              quality={100}
+              src={image20250516CornerstoneImageBrowser}
+              alt=""
+              loading="lazy"
+              className="self-center"
+            />
           </DayItem>
 
           <DayItem heading="Tasks">
