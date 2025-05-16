@@ -10,7 +10,7 @@ import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
   id: z.union([z.string().cuid(), z.string().cuid2()]),
-  rewardTypeSilcValue: z.number().min(1),
+  rewardTypeSilcValue: z.coerce.number(),
 });
 
 export const updateTaskRewardTypeSilcValue = createAuthenticatedAction(

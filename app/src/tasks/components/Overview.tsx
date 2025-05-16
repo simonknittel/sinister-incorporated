@@ -152,12 +152,17 @@ export const Overview = ({
             )}
           </div>
 
-          <div className="flex flex-col items-start">
-            <span className="text-neutral-400 text-sm">Maximal</span>
-            <div className="flex gap-2 items-center">
-              {task.assignmentLimit ? task.assignmentLimit : "-"}
+          {task.visibility === TaskVisibility.PUBLIC && (
+            <div className="flex flex-col items-start">
+              <span className="text-neutral-400 text-sm">Teilnehmerlimit</span>
+              <div className="flex gap-2 items-center">
+                {task.assignmentLimit ? task.assignmentLimit : "-"}
+                {isTaskUpdatable && isAllowedToManageTask && (
+                  <UpdateTaskAssignments task={task} className="flex-none" />
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {task.visibility === TaskVisibility.PUBLIC && (
             <div className="flex flex-col items-start">
@@ -185,7 +190,7 @@ export const Overview = ({
 
           <div className="flex flex-col items-start">
             <span className="text-neutral-400 text-sm">Angenommen von</span>
-            <div className="flex gap-3 items-center">
+            <div className="flex gap-2 items-center">
               {task.assignments.length > 0 ? (
                 <div className="flex flex-wrap gap-x-3 gap-y-1">
                   {task.assignments.map((assignment) => (
@@ -389,12 +394,12 @@ export const Overview = ({
         </div>
       </Tile>
 
-      {((isTaskUpdatable && task.visibility === TaskVisibility.PUBLIC) ||
+      {(isTaskUpdatable ||
         (isTaskUpdatable && isAllowedToManageTask) ||
         isAllowedToDeleteTask) && (
         <Tile heading="Aktionen">
           <div className="flex flex-wrap gap-2">
-            {isTaskUpdatable && task.visibility === TaskVisibility.PUBLIC && (
+            {isTaskUpdatable && (
               <ToggleAssignmentForCurrentUser
                 task={task}
                 isCurrentUserAssigned={isCurrentUserAssigned}
