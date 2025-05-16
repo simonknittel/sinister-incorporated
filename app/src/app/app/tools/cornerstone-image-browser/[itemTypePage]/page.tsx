@@ -57,7 +57,7 @@ export default async function Page({ params }: Props) {
       <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
         <Link
           href="/app/tools"
-          className="self-start text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 flex items-center gap-2"
+          className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 inline-flex items-center gap-2"
         >
           <FaChevronLeft />
           Alle Tools
@@ -85,7 +85,7 @@ export default async function Page({ params }: Props) {
       <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
         <Link
           href="/app/tools"
-          className="self-start text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 flex items-center gap-2"
+          className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 inline-flex items-center gap-2"
         >
           <FaChevronLeft />
           Alle Tools
@@ -108,7 +108,7 @@ export default async function Page({ params }: Props) {
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
       <Link
         href="/app/tools"
-        className="self-start text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 flex items-center gap-2"
+        className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 inline-flex items-center gap-2"
       >
         <FaChevronLeft />
         Alle Tools
