@@ -2,8 +2,8 @@ import clsx from "clsx";
 import { useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import { FaPen, FaSave, FaSpinner } from "react-icons/fa";
-import Markdown from "react-markdown";
 import { useOutsideClick } from "../../utils/useOutsideClick";
+import { Markdown } from "../Markdown";
 
 interface Props {
   readonly className?: string;
@@ -132,9 +132,7 @@ export const EditableTextarea = ({
           className="flex gap-2 items-center group text-left w-full"
           title="Klicken, um zu bearbeiten"
         >
-          <div className="prose prose-invert flex-1 w-full max-w-none break-all">
-            <Markdown>{value || "-"}</Markdown>
-          </div>
+          <Markdown className="flex-1">{value || "-"}</Markdown>
           <FaPen className="flex-none text-sinister-red-500 group-hover:text-sinister-red-300 text-sm" />
         </button>
       )}

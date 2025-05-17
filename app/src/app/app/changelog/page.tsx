@@ -16,6 +16,7 @@ import image20250323LineupDragNDrop from "@/changelog/assets/2025-03-23-lineup-d
 import image20250329CitizenHandle from "@/changelog/assets/2025-03-29-citizen-handle.png";
 import image20250516CornerstoneImageBrowser from "@/changelog/assets/2025-05-16-cornerstone-image-browser.png";
 import { Hero } from "@/common/components/Hero";
+import { Link } from "@/common/components/Link";
 import { type Metadata } from "next";
 import Image from "next/image";
 import { type ReactNode } from "react";
@@ -35,11 +36,26 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
-        <Day heading="16. Mai 2025">
+        <Day heading="17. Mai 2025">
           <DayItem heading="Cornerstone Image Browser">
             <p>
               Es stehen nun auch die Bilder für Hüte, Brillen, Handschuhe,
               Jacken, Oberteile, Jumpsuits, Hosen und Schuhe zur Verfügung.
+            </p>
+          </DayItem>
+
+          <DayItem heading="Tasks: GitHub Flavored Markdown">
+            <p>
+              Die Beschreibung und der Belohnungstext unterstützen nun{" "}
+              <Link
+                href="https://github.github.com/gfm/"
+                target="_blank"
+                className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300"
+              >
+                GitHub Flavored Markdown
+              </Link>
+              . Dadurch werden u.a. nun Links automatisch erkannt und
+              Zeilenumbrüche können mit einem einfachen Enter gesetzt werden.
             </p>
           </DayItem>
         </Day>
