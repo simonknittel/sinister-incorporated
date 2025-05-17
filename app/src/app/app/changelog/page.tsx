@@ -58,6 +58,10 @@ export default async function Page() {
               Zeilenumbrüche können mit einem einfachen Enter gesetzt werden.
             </p>
           </DayItem>
+
+          <DayItem heading="Tasks: Dashboard">
+            <p>Angenommene Tasks werden nun zusätzlich im Dashboard gezeigt.</p>
+          </DayItem>
         </Day>
 
         <Day heading="16. Mai 2025">
