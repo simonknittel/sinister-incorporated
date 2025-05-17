@@ -208,8 +208,8 @@ const isVisibleForCurrentUser = async (
   return false;
 };
 
-export const getAssignedTasks = cache(
-  withTrace("getAssignedTasks", async () => {
+export const getMyAssignedTasks = cache(
+  withTrace("getMyAssignedTasks", async () => {
     const authentication = await requireAuthentication();
     if (!authentication.session.entity) forbidden();
     if (!(await authentication.authorize("task", "read"))) forbidden();
@@ -236,13 +236,14 @@ export const getAssignedTasks = cache(
         ],
       },
       include: {
-        assignments: true,
+        assignments: { include: { citizen: true } },
         completionists: true,
         requiredRoles: {
           include: {
             icon: true,
           },
         },
+        createdBy: true,
       },
     });
 

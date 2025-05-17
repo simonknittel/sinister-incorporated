@@ -1,4 +1,4 @@
-import { getAssignedTasks } from "@/tasks/queries";
+import { getMyAssignedTasks } from "@/tasks/queries";
 import clsx from "clsx";
 
 interface Props {
@@ -6,7 +6,7 @@ interface Props {
 }
 
 export const TasksBadge = async ({ className }: Props) => {
-  const tasks = await getAssignedTasks();
+  const tasks = await getMyAssignedTasks();
 
   if (tasks.length === 0) return null;
 

@@ -11,6 +11,7 @@ import {
 import { TileSkeleton } from "@/dashboard/components/TileSkeleton";
 import { CalendarTile } from "@/events/components/CalendarTile";
 import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
+import { TasksDashboardTile } from "@/tasks/components/DashboardTile";
 import { type Metadata } from "next";
 import { Suspense } from "react";
 
@@ -52,13 +53,17 @@ export default async function Page({ searchParams }: Props) {
           </Suspense>
         )}
 
-        <section className="flex flex-col gap-4 xl:w-[400px] flex-none">
-          <h2 className="font-thin text-2xl self-start">Spynet</h2>
-          {showSpynetSearchTile && <SpynetSearchTile />}
-          <SuspenseWithErrorBoundaryTile>
-            <ProfileTile />
-          </SuspenseWithErrorBoundaryTile>
-        </section>
+        <div className="flex flex-col gap-8">
+          <TasksDashboardTile />
+
+          <section className="flex flex-col gap-4 xl:w-[400px] flex-none">
+            <h2 className="font-thin text-2xl self-start">Spynet</h2>
+            {showSpynetSearchTile && <SpynetSearchTile />}
+            <SuspenseWithErrorBoundaryTile>
+              <ProfileTile />
+            </SuspenseWithErrorBoundaryTile>
+          </section>
+        </div>
       </div>
     </main>
   );
