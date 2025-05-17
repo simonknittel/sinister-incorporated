@@ -23,9 +23,6 @@ export const TasksDashboardTile = async ({ className }: Props) => {
         {myAssignedTasks.map((task) => (
           <Task key={task.id} task={task} />
         ))}
-        {myAssignedTasks.map((task) => (
-          <Task key={task.id} task={task} />
-        ))}
       </div>
     </section>
   );
