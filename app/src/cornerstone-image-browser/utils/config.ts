@@ -12,7 +12,7 @@ export const itemTypes = [
     linkBase: "https://finder.cstone.space/FPSArmors1",
   },
   {
-    title: "Oberkörper",
+    title: "Torso",
     page: "torsos",
     dataUrl: "https://finder.cstone.space/GetArmors/Torsos",
     linkBase: "https://finder.cstone.space/FPSArmors1",
@@ -34,5 +34,53 @@ export const itemTypes = [
     page: "undersuites",
     dataUrl: "https://finder.cstone.space/GetArmors/Undersuits",
     linkBase: "https://finder.cstone.space/FPSArmors1",
+  },
+  {
+    title: "Hüte",
+    page: "hats",
+    dataUrl: "https://finder.cstone.space/GetClothes/Hat",
+    linkBase: "https://finder.cstone.space/FPSClothes1",
+  },
+  {
+    title: "Brillen",
+    page: "eyes",
+    dataUrl: "https://finder.cstone.space/GetClothes/Eyes",
+    linkBase: "https://finder.cstone.space/FPSClothes1",
+  },
+  {
+    title: "Handschuhe",
+    page: "hands",
+    dataUrl: "https://finder.cstone.space/GetClothes/Hands",
+    linkBase: "https://finder.cstone.space/FPSClothes1",
+  },
+  {
+    title: "Jacken",
+    page: "jacket",
+    dataUrl: "https://finder.cstone.space/GetClothes/Jacket",
+    linkBase: "https://finder.cstone.space/FPSClothes1",
+  },
+  {
+    title: "Oberteile",
+    page: "shirt",
+    dataUrl: "https://finder.cstone.space/GetClothes/Shirt",
+    linkBase: "https://finder.cstone.space/FPSClothes1",
+  },
+  {
+    title: "Jumpsuits",
+    page: "jumpsuit",
+    dataUrl: "https://finder.cstone.space/GetClothes/Jumpsuit",
+    linkBase: "https://finder.cstone.space/FPSClothes1",
+  },
+  {
+    title: "Hosen",
+    page: "civil-legs",
+    dataUrl: "https://finder.cstone.space/GetClothes/Legs",
+    linkBase: "https://finder.cstone.space/FPSClothes1",
+  },
+  {
+    title: "Schuhe",
+    page: "feet",
+    dataUrl: "https://finder.cstone.space/GetClothes/Feet",
+    linkBase: "https://finder.cstone.space/FPSClothes1",
   },
 ] as const;

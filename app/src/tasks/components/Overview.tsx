@@ -7,6 +7,7 @@ import { EditableDateTimeInput } from "@/common/components/form/EditableDateTime
 import { EditableInput } from "@/common/components/form/EditableInput";
 import { EditableTextarea } from "@/common/components/form/EditableTextarea";
 import { Link } from "@/common/components/Link";
+import { Markdown } from "@/common/components/Markdown";
 import { Tile } from "@/common/components/Tile";
 import { Tooltip } from "@/common/components/Tooltip";
 import { formatDate } from "@/common/utils/formatDate";
@@ -23,7 +24,6 @@ import {
 import clsx from "clsx";
 import { forbidden } from "next/navigation";
 import { FaChevronLeft, FaEye, FaInfoCircle } from "react-icons/fa";
-import Markdown from "react-markdown";
 import { updateTaskDescription } from "../actions/updateTaskDescription";
 import { updateTaskExpiresAt } from "../actions/updateTaskExpiresAt";
 import { updateTaskRewardTypeNewSilcValue } from "../actions/updateTaskRewardTypeNewSilcValue";
@@ -112,9 +112,7 @@ export const Overview = ({
             classNameTextarea="h-64"
           />
         ) : (
-          <div className="prose prose-invert max-w-none">
-            <Markdown>{task.description || "-"}</Markdown>
-          </div>
+          <Markdown>{task.description || "-"}</Markdown>
         )}
       </Tile>
 
@@ -224,9 +222,7 @@ export const Overview = ({
               classNameTextarea="h-64"
             />
           ) : (
-            <div className="prose prose-invert max-w-none">
-              <Markdown>{task.rewardTypeTextValue || "-"}</Markdown>
-            </div>
+            <Markdown>{task.rewardTypeTextValue || "-"}</Markdown>
           ))}
         {task.rewardType === TaskRewardType.SILC &&
           (isTaskUpdatable && isAllowedToManageTask ? (

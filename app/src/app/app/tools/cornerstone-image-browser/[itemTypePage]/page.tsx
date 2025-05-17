@@ -24,9 +24,19 @@ type Params = Promise<{
   itemTypePage: string;
 }>;
 
-export const metadata: Metadata = {
-  title: "Cornerstone Image Browser | S.A.M. - Sinister Incorporated",
-};
+export async function generateMetadata(props: {
+  params: Params;
+}): Promise<Metadata> {
+  const { itemTypePage } = await props.params;
+  const itemTypeConfig = itemTypes.find(
+    (itemType) => itemType.page === itemTypePage,
+  );
+  if (!itemTypeConfig) notFound();
+
+  return {
+    title: `${itemTypeConfig.title} - Cornerstone Image Browser | S.A.M. - Sinister Incorporated`,
+  };
+}
 
 interface Props {
   readonly params: Params;
@@ -139,7 +149,7 @@ export default async function Page({ params }: Props) {
                   <img
                     src={`https://cstone.space/uifimages/${item.ItemId}.png`}
                     alt=""
-                    className="w-full h-auto object-contain relative z-10"
+                    className="w-full h-auto object-contain relative z-10 aspect-square"
                     loading="lazy"
                   />
                   <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-500 text-sm text-center">

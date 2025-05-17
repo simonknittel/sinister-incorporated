@@ -190,11 +190,11 @@ export const CreateTask = ({ className, cta }: Props) => {
                 <>
                   optional, max. 2048 Zeichen,{" "}
                   <Link
-                    href="https://commonmark.org/help/"
+                    href="https://github.github.com/gfm/"
                     target="_blank"
                     className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300"
                   >
-                    Markdown-Support
+                    GitHub Flavored Markdown-Support
                   </Link>
                 </>
               }
@@ -379,11 +379,11 @@ export const CreateTask = ({ className, cta }: Props) => {
                   <>
                     optional, max. 2048 Zeichen,{" "}
                     <Link
-                      href="https://commonmark.org/help/"
+                      href="https://github.github.com/gfm/"
                       target="_blank"
                       className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300"
                     >
-                      Markdown-Support
+                      GitHub Flavored Markdown-Support
                     </Link>
                   </>
                 }
