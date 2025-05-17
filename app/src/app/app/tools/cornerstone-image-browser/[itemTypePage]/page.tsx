@@ -137,39 +137,36 @@ export default async function Page({ params }: Props) {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8 mt-4">
           {parsedData.data.map((item) => (
-            <article key={item.ItemId}>
-              <Link
-                href={`${itemTypeConfig.linkBase}/${item.ItemId}`}
-                className="flex flex-col gap-1 h-full"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <div className="flex-1 background-secondary rounded-secondary overflow-hidden relative flex flex-col justify-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`https://cstone.space/uifimages/${item.ItemId}.png`}
-                    alt=""
-                    className="w-full h-auto object-contain relative z-10 aspect-square"
-                    loading="lazy"
-                  />
-                  <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-500 text-sm text-center">
-                    Bild nicht
-                    <br />
-                    verfügbar
-                  </p>
-                </div>
+            <Link
+              key={item.ItemId}
+              href={`${itemTypeConfig.linkBase}/${item.ItemId}`}
+              className="h-full group rounded-secondary overflow-hidden flex flex-col"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <div className="flex-1 background-secondary group-hover:background-tertiary relative flex flex-col justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://cstone.space/uifimages/${item.ItemId}.png`}
+                  alt=""
+                  className="w-full h-auto object-contain relative z-10 aspect-square"
+                  loading="lazy"
+                />
+                <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-500 text-sm text-center">
+                  Bild nicht
+                  <br />
+                  verfügbar
+                </p>
+              </div>
 
-                <div className="px-1">
-                  <p className="text-xs text-gray-500 mt-2 leading-tight">
-                    {item.Manu}
-                  </p>
+              <div className="p-2 group-hover:background-tertiary flex-1 flex flex-col gap-1 justify-end leading-tight">
+                {item.Manu && (
+                  <p className="text-xs text-gray-500">{item.Manu}</p>
+                )}
 
-                  <h3 className="text-sm font-bold leading-tight mt-1">
-                    {item.Name}
-                  </h3>
-                </div>
-              </Link>
-            </article>
+                <h3 className="text-sm font-bold">{item.Name}</h3>
+              </div>
+            </Link>
           ))}
         </div>
       )}
