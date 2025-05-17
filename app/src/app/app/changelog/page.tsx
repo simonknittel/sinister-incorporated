@@ -38,6 +38,15 @@ export default async function Page() {
         <Day heading="16. Mai 2025">
           <DayItem heading="Cornerstone Image Browser">
             <p>
+              Es stehen nun auch die Bilder für Hüte, Brillen, Handschuhe,
+              Jacken, Oberteile, Jumpsuits, Hosen und Schuhe zur Verfügung.
+            </p>
+          </DayItem>
+        </Day>
+
+        <Day heading="16. Mai 2025">
+          <DayItem heading="Cornerstone Image Browser">
+            <p>
               Unter dem Navigationspunkt <strong>Tools</strong> gibt es nun den
               <strong>Cornerstone Image Browser</strong>. Hier können die Bilder
               von Cornerstone nebeneinander dargestellt werden, um sie visuell
