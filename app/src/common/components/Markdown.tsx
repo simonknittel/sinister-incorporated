@@ -10,7 +10,9 @@ interface Props {
 
 export const Markdown = ({ className, children }: Props) => {
   return (
-    <div className={clsx("prose prose-invert break-all max-w-none", className)}>
+    <div
+      className={clsx("prose prose-invert break-words max-w-none", className)}
+    >
       <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
         {children}
       </ReactMarkdown>
