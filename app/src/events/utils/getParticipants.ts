@@ -30,7 +30,7 @@ export const getParticipants = cache(
       );
 
       return {
-        participant: EventDiscordParticipant!,
+        participant: EventDiscordParticipant,
         citizen,
       };
     });

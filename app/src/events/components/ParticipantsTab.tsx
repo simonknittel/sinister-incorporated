@@ -77,13 +77,13 @@ export const ParticipantsTab = async ({
 
       case "joined-at-asc":
         return sortAscWithAndNullLast(
-          a.participant.createdAt?.getTime(),
-          b.participant.createdAt?.getTime(),
+          a.participant?.createdAt?.getTime(),
+          b.participant?.createdAt?.getTime(),
         );
       case "joined-at-desc":
         return sortDescAndNullLast(
-          a.participant.createdAt?.getTime(),
-          b.participant.createdAt?.getTime(),
+          a.participant?.createdAt?.getTime(),
+          b.participant?.createdAt?.getTime(),
         );
 
       default:
@@ -264,7 +264,7 @@ export const ParticipantsTab = async ({
                     </td>
 
                     <td className="h-full min-h-14 flex items-center">
-                      {resolvedParticipant.participant.createdAt ? (
+                      {resolvedParticipant.participant?.createdAt ? (
                         <time>
                           {formatDate(
                             resolvedParticipant.participant.createdAt,

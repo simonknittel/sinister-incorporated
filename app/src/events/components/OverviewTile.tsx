@@ -1,7 +1,7 @@
 import { DiscordButton } from "@/common/components/DiscordButton";
+import { Markdown } from "@/common/components/Markdown";
 import type { Event } from "@prisma/client";
 import clsx from "clsx";
-import { MDXRemote } from "next-mdx-remote/rsc";
 import Image from "next/image";
 import { DownloadEventButton } from "./DownloadEventButton";
 
@@ -36,10 +36,7 @@ export const OverviewTile = ({ className, event }: Props) => {
         <h1 className="font-bold">{event.name}</h1>
 
         {event.description && (
-          <div className="mt-4 prose prose-invert">
-            {/* TODO: Add noreferrer to links */}
-            <MDXRemote source={event.description} />
-          </div>
+          <Markdown className="mt-4">{event.description}</Markdown>
         )}
 
         <dl className="mt-4">
