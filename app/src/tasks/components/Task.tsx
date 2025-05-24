@@ -15,7 +15,7 @@ import {
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { BsExclamationOctagonFill } from "react-icons/bs";
-import { FaCheckSquare, FaClock, FaInfoCircle } from "react-icons/fa";
+import { FaCheck, FaCheckSquare, FaClock, FaInfoCircle } from "react-icons/fa";
 import { TbRepeatOnce } from "react-icons/tb";
 
 interface TaskWithIncludes extends TaskType {
@@ -110,15 +110,27 @@ export const Task = ({ className, task }: Props) => {
     );
   }
 
+  const isTaskAssignedToCurrentCitizen = task.assignments.some(
+    (assignment) => assignment.citizen.id === authentication.session.entity?.id,
+  );
+
   return (
     <Link
       href={`/app/tasks/${task.id}`}
-      title="Details öffnen"
       className={clsx(
-        "flex background-secondary rounded-secondary hover:bg-neutral-800",
+        "flex background-secondary rounded-secondary overflow-hidden hover:bg-neutral-800",
         className,
       )}
     >
+      {isTaskAssignedToCurrentCitizen && (
+        <div
+          title="Dieser Task ist mir zugewiesen"
+          className="bg-me flex items-center p-2"
+        >
+          <FaCheck className="text-sm" />
+        </div>
+      )}
+
       <div className="flex-1">
         <h3 className="font-bold p-2">{task.title}</h3>
 
@@ -127,7 +139,7 @@ export const Task = ({ className, task }: Props) => {
         )}
       </div>
 
-      <AccordeonLink />
+      <AccordeonLink title="Details öffnen" />
     </Link>
   );
 };
