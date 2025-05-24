@@ -109,7 +109,6 @@ export const Overview = ({
             columnName="description"
             initialValue={task.description}
             action={updateTaskDescription}
-            classNameTextarea="h-64"
           />
         ) : (
           <Markdown>{task.description || "-"}</Markdown>
@@ -219,7 +218,6 @@ export const Overview = ({
               columnName="rewardTypeTextValue"
               initialValue={task.rewardTypeTextValue || ""}
               action={updateTaskRewardTypeTextValue}
-              classNameTextarea="h-64"
             />
           ) : (
             <Markdown>{task.rewardTypeTextValue || "-"}</Markdown>

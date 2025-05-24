@@ -31,12 +31,16 @@ export const EditableTextarea = ({
   const [isPending, startTransition] = useTransition();
   const [value, setValue] = useState(initialValue);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const markdownRef = useRef<HTMLDivElement>(null);
+  const [textareaHeight, setTextareaHeight] = useState(384);
 
   const { ref: outsideRef } = useOutsideClick(() => {
     setIsEditing(false);
   });
 
   const handleClick = () => {
+    if (markdownRef.current)
+      setTextareaHeight(markdownRef.current.clientHeight);
     setIsEditing(true);
   };
 
@@ -109,6 +113,9 @@ export const EditableTextarea = ({
               },
               classNameTextarea,
             )}
+            style={{
+              height: textareaHeight,
+            }}
             autoFocus
             ref={inputRef}
           />
@@ -132,7 +139,9 @@ export const EditableTextarea = ({
           className="flex gap-2 items-center group text-left w-full"
           title="Klicken, um zu bearbeiten"
         >
-          <Markdown className="flex-1">{value || "-"}</Markdown>
+          <Markdown ref={markdownRef} className="flex-1">
+            {value || "-"}
+          </Markdown>
           <FaPen className="flex-none text-sinister-red-500 group-hover:text-sinister-red-300 text-sm" />
         </button>
       )}
