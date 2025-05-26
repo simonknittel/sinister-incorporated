@@ -61,7 +61,8 @@ export const CompleteTask = ({ className, task }: Props) => {
 
   return (
     <>
-      <button
+      <Button
+        variant="secondary"
         onClick={handleClick}
         title="Task abschließen"
         className={clsx(
@@ -69,8 +70,8 @@ export const CompleteTask = ({ className, task }: Props) => {
           className,
         )}
       >
-        <FaCheck />
-      </button>
+        Abschließen <FaCheck />
+      </Button>
 
       <Modal
         isOpen={isOpen}

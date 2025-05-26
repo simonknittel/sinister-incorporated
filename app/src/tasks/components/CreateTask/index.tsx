@@ -278,12 +278,16 @@ export const CreateTask = ({ className, cta }: Props) => {
               </>
             )}
 
-            {visibility === TaskVisibility.PERSONALIZED && (
-              <CitizenInput name="assignedToId" multiple className="mt-4" />
-            )}
+            {(visibility === TaskVisibility.PERSONALIZED ||
+              visibility === TaskVisibility.GROUP) && (
+              <>
+                <CitizenInput name="assignedToId" multiple className="mt-4" />
 
-            {visibility === TaskVisibility.GROUP && (
-              <CitizenInput name="assignedToId" multiple className="mt-4" />
+                <label className="mt-4 mb-2 block">
+                  Kann dieser Task selbstständig abgeschlossen werden?
+                </label>
+                <YesNoCheckbox name="canSelfComplete" />
+              </>
             )}
 
             <Button

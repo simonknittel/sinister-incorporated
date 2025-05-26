@@ -59,7 +59,13 @@ export const completeTask = async (formData: FormData) => {
         error: "Der Task ist bereits abgeschlossen.",
         requestPayload: formData,
       };
-    if (!(await isAllowedToManageTask(task)))
+    const isAllowedToSelfComplete =
+      task.canSelfComplete &&
+      task.assignments.some(
+        (assignment) =>
+          assignment.citizenId === authentication.session.entity!.id,
+      );
+    if (!(await isAllowedToManageTask(task)) && !isAllowedToSelfComplete)
       return {
         error: t("Common.forbidden"),
         requestPayload: formData,
@@ -232,6 +238,7 @@ export const completeTask = async (formData: FormData) => {
                 },
               },
               repeatable: task.repeatable - 1,
+              canSelfComplete: task.canSelfComplete,
             },
           });
           break;
@@ -255,6 +262,7 @@ export const completeTask = async (formData: FormData) => {
                     rewardTypeSilcValue: task.rewardTypeSilcValue,
                     rewardTypeNewSilcValue: task.rewardTypeNewSilcValue,
                     repeatable: task.repeatable - 1,
+                    canSelfComplete: task.canSelfComplete,
                   },
                 }),
 

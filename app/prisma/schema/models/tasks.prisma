@@ -38,6 +38,7 @@ model Task {
   requiredRoles          Role[]           @relation("requiredRoles")
   hiddenForOtherRoles    Boolean?
   assignments            TaskAssignment[]
+  canSelfComplete        Boolean?
 }
 
 model TaskAssignment {

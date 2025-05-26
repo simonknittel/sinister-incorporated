@@ -25,6 +25,7 @@ const schema = z.object({
   repeatable: z.coerce.number().min(1),
   requiredRoles: z.array(z.string().cuid()).optional(),
   hiddenForOtherRoles: z.coerce.boolean().optional(),
+  canSelfComplete: z.coerce.boolean().optional(),
 });
 
 export const createTask = async (formData: FormData) => {
@@ -75,6 +76,9 @@ export const createTask = async (formData: FormData) => {
       requiredRoles: formData.getAll("requiredRole[]"),
       hiddenForOtherRoles: formData.get("hiddenForOtherRoles")
         ? formData.get("hiddenForOtherRoles")
+        : undefined,
+      canSelfComplete: formData.has("canSelfComplete")
+        ? formData.get("canSelfComplete")
         : undefined,
     });
     if (!result.success)
@@ -178,6 +182,7 @@ export const createTask = async (formData: FormData) => {
               },
             },
             repeatable: result.data.repeatable,
+            canSelfComplete: result.data.canSelfComplete,
           },
           select: {
             id: true,
@@ -224,6 +229,7 @@ export const createTask = async (formData: FormData) => {
                       createdById: authentication.session.entity!.id,
                     },
                   },
+                  canSelfComplete: result.data.canSelfComplete,
                 },
                 select: {
                   id: true,
