@@ -36,6 +36,18 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="25. Mai 2025">
+          <DayItem heading="Tasks">
+            <p>
+              Für personalisierte und Gruppen-Tasks gibt es nun die Möglichkeit,
+              dass diese von den zugewiesenen Citizen selbstständig
+              abgeschlossen werden können. Diese Option kann unter dem Reiter
+              &ldquo;Zielgruppe&rdquo; beim Erstellen eines Tasks aktiviert
+              werden.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="17. Mai 2025">
           <DayItem heading="Cornerstone Image Browser">
             <p>

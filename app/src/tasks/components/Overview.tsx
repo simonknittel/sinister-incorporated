@@ -78,6 +78,8 @@ export const Overview = ({
   const isCurrentUserAssigned = task.assignments.some(
     (assignment) => assignment.citizenId === authentication.session.entity?.id,
   );
+  const isAllowedToSelfCompleteTask =
+    task.canSelfComplete && isCurrentUserAssigned;
 
   return (
     <div className={clsx("flex flex-col gap-4", className)}>
@@ -207,6 +209,19 @@ export const Overview = ({
                 )}
             </div>
           </div>
+
+          {(task.visibility === TaskVisibility.PERSONALIZED ||
+            task.visibility === TaskVisibility.GROUP) && (
+            <div className="flex flex-col items-start">
+              <span className="text-neutral-400 text-sm">
+                Kann selbstständig abgeschlossen werden
+              </span>
+
+              <div className="flex gap-2 items-center">
+                {task.canSelfComplete ? "Ja" : "Nein"}
+              </div>
+            </div>
+          )}
         </div>
       </Tile>
 
@@ -389,7 +404,8 @@ export const Overview = ({
       </Tile>
 
       {(isTaskUpdatable ||
-        (isTaskUpdatable && isAllowedToManageTask) ||
+        (isTaskUpdatable &&
+          (isAllowedToManageTask || isAllowedToSelfCompleteTask)) ||
         isAllowedToDeleteTask) && (
         <Tile heading="Aktionen">
           <div className="flex flex-wrap gap-2">
@@ -400,11 +416,13 @@ export const Overview = ({
               />
             )}
 
-            {isAllowedToManageTask && isTaskUpdatable && (
-              <>
+            {(isAllowedToManageTask || isAllowedToSelfCompleteTask) &&
+              isTaskUpdatable && (
                 <CompleteTask task={task} className="flex-none" />
-                <CancelTask task={task} className="flex-none" />
-              </>
+              )}
+
+            {isAllowedToManageTask && isTaskUpdatable && (
+              <CancelTask task={task} className="flex-none" />
             )}
 
             {isAllowedToDeleteTask && (
