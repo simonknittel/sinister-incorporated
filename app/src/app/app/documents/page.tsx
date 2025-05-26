@@ -18,6 +18,7 @@ import srcInterdictAndDisable from "@/documents/assets/interdictAndDisable.svg";
 import srcLeadership from "@/documents/assets/leadership.svg";
 import srcLeadThePack from "@/documents/assets/leadThePack.svg";
 import srcManager from "@/documents/assets/manager.svg";
+import srcMarketeer from "@/documents/assets/marketeer.svg";
 import srcMember from "@/documents/assets/member.svg";
 import srcMining from "@/documents/assets/mining.svg";
 import srcMissiles from "@/documents/assets/missiles.svg";
@@ -25,6 +26,7 @@ import srcOnboarding from "@/documents/assets/onboarding.svg";
 import srcPolaris from "@/documents/assets/polaris.svg";
 import srcRecon from "@/documents/assets/recon.svg";
 import srcSalvage from "@/documents/assets/salvage.svg";
+import srcScavenger from "@/documents/assets/scavenger.svg";
 import srcSupervisor from "@/documents/assets/supervisor.svg";
 import srcTechAndTactic from "@/documents/assets/techAndTactic.svg";
 import srcTradeAndTransport from "@/documents/assets/tradeAndTransport.svg";
@@ -180,6 +182,16 @@ const categories = [
         src: srcTradeAndTransport,
         href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/trade&transport.pdf`,
       },
+      {
+        name: "Scavenger",
+        src: srcScavenger,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/scavenger.pdf`,
+      },
+      {
+        name: "Marketeer",
+        src: srcMarketeer,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/marketeer.pdf`,
+      },
     ],
   },
 
@@ -228,6 +240,8 @@ export default async function Page() {
     authentication.authorize("documentSalvage", "read"),
     authentication.authorize("documentMining", "read"),
     authentication.authorize("documentTradeAndTransport", "read"),
+    authentication.authorize("documentScavenger", "read"),
+    authentication.authorize("documentMarketeer", "read"),
     authentication.authorize("documentPolaris", "read"),
   ]);
 

@@ -142,6 +142,16 @@ export const DocumentsTab = () => {
       </div>
 
       <div className="py-2 flex justify-between items-center mt-2">
+        <h4 className="font-bold">Scavenger</h4>
+        <YesNoCheckbox {...register("documentScavenger;read")} />
+      </div>
+
+      <div className="py-2 flex justify-between items-center mt-2">
+        <h4 className="font-bold">Marketeer</h4>
+        <YesNoCheckbox {...register("documentMarketeer;read")} />
+      </div>
+
+      <div className="py-2 flex justify-between items-center mt-2">
         <h4 className="font-bold">Polaris</h4>
         <YesNoCheckbox {...register("documentPolaris;read")} />
       </div>

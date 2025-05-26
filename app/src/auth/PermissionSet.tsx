@@ -47,6 +47,8 @@ export interface PermissionSet {
     | "documentSalvage"
     | "documentMining"
     | "documentTradeAndTransport"
+    | "documentScavenger"
+    | "documentMarketeer"
     | "documentPolaris"
     | "algolia"
     | "spynetActivity"
