@@ -27,8 +27,8 @@
         "!eslint-plugin-react-compiler",
         "!@biomejs/biome",
         "!prisma",
-        "@prisma/client",
-        "@prisma/instrumentation"
+        "!@prisma/client",
+        "!@prisma/instrumentation"
       ]
     }
   ],
