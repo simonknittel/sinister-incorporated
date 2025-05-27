@@ -26,7 +26,9 @@
         "!postgres",
         "!eslint-plugin-react-compiler",
         "!@biomejs/biome",
-        "!prisma"
+        "!prisma",
+        "@prisma/client",
+        "@prisma/instrumentation"
       ]
     }
   ],
