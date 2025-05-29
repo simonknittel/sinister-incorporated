@@ -49,6 +49,7 @@
     "VCALENDAR",
     "vercel",
     "VEVENT",
+    "wicg",
     "xyflow"
   ],
   "dotenv.enableAutocloaking": false,

@@ -51,6 +51,12 @@ const OtherTab = ({ roles, flows }: Readonly<Props>) => {
         <YesNoCheckbox {...register("role;manage")} />
       </div>
 
+      <div className="py-2 flex justify-between items-center">
+        <h4 className="font-bold">Log Analyzer</h4>
+
+        <YesNoCheckbox {...register("logAnalyzer;read")} />
+      </div>
+
       <CareerSection flows={flows} className="mt-2" />
 
       <SpynetSection className="mt-2" />
