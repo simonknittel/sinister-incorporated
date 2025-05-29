@@ -3,6 +3,7 @@ import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
 import cornerstoneImageBrowserScreenshot from "@/cornerstone-image-browser/assets/screenshot.png";
 import { itemTypes } from "@/cornerstone-image-browser/utils/config";
+import logAnalyzerScreenshot from "@/log-analyzer/assets/screenshot.png";
 import { type Metadata } from "next";
 import Image from "next/image";
 
@@ -13,7 +14,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await authenticatePage("/app/tools");
+  const authentication = await authenticatePage("/app/tools");
+  const showLogAnalyzer = await authentication.authorize("logAnalyzer", "read");
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
@@ -25,7 +27,7 @@ export default async function Page() {
         <article className="background-secondary rounded-primary overflow-hidden">
           <Image
             src={cornerstoneImageBrowserScreenshot}
-            alt="Screenshot of the Cornerstone Image Browser"
+            alt="Screenshot vom Cornerstone Image Browser"
             priority
           />
 
@@ -51,6 +53,32 @@ export default async function Page() {
             </div>
           </div>
         </article>
+
+        {showLogAnalyzer && (
+          <article className="background-secondary rounded-primary overflow-hidden">
+            <Image
+              src={logAnalyzerScreenshot}
+              alt="Screenshot vom Log Analyzer"
+              priority
+            />
+
+            <div className="p-4 lg:p-8">
+              <h2 className="font-bold text-xl">Log Analyzer</h2>
+
+              <p className="mt-2">
+                Wertet die Game Logs von Star Citizen aus um nach Kills zu
+                filtern.
+              </p>
+
+              <Link
+                href="/app/tools/log-analyzer"
+                className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 mt-2 block"
+              >
+                Zum Log Analyzer
+              </Link>
+            </div>
+          </article>
+        )}
       </div>
     </main>
   );

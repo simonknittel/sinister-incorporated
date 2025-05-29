@@ -16,3 +16,13 @@ export const getCitizenById = cache(
     });
   }),
 );
+
+export const getCitizenByDiscordId = cache(
+  withTrace("getCitizenByDiscordId", async (discordId: string) => {
+    return prisma.entity.findUnique({
+      where: {
+        discordId, // TODO: Respect history
+      },
+    });
+  }),
+);

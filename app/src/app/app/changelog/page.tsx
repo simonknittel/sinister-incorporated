@@ -36,6 +36,16 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="29. Mai 2025">
+          <DayItem heading="Events">
+            <p>
+              Änderung: Der Eventorganisator wird nun nicht mehr automatisch in
+              der Teilnehmerliste mit aufgenommen, wenn er in Discord nicht auf
+              Teilnehmen geklickt hat.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="25. Mai 2025">
           <DayItem heading="Tasks">
             <p>

@@ -1,5 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import { RolesCell } from "@/citizen/components/RolesCell";
+import { getCitizenByDiscordId } from "@/citizen/queries";
 import { CitizenLink } from "@/common/components/CitizenLink";
 import { Link } from "@/common/components/Link";
 import { Tooltip } from "@/common/components/Tooltip";
@@ -91,16 +92,19 @@ export const ParticipantsTab = async ({
     }
   });
 
-  const resolvedCreatorParticipant = resolvedParticipants.find(
-    (resolvedParticipant) =>
-      resolvedParticipant.citizen.discordId === event.discordCreatorId,
-  )!;
+  const resolvedCreatoreCitizen = await getCitizenByDiscordId(
+    event.discordCreatorId,
+  );
 
   return (
     <div className={clsx("flex flex-col gap-4", className)}>
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
         <h2 className="font-bold mb-2 text-lg">Organisator</h2>
-        <CitizenLink citizen={resolvedCreatorParticipant.citizen} />
+        {resolvedCreatoreCitizen ? (
+          <CitizenLink citizen={resolvedCreatoreCitizen} />
+        ) : (
+          "-"
+        )}
 
         <div className="flex items-center gap-2 mt-4 mb-2">
           <h2 className="font-bold text-lg">Manager</h2>
