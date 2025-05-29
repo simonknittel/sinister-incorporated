@@ -14,8 +14,6 @@ export const getParticipants = cache(
       discordUserIds.add(user.discordUserId);
     }
 
-    discordUserIds.add(event.discordCreatorId);
-
     const citizens = await prisma.entity.findMany({
       where: {
         discordId: {
