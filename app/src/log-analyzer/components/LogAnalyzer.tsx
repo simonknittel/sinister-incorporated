@@ -229,21 +229,22 @@ const RSILink = ({ handle }: RSILinkProps) => {
   const isMe =
     authentication && authentication.session.entity?.handle === handle;
 
+  if (isMe)
+    return (
+      <span className="text-me flex items-center h-full p-2">
+        <span className="truncate">{handle}</span>
+      </span>
+    );
+
   return (
     <Link
       href={`https://robertsspaceindustries.com/citizens/${handle}`}
-      className={clsx(
-        "hover:background-secondary focus-visible:background-secondary rounded-secondary flex items-center gap-2 h-full p-2",
-        {
-          "text-rsi-blue-200": !isMe,
-          "text-me": isMe,
-        },
-      )}
+      className="hover:background-secondary focus-visible:background-secondary rounded-secondary flex items-center gap-2 h-full p-2 text-rsi-blue-200"
       rel="noreferrer"
-      target={isMe ? undefined : "_blank"}
+      target="_blank"
     >
       <span className="truncate">{handle}</span>
-      {!isMe && <FaExternalLinkAlt className="text-xs opacity-50 flex-none" />}
+      <FaExternalLinkAlt className="text-xs opacity-50 flex-none" />
     </Link>
   );
 };
