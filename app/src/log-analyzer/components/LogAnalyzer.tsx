@@ -273,6 +273,8 @@ export const LogAnalyzer = ({ className }: Props) => {
           </p>
 
           <p>Es werden die Logs der letzten 7 Tage ausgewertet.</p>
+
+          <p>Aktuell nur in Google Chrome und Microsoft Edge verfügbar.</p>
         </div>
       )}
     </div>
