@@ -17,6 +17,7 @@ import {
 } from "react";
 import { FaInfoCircle, FaSpinner } from "react-icons/fa";
 import { FaFileArrowUp } from "react-icons/fa6";
+import { TfiReload } from "react-icons/tfi";
 import { Entry, type IEntry } from "./Entry";
 
 export const gridTemplateColumns = "144px 1fr 1fr 1fr 1fr 1fr";
@@ -185,8 +186,14 @@ export const LogAnalyzer = ({ className }: Props) => {
             <Button
               type="button"
               variant="secondary"
+              disabled={isPending}
               onClick={handleManualRefresh}
             >
+              {isPending ? (
+                <FaSpinner className="animate-spin" />
+              ) : (
+                <TfiReload />
+              )}
               Aktualisieren
             </Button>
 
