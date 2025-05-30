@@ -2,16 +2,24 @@
 
 "use client";
 
-import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import Button from "@/common/components/Button";
-import { Link } from "@/common/components/Link";
-import { formatDate } from "@/common/utils/formatDate";
+import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
+import { Tooltip } from "@/common/components/Tooltip";
 import clsx from "clsx";
-import { useState, useTransition, type MouseEventHandler } from "react";
-import { FaExternalLinkAlt, FaSpinner } from "react-icons/fa";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+  type ChangeEventHandler,
+  type MouseEventHandler,
+} from "react";
+import { FaInfoCircle, FaSpinner } from "react-icons/fa";
 import { FaFileArrowUp } from "react-icons/fa6";
+import { Entry, type IEntry } from "./Entry";
 
-const gridTemplateColumns = "144px 1fr 1fr 1fr 1fr 1fr";
+export const gridTemplateColumns = "144px 1fr 1fr 1fr 1fr 1fr";
 
 interface Props {
   readonly className?: string;
@@ -19,16 +27,110 @@ interface Props {
 
 export const LogAnalyzer = ({ className }: Props) => {
   const [isPending, startTransition] = useTransition();
-  const [entries, setEntries] = useState<
-    {
-      isoDate: Date;
-      target: string;
-      zone: string;
-      killer: string;
-      weapon: string;
-      damageType: string;
-    }[]
-  >([]);
+  const [entries, setEntries] = useState<Map<number, IEntry>>(new Map());
+  const [directoryHandle, setDirectoryHandle] =
+    useState<FileSystemDirectoryHandle | null>(null);
+  const [isLiveModeEnabled, setIsLiveModeEnabled] = useState(false);
+  const liveModeIntervalRef = useRef<number | null>(null);
+
+  const parseLogs = useCallback(
+    (isNew = false) => {
+      if (!directoryHandle) return;
+
+      startTransition(async () => {
+        async function* getFilesRecursively(
+          entry: FileSystemFileHandle | FileSystemDirectoryHandle,
+        ): AsyncGenerator<File | null> {
+          if (entry.kind === "file") {
+            const file = await entry.getFile();
+            if (file) yield file;
+          } else if (entry.kind === "directory") {
+            // TODO: Ignore subdirectories
+            for await (const handle of entry.values()) {
+              yield* getFilesRecursively(handle);
+            }
+          }
+        }
+
+        const files = [];
+
+        for await (const fileHandle of getFilesRecursively(directoryHandle)) {
+          if (!fileHandle) continue;
+          if (!fileHandle.name.endsWith(".log")) continue;
+          files.push(fileHandle);
+        }
+
+        // <2025-05-27T15:34:52.141Z> [Notice] <Actor Death> CActor::Kill: 'PU_Human-NineTails-Pilot-Male-Light_01_3864128940772' [3864128940772] in zone 'MISC_Prospector_PU_AI_NT_NonLethal_3864128940380' killed by 'ind3x' [202028778295] using 'KLWE_LaserRepeater_S5_3657139981503' [Class unknown] with damage type 'VehicleDestruction' from direction x: 0.000000, y: 0.000000, z: 0.000000 [Team_ActorTech][Actor]
+        const regex =
+          /^<(?<isoDate>[\d\-T:.Z]+)>(?:.+)CActor::Kill(?:.+)'(?<target>.*)'(?:.+)'(?<zone>.*)'(?:.+)'(?<killer>.*)'(?:.+)'(?<weapon>.*)'(?:.+)'(?<damageType>.*)'.+$/gm;
+
+        const cutoffDateEnd = new Date();
+        cutoffDateEnd.setHours(23, 59, 59, 999);
+        const cutoffDateStart = new Date(cutoffDateEnd);
+        cutoffDateStart.setDate(cutoffDateStart.getDate() - 7); // 7 days ago
+        cutoffDateStart.setHours(0, 0, 0, 0);
+
+        const slicedFiles = files.filter((file) => {
+          const lastModified = new Date(file.lastModified);
+
+          return (
+            lastModified >= cutoffDateStart && lastModified <= cutoffDateEnd
+          );
+        });
+
+        const fileContents = await Promise.all(
+          slicedFiles.map((file) => file.text()),
+        );
+
+        setEntries((previousEntries) => {
+          const newEntries = new Map<number, IEntry>(previousEntries);
+
+          for (const fileContent of fileContents) {
+            const matches = fileContent.matchAll(regex);
+
+            for (const match of matches) {
+              if (!match.groups) continue;
+
+              const { isoDate, target, zone, killer, weapon, damageType } =
+                match.groups;
+              const date = new Date(isoDate);
+
+              if (newEntries.has(date.getTime())) continue;
+
+              newEntries.set(date.getTime(), {
+                isoDate: date,
+                target,
+                zone,
+                killer,
+                weapon,
+                damageType,
+                isNew,
+              });
+            }
+          }
+
+          return newEntries;
+        });
+      });
+    },
+    [directoryHandle],
+  );
+
+  useEffect(() => {
+    parseLogs();
+
+    if (isLiveModeEnabled) {
+      liveModeIntervalRef.current = window.setInterval(() => {
+        parseLogs(true);
+      }, 10_000);
+
+      return () => {
+        if (liveModeIntervalRef.current) {
+          window.clearInterval(liveModeIntervalRef.current);
+        }
+      };
+    }
+  }, [parseLogs, isLiveModeEnabled]);
 
   const handleFileSelect: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault();
@@ -37,82 +139,21 @@ export const LogAnalyzer = ({ className }: Props) => {
       .showDirectoryPicker()
       .then((directoryHandle) => {
         if (!directoryHandle) return;
-
-        startTransition(async () => {
-          async function* getFilesRecursively(
-            entry: FileSystemFileHandle | FileSystemDirectoryHandle,
-          ): AsyncGenerator<File | null> {
-            if (entry.kind === "file") {
-              const file = await entry.getFile();
-              if (file) yield file;
-            } else if (entry.kind === "directory") {
-              // TODO: Ignore subdirectories
-              for await (const handle of entry.values()) {
-                yield* getFilesRecursively(handle);
-              }
-            }
-          }
-
-          const files = [];
-
-          for await (const fileHandle of getFilesRecursively(directoryHandle)) {
-            if (!fileHandle) continue;
-            if (!fileHandle.name.endsWith(".log")) continue;
-            files.push(fileHandle);
-          }
-
-          // <2025-05-27T15:34:52.141Z> [Notice] <Actor Death> CActor::Kill: 'PU_Human-NineTails-Pilot-Male-Light_01_3864128940772' [3864128940772] in zone 'MISC_Prospector_PU_AI_NT_NonLethal_3864128940380' killed by 'ind3x' [202028778295] using 'KLWE_LaserRepeater_S5_3657139981503' [Class unknown] with damage type 'VehicleDestruction' from direction x: 0.000000, y: 0.000000, z: 0.000000 [Team_ActorTech][Actor]
-          const regex =
-            /^<(?<isoDate>[\d\-T:.Z]+)>(?:.+)CActor::Kill(?:.+)'(?<target>.*)'(?:.+)'(?<zone>.*)'(?:.+)'(?<killer>.*)'(?:.+)'(?<weapon>.*)'(?:.+)'(?<damageType>.*)'.+$/gm;
-
-          const cutoffDateEnd = new Date();
-          cutoffDateEnd.setHours(23, 59, 59, 999);
-          const cutoffDateStart = new Date(cutoffDateEnd);
-          cutoffDateStart.setDate(cutoffDateStart.getDate() - 7); // 7 days ago
-          cutoffDateStart.setHours(0, 0, 0, 0);
-
-          const slicedFiles = files.filter((file) => {
-            const lastModified = new Date(file.lastModified);
-
-            return (
-              lastModified >= cutoffDateStart && lastModified <= cutoffDateEnd
-            );
-          });
-
-          const sortedFiles = slicedFiles.sort(
-            (a, b) => b.lastModified - a.lastModified,
-          );
-
-          const newEntries = [];
-
-          for (const file of sortedFiles) {
-            const fileContent = await file.text();
-
-            const matches = fileContent.matchAll(regex);
-
-            for (const match of matches) {
-              if (!match.groups) continue;
-
-              const { isoDate, target, zone, killer, weapon, damageType } =
-                match.groups;
-
-              newEntries.push({
-                isoDate: new Date(isoDate),
-                target,
-                zone,
-                killer,
-                weapon,
-                damageType,
-              });
-            }
-          }
-
-          setEntries(newEntries);
-        });
+        setDirectoryHandle(directoryHandle);
       })
       .catch((error) => {
         console.error(error);
       });
+  };
+
+  const handleManualRefresh = () => {
+    parseLogs(true);
+  };
+
+  const handleChangeLiveMode: ChangeEventHandler<HTMLInputElement> = (
+    event,
+  ) => {
+    setIsLiveModeEnabled(event.target.checked);
   };
 
   return (
@@ -136,64 +177,73 @@ export const LogAnalyzer = ({ className }: Props) => {
         </Button>
       </div>
 
-      {entries.length > 0 ? (
-        <div className="mt-4 p-8 background-secondary rounded-primary overflow-auto">
-          <table className="w-full min-w-[1200px]">
-            <thead>
-              <tr
-                className="grid items-center gap-4 text-left text-neutral-500"
-                style={{
-                  gridTemplateColumns,
-                }}
-              >
-                <th className="whitespace-nowrap">Datum</th>
-                <th className="whitespace-nowrap">Ziel</th>
-                <th className="whitespace-nowrap">Killer</th>
-                <th className="whitespace-nowrap">Waffe</th>
-                <th className="whitespace-nowrap">Schadensart</th>
-                <th className="whitespace-nowrap">Ort</th>
-              </tr>
-            </thead>
+      {entries.size > 0 ? (
+        <>
+          <div className="mt-4 background-secondary rounded-primary px-8 py-4 flex items-center gap-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleManualRefresh}
+            >
+              Aktualisieren
+            </Button>
 
-            <tbody>
-              {entries
-                .toSorted((a, b) => b.isoDate.getTime() - a.isoDate.getTime())
-                .map((entry, index) => (
-                  <tr
-                    key={index}
-                    className="grid gap-4 h-14 -mx-2 first:mt-2"
-                    style={{
-                      gridTemplateColumns,
-                    }}
-                  >
-                    <td className="p-2 flex items-center">
-                      {formatDate(entry.isoDate)}
-                    </td>
+            <YesNoCheckbox
+              yesLabel={
+                <span className="flex items-center gap-2">
+                  Automatisch aktualisieren
+                  <Tooltip triggerChildren={<FaInfoCircle />}>
+                    <p>Aktualisiert die Logs alle 10 Sekunden.</p>
+                    <p className="mt-1">
+                      Neue Einträge werden für 30 Sekunden hervorgehoben.
+                    </p>
+                  </Tooltip>
+                </span>
+              }
+              noLabel={
+                <span className="flex items-center gap-2">
+                  Automatisch aktualisieren
+                  <Tooltip triggerChildren={<FaInfoCircle />}>
+                    <p>Aktualisiert die Logs alle 10 Sekunden.</p>
+                    <p className="mt-1">
+                      Neue Einträge werden für 30 Sekunden hervorgehoben.
+                    </p>
+                  </Tooltip>
+                </span>
+              }
+              labelClassName="w-auto"
+              onChange={handleChangeLiveMode}
+            />
+          </div>
 
-                    <td className="truncate">
-                      <RSILink handle={entry.target} />
-                    </td>
+          <div className="mt-4 p-8 background-secondary rounded-primary overflow-auto">
+            <table className="w-full min-w-[1200px]">
+              <thead>
+                <tr
+                  className="grid items-center gap-4 text-left text-neutral-500"
+                  style={{
+                    gridTemplateColumns,
+                  }}
+                >
+                  <th className="whitespace-nowrap">Datum</th>
+                  <th className="whitespace-nowrap">Ziel</th>
+                  <th className="whitespace-nowrap">Killer</th>
+                  <th className="whitespace-nowrap">Waffe</th>
+                  <th className="whitespace-nowrap">Schadensart</th>
+                  <th className="whitespace-nowrap">Ort</th>
+                </tr>
+              </thead>
 
-                    <td className="truncate">
-                      <RSILink handle={entry.killer} />
-                    </td>
-
-                    <td className="p-2 flex items-center truncate">
-                      <span className="truncate">{entry.weapon}</span>
-                    </td>
-
-                    <td className="p-2 flex items-center truncate">
-                      <span className="truncate">{entry.damageType}</span>
-                    </td>
-
-                    <td className="p-2 flex items-center truncate">
-                      <span className="truncate">{entry.zone}</span>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+              <tbody>
+                {Array.from(entries.values())
+                  .toSorted((a, b) => b.isoDate.getTime() - a.isoDate.getTime())
+                  .map((entry) => (
+                    <Entry key={entry.isoDate.getTime()} entry={entry} />
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : (
         <div className="mt-4 p-8 background-secondary rounded-primary overflow-auto flex flex-col gap-2">
           <strong className="block font-bold">
@@ -209,42 +259,5 @@ export const LogAnalyzer = ({ className }: Props) => {
         </div>
       )}
     </div>
-  );
-};
-
-interface RSILinkProps {
-  readonly handle: string;
-}
-
-const RSILink = ({ handle }: RSILinkProps) => {
-  const authentication = useAuthentication();
-
-  if (handle.includes("_"))
-    return (
-      <span className="text-neutral-500 flex items-center h-full p-2">
-        <span className="truncate">{handle}</span>
-      </span>
-    );
-
-  const isMe =
-    authentication && authentication.session.entity?.handle === handle;
-
-  if (isMe)
-    return (
-      <span className="text-me flex items-center h-full p-2">
-        <span className="truncate">{handle}</span>
-      </span>
-    );
-
-  return (
-    <Link
-      href={`https://robertsspaceindustries.com/citizens/${handle}`}
-      className="hover:background-secondary focus-visible:background-secondary rounded-secondary flex items-center gap-2 h-full p-2 text-rsi-blue-200"
-      rel="noreferrer"
-      target="_blank"
-    >
-      <span className="truncate">{handle}</span>
-      <FaExternalLinkAlt className="text-xs opacity-50 flex-none" />
-    </Link>
   );
 };

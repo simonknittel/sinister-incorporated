@@ -1,0 +1,20 @@
+.Row {
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  transition: border-color 30s;
+}
+
+.New {
+  opacity: 0;
+  transition: opacity 30s;
+}
+
+@starting-style {
+  .Row {
+    border-color: #f59e0b;
+  }
+
+  .New {
+    opacity: 1;
+  }
+}

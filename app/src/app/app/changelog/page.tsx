@@ -47,6 +47,12 @@ export default async function Page() {
                 Die Handles im Log Analyzer verlinken nun zu den Profilen auf
                 der Seite von Roberts Space Industries.
               </p>
+
+              <p>
+                Es kann nun ein Interval aktiviert werden, durch welchen die
+                Logs alle 10 Sekunden aktualisiert werden. Neue Einträge werden
+                für 30 Sekunden hervorgehoben.
+              </p>
             </DayItem>
           ) : (
             <RedactedDayItem />
