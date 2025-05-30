@@ -15,8 +15,11 @@ import image20250322RequiredVariantsTooltip from "@/changelog/assets/2025-03-22-
 import image20250323LineupDragNDrop from "@/changelog/assets/2025-03-23-lineup-dragndrop.png";
 import image20250329CitizenHandle from "@/changelog/assets/2025-03-29-citizen-handle.png";
 import image20250516CornerstoneImageBrowser from "@/changelog/assets/2025-05-16-cornerstone-image-browser.png";
+import image20250529LogAnalyzer from "@/changelog/assets/2025-05-29-log-analyzer.png";
 import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
+import { random } from "lodash";
+import { LoremIpsum } from "lorem-ipsum";
 import { type Metadata } from "next";
 import Image from "next/image";
 import { type ReactNode } from "react";
@@ -27,7 +30,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await authenticatePage("/app/changelog");
+  const authentication = await authenticatePage("/app/changelog");
+  const showLogAnalyzer = await authentication.authorize("logAnalyzer", "read");
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
@@ -36,6 +40,19 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="30. Mai 2025">
+          {showLogAnalyzer ? (
+            <DayItem heading="Log Analyzer">
+              <p>
+                Die Handles im Log Analyzer verlinken nun zu den Profilen auf
+                der Seite von Roberts Space Industries.
+              </p>
+            </DayItem>
+          ) : (
+            <RedactedDayItem />
+          )}
+        </Day>
+
         <Day heading="29. Mai 2025">
           <DayItem heading="Events">
             <p>
@@ -44,6 +61,32 @@ export default async function Page() {
               Teilnehmen geklickt hat.
             </p>
           </DayItem>
+
+          {showLogAnalyzer ? (
+            <DayItem heading="Log Analyzer">
+              <p>
+                Unter Tools gibt es nun den{" "}
+                <Link
+                  href="/app/tools/log-analyzer"
+                  className="text-interaction-500 hover:text-interaction-300 focus-visible:text-interaction-300"
+                >
+                  Log Analyzer
+                </Link>
+                . Dieser wertet die Game Logs von Star Citizen aus um nach Kills
+                zu filtern.
+              </p>
+
+              <Image
+                quality={100}
+                src={image20250529LogAnalyzer}
+                alt=""
+                loading="lazy"
+                className="self-center"
+              />
+            </DayItem>
+          ) : (
+            <RedactedDayItem />
+          )}
         </Day>
 
         <Day heading="25. Mai 2025">
@@ -986,6 +1029,41 @@ const DayItem = ({ heading, children }: DayItemProps) => {
       <strong className="block font-bold">{heading}</strong>
 
       <div className="mt-1 flex flex-col gap-2">{children}</div>
+    </li>
+  );
+};
+
+const lorem = new LoremIpsum({
+  sentencesPerParagraph: {
+    max: 3,
+    min: 1,
+  },
+  wordsPerSentence: {
+    max: 16,
+    min: 4,
+  },
+});
+
+const RedactedDayItem = () => {
+  return (
+    <li className="border-l-2 border-neutral-800/80 pl-5 relative py-3 pr-3">
+      <strong className="block font-bold">Lorem ipsum</strong>
+
+      <div className="mt-1 flex flex-col gap-2">
+        <p>{lorem.generateParagraphs(1)}</p>
+      </div>
+
+      <div className="absolute inset-0 flex items-center justify-center backdrop-blur">
+        <p
+          className="text-sinister-red-500 font-bold border-2 border-sinister-red-500 rounded px-2 py-1 text-lg relative"
+          style={{
+            transform: `rotate(${random(-15, 15)}deg)`,
+            left: `${random(-100, 100)}px`,
+          }}
+        >
+          Redacted
+        </p>
+      </div>
     </li>
   );
 };
