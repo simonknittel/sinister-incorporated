@@ -43,8 +43,16 @@ export const LogAnalyzer = ({ className }: Props) => {
           entry: FileSystemFileHandle | FileSystemDirectoryHandle,
         ): AsyncGenerator<File | null> {
           if (entry.kind === "file") {
-            const file = await entry.getFile();
-            if (file) yield file;
+            try {
+              const file = await entry.getFile();
+              if (file) yield file;
+            } catch (error) {
+              console.error(
+                `[Log Analyzer] Error getting file: ${entry.name}`,
+                error,
+              );
+              yield null;
+            }
           } else if (entry.kind === "directory") {
             // TODO: Ignore subdirectories
             for await (const handle of entry.values()) {
@@ -145,7 +153,7 @@ export const LogAnalyzer = ({ className }: Props) => {
         setDirectoryHandle(directoryHandle);
       })
       .catch((error) => {
-        console.error(error);
+        console.error("[Log Analyzer] Error selecting directory:", error);
       });
   };
 
