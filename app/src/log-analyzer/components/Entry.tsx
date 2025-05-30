@@ -58,15 +58,21 @@ export const Entry = ({ className, entry }: Props) => {
       </td>
 
       <td className="p-2 flex items-center truncate">
-        <span className="truncate">{entry.weapon}</span>
+        <span className="truncate" title={entry.weapon}>
+          {entry.weapon}
+        </span>
       </td>
 
       <td className="p-2 flex items-center truncate">
-        <span className="truncate">{entry.damageType}</span>
+        <span className="truncate" title={entry.damageType}>
+          {entry.damageType}
+        </span>
       </td>
 
       <td className="p-2 flex items-center truncate">
-        <span className="truncate">{entry.zone}</span>
+        <span className="truncate" title={entry.zone}>
+          {entry.zone}
+        </span>
       </td>
     </tr>
   );
@@ -82,7 +88,9 @@ const RSILink = ({ handle }: RSILinkProps) => {
   if (handle.includes("_"))
     return (
       <span className="text-neutral-500 flex items-center h-full p-2">
-        <span className="truncate">{handle}</span>
+        <span className="truncate" title={handle}>
+          {handle}
+        </span>
       </span>
     );
 
@@ -92,7 +100,9 @@ const RSILink = ({ handle }: RSILinkProps) => {
   if (isMe)
     return (
       <span className="text-me flex items-center h-full p-2">
-        <span className="truncate">{handle}</span>
+        <span className="truncate" title={handle}>
+          {handle}
+        </span>
       </span>
     );
 
@@ -102,6 +112,7 @@ const RSILink = ({ handle }: RSILinkProps) => {
       className="hover:background-secondary focus-visible:background-secondary rounded-secondary flex items-center gap-2 h-full p-2 text-rsi-blue-200"
       rel="noreferrer"
       target="_blank"
+      title={handle}
     >
       <span className="truncate">{handle}</span>
       <FaExternalLinkAlt className="text-xs opacity-50 flex-none" />
