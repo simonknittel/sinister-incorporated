@@ -17,6 +17,7 @@ import {
 } from "react";
 import { FaInfoCircle, FaSpinner } from "react-icons/fa";
 import { FaFileArrowUp } from "react-icons/fa6";
+import { TfiReload } from "react-icons/tfi";
 import { Entry, type IEntry } from "./Entry";
 
 export const gridTemplateColumns = "144px 1fr 1fr 1fr 1fr 1fr";
@@ -27,7 +28,7 @@ interface Props {
 
 export const LogAnalyzer = ({ className }: Props) => {
   const [isPending, startTransition] = useTransition();
-  const [entries, setEntries] = useState<Map<number, IEntry>>(new Map());
+  const [entries, setEntries] = useState<Map<string, IEntry>>(new Map());
   const [directoryHandle, setDirectoryHandle] =
     useState<FileSystemDirectoryHandle | null>(null);
   const [isLiveModeEnabled, setIsLiveModeEnabled] = useState(false);
@@ -42,8 +43,16 @@ export const LogAnalyzer = ({ className }: Props) => {
           entry: FileSystemFileHandle | FileSystemDirectoryHandle,
         ): AsyncGenerator<File | null> {
           if (entry.kind === "file") {
-            const file = await entry.getFile();
-            if (file) yield file;
+            try {
+              const file = await entry.getFile();
+              if (file) yield file;
+            } catch (error) {
+              console.error(
+                `[Log Analyzer] Error getting file: ${entry.name}`,
+                error,
+              );
+              yield null;
+            }
           } else if (entry.kind === "directory") {
             // TODO: Ignore subdirectories
             for await (const handle of entry.values()) {
@@ -83,7 +92,7 @@ export const LogAnalyzer = ({ className }: Props) => {
         );
 
         setEntries((previousEntries) => {
-          const newEntries = new Map<number, IEntry>(previousEntries);
+          const newEntries = new Map<string, IEntry>(previousEntries);
 
           for (const fileContent of fileContents) {
             const matches = fileContent.matchAll(regex);
@@ -94,10 +103,12 @@ export const LogAnalyzer = ({ className }: Props) => {
               const { isoDate, target, zone, killer, weapon, damageType } =
                 match.groups;
               const date = new Date(isoDate);
+              const key = `${date.getTime()}_${target}`;
 
-              if (newEntries.has(date.getTime())) continue;
+              if (newEntries.has(key)) continue;
 
-              newEntries.set(date.getTime(), {
+              newEntries.set(key, {
+                key,
                 isoDate: date,
                 target,
                 zone,
@@ -142,7 +153,7 @@ export const LogAnalyzer = ({ className }: Props) => {
         setDirectoryHandle(directoryHandle);
       })
       .catch((error) => {
-        console.error(error);
+        console.error("[Log Analyzer] Error selecting directory:", error);
       });
   };
 
@@ -183,8 +194,14 @@ export const LogAnalyzer = ({ className }: Props) => {
             <Button
               type="button"
               variant="secondary"
+              disabled={isPending}
               onClick={handleManualRefresh}
             >
+              {isPending ? (
+                <FaSpinner className="animate-spin" />
+              ) : (
+                <TfiReload />
+              )}
               Aktualisieren
             </Button>
 
@@ -238,7 +255,7 @@ export const LogAnalyzer = ({ className }: Props) => {
                 {Array.from(entries.values())
                   .toSorted((a, b) => b.isoDate.getTime() - a.isoDate.getTime())
                   .map((entry) => (
-                    <Entry key={entry.isoDate.getTime()} entry={entry} />
+                    <Entry key={entry.key} entry={entry} />
                   ))}
               </tbody>
             </table>

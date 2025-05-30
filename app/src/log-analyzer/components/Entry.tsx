@@ -7,6 +7,7 @@ import styles from "./Entry.module.css";
 import { gridTemplateColumns } from "./LogAnalyzer";
 
 export interface IEntry {
+  readonly key: string;
   readonly isoDate: Date;
   readonly target: string;
   readonly zone: string;
