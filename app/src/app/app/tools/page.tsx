@@ -74,7 +74,7 @@ export default async function Page() {
                 href="/app/tools/log-analyzer"
                 className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 mt-2 block"
               >
-                Zum Log Analyzer
+                Öffnen
               </Link>
             </div>
           </article>
