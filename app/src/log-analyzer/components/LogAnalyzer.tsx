@@ -2,14 +2,16 @@
 
 "use client";
 
+import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import Button from "@/common/components/Button";
+import { Link } from "@/common/components/Link";
 import { formatDate } from "@/common/utils/formatDate";
 import clsx from "clsx";
 import { useState, useTransition, type MouseEventHandler } from "react";
-import { FaSpinner } from "react-icons/fa";
+import { FaExternalLinkAlt, FaSpinner } from "react-icons/fa";
 import { FaFileArrowUp } from "react-icons/fa6";
 
-const gridTemplateColumns = "128px 1fr 1fr 1fr 1fr 1fr";
+const gridTemplateColumns = "144px 1fr 1fr 1fr 1fr 1fr";
 
 interface Props {
   readonly className?: string;
@@ -81,7 +83,7 @@ export const LogAnalyzer = ({ className }: Props) => {
             (a, b) => b.lastModified - a.lastModified,
           );
 
-          setEntries([]);
+          const newEntries = [];
 
           for (const file of sortedFiles) {
             const fileContent = await file.text();
@@ -94,19 +96,18 @@ export const LogAnalyzer = ({ className }: Props) => {
               const { isoDate, target, zone, killer, weapon, damageType } =
                 match.groups;
 
-              setEntries((prevEntries) => [
-                ...prevEntries,
-                {
-                  isoDate: new Date(isoDate),
-                  target,
-                  zone,
-                  killer,
-                  weapon,
-                  damageType,
-                },
-              ]);
+              newEntries.push({
+                isoDate: new Date(isoDate),
+                target,
+                zone,
+                killer,
+                weapon,
+                damageType,
+              });
             }
           }
+
+          setEntries(newEntries);
         });
       })
       .catch((error) => {
@@ -160,17 +161,34 @@ export const LogAnalyzer = ({ className }: Props) => {
                 .map((entry, index) => (
                   <tr
                     key={index}
-                    className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
+                    className="grid gap-4 h-14 -mx-2 first:mt-2"
                     style={{
                       gridTemplateColumns,
                     }}
                   >
-                    <td>{formatDate(entry.isoDate)}</td>
-                    <td className="truncate">{entry.target}</td>
-                    <td className="truncate">{entry.killer}</td>
-                    <td className="truncate">{entry.weapon}</td>
-                    <td className="truncate">{entry.damageType}</td>
-                    <td className="truncate">{entry.zone}</td>
+                    <td className="p-2 flex items-center">
+                      {formatDate(entry.isoDate)}
+                    </td>
+
+                    <td className="truncate">
+                      <RSILink handle={entry.target} />
+                    </td>
+
+                    <td className="truncate">
+                      <RSILink handle={entry.killer} />
+                    </td>
+
+                    <td className="p-2 flex items-center truncate">
+                      <span className="truncate">{entry.weapon}</span>
+                    </td>
+
+                    <td className="p-2 flex items-center truncate">
+                      <span className="truncate">{entry.damageType}</span>
+                    </td>
+
+                    <td className="p-2 flex items-center truncate">
+                      <span className="truncate">{entry.zone}</span>
+                    </td>
                   </tr>
                 ))}
             </tbody>
@@ -191,5 +209,41 @@ export const LogAnalyzer = ({ className }: Props) => {
         </div>
       )}
     </div>
+  );
+};
+
+interface RSILinkProps {
+  readonly handle: string;
+}
+
+const RSILink = ({ handle }: RSILinkProps) => {
+  const authentication = useAuthentication();
+
+  if (handle.includes("_"))
+    return (
+      <span className="text-neutral-500 flex items-center h-full p-2">
+        <span className="truncate">{handle}</span>
+      </span>
+    );
+
+  const isMe =
+    authentication && authentication.session.entity?.handle === handle;
+
+  return (
+    <Link
+      href={`https://robertsspaceindustries.com/citizens/${handle}`}
+      className={clsx(
+        "hover:background-secondary focus-visible:background-secondary rounded-secondary flex items-center gap-2 h-full p-2",
+        {
+          "text-rsi-blue-200": !isMe,
+          "text-me": isMe,
+        },
+      )}
+      rel="noreferrer"
+      target={isMe ? undefined : "_blank"}
+    >
+      <span className="truncate">{handle}</span>
+      {!isMe && <FaExternalLinkAlt className="text-xs opacity-50 flex-none" />}
+    </Link>
   );
 };
