@@ -27,7 +27,7 @@ interface Props {
 
 export const LogAnalyzer = ({ className }: Props) => {
   const [isPending, startTransition] = useTransition();
-  const [entries, setEntries] = useState<Map<number, IEntry>>(new Map());
+  const [entries, setEntries] = useState<Map<string, IEntry>>(new Map());
   const [directoryHandle, setDirectoryHandle] =
     useState<FileSystemDirectoryHandle | null>(null);
   const [isLiveModeEnabled, setIsLiveModeEnabled] = useState(false);
@@ -83,7 +83,7 @@ export const LogAnalyzer = ({ className }: Props) => {
         );
 
         setEntries((previousEntries) => {
-          const newEntries = new Map<number, IEntry>(previousEntries);
+          const newEntries = new Map<string, IEntry>(previousEntries);
 
           for (const fileContent of fileContents) {
             const matches = fileContent.matchAll(regex);
@@ -94,10 +94,12 @@ export const LogAnalyzer = ({ className }: Props) => {
               const { isoDate, target, zone, killer, weapon, damageType } =
                 match.groups;
               const date = new Date(isoDate);
+              const key = `${date.getTime()}_${target}`;
 
-              if (newEntries.has(date.getTime())) continue;
+              if (newEntries.has(key)) continue;
 
-              newEntries.set(date.getTime(), {
+              newEntries.set(key, {
+                key,
                 isoDate: date,
                 target,
                 zone,
@@ -238,7 +240,7 @@ export const LogAnalyzer = ({ className }: Props) => {
                 {Array.from(entries.values())
                   .toSorted((a, b) => b.isoDate.getTime() - a.isoDate.getTime())
                   .map((entry) => (
-                    <Entry key={entry.isoDate.getTime()} entry={entry} />
+                    <Entry key={entry.key} entry={entry} />
                   ))}
               </tbody>
             </table>
