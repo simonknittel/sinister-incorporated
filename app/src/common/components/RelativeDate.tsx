@@ -1,16 +1,25 @@
 "use client";
 
 import { useFormatter, useNow } from "next-intl";
+import { formatDate } from "../utils/formatDate";
 
 interface Props {
-  readonly date: Date | string;
+  readonly date: Date;
+  readonly updateInterval?: number;
 }
 
-export const RelativeDate = ({ date }: Props) => {
+export const RelativeDate = ({ date, updateInterval = 60_000 }: Props) => {
   const now = useNow({
-    updateInterval: 60_000,
+    updateInterval,
   });
   const format = useFormatter();
 
-  return format.relativeTime(new Date(date), now);
+  return (
+    <time
+      dateTime={new Date(date).toISOString()}
+      title={formatDate(date) || undefined}
+    >
+      {format.relativeTime(new Date(date), now)}
+    </time>
+  );
 };

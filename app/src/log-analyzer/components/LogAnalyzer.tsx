@@ -29,16 +29,15 @@ interface Props {
 export const LogAnalyzer = ({ className }: Props) => {
   const [isPending, startTransition] = useTransition();
   const [entries, setEntries] = useState<Map<string, IEntry>>(new Map());
-  const [directoryHandle, setDirectoryHandle] =
-    useState<FileSystemDirectoryHandle | null>(null);
+  const directoryHandleRef = useRef<FileSystemDirectoryHandle | null>(null);
   const [isLiveModeEnabled, setIsLiveModeEnabled] = useState(false);
   const liveModeIntervalRef = useRef<number | null>(null);
 
   const parseLogs = useCallback(
     (isNew = false) => {
-      if (!directoryHandle) return;
-
       startTransition(async () => {
+        if (!directoryHandleRef.current) return;
+
         async function* getFilesRecursively(
           entry: FileSystemFileHandle | FileSystemDirectoryHandle,
         ): AsyncGenerator<File | null> {
@@ -63,7 +62,9 @@ export const LogAnalyzer = ({ className }: Props) => {
 
         const files = [];
 
-        for await (const fileHandle of getFilesRecursively(directoryHandle)) {
+        for await (const fileHandle of getFilesRecursively(
+          directoryHandleRef.current,
+        )) {
           if (!fileHandle) continue;
           if (!fileHandle.name.endsWith(".log")) continue;
           files.push(fileHandle);
@@ -124,24 +125,16 @@ export const LogAnalyzer = ({ className }: Props) => {
         });
       });
     },
-    [directoryHandle],
+    [directoryHandleRef],
   );
 
   useEffect(() => {
-    parseLogs();
-
-    if (isLiveModeEnabled) {
-      liveModeIntervalRef.current = window.setInterval(() => {
-        parseLogs(true);
-      }, 10_000);
-
-      return () => {
-        if (liveModeIntervalRef.current) {
-          window.clearInterval(liveModeIntervalRef.current);
-        }
-      };
-    }
-  }, [parseLogs, isLiveModeEnabled]);
+    return () => {
+      if (liveModeIntervalRef.current) {
+        window.clearInterval(liveModeIntervalRef.current);
+      }
+    };
+  }, []);
 
   const handleFileSelect: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault();
@@ -150,7 +143,8 @@ export const LogAnalyzer = ({ className }: Props) => {
       .showDirectoryPicker()
       .then((directoryHandle) => {
         if (!directoryHandle) return;
-        setDirectoryHandle(directoryHandle);
+        directoryHandleRef.current = directoryHandle;
+        parseLogs();
       })
       .catch((error) => {
         console.error("[Log Analyzer] Error selecting directory:", error);
@@ -164,7 +158,20 @@ export const LogAnalyzer = ({ className }: Props) => {
   const handleChangeLiveMode: ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
-    setIsLiveModeEnabled(event.target.checked);
+    if (event.target.checked) {
+      liveModeIntervalRef.current = window.setInterval(() => {
+        parseLogs(true);
+      }, 10_000);
+
+      setIsLiveModeEnabled(true);
+    } else {
+      if (liveModeIntervalRef.current) {
+        window.clearInterval(liveModeIntervalRef.current);
+        liveModeIntervalRef.current = null;
+      }
+
+      setIsLiveModeEnabled(false);
+    }
   };
 
   return (
@@ -212,7 +219,7 @@ export const LogAnalyzer = ({ className }: Props) => {
                   <Tooltip triggerChildren={<FaInfoCircle />}>
                     <p>Aktualisiert die Logs alle 10 Sekunden.</p>
                     <p className="mt-1">
-                      Neue Einträge werden für 30 Sekunden hervorgehoben.
+                      Neue Einträge werden für 60 Sekunden hervorgehoben.
                     </p>
                   </Tooltip>
                 </span>
@@ -229,6 +236,7 @@ export const LogAnalyzer = ({ className }: Props) => {
                 </span>
               }
               labelClassName="w-auto"
+              checked={isLiveModeEnabled}
               onChange={handleChangeLiveMode}
             />
           </div>
@@ -263,10 +271,10 @@ export const LogAnalyzer = ({ className }: Props) => {
         </>
       ) : (
         <div className="mt-4 p-8 background-secondary rounded-primary overflow-auto flex flex-col gap-2">
-          <strong className="block font-bold">
-            Wähle zuerst den Ordner mit deiner Star Citizen-Installation aus.
-          </strong>
+          <p className="text-neutral-500">Anleitung</p>
+          <p>Wähle den Ordner mit deiner Star Citizen-Installation aus.</p>
 
+          <p className="text-neutral-500 mt-4">Info</p>
           <p>
             Keine Dateien werden auf den Server hochgeladen. Die Logs werden
             ausschließlich client-seitig im Browser ausgewertet.
@@ -274,7 +282,14 @@ export const LogAnalyzer = ({ className }: Props) => {
 
           <p>Es werden die Logs der letzten 7 Tage ausgewertet.</p>
 
-          <p>Aktuell nur in Google Chrome und Microsoft Edge verfügbar.</p>
+          <p className="text-neutral-500 mt-4">Voraussetzungen</p>
+          <p>
+            Aktuell werden nur in Google Chrome und Microsoft Edge unterstützt.
+          </p>
+          <p>
+            Die Star Citizen-Installation darf nicht unter{" "}
+            <span className="italic font-mono">C:\Program Files</span> liegen.
+          </p>
         </div>
       )}
     </div>

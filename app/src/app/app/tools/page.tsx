@@ -29,6 +29,7 @@ export default async function Page() {
             src={cornerstoneImageBrowserScreenshot}
             alt="Screenshot vom Cornerstone Image Browser"
             priority
+            className="aspect-video object-cover object-top"
           />
 
           <div className="p-4 lg:p-8">
@@ -60,6 +61,7 @@ export default async function Page() {
               src={logAnalyzerScreenshot}
               alt="Screenshot vom Log Analyzer"
               priority
+              className="aspect-video object-cover object-top"
             />
 
             <div className="p-4 lg:p-8">

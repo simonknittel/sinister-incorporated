@@ -1,7 +1,8 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Link } from "@/common/components/Link";
-import { formatDate } from "@/common/utils/formatDate";
+import { RelativeDate } from "@/common/components/RelativeDate";
 import clsx from "clsx";
+import { memo } from "react";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import styles from "./Entry.module.css";
 import { gridTemplateColumns } from "./LogAnalyzer";
@@ -22,61 +23,64 @@ interface Props {
   readonly entry: IEntry;
 }
 
-export const Entry = ({ className, entry }: Props) => {
-  return (
-    <tr
-      className={clsx(
-        "grid gap-4 h-14 -mx-2 first:mt-2",
-        { [styles.Row]: entry.isNew },
-        className,
-      )}
-      style={{
-        gridTemplateColumns,
-      }}
-    >
-      <td className="p-2 flex items-center relative">
-        {formatDate(entry.isoDate)}
-
-        {entry.isNew && (
-          <div
-            className={clsx(
-              "absolute left-0 top-0 bg-amber-500 text-black uppercase text-xs px-1 rounded-br-secondary",
-              styles.New,
-            )}
-          >
-            Neu
-          </div>
+export const Entry = memo(
+  function Entry({ className, entry }: Props) {
+    return (
+      <tr
+        className={clsx(
+          "grid gap-4 h-14 -mx-2 first:mt-2",
+          { [styles.Row]: entry.isNew },
+          className,
         )}
-      </td>
+        style={{
+          gridTemplateColumns,
+        }}
+      >
+        <td className="p-2 flex items-center relative">
+          <RelativeDate date={entry.isoDate} updateInterval={10_000} />
 
-      <td className="truncate">
-        <RSILink handle={entry.target} />
-      </td>
+          {entry.isNew && (
+            <div
+              className={clsx(
+                "absolute left-0 top-0 bg-amber-500 text-black uppercase text-xs px-1 rounded-br-secondary",
+                styles.New,
+              )}
+            >
+              Neu
+            </div>
+          )}
+        </td>
 
-      <td className="truncate">
-        <RSILink handle={entry.killer} />
-      </td>
+        <td className="truncate">
+          <RSILink handle={entry.target} />
+        </td>
 
-      <td className="p-2 flex items-center truncate">
-        <span className="truncate" title={entry.weapon}>
-          {entry.weapon}
-        </span>
-      </td>
+        <td className="truncate">
+          <RSILink handle={entry.killer} />
+        </td>
 
-      <td className="p-2 flex items-center truncate">
-        <span className="truncate" title={entry.damageType}>
-          {entry.damageType}
-        </span>
-      </td>
+        <td className="p-2 flex items-center truncate">
+          <span className="truncate" title={entry.weapon}>
+            {entry.weapon}
+          </span>
+        </td>
 
-      <td className="p-2 flex items-center truncate">
-        <span className="truncate" title={entry.zone}>
-          {entry.zone}
-        </span>
-      </td>
-    </tr>
-  );
-};
+        <td className="p-2 flex items-center truncate">
+          <span className="truncate" title={entry.damageType}>
+            {entry.damageType}
+          </span>
+        </td>
+
+        <td className="p-2 flex items-center truncate">
+          <span className="truncate" title={entry.zone}>
+            {entry.zone}
+          </span>
+        </td>
+      </tr>
+    );
+  },
+  (previousProps, nextProps) => previousProps.entry.key === nextProps.entry.key,
+);
 
 interface RSILinkProps {
   readonly handle: string;
