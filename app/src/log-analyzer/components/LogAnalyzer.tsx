@@ -165,10 +165,13 @@ export const LogAnalyzer = ({ className }: Props) => {
           existingDirectoryHandle: FileSystemDirectoryHandle | undefined,
         ) => {
           if (existingDirectoryHandle) {
-            await existingDirectoryHandle.requestPermission();
-            directoryHandleRef.current = existingDirectoryHandle;
-            parseLogs();
-            return;
+            const permissionState =
+              await existingDirectoryHandle.requestPermission();
+            if (permissionState === "granted") {
+              directoryHandleRef.current = existingDirectoryHandle;
+              parseLogs();
+              return;
+            }
           }
 
           const newDirectoryHandle = await window.showDirectoryPicker();
