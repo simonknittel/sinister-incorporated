@@ -7,6 +7,7 @@ import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import { Tooltip } from "@/common/components/Tooltip";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import clsx from "clsx";
+import { get, set } from "idb-keyval";
 import {
   useCallback,
   useEffect,
@@ -39,104 +40,99 @@ export const LogAnalyzer = ({ className }: Props) => {
     false,
   );
 
-  const parseLogs = useCallback(
-    (isNew = false) => {
-      startTransition(async () => {
-        if (!directoryHandleRef.current) return;
+  const parseLogs = useCallback((isNew = false) => {
+    startTransition(async () => {
+      if (!directoryHandleRef.current) return;
 
-        async function* getFilesRecursively(
-          entry: FileSystemFileHandle | FileSystemDirectoryHandle,
-        ): AsyncGenerator<File | null> {
-          if (entry.kind === "file") {
-            try {
-              const file = await entry.getFile();
-              if (file) yield file;
-            } catch (error) {
-              console.error(
-                `[Log Analyzer] Error getting file: ${entry.name}`,
-                error,
-              );
-              yield null;
-            }
-          } else if (entry.kind === "directory") {
-            // TODO: Ignore subdirectories
-            for await (const handle of entry.values()) {
-              yield* getFilesRecursively(handle);
-            }
+      async function* getFilesRecursively(
+        entry: FileSystemFileHandle | FileSystemDirectoryHandle,
+      ): AsyncGenerator<File | null> {
+        if (entry.kind === "file") {
+          try {
+            const file = await entry.getFile();
+            if (file) yield file;
+          } catch (error) {
+            console.error(
+              `[Log Analyzer] Error getting file: ${entry.name}`,
+              error,
+            );
+            yield null;
+          }
+        } else if (entry.kind === "directory") {
+          // TODO: Ignore subdirectories
+          for await (const handle of entry.values()) {
+            yield* getFilesRecursively(handle);
           }
         }
+      }
 
-        const files = [];
+      const files = [];
 
-        for await (const fileHandle of getFilesRecursively(
-          directoryHandleRef.current,
-        )) {
-          if (!fileHandle) continue;
-          if (!fileHandle.name.endsWith(".log")) continue;
-          files.push(fileHandle);
-        }
+      for await (const fileHandle of getFilesRecursively(
+        directoryHandleRef.current,
+      )) {
+        if (!fileHandle) continue;
+        if (!fileHandle.name.endsWith(".log")) continue;
+        files.push(fileHandle);
+      }
 
-        // <2025-05-27T15:34:52.141Z> [Notice] <Actor Death> CActor::Kill: 'PU_Human-NineTails-Pilot-Male-Light_01_3864128940772' [3864128940772] in zone 'MISC_Prospector_PU_AI_NT_NonLethal_3864128940380' killed by 'ind3x' [202028778295] using 'KLWE_LaserRepeater_S5_3657139981503' [Class unknown] with damage type 'VehicleDestruction' from direction x: 0.000000, y: 0.000000, z: 0.000000 [Team_ActorTech][Actor]
-        const regex =
-          /^<(?<isoDate>[\d\-T:.Z]+)>(?:.+)CActor::Kill(?:.+)'(?<target>.*)'(?:.+)'(?<zone>.*)'(?:.+)'(?<killer>.*)'(?:.+)'(?<weapon>.*)'(?:.+)'(?<damageType>.*)'.+$/gm;
+      // <2025-05-27T15:34:52.141Z> [Notice] <Actor Death> CActor::Kill: 'PU_Human-NineTails-Pilot-Male-Light_01_3864128940772' [3864128940772] in zone 'MISC_Prospector_PU_AI_NT_NonLethal_3864128940380' killed by 'ind3x' [202028778295] using 'KLWE_LaserRepeater_S5_3657139981503' [Class unknown] with damage type 'VehicleDestruction' from direction x: 0.000000, y: 0.000000, z: 0.000000 [Team_ActorTech][Actor]
+      const regex =
+        /^<(?<isoDate>[\d\-T:.Z]+)>(?:.+)CActor::Kill(?:.+)'(?<target>.*)'(?:.+)'(?<zone>.*)'(?:.+)'(?<killer>.*)'(?:.+)'(?<weapon>.*)'(?:.+)'(?<damageType>.*)'.+$/gm;
 
-        const cutoffDateEnd = new Date();
-        cutoffDateEnd.setHours(23, 59, 59, 999);
-        const cutoffDateStart = new Date(cutoffDateEnd);
-        cutoffDateStart.setDate(cutoffDateStart.getDate() - 7); // 7 days ago
-        cutoffDateStart.setHours(0, 0, 0, 0);
+      const cutoffDateEnd = new Date();
+      cutoffDateEnd.setHours(23, 59, 59, 999);
+      const cutoffDateStart = new Date(cutoffDateEnd);
+      cutoffDateStart.setDate(cutoffDateStart.getDate() - 7); // 7 days ago
+      cutoffDateStart.setHours(0, 0, 0, 0);
 
-        const slicedFiles = files.filter((file) => {
-          const lastModified = new Date(file.lastModified);
+      const slicedFiles = files.filter((file) => {
+        const lastModified = new Date(file.lastModified);
 
-          return (
-            lastModified >= cutoffDateStart && lastModified <= cutoffDateEnd
-          );
-        });
-
-        try {
-          const fileContents = await Promise.all(
-            slicedFiles.map((file) => file.text()),
-          );
-
-          setEntries((previousEntries) => {
-            const newEntries = new Map<string, IEntry>(previousEntries);
-
-            for (const fileContent of fileContents) {
-              const matches = fileContent.matchAll(regex);
-
-              for (const match of matches) {
-                if (!match.groups) continue;
-
-                const { isoDate, target, zone, killer, weapon, damageType } =
-                  match.groups;
-                const date = new Date(isoDate);
-                const key = `${date.getTime()}_${target}`;
-
-                if (newEntries.has(key)) continue;
-
-                newEntries.set(key, {
-                  key,
-                  isoDate: date,
-                  target,
-                  zone,
-                  killer,
-                  weapon,
-                  damageType,
-                  isNew,
-                });
-              }
-            }
-
-            return newEntries;
-          });
-        } catch (error) {
-          console.error("[Log Analyzer] Error reading files:", error);
-        }
+        return lastModified >= cutoffDateStart && lastModified <= cutoffDateEnd;
       });
-    },
-    [directoryHandleRef],
-  );
+
+      try {
+        const fileContents = await Promise.all(
+          slicedFiles.map((file) => file.text()),
+        );
+
+        setEntries((previousEntries) => {
+          const newEntries = new Map<string, IEntry>(previousEntries);
+
+          for (const fileContent of fileContents) {
+            const matches = fileContent.matchAll(regex);
+
+            for (const match of matches) {
+              if (!match.groups) continue;
+
+              const { isoDate, target, zone, killer, weapon, damageType } =
+                match.groups;
+              const date = new Date(isoDate);
+              const key = `${date.getTime()}_${target}`;
+
+              if (newEntries.has(key)) continue;
+
+              newEntries.set(key, {
+                key,
+                isoDate: date,
+                target,
+                zone,
+                killer,
+                weapon,
+                damageType,
+                isNew,
+              });
+            }
+          }
+
+          return newEntries;
+        });
+      } catch (error) {
+        console.error("[Log Analyzer] Error reading files:", error);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (isLiveModeEnabled) {
@@ -158,15 +154,33 @@ export const LogAnalyzer = ({ className }: Props) => {
     };
   }, [isLiveModeEnabled, parseLogs]);
 
+  useEffect(() => {
+    get("directory_handle")
+      .then((directoryHandle) => {
+        if (directoryHandle) {
+          directoryHandleRef.current =
+            directoryHandle as FileSystemDirectoryHandle;
+          parseLogs();
+        }
+      })
+      .catch((error) => {
+        console.error(
+          "[Log Analyzer] Error retrieving directory handle:",
+          error,
+        );
+      });
+  }, [parseLogs]);
+
   const handleFileSelect: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault();
 
     window
       .showDirectoryPicker()
-      .then((directoryHandle) => {
+      .then(async (directoryHandle) => {
         if (!directoryHandle) return;
         directoryHandleRef.current = directoryHandle;
         parseLogs();
+        await set("directory_handle", directoryHandle);
       })
       .catch((error) => {
         console.error("[Log Analyzer] Error selecting directory:", error);
