@@ -2,7 +2,7 @@
 
 import Button from "@/common/components/Button";
 import clsx from "clsx";
-import type { MouseEventHandler } from "react";
+import { useEffect, type MouseEventHandler } from "react";
 import { FaRegWindowRestore } from "react-icons/fa";
 import type { IEntry } from "./Entry";
 import styles from "./Entry.module.css";
@@ -18,6 +18,12 @@ interface Props {
 export const OverlayButton = ({ className, entries }: Props) => {
   const { isSupported, requestPipWindow, pipWindow, closePipWindow } =
     useOverlay();
+
+  useEffect(() => {
+    return () => {
+      closePipWindow();
+    };
+  }, [closePipWindow]);
 
   if (!isSupported) return null;
 
