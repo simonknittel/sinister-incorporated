@@ -36,6 +36,10 @@ export const OverlayButton = ({ className, entries }: Props) => {
     }
   };
 
+  const newEntries = entries
+    .filter((entry) => entry.isNew)
+    .toSorted((a, b) => b.isoDate.getTime() - a.isoDate.getTime());
+
   return (
     <>
       <Button
@@ -51,12 +55,15 @@ export const OverlayButton = ({ className, entries }: Props) => {
       {pipWindow && (
         <OverlayWindow pipWindow={pipWindow}>
           <section className="min-h-dvh background-primary text-text-primary p-2 flex flex-col gap-2">
-            {entries
-              .filter((entry) => entry.isNew)
-              .toSorted((a, b) => b.isoDate.getTime() - a.isoDate.getTime())
-              .map((entry) => (
+            {newEntries.length > 0 ? (
+              newEntries.map((entry) => (
                 <OverlayEntry key={entry.key} entry={entry} />
-              ))}
+              ))
+            ) : (
+              <div className="text-center text-neutral-500 p-2 text-sm">
+                Neue Kills aus dieser Session werden hier angezeigt.
+              </div>
+            )}
           </section>
         </OverlayWindow>
       )}
