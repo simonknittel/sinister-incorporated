@@ -154,33 +154,50 @@ export const LogAnalyzer = ({ className }: Props) => {
     };
   }, [isLiveModeEnabled, parseLogs]);
 
-  useEffect(() => {
+  const handlePreviousDirectorySelect: MouseEventHandler<HTMLButtonElement> = (
+    event,
+  ) => {
+    event.preventDefault();
+
     get("directory_handle")
-      .then((directoryHandle) => {
-        if (directoryHandle) {
-          directoryHandleRef.current =
-            directoryHandle as FileSystemDirectoryHandle;
+      .then(
+        async (
+          existingDirectoryHandle: FileSystemDirectoryHandle | undefined,
+        ) => {
+          if (existingDirectoryHandle) {
+            await existingDirectoryHandle.requestPermission();
+            directoryHandleRef.current = existingDirectoryHandle;
+            parseLogs();
+            return;
+          }
+
+          const newDirectoryHandle = await window.showDirectoryPicker();
+          if (!newDirectoryHandle) return;
+          directoryHandleRef.current = newDirectoryHandle;
           parseLogs();
-        }
-      })
+          await set("directory_handle", newDirectoryHandle);
+        },
+      )
       .catch((error) => {
         console.error(
-          "[Log Analyzer] Error retrieving directory handle:",
+          "[Log Analyzer] Error retrieving or selecting directory handle:",
           error,
         );
       });
-  }, [parseLogs]);
+  };
 
-  const handleFileSelect: MouseEventHandler<HTMLButtonElement> = (event) => {
+  const handleNewDirectorySelect: MouseEventHandler<HTMLButtonElement> = (
+    event,
+  ) => {
     event.preventDefault();
 
     window
       .showDirectoryPicker()
-      .then(async (directoryHandle) => {
-        if (!directoryHandle) return;
-        directoryHandleRef.current = directoryHandle;
+      .then(async (newDirectoryHandle) => {
+        if (!newDirectoryHandle) return;
+        directoryHandleRef.current = newDirectoryHandle;
         parseLogs();
-        await set("directory_handle", directoryHandle);
+        await set("directory_handle", newDirectoryHandle);
       })
       .catch((error) => {
         console.error("[Log Analyzer] Error selecting directory:", error);
@@ -202,20 +219,32 @@ export const LogAnalyzer = ({ className }: Props) => {
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 items-baseline justify-between">
         <h1 className="text-xl font-bold leading-tight">Log Analyzer</h1>
 
-        <Button
-          type="button"
-          onClick={handleFileSelect}
-          variant="primary"
-          disabled={isPending}
-          className="lg:ml-auto"
-        >
-          {isPending ? (
-            <FaSpinner className="animate-spin" />
-          ) : (
-            <FaFileArrowUp />
-          )}
-          Ordner auswählen
-        </Button>
+        <div>
+          <Button
+            type="button"
+            onClick={handleNewDirectorySelect}
+            variant="primary"
+            disabled={isPending}
+            className="lg:ml-auto"
+          >
+            {isPending ? (
+              <FaSpinner className="animate-spin" />
+            ) : (
+              <FaFileArrowUp />
+            )}
+            Ordner auswählen
+          </Button>
+
+          <Button
+            type="button"
+            onClick={handlePreviousDirectorySelect}
+            variant="tertiary"
+            disabled={isPending}
+            className="lg:ml-auto"
+          >
+            Letzten Ordner verwenden
+          </Button>
+        </div>
       </div>
 
       {entries.size > 0 ? (

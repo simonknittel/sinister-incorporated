@@ -61,6 +61,11 @@ export default async function Page() {
                 Die letzte Einstellung von &ldquo;Automatisch
                 aktualisieren&rdquo; bleibt nun bestehen.
               </p>
+
+              <p>
+                Es gibt nun eine Möglichkeit den letzten ausgewählten Ordner
+                wiederzuverwenden.
+              </p>
             </DayItem>
           ) : (
             <RedactedDayItem />
