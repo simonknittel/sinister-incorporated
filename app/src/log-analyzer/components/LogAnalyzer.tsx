@@ -29,16 +29,15 @@ interface Props {
 export const LogAnalyzer = ({ className }: Props) => {
   const [isPending, startTransition] = useTransition();
   const [entries, setEntries] = useState<Map<string, IEntry>>(new Map());
-  const [directoryHandle, setDirectoryHandle] =
-    useState<FileSystemDirectoryHandle | null>(null);
+  const directoryHandleRef = useRef<FileSystemDirectoryHandle | null>(null);
   const [isLiveModeEnabled, setIsLiveModeEnabled] = useState(false);
   const liveModeIntervalRef = useRef<number | null>(null);
 
   const parseLogs = useCallback(
     (isNew = false) => {
-      if (!directoryHandle) return;
-
       startTransition(async () => {
+        if (!directoryHandleRef.current) return;
+
         async function* getFilesRecursively(
           entry: FileSystemFileHandle | FileSystemDirectoryHandle,
         ): AsyncGenerator<File | null> {
@@ -63,7 +62,9 @@ export const LogAnalyzer = ({ className }: Props) => {
 
         const files = [];
 
-        for await (const fileHandle of getFilesRecursively(directoryHandle)) {
+        for await (const fileHandle of getFilesRecursively(
+          directoryHandleRef.current,
+        )) {
           if (!fileHandle) continue;
           if (!fileHandle.name.endsWith(".log")) continue;
           files.push(fileHandle);
@@ -124,24 +125,16 @@ export const LogAnalyzer = ({ className }: Props) => {
         });
       });
     },
-    [directoryHandle],
+    [directoryHandleRef],
   );
 
   useEffect(() => {
-    parseLogs();
-
-    if (isLiveModeEnabled) {
-      liveModeIntervalRef.current = window.setInterval(() => {
-        parseLogs(true);
-      }, 10_000);
-
-      return () => {
-        if (liveModeIntervalRef.current) {
-          window.clearInterval(liveModeIntervalRef.current);
-        }
-      };
-    }
-  }, [parseLogs, isLiveModeEnabled]);
+    return () => {
+      if (liveModeIntervalRef.current) {
+        window.clearInterval(liveModeIntervalRef.current);
+      }
+    };
+  }, []);
 
   const handleFileSelect: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault();
@@ -150,7 +143,8 @@ export const LogAnalyzer = ({ className }: Props) => {
       .showDirectoryPicker()
       .then((directoryHandle) => {
         if (!directoryHandle) return;
-        setDirectoryHandle(directoryHandle);
+        directoryHandleRef.current = directoryHandle;
+        parseLogs();
       })
       .catch((error) => {
         console.error("[Log Analyzer] Error selecting directory:", error);
@@ -164,7 +158,20 @@ export const LogAnalyzer = ({ className }: Props) => {
   const handleChangeLiveMode: ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
-    setIsLiveModeEnabled(event.target.checked);
+    if (event.target.checked) {
+      liveModeIntervalRef.current = window.setInterval(() => {
+        parseLogs(true);
+      }, 10_000);
+
+      setIsLiveModeEnabled(true);
+    } else {
+      if (liveModeIntervalRef.current) {
+        window.clearInterval(liveModeIntervalRef.current);
+        liveModeIntervalRef.current = null;
+      }
+
+      setIsLiveModeEnabled(false);
+    }
   };
 
   return (
@@ -229,6 +236,7 @@ export const LogAnalyzer = ({ className }: Props) => {
                 </span>
               }
               labelClassName="w-auto"
+              checked={isLiveModeEnabled}
               onChange={handleChangeLiveMode}
             />
           </div>
