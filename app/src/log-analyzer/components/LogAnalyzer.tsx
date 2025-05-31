@@ -90,41 +90,45 @@ export const LogAnalyzer = ({ className }: Props) => {
           );
         });
 
-        const fileContents = await Promise.all(
-          slicedFiles.map((file) => file.text()),
-        );
+        try {
+          const fileContents = await Promise.all(
+            slicedFiles.map((file) => file.text()),
+          );
 
-        setEntries((previousEntries) => {
-          const newEntries = new Map<string, IEntry>(previousEntries);
+          setEntries((previousEntries) => {
+            const newEntries = new Map<string, IEntry>(previousEntries);
 
-          for (const fileContent of fileContents) {
-            const matches = fileContent.matchAll(regex);
+            for (const fileContent of fileContents) {
+              const matches = fileContent.matchAll(regex);
 
-            for (const match of matches) {
-              if (!match.groups) continue;
+              for (const match of matches) {
+                if (!match.groups) continue;
 
-              const { isoDate, target, zone, killer, weapon, damageType } =
-                match.groups;
-              const date = new Date(isoDate);
-              const key = `${date.getTime()}_${target}`;
+                const { isoDate, target, zone, killer, weapon, damageType } =
+                  match.groups;
+                const date = new Date(isoDate);
+                const key = `${date.getTime()}_${target}`;
 
-              if (newEntries.has(key)) continue;
+                if (newEntries.has(key)) continue;
 
-              newEntries.set(key, {
-                key,
-                isoDate: date,
-                target,
-                zone,
-                killer,
-                weapon,
-                damageType,
-                isNew,
-              });
+                newEntries.set(key, {
+                  key,
+                  isoDate: date,
+                  target,
+                  zone,
+                  killer,
+                  weapon,
+                  damageType,
+                  isNew,
+                });
+              }
             }
-          }
 
-          return newEntries;
-        });
+            return newEntries;
+          });
+        } catch (error) {
+          console.error("[Log Analyzer] Error reading files:", error);
+        }
       });
     },
     [directoryHandleRef],
