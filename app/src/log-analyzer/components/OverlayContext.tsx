@@ -74,7 +74,7 @@ export function OverlayProvider({ children }: Props) {
       }
 
       const style = document.createElement("style");
-      style.textContent = "html, body { height: 100%; }";
+      style.textContent = "html, body { min-height: 100%; }";
       pip.document.head.appendChild(style);
     });
 
