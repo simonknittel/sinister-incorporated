@@ -56,6 +56,11 @@ export default async function Page() {
                 loading="lazy"
                 className="self-center"
               />
+
+              <p>
+                Die letzte Einstellung von &ldquo;Automatisch
+                aktualisieren&rdquo; bleibt nun bestehen.
+              </p>
             </DayItem>
           ) : (
             <RedactedDayItem />
