@@ -16,6 +16,7 @@ import image20250323LineupDragNDrop from "@/changelog/assets/2025-03-23-lineup-d
 import image20250329CitizenHandle from "@/changelog/assets/2025-03-29-citizen-handle.png";
 import image20250516CornerstoneImageBrowser from "@/changelog/assets/2025-05-16-cornerstone-image-browser.png";
 import image20250529LogAnalyzer from "@/changelog/assets/2025-05-29-log-analyzer.png";
+import image20250531Overlay from "@/changelog/assets/2025-05-31-overlay.png";
 import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
 import { random } from "lodash";
@@ -40,6 +41,27 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="31. Mai 2025">
+          {showLogAnalyzer ? (
+            <DayItem heading="Log Analyzer">
+              <p>
+                Es gibt nun ein Overlay, welches über dem Star Citizen Fenster
+                positioniert werden kann.
+              </p>
+
+              <Image
+                quality={100}
+                src={image20250531Overlay}
+                alt=""
+                loading="lazy"
+                className="self-center"
+              />
+            </DayItem>
+          ) : (
+            <RedactedDayItem />
+          )}
+        </Day>
+
         <Day heading="30. Mai 2025">
           {showLogAnalyzer ? (
             <DayItem heading="Log Analyzer">

@@ -19,6 +19,8 @@ import { FaInfoCircle, FaSpinner } from "react-icons/fa";
 import { FaFileArrowUp } from "react-icons/fa6";
 import { TfiReload } from "react-icons/tfi";
 import { Entry, type IEntry } from "./Entry";
+import { OverlayButton } from "./OverlayButton";
+import { OverlayProvider } from "./OverlayContext";
 
 export const gridTemplateColumns = "144px 1fr 1fr 1fr 1fr 1fr";
 
@@ -239,6 +241,10 @@ export const LogAnalyzer = ({ className }: Props) => {
               checked={isLiveModeEnabled}
               onChange={handleChangeLiveMode}
             />
+
+            <OverlayProvider>
+              <OverlayButton entries={Array.from(entries.values())} />
+            </OverlayProvider>
           </div>
 
           <div className="mt-4 p-8 background-secondary rounded-primary overflow-auto">
@@ -290,6 +296,11 @@ export const LogAnalyzer = ({ className }: Props) => {
             Die Star Citizen-Installation darf nicht unter{" "}
             <span className="italic font-mono">C:\Program Files</span> liegen.
           </p>
+          <p>
+            Für das Overlay muss der Star Citizen Window Mode auf entweder
+            Borderless oder Windowed gestellt sein.
+          </p>
+          <p>Nein, das Overlay kann nicht transparent gemacht werden.</p>
         </div>
       )}
     </div>
