@@ -1,6 +1,6 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Link } from "@/common/components/Link";
-import { formatDate } from "@/common/utils/formatDate";
+import { RelativeDate } from "@/common/components/RelativeDate";
 import clsx from "clsx";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import styles from "./Entry.module.css";
@@ -35,7 +35,7 @@ export const Entry = ({ className, entry }: Props) => {
       }}
     >
       <td className="p-2 flex items-center relative">
-        {formatDate(entry.isoDate)}
+          <RelativeDate date={entry.isoDate} updateInterval={10_000} />
 
         {entry.isNew && (
           <div
