@@ -263,10 +263,10 @@ export const LogAnalyzer = ({ className }: Props) => {
         </>
       ) : (
         <div className="mt-4 p-8 background-secondary rounded-primary overflow-auto flex flex-col gap-2">
-          <strong className="block font-bold">
-            Wähle zuerst den Ordner mit deiner Star Citizen-Installation aus.
-          </strong>
+          <p className="text-neutral-500">Anleitung</p>
+          <p>Wähle den Ordner mit deiner Star Citizen-Installation aus.</p>
 
+          <p className="text-neutral-500 mt-4">Info</p>
           <p>
             Keine Dateien werden auf den Server hochgeladen. Die Logs werden
             ausschließlich client-seitig im Browser ausgewertet.
@@ -274,7 +274,14 @@ export const LogAnalyzer = ({ className }: Props) => {
 
           <p>Es werden die Logs der letzten 7 Tage ausgewertet.</p>
 
-          <p>Aktuell nur in Google Chrome und Microsoft Edge verfügbar.</p>
+          <p className="text-neutral-500 mt-4">Voraussetzungen</p>
+          <p>
+            Aktuell werden nur in Google Chrome und Microsoft Edge unterstützt.
+          </p>
+          <p>
+            Die Star Citizen-Installation darf nicht unter{" "}
+            <span className="italic font-mono">C:\Program Files</span> liegen.
+          </p>
         </div>
       )}
     </div>
