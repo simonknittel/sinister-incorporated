@@ -3,6 +3,7 @@ import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
 import cornerstoneImageBrowserScreenshot from "@/cornerstone-image-browser/assets/screenshot.png";
 import { itemTypes } from "@/cornerstone-image-browser/utils/config";
+import dogfightTrainerScreenshot from "@/dogfight-trainer/assets/screenshot.png";
 import logAnalyzerScreenshot from "@/log-analyzer/assets/screenshot.png";
 import { type Metadata } from "next";
 import Image from "next/image";
@@ -81,6 +82,31 @@ export default async function Page() {
             </div>
           </article>
         )}
+
+        <article className="background-secondary rounded-primary overflow-hidden">
+          <Image
+            src={dogfightTrainerScreenshot}
+            alt="Screenshot vom Dogfight Trainer"
+            priority
+            className="aspect-video object-cover object-center"
+          />
+
+          <div className="p-4 lg:p-8">
+            <h2 className="font-bold text-xl">Dogfight Trainer</h2>
+
+            <p className="mt-2">
+              Zeige deinen Dogfight Skill in unserer Hommage an den Klassiker,
+              Asteroids. Achte darauf was du abschießt!
+            </p>
+
+            <Link
+              href="/dogfight-trainer"
+              className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 mt-2 block"
+            >
+              Öffnen
+            </Link>
+          </div>
+        </article>
       </div>
     </main>
   );

@@ -70,6 +70,10 @@ export default async function Page() {
           ) : (
             <RedactedDayItem />
           )}
+
+          <DayItem heading="Dogfight Trainer">
+            <p>Der Dogfight Trainer ist nun direkt unter Tools verfügbar.</p>
+          </DayItem>
         </Day>
 
         <Day heading="30. Mai 2025">
