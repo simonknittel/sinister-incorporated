@@ -9,7 +9,7 @@ interface RSILinkProps {
 export const RSILink = ({ handle }: RSILinkProps) => {
   const authentication = useAuthentication();
 
-  if (handle.includes("_"))
+  if (handle.length >= 27 && handle.split("_").length - 1 >= 2)
     return (
       <span className="text-neutral-500 flex items-center h-full p-2">
         <span className="truncate" title={handle}>
