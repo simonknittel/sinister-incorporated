@@ -22,10 +22,13 @@ export const YesNoCheckbox = (props: Props) => {
 
   return (
     <label
-      className={clsx("group inline-flex justify-center gap-2 items-center", {
-        "opacity-50 pointer-events-none": props.disabled,
-        "cursor-pointer": !props.disabled,
-      })}
+      className={clsx(
+        "group inline-flex justify-center gap-2 items-center align-middle",
+        {
+          "opacity-50 pointer-events-none": props.disabled,
+          "cursor-pointer": !props.disabled,
+        },
+      )}
     >
       <input
         type="checkbox"
