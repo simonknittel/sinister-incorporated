@@ -72,10 +72,6 @@ export function OverlayProvider({ children }: Props) {
         link.href = styleSheet.href;
         pip.document.head.appendChild(link);
       }
-
-      const style = document.createElement("style");
-      style.textContent = "html, body { min-height: 100%; }";
-      pip.document.head.appendChild(style);
     });
 
     setPipWindow(pip);

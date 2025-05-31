@@ -44,7 +44,7 @@ export const OverlayButton = ({ className, entries }: Props) => {
 
       {pipWindow && (
         <OverlayWindow pipWindow={pipWindow}>
-          <section className="h-full background-primary text-text-primary p-2 flex flex-col gap-2">
+          <section className="min-h-dvh background-primary text-text-primary p-2 flex flex-col gap-2">
             {entries
               .filter((entry) => entry.isNew)
               .toSorted((a, b) => b.isoDate.getTime() - a.isoDate.getTime())
