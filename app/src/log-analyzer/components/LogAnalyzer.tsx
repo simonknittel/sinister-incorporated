@@ -5,6 +5,7 @@
 import Button from "@/common/components/Button";
 import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import { Tooltip } from "@/common/components/Tooltip";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import clsx from "clsx";
 import {
   useCallback,
@@ -32,8 +33,11 @@ export const LogAnalyzer = ({ className }: Props) => {
   const [isPending, startTransition] = useTransition();
   const [entries, setEntries] = useState<Map<string, IEntry>>(new Map());
   const directoryHandleRef = useRef<FileSystemDirectoryHandle | null>(null);
-  const [isLiveModeEnabled, setIsLiveModeEnabled] = useState(false);
   const liveModeIntervalRef = useRef<number | null>(null);
+  const [isLiveModeEnabled, setIsLiveModeEnabled] = useLocalStorage(
+    "is_live_mode_enabled",
+    false,
+  );
 
   const parseLogs = useCallback(
     (isNew = false) => {
@@ -135,12 +139,24 @@ export const LogAnalyzer = ({ className }: Props) => {
   );
 
   useEffect(() => {
+    if (isLiveModeEnabled) {
+      liveModeIntervalRef.current = window.setInterval(() => {
+        parseLogs(true);
+      }, 10_000);
+    } else {
+      if (liveModeIntervalRef.current) {
+        window.clearInterval(liveModeIntervalRef.current);
+        liveModeIntervalRef.current = null;
+      }
+    }
+
     return () => {
       if (liveModeIntervalRef.current) {
         window.clearInterval(liveModeIntervalRef.current);
+        liveModeIntervalRef.current = null;
       }
     };
-  }, []);
+  }, [isLiveModeEnabled, parseLogs]);
 
   const handleFileSelect: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault();
@@ -164,20 +180,7 @@ export const LogAnalyzer = ({ className }: Props) => {
   const handleChangeLiveMode: ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
-    if (event.target.checked) {
-      liveModeIntervalRef.current = window.setInterval(() => {
-        parseLogs(true);
-      }, 10_000);
-
-      setIsLiveModeEnabled(true);
-    } else {
-      if (liveModeIntervalRef.current) {
-        window.clearInterval(liveModeIntervalRef.current);
-        liveModeIntervalRef.current = null;
-      }
-
-      setIsLiveModeEnabled(false);
-    }
+    setIsLiveModeEnabled(event.target.checked);
   };
 
   return (

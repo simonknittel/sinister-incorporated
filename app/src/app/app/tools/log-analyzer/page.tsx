@@ -1,6 +1,7 @@
 import { authenticatePage } from "@/auth/server";
 import { Link } from "@/common/components/Link";
-import { LogAnalyzer } from "@/log-analyzer/components/LogAnalyzer";
+import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
+import { LogAnalyzerWrapper } from "@/log-analyzer/components/LogAnalyzerWrapper";
 import { type Metadata } from "next";
 import { FaChevronLeft } from "react-icons/fa";
 
@@ -22,7 +23,9 @@ export default async function Page() {
         Alle Tools
       </Link>
 
-      <LogAnalyzer className="mt-4" />
+      <SuspenseWithErrorBoundaryTile className="mt-4">
+        <LogAnalyzerWrapper className="mt-4" />
+      </SuspenseWithErrorBoundaryTile>
     </main>
   );
 }
