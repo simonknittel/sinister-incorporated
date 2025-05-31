@@ -212,7 +212,7 @@ export const LogAnalyzer = ({ className }: Props) => {
                   <Tooltip triggerChildren={<FaInfoCircle />}>
                     <p>Aktualisiert die Logs alle 10 Sekunden.</p>
                     <p className="mt-1">
-                      Neue Einträge werden für 30 Sekunden hervorgehoben.
+                      Neue Einträge werden für 60 Sekunden hervorgehoben.
                     </p>
                   </Tooltip>
                 </span>
