@@ -42,7 +42,7 @@ export const Entry = memo(
     return (
       <tr
         className={clsx(
-          "grid gap-4 h-14 -mx-2 first:mt-2",
+          "grid gap-4 h-10 -mx-2 first:mt-2",
           { [styles.Row]: entry.isNew },
           className,
         )}
@@ -81,7 +81,9 @@ export const Entry = memo(
         <td className="truncate">
           {entry.type === "kill" && <RSILink handle={entry.killer} />}
           {entry.type === "corpse" && (
-            <div className="text-neutral-500 p-2">Leiche entdeckt</div>
+            <div className="text-neutral-500 p-2 h-full flex items-center">
+              Leiche entdeckt
+            </div>
           )}
         </td>
 
