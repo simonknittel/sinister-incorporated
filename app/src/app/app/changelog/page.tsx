@@ -41,6 +41,19 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="1. Juni 2025">
+          {showLogAnalyzer ? (
+            <DayItem heading="Log Analyzer">
+              <p>
+                Es werden nun auch Logs erkannt, die auf eine Leiche in der
+                Umgebung hinweisen.
+              </p>
+            </DayItem>
+          ) : (
+            <RedactedDayItem />
+          )}
+        </Day>
+
         <Day heading="31. Mai 2025">
           {showLogAnalyzer ? (
             <DayItem heading="Log Analyzer">

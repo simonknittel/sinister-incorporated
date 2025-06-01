@@ -1,20 +1,32 @@
 import { RelativeDate } from "@/common/components/RelativeDate";
+import { formatDate } from "@/common/utils/formatDate";
 import clsx from "clsx";
 import { memo } from "react";
 import styles from "./Entry.module.css";
 import { gridTemplateColumns } from "./LogAnalyzer";
 import { RSILink } from "./RSILink";
 
-export interface IEntry {
+interface IBaseEntry {
   readonly key: string;
   readonly isoDate: Date;
+  readonly isNew?: boolean;
+}
+
+interface IKillEntry extends IBaseEntry {
+  readonly type: "kill";
   readonly target: string;
   readonly zone: string;
   readonly killer: string;
   readonly weapon: string;
   readonly damageType: string;
-  readonly isNew?: boolean;
 }
+
+interface ICorpseEntry extends IBaseEntry {
+  readonly type: "corpse";
+  readonly target: string;
+}
+
+export type IEntry = IKillEntry | ICorpseEntry;
 
 interface Props {
   readonly className?: string;
@@ -23,6 +35,10 @@ interface Props {
 
 export const Entry = memo(
   function Entry({ className, entry }: Props) {
+    const now = new Date();
+    const showRelativeDate =
+      entry.isoDate.getTime() > now.getTime() - 1000 * 60 * 60 * 24;
+
     return (
       <tr
         className={clsx(
@@ -35,7 +51,16 @@ export const Entry = memo(
         }}
       >
         <td className="p-2 flex items-center relative">
-          <RelativeDate date={entry.isoDate} updateInterval={10_000} />
+          {showRelativeDate ? (
+            <RelativeDate date={entry.isoDate} updateInterval={10_000} />
+          ) : (
+            <time
+              dateTime={entry.isoDate.toISOString()}
+              title={formatDate(entry.isoDate) || undefined}
+            >
+              {formatDate(entry.isoDate)}
+            </time>
+          )}
 
           {entry.isNew && (
             <div
@@ -54,25 +79,34 @@ export const Entry = memo(
         </td>
 
         <td className="truncate">
-          <RSILink handle={entry.killer} />
+          {entry.type === "kill" && <RSILink handle={entry.killer} />}
+          {entry.type === "corpse" && (
+            <div className="text-neutral-500 p-2">Leiche entdeckt</div>
+          )}
         </td>
 
         <td className="p-2 flex items-center truncate">
-          <span className="truncate" title={entry.weapon}>
-            {entry.weapon}
-          </span>
+          {entry.type === "kill" && (
+            <span className="truncate" title={entry.weapon}>
+              {entry.weapon}
+            </span>
+          )}
         </td>
 
         <td className="p-2 flex items-center truncate">
-          <span className="truncate" title={entry.damageType}>
-            {entry.damageType}
-          </span>
+          {entry.type === "kill" && (
+            <span className="truncate" title={entry.damageType}>
+              {entry.damageType}
+            </span>
+          )}
         </td>
 
         <td className="p-2 flex items-center truncate">
-          <span className="truncate" title={entry.zone}>
-            {entry.zone}
-          </span>
+          {entry.type === "kill" && (
+            <span className="truncate" title={entry.zone}>
+              {entry.zone}
+            </span>
+          )}
         </td>
       </tr>
     );

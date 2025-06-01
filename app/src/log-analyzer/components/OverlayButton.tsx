@@ -79,21 +79,40 @@ const OverlayEntry = ({ entry }: OverlayEntryProps) => {
   return (
     <div className={clsx("relative", styles.Row)}>
       <div className="whitespace-nowrap overflow-hidden">
-        <div
-          className="max-w-32 truncate inline-block align-middle"
-          title={entry.killer}
-        >
-          <RSILink handle={entry.killer} />
-        </div>
+        {entry.type === "kill" && (
+          <>
+            <div
+              className="max-w-32 truncate inline-block align-middle"
+              title={entry.killer}
+            >
+              <RSILink handle={entry.killer} />
+            </div>
 
-        <div className="inline-block p-2 align-middle">killed</div>
+            <div className="inline-block p-1 align-middle">killed</div>
 
-        <div
-          className="max-w-32 truncate inline-block align-middle"
-          title={entry.target}
-        >
-          <RSILink handle={entry.target} />
-        </div>
+            <div
+              className="max-w-32 truncate inline-block align-middle"
+              title={entry.target}
+            >
+              <RSILink handle={entry.target} />
+            </div>
+          </>
+        )}
+
+        {entry.type === "corpse" && (
+          <>
+            <div className="inline-block p-1 align-middle">Leiche von</div>
+
+            <div
+              className="max-w-32 truncate inline-block align-middle"
+              title={entry.target}
+            >
+              <RSILink handle={entry.target} />
+            </div>
+
+            <div className="inline-block p-1 align-middle">entdeckt</div>
+          </>
+        )}
       </div>
 
       <div
