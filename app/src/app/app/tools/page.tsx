@@ -5,6 +5,7 @@ import cornerstoneImageBrowserScreenshot from "@/cornerstone-image-browser/asset
 import { itemTypes } from "@/cornerstone-image-browser/utils/config";
 import dogfightTrainerScreenshot from "@/dogfight-trainer/assets/screenshot.png";
 import logAnalyzerScreenshot from "@/log-analyzer/assets/screenshot.png";
+import { random } from "lodash";
 import { type Metadata } from "next";
 import Image from "next/image";
 
@@ -55,8 +56,7 @@ export default async function Page() {
             </div>
           </div>
         </article>
-
-        {showLogAnalyzer && (
+        {showLogAnalyzer ? (
           <article className="background-secondary rounded-primary overflow-hidden">
             <Image
               src={logAnalyzerScreenshot}
@@ -81,6 +81,8 @@ export default async function Page() {
               </Link>
             </div>
           </article>
+        ) : (
+          <RedactedTile />
         )}
 
         <article className="background-secondary rounded-primary overflow-hidden">
@@ -111,3 +113,35 @@ export default async function Page() {
     </main>
   );
 }
+
+const RedactedTile = () => {
+  return (
+    <div className="background-secondary rounded-primary overflow-hidden">
+      <div className="aspect-video bg-black" />
+
+      <div className="p-4 lg:p-8 relative">
+        <h2 className="font-bold text-xl">Redacted</h2>
+
+        <p className="mt-2">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Lorem ipsum
+          dolor sit amet consectetur adipisicing elit.
+        </p>
+
+        <p className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 mt-2">
+          Lorem ipsum
+        </p>
+
+        <div className="absolute inset-0 flex items-center justify-center backdrop-blur">
+          <p
+            className="text-sinister-red-500 font-bold border-2 border-sinister-red-500 rounded px-2 py-1 text-lg relative"
+            style={{
+              transform: `rotate(${random(-15, 15)}deg)`,
+            }}
+          >
+            Redacted
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
