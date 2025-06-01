@@ -44,6 +44,8 @@ export function OverlayProvider({ children }: Props) {
 
     const pip = await window.documentPictureInPicture.requestWindow({
       disallowReturnToOpener: true,
+      width: 352,
+      height: 256,
     });
 
     // Detect when window is closed by user
