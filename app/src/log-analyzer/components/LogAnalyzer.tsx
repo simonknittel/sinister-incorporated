@@ -331,8 +331,8 @@ export const LogAnalyzer = ({ className }: Props) => {
             </OverlayProvider>
 
             <YesNoCheckbox
-              yesLabel="Leichen verstecken"
-              noLabel="Leichen verstecken"
+              yesLabel="Leichen ausblenden"
+              noLabel="Leichen ausblenden"
               labelClassName="w-auto"
               checked={isHideCorpsesEnabled}
               onChange={(e) => setIsHideCorpsesEnabled(e.target.checked)}
