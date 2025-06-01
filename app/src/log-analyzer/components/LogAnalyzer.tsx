@@ -14,7 +14,6 @@ import {
   useRef,
   useState,
   useTransition,
-  type ChangeEventHandler,
   type MouseEventHandler,
 } from "react";
 import { FaInfoCircle, FaSpinner } from "react-icons/fa";
@@ -25,6 +24,38 @@ import { OverlayButton } from "./OverlayButton";
 import { OverlayProvider } from "./OverlayContext";
 
 export const gridTemplateColumns = "144px 1fr 1fr 1fr 1fr 1fr";
+
+async function* getFilesRecursively(
+  entry: FileSystemFileHandle | FileSystemDirectoryHandle,
+): AsyncGenerator<File | null> {
+  if (entry.kind === "file") {
+    try {
+      const file = await entry.getFile();
+      if (file) yield file;
+    } catch (error) {
+      console.error(`[Log Analyzer] Error getting file: ${entry.name}`, error);
+      yield null;
+    }
+  } else if (entry.kind === "directory") {
+    // TODO: Ignore subdirectories
+    for await (const handle of entry.values()) {
+      yield* getFilesRecursively(handle);
+    }
+  }
+}
+
+// <2025-05-27T15:34:52.141Z> [Notice] <Actor Death> CActor::Kill: 'PU_Human-NineTails-Pilot-Male-Light_01_3864128940772' [3864128940772] in zone 'MISC_Prospector_PU_AI_NT_NonLethal_3864128940380' killed by 'ind3x' [202028778295] using 'KLWE_LaserRepeater_S5_3657139981503' [Class unknown] with damage type 'VehicleDestruction' from direction x: 0.000000, y: 0.000000, z: 0.000000 [Team_ActorTech][Actor]
+const killRegex =
+  /^<(?<isoDate>[\d\-T:.Z]+)>.+CActor::Kill.+'(?<target>.*)'.+'(?<zone>.*)'.+'(?<killer>.*)'.+'(?<weapon>.*)'.+'(?<damageType>.*)'.+$/gm;
+
+// <2025-05-28T22:14:04.694Z> [Notice] <[ActorState] Corpse> [ACTOR STATE][SSCActorStateCVars::LogCorpse] Player 'Test' <remote client>: Running corpsify for corpse. [Team_ActorFeatures][Actor]
+const corpseRegex =
+  /^<(?<isoDate>[\d\-T:.Z]+)>.+'(?<target>.*)'.+Running corpsify.+$/gm;
+
+// <2025-05-28T22:13:34.556Z> [Notice] <[ActorState] Corpse> [ACTOR STATE][SSCActorStateCVars::LogCorpse] Player 'Test' <remote client>: IsCorpseEnabled: Yes, there is no local inventory. [Team_ActorFeatures][Actor]
+// This runs multiple times for some corpses, so we don't use it.
+// const corpse2Regex =
+//   /^<(?<isoDate>[\d\-T:.Z]+)>.+LogCorpse.+'(?<target>.*)'.+$/gm;
 
 interface Props {
   readonly className?: string;
@@ -39,32 +70,14 @@ export const LogAnalyzer = ({ className }: Props) => {
     "is_live_mode_enabled",
     false,
   );
+  const [isHideCorpsesEnabled, setIsHideCorpsesEnabled] = useLocalStorage(
+    "is_hide_corpses_enabled",
+    false,
+  );
 
   const parseLogs = useCallback((isNew = false) => {
     startTransition(async () => {
       if (!directoryHandleRef.current) return;
-
-      async function* getFilesRecursively(
-        entry: FileSystemFileHandle | FileSystemDirectoryHandle,
-      ): AsyncGenerator<File | null> {
-        if (entry.kind === "file") {
-          try {
-            const file = await entry.getFile();
-            if (file) yield file;
-          } catch (error) {
-            console.error(
-              `[Log Analyzer] Error getting file: ${entry.name}`,
-              error,
-            );
-            yield null;
-          }
-        } else if (entry.kind === "directory") {
-          // TODO: Ignore subdirectories
-          for await (const handle of entry.values()) {
-            yield* getFilesRecursively(handle);
-          }
-        }
-      }
 
       const files = [];
 
@@ -76,10 +89,6 @@ export const LogAnalyzer = ({ className }: Props) => {
         files.push(fileHandle);
       }
 
-      // <2025-05-27T15:34:52.141Z> [Notice] <Actor Death> CActor::Kill: 'PU_Human-NineTails-Pilot-Male-Light_01_3864128940772' [3864128940772] in zone 'MISC_Prospector_PU_AI_NT_NonLethal_3864128940380' killed by 'ind3x' [202028778295] using 'KLWE_LaserRepeater_S5_3657139981503' [Class unknown] with damage type 'VehicleDestruction' from direction x: 0.000000, y: 0.000000, z: 0.000000 [Team_ActorTech][Actor]
-      const regex =
-        /^<(?<isoDate>[\d\-T:.Z]+)>(?:.+)CActor::Kill(?:.+)'(?<target>.*)'(?:.+)'(?<zone>.*)'(?:.+)'(?<killer>.*)'(?:.+)'(?<weapon>.*)'(?:.+)'(?<damageType>.*)'.+$/gm;
-
       const cutoffDateEnd = new Date();
       cutoffDateEnd.setHours(23, 59, 59, 999);
       const cutoffDateStart = new Date(cutoffDateEnd);
@@ -88,7 +97,6 @@ export const LogAnalyzer = ({ className }: Props) => {
 
       const slicedFiles = files.filter((file) => {
         const lastModified = new Date(file.lastModified);
-
         return lastModified >= cutoffDateStart && lastModified <= cutoffDateEnd;
       });
 
@@ -101,9 +109,9 @@ export const LogAnalyzer = ({ className }: Props) => {
           const newEntries = new Map<string, IEntry>(previousEntries);
 
           for (const fileContent of fileContents) {
-            const matches = fileContent.matchAll(regex);
+            const killMatches = fileContent.matchAll(killRegex);
 
-            for (const match of matches) {
+            for (const match of killMatches) {
               if (!match.groups) continue;
 
               const { isoDate, target, zone, killer, weapon, damageType } =
@@ -116,12 +124,33 @@ export const LogAnalyzer = ({ className }: Props) => {
               newEntries.set(key, {
                 key,
                 isoDate: date,
+                isNew,
+                type: "kill",
                 target,
                 zone,
                 killer,
                 weapon,
                 damageType,
+              });
+            }
+
+            const corpseMatches = fileContent.matchAll(corpseRegex);
+
+            for (const match of corpseMatches) {
+              if (!match.groups) continue;
+
+              const { isoDate, target } = match.groups;
+              const date = new Date(isoDate);
+              const key = `${date.getTime()}_${target}`;
+
+              if (newEntries.has(key)) continue;
+
+              newEntries.set(key, {
+                key,
+                isoDate: date,
                 isNew,
+                type: "corpse",
+                target,
               });
             }
           }
@@ -211,12 +240,6 @@ export const LogAnalyzer = ({ className }: Props) => {
     parseLogs(true);
   };
 
-  const handleChangeLiveMode: ChangeEventHandler<HTMLInputElement> = (
-    event,
-  ) => {
-    setIsLiveModeEnabled(event.target.checked);
-  };
-
   return (
     <div className={clsx(className)}>
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 items-baseline justify-between">
@@ -292,12 +315,28 @@ export const LogAnalyzer = ({ className }: Props) => {
               }
               labelClassName="w-auto"
               checked={isLiveModeEnabled}
-              onChange={handleChangeLiveMode}
+              onChange={(e) => setIsLiveModeEnabled(e.target.checked)}
             />
 
             <OverlayProvider>
-              <OverlayButton entries={Array.from(entries.values())} />
+              <OverlayButton
+                entries={Array.from(
+                  entries.values().filter((entry) => {
+                    if (isHideCorpsesEnabled && entry.type === "corpse")
+                      return false;
+                    return true;
+                  }),
+                )}
+              />
             </OverlayProvider>
+
+            <YesNoCheckbox
+              yesLabel="Leichen verstecken"
+              noLabel="Leichen verstecken"
+              labelClassName="w-auto"
+              checked={isHideCorpsesEnabled}
+              onChange={(e) => setIsHideCorpsesEnabled(e.target.checked)}
+            />
           </div>
 
           <div className="mt-4 p-8 background-secondary rounded-primary overflow-auto">
@@ -321,6 +360,11 @@ export const LogAnalyzer = ({ className }: Props) => {
               <tbody>
                 {Array.from(entries.values())
                   .toSorted((a, b) => b.isoDate.getTime() - a.isoDate.getTime())
+                  .filter((entry) => {
+                    if (isHideCorpsesEnabled && entry.type === "corpse")
+                      return false;
+                    return true;
+                  })
                   .map((entry) => (
                     <Entry key={entry.key} entry={entry} />
                   ))}
