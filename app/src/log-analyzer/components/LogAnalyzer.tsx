@@ -388,6 +388,7 @@ export const LogAnalyzer = ({ className }: Props) => {
           <p className="text-neutral-500 mt-4">Voraussetzungen</p>
           <p>
             Aktuell werden nur in Google Chrome und Microsoft Edge unterstützt.
+            Mozilla Firefox, Safari und Brave werden aktuell nicht unterstützt.
           </p>
           <p>
             Die Star Citizen-Installation darf nicht unter{" "}
