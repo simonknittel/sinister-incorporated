@@ -110,7 +110,6 @@ export const LogAnalyzer = ({ className }: Props) => {
 
           for (const fileContent of fileContents) {
             const killMatches = fileContent.matchAll(killRegex);
-
             for (const match of killMatches) {
               if (!match.groups) continue;
 
@@ -135,7 +134,6 @@ export const LogAnalyzer = ({ className }: Props) => {
             }
 
             const corpseMatches = fileContent.matchAll(corpseRegex);
-
             for (const match of corpseMatches) {
               if (!match.groups) continue;
 
