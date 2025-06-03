@@ -2,11 +2,17 @@ import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Link } from "@/common/components/Link";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
-interface RSILinkProps {
+const NPC_HANDLES = ["Hazard-002"];
+
+const isNpc = (handle: string) =>
+  (handle.length >= 27 && handle.split("_").length - 1 >= 2) ||
+  NPC_HANDLES.includes(handle);
+
+interface Props {
   readonly handle: string;
 }
 
-export const RSILink = ({ handle }: RSILinkProps) => {
+export const RSILink = ({ handle }: Props) => {
   const authentication = useAuthentication();
 
   const isMe =
@@ -21,10 +27,7 @@ export const RSILink = ({ handle }: RSILinkProps) => {
       </span>
     );
 
-  if (
-    (handle.length >= 27 && handle.split("_").length - 1 >= 2) ||
-    ["Hazard-002"].includes(handle)
-  )
+  if (isNpc(handle))
     return (
       <span className="text-neutral-500 flex items-center h-full px-2 py-1">
         <span className="truncate" title={handle}>

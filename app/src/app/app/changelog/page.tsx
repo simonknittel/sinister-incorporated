@@ -19,6 +19,7 @@ import image20250529LogAnalyzer from "@/changelog/assets/2025-05-29-log-analyzer
 import image20250531Overlay from "@/changelog/assets/2025-05-31-overlay.png";
 import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
+import { SmallBadge } from "@/common/components/SmallBadge";
 import { random } from "lodash";
 import { LoremIpsum } from "lorem-ipsum";
 import { type Metadata } from "next";
@@ -43,10 +44,15 @@ export default async function Page() {
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
         <Day heading="1. Juni 2025">
           {showLogAnalyzer ? (
-            <DayItem heading="Log Analyzer">
+            <DayItem
+              heading="Leichen in der Umgebung"
+              badges={["Log Analyzer", "Neu"]}
+            >
               <p>
-                Es werden nun auch Logs erkannt, die auf eine Leiche in der
-                Umgebung hinweisen.
+                Der Log Analyzer wertet nun Log-Einträge aus, die auf eine
+                Leiche in der Umgebung hinweisen. Nach meinem Verständnis werden
+                diese Einträge nur einmal pro Leiche geloggt. Hierüber können
+                bspw. Tode erkannt werden, die man selber nicht verursacht hat.
               </p>
             </DayItem>
           ) : (
@@ -56,69 +62,113 @@ export default async function Page() {
 
         <Day heading="31. Mai 2025">
           {showLogAnalyzer ? (
-            <DayItem heading="Log Analyzer">
-              <p>
-                Es gibt nun ein Overlay, welches über dem Star Citizen Fenster
-                positioniert werden kann.
-              </p>
+            <>
+              <DayItem
+                heading="Kill Feed Overlay"
+                badges={["Log Analyzer", "Neu"]}
+              >
+                <p>
+                  Der Log Analyzer hat nun ein Overlay, welches über dem Star
+                  Citizen Fenster positioniert werden kann. In diesem wird der
+                  Kill Feed gezeigt, wenn automatisches aktualisieren aktiv ist.
+                </p>
 
-              <Image
-                quality={100}
-                src={image20250531Overlay}
-                alt=""
-                loading="lazy"
-                className="self-center"
-              />
+                <Image
+                  quality={100}
+                  src={image20250531Overlay}
+                  alt=""
+                  loading="lazy"
+                  className="self-center"
+                />
+              </DayItem>
 
-              <p>
-                Die letzte Einstellung von &ldquo;Automatisch
-                aktualisieren&rdquo; bleibt nun bestehen.
-              </p>
+              <DayItem
+                heading="Letzten Einstellungen"
+                badges={["Log Analyzer", "Neu"]}
+              >
+                <p>
+                  Die letzte Einstellung von &ldquo;Automatisch
+                  aktualisieren&rdquo; bleibt nun bestehen.
+                </p>
 
-              <p>
-                Es gibt nun eine Möglichkeit den letzten ausgewählten Ordner
-                wiederzuverwenden.
-              </p>
-            </DayItem>
+                <p>
+                  Es gibt nun eine Möglichkeit den letzten ausgewählten Ordner
+                  wiederzuverwenden.
+                </p>
+              </DayItem>
+            </>
           ) : (
             <RedactedDayItem />
           )}
 
-          <DayItem heading="Dogfight Trainer">
-            <p>Der Dogfight Trainer ist nun direkt unter Tools verfügbar.</p>
+          <DayItem
+            heading="Dogfight Trainer"
+            badges={["Dogfight Trainer", "Tools", "Neu"]}
+          >
+            <p>
+              Der{" "}
+              <Link
+                href="/dogfight-trainer"
+                className="text-interaction-500 hover:text-interaction-300 focus-visible:text-interaction-300"
+              >
+                Dogfight Trainer
+              </Link>{" "}
+              ist nun direkt unter Tools verfügbar.
+            </p>
+
+            <p>
+              Zeige deinen Dogfight Skill in unserer Hommage an den Klassiker,
+              Asteroids. Achte darauf was du abschießt!
+            </p>
           </DayItem>
         </Day>
 
         <Day heading="30. Mai 2025">
           {showLogAnalyzer ? (
-            <DayItem heading="Log Analyzer">
-              <p>
-                Die Handles im Log Analyzer verlinken nun zu den Profilen auf
-                der Seite von Roberts Space Industries.
-              </p>
+            <>
+              <DayItem
+                heading="Verlinkung von Handles"
+                badges={["Log Analyzer", "Neu"]}
+              >
+                <p>
+                  Die Handles im Log Analyzer verlinken nun zu den Profilen auf
+                  der Seite von Roberts Space Industries.
+                </p>
+              </DayItem>
 
-              <p>
-                Es kann nun ein Interval aktiviert werden, durch welchen die
-                Logs alle 10 Sekunden aktualisiert werden. Neue Einträge werden
-                für 30 Sekunden hervorgehoben.
-              </p>
-            </DayItem>
+              <DayItem
+                heading="Automatisches aktualisieren"
+                badges={["Log Analyzer", "Neu"]}
+              >
+                <p>
+                  Es kann nun ein Interval aktiviert werden, durch welchen die
+                  Logs alle 10 Sekunden aktualisiert werden. Neue Einträge
+                  werden für 30 Sekunden hervorgehoben.
+                </p>
+              </DayItem>
+            </>
           ) : (
             <RedactedDayItem />
           )}
         </Day>
 
         <Day heading="29. Mai 2025">
-          <DayItem heading="Events">
+          <DayItem
+            heading="Eventorganisator in der Teilnehmerliste"
+            badges={["Events", "Änderung"]}
+          >
             <p>
-              Änderung: Der Eventorganisator wird nun nicht mehr automatisch in
-              der Teilnehmerliste mit aufgenommen, wenn er in Discord nicht auf
+              Der Eventorganisator wird nun nicht mehr automatisch in der
+              Teilnehmerliste mit aufgenommen, wenn er in Discord nicht auf
               Teilnehmen geklickt hat.
             </p>
           </DayItem>
 
           {showLogAnalyzer ? (
-            <DayItem heading="Log Analyzer">
+            <DayItem
+              heading="Log Analyzer"
+              badges={["Log Analyzer", "Tools", "Neu"]}
+            >
               <p>
                 Unter Tools gibt es nun den{" "}
                 <Link
@@ -145,7 +195,10 @@ export default async function Page() {
         </Day>
 
         <Day heading="25. Mai 2025">
-          <DayItem heading="Tasks">
+          <DayItem
+            heading="Selbstständiges Abschließen von Tasks"
+            badges={["Tasks", "Neu"]}
+          >
             <p>
               Für personalisierte und Gruppen-Tasks gibt es nun die Möglichkeit,
               dass diese von den zugewiesenen Citizen selbstständig
@@ -157,14 +210,17 @@ export default async function Page() {
         </Day>
 
         <Day heading="17. Mai 2025">
-          <DayItem heading="Cornerstone Image Browser">
+          <DayItem
+            heading="Cornerstone Image Browser"
+            badges={["Cornerstone Image Browser", "Tools", "Neu"]}
+          >
             <p>
               Es stehen nun auch die Bilder für Hüte, Brillen, Handschuhe,
               Jacken, Oberteile, Jumpsuits, Hosen und Schuhe zur Verfügung.
             </p>
           </DayItem>
 
-          <DayItem heading="Tasks: GitHub Flavored Markdown">
+          <DayItem heading="GitHub Flavored Markdown" badges={["Tasks", "Neu"]}>
             <p>
               Die Beschreibung und der Belohnungstext unterstützen nun{" "}
               <Link
@@ -179,18 +235,27 @@ export default async function Page() {
             </p>
           </DayItem>
 
-          <DayItem heading="Tasks: Dashboard">
+          <DayItem heading="Tasks auf dem Dashboard" badges={["Tasks", "Neu"]}>
             <p>Angenommene Tasks werden nun zusätzlich im Dashboard gezeigt.</p>
           </DayItem>
         </Day>
 
         <Day heading="16. Mai 2025">
-          <DayItem heading="Cornerstone Image Browser">
+          <DayItem
+            heading="Cornerstone Image Browser"
+            badges={["Cornerstone Image Browser", "Tools", "Neu"]}
+          >
             <p>
-              Unter dem Navigationspunkt <strong>Tools</strong> gibt es nun den
-              <strong>Cornerstone Image Browser</strong>. Hier können die Bilder
-              von Cornerstone nebeneinander dargestellt werden, um sie visuell
-              einfach vergleichen zu können.
+              Unter dem Navigationspunkt{" "}
+              <Link
+                href="/app/tools"
+                className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300"
+              >
+                Tools
+              </Link>{" "}
+              gibt es nun den <strong>Cornerstone Image Browser</strong>. Hier
+              können die Bilder von Cornerstone nebeneinander dargestellt
+              werden, um sie visuell einfach vergleichen zu können.
             </p>
 
             <Image
@@ -1076,12 +1141,21 @@ const Day = ({ heading, children }: DayProps) => {
 type DayItemProps = Readonly<{
   heading: ReactNode;
   children: ReactNode;
+  badges?: string[];
 }>;
 
-const DayItem = ({ heading, children }: DayItemProps) => {
+const DayItem = ({ heading, badges = [], children }: DayItemProps) => {
   return (
     <li className="border-l-2 border-neutral-800/80 pl-5">
       <strong className="block font-bold">{heading}</strong>
+
+      {badges.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-1">
+          {badges.map((badge, index) => (
+            <SmallBadge key={index} value={badge} />
+          ))}
+        </div>
+      )}
 
       <div className="mt-1 flex flex-col gap-2">{children}</div>
     </li>
