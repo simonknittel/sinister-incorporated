@@ -54,7 +54,7 @@ export const OverlayButton = ({ className, entries }: Props) => {
 
       {pipWindow && (
         <OverlayWindow pipWindow={pipWindow}>
-          <section className="min-h-dvh background-primary text-text-primary p-2 flex flex-col gap-2">
+          <section className="min-h-dvh background-primary text-text-primary p-2 flex flex-col gap-1">
             {newEntries.length > 0 ? (
               newEntries.map((entry) => (
                 <OverlayEntry key={entry.key} entry={entry} />
@@ -88,7 +88,7 @@ const OverlayEntry = ({ entry }: OverlayEntryProps) => {
               <RSILink handle={entry.killer} />
             </div>
 
-            <div className="inline-block p-1 align-middle">killed</div>
+            <div className="inline-block align-middle">killed</div>
 
             <div
               className="max-w-32 truncate inline-block align-middle"
@@ -101,7 +101,7 @@ const OverlayEntry = ({ entry }: OverlayEntryProps) => {
 
         {entry.type === "corpse" && (
           <>
-            <div className="inline-block p-1 align-middle">Leiche von</div>
+            <div className="inline-block align-middle pl-2">Leiche von</div>
 
             <div
               className="max-w-32 truncate inline-block align-middle"
@@ -110,7 +110,7 @@ const OverlayEntry = ({ entry }: OverlayEntryProps) => {
               <RSILink handle={entry.target} />
             </div>
 
-            <div className="inline-block p-1 align-middle">entdeckt</div>
+            <div className="inline-block align-middle">entdeckt</div>
           </>
         )}
       </div>
