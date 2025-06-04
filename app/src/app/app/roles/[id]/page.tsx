@@ -1,7 +1,7 @@
 import { authenticatePage } from "@/auth/server";
 import { log } from "@/logging";
 import { OverviewTab } from "@/roles/components/OverviewTab";
-import { Template } from "@/roles/components/Template";
+import { RoleDetailsTemplate } from "@/roles/components/RoleDetailsTemplate";
 import { getRoleById } from "@/roles/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -47,8 +47,8 @@ export default async function Page({ params }: Props) {
   if (!role) notFound();
 
   return (
-    <Template role={role}>
+    <RoleDetailsTemplate role={role}>
       <OverviewTab role={role} />
-    </Template>
+    </RoleDetailsTemplate>
   );
 }

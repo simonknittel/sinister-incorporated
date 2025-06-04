@@ -1,8 +1,8 @@
 import { authenticatePage } from "@/auth/server";
 import { log } from "@/logging";
 import { InheritanceForm } from "@/roles/components/InheritanceForm";
+import { RoleDetailsTemplate } from "@/roles/components/RoleDetailsTemplate";
 import { SingleRole } from "@/roles/components/SingleRole";
-import { Template } from "@/roles/components/Template";
 import { getRoleById, getRoles } from "@/roles/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -53,7 +53,7 @@ export default async function Page({ params }: Props) {
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <Template role={role}>
+    <RoleDetailsTemplate role={role}>
       <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
         <h2 className="text-xl font-bold mb-2">Vererbungen</h2>
         <p className="max-w-prose">
@@ -66,6 +66,6 @@ export default async function Page({ params }: Props) {
 
         <InheritanceForm currentRole={role} roles={_roles} className="mt-4" />
       </section>
-    </Template>
+    </RoleDetailsTemplate>
   );
 }

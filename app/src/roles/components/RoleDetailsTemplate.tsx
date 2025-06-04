@@ -1,17 +1,17 @@
 import { SubNavigation } from "@/common/components/SubNavigation";
 import type { Role } from "@prisma/client";
-import clsx from "clsx";
+import type { ReactNode } from "react";
 import { FaHome, FaLock, FaUsers } from "react-icons/fa";
 import { TbHierarchy3 } from "react-icons/tb";
 
 interface Props {
-  readonly className?: string;
   readonly role: Role & {
     inherits: Role[];
   };
+  readonly children: ReactNode;
 }
 
-export const Navigation = ({ className, role }: Props) => {
+export const RoleDetailsTemplate = ({ role, children }: Props) => {
   const pages = [
     {
       name: "Übersicht",
@@ -36,9 +36,15 @@ export const Navigation = ({ className, role }: Props) => {
   ];
 
   return (
-    <SubNavigation
-      pages={pages}
-      className={clsx("flex flex-wrap", className)}
-    />
+    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+      <div className="flex gap-2 font-bold text-xl">
+        <span className="text-neutral-500">Rolle /</span>
+        <p>{role?.name}</p>
+      </div>
+
+      <SubNavigation pages={pages} className="flex flex-wrap my-4" />
+
+      {children}
+    </main>
   );
 };
