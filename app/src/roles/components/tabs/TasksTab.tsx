@@ -11,14 +11,14 @@ export const TasksTab = () => {
   return (
     <TabPanel id="tasks">
       <div className="border rounded border-neutral-700 p-4">
-        <h4 className="font-bold text-xl">Task einsehen</h4>
+        <h4 className="font-bold text-xl">Task lesen</h4>
         <div className="py-2 flex justify-between items-center gap-2 mt-2">
           <div>
             <h4 className="font-bold">
               Öffentlich, personalisiert oder Gruppe
             </h4>
             <p className="text-sm text-neutral-400">
-              Citizen mit dieser Berechtigung können öffentliche Tasks einsehen
+              Citizen mit dieser Berechtigung können öffentliche Tasks lesen
               sowie personalisierte und Gruppen-Tasks, die ihnen zugewiesen
               sind.
             </p>
@@ -31,7 +31,7 @@ export const TasksTab = () => {
           <div>
             <h4 className="font-bold">Gelöscht</h4>
             <p className="text-sm text-neutral-400">
-              Citizen mit dieser Berechtigung können gelöschte Tasks einsehen.
+              Citizen mit dieser Berechtigung können gelöschte Tasks lesen.
             </p>
           </div>
 

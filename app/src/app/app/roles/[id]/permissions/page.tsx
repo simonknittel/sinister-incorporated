@@ -3,7 +3,7 @@ import { getAllFlows } from "@/career/queries";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { log } from "@/logging";
 import { PermissionsTab } from "@/roles/components/PermissionsTab";
-import { Template } from "@/roles/components/Template";
+import { RoleDetailsTemplate } from "@/roles/components/RoleDetailsTemplate";
 import { getRoleById, getRoles } from "@/roles/queries";
 import { getAllClassificationLevels, getAllNoteTypes } from "@/spynet/queries";
 import { type Metadata } from "next";
@@ -59,7 +59,7 @@ export default async function Page({ params }: Props) {
   const enableOperations = Boolean(await getUnleashFlag("EnableOperations"));
 
   return (
-    <Template role={role}>
+    <RoleDetailsTemplate role={role}>
       <PermissionsTab
         role={role}
         allRoles={allRoles}
@@ -68,6 +68,6 @@ export default async function Page({ params }: Props) {
         enableOperations={enableOperations}
         flows={flows}
       />
-    </Template>
+    </RoleDetailsTemplate>
   );
 }
