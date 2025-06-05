@@ -20,7 +20,7 @@ const CitizenSection = ({ className }: Readonly<Props>) => {
         </div>
 
         <div>
-          <h5 className="font-bold mb-2">Einsehen</h5>
+          <h5 className="font-bold mb-2">Lesen</h5>
           <YesNoCheckbox {...register("citizen;read")} />
         </div>
 

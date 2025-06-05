@@ -68,20 +68,20 @@ export const Permissions = ({
             <RiSpyFill /> Citizen
           </Tab>
 
-          <Tab id="organizations">
-            <RiSpyFill /> Organisationen
-          </Tab>
-
-          <Tab id="fleet">
-            <MdWorkspaces /> Flotte
+          <Tab id="documents">
+            <IoDocuments /> Dokumente
           </Tab>
 
           <Tab id="events">
             <FaCalendarDay /> Events
           </Tab>
 
-          <Tab id="documents">
-            <IoDocuments /> Dokumente
+          <Tab id="fleet">
+            <MdWorkspaces /> Flotte
+          </Tab>
+
+          <Tab id="organizations">
+            <RiSpyFill /> Organisationen
           </Tab>
 
           <Tab id="silc">

@@ -14,7 +14,7 @@ const EventsTab = ({ enableOperations }: Props) => {
   return (
     <TabPanel id="events">
       <div className="py-2 flex justify-between items-center">
-        <h4 className="font-bold">Events einsehen</h4>
+        <h4 className="font-bold">Events lesen</h4>
 
         <YesNoCheckbox {...register("event;read")} />
       </div>
@@ -26,7 +26,7 @@ const EventsTab = ({ enableOperations }: Props) => {
       </div>
 
       <div className="py-2 flex justify-between items-center">
-        <h4 className="font-bold">Event-Flotte einsehen</h4>
+        <h4 className="font-bold">Event-Flotte lesen</h4>
 
         <YesNoCheckbox {...register("eventFleet;read")} />
       </div>
