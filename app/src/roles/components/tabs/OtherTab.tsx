@@ -34,7 +34,7 @@ const OtherTab = ({ roles, flows }: Readonly<Props>) => {
       </div>
 
       <div className="py-2 flex justify-between items-center">
-        <h4 className="font-bold">Benutzer einsehen</h4>
+        <h4 className="font-bold">Benutzer lesen</h4>
 
         <YesNoCheckbox {...register("user;read")} />
       </div>

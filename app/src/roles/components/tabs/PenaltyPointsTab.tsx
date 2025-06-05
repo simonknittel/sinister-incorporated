@@ -11,10 +11,10 @@ export const PenaltyPointsTab = () => {
     <TabPanel id="penalty_points">
       <div className="py-2 flex justify-between items-center gap-2  mt-2">
         <div>
-          <h4 className="font-bold">Einsehen</h4>
+          <h4 className="font-bold">Lesen</h4>
           <p className="text-sm">
             Citizen mit dieser Berechtigung können Strafpunkte von anderen
-            Citizen einsehen.
+            Citizen lesen.
           </p>
         </div>
 
@@ -49,10 +49,10 @@ export const PenaltyPointsTab = () => {
 
       <div className="py-2 flex justify-between items-center gap-2 mt-2">
         <div>
-          <h4 className="font-bold">Eigene Strafpunkte einsehen</h4>
+          <h4 className="font-bold">Eigene Strafpunkte lesen</h4>
           <p className="text-sm">
             Citizen mit dieser Berechtigung können ihre eigenen Strafpunkte
-            einsehen.
+            lesen.
           </p>
         </div>
 

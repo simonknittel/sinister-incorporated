@@ -2,18 +2,20 @@
 
 import { useAction } from "@/actions/utils/useAction";
 import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
-import type { ChangeEventHandler } from "react";
+import type { Role } from "@prisma/client";
+import { memo, type ChangeEventHandler } from "react";
 import { updateSingleRolePermission } from "../actions/updateSingleRolePermission";
-import type { getRoles } from "../queries";
-import type { PERMISSIONS } from "./PermissionMatrix";
 import { usePermissionsContext } from "./PermissionsContext";
 
 interface Props {
-  readonly role: Awaited<ReturnType<typeof getRoles>>[number];
-  readonly permission: (typeof PERMISSIONS)[number];
+  readonly roleId: Role["id"];
+  readonly permissionString: string;
 }
 
-export const PermissionCheckbox = ({ role, permission }: Props) => {
+export const PermissionCheckbox = memo(function PermissionCheckbox({
+  roleId,
+  permissionString,
+}: Props) {
   const { permissionStrings } = usePermissionsContext();
   const { formAction } = useAction(updateSingleRolePermission);
 
@@ -26,16 +28,12 @@ export const PermissionCheckbox = ({ role, permission }: Props) => {
   return (
     <td>
       <form action={formAction}>
-        <input type="hidden" name="roleId" value={role.id} />
-        <input
-          type="hidden"
-          name="permissionString"
-          value={permission.string}
-        />
+        <input type="hidden" name="roleId" value={roleId} />
+        <input type="hidden" name="permissionString" value={permissionString} />
 
         <YesNoCheckbox
           name="checked"
-          defaultChecked={permissionStrings.includes(permission.string)}
+          defaultChecked={permissionStrings.includes(permissionString)}
           yesLabel=""
           noLabel=""
           onChange={handleChange}
@@ -43,4 +41,4 @@ export const PermissionCheckbox = ({ role, permission }: Props) => {
       </form>
     </td>
   );
-};
+});
