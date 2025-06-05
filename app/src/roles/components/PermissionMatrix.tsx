@@ -8,7 +8,7 @@ import { getRoles } from "../queries";
 import { PermissionCheckbox } from "./PermissionCheckbox";
 import { PermissionsProvider } from "./PermissionsContext";
 
-export const PERMISSIONS = [
+export const STATIC_PERMISSIONS = [
   // Citizen
   {
     section: "Citizen",
@@ -500,7 +500,8 @@ interface Props {
 export const PermissionMatrix = async ({ className }: Props) => {
   const [roles, flows] = await Promise.all([getRoles(true), getAllFlows()]);
 
-  PERMISSIONS.push(
+  const PERMISSIONS = [
+    ...STATIC_PERMISSIONS,
     ...flows.flatMap((flow) => [
       {
         section: "Karriere",
@@ -513,7 +514,7 @@ export const PermissionMatrix = async ({ className }: Props) => {
         string: `career;update;flowId=${flow.id}`,
       },
     ]),
-  );
+  ];
 
   const gridTemplateColumns = `256px repeat(${PERMISSIONS.length}, 32px)`;
 
