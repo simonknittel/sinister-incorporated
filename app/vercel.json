@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/silc-role-salaries",
-      "schedule": "0 2 * * *"
-    }
-  ]
-}
