@@ -2,7 +2,9 @@ import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { env } from "@/env";
 import { getRoleSalaries } from "@/silc/queries";
+import { updateCitizensSilcBalances } from "@/silc/utils/updateCitizensSilcBalances";
 import type { Entity, Role } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -69,6 +71,24 @@ export async function POST(request: NextRequest) {
         })),
       });
     }
+
+    /**
+     * Update citizens' balances
+     */
+    const citizenIds = todaysSalaries.flatMap(
+      (salary) =>
+        citizensGroupedByRole
+          .get(salary.roleId)
+          ?.citizens.map((citizen) => citizen.id) || [],
+    );
+    await updateCitizensSilcBalances(citizenIds);
+
+    /**
+     * Revalidate cache(s)
+     */
+    revalidatePath("/app/silc");
+    revalidatePath("/app/silc/transactions");
+    revalidatePath("/app/dashboard");
 
     return NextResponse.json({ success: "ok" });
   } catch (error) {
