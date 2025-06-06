@@ -33,7 +33,10 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const authentication = await authenticatePage("/app/changelog");
-  const showLogAnalyzer = await authentication.authorize("logAnalyzer", "read");
+  const [showLogAnalyzer, showManageRoles] = await Promise.all([
+    authentication.authorize("logAnalyzer", "read"),
+    authentication.authorize("role", "manage"),
+  ]);
 
   return (
     <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
@@ -42,6 +45,38 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="6. Juni 2025">
+          <DayItem
+            heading="Monatliches Gehalt auf dem Dashboard"
+            badges={["SILC", "Neu"]}
+          >
+            <p>
+              In der SILC-Kachel auf dem Dashboard ist nun das eigene monatliche
+              Gehalt sichtbar.
+            </p>
+          </DayItem>
+        </Day>
+
+        <Day heading="5. Juni 2025">
+          {showManageRoles ? (
+            <DayItem heading="Berechtigungsmatrix" badges={["Rollen", "Neu"]}>
+              <p>
+                Unter{" "}
+                <Link
+                  href="/app/roles/permission-matrix"
+                  className="text-interaction-500 hover:text-interaction-300 focus-visible:text-interaction-300"
+                >
+                  Rollen &gt; Berechtigungsmatrix
+                </Link>{" "}
+                gibt es nun eine Darstellung aller Rollen und deren
+                Berechtigungen in Matrixform.
+              </p>
+            </DayItem>
+          ) : (
+            <RedactedDayItem />
+          )}
+        </Day>
+
         <Day heading="1. Juni 2025">
           {showLogAnalyzer ? (
             <DayItem

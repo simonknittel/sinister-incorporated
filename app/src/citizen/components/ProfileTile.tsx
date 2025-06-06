@@ -4,7 +4,10 @@ import { Link } from "@/common/components/Link";
 import { getPenaltyEntriesOfCurrentUser } from "@/penalty-points/queries";
 import { SingleRole } from "@/roles/components/SingleRole";
 import { getMyAssignedRoles } from "@/roles/utils/getRoles";
-import { getSilcBalanceOfCurrentCitizen } from "@/silc/queries";
+import {
+  getMonthlySalaryOfCurrentCitizen,
+  getSilcBalanceOfCurrentCitizen,
+} from "@/silc/queries";
 import clsx from "clsx";
 import { forbidden } from "next/navigation";
 import { FaExternalLinkAlt, FaPiggyBank } from "react-icons/fa";
@@ -30,9 +33,12 @@ export const ProfileTile = async ({ className }: Props) => {
       authentication.authorize("silcBalanceOfCurrentCitizen", "read"),
     ]);
 
-  const silcBalance = showSilcBalance
-    ? await getSilcBalanceOfCurrentCitizen()
-    : undefined;
+  const [silcBalance, monthlySalary] = showSilcBalance
+    ? await Promise.all([
+        getSilcBalanceOfCurrentCitizen(),
+        getMonthlySalaryOfCurrentCitizen(),
+      ])
+    : [undefined, undefined];
   const penaltyPoints = showPenaltyPoints
     ? (await getPenaltyEntriesOfCurrentUser()).reduce(
         (previous, current) => (previous += current.points),
@@ -77,6 +83,14 @@ export const ProfileTile = async ({ className }: Props) => {
               >
                 {silcBalance}
               </span>
+
+              {monthlySalary ? (
+                <p className="text-neutral-500 text-xs">
+                  {monthlySalary >= 0 ? "+" : "-"}
+                  {monthlySalary} monatlich
+                </p>
+              ) : null}
+
               <p className="text-neutral-500 flex gap-2 items-center">
                 <FaPiggyBank className="text-neutral-500" />
                 SILC
