@@ -1,6 +1,6 @@
 <h1 align="center">Sinister Administration Module (S.A.M.)</h1>
 
-<p align="center">Monorepo for the <i>Sinister Administration Module (S.A.M.)</i> of the Star Citizen organization <i>Sinister Incorporated</i>.</p>
+<p align="center">Monorepo for the ERP/CRM of the Star Citizen organization <i>Sinister Incorporated</i>.</p>
 
 <p align="center">
   <a href="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-dashboard.png" style="display: block;">
@@ -14,37 +14,23 @@
 
 ## Features
 
-- CRM-like citizen and organization management
-- Dynamic RBAC + ABAC
-- Fleet and ship management
-- Operation management
-- Discord Event integration
-  - Shows the available fleet based on the participants' ships
-- Discord Login
+- Spynet: ERP- and CRM-like citizen and organization management
+- Fully dynamic role and attribute based access control
+- Fleet: Org-wide management of the member's Star Citizen fleet
+- Events: Prepare complex operations based on the event participant's roles and fleet. Synchronized with Discord events
+- Career: Interactive org-internal career path graph synchronized to the member's roles
+- Log Analyzer: Star Citizen game log analysis. Kill feed with overlay
+- Documents: Access important org documents based on the member's roles
+- Tasks: Org-internal quest system
+- S.I.L.C.: Org-internal reward system for participating in events, tasks and monthly salary based on the members's roles
+- Social login via Discord integration
+- Dogfight Trainer: Asteroids-like mini game
+- Cornerstone Image Browser: Simple way to compare Star Citizen item skins based on Cornerstone's database
 
-## Technologies
+## Core technologies
 
-- [Next.js](https://nextjs.org/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Prisma](https://www.prisma.io/)
-- [Vercel](https://vercel.com/)
-- [NextAuth.js](https://next-auth.js.org/)
-- [React Table](https://github.com/TanStack/table)
-- [react-hot-toast](https://github.com/timolins/react-hot-toast)
-- [React Icons](https://github.com/react-icons/react-icons)
-- [Zod](https://github.com/colinhacks/zod)
-- [Terraform](https://www.terraform.io/)
-- [React Email](https://react.email/)
-- [Mailgun](https://www.mailgun.com/)
-- [AWS](https://aws.amazon.com/)
-- [PostgreSQL](https://www.postgresql.org/)
-
-## Setup
-
-- [Local Machine](./docs/setup-local-machine.md)
-- [Test and Production](./docs/setup-test-and-production.md)
+Next.js, PostgreSQL, Vercel, Tailwind CSS, TypeScript, React, AWS
 
 ## License
 
-See [LICENSE](./LICENSE)
+APGL-3.0 (see [LICENSE](./LICENSE))
