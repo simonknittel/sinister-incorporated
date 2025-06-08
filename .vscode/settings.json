@@ -11,6 +11,7 @@
 		"postgresql",
 		"prisma",
 		"psql",
+		"rustnsparks",
 		"tfbackend",
 		"tfvars",
 		"VERCEL"
