@@ -52,6 +52,7 @@ export const LineupTab = ({
     <section className={clsx("flex flex-col gap-4", className)}>
       <div className="flex justify-end">
         <h2 className="sr-only">Aufstellung</h2>
+
         {canManagePositions && (
           <div className="flex items-center gap-4">
             <UpdateEventLineupEnabled event={event} />

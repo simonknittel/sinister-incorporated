@@ -7,6 +7,7 @@ import { DesktopSidebarContainer } from "@/common/components/Sidebar/DesktopSide
 import { MobileActionBarContainer } from "@/common/components/Sidebar/MobileActionBarContainer";
 import { env } from "@/env";
 import { BeamsProvider } from "@/pusher/components/BeamsContext";
+import { ChannelsProvider } from "@/pusher/components/ChannelsContext";
 import { TRPCReactProvider } from "@/trpc/react";
 import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";
@@ -23,29 +24,33 @@ export default async function AppLayout({ children }: Readonly<Props>) {
     <SessionProviderContainer session={authentication.session}>
       <QueryClientProviderContainer>
         <TRPCReactProvider>
-          <BeamsProvider
-            instanceId={env.PUSHER_BEAMS_INSTANCE_ID}
-            userId={authentication.session.user.id}
-          >
-            <NextIntlClientProvider>
-              <div className="min-h-dvh background-primary">
-                <MobileActionBarContainer />
-                <DesktopSidebarContainer />
+          <ChannelsProvider userId={authentication.session.user.id}>
+            <BeamsProvider
+              instanceId={env.PUSHER_BEAMS_INSTANCE_ID}
+              userId={authentication.session.user.id}
+            >
+              <NextIntlClientProvider>
+                <div className="min-h-dvh background-primary">
+                  <MobileActionBarContainer />
+                  <DesktopSidebarContainer />
 
-                <div className="lg:ml-[26rem] min-h-dvh">{children}</div>
-              </div>
+                  <div className="lg:ml-[26rem] min-h-dvh">{children}</div>
+                </div>
 
-              <Suspense>
-                <ImpersonationBannerContainer />
-              </Suspense>
+                <Suspense>
+                  <ImpersonationBannerContainer />
+                </Suspense>
 
-              {authentication.session.user.role === "admin" && (
-                <AdminEnabler
-                  enabled={(await cookies()).get("enable_admin")?.value === "1"}
-                />
-              )}
-            </NextIntlClientProvider>
-          </BeamsProvider>
+                {authentication.session.user.role === "admin" && (
+                  <AdminEnabler
+                    enabled={
+                      (await cookies()).get("enable_admin")?.value === "1"
+                    }
+                  />
+                )}
+              </NextIntlClientProvider>
+            </BeamsProvider>
+          </ChannelsProvider>
         </TRPCReactProvider>
       </QueryClientProviderContainer>
     </SessionProviderContainer>

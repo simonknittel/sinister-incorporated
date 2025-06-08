@@ -11,6 +11,7 @@
 		"postgresql",
 		"prisma",
 		"psql",
+		"soketi",
 		"tfbackend",
 		"tfvars",
 		"VERCEL"

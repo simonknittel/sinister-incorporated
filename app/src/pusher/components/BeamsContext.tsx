@@ -5,9 +5,12 @@ import dynamic from "next/dynamic";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-const Client = dynamic(() => import("./Client").then((mod) => mod.Client), {
-  ssr: false,
-});
+const BeamsClient = dynamic(
+  () => import("./BeamsClient").then((mod) => mod.BeamsClient),
+  {
+    ssr: false,
+  },
+);
 
 interface BeamsContext {
   interests?: string[];
@@ -51,7 +54,7 @@ export const BeamsProvider = ({ children, instanceId, userId }: Props) => {
   return (
     <BeamsContext.Provider value={value}>
       {children}
-      {instanceId && <Client instanceId={instanceId} userId={userId} />}
+      {instanceId && <BeamsClient instanceId={instanceId} userId={userId} />}
     </BeamsContext.Provider>
   );
 };

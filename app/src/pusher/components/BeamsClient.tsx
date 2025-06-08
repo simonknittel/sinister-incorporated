@@ -11,7 +11,7 @@ interface Props {
   readonly userId: User["id"];
 }
 
-export const Client = ({ instanceId, userId }: Props) => {
+export const BeamsClient = ({ instanceId, userId }: Props) => {
   const { interests } = useBeamsContext();
 
   useEffect(() => {

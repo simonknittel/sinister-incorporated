@@ -63,6 +63,8 @@
     "next-auth": "4.24.11",
     "next-intl": "4.1.0",
     "openai": "4.103.0",
+    "pusher": "5.2.0",
+    "pusher-js": "8.4.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-error-boundary": "6.0.0",
