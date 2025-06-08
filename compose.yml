@@ -1,4 +1,5 @@
 services:
+
   psql:
     image: postgres:15.6-alpine3.19
     restart: no
@@ -7,3 +8,12 @@ services:
       POSTGRES_DB: db
     ports:
       - 5432:5432
+
+  soketi:
+    image: quay.io/soketi/soketi:1.6.1-16-distroless
+    restart: no
+    environment:
+      SOKETI_DEFAULT_APP_USER_AUTHENTICATION: "true"
+    ports:
+      - 6001:6001
+      - 9601:9601

@@ -83,6 +83,7 @@ export const env = createEnv({
     OTEL_EXPORTER_OTLP_PROTOCOL: z.string().optional(),
     OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
     CRON_SECRET: z.string().optional(),
+    PUSHER_CHANNELS_APP_SECRET: z.string().optional(),
   },
 
   /*
@@ -96,6 +97,11 @@ export const env = createEnv({
     NEXT_PUBLIC_R2_PUBLIC_URL: z.string(),
     NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL: z.string().url(),
     NEXT_PUBLIC_DOWNLOADS_BASE_URL: z.string().url().optional(),
+    NEXT_PUBLIC_PUSHER_CHANNELS_APP_ID: z.string().optional(),
+    NEXT_PUBLIC_PUSHER_CHANNELS_APP_KEY: z.string().optional(),
+    NEXT_PUBLIC_PUSHER_CHANNELS_HOST: z.string().optional(),
+    NEXT_PUBLIC_PUSHER_CHANNELS_PORT: z.coerce.number().optional(),
+    NEXT_PUBLIC_PUSHER_CHANNELS_SECURE_PORT: z.coerce.number().optional(),
   },
 
   /*
@@ -146,6 +152,17 @@ export const env = createEnv({
     OTEL_EXPORTER_OTLP_ENDPOINT: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
     NEXT_PUBLIC_DOWNLOADS_BASE_URL: process.env.NEXT_PUBLIC_DOWNLOADS_BASE_URL,
     CRON_SECRET: process.env.CRON_SECRET,
+    NEXT_PUBLIC_PUSHER_CHANNELS_APP_ID:
+      process.env.NEXT_PUBLIC_PUSHER_CHANNELS_APP_ID,
+    NEXT_PUBLIC_PUSHER_CHANNELS_APP_KEY:
+      process.env.NEXT_PUBLIC_PUSHER_CHANNELS_APP_KEY,
+    PUSHER_CHANNELS_APP_SECRET: process.env.PUSHER_CHANNELS_APP_SECRET,
+    NEXT_PUBLIC_PUSHER_CHANNELS_HOST:
+      process.env.NEXT_PUBLIC_PUSHER_CHANNELS_HOST,
+    NEXT_PUBLIC_PUSHER_CHANNELS_PORT:
+      process.env.NEXT_PUBLIC_PUSHER_CHANNELS_PORT,
+    NEXT_PUBLIC_PUSHER_CHANNELS_SECURE_PORT:
+      process.env.NEXT_PUBLIC_PUSHER_CHANNELS_SECURE_PORT,
   },
 
   emptyStringAsUndefined: true,
