@@ -42,11 +42,13 @@ export function OverlayProvider({ children }: Props) {
     // We don't want to allow multiple requests.
     if (pipWindow != null) return;
 
-    const pip = await window.documentPictureInPicture.requestWindow({
+    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const pip = (await window.documentPictureInPicture.requestWindow({
       disallowReturnToOpener: true,
       width: 352,
       height: 256,
-    });
+    })) as Window;
 
     // Detect when window is closed by user
     pip.addEventListener("pagehide", () => {
@@ -64,7 +66,9 @@ export function OverlayProvider({ children }: Props) {
 
         style.textContent = cssRules;
         pip.document.head.appendChild(style);
-      } catch (e) {
+      } catch (error) {
+        console.error("Error copying stylesheet:", error);
+
         const link = document.createElement("link");
         if (styleSheet.href == null) return;
 
