@@ -17,6 +17,8 @@ import image20250329CitizenHandle from "@/changelog/assets/2025-03-29-citizen-ha
 import image20250516CornerstoneImageBrowser from "@/changelog/assets/2025-05-16-cornerstone-image-browser.png";
 import image20250529LogAnalyzer from "@/changelog/assets/2025-05-29-log-analyzer.png";
 import image20250531Overlay from "@/changelog/assets/2025-05-31-overlay.png";
+import image20250609Collapsed from "@/changelog/assets/2025-06-09-collapsed.png";
+import image20250609Uncollapsed from "@/changelog/assets/2025-06-09-uncollapsed.png";
 import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
 import { SmallBadge } from "@/common/components/SmallBadge";
@@ -45,6 +47,36 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="6. Juni 2025">
+          <DayItem heading="Ein-/ausklappare Navigation" badges={["Neu"]}>
+            <p>Die Navigation ist nun ein-/ausklappbar.</p>
+            <p>
+              Mit der Zeit wird das restliche Interface an den mehr verfügbaren
+              Platz angepasst.
+            </p>
+
+            <div className="flex justify-between items-start gap-2">
+              <div className="w-2/3">
+                <Image
+                  quality={100}
+                  src={image20250609Uncollapsed}
+                  alt=""
+                  loading="lazy"
+                />
+              </div>
+
+              <div className="w-1/3">
+                <Image
+                  quality={100}
+                  src={image20250609Collapsed}
+                  alt=""
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </DayItem>
+        </Day>
+
         <Day heading="6. Juni 2025">
           <DayItem
             heading="Monatliches Gehalt auf dem Dashboard"

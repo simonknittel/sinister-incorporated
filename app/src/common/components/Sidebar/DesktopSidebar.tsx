@@ -25,6 +25,7 @@ import { CmdKLoader } from "../CmdK/CmdKLoader";
 import { Footer } from "../Footer";
 import { Link } from "../Link";
 import { Account } from "./Account";
+import { CollapseToggle } from "./CollapseToggle";
 import { RedBar } from "./RedBar";
 import { TasksBadge } from "./TasksBadge";
 
@@ -101,9 +102,9 @@ export const DesktopSidebar = async () => {
 
       <div className="background-secondary flex flex-col justify-between rounded-primary">
         <div>
-          <Account />
+          <Account isInDesktopSidebar />
 
-          <div className="flex justify-evenly items-center mt-4">
+          <div className="flex justify-between items-center mt-4 px-8 group-data-[navigation-collapsed]/navigation:px-0 group-data-[navigation-collapsed]/navigation:justify-center">
             <CmdKLoader
               disableAlgolia={disableAlgolia}
               showCitizenRead={showCitizenRead}
@@ -118,9 +119,11 @@ export const DesktopSidebar = async () => {
               showManufacturersSeriesAndVariantsManage={
                 showManufacturersSeriesAndVariantsManage
               }
+              className="group-data-[navigation-collapsed]/navigation:hidden"
             />
 
             {/* <InstallPWA /> */}
+            <CollapseToggle />
           </div>
 
           <nav
@@ -128,104 +131,113 @@ export const DesktopSidebar = async () => {
             data-red-bar-container
           >
             <ul>
-              <NavigationItem href="/app" icon={<FaHome />}>
-                Dashboard
-              </NavigationItem>
+              <NavigationItem href="/app" label="Dashboard" icon={<FaHome />} />
 
               {showTasks && (
-                <NavigationItem href="/app/tasks" icon={<MdTaskAlt />}>
-                  Tasks
+                <NavigationItem
+                  href="/app/tasks"
+                  label="Tasks"
+                  icon={<MdTaskAlt />}
+                >
                   <Suspense>
-                    <TasksBadge />
+                    <TasksBadge isInDesktopSidebar />
                   </Suspense>
                 </NavigationItem>
               )}
 
               {showSpynet && (
-                <NavigationItem href="/app/spynet" icon={<RiSpyFill />}>
-                  Spynet
-                </NavigationItem>
+                <NavigationItem
+                  href="/app/spynet"
+                  label="Spynet"
+                  icon={<RiSpyFill />}
+                />
               )}
 
               {(showOrgFleetRead || showShipManage) && (
-                <NavigationItem href="/app/fleet" icon={<MdWorkspaces />}>
-                  Flotte
-                </NavigationItem>
+                <NavigationItem
+                  href="/app/fleet"
+                  label="Flotte"
+                  icon={<MdWorkspaces />}
+                />
               )}
 
-              <NavigationItem href="/app/documents" icon={<IoDocuments />}>
-                Dokumente
-              </NavigationItem>
+              <NavigationItem
+                href="/app/documents"
+                label="Dokumente"
+                icon={<IoDocuments />}
+              />
 
               {showCareer && (
-                <NavigationItem href="/app/career" icon={<TbMilitaryRank />}>
-                  Karriere
-                </NavigationItem>
+                <NavigationItem
+                  href="/app/career"
+                  label="Karriere"
+                  icon={<TbMilitaryRank />}
+                />
               )}
 
               {showSilc && (
-                <NavigationItem href="/app/silc" icon={<FaPiggyBank />}>
-                  SILC
-                </NavigationItem>
+                <NavigationItem
+                  href="/app/silc"
+                  label="SILC"
+                  icon={<FaPiggyBank />}
+                />
               )}
 
               {showPenaltyPoints && (
                 <NavigationItem
                   href="/app/penalty-points"
                   icon={<FaScaleBalanced />}
-                >
-                  Strafpunkte
-                </NavigationItem>
+                  label="Strafpunkte"
+                />
               )}
 
-              <NavigationItem href="/app/tools" icon={<FaTools />}>
-                Tools
-              </NavigationItem>
+              <NavigationItem
+                href="/app/tools"
+                label="Tools"
+                icon={<FaTools />}
+              />
 
               <NavigationItem
                 href="/app/changelog"
+                label="Changelog"
                 icon={<FaCodePullRequest />}
-              >
-                Changelog
-              </NavigationItem>
+              />
             </ul>
 
             {showSpynetAdmin && (
-              <div className="mt-4">
-                <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
+              <NavigationSection heading="Spynet">
+                {showSpynetActivity && (
+                  <NavigationItem
+                    href="/app/spynet/activity"
+                    label="Aktivität"
+                    icon={<RxActivityLog />}
+                  />
+                )}
 
-                <ul>
-                  {showSpynetActivity && (
-                    <NavigationItem
-                      href="/app/spynet/activity"
-                      icon={<RxActivityLog />}
-                    >
-                      Aktivität
-                    </NavigationItem>
-                  )}
+                {showSpynetCitizen && (
+                  <NavigationItem
+                    href="/app/spynet/citizen"
+                    label="Citizen"
+                    icon={<FaTable />}
+                  />
+                )}
 
-                  {showSpynetCitizen && (
-                    <NavigationItem
-                      href="/app/spynet/citizen"
-                      icon={<FaTable />}
-                    >
-                      Citizen
-                    </NavigationItem>
-                  )}
+                {showSpynetNotes && (
+                  <NavigationItem
+                    href="/app/spynet/notes"
+                    label="Notizen"
+                    icon={<FaTable />}
+                  />
+                )}
 
-                  {showSpynetNotes && (
-                    <NavigationItem href="/app/spynet/notes" icon={<FaTable />}>
-                      Notizen
-                    </NavigationItem>
-                  )}
-
-                  {showSpynetOther && (
-                    <NavigationItem href="/app/spynet/other" icon={<FaTable />}>
-                      Sonstige
-                    </NavigationItem>
-                  )}
-                </ul>
-              </div>
+                {showSpynetOther && (
+                  <NavigationItem
+                    href="/app/spynet/other"
+                    label="Sonstige"
+                    icon={<FaTable />}
+                  />
+                )}
+              </NavigationSection>
             )}
 
             {(showUserRead ||
@@ -234,40 +246,41 @@ export const DesktopSidebar = async () => {
               showNoteTypeManage ||
               showAnalyticsManage ||
               showManufacturersSeriesAndVariantsManage) && (
-              <div className="mt-4">
-                <p className="ml-4 text-neutral-500 mt-4">Admin</p>
+              <NavigationSection heading="Admin">
+                {(showNoteTypeManage ||
+                  showClassificationLevelManage ||
+                  showAnalyticsManage) && (
+                  <NavigationItem
+                    href="/app/settings"
+                    label="Einstellungen"
+                    icon={<FaCog />}
+                  />
+                )}
 
-                <ul>
-                  {(showNoteTypeManage ||
-                    showClassificationLevelManage ||
-                    showAnalyticsManage) && (
-                    <NavigationItem href="/app/settings" icon={<FaCog />}>
-                      Einstellungen
-                    </NavigationItem>
-                  )}
+                {showRoleManage && (
+                  <NavigationItem
+                    href="/app/roles"
+                    label="Rollen"
+                    icon={<FaLock />}
+                  />
+                )}
 
-                  {showRoleManage && (
-                    <NavigationItem href="/app/roles" icon={<FaLock />}>
-                      Rollen
-                    </NavigationItem>
-                  )}
+                {showManufacturersSeriesAndVariantsManage && (
+                  <NavigationItem
+                    href="/app/fleet/settings/manufacturer"
+                    label="Schiffe"
+                    icon={<FaCog />}
+                  />
+                )}
 
-                  {showManufacturersSeriesAndVariantsManage && (
-                    <NavigationItem
-                      href="/app/fleet/settings/manufacturer"
-                      icon={<FaCog />}
-                    >
-                      Schiffe
-                    </NavigationItem>
-                  )}
-
-                  {showUserRead && (
-                    <NavigationItem href="/app/users" icon={<FaUsers />}>
-                      Benutzer
-                    </NavigationItem>
-                  )}
-                </ul>
-              </div>
+                {showUserRead && (
+                  <NavigationItem
+                    href="/app/users"
+                    label="Benutzer"
+                    icon={<FaUsers />}
+                  />
+                )}
+              </NavigationSection>
             )}
 
             <RedBar />
@@ -275,7 +288,7 @@ export const DesktopSidebar = async () => {
         </div>
       </div>
 
-      <Footer className="px-8 py-4" />
+      <Footer className="px-8 py-4 group-data-[navigation-collapsed]/navigation:hidden" />
     </div>
   );
 };
@@ -283,10 +296,16 @@ export const DesktopSidebar = async () => {
 interface NavigationItemProps {
   href: string;
   icon: ReactElement;
-  children: ReactNode;
+  label: string;
+  children?: ReactNode;
 }
 
-const NavigationItem = ({ href, icon, children }: NavigationItemProps) => {
+const NavigationItem = ({
+  href,
+  icon,
+  label,
+  children,
+}: NavigationItemProps) => {
   const _icon = cloneElement(icon, {
     // @ts-expect-error
     className: "text-neutral-500",
@@ -296,11 +315,36 @@ const NavigationItem = ({ href, icon, children }: NavigationItemProps) => {
     <li>
       <Link
         href={href}
-        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
+        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded relative"
+        title={label}
       >
         {_icon}
+
+        <div className="group-data-[navigation-collapsed]/navigation:hidden">
+          {label}
+        </div>
+
         {children}
       </Link>
     </li>
+  );
+};
+
+interface NavigationSectionProps {
+  heading: ReactNode;
+  children: ReactNode;
+}
+
+const NavigationSection = ({ heading, children }: NavigationSectionProps) => {
+  return (
+    <div className="mt-4 group-data-[navigation-collapsed]/navigation:mt-0">
+      <p className="ml-4 text-neutral-500 mt-4 group-data-[navigation-collapsed]/navigation:hidden">
+        {heading}
+      </p>
+
+      <div className="hidden group-data-[navigation-collapsed]/navigation:block h-[1px] bg-neutral-500 my-2" />
+
+      <ul>{children}</ul>
+    </div>
   );
 };

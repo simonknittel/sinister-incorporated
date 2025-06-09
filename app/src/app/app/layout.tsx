@@ -18,7 +18,12 @@ interface Props {
 }
 
 export default async function AppLayout({ children }: Readonly<Props>) {
-  const authentication = await authenticatePage();
+  const [authentication, _cookies] = await Promise.all([
+    authenticatePage(),
+    cookies(),
+  ]);
+  const isNavigationCollapsed =
+    _cookies.get("navigation_collapsed")?.value === "true";
 
   return (
     <SessionProviderContainer session={authentication.session}>
@@ -30,11 +35,18 @@ export default async function AppLayout({ children }: Readonly<Props>) {
               userId={authentication.session.user.id}
             >
               <NextIntlClientProvider>
-                <div className="min-h-dvh background-primary">
+                <div
+                  className="min-h-dvh background-primary group/navigation"
+                  data-navigation-collapsed={
+                    isNavigationCollapsed ? "true" : undefined
+                  }
+                >
                   <MobileActionBarContainer />
                   <DesktopSidebarContainer />
 
-                  <div className="lg:ml-[26rem] min-h-dvh">{children}</div>
+                  <div className="lg:ml-[26rem] group-data-[navigation-collapsed]/navigation:lg:ml-[7rem] min-h-dvh">
+                    {children}
+                  </div>
                 </div>
 
                 <Suspense>
