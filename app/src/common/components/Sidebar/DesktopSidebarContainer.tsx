@@ -7,7 +7,7 @@ export const DesktopSidebarContainer = () => {
     <div className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[26rem] flex-col">
       <Suspense
         fallback={
-          <div className="flex max-h-full h-96 ml-8 my-8 flex-col justify-between bg-neutral-800/50 rounded-2xl">
+          <div className="flex max-h-full h-96 ml-8 my-8 flex-col justify-between background-secondary rounded-primary">
             <div />
 
             <Footer className="px-8 pb-4 pt-0" />
