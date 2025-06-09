@@ -1,6 +1,11 @@
 import { requireAuthentication } from "@/auth/server";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { Suspense } from "react";
+import {
+  cloneElement,
+  Suspense,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import {
   FaCog,
   FaHome,
@@ -123,120 +128,66 @@ export const DesktopSidebar = async () => {
             data-red-bar-container
           >
             <ul>
-              <li>
-                <Link
-                  href="/app"
-                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                >
-                  <FaHome className="text-neutral-500" />
-                  Dashboard
-                </Link>
-              </li>
+              <NavigationItem href="/app" icon={<FaHome />}>
+                Dashboard
+              </NavigationItem>
 
               {showTasks && (
-                <li>
-                  <Link
-                    href="/app/tasks"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <MdTaskAlt className="text-neutral-500" />
-                    Tasks
-                    <Suspense>
-                      <TasksBadge />
-                    </Suspense>
-                  </Link>
-                </li>
+                <NavigationItem href="/app/tasks" icon={<MdTaskAlt />}>
+                  Tasks
+                  <Suspense>
+                    <TasksBadge />
+                  </Suspense>
+                </NavigationItem>
               )}
 
               {showSpynet && (
-                <li>
-                  <Link
-                    href="/app/spynet"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <RiSpyFill className="text-neutral-500" />
-                    Spynet
-                  </Link>
-                </li>
+                <NavigationItem href="/app/spynet" icon={<RiSpyFill />}>
+                  Spynet
+                </NavigationItem>
               )}
 
               {(showOrgFleetRead || showShipManage) && (
-                <li>
-                  <Link
-                    href="/app/fleet"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <MdWorkspaces className="text-neutral-500" />
-                    Flotte
-                  </Link>
-                </li>
+                <NavigationItem href="/app/fleet" icon={<MdWorkspaces />}>
+                  Flotte
+                </NavigationItem>
               )}
 
-              <li>
-                <Link
-                  href="/app/documents"
-                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                >
-                  <IoDocuments className="text-neutral-500" />
-                  Dokumente
-                </Link>
-              </li>
+              <NavigationItem href="/app/documents" icon={<IoDocuments />}>
+                Dokumente
+              </NavigationItem>
 
               {showCareer && (
-                <li>
-                  <Link
-                    href="/app/career"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <TbMilitaryRank className="text-neutral-500" />
-                    Karriere
-                  </Link>
-                </li>
+                <NavigationItem href="/app/career" icon={<TbMilitaryRank />}>
+                  Karriere
+                </NavigationItem>
               )}
 
               {showSilc && (
-                <li>
-                  <Link
-                    href="/app/silc"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <FaPiggyBank className="text-neutral-500" />
-                    SILC
-                  </Link>
-                </li>
+                <NavigationItem href="/app/silc" icon={<FaPiggyBank />}>
+                  SILC
+                </NavigationItem>
               )}
 
               {showPenaltyPoints && (
-                <li>
-                  <Link
-                    href="/app/penalty-points"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <FaScaleBalanced className="text-neutral-500" />
-                    Strafpunkte
-                  </Link>
-                </li>
+                <NavigationItem
+                  href="/app/penalty-points"
+                  icon={<FaScaleBalanced />}
+                >
+                  Strafpunkte
+                </NavigationItem>
               )}
 
-              <li>
-                <Link
-                  href="/app/tools"
-                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                >
-                  <FaTools className="text-neutral-500" />
-                  Tools
-                </Link>
-              </li>
+              <NavigationItem href="/app/tools" icon={<FaTools />}>
+                Tools
+              </NavigationItem>
 
-              <li>
-                <Link
-                  href="/app/changelog"
-                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                >
-                  <FaCodePullRequest className="text-neutral-500" />
-                  Changelog
-                </Link>
-              </li>
+              <NavigationItem
+                href="/app/changelog"
+                icon={<FaCodePullRequest />}
+              >
+                Changelog
+              </NavigationItem>
             </ul>
 
             {showSpynetAdmin && (
@@ -245,51 +196,33 @@ export const DesktopSidebar = async () => {
 
                 <ul>
                   {showSpynetActivity && (
-                    <li>
-                      <Link
-                        href="/app/spynet/activity"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <RxActivityLog className="text-neutral-500" />
-                        Aktivität
-                      </Link>
-                    </li>
+                    <NavigationItem
+                      href="/app/spynet/activity"
+                      icon={<RxActivityLog />}
+                    >
+                      Aktivität
+                    </NavigationItem>
                   )}
 
                   {showSpynetCitizen && (
-                    <li>
-                      <Link
-                        href="/app/spynet/citizen"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaTable className="text-neutral-500" />
-                        Citizen
-                      </Link>
-                    </li>
+                    <NavigationItem
+                      href="/app/spynet/citizen"
+                      icon={<FaTable />}
+                    >
+                      Citizen
+                    </NavigationItem>
                   )}
 
                   {showSpynetNotes && (
-                    <li>
-                      <Link
-                        href="/app/spynet/notes"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaTable className="text-neutral-500" />
-                        Notizen
-                      </Link>
-                    </li>
+                    <NavigationItem href="/app/spynet/notes" icon={<FaTable />}>
+                      Notizen
+                    </NavigationItem>
                   )}
 
                   {showSpynetOther && (
-                    <li>
-                      <Link
-                        href="/app/spynet/other"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaTable className="text-neutral-500" />
-                        Sonstige
-                      </Link>
-                    </li>
+                    <NavigationItem href="/app/spynet/other" icon={<FaTable />}>
+                      Sonstige
+                    </NavigationItem>
                   )}
                 </ul>
               </div>
@@ -308,50 +241,30 @@ export const DesktopSidebar = async () => {
                   {(showNoteTypeManage ||
                     showClassificationLevelManage ||
                     showAnalyticsManage) && (
-                    <li>
-                      <Link
-                        href="/app/settings"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaCog className="text-neutral-500" />
-                        Einstellungen
-                      </Link>
-                    </li>
+                    <NavigationItem href="/app/settings" icon={<FaCog />}>
+                      Einstellungen
+                    </NavigationItem>
                   )}
 
                   {showRoleManage && (
-                    <li>
-                      <Link
-                        href="/app/roles"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaLock className="text-neutral-500" />
-                        Rollen
-                      </Link>
-                    </li>
+                    <NavigationItem href="/app/roles" icon={<FaLock />}>
+                      Rollen
+                    </NavigationItem>
                   )}
 
                   {showManufacturersSeriesAndVariantsManage && (
-                    <li>
-                      <Link
-                        href="/app/fleet/settings/manufacturer"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaCog className="text-neutral-500" />
-                        Schiffe
-                      </Link>
-                    </li>
+                    <NavigationItem
+                      href="/app/fleet/settings/manufacturer"
+                      icon={<FaCog />}
+                    >
+                      Schiffe
+                    </NavigationItem>
                   )}
+
                   {showUserRead && (
-                    <li>
-                      <Link
-                        href="/app/users"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaUsers className="text-neutral-500" />
-                        Benutzer
-                      </Link>
-                    </li>
+                    <NavigationItem href="/app/users" icon={<FaUsers />}>
+                      Benutzer
+                    </NavigationItem>
                   )}
                 </ul>
               </div>
@@ -364,5 +277,30 @@ export const DesktopSidebar = async () => {
 
       <Footer className="px-8 py-4" />
     </div>
+  );
+};
+
+interface NavigationItemProps {
+  href: string;
+  icon: ReactElement;
+  children: ReactNode;
+}
+
+const NavigationItem = ({ href, icon, children }: NavigationItemProps) => {
+  const _icon = cloneElement(icon, {
+    // @ts-expect-error
+    className: "text-neutral-500",
+  });
+
+  return (
+    <li>
+      <Link
+        href={href}
+        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
+      >
+        {_icon}
+        {children}
+      </Link>
+    </li>
   );
 };
