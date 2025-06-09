@@ -6,7 +6,11 @@ import { FaSpinner } from "react-icons/fa";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import Button from "./Button";
 
-export const LogoutButton = () => {
+interface Props {
+  className?: string;
+}
+
+export const LogoutButton = ({ className }: Props) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleClick = async () => {
@@ -23,6 +27,7 @@ export const LogoutButton = () => {
       title="Abmelden"
       iconOnly={true}
       disabled={isLoggingOut}
+      className={className}
     >
       {isLoggingOut ? (
         <FaSpinner className="animate-spin" />

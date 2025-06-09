@@ -107,6 +107,7 @@ export const Position = ({
   return (
     <div
       className={clsx(
+        "@container",
         {
           "opacity-50": isDragging?.id === position.id,
         },
@@ -130,7 +131,7 @@ export const Position = ({
       >
         {showActions && showManage && <DragHandle position={position} />}
 
-        <div className="flex-1 flex flex-col xl:grid xl:grid-cols-[1fr_256px_256px] gap-2">
+        <div className="flex-1 flex flex-col @3xl:grid @3xl:grid-cols-[1fr_256px_256px] gap-2">
           <div className="flex flex-col justify-center overflow-hidden pl-2">
             <h3
               className={clsx("text-sm text-gray-500", {

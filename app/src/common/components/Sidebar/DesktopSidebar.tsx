@@ -1,6 +1,11 @@
 import { requireAuthentication } from "@/auth/server";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { Suspense } from "react";
+import {
+  cloneElement,
+  Suspense,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import {
   FaCog,
   FaHome,
@@ -20,6 +25,7 @@ import { CmdKLoader } from "../CmdK/CmdKLoader";
 import { Footer } from "../Footer";
 import { Link } from "../Link";
 import { Account } from "./Account";
+import { CollapseToggle } from "./CollapseToggle";
 import { RedBar } from "./RedBar";
 import { TasksBadge } from "./TasksBadge";
 
@@ -94,11 +100,11 @@ export const DesktopSidebar = async () => {
     <div className="overflow-auto pl-8 py-8">
       {/* <GlobalAlert /> */}
 
-      <div className="background-secondary flex flex-col justify-between rounded-2xl">
+      <div className="background-secondary flex flex-col justify-between rounded-primary">
         <div>
-          <Account />
+          <Account isInDesktopSidebar />
 
-          <div className="flex justify-evenly items-center mt-4">
+          <div className="flex justify-between items-center mt-4 px-8 group-data-[navigation-collapsed]/navigation:px-0 group-data-[navigation-collapsed]/navigation:justify-center">
             <CmdKLoader
               disableAlgolia={disableAlgolia}
               showCitizenRead={showCitizenRead}
@@ -113,9 +119,11 @@ export const DesktopSidebar = async () => {
               showManufacturersSeriesAndVariantsManage={
                 showManufacturersSeriesAndVariantsManage
               }
+              className="group-data-[navigation-collapsed]/navigation:hidden"
             />
 
             {/* <InstallPWA /> */}
+            <CollapseToggle />
           </div>
 
           <nav
@@ -123,176 +131,113 @@ export const DesktopSidebar = async () => {
             data-red-bar-container
           >
             <ul>
-              <li>
-                <Link
-                  href="/app"
-                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                >
-                  <FaHome className="text-neutral-500" />
-                  Dashboard
-                </Link>
-              </li>
+              <NavigationItem href="/app" label="Dashboard" icon={<FaHome />} />
 
               {showTasks && (
-                <li>
-                  <Link
-                    href="/app/tasks"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <MdTaskAlt className="text-neutral-500" />
-                    Tasks
-                    <Suspense>
-                      <TasksBadge />
-                    </Suspense>
-                  </Link>
-                </li>
+                <NavigationItem
+                  href="/app/tasks"
+                  label="Tasks"
+                  icon={<MdTaskAlt />}
+                >
+                  <Suspense>
+                    <TasksBadge isInDesktopSidebar />
+                  </Suspense>
+                </NavigationItem>
               )}
 
               {showSpynet && (
-                <li>
-                  <Link
-                    href="/app/spynet"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <RiSpyFill className="text-neutral-500" />
-                    Spynet
-                  </Link>
-                </li>
+                <NavigationItem
+                  href="/app/spynet"
+                  label="Spynet"
+                  icon={<RiSpyFill />}
+                />
               )}
 
               {(showOrgFleetRead || showShipManage) && (
-                <li>
-                  <Link
-                    href="/app/fleet"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <MdWorkspaces className="text-neutral-500" />
-                    Flotte
-                  </Link>
-                </li>
+                <NavigationItem
+                  href="/app/fleet"
+                  label="Flotte"
+                  icon={<MdWorkspaces />}
+                />
               )}
 
-              <li>
-                <Link
-                  href="/app/documents"
-                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                >
-                  <IoDocuments className="text-neutral-500" />
-                  Dokumente
-                </Link>
-              </li>
+              <NavigationItem
+                href="/app/documents"
+                label="Dokumente"
+                icon={<IoDocuments />}
+              />
 
               {showCareer && (
-                <li>
-                  <Link
-                    href="/app/career"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <TbMilitaryRank className="text-neutral-500" />
-                    Karriere
-                  </Link>
-                </li>
+                <NavigationItem
+                  href="/app/career"
+                  label="Karriere"
+                  icon={<TbMilitaryRank />}
+                />
               )}
 
               {showSilc && (
-                <li>
-                  <Link
-                    href="/app/silc"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <FaPiggyBank className="text-neutral-500" />
-                    SILC
-                  </Link>
-                </li>
+                <NavigationItem
+                  href="/app/silc"
+                  label="SILC"
+                  icon={<FaPiggyBank />}
+                />
               )}
 
               {showPenaltyPoints && (
-                <li>
-                  <Link
-                    href="/app/penalty-points"
-                    className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                  >
-                    <FaScaleBalanced className="text-neutral-500" />
-                    Strafpunkte
-                  </Link>
-                </li>
+                <NavigationItem
+                  href="/app/penalty-points"
+                  icon={<FaScaleBalanced />}
+                  label="Strafpunkte"
+                />
               )}
 
-              <li>
-                <Link
-                  href="/app/tools"
-                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                >
-                  <FaTools className="text-neutral-500" />
-                  Tools
-                </Link>
-              </li>
+              <NavigationItem
+                href="/app/tools"
+                label="Tools"
+                icon={<FaTools />}
+              />
 
-              <li>
-                <Link
-                  href="/app/changelog"
-                  className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                >
-                  <FaCodePullRequest className="text-neutral-500" />
-                  Changelog
-                </Link>
-              </li>
+              <NavigationItem
+                href="/app/changelog"
+                label="Changelog"
+                icon={<FaCodePullRequest />}
+              />
             </ul>
 
             {showSpynetAdmin && (
-              <div className="mt-4">
-                <p className="ml-4 text-neutral-500 mt-4">Spynet</p>
+              <NavigationSection heading="Spynet">
+                {showSpynetActivity && (
+                  <NavigationItem
+                    href="/app/spynet/activity"
+                    label="Aktivität"
+                    icon={<RxActivityLog />}
+                  />
+                )}
 
-                <ul>
-                  {showSpynetActivity && (
-                    <li>
-                      <Link
-                        href="/app/spynet/activity"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <RxActivityLog className="text-neutral-500" />
-                        Aktivität
-                      </Link>
-                    </li>
-                  )}
+                {showSpynetCitizen && (
+                  <NavigationItem
+                    href="/app/spynet/citizen"
+                    label="Citizen"
+                    icon={<FaTable />}
+                  />
+                )}
 
-                  {showSpynetCitizen && (
-                    <li>
-                      <Link
-                        href="/app/spynet/citizen"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaTable className="text-neutral-500" />
-                        Citizen
-                      </Link>
-                    </li>
-                  )}
+                {showSpynetNotes && (
+                  <NavigationItem
+                    href="/app/spynet/notes"
+                    label="Notizen"
+                    icon={<FaTable />}
+                  />
+                )}
 
-                  {showSpynetNotes && (
-                    <li>
-                      <Link
-                        href="/app/spynet/notes"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaTable className="text-neutral-500" />
-                        Notizen
-                      </Link>
-                    </li>
-                  )}
-
-                  {showSpynetOther && (
-                    <li>
-                      <Link
-                        href="/app/spynet/other"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaTable className="text-neutral-500" />
-                        Sonstige
-                      </Link>
-                    </li>
-                  )}
-                </ul>
-              </div>
+                {showSpynetOther && (
+                  <NavigationItem
+                    href="/app/spynet/other"
+                    label="Sonstige"
+                    icon={<FaTable />}
+                  />
+                )}
+              </NavigationSection>
             )}
 
             {(showUserRead ||
@@ -301,60 +246,41 @@ export const DesktopSidebar = async () => {
               showNoteTypeManage ||
               showAnalyticsManage ||
               showManufacturersSeriesAndVariantsManage) && (
-              <div className="mt-4">
-                <p className="ml-4 text-neutral-500 mt-4">Admin</p>
+              <NavigationSection heading="Admin">
+                {(showNoteTypeManage ||
+                  showClassificationLevelManage ||
+                  showAnalyticsManage) && (
+                  <NavigationItem
+                    href="/app/settings"
+                    label="Einstellungen"
+                    icon={<FaCog />}
+                  />
+                )}
 
-                <ul>
-                  {(showNoteTypeManage ||
-                    showClassificationLevelManage ||
-                    showAnalyticsManage) && (
-                    <li>
-                      <Link
-                        href="/app/settings"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaCog className="text-neutral-500" />
-                        Einstellungen
-                      </Link>
-                    </li>
-                  )}
+                {showRoleManage && (
+                  <NavigationItem
+                    href="/app/roles"
+                    label="Rollen"
+                    icon={<FaLock />}
+                  />
+                )}
 
-                  {showRoleManage && (
-                    <li>
-                      <Link
-                        href="/app/roles"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaLock className="text-neutral-500" />
-                        Rollen
-                      </Link>
-                    </li>
-                  )}
+                {showManufacturersSeriesAndVariantsManage && (
+                  <NavigationItem
+                    href="/app/fleet/settings/manufacturer"
+                    label="Schiffe"
+                    icon={<FaCog />}
+                  />
+                )}
 
-                  {showManufacturersSeriesAndVariantsManage && (
-                    <li>
-                      <Link
-                        href="/app/fleet/settings/manufacturer"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaCog className="text-neutral-500" />
-                        Schiffe
-                      </Link>
-                    </li>
-                  )}
-                  {showUserRead && (
-                    <li>
-                      <Link
-                        href="/app/users"
-                        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded"
-                      >
-                        <FaUsers className="text-neutral-500" />
-                        Benutzer
-                      </Link>
-                    </li>
-                  )}
-                </ul>
-              </div>
+                {showUserRead && (
+                  <NavigationItem
+                    href="/app/users"
+                    label="Benutzer"
+                    icon={<FaUsers />}
+                  />
+                )}
+              </NavigationSection>
             )}
 
             <RedBar />
@@ -362,7 +288,63 @@ export const DesktopSidebar = async () => {
         </div>
       </div>
 
-      <Footer className="px-8 py-4" />
+      <Footer className="px-8 py-4 group-data-[navigation-collapsed]/navigation:hidden" />
+    </div>
+  );
+};
+
+interface NavigationItemProps {
+  href: string;
+  icon: ReactElement;
+  label: string;
+  children?: ReactNode;
+}
+
+const NavigationItem = ({
+  href,
+  icon,
+  label,
+  children,
+}: NavigationItemProps) => {
+  const _icon = cloneElement(icon, {
+    // @ts-expect-error
+    className: "text-neutral-500",
+  });
+
+  return (
+    <li>
+      <Link
+        href={href}
+        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded relative"
+        title={label}
+      >
+        {_icon}
+
+        <div className="group-data-[navigation-collapsed]/navigation:hidden">
+          {label}
+        </div>
+
+        {children}
+      </Link>
+    </li>
+  );
+};
+
+interface NavigationSectionProps {
+  heading: ReactNode;
+  children: ReactNode;
+}
+
+const NavigationSection = ({ heading, children }: NavigationSectionProps) => {
+  return (
+    <div className="mt-4 group-data-[navigation-collapsed]/navigation:mt-0">
+      <p className="ml-4 text-neutral-500 mt-4 group-data-[navigation-collapsed]/navigation:hidden">
+        {heading}
+      </p>
+
+      <div className="hidden group-data-[navigation-collapsed]/navigation:block h-[1px] bg-neutral-500 my-2" />
+
+      <ul>{children}</ul>
     </div>
   );
 };
