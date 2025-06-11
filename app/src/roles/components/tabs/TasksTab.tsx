@@ -10,7 +10,7 @@ export const TasksTab = () => {
 
   return (
     <TabPanel id="tasks">
-      <div className="border rounded border-neutral-700 p-4">
+      <div className="border rounded-secondary border-neutral-700 p-4">
         <h4 className="font-bold text-xl">Task lesen</h4>
         <div className="py-2 flex justify-between items-center gap-2 mt-2">
           <div>
@@ -39,7 +39,7 @@ export const TasksTab = () => {
         </div>
       </div>
 
-      <div className="border rounded border-neutral-700 p-4 mt-4">
+      <div className="border rounded-secondary border-neutral-700 p-4 mt-4">
         <h4 className="font-bold text-xl">Task erstellen</h4>
 
         <div className="py-2 flex justify-between items-center gap-2 mt-2">

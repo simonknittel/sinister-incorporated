@@ -315,7 +315,7 @@ const NavigationItem = ({
     <li>
       <Link
         href={href}
-        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded relative"
+        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded-secondary relative"
         title={label}
       >
         {_icon}

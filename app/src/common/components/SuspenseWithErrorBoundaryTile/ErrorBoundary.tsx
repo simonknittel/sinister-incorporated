@@ -35,7 +35,7 @@ export const Fallback = ({ className, error }: FallbackProps) => {
   return (
     <section
       className={clsx(
-        "rounded-2xl bg-neutral-800/50 border border-red-500",
+        "rounded-primary bg-neutral-800/50 border border-red-500",
         className,
       )}
     >

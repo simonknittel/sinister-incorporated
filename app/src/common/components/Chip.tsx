@@ -8,7 +8,7 @@ interface Props {
 export const Chip = ({ children, title }: Props) => {
   return (
     <span
-      className="rounded bg-neutral-700 py-1 px-2 text-sm text-neutral-50"
+      className="rounded-secondary bg-neutral-700 py-1 px-2 text-sm text-neutral-50"
       title={
         title
           ? title

@@ -150,7 +150,7 @@ export const CreateOrUpdateNodeModal = ({
                 alt=""
                 width={128}
                 height={128}
-                className="mt-2 size-32 border border-neutral-700 rounded object-contain object-center"
+                className="mt-2 size-32 border border-neutral-700 rounded-secondary object-contain object-center"
                 unoptimized={["image/svg+xml", "image/gif"].includes(
                   role.icon.mimeType,
                 )}
@@ -162,7 +162,7 @@ export const CreateOrUpdateNodeModal = ({
                 alt=""
                 width={228}
                 height={128}
-                className="mt-2 w-[228px] h-32 border border-neutral-700 rounded object-contain object-center"
+                className="mt-2 w-[228px] h-32 border border-neutral-700 rounded-secondary object-contain object-center"
                 unoptimized={["image/svg+xml", "image/gif"].includes(
                   role.thumbnail.mimeType,
                 )}

@@ -79,7 +79,7 @@ export const MobileActionBar = async ({ className }: Props) => {
           <li className="h-full py-1">
             <Link
               href="/app"
-              className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
+              className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded-secondary"
             >
               <FaHome className="text-xl text-neutral-500" />
               <span className="text-xs">Dashboard</span>
@@ -90,7 +90,7 @@ export const MobileActionBar = async ({ className }: Props) => {
             <li className="h-full py-1">
               <Link
                 href="/app/tasks"
-                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
+                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded-secondary"
               >
                 <div className="flex">
                   <MdTaskAlt className="text-xl text-neutral-500" />
@@ -106,7 +106,7 @@ export const MobileActionBar = async ({ className }: Props) => {
             <li className="h-full py-1">
               <Link
                 href="/app/fleet"
-                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
+                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded-secondary"
               >
                 <MdWorkspaces className="text-xl text-neutral-500" />
                 <span className="text-xs">Flotte</span>
@@ -118,7 +118,7 @@ export const MobileActionBar = async ({ className }: Props) => {
             <li className="h-full py-1">
               <Link
                 href="/app/career"
-                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
+                className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded-secondary"
               >
                 <TbMilitaryRank className="text-xl text-neutral-500" />
                 <span className="text-xs">Karriere</span>
@@ -139,7 +139,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                   <li>
                     <Link
                       href="/app"
-                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                     >
                       <FaHome className="text-neutral-500" />
                       Dashboard
@@ -150,7 +150,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                     <li>
                       <Link
                         href="/app/tasks"
-                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                       >
                         <MdTaskAlt className="text-neutral-500" />
                         Tasks
@@ -163,7 +163,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                     <li>
                       <Link
                         href="/app/spynet"
-                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                       >
                         <RiSpyFill className="text-neutral-500" />
                         Spynet
@@ -176,7 +176,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                     <li>
                       <Link
                         href="/app/fleet"
-                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                       >
                         <MdWorkspaces className="text-neutral-500" />
                         Flotte
@@ -187,7 +187,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                   <li>
                     <Link
                       href="/app/documents"
-                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                     >
                       <IoDocuments className="text-neutral-500" />
                       Dokumente
@@ -198,7 +198,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                     <li>
                       <Link
                         href="/app/career"
-                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                       >
                         <TbMilitaryRank className="text-neutral-500" />
                         Karriere
@@ -210,7 +210,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                     <li>
                       <Link
                         href="/app/silc"
-                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                       >
                         <FaPiggyBank className="text-neutral-500" />
                         SILC
@@ -222,7 +222,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                     <li>
                       <Link
                         href="/app/penalty-points"
-                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                       >
                         <FaScaleBalanced className="text-neutral-500" />
                         Strafpunkte
@@ -233,7 +233,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                   <li>
                     <Link
                       href="/app/tools"
-                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                     >
                       <FaTools className="text-neutral-500" />
                       Tools
@@ -243,7 +243,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                   <li>
                     <Link
                       href="/app/changelog"
-                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                     >
                       <FaCodePullRequest className="text-neutral-500" />
                       Changelog
@@ -260,7 +260,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/spynet/activity"
-                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                           >
                             <RxActivityLog className="text-neutral-500" />
                             Aktivität
@@ -272,7 +272,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/spynet/citizen"
-                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                           >
                             <FaTable className="text-neutral-500" />
                             Citizen
@@ -284,7 +284,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/spynet/notes"
-                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                           >
                             <FaTable className="text-neutral-500" />
                             Notizen
@@ -296,7 +296,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/spynet/other"
-                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                           >
                             <FaTable className="text-neutral-500" />
                             Sonstige
@@ -338,7 +338,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/settings"
-                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                           >
                             <FaCog className="text-neutral-500" />
                             Einstellungen
@@ -350,7 +350,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/roles"
-                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                           >
                             <FaLock className="text-neutral-500" />
                             Rollen
@@ -365,7 +365,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/fleet/settings/manufacturer"
-                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                           >
                             <FaCog className="text-neutral-500" />
                             Schiffe
@@ -376,7 +376,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                         <li>
                           <Link
                             href="/app/users"
-                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded"
+                            className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
                           >
                             <FaUsers className="text-neutral-500" />
                             Benutzer

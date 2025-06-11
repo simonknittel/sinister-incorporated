@@ -22,7 +22,7 @@ export const MobileActionBarFlyout = ({ children }: Props) => {
       <button
         onClick={() => setIsVisible((value) => !value)}
         type="button"
-        className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded"
+        className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded-secondary"
       >
         {isVisible ? <FaTimes /> : <FaBars />}
       </button>

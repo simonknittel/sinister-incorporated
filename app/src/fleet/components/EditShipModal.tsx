@@ -81,7 +81,7 @@ const EditShipModal = ({ isOpen, onRequestClose, ship }: Readonly<Props>) => {
 
         <select
           id={selectId}
-          className="p-2 rounded bg-neutral-900 w-full mt-2"
+          className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
           disabled
         >
           <option>{ship.variant.name}</option>
@@ -92,7 +92,7 @@ const EditShipModal = ({ isOpen, onRequestClose, ship }: Readonly<Props>) => {
         </label>
 
         <input
-          className="p-2 rounded bg-neutral-900 w-full mt-2"
+          className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
           id={inputId}
           {...register("name")}
           autoFocus

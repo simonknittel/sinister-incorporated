@@ -48,7 +48,7 @@ export const CmdKLoader = ({
         onClick={() => setOpen(true)}
       >
         Hotkey{" "}
-        <span className="px-2 py-1 rounded border border-neutral-800 group-hover:border-neutral-600 group-active:border-neutral-500">
+        <span className="px-2 py-1 rounded-secondary border border-neutral-800 group-hover:border-neutral-600 group-active:border-neutral-500">
           Strg + K
         </span>
       </button>

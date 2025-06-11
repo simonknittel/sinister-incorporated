@@ -98,12 +98,12 @@ export const OtherTable = ({ rows, searchParams }: Props) => {
           return (
             <tr
               key={row.entityLog.id}
-              className="grid items-center gap-4 h-14 rounded -mx-2 first:mt-2 grid-cols-[1fr_1fr_2fr_1fr_1fr_1fr_1fr_1fr_44px]"
+              className="grid items-center gap-4 h-14 rounded-secondary -mx-2 first:mt-2 grid-cols-[1fr_1fr_2fr_1fr_1fr_1fr_1fr_1fr_44px]"
             >
               <td>
                 <Link
                   href={`/app/spynet/citizen/${row.entity.id}`}
-                  className="text-sinister-red-500 hover:bg-neutral-800 block rounded px-2 h-full"
+                  className="text-sinister-red-500 hover:bg-neutral-800 block rounded-secondary px-2 h-full"
                 >
                   <span className="flex items-center h-14">
                     <span className="overflow-hidden text-ellipsis">

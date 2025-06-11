@@ -119,7 +119,7 @@ export const Notes = async ({ className, entity }: Props) => {
     <section
       className={clsx(
         className,
-        "rounded-2xl p-4 lg:p-8 bg-neutral-800/50 w-full",
+        "rounded-primary p-4 lg:p-8 bg-neutral-800/50 w-full",
       )}
     >
       <TabsProvider initialActiveTab={filteredNoteTypes[0].id}>

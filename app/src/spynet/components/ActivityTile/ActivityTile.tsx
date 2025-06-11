@@ -77,7 +77,7 @@ export const ActivityTile = async ({ className }: Props) => {
         Änderungen an Citizens folgen später.
       </small>
 
-      <div className="rounded-2xl p-4 lg:p-8 bg-neutral-800/50 mt-4">
+      <div className="rounded-primary p-4 lg:p-8 bg-neutral-800/50 mt-4">
         {entries.length > 0 ? (
           <ul className="flex flex-col gap-8">
             {limitedEntries.map((entry) => (

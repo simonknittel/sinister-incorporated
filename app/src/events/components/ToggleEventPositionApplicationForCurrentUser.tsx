@@ -112,7 +112,7 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
             </Tooltip.Trigger>
 
             <Tooltip.Content
-              className="p-4 max-w-[320px] select-none rounded bg-neutral-950 border border-sinister-red-500 text-white font-normal"
+              className="p-4 max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
               sideOffset={5}
             >
               <div>

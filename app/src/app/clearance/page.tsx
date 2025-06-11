@@ -38,7 +38,7 @@ export default async function Page() {
           Anmeldung erfolgreich
         </h1>
 
-        <div className="flex flex-col gap-2 rounded-2xl bg-neutral-800/50 p-8 mx-8">
+        <div className="flex flex-col gap-2 rounded-primary bg-neutral-800/50 p-8 mx-8">
           <p>
             Bitte melde dich bei Human Resources oder der Leitung um deinen
             Account freischalten zu lassen.

@@ -32,7 +32,7 @@ const Avatar = ({ className, name, image, size }: Readonly<Props>) => {
           "text-sm": size === 32,
           "text-2xl": !size || size === 64,
           "text-3xl": size === 128,
-          "rounded-2xl": size === 128,
+          "rounded-primary": size === 128,
           rounded: size !== 128,
         },
       )}

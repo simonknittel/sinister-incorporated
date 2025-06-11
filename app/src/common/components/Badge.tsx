@@ -21,7 +21,7 @@ export const Badge = ({
   return (
     <div
       className={clsx(
-        "rounded bg-neutral-700/50 px-2 py-1 inline-flex gap-2 items-center overflow-hidden",
+        "rounded-secondary bg-neutral-700/50 px-2 py-1 inline-flex gap-2 items-center overflow-hidden",
         className,
       )}
       title={`${label}: ${value}`}

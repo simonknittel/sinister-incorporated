@@ -98,7 +98,7 @@ export const ParticipantsTab = async ({
 
   return (
     <div className={clsx("flex flex-col gap-4", className)}>
-      <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
+      <section className="rounded-primary bg-neutral-800/50 p-4 lg:p-8">
         <h2 className="font-bold mb-2 text-lg">Organisator</h2>
         {resolvedCreatoreCitizen ? (
           <CitizenLink citizen={resolvedCreatoreCitizen} />
@@ -121,7 +121,7 @@ export const ParticipantsTab = async ({
                   return (
                     <div
                       key={manager.id}
-                      className="rounded bg-neutral-700/50 flex"
+                      className="rounded-secondary bg-neutral-700/50 flex"
                     >
                       <Link
                         href={`/app/spynet/citizen/${manager.id}`}
@@ -153,7 +153,7 @@ export const ParticipantsTab = async ({
       </section>
 
       {showCreateSilcTransactionButton && (
-        <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
+        <section className="rounded-primary bg-neutral-800/50 p-4 lg:p-8">
           <h2 className="font-bold text-lg">SILC-Belohnung</h2>
           <CreateOrUpdateSilcTransaction
             initialReceiverIds={resolvedParticipants.map(
@@ -165,7 +165,7 @@ export const ParticipantsTab = async ({
         </section>
       )}
 
-      <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 overflow-auto">
+      <section className="rounded-primary bg-neutral-800/50 p-4 lg:p-8 overflow-auto">
         <h2 className="font-bold mb-4 flex items-center gap-2 text-lg">
           Teilnehmer ({sortedResolvedParticipants.length})
           <Tooltip triggerChildren={<FaInfoCircle />}>
@@ -233,7 +233,7 @@ export const ParticipantsTab = async ({
                   <tr
                     key={resolvedParticipant.citizen.id}
                     className={clsx(
-                      "grid items-center gap-4 rounded -mx-2",
+                      "grid items-center gap-4 rounded-secondary -mx-2",
                       GRID_COLS,
                     )}
                   >
@@ -241,7 +241,7 @@ export const ParticipantsTab = async ({
                       <Link
                         href={`/app/spynet/citizen/${resolvedParticipant.citizen.id}`}
                         className={clsx(
-                          "hover:bg-neutral-800 block rounded px-2 h-full",
+                          "hover:bg-neutral-800 block rounded-secondary px-2 h-full",
                           {
                             "text-green-500":
                               resolvedParticipant.citizen.id ===
@@ -282,7 +282,7 @@ export const ParticipantsTab = async ({
                     <td className="h-full min-h-14 flex items-center">
                       <Suspense
                         fallback={
-                          <div className="bg-neutral-800 animate-pulse rounded h-8 w-20" />
+                          <div className="bg-neutral-800 animate-pulse rounded-secondary h-8 w-20" />
                         }
                       >
                         <RolesCell

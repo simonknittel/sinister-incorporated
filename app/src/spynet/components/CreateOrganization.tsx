@@ -71,7 +71,7 @@ export const CreateOrganization = () => {
           </label>
 
           <input
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
             id={spectrumIdInputId}
             {...register("spectrumId", { required: true })}
             autoFocus
@@ -82,7 +82,7 @@ export const CreateOrganization = () => {
           </label>
 
           <input
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
             id={nameInputId}
             {...register("name", { required: true })}
           />

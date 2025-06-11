@@ -57,7 +57,7 @@ export const CitizenInput = ({
     return (
       <div className={clsx(className)}>
         <label className="block mb-1">Citizen (Handle)</label>
-        <div className="h-10 animate-pulse rounded bg-neutral-900" />
+        <div className="h-10 animate-pulse rounded-secondary bg-neutral-900" />
       </div>
     );
 
@@ -117,7 +117,7 @@ const ComboboxOptionItem = ({ result }: ComboboxOptionProps) => {
   return (
     <ComboboxOption
       value={citizen}
-      className="group flex cursor-pointer items-center gap-2 rounded py-1 px-2 select-none data-[focus]:bg-white/20"
+      className="group flex cursor-pointer items-center gap-2 rounded-secondary py-1 px-2 select-none data-[focus]:bg-white/20"
     >
       <FaCheck className="invisible group-data-[selected]:visible text-sm text-sinister-red-500" />
 
@@ -165,7 +165,7 @@ const Single = ({
           aria-label="Citizen"
           displayValue={(citizen: Entity) => citizen?.handle || ""}
           onChange={(event) => setQuery(event.target.value)}
-          className="w-full rounded bg-neutral-900 py-2 pr-8 pl-2 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 disabled:opacity-50"
+          className="w-full rounded-secondary bg-neutral-900 py-2 pr-8 pl-2 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 disabled:opacity-50"
           disabled={disabled}
         />
 
@@ -241,7 +241,7 @@ const Multiple = ({
             aria-label="Citizens"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            className="w-full rounded bg-neutral-900 py-2 pr-8 pl-2 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25"
+            className="w-full rounded-secondary bg-neutral-900 py-2 pr-8 pl-2 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25"
           />
 
           <ComboboxOptions
@@ -271,7 +271,7 @@ const Multiple = ({
           {/* eslint-disable-next-line react-compiler/react-compiler */}
           <Popover.Portal container={popoverPortalRef.current}>
             <Popover.Content sideOffset={4} side="top">
-              <div className="flex flex-col gap-2 p-4 rounded bg-neutral-800 border border-sinister-red-500 max-h-96 overflow-auto">
+              <div className="flex flex-col gap-2 p-4 rounded-secondary bg-neutral-800 border border-sinister-red-500 max-h-96 overflow-auto">
                 {dataCitizensGroupedByVisibleRoles
                   ? Array.from(dataCitizensGroupedByVisibleRoles.values())
                       .toSorted((a, b) =>

@@ -13,7 +13,7 @@ export const OverviewTile = async ({ className, id }: Props) => {
   if (!organization) throw new Error("Organization not found");
 
   return (
-    <section className={clsx(className, "rounded-2xl overflow-hidden")}>
+    <section className={clsx(className, "rounded-primary overflow-hidden")}>
       {organization.logo && (
         <div className="bg-black flex items-center justify-center p-2">
           <Image

@@ -41,7 +41,7 @@ export const RoleFilter = ({ roles }: Props) => {
   };
 
   return (
-    <div className="flex flex-col gap-2 px-4 py-2 rounded bg-neutral-800 max-h-96 overflow-auto">
+    <div className="flex flex-col gap-2 px-4 py-2 rounded-secondary bg-neutral-800 max-h-96 overflow-auto">
       {roles.map((role) => (
         <div
           key={role.id}
@@ -49,7 +49,7 @@ export const RoleFilter = ({ roles }: Props) => {
         >
           <label className="flex gap-2 items-center whitespace-nowrap">
             {role.icon && (
-              <div className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
+              <div className="aspect-square w-6 h-6 flex items-center justify-center rounded-secondary overflow-hidden">
                 <Image
                   src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.icon.id}`}
                   alt=""

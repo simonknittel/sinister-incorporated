@@ -30,7 +30,7 @@ export const Tooltip = ({
 
         <RadixUiTooltip.Content
           className={clsx(
-            "p-2 text-sm leading-tight max-w-[320px] select-none rounded bg-neutral-600 text-white font-normal",
+            "p-2 text-sm leading-tight max-w-[320px] select-none rounded-secondary bg-neutral-600 text-white font-normal",
             contentClassName,
           )}
           sideOffset={5}

@@ -38,7 +38,7 @@ export const AuecConversionRateSettingClient = ({
         Wie viel aUEC entspricht ein SILC?
       </label>
       <input
-        className="p-2 rounded bg-neutral-900 border border-neutral-800 w-full mt-2 disabled:opacity-50"
+        className="p-2 rounded-secondary bg-neutral-900 border border-neutral-800 w-full mt-2 disabled:opacity-50"
         name="value"
         required
         type="number"

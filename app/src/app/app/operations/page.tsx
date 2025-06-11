@@ -44,7 +44,7 @@ export default async function Page() {
         ))}
 
       {operations.length === 0 && (
-        <div className="bg-neutral-800/50  rounded-2xl p-4 lg:p-8 max-w-4xl mt-4">
+        <div className="bg-neutral-800/50 rounded-primary p-4 lg:p-8 max-w-4xl mt-4">
           <p>Aktuell sind keine Operationen geplant.</p>
         </div>
       )}

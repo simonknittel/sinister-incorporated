@@ -37,7 +37,7 @@ export const NoteSection = ({
     <div className={clsx(className)}>
       <h4 className="font-bold">Notizen</h4>
 
-      <div className="border border-neutral-700 p-4 rounded mt-2">
+      <div className="border border-neutral-700 p-4 rounded-secondary mt-2">
         <div className="grid grid-cols-5 gap-2 font-bold">
           <span>Notizart</span>
           <span>Geheimhaltungsstufe</span>
@@ -119,7 +119,7 @@ const Rule = ({
       <select
         defaultValue={noteTypeId}
         required
-        className="bg-neutral-900 rounded px-4 h-11"
+        className="bg-neutral-900 rounded-secondary px-4 h-11"
         onChange={(event) => setNoteTypeId(event.target.value)}
       >
         <option disabled hidden value=""></option>
@@ -135,7 +135,7 @@ const Rule = ({
       <select
         defaultValue={classificationLevelId}
         required
-        className="bg-neutral-900 rounded px-4 h-11"
+        className="bg-neutral-900 rounded-secondary px-4 h-11"
         onChange={(event) => setClassificationLevelId(event.target.value)}
       >
         <option disabled hidden value=""></option>
@@ -157,7 +157,7 @@ const Rule = ({
 
       <select
         required
-        className="bg-neutral-900 rounded px-4 h-11"
+        className="bg-neutral-900 rounded-secondary px-4 h-11"
         defaultValue={operation}
         onChange={(event) => setOperation(event.target.value)}
       >

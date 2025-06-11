@@ -21,7 +21,7 @@ export const DateTimeInput = (props: Props) => {
 
       <input
         type="datetime-local"
-        className="p-2 rounded bg-neutral-900 w-full mt-2"
+        className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
         id={id}
         {...rest}
       />

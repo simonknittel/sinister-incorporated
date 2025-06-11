@@ -18,7 +18,7 @@ export const CareerSection = ({ className, flows }: Props) => {
     <div className={clsx(className)}>
       <h4 className="font-bold">Karriere</h4>
 
-      <div className="border border-neutral-700 p-4 rounded mt-2 grid grid-cols-2 grid-rows-2 gap-4">
+      <div className="border border-neutral-700 p-4 rounded-secondary mt-2 grid grid-cols-2 grid-rows-2 gap-4">
         {flows.map((flow) => (
           <Fragment key={flow.id}>
             <div>

@@ -192,7 +192,7 @@ export const NotesTableTile = async ({ className, searchParams }: Props) => {
   return (
     <section
       className={clsx(
-        "p-8 pb-10 bg-neutral-800/50 rounded-2xl overflow-auto",
+        "p-8 pb-10 bg-neutral-800/50 rounded-primary overflow-auto",
         className,
       )}
     >

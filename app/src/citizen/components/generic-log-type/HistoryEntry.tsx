@@ -33,7 +33,7 @@ export const HistoryEntry = ({
   );
 
   return (
-    <li className="relative rounded overflow-hidden">
+    <li className="relative rounded-secondary overflow-hidden">
       <div
         className={clsx({
           "absolute w-full h-20 border-t-2 border-x-2 bg-gradient-to-t from-neutral-800":

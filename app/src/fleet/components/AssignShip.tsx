@@ -88,7 +88,7 @@ export const AssignShip = ({ className, data = [] }: Props) => {
             name="variantId"
             autoFocus
             id={selectId}
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
           >
             {options.map((option) => (
               <optgroup
@@ -109,7 +109,7 @@ export const AssignShip = ({ className, data = [] }: Props) => {
           </label>
           <input
             name="name"
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
             id={inputId}
           />
           <p className="mt-2 text-neutral-500">optional</p>

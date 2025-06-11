@@ -185,7 +185,10 @@ export const ActivityTile = async ({ className, id }: Props) => {
 
   return (
     <section
-      className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
+      className={clsx(
+        className,
+        "rounded-primary p-4 lg:p-8 bg-neutral-800/50",
+      )}
     >
       <h2 className="font-bold flex gap-2 items-center">
         <FaListAlt /> Aktivität
@@ -194,7 +197,10 @@ export const ActivityTile = async ({ className, id }: Props) => {
       {sortedEntries.length > 0 ? (
         <ul className="mt-4 flex flex-col gap-8">
           {sortedEntries.map((entry) => (
-            <li key={entry.key} className="relative rounded overflow-hidden">
+            <li
+              key={entry.key}
+              className="relative rounded-secondary overflow-hidden"
+            >
               <div
                 className={clsx({
                   "absolute w-full h-24 border-t-2 border-x-2 bg-gradient-to-t from-neutral-900/0":

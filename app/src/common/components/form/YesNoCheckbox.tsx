@@ -36,12 +36,12 @@ export const YesNoCheckbox = (props: Props) => {
         {...rest}
       />
 
-      <span className="flex-none size-8 bg-neutral-700 rounded block relative peer-checked:hidden">
-        <span className="absolute inset-1 rounded bg-green-500/50 hidden group-hover:block" />
+      <span className="flex-none size-8 bg-neutral-700 rounded-secondary block relative peer-checked:hidden">
+        <span className="absolute inset-1 rounded-secondary bg-green-500/50 hidden group-hover:block" />
       </span>
 
-      <span className="flex-none size-8 bg-neutral-700 rounded hidden relative peer-checked:block">
-        <span className="absolute inset-1 rounded bg-green-500" />
+      <span className="flex-none size-8 bg-neutral-700 rounded-secondary hidden relative peer-checked:block">
+        <span className="absolute inset-1 rounded-secondary bg-green-500" />
       </span>
 
       {!hideLabel && (

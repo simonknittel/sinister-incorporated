@@ -32,7 +32,10 @@ export const OverviewTab = ({ className, role }: Props) => {
     <div className={clsx("flex flex-col gap-2", className)}>
       <form
         action={updateNameFormAction}
-        className={clsx("rounded-2xl bg-neutral-800/50 p-4 lg:p-8", className)}
+        className={clsx(
+          "rounded-primary bg-neutral-800/50 p-4 lg:p-8",
+          className,
+        )}
       >
         <input type="hidden" name="id" value={role.id} />
 
@@ -41,7 +44,7 @@ export const OverviewTab = ({ className, role }: Props) => {
           name="name"
           defaultValue={role.name}
           id={nameInputId}
-          className="p-2 rounded bg-neutral-900 w-full mt-2"
+          className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
         />
         <Button
           type="submit"
@@ -73,7 +76,10 @@ export const OverviewTab = ({ className, role }: Props) => {
       </form>
 
       <section
-        className={clsx("rounded-2xl bg-neutral-800/50 p-4 lg:p-8", className)}
+        className={clsx(
+          "rounded-primary bg-neutral-800/50 p-4 lg:p-8",
+          className,
+        )}
       >
         <h2 className="font-bold">Bilder</h2>
 
@@ -90,7 +96,7 @@ export const OverviewTab = ({ className, role }: Props) => {
               width={128}
               height={128}
               className={clsx(
-                "mt-2 size-32 border border-neutral-700 hover:border-neutral-500 text-neutral-500 hover:text-neutral-300 transition-colors group rounded",
+                "mt-2 size-32 border border-neutral-700 hover:border-neutral-500 text-neutral-500 hover:text-neutral-300 transition-colors group rounded-secondary",
                 {
                   "after:content-['Bild_hochladen'] flex items-center justify-center":
                     !role.iconId,
@@ -114,7 +120,7 @@ export const OverviewTab = ({ className, role }: Props) => {
               width={228}
               height={128}
               className={clsx(
-                "mt-2 w-[228px] h-32 border border-neutral-700 hover:border-neutral-500 text-neutral-500 hover:text-neutral-300 transition-colors group rounded",
+                "mt-2 w-[228px] h-32 border border-neutral-700 hover:border-neutral-500 text-neutral-500 hover:text-neutral-300 transition-colors group rounded-secondary",
                 {
                   "after:content-['Bild_hochladen'] flex items-center justify-center":
                     !role.thumbnailId,
@@ -132,7 +138,10 @@ export const OverviewTab = ({ className, role }: Props) => {
       </section>
 
       <section
-        className={clsx("rounded-2xl bg-neutral-800/50 p-4 lg:p-8", className)}
+        className={clsx(
+          "rounded-primary bg-neutral-800/50 p-4 lg:p-8",
+          className,
+        )}
       >
         <form action={deleteFormAction}>
           <input type="hidden" name="id" value={role.id} />

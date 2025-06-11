@@ -571,11 +571,11 @@ export const PermissionMatrix = async ({ className }: Props) => {
               <td className="h-8 overflow-hidden sticky -left-2 z-10 background-secondary rounded-secondary">
                 <Link
                   href={`/app/roles/${role.id}`}
-                  className="flex items-center gap-2 hover:bg-neutral-800 px-2 rounded h-full"
+                  className="flex items-center gap-2 hover:bg-neutral-800 px-2 rounded-secondary h-full"
                   prefetch={false}
                 >
                   {role.icon ? (
-                    <div className="aspect-square size-4 flex items-center justify-center rounded overflow-hidden flex-none">
+                    <div className="aspect-square size-4 flex items-center justify-center rounded-secondary overflow-hidden flex-none">
                       <Image
                         src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.icon.id}`}
                         alt=""

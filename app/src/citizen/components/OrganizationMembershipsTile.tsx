@@ -83,7 +83,7 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
             .map((membership) => (
               <li
                 key={membership.organization.id}
-                className="rounded bg-neutral-700/50 flex overflow-hidden"
+                className="rounded-secondary bg-neutral-700/50 flex overflow-hidden"
               >
                 <Link
                   href={`/app/spynet/organization/${membership.organization.id}`}

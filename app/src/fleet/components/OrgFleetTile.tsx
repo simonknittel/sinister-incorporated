@@ -32,7 +32,7 @@ export const OrgFleetTile = async ({ className, urlSearchParams }: Props) => {
         Schiffe von {Object.keys(groupedByUser).length} Citizen
       </p>
 
-      <div className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 mt-4 overflow-x-auto">
+      <div className="rounded-primary bg-neutral-800/50 p-4 lg:p-8 mt-4 overflow-x-auto">
         <Filters />
 
         <FleetTable fleet={countedFleet} className="mt-8" />
