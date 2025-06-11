@@ -42,21 +42,21 @@ export default async function Page({ searchParams }: Props) {
         {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." withGlitch />}
       </div>
 
-      <div className="mt-8 flex gap-8 flex-col xl:flex-row justify-center max-w-[400px] mx-auto xl:max-w-none">
+      <div className="mt-8 flex gap-8 flex-row flex-wrap justify-center mx-auto @container">
         {showCalendar && (
           <Suspense
             fallback={
-              <TileSkeleton className="flex-1 xl:max-w-[400px] 3xl:max-w-none" />
+              <TileSkeleton className="flex-none @7xl:flex-1 max-w-[400px] @7xl:max-w-none" />
             }
           >
-            <CalendarTile className="flex-1 xl:max-w-[400px] 3xl:max-w-none" />
+            <CalendarTile className="flex-none @7xl:flex-1 max-w-[400px] @7xl:max-w-none" />
           </Suspense>
         )}
 
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-8 max-w-[400px] flex-none">
           <TasksDashboardTile />
 
-          <section className="flex flex-col gap-4 xl:w-[400px] flex-none">
+          <section className="flex flex-col gap-4 flex-none">
             <h2 className="font-thin text-2xl self-start">Spynet</h2>
             {showSpynetSearchTile && <SpynetSearchTile />}
             <SuspenseWithErrorBoundaryTile>
