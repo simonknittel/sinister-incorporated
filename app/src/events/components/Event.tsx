@@ -69,9 +69,9 @@ export const Event = async ({ className, event, index }: Props) => {
         </div>
       )}
 
-      <div className="flex flex-col 3xl:flex-row background-secondary">
+      <div className="flex flex-col @7xl:flex-row background-secondary">
         {event.discordImage && (
-          <div className="3xl:flex-grow-0 3xl:flex-shrink-0 3xl:basis-[400px] max-h-[160px] flex justify-center rounded-r-primary rounded-b-primary overflow-hidden">
+          <div className="@7xl:flex-grow-0 @7xl:flex-shrink-0 @7xl:basis-[400px] max-h-[160px] flex justify-center rounded-r-primary rounded-b-primary overflow-hidden">
             <Image
               src={`https://cdn.discordapp.com/guild-events/${event.discordId}/${event.discordImage}.webp?size=1024`}
               alt=""
@@ -82,9 +82,9 @@ export const Event = async ({ className, event, index }: Props) => {
           </div>
         )}
 
-        <div className="flex-1 flex flex-col gap-3 justify-center p-4 lg:p-6 3xl:overflow-hidden">
+        <div className="flex-1 flex flex-col gap-3 justify-center p-4 @7xl:overflow-hidden">
           <h2
-            className="font-bold text-xl 3xl:text-ellipsis 3xl:whitespace-nowrap 3xl:overflow-hidden"
+            className="font-bold text-xl @7xl:text-ellipsis @7xl:whitespace-nowrap @7xl:overflow-hidden"
             title={event.name}
           >
             {event.name}

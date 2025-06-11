@@ -51,7 +51,7 @@ export const ProfileTile = async ({ className }: Props) => {
       <section
         className={clsx(
           className,
-          "rounded-primary p-4 lg:p-8 background-secondary flex flex-col gap-4 items-center",
+          "rounded-primary p-4 background-secondary flex flex-col gap-4 items-center",
         )}
       >
         <Avatar name={name} image={image} size={128} />

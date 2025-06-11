@@ -14,8 +14,8 @@ export const CalendarTile = async ({ className }: Props) => {
   return (
     <section
       className={clsx(
+        "flex flex-col gap-4 items-center @7xl:overflow-hidden",
         className,
-        "flex flex-col gap-4 items-center 3xl:overflow-hidden",
       )}
     >
       <div className="w-full flex gap-2 items-center">
@@ -28,7 +28,7 @@ export const CalendarTile = async ({ className }: Props) => {
           <Event key={event.id} event={event} index={index} />
         ))
       ) : (
-        <div className="background-secondary rounded-primary p-4 lg:p-8 w-full">
+        <div className="background-secondary rounded-primary p-4 w-full">
           <p>Aktuell sind keine Events geplant.</p>
         </div>
       )}
