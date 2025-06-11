@@ -12,7 +12,7 @@ export const ClosedTasksTile = async ({ className }: Props) => {
   if (tasks.length <= 0)
     return (
       <section className={clsx("flex justify-center", className)}>
-        <div className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8 flex flex-col items-center gap-4">
+        <div className="rounded-primary bg-neutral-800/50 p-4 lg:p-8 flex flex-col items-center gap-4">
           <p>Es gibt keine geschlossenen Tasks.</p>
         </div>
       </section>

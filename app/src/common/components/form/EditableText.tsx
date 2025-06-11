@@ -80,7 +80,7 @@ export const EditableText = ({ className, action, initialValue }: Props) => {
             name="value"
             defaultValue={value}
             disabled={isPending}
-            className={clsx("rounded bg-neutral-700 px-1 w-full", {
+            className={clsx("rounded-secondary bg-neutral-700 px-1 w-full", {
               "animate-pulse": isPending,
             })}
             autoFocus

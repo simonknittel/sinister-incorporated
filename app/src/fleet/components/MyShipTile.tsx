@@ -25,7 +25,7 @@ interface Props {
 
 export const MyShipTile = ({ className, ship }: Props) => {
   return (
-    <article className={clsx(className, "bg-neutral-800/50 rounded-2xl")}>
+    <article className={clsx(className, "bg-neutral-800/50 rounded-primary")}>
       <div className="flex justify-between items-center">
         <h3 className="font-bold p-4">
           <EditableShipName

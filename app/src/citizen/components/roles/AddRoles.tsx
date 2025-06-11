@@ -57,7 +57,7 @@ export const AddRoles = ({
           <div key={role.id} className="py-2 flex justify-between items-center">
             <span className="flex gap-2 items-center">
               {role.icon && (
-                <div className="aspect-square w-6 h-6 flex items-center justify-center rounded overflow-hidden">
+                <div className="aspect-square w-6 h-6 flex items-center justify-center rounded-secondary overflow-hidden">
                   <Image
                     src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.icon.id}`}
                     alt=""

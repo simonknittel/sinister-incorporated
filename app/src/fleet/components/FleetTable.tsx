@@ -157,7 +157,7 @@ export const FleetTable = ({ className, fleet }: Props) => {
           <tr
             key={row.id}
             className={clsx(
-              "grid items-center gap-4 px-2 py-1 rounded -mx-2 first:mt-2",
+              "grid items-center gap-4 px-2 py-1 rounded-secondary -mx-2 first:mt-2",
               GRID_COLS,
             )}
           >

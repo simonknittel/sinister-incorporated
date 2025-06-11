@@ -136,7 +136,7 @@ export const SingleNote = async ({ note }: Props) => {
               key={index}
             >
               {organization.logo && (
-                <span className="inline-block rounded bg-black mr-1 align-bottom">
+                <span className="inline-block rounded-secondary bg-black mr-1 align-bottom">
                   <Image
                     src={`https://robertsspaceindustries.com${organization.logo}`}
                     alt=""
@@ -172,7 +172,7 @@ export const SingleNote = async ({ note }: Props) => {
   );
 
   return (
-    <article className="mt-4 lg:mt-8 relative rounded overflow-hidden">
+    <article className="mt-4 lg:mt-8 relative rounded-secondary overflow-hidden">
       <div
         className={clsx({
           "absolute w-full h-24 border-t-2 border-x-2 bg-gradient-to-t from-neutral-900/0":

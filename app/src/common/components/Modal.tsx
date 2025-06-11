@@ -37,7 +37,7 @@ export default function Modal({
     >
       <div
         className={clsx(
-          "max-h-full max-w-full cursor-auto overflow-auto rounded-2xl bg-neutral-800 text-neutral-50",
+          "max-h-full max-w-full cursor-auto overflow-auto rounded-primary bg-neutral-800 text-neutral-50",
           className,
         )}
         onMouseDown={(e) => e.stopPropagation()}

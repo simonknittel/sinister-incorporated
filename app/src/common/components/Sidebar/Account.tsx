@@ -26,7 +26,7 @@ export const Account = async ({ isInDesktopSidebar = false }: Props) => {
       )}
     >
       <div className="flex items-center gap-4">
-        <div className="overflow-hidden rounded">
+        <div className="overflow-hidden rounded-secondary">
           <Avatar name={name} image={image} size={48} />
         </div>
 

@@ -14,7 +14,7 @@ export default function Page() {
         <main className="flex items-center flex-col">
           <h1 className="text-xl font-bold">Datenschutzerklärung</h1>
 
-          <RichText className="mt-4 w-full max-w-4xl p-4 lg:p-8 rounded-2xl bg-neutral-800/50 ">
+          <RichText className="mt-4 w-full max-w-4xl p-4 lg:p-8 rounded-primary bg-neutral-800/50 ">
             <h2>1. Datenschutz auf einen Blick</h2>
 
             <h3>Allgemeine Hinweise</h3>

@@ -62,7 +62,7 @@ export const CreateManufacturerModal = ({ onRequestClose }: Props) => {
         <input
           id="name"
           type="text"
-          className="p-2 rounded bg-neutral-900 w-full mt-2"
+          className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
           {...register("name", { required: true })}
           autoFocus
         />

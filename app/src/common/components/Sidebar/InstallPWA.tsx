@@ -37,7 +37,7 @@ export const InstallPWA = ({ className }: Props) => {
       onClick={handleClick}
     >
       App installieren
-      <span className="p-1 rounded border border-neutral-800 group-hover:border-neutral-600 group-active:border-neutral-500">
+      <span className="p-1 rounded-secondary border border-neutral-800 group-hover:border-neutral-600 group-active:border-neutral-500">
         <MdOutlineInstallMobile className="lg:hidden" />
         <MdOutlineInstallDesktop className="hidden lg:block" />
       </span>

@@ -69,7 +69,7 @@ const EditUnitModal = ({ isOpen, onRequestClose, unit }: Readonly<Props>) => {
         </label>
 
         <select
-          className="p-2 rounded bg-neutral-900 w-full mt-2"
+          className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
           id={selectId}
           disabled
           defaultValue="squadron"
@@ -90,7 +90,7 @@ const EditUnitModal = ({ isOpen, onRequestClose, unit }: Readonly<Props>) => {
         </label>
 
         <input
-          className="p-2 rounded bg-neutral-900 w-full mt-2"
+          className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
           id={inputId}
           {...register("title", { required: true })}
           autoFocus

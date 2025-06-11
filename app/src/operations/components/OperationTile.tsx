@@ -15,7 +15,7 @@ const OperationTile = ({ className, operation }: Readonly<Props>) => {
     <article
       className={clsx(
         className,
-        "block bg-neutral-800/50  rounded-2xl overflow-hidden",
+        "block bg-neutral-800/50  rounded-primary overflow-hidden",
       )}
     >
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 p-4 lg:p-8">
@@ -31,7 +31,7 @@ const OperationTile = ({ className, operation }: Readonly<Props>) => {
         <div className="flex flex-col gap-2">
           <Link
             href={`/app/operations/${operation.id}`}
-            className="flex items-center justify-center gap-4 rounded uppercase h-11 border text-base border-sinister-red-500 text-sinister-red-500 hover:border-sinister-red-300 active:border-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300 px-6"
+            className="flex items-center justify-center gap-4 rounded-secondary uppercase h-11 border text-base border-sinister-red-500 text-sinister-red-500 hover:border-sinister-red-300 active:border-sinister-red-300 hover:text-sinister-red-300 active:text-sinister-red-300 px-6"
           >
             Öffnen <FaArrowRight />
           </Link>

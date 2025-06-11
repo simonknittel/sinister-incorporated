@@ -15,7 +15,10 @@ export const OverviewTile = ({ className, event }: Props) => {
 
   return (
     <section
-      className={clsx("rounded-2xl bg-neutral-800/50 overflow-auto", className)}
+      className={clsx(
+        "rounded-primary bg-neutral-800/50 overflow-auto",
+        className,
+      )}
       style={{
         gridArea: "overview",
       }}

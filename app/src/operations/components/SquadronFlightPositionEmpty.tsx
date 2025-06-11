@@ -128,7 +128,7 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Readonly<Props>) => {
           Unbesetzt
         </p>
 
-        <div className="aspect-square rounded mt-2 flex flex-col items-center justify-center gap-4 relative">
+        <div className="aspect-square rounded-secondary mt-2 flex flex-col items-center justify-center gap-4 relative">
           <Image src={f7hornetImage} alt="" className="rotate-90" />
         </div>
 
@@ -147,7 +147,7 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Readonly<Props>) => {
           </label>
 
           <select
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
             id={selectUserId}
             {...register("userId", { required: true })}
           >
@@ -169,7 +169,7 @@ const SquadronFlightPositionEmpty = ({ type, unit }: Readonly<Props>) => {
           </label>
 
           <select
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
             id={selectShipId}
             {...register("shipId", { required: true })}
           >

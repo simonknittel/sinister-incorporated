@@ -16,7 +16,7 @@ export const RolesTile = async ({ className }: Props) => {
   return (
     <section
       className={clsx(
-        "p-4 lg:p-8 rounded-2xl bg-neutral-800/50 overflow-hidden",
+        "p-4 lg:p-8 rounded-primary bg-neutral-800/50 overflow-hidden",
         className,
       )}
     >
@@ -42,11 +42,11 @@ export const RolesTile = async ({ className }: Props) => {
               <td className="h-14 overflow-hidden">
                 <Link
                   href={`/app/roles/${role.id}`}
-                  className="flex items-center gap-2 hover:bg-neutral-800 px-2 rounded h-full"
+                  className="flex items-center gap-2 hover:bg-neutral-800 px-2 rounded-secondary h-full"
                   prefetch={false}
                 >
                   {role.icon ? (
-                    <div className="aspect-square size-8 flex items-center justify-center rounded overflow-hidden flex-none">
+                    <div className="aspect-square size-8 flex items-center justify-center rounded-secondary overflow-hidden flex-none">
                       <Image
                         src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${role.icon.id}`}
                         alt=""
@@ -72,7 +72,7 @@ export const RolesTile = async ({ className }: Props) => {
               <td className="h-14">
                 <Link
                   href={`/app/roles/${role.id}/inheritance`}
-                  className="flex items-center gap-2 hover:bg-neutral-800 px-2 rounded h-full"
+                  className="flex items-center gap-2 hover:bg-neutral-800 px-2 rounded-secondary h-full"
                   prefetch={false}
                 >
                   {role.inherits.length > 0 ? role.inherits.length : "-"}

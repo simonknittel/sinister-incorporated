@@ -180,7 +180,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
           </label>
           <input
             autoFocus
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
             name="name"
             required
             type="text"
@@ -194,7 +194,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             Beschreibung (optional)
           </label>
           <textarea
-            className="p-2 rounded bg-neutral-900 w-full h-32 mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full h-32 mt-2"
             name="description"
             maxLength={512}
             defaultValue={
@@ -363,7 +363,7 @@ const RequiredVariants = ({
           </div>
 
           <select
-            className="p-2 rounded bg-neutral-900 w-full"
+            className="p-2 rounded-secondary bg-neutral-900 w-full"
             defaultValue={item}
             onChange={(e) => handleChange(e, index)}
           >

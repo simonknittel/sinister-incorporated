@@ -71,13 +71,13 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
           Name
         </label>
         {_variant.isFetching ? (
-          <div className="rounded bg-neutral-900 mt-2 h-10 animate-pulse " />
+          <div className="rounded-secondary bg-neutral-900 mt-2 h-10 animate-pulse " />
         ) : (
           <input
             id={nameId}
             name="name"
             type="text"
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
             required
             autoFocus
             defaultValue={_variant.data?.name}
@@ -88,12 +88,12 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
           Status
         </label>
         {_variant.isFetching ? (
-          <div className="rounded bg-neutral-900 mt-2 h-10 animate-pulse " />
+          <div className="rounded-secondary bg-neutral-900 mt-2 h-10 animate-pulse " />
         ) : (
           <select
             id={statusId}
             name="status"
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
             defaultValue={_variant.data?.status || "FLIGHT_READY"}
             required
           >
@@ -111,7 +111,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
             <div key={tag.id} className="flex gap-1 items-stretch">
               <input
                 type="text"
-                className="p-2 rounded bg-neutral-900 flex-1 min-w-0"
+                className="p-2 rounded-secondary bg-neutral-900 flex-1 min-w-0"
                 name="tagKeys[]"
                 placeholder="Key"
                 defaultValue={tag.key}
@@ -119,7 +119,7 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
               />
               <input
                 type="text"
-                className="p-2 rounded bg-neutral-900 flex-1 min-w-0"
+                className="p-2 rounded-secondary bg-neutral-900 flex-1 min-w-0"
                 name="tagValues[]"
                 placeholder="Value"
                 defaultValue={tag.value}

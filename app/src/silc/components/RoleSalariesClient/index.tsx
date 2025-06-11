@@ -90,7 +90,7 @@ export const RoleSalariesClient = ({
                     );
                   }}
                   required
-                  className="p-2 rounded bg-neutral-900 border border-neutral-800 w-full"
+                  className="p-2 rounded-secondary bg-neutral-900 border border-neutral-800 w-full"
                   style={{
                     gridArea: "value",
                   }}
@@ -108,7 +108,7 @@ export const RoleSalariesClient = ({
                     );
                   }}
                   required
-                  className="p-2 rounded bg-neutral-900 border border-neutral-800 w-full"
+                  className="p-2 rounded-secondary bg-neutral-900 border border-neutral-800 w-full"
                   style={{
                     gridArea: "dayOfMonth",
                   }}

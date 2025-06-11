@@ -81,7 +81,7 @@ export const LineupTab = ({
           showToggle={showToggle}
         />
       ) : (
-        <p className="rounded-2xl bg-neutral-800/50 p-4">
+        <p className="rounded-primary bg-neutral-800/50 p-4">
           Keine Posten vorhanden. Diese können vom Organisator des Events
           angelegt und zugeordnet werden.
         </p>

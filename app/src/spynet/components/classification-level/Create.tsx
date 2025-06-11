@@ -75,7 +75,7 @@ const Create = ({ className }: Readonly<Props>) => {
           </label>
 
           <input
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
             id={inputId}
             {...register("name", { required: true })}
             autoFocus

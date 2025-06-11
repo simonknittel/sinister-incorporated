@@ -1194,7 +1194,7 @@ type DayProps = Readonly<{
 
 const Day = ({ heading, children }: DayProps) => {
   return (
-    <article className="bg-neutral-800/50 rounded-2xl p-4 lg:p-8">
+    <article className="bg-neutral-800/50 rounded-primary p-4 lg:p-8">
       <h2 className="font-thin text-2xl flex gap-3 items-center">
         <FaCalendar className="text-neutral-500 text-base" />
         {heading}
@@ -1251,7 +1251,7 @@ const RedactedDayItem = () => {
 
       <div className="absolute inset-0 flex items-center justify-center backdrop-blur">
         <p
-          className="text-sinister-red-500 font-bold border-2 border-sinister-red-500 rounded px-2 py-1 text-lg relative"
+          className="text-sinister-red-500 font-bold border-2 border-sinister-red-500 rounded-secondary px-2 py-1 text-lg relative"
           style={{
             transform: `rotate(${random(-15, 15)}deg)`,
             left: `${random(-100, 100)}px`,

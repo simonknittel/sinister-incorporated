@@ -30,7 +30,7 @@ export const DownloadEventButton = ({ className, event }: Props) => {
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="bg-neutral-800 rounded py-2"
+          className="bg-neutral-800 rounded-secondary py-2"
           side="top"
           sideOffset={4}
         >

@@ -54,7 +54,7 @@ const SquadronFlightPosition = ({
         {member.user.name}
       </p>
 
-      <div className="aspect-square rounded mt-2 flex flex-col items-center justify-center gap-4 relative">
+      <div className="aspect-square rounded-secondary mt-2 flex flex-col items-center justify-center gap-4 relative">
         <Image src={f7hornetImage} alt="" className="rotate-90 sepia" />
 
         <div

@@ -67,7 +67,10 @@ export const MembershipsTile = async ({ className, id }: Props) => {
 
   return (
     <section
-      className={clsx(className, "rounded-2xl p-4 lg:p-8 bg-neutral-800/50")}
+      className={clsx(
+        className,
+        "rounded-primary p-4 lg:p-8 bg-neutral-800/50",
+      )}
     >
       <h2 className="font-bold flex gap-2 items-center">
         <FaUsers /> Mitglieder
@@ -84,7 +87,7 @@ export const MembershipsTile = async ({ className, id }: Props) => {
             .map((membership) => (
               <li
                 key={membership.citizen.id}
-                className="rounded bg-neutral-700/50 flex"
+                className="rounded-secondary bg-neutral-700/50 flex"
               >
                 <Link
                   href={`/app/spynet/citizen/${membership.citizen.id}`}

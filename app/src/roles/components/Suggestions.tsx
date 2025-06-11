@@ -58,7 +58,7 @@ export const Suggestions = ({ className, onClick }: Props) => {
               <button
                 key={roleName}
                 className={clsx(
-                  "px-2 py-1 rounded bg-neutral-700 flex gap-2 items-center whitespace-nowrap enabled:hover:bg-neutral-600 transition-colors",
+                  "px-2 py-1 rounded-secondary bg-neutral-700 flex gap-2 items-center whitespace-nowrap enabled:hover:bg-neutral-600 transition-colors",
                   {
                     "animate-pulse": suggestions.isFetching,
                   },
@@ -85,11 +85,11 @@ export const Suggestions = ({ className, onClick }: Props) => {
           </>
         ) : (
           <>
-            <div className="w-[8rem] h-8 rounded bg-neutral-700 animate-pulse" />
-            <div className="w-[12rem] h-8 rounded bg-neutral-700 animate-pulse" />
-            <div className="w-[6rem] h-8 rounded bg-neutral-700 animate-pulse" />
-            <div className="w-[6rem] h-8 rounded bg-neutral-700 animate-pulse" />
-            <div className="w-[8rem] h-8 rounded bg-neutral-700 animate-pulse" />
+            <div className="w-[8rem] h-8 rounded-secondary bg-neutral-700 animate-pulse" />
+            <div className="w-[12rem] h-8 rounded-secondary bg-neutral-700 animate-pulse" />
+            <div className="w-[6rem] h-8 rounded-secondary bg-neutral-700 animate-pulse" />
+            <div className="w-[6rem] h-8 rounded-secondary bg-neutral-700 animate-pulse" />
+            <div className="w-[8rem] h-8 rounded-secondary bg-neutral-700 animate-pulse" />
           </>
         )}
       </div>

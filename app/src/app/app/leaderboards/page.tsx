@@ -22,7 +22,7 @@ export default async function Page() {
         <Hero text="Leaderboards" withGlitch />
       </div>
 
-      <section className="bg-neutral-800/50 rounded-2xl p-4 lg:p-8 mt-8 overflow-hidden">
+      <section className="bg-neutral-800/50 rounded-primary p-4 lg:p-8 mt-8 overflow-hidden">
         <table className="w-full">
           <thead>
             <tr
@@ -50,7 +50,7 @@ export default async function Page() {
                   {/* <Link
                     href={`/app/spynet/citizen/${}`}
                     prefetch={false}
-                    className="flex items-center gap-2 text-sinister-red-500 hover:bg-neutral-800 px-2 rounded h-full overflow-hidden text-ellipsis whitespace-nowrap"
+                    className="flex items-center gap-2 text-sinister-red-500 hover:bg-neutral-800 px-2 rounded-secondary h-full overflow-hidden text-ellipsis whitespace-nowrap"
                   > */}
                   {citizen.displayname}
                   {/* </Link> */}

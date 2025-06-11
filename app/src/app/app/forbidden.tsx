@@ -15,7 +15,7 @@ export default async function Forbidden() {
         <Hero text="Redacted" className="text-center mx-auto" withGlitch />
       </div>
 
-      <div className="flex flex-col gap-2 rounded-2xl bg-neutral-800/50 p-8 mx-8 items-center">
+      <div className="flex flex-col gap-2 rounded-primary bg-neutral-800/50 p-8 mx-8 items-center">
         <p>Du bist nicht berechtigt dies zu sehen.</p>
       </div>
     </main>

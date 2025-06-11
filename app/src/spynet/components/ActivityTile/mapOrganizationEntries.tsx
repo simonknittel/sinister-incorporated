@@ -20,7 +20,7 @@ export const mapOrganizationEntries = async (
           className="text-sinister-red-500 hover:text-sinister-red-300"
         >
           {entry.logo && (
-            <span className="inline-block rounded bg-black mr-1 align-bottom">
+            <span className="inline-block rounded-secondary bg-black mr-1 align-bottom">
               <Image
                 src={`https://robertsspaceindustries.com${entry.logo}`}
                 alt=""

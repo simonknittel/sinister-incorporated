@@ -53,7 +53,7 @@ export const RequiredRoles = ({ className, defaultValue }: Props) => {
         {/* eslint-disable-next-line react-compiler/react-compiler */}
         <Popover.Portal container={popoverPortalRef.current}>
           <Popover.Content sideOffset={4} side="top">
-            <div className="flex flex-col gap-2 p-4 rounded bg-neutral-800 border border-sinister-red-500 max-h-96 overflow-auto">
+            <div className="flex flex-col gap-2 p-4 rounded-secondary bg-neutral-800 border border-sinister-red-500 max-h-96 overflow-auto">
               {data
                 ? data
                     .toSorted((a, b) => a.name.localeCompare(b.name))
@@ -102,7 +102,7 @@ export const RequiredRoles = ({ className, defaultValue }: Props) => {
                       prev.filter((id) => id !== role!.id),
                     )
                   }
-                  className="flex items-center gap-1 bg-neutral-700/50 pr-2 rounded"
+                  className="flex items-center gap-1 bg-neutral-700/50 pr-2 rounded-secondary"
                 >
                   <SingleRole
                     className="bg-transparent"

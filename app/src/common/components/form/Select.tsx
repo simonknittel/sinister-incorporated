@@ -10,7 +10,10 @@ export const Select = (props: Props) => {
 
   return (
     <select
-      className={clsx(className, "bg-neutral-900 rounded px-4 h-11 w-full")}
+      className={clsx(
+        className,
+        "bg-neutral-900 rounded-secondary px-4 h-11 w-full",
+      )}
       {...rest}
     >
       {children}

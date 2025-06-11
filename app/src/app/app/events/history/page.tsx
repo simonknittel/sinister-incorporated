@@ -23,7 +23,7 @@ export default async function Page() {
             <Event key={event.id} event={event} index={index} />
           ))
         ) : (
-          <div className="bg-neutral-800/50 rounded-2xl p-4 lg:p-8 w-full">
+          <div className="bg-neutral-800/50 rounded-primary p-4 lg:p-8 w-full">
             <p>Keine Events vorhanden.</p>
           </div>
         )}

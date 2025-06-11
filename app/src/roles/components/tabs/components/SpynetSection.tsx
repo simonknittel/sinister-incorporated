@@ -15,7 +15,7 @@ export const SpynetSection = ({ className }: Props) => {
     <div className={clsx(className)}>
       <h4 className="font-bold">Spynet</h4>
 
-      <div className="border border-neutral-700 p-4 rounded mt-2 grid grid-cols-4 grid-rows-1 gap-4">
+      <div className="border border-neutral-700 p-4 rounded-secondary mt-2 grid grid-cols-4 grid-rows-1 gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <h5 className="font-bold">Aktivität</h5>

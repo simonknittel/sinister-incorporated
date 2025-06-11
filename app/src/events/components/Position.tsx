@@ -180,7 +180,7 @@ export const Position = ({
             {position.requiredVariants.length > 1 && (
               <Tooltip.Provider delayDuration={0}>
                 <Tooltip.Root>
-                  <Tooltip.Trigger className="cursor-default hover:bg-neutral-700 rounded flex gap-2 items-center">
+                  <Tooltip.Trigger className="cursor-default hover:bg-neutral-700 rounded-secondary flex gap-2 items-center">
                     <VariantWithLogo
                       key={position.requiredVariants[0].id}
                       variant={position.requiredVariants[0].variant}
@@ -196,7 +196,7 @@ export const Position = ({
                   </Tooltip.Trigger>
 
                   <Tooltip.Content
-                    className="px-4 py-2 max-w-[320px] select-none rounded bg-neutral-950 border border-sinister-red-500 text-white font-normal"
+                    className="px-4 py-2 max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
                     sideOffset={5}
                   >
                     <p className="text-sm text-gray-500">Alternativen</p>

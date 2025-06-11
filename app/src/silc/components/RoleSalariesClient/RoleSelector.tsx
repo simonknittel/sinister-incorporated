@@ -42,7 +42,7 @@ export const RoleSelector = ({ style, defaultValue, onChange }: Props) => {
             selectedRole ? (
               <button
                 type="button"
-                className="flex items-center justify-between gap-1 bg-neutral-700/50 hover:bg-neutral-600/50 pr-3 rounded"
+                className="flex items-center justify-between gap-1 bg-neutral-700/50 hover:bg-neutral-600/50 pr-3 rounded-secondary"
                 style={style}
               >
                 <SingleRole
@@ -81,7 +81,7 @@ export const RoleSelector = ({ style, defaultValue, onChange }: Props) => {
         {/* eslint-disable-next-line react-compiler/react-compiler */}
         <Popover.Portal>
           <Popover.Content sideOffset={4} side="top">
-            <div className="flex flex-col gap-2 p-4 rounded bg-neutral-800 border border-sinister-red-500 max-h-96 overflow-auto">
+            <div className="flex flex-col gap-2 p-4 rounded-secondary bg-neutral-800 border border-sinister-red-500 max-h-96 overflow-auto">
               {data
                 ? data
                     .toSorted((a, b) => a.role.name.localeCompare(b.role.name))

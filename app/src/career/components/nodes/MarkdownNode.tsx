@@ -124,7 +124,7 @@ export const MarkdownNode = (props: NodeProps<Markdown>) => {
             title="Größe ändern"
             type="button"
             onClick={() => setIsResizing((value) => !value)}
-            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+            className="bg-neutral-800 rounded-secondary p-2 text-sinister-red-500 hover:bg-neutral-700"
           >
             <IoMdResize />
           </button>
@@ -133,7 +133,7 @@ export const MarkdownNode = (props: NodeProps<Markdown>) => {
             onClick={onEdit}
             type="button"
             title="Bearbeiten"
-            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+            className="bg-neutral-800 rounded-secondary p-2 text-sinister-red-500 hover:bg-neutral-700"
           >
             <FaPen />
           </button>
@@ -157,7 +157,7 @@ export const MarkdownNode = (props: NodeProps<Markdown>) => {
             onClick={onDelete}
             type="button"
             title="Löschen"
-            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+            className="bg-neutral-800 rounded-secondary p-2 text-sinister-red-500 hover:bg-neutral-700"
           >
             <FaTrash />
           </button>
@@ -168,7 +168,7 @@ export const MarkdownNode = (props: NodeProps<Markdown>) => {
 
       <div
         className={clsx(
-          "rounded h-full p-4 prose prose-invert prose-sm overflow-hidden flex flex-col justify-center",
+          "rounded-secondary h-full p-4 prose prose-invert prose-sm overflow-hidden flex flex-col justify-center",
           {
             "text-left":
               props.data.markdownPosition === FlowNodeMarkdownPosition.LEFT ||

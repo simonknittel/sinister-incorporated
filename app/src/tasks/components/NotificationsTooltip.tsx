@@ -69,7 +69,7 @@ export const NotificationsTooltip = ({ className }: Props) => {
         <Popover.Content sideOffset={4}>
           <form
             onSubmit={submitHandler}
-            className="px-6 py-4 rounded bg-neutral-800"
+            className="px-6 py-4 rounded-secondary bg-neutral-800"
           >
             <p>Erhalte ein Benachrichtigung wenn ...</p>
 
@@ -82,11 +82,11 @@ export const NotificationsTooltip = ({ className }: Props) => {
                 defaultChecked={taskAssigned}
                 className="hidden peer"
               />
-              <span className="w-8 h-8 bg-neutral-700 rounded block relative peer-checked:hidden">
-                <span className="absolute inset-1 rounded bg-green-500/50 hidden group-hover:block" />
+              <span className="w-8 h-8 bg-neutral-700 rounded-secondary block relative peer-checked:hidden">
+                <span className="absolute inset-1 rounded-secondary bg-green-500/50 hidden group-hover:block" />
               </span>
-              <span className="w-8 h-8 bg-neutral-700 rounded hidden relative peer-checked:block">
-                <span className="absolute inset-1 rounded bg-green-500" />
+              <span className="w-8 h-8 bg-neutral-700 rounded-secondary hidden relative peer-checked:block">
+                <span className="absolute inset-1 rounded-secondary bg-green-500" />
               </span>
               mir ein Task zugewiesen wird.
             </label>

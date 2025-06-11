@@ -159,7 +159,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
             title="Größe ändern"
             type="button"
             onClick={() => setIsResizing((value) => !value)}
-            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+            className="bg-neutral-800 rounded-secondary p-2 text-sinister-red-500 hover:bg-neutral-700"
           >
             <IoMdResize />
           </button>
@@ -168,7 +168,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
             onClick={onEdit}
             type="button"
             title="Bearbeiten"
-            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+            className="bg-neutral-800 rounded-secondary p-2 text-sinister-red-500 hover:bg-neutral-700"
           >
             <FaPen />
           </button>
@@ -192,7 +192,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
             onClick={onDelete}
             type="button"
             title="Löschen"
-            className="bg-neutral-800 rounded p-2 text-sinister-red-500 hover:bg-neutral-700"
+            className="bg-neutral-800 rounded-secondary p-2 text-sinister-red-500 hover:bg-neutral-700"
           >
             <FaTrash />
           </button>
@@ -203,7 +203,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
 
       <div
         className={clsx(
-          "bg-neutral-800 rounded h-full p-4 flex justify-center items-center",
+          "bg-neutral-800 rounded-secondary h-full p-4 flex justify-center items-center",
           {
             "grayscale opacity-40 hover:grayscale-0 hover:opacity-100":
               !unlocked,
@@ -238,7 +238,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
 
               <Tooltip.Content
                 className={clsx(
-                  "px-2 py-1 text-sm leading-tight select-none rounded bg-sinister-red-500 text-white",
+                  "px-2 py-1 text-sm leading-tight select-none rounded-secondary bg-sinister-red-500 text-white",
                   styles.TooltipContent,
                 )}
                 side="top"
@@ -252,7 +252,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         )}
 
         {"redacted" in props.data && (
-          <p className="text-sinister-red-500 font-bold border border-sinister-red-500 rounded px-2 py-1 inline-block text-xs">
+          <p className="text-sinister-red-500 font-bold border border-sinister-red-500 rounded-secondary px-2 py-1 inline-block text-xs">
             Redacted
           </p>
         )}

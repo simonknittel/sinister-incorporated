@@ -75,11 +75,11 @@ export const CreateSeriesModal = ({
         </label>
 
         {manufacturers.isFetching ? (
-          <div className="p-2 rounded bg-neutral-900 w-full mt-2 animate-pulse h-10" />
+          <div className="p-2 rounded-secondary bg-neutral-900 w-full mt-2 animate-pulse h-10" />
         ) : (
           <select
             id="manufacturerId"
-            className="p-2 rounded bg-neutral-900 w-full mt-2"
+            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
             {...register("manufacturerId", { required: true })}
             defaultValue={manufacturerId}
             autoFocus={!Boolean(manufacturerId)}
@@ -100,7 +100,7 @@ export const CreateSeriesModal = ({
         <input
           id="name"
           type="text"
-          className="p-2 rounded bg-neutral-900 w-full mt-2"
+          className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
           {...register("name", { required: true })}
           autoFocus={Boolean(manufacturerId)}
         />

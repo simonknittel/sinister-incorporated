@@ -23,7 +23,7 @@ export const NumberInput = (props: Props) => {
 
       <input
         type="number"
-        className="p-2 rounded bg-neutral-900 w-full"
+        className="p-2 rounded-secondary bg-neutral-900 w-full"
         id={id}
         {...rest}
       />

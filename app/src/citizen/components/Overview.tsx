@@ -80,7 +80,7 @@ export const Overview = async ({ className, entity }: Props) => {
               <dd className="flex gap-4 items-center">
                 <Suspense
                   fallback={
-                    <div className="bg-neutral-800 animate-pulse rounded h-6 w-20" />
+                    <div className="bg-neutral-800 animate-pulse rounded-secondary h-6 w-20" />
                   }
                 >
                   <LastSeenAt entity={entity} />

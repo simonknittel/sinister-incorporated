@@ -24,7 +24,7 @@ export const CollapseToggle = ({ className }: Props) => {
   return (
     <button
       className={clsx(
-        "px-2 py-1 rounded border border-neutral-800 hover:border-neutral-600 active:border-neutral-500 text-neutral-600 hover:text-neutral-400 active:text-neutral-300 text-lg",
+        "px-2 py-1 rounded-secondary border border-neutral-800 hover:border-neutral-600 active:border-neutral-500 text-neutral-600 hover:text-neutral-400 active:text-neutral-300 text-lg",
         className,
       )}
       onClick={handleClick}

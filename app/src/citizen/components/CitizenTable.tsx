@@ -148,7 +148,7 @@ export const CitizenTable = ({
           return (
             <tr
               key={row.entity.id}
-              className="grid items-center gap-4 px-2 h-14 rounded -mx-2 first:mt-2"
+              className="grid items-center gap-4 px-2 h-14 rounded-secondary -mx-2 first:mt-2"
               style={{
                 gridTemplateColumns,
               }}
@@ -221,7 +221,7 @@ export const CitizenTable = ({
                 <td className="overflow-hidden text-ellipsis">
                   <Suspense
                     fallback={
-                      <div className="bg-neutral-800 animate-pulse rounded h-6 w-20" />
+                      <div className="bg-neutral-800 animate-pulse rounded-secondary h-6 w-20" />
                     }
                   >
                     <LastSeenAt entity={row.entity} />

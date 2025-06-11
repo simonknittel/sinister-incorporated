@@ -31,7 +31,7 @@ export const DragPlaceholder = ({ className }: Props) => {
         <div
           ref={ref}
           className={clsx(
-            "h-12 w-60 absolute bg-neutral-800/50 -translate-x-2 -translate-y-1/2 rounded pointer-events-none",
+            "h-12 w-60 absolute bg-neutral-800/50 -translate-x-2 -translate-y-1/2 rounded-secondary pointer-events-none",
             className,
           )}
         />,

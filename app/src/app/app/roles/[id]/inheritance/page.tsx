@@ -54,7 +54,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <RoleDetailsTemplate role={role}>
-      <section className="rounded-2xl bg-neutral-800/50 p-4 lg:p-8">
+      <section className="rounded-primary bg-neutral-800/50 p-4 lg:p-8">
         <h2 className="text-xl font-bold mb-2">Vererbungen</h2>
         <p className="max-w-prose">
           Die Rolle <SingleRole role={role} className="inline-flex align-sub" />{" "}

@@ -40,7 +40,7 @@ export const CopyToClipboard = ({ className, value }: Props) => {
     >
       <FaCopy />
       {showTooltip && (
-        <span className="absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+8px)] select-none rounded bg-neutral-600 text-white p-2 flex items-center gap-1">
+        <span className="absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+8px)] select-none rounded-secondary bg-neutral-600 text-white p-2 flex items-center gap-1">
           <FaCheck className="text-green-500 text-sm" />
           Kopiert
         </span>
