@@ -13,21 +13,24 @@
   transform: translateX(-50%);
   z-index: 40;
   background-color: rgb(38 38 38);
-  padding-bottom: 1rem;
+  padding-bottom: 0.5rem;
   border-radius: 1rem;
   width: 640px;
 }
 
 .cmdk [cmdk-input] {
-  padding: 0.5rem;
-  background-color: rgb(23 23 23);
-  border-radius: 0.25rem;
+  padding: 1rem;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
   display: block;
-  margin-bottom: 1rem;
-  margin-top: 2rem;
-  margin-left: 2rem;
-  margin-right: 2rem;
-  width: calc(100% - 4rem);
+  margin-bottom: 0.5rem;
+  width: 100%;
+  background-color: rgb(38 38 38);
+  border-bottom: 1px solid rgb(64 64 64);
+}
+
+.cmdk [cmdk-input]:focus-visible {
+  outline: none;
 }
 
 .cmdk [cmdk-list] {
@@ -38,18 +41,18 @@
 .cmdk [cmdk-group-heading] {
   color: rgb(115 115 115);
   padding-left: 1rem;
-  padding-top: 1rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
+  padding-right: 1rem;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .cmdk [cmdk-item] {
-  padding: 1rem;
+  padding: 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .cmdk [cmdk-item][data-selected="true"]:not([data-disabled="true"]) {

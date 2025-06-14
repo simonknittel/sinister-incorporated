@@ -56,6 +56,7 @@ export default async function Page() {
             </div>
           </div>
         </article>
+
         {showLogAnalyzer ? (
           <article className="background-secondary rounded-primary overflow-hidden">
             <Image

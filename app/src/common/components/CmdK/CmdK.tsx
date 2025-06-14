@@ -1,10 +1,27 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import { FaCog, FaHome, FaLock, FaSearch, FaUsers } from "react-icons/fa";
-import { MdWorkspaces } from "react-icons/md";
+import {
+  cloneElement,
+  useEffect,
+  useState,
+  type Dispatch,
+  type ReactElement,
+  type SetStateAction,
+} from "react";
+import {
+  FaCog,
+  FaHome,
+  FaLock,
+  FaPiggyBank,
+  FaTools,
+  FaUsers,
+} from "react-icons/fa";
+import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
+import { IoDocuments } from "react-icons/io5";
+import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
+import { TbMilitaryRank } from "react-icons/tb";
 import "./CmdK.css";
 import { SpynetSearchPage } from "./SpynetSearchPage";
 
@@ -22,6 +39,11 @@ interface Props {
   readonly showNoteTypeManage: boolean;
   readonly showAnalyticsManage: boolean;
   readonly showManufacturersSeriesAndVariantsManage: boolean;
+  readonly showTasks: boolean;
+  readonly showCareer: boolean;
+  readonly showSilc: boolean;
+  readonly showPenaltyPoints: boolean;
+  readonly showLogAnalyzer: boolean;
 }
 
 export const CmdK = ({
@@ -38,12 +60,16 @@ export const CmdK = ({
   showNoteTypeManage,
   showAnalyticsManage,
   showManufacturersSeriesAndVariantsManage,
+  showTasks,
+  showCareer,
+  showSilc,
+  showPenaltyPoints,
+  showLogAnalyzer,
 }: Props) => {
   const authentication = useAuthentication();
   if (!authentication || !authentication.session.entity)
     throw new Error("Forbidden");
   const [search, setSearch] = useState("");
-  const router = useRouter();
   const [pages, setPages] = useState<string[]>([]);
 
   useEffect(() => {
@@ -73,92 +99,164 @@ export const CmdK = ({
       onKeyDown={(e) => {
         if (pages.length === 0) return;
 
-        if (e.key === "Escape") {
+        if (e.key === "Escape" || (e.key === "Backspace" && !search)) {
           e.preventDefault();
           setPages((pages) => pages.slice(0, -1));
-          setSearch("");
         }
       }}
       shouldFilter={page !== "spynet-search"}
+      label="Navigation"
     >
-      <Command.Input value={search} onValueChange={setSearch} placeholder="" />
+      <Command.Input
+        value={search}
+        onValueChange={setSearch}
+        placeholder="Suche ..."
+      />
 
       <Command.List>
         {!page && (
           <>
-            <Command.Group heading="Dashboard">
-              <Command.Item
-                keywords={["Dashboard", "Startseite", "Homepage"]}
-                onSelect={() => {
-                  router.push("/app");
-                  setOpen(false);
-                  setSearch("");
-                }}
-              >
-                <FaHome />
-                Öffnen
-              </Command.Item>
-            </Command.Group>
+            <LinkItem
+              label="Dashboard"
+              keywords={["Dashboard", "Startseite", "Homepage"]}
+              icon={<FaHome />}
+              href="/app"
+              setOpen={setOpen}
+              setSearch={setSearch}
+            />
 
-            {(showOrgFleetRead || showShipManage) && (
-              <Command.Group heading="Flotte">
-                <Command.Item
-                  keywords={["Flotte", "Fleet", "Schiffe", "Ships", "Overview"]}
-                  onSelect={() => {
-                    router.push("/app/fleet");
-                    setOpen(false);
-                    setSearch("");
-                  }}
-                  value="fleet_overview"
-                >
-                  <MdWorkspaces />
-                  Übersicht öffnen
-                </Command.Item>
-              </Command.Group>
+            {showTasks && (
+              <LinkItem
+                label="Tasks"
+                keywords={["Tasks", "Aufgaben", "Quests"]}
+                icon={<MdTaskAlt />}
+                href="/app/tasks"
+                setOpen={setOpen}
+                setSearch={setSearch}
+              />
             )}
 
+            {(showOrgFleetRead || showShipManage) && (
+              <LinkItem
+                label="Flotte"
+                keywords={["Flotte", "Fleet", "Schiffe", "Ships", "Overview"]}
+                icon={<MdWorkspaces />}
+                href="/app/fleet"
+                setOpen={setOpen}
+                setSearch={setSearch}
+              />
+            )}
+
+            <LinkItem
+              label="Dokumente"
+              keywords={["Dokumente", "Documents", "Dateien"]}
+              icon={<IoDocuments />}
+              href="/app/documents"
+              setOpen={setOpen}
+              setSearch={setSearch}
+            />
+
+            {showCareer && (
+              <LinkItem
+                label="Karriere"
+                keywords={["Karriere", "Career", "Laufbahn"]}
+                icon={<TbMilitaryRank />}
+                href="/app/career"
+                setOpen={setOpen}
+                setSearch={setSearch}
+              />
+            )}
+
+            {showSilc && (
+              <LinkItem
+                label="SILC"
+                icon={<FaPiggyBank />}
+                href="/app/silc"
+                setOpen={setOpen}
+                setSearch={setSearch}
+              />
+            )}
+
+            {showPenaltyPoints && (
+              <LinkItem
+                label="Strafpunkte"
+                keywords={["Strafpunkte", "Penalty Points"]}
+                icon={<FaScaleBalanced />}
+                href="/app/penalty-points"
+                setOpen={setOpen}
+                setSearch={setSearch}
+              />
+            )}
+
+            <LinkItem
+              label="Tools"
+              icon={<FaTools />}
+              href="/app/tools"
+              setOpen={setOpen}
+              setSearch={setSearch}
+            />
+
+            {showLogAnalyzer && (
+              <LinkItem
+                label="Log Analyzer"
+                icon={<FaTools />}
+                section="Tools"
+                href="/app/tools/log-analyzer"
+                setOpen={setOpen}
+                setSearch={setSearch}
+              />
+            )}
+
+            <LinkItem
+              label="Dogfight Trainer"
+              keywords={["Dogfight Trainer", "Asteroids"]}
+              icon={<FaTools />}
+              section="Tools"
+              href="/dogfight-trainer"
+              setOpen={setOpen}
+              setSearch={setSearch}
+            />
+
+            <LinkItem
+              label="Changelog"
+              keywords={["Changelog", "Updates"]}
+              icon={<FaCodePullRequest />}
+              href="/app/changelog"
+              setOpen={setOpen}
+              setSearch={setSearch}
+            />
+
             {showSpynet && (
-              <Command.Group heading="Spynet">
+              <>
+                <LinkItem
+                  label="Spynet"
+                  icon={<RiSpyFill />}
+                  href="/app/spynet"
+                  setOpen={setOpen}
+                  setSearch={setSearch}
+                />
+
+                <LinkItem
+                  label="Mein Profil"
+                  icon={<RiSpyFill />}
+                  section="Spynet"
+                  href={`/app/spynet/citizen/${authentication.session.entity.id}`}
+                  setOpen={setOpen}
+                  setSearch={setSearch}
+                />
+
                 {!disableAlgolia && (
-                  <Command.Item
-                    keywords={["Spynet", "Search"]}
-                    onSelect={() => {
-                      setPages(() => [...pages, "spynet-search"]);
-                      setSearch("");
-                    }}
-                  >
-                    <FaSearch />
-                    Suchen
-                  </Command.Item>
+                  <PageItem
+                    label="Profil suchen"
+                    icon={<RiSpyFill />}
+                    section="Spynet"
+                    setPages={() =>
+                      setPages((pages) => [...pages, "spynet-search"])
+                    }
+                    setSearch={setSearch}
+                  />
                 )}
-
-                <Command.Item
-                  keywords={["Spynet", "Overview"]}
-                  onSelect={() => {
-                    router.push("/app/spynet");
-                    setOpen(false);
-                    setSearch("");
-                  }}
-                  value="spynet_overview"
-                >
-                  <RiSpyFill />
-                  Übersicht öffnen
-                </Command.Item>
-
-                <Command.Item
-                  keywords={["Spynet"]}
-                  onSelect={() => {
-                    router.push(
-                      `/app/spynet/citizen/${authentication.session.entity!.id}`,
-                    );
-                    setOpen(false);
-                    setSearch("");
-                  }}
-                >
-                  <RiSpyFill />
-                  Eigenes Profil öffnen
-                </Command.Item>
-              </Command.Group>
+              </>
             )}
 
             {(showUserRead ||
@@ -167,65 +265,55 @@ export const CmdK = ({
               showNoteTypeManage ||
               showAnalyticsManage ||
               showManufacturersSeriesAndVariantsManage) && (
-              <Command.Group heading="Admin">
+              <>
                 {(showNoteTypeManage ||
                   showClassificationLevelManage ||
                   showAnalyticsManage) && (
-                  <Command.Item
-                    keywords={["Admin", "Settings"]}
-                    onSelect={() => {
-                      router.push("/app/settings");
-                      setOpen(false);
-                      setSearch("");
-                    }}
-                  >
-                    <FaCog />
-                    Einstellungen öffnen
-                  </Command.Item>
+                  <LinkItem
+                    label="Notizarten- und Geheimhaltungsstufen"
+                    icon={<FaCog />}
+                    section="Admin"
+                    href="/app/settings"
+                    setOpen={setOpen}
+                    setSearch={setSearch}
+                  />
                 )}
 
                 {showRoleManage && (
-                  <Command.Item
-                    keywords={["Admin", "Berechtigungen"]}
-                    onSelect={() => {
-                      router.push("/app/roles");
-                      setOpen(false);
-                      setSearch("");
-                    }}
-                  >
-                    <FaLock />
-                    Rollen öffnen
-                  </Command.Item>
+                  <LinkItem
+                    label="Rollen"
+                    keywords={["Berechtigungen", "Permissions"]}
+                    icon={<FaLock />}
+                    section="Admin"
+                    href="/app/roles"
+                    setOpen={setOpen}
+                    setSearch={setSearch}
+                  />
                 )}
 
                 {showManufacturersSeriesAndVariantsManage && (
-                  <Command.Item
-                    keywords={["Admin", "Ships"]}
-                    onSelect={() => {
-                      router.push("/app/fleet/settings/manufacturer");
-                      setOpen(false);
-                      setSearch("");
-                    }}
-                  >
-                    <FaCog />
-                    Schiffe öffnen
-                  </Command.Item>
+                  <LinkItem
+                    label="Schiffe"
+                    icon={<FaCog />}
+                    section="Admin"
+                    href="/app/fleet/settings/manufacturer"
+                    setOpen={setOpen}
+                    setSearch={setSearch}
+                  />
                 )}
 
                 {showUserRead && (
-                  <Command.Item
-                    keywords={["Admin", "Users"]}
-                    onSelect={() => {
-                      router.push("/app/users");
-                      setOpen(false);
-                      setSearch("");
-                    }}
-                  >
-                    <FaUsers />
-                    Benutzer öffnen
-                  </Command.Item>
+                  <LinkItem
+                    label="Benutzer"
+                    keywords={["Users"]}
+                    icon={<FaUsers />}
+                    section="Admin"
+                    href="/app/users"
+                    setOpen={setOpen}
+                    setSearch={setSearch}
+                  />
                 )}
-              </Command.Group>
+              </>
             )}
           </>
         )}
@@ -245,4 +333,87 @@ export const CmdK = ({
   );
 };
 
-export default CmdK;
+interface ItemBaseProps {
+  readonly icon?: ReactElement;
+  readonly label: string;
+  readonly keywords?: string[];
+  readonly section?: string;
+  readonly setSearch: Dispatch<SetStateAction<string>>;
+}
+
+interface LinkItemProps extends ItemBaseProps {
+  readonly href: string;
+  readonly setOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+const LinkItem = ({
+  href,
+  icon,
+  label,
+  keywords,
+  section,
+  setOpen,
+  setSearch,
+}: LinkItemProps) => {
+  const router = useRouter();
+
+  const _icon = icon
+    ? cloneElement(icon, {
+        // @ts-expect-error
+        className: "text-neutral-500 text-sm",
+      })
+    : null;
+
+  return (
+    <Command.Item
+      keywords={keywords}
+      onSelect={() => {
+        router.push(href);
+        setOpen(false);
+        setSearch("");
+      }}
+    >
+      {_icon || <div className="size-4" />}
+
+      {label}
+
+      {section && <span className="text-neutral-500 text-xs">{section}</span>}
+    </Command.Item>
+  );
+};
+
+interface PageItemProps extends ItemBaseProps {
+  readonly setPages: () => void;
+}
+
+const PageItem = ({
+  icon,
+  label,
+  keywords,
+  section,
+  setPages,
+  setSearch,
+}: PageItemProps) => {
+  const _icon = icon
+    ? cloneElement(icon, {
+        // @ts-expect-error
+        className: "text-neutral-500 text-sm",
+      })
+    : null;
+
+  return (
+    <Command.Item
+      keywords={keywords}
+      onSelect={() => {
+        setPages();
+        setSearch("");
+      }}
+    >
+      {_icon || <div className="size-4" />}
+
+      {label}
+
+      {section && <span className="text-neutral-500 text-xs">{section}</span>}
+    </Command.Item>
+  );
+};

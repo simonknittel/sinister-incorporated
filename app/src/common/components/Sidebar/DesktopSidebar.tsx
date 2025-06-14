@@ -64,6 +64,7 @@ export const DesktopSidebar = async () => {
     showSilc,
     showSpynetActivity,
     showTasks,
+    showLogAnalyzer,
   ] = await Promise.all([
     authentication.authorize("ship", "manage"),
     authentication.authorize("orgFleet", "read"),
@@ -79,6 +80,7 @@ export const DesktopSidebar = async () => {
     authentication.authorize("silcBalanceOfOtherCitizen", "read"),
     authentication.authorize("spynetActivity", "read"),
     authentication.authorize("task", "read"),
+    authentication.authorize("logAnalyzer", "read"),
   ]);
 
   const showSpynetCitizen =
@@ -119,6 +121,11 @@ export const DesktopSidebar = async () => {
               showManufacturersSeriesAndVariantsManage={
                 showManufacturersSeriesAndVariantsManage
               }
+              showTasks={showTasks}
+              showCareer={showCareer}
+              showSilc={showSilc}
+              showPenaltyPoints={showPenaltyPoints}
+              showLogAnalyzer={showLogAnalyzer}
               className="group-data-[navigation-collapsed]/navigation:hidden"
             />
 
