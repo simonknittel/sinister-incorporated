@@ -19,6 +19,7 @@ import image20250529LogAnalyzer from "@/changelog/assets/2025-05-29-log-analyzer
 import image20250531Overlay from "@/changelog/assets/2025-05-31-overlay.png";
 import image20250609Collapsed from "@/changelog/assets/2025-06-09-collapsed.png";
 import image20250609Uncollapsed from "@/changelog/assets/2025-06-09-uncollapsed.png";
+import image20250614CmdK from "@/changelog/assets/2025-06-14-cmdk.png";
 import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
 import { SmallBadge } from "@/common/components/SmallBadge";
@@ -47,6 +48,19 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+        <Day heading="14. Juni 2025">
+          <DayItem heading="Neues Design" badges={["Strg + K", "Änderung"]}>
+            <p>Das Strg + K Menü wurde auf den aktuellen Stand gebracht.</p>
+
+            <Image
+              quality={100}
+              src={image20250614CmdK}
+              alt=""
+              loading="lazy"
+            />
+          </DayItem>
+        </Day>
+
         <Day heading="6. Juni 2025">
           <DayItem heading="Ein-/ausklappare Navigation" badges={["Neu"]}>
             <p>Die Navigation ist nun ein-/ausklappbar.</p>
