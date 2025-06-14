@@ -16,7 +16,7 @@ const fetcher = async (key: string) => {
     },
   });
 
-  return res.json();
+  return res.json() as unknown as AlgoliaResponse;
 };
 
 interface AlgoliaResponse {
