@@ -2,39 +2,17 @@
 
 import clsx from "clsx";
 import dynamic from "next/dynamic";
-import { Suspense, useState } from "react";
+import { Suspense, useState, type ComponentProps } from "react";
 
-const CmdK = dynamic(() => import("./CmdK"), { ssr: false });
+const CmdK = dynamic(() => import("./CmdK").then((mod) => mod.CmdK), {
+  ssr: false,
+});
 
-interface Props {
+interface Props extends Omit<ComponentProps<typeof CmdK>, "open" | "setOpen"> {
   readonly className?: string;
-  readonly disableAlgolia: boolean;
-  readonly showCitizenRead: boolean;
-  readonly showOrganizationRead: boolean;
-  readonly showOrgFleetRead: boolean;
-  readonly showShipManage: boolean;
-  readonly showUserRead: boolean;
-  readonly showRoleManage: boolean;
-  readonly showClassificationLevelManage: boolean;
-  readonly showNoteTypeManage: boolean;
-  readonly showAnalyticsManage: boolean;
-  readonly showManufacturersSeriesAndVariantsManage: boolean;
 }
 
-export const CmdKLoader = ({
-  className,
-  disableAlgolia,
-  showCitizenRead,
-  showOrganizationRead,
-  showOrgFleetRead,
-  showShipManage,
-  showUserRead,
-  showRoleManage,
-  showClassificationLevelManage,
-  showNoteTypeManage,
-  showAnalyticsManage,
-  showManufacturersSeriesAndVariantsManage,
-}: Props) => {
+export const CmdKLoader = ({ className, ...cmdKProps }: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -54,23 +32,7 @@ export const CmdKLoader = ({
       </button>
 
       <Suspense>
-        <CmdK
-          open={open}
-          setOpen={setOpen}
-          disableAlgolia={disableAlgolia}
-          showCitizenRead={showCitizenRead}
-          showOrganizationRead={showOrganizationRead}
-          showOrgFleetRead={showOrgFleetRead}
-          showShipManage={showShipManage}
-          showUserRead={showUserRead}
-          showRoleManage={showRoleManage}
-          showClassificationLevelManage={showClassificationLevelManage}
-          showNoteTypeManage={showNoteTypeManage}
-          showAnalyticsManage={showAnalyticsManage}
-          showManufacturersSeriesAndVariantsManage={
-            showManufacturersSeriesAndVariantsManage
-          }
-        />
+        <CmdK open={open} setOpen={setOpen} {...cmdKProps} />
       </Suspense>
     </>
   );

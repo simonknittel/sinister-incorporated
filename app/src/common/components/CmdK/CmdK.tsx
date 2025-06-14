@@ -244,5 +244,3 @@ export const CmdK = ({
     </Command.Dialog>
   );
 };
-
-export default CmdK;
