@@ -12,21 +12,21 @@
   top: 15%;
   transform: translateX(-50%);
   z-index: 40;
-  background-color: rgb(38 38 38);
+  background-color: rgb(20 20 20);
+  border: 1px solid rgb(64 64 64);
   padding-bottom: 0.5rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-primary);
+  overflow: hidden;
   width: 640px;
 }
 
 .cmdk [cmdk-input] {
   padding: 1rem;
-  border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.25rem;
   display: block;
   margin-bottom: 0.5rem;
   width: 100%;
-  background-color: rgb(38 38 38);
-  border-bottom: 1px solid rgb(64 64 64);
+  background-color: rgb(20 20 20);
+  border-bottom: 1px solid rgb(38 38 38);
 }
 
 .cmdk [cmdk-input]:focus-visible {
@@ -56,7 +56,7 @@
 }
 
 .cmdk [cmdk-item][data-selected="true"]:not([data-disabled="true"]) {
-  background-color: rgb(64 64 64);
+  background-color: rgb(38 38 38);
   border-radius: 0.25rem;
   cursor: pointer;
 }
