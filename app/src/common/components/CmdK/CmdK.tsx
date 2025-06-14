@@ -23,6 +23,7 @@ import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
 import { TbMilitaryRank } from "react-icons/tb";
 import "./CmdK.css";
+import { CornerstoneImageBrowserPage } from "./CornerstoneImageBrowserPage";
 import { SpynetSearchPage } from "./SpynetSearchPage";
 
 interface Props {
@@ -196,6 +197,16 @@ export const CmdK = ({
               setSearch={setSearch}
             />
 
+            <PageItem
+              label="Cornerstone Image Browser"
+              icon={<FaTools />}
+              section="Tools"
+              setPages={() =>
+                setPages((pages) => [...pages, "cornerstone-image-browser"])
+              }
+              setSearch={setSearch}
+            />
+
             {showLogAnalyzer && (
               <LinkItem
                 label="Log Analyzer"
@@ -326,6 +337,13 @@ export const CmdK = ({
               setSearch("");
               setPages([]);
             }}
+          />
+        )}
+
+        {page === "cornerstone-image-browser" && (
+          <CornerstoneImageBrowserPage
+            setOpen={setOpen}
+            setSearch={setSearch}
           />
         )}
       </Command.List>

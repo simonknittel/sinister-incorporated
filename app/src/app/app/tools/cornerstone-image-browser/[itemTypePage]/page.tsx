@@ -1,7 +1,7 @@
 import { authenticatePage } from "@/auth/server";
 import { Link } from "@/common/components/Link";
 import Note from "@/common/components/Note";
-import { itemTypes } from "@/cornerstone-image-browser/utils/config";
+import { cornerstoneImageBrowserItemTypes } from "@/cornerstone-image-browser/utils/config";
 import { log } from "@/logging";
 import { type Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -28,7 +28,7 @@ export async function generateMetadata(props: {
   params: Params;
 }): Promise<Metadata> {
   const { itemTypePage } = await props.params;
-  const itemTypeConfig = itemTypes.find(
+  const itemTypeConfig = cornerstoneImageBrowserItemTypes.find(
     (itemType) => itemType.page === itemTypePage,
   );
   if (!itemTypeConfig) notFound();
@@ -46,7 +46,7 @@ export default async function Page({ params }: Props) {
   await authenticatePage("/app/tools/cornerstone-image-browser/[itemType]");
 
   const { itemTypePage } = await params;
-  const itemTypeConfig = itemTypes.find(
+  const itemTypeConfig = cornerstoneImageBrowserItemTypes.find(
     (itemType) => itemType.page === itemTypePage,
   );
   if (!itemTypeConfig) notFound();
