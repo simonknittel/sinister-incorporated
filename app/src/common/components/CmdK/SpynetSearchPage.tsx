@@ -54,7 +54,14 @@ export const SpynetSearchPage = ({ search, onSelect }: Props) => {
   const showDogfightTrainer = !isValidating && data && /knebel/i.exec(search);
 
   return (
-    <Command.Group heading="Spynet > Suchen">
+    <Command.Group
+      heading={
+        <div className="flex items-baseline gap-2">
+          Profil suchen
+          <span className="text-neutral-700 text-xs">Spynet</span>
+        </div>
+      }
+    >
       {isValidating || !data ? (
         <div className="animate-pulse rounded-secondary bg-neutral-800 h-24 mx-2" />
       ) : data.hits.length > 0 ? (

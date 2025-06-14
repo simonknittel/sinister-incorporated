@@ -2,7 +2,7 @@ import { authenticatePage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
 import cornerstoneImageBrowserScreenshot from "@/cornerstone-image-browser/assets/screenshot.png";
-import { itemTypes } from "@/cornerstone-image-browser/utils/config";
+import { cornerstoneImageBrowserItemTypes } from "@/cornerstone-image-browser/utils/config";
 import dogfightTrainerScreenshot from "@/dogfight-trainer/assets/screenshot.png";
 import logAnalyzerScreenshot from "@/log-analyzer/assets/screenshot.png";
 import { random } from "lodash";
@@ -43,7 +43,7 @@ export default async function Page() {
             </p>
 
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-              {itemTypes.map((item) => (
+              {cornerstoneImageBrowserItemTypes.map((item) => (
                 <Link
                   key={item.page}
                   href={`/app/tools/cornerstone-image-browser/${item.page}`}

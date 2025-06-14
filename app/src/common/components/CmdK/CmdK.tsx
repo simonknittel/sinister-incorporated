@@ -1,15 +1,15 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
+import clsx from "clsx";
 import { Command } from "cmdk";
-import { useRouter } from "next/navigation";
 import {
-  cloneElement,
   useEffect,
   useState,
   type Dispatch,
-  type ReactElement,
+  type MouseEventHandler,
   type SetStateAction,
 } from "react";
 import {
+  FaArrowLeft,
   FaCog,
   FaHome,
   FaLock,
@@ -23,6 +23,8 @@ import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
 import { TbMilitaryRank } from "react-icons/tb";
 import "./CmdK.css";
+import { CornerstoneImageBrowserPage } from "./CornerstoneImageBrowserPage";
+import { LinkItem, PageItem } from "./Item";
 import { SpynetSearchPage } from "./SpynetSearchPage";
 
 interface Props {
@@ -84,7 +86,10 @@ export const CmdK = ({
     return () => document.removeEventListener("keydown", down);
   }, [setOpen]);
 
-  if (!authentication) return null;
+  const handleBack: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    setPages((pages) => pages.slice(0, -1));
+  };
 
   const page = pages[pages.length - 1];
 
@@ -107,11 +112,26 @@ export const CmdK = ({
       shouldFilter={page !== "spynet-search"}
       label="Navigation"
     >
-      <Command.Input
-        value={search}
-        onValueChange={setSearch}
-        placeholder="Suche ..."
-      />
+      <div className="relative">
+        <Command.Input
+          value={search}
+          onValueChange={setSearch}
+          placeholder="Suche ..."
+          className={clsx("p-4", {
+            "pl-10": pages.length > 0,
+          })}
+        />
+
+        {pages.length > 0 && (
+          <button
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-neutral-700/50 hover:bg-neutral-500/50 focus-visible:bg-neutral-500/50 focus-visible:outline-none p-1 rounded border border-neutral-700 text-xs"
+            type="button"
+            onClick={handleBack}
+          >
+            <FaArrowLeft />
+          </button>
+        )}
+      </div>
 
       <Command.List>
         {!page && (
@@ -193,6 +213,16 @@ export const CmdK = ({
               icon={<FaTools />}
               href="/app/tools"
               setOpen={setOpen}
+              setSearch={setSearch}
+            />
+
+            <PageItem
+              label="Cornerstone Image Browser"
+              icon={<FaTools />}
+              section="Tools"
+              setPages={() =>
+                setPages((pages) => [...pages, "cornerstone-image-browser"])
+              }
               setSearch={setSearch}
             />
 
@@ -328,92 +358,14 @@ export const CmdK = ({
             }}
           />
         )}
+
+        {page === "cornerstone-image-browser" && (
+          <CornerstoneImageBrowserPage
+            setOpen={setOpen}
+            setSearch={setSearch}
+          />
+        )}
       </Command.List>
     </Command.Dialog>
-  );
-};
-
-interface ItemBaseProps {
-  readonly icon?: ReactElement;
-  readonly label: string;
-  readonly keywords?: string[];
-  readonly section?: string;
-  readonly setSearch: Dispatch<SetStateAction<string>>;
-}
-
-interface LinkItemProps extends ItemBaseProps {
-  readonly href: string;
-  readonly setOpen: Dispatch<SetStateAction<boolean>>;
-}
-
-const LinkItem = ({
-  href,
-  icon,
-  label,
-  keywords,
-  section,
-  setOpen,
-  setSearch,
-}: LinkItemProps) => {
-  const router = useRouter();
-
-  const _icon = icon
-    ? cloneElement(icon, {
-        // @ts-expect-error
-        className: "text-neutral-500 text-sm",
-      })
-    : null;
-
-  return (
-    <Command.Item
-      keywords={keywords}
-      onSelect={() => {
-        router.push(href);
-        setOpen(false);
-        setSearch("");
-      }}
-    >
-      {_icon || <div className="size-4" />}
-
-      {label}
-
-      {section && <span className="text-neutral-500 text-xs">{section}</span>}
-    </Command.Item>
-  );
-};
-
-interface PageItemProps extends ItemBaseProps {
-  readonly setPages: () => void;
-}
-
-const PageItem = ({
-  icon,
-  label,
-  keywords,
-  section,
-  setPages,
-  setSearch,
-}: PageItemProps) => {
-  const _icon = icon
-    ? cloneElement(icon, {
-        // @ts-expect-error
-        className: "text-neutral-500 text-sm",
-      })
-    : null;
-
-  return (
-    <Command.Item
-      keywords={keywords}
-      onSelect={() => {
-        setPages();
-        setSearch("");
-      }}
-    >
-      {_icon || <div className="size-4" />}
-
-      {label}
-
-      {section && <span className="text-neutral-500 text-xs">{section}</span>}
-    </Command.Item>
   );
 };
