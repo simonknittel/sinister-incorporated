@@ -1,15 +1,15 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
+import clsx from "clsx";
 import { Command } from "cmdk";
-import { useRouter } from "next/navigation";
 import {
-  cloneElement,
   useEffect,
   useState,
   type Dispatch,
-  type ReactElement,
+  type MouseEventHandler,
   type SetStateAction,
 } from "react";
 import {
+  FaArrowLeft,
   FaCog,
   FaHome,
   FaLock,
@@ -86,7 +86,10 @@ export const CmdK = ({
     return () => document.removeEventListener("keydown", down);
   }, [setOpen]);
 
-  if (!authentication) return null;
+  const handleBack: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    setPages((pages) => pages.slice(0, -1));
+  };
 
   const page = pages[pages.length - 1];
 
@@ -109,11 +112,26 @@ export const CmdK = ({
       shouldFilter={page !== "spynet-search"}
       label="Navigation"
     >
-      <Command.Input
-        value={search}
-        onValueChange={setSearch}
-        placeholder="Suche ..."
-      />
+      <div className="relative">
+        <Command.Input
+          value={search}
+          onValueChange={setSearch}
+          placeholder="Suche ..."
+          className={clsx("p-4", {
+            "pl-10": pages.length > 0,
+          })}
+        />
+
+        {pages.length > 0 && (
+          <button
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-neutral-700/50 hover:bg-neutral-500/50 focus-visible:bg-neutral-500/50 focus-visible:outline-none p-1 rounded border border-neutral-700 text-xs"
+            type="button"
+            onClick={handleBack}
+          >
+            <FaArrowLeft />
+          </button>
+        )}
+      </div>
 
       <Command.List>
         {!page && (
