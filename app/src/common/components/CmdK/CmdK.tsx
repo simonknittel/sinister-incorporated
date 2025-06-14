@@ -24,6 +24,7 @@ import { RiSpyFill } from "react-icons/ri";
 import { TbMilitaryRank } from "react-icons/tb";
 import "./CmdK.css";
 import { CornerstoneImageBrowserPage } from "./CornerstoneImageBrowserPage";
+import { LinkItem, PageItem } from "./Item";
 import { SpynetSearchPage } from "./SpynetSearchPage";
 
 interface Props {
@@ -348,90 +349,5 @@ export const CmdK = ({
         )}
       </Command.List>
     </Command.Dialog>
-  );
-};
-
-interface ItemBaseProps {
-  readonly icon?: ReactElement;
-  readonly label: string;
-  readonly keywords?: string[];
-  readonly section?: string;
-  readonly setSearch: Dispatch<SetStateAction<string>>;
-}
-
-interface LinkItemProps extends ItemBaseProps {
-  readonly href: string;
-  readonly setOpen: Dispatch<SetStateAction<boolean>>;
-}
-
-const LinkItem = ({
-  href,
-  icon,
-  label,
-  keywords,
-  section,
-  setOpen,
-  setSearch,
-}: LinkItemProps) => {
-  const router = useRouter();
-
-  const _icon = icon
-    ? cloneElement(icon, {
-        // @ts-expect-error
-        className: "text-neutral-500 text-sm",
-      })
-    : null;
-
-  return (
-    <Command.Item
-      keywords={keywords}
-      onSelect={() => {
-        router.push(href);
-        setOpen(false);
-        setSearch("");
-      }}
-    >
-      {_icon || <div className="size-4" />}
-
-      {label}
-
-      {section && <span className="text-neutral-500 text-xs">{section}</span>}
-    </Command.Item>
-  );
-};
-
-interface PageItemProps extends ItemBaseProps {
-  readonly setPages: () => void;
-}
-
-const PageItem = ({
-  icon,
-  label,
-  keywords,
-  section,
-  setPages,
-  setSearch,
-}: PageItemProps) => {
-  const _icon = icon
-    ? cloneElement(icon, {
-        // @ts-expect-error
-        className: "text-neutral-500 text-sm",
-      })
-    : null;
-
-  return (
-    <Command.Item
-      keywords={keywords}
-      onSelect={() => {
-        setPages();
-        setSearch("");
-      }}
-    >
-      {_icon || <div className="size-4" />}
-
-      {label}
-
-      {section && <span className="text-neutral-500 text-xs">{section}</span>}
-    </Command.Item>
   );
 };
