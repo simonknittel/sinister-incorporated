@@ -310,15 +310,26 @@ export const CmdK = ({
                 )}
 
                 {showRoleManage && (
-                  <LinkItem
-                    label="Rollen"
-                    keywords={["Berechtigungen", "Permissions"]}
-                    icon={<FaLock />}
-                    section="Admin"
-                    href="/app/roles"
-                    setOpen={setOpen}
-                    setSearch={setSearch}
-                  />
+                  <>
+                    <LinkItem
+                      label="Rollen"
+                      keywords={["Berechtigungen", "Permissions"]}
+                      icon={<FaLock />}
+                      section="Admin"
+                      href="/app/roles"
+                      setOpen={setOpen}
+                      setSearch={setSearch}
+                    />
+                    <LinkItem
+                      label="Berechtigungsmatrix"
+                      keywords={["Berechtigungen", "Permissions"]}
+                      icon={<FaLock />}
+                      section="Admin"
+                      href="/app/roles/permission-matrix"
+                      setOpen={setOpen}
+                      setSearch={setSearch}
+                    />
+                  </>
                 )}
 
                 {showManufacturersSeriesAndVariantsManage && (
