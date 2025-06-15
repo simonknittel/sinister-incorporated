@@ -26,12 +26,12 @@ export default async function Page({ searchParams }: Props) {
     await searchParamsNextjsToURLSearchParams(searchParams);
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
-        <Hero text="Flotte" withGlitch />
+        <Hero text="Flotte" withGlitch size="md" />
       </div>
 
-      <div className="flex flex-col-reverse xl:flex-row gap-8 items-start mt-8">
+      <div className="flex flex-col-reverse xl:flex-row gap-8 items-start mt-6">
         {showOrgFleetTile && (
           <SuspenseWithErrorBoundaryTile className="w-full 2xl:flex-1">
             <OrgFleetTile

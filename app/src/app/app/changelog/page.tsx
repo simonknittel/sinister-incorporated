@@ -42,12 +42,12 @@ export default async function Page() {
   ]);
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
-        <Hero text="Changelog" withGlitch />
+        <Hero text="Changelog" withGlitch size="md" />
       </div>
 
-      <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-8 mx-auto">
+      <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
         <Day heading="14. Juni 2025">
           <DayItem heading="Neues Design" badges={["Strg + K", "Änderung"]}>
             <p>Das Strg + K Menü wurde auf den aktuellen Stand gebracht.</p>

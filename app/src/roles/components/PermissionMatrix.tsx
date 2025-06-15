@@ -521,7 +521,7 @@ export const PermissionMatrix = async ({ className }: Props) => {
   return (
     <section
       className={clsx(
-        "p-4 lg:p-8 rounded-primary background-secondary overflow-x-scroll",
+        "p-4 lg:p-6 rounded-primary background-secondary overflow-x-scroll",
         className,
       )}
     >

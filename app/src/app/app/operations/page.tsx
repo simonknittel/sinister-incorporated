@@ -20,7 +20,7 @@ export default async function Page() {
   const operations = await getOperations();
 
   return (
-    <main className="p-4 pb-20 lg:p-8">
+    <main className="p-4 pb-20 lg:p-6">
       <h1 className="text-xl font-bold">Operationen</h1>
 
       <Note

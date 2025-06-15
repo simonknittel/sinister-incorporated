@@ -8,9 +8,9 @@ interface Props {
 
 export const Template = ({ children }: Props) => {
   return (
-    <main className="p-4 pb-20 lg:p-8">
+    <main className="p-4 pb-20 lg:p-6">
       <div className="flex justify-center">
-        <Hero text="SILC" withGlitch />
+        <Hero text="SILC" withGlitch size="md" />
       </div>
 
       <Navigation className="my-4" />

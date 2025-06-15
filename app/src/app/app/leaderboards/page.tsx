@@ -17,12 +17,12 @@ export default async function Page() {
   const leaderboard = await getLeaderboard("SB", "47", 15);
 
   return (
-    <main className="p-4 pb-20 lg:p-8">
+    <main className="p-4 pb-20 lg:p-6">
       <div className="flex justify-center">
-        <Hero text="Leaderboards" withGlitch />
+        <Hero text="Leaderboards" withGlitch size="md" />
       </div>
 
-      <section className="bg-neutral-800/50 rounded-primary p-4 lg:p-8 mt-8 overflow-hidden">
+      <section className="bg-neutral-800/50 rounded-primary p-4 lg:p-6 mt-6 overflow-hidden">
         <table className="w-full">
           <thead>
             <tr

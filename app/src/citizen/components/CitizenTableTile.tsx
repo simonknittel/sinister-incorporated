@@ -132,11 +132,11 @@ export const CitizenTableTile = async ({ className, searchParams }: Props) => {
   return (
     <section
       className={clsx(
-        "p-8 pb-10 bg-neutral-800/50 rounded-primary overflow-auto",
+        "p-6 bg-neutral-800/50 rounded-primary overflow-auto",
         className,
       )}
     >
-      <CitizenTableFilters className="mb-8" />
+      <CitizenTableFilters className="mb-6" />
 
       <CitizenTable
         rows={limitedRows}
@@ -147,7 +147,7 @@ export const CitizenTableTile = async ({ className, searchParams }: Props) => {
         searchParams={searchParams}
       />
 
-      <div className="flex justify-center mt-8">
+      <div className="flex justify-center mt-6">
         <Pagination
           totalPages={Math.ceil(sortedRows.length / PER_PAGE)}
           currentPage={currentPage}

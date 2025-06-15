@@ -16,7 +16,7 @@ export const RolesTile = async ({ className }: Props) => {
   return (
     <section
       className={clsx(
-        "p-4 lg:p-8 rounded-primary bg-neutral-800/50 overflow-hidden",
+        "p-4 lg:p-6 rounded-primary bg-neutral-800/50 overflow-hidden",
         className,
       )}
     >

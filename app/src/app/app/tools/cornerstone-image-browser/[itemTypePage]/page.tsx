@@ -64,7 +64,7 @@ export default async function Page({ params }: Props) {
       responseBody: await response.text(),
     });
     return (
-      <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+      <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
         <Link
           href="/app/tools"
           className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 inline-flex items-center gap-2"
@@ -92,7 +92,7 @@ export default async function Page({ params }: Props) {
       error: serializeError(parsedData.error),
     });
     return (
-      <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+      <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
         <Link
           href="/app/tools"
           className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 inline-flex items-center gap-2"
@@ -115,7 +115,7 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
       <Link
         href="/app/tools"
         className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 inline-flex items-center gap-2"

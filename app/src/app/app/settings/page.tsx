@@ -45,7 +45,7 @@ export default async function Page() {
   }
 
   return (
-    <main className="p-4 pb-20 lg:p-8">
+    <main className="p-4 pb-20 lg:p-6">
       <h1 className="font-thin text-2xl">Einstellungen</h1>
 
       <div className="flex flex-col gap-4 mt-4">

@@ -5,6 +5,8 @@ import ImpersonationBannerContainer from "@/common/components/ImpersonationBanne
 import QueryClientProviderContainer from "@/common/components/QueryClientProviderContainer";
 import { DesktopSidebarContainer } from "@/common/components/Sidebar/DesktopSidebarContainer";
 import { MobileActionBarContainer } from "@/common/components/Sidebar/MobileActionBarContainer";
+import { TopBar } from "@/common/components/TopBar";
+import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { env } from "@/env";
 import { BeamsProvider } from "@/pusher/components/BeamsContext";
 import { ChannelsProvider } from "@/pusher/components/ChannelsContext";
@@ -18,9 +20,10 @@ interface Props {
 }
 
 export default async function AppLayout({ children }: Readonly<Props>) {
-  const [authentication, _cookies] = await Promise.all([
+  const [authentication, _cookies, topBarEnabled] = await Promise.all([
     authenticatePage(),
     cookies(),
+    getUnleashFlag("EnableTopBar"),
   ]);
   const isNavigationCollapsed =
     _cookies.get("navigation_collapsed")?.value === "true";
@@ -36,15 +39,17 @@ export default async function AppLayout({ children }: Readonly<Props>) {
             >
               <NextIntlClientProvider>
                 <div
-                  className="min-h-dvh background-primary group/navigation"
+                  className="min-h-dvh background-primary group/navigation group/top-bar"
                   data-navigation-collapsed={
                     isNavigationCollapsed ? "true" : undefined
                   }
+                  data-top-bar-enabled={topBarEnabled ? "true" : undefined}
                 >
                   <MobileActionBarContainer />
                   <DesktopSidebarContainer />
+                  {topBarEnabled && <TopBar />}
 
-                  <div className="lg:ml-[26rem] group-data-[navigation-collapsed]/navigation:lg:ml-[7rem] min-h-dvh">
+                  <div className="lg:ml-[26rem] group-data-[navigation-collapsed]/navigation:lg:ml-[6.5rem] group-data-[top-bar-enabled]/top-bar:lg:pt-[5.5rem] min-h-dvh">
                     {children}
                   </div>
                 </div>
