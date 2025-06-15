@@ -13,9 +13,9 @@ export default async function Page() {
   await authentication.authorizePage("penaltyEntry", "read");
 
   return (
-    <main className="p-4 pb-20 lg:p-8 flex flex-col gap-8">
+    <main className="p-4 pb-20 lg:p-6 flex flex-col gap-8">
       <div className="flex justify-center">
-        <Hero text="Strafpunkte" withGlitch />
+        <Hero text="Strafpunkte" withGlitch size="md" />
       </div>
 
       <SuspenseWithErrorBoundaryTile>

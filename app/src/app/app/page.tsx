@@ -37,12 +37,12 @@ export default async function Page({ searchParams }: Props) {
   const showUwuHero = urlSearchParams.has("uwu");
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
         {showUwuHero ? <UwuHero /> : <Hero text="S.A.M." withGlitch />}
       </div>
 
-      <div className="mt-8 flex gap-8 flex-row flex-wrap justify-center mx-auto @container">
+      <div className="mt-6 flex gap-6 flex-row flex-wrap justify-center mx-auto @container">
         {showCalendar && (
           <Suspense
             fallback={
@@ -53,7 +53,7 @@ export default async function Page({ searchParams }: Props) {
           </Suspense>
         )}
 
-        <div className="flex flex-col gap-8 max-w-[400px] flex-none">
+        <div className="flex flex-col gap-6 max-w-[400px] flex-none">
           <TasksDashboardTile />
 
           <section className="flex flex-col gap-4 flex-none">

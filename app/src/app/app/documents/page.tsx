@@ -260,12 +260,12 @@ export default async function Page() {
   }
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
-        <Hero text="Dokumente" withGlitch />
+        <Hero text="Dokumente" withGlitch size="md" />
       </div>
 
-      <div className="flex flex-col gap-4 mt-4 lg:mt-8">
+      <div className="flex flex-col gap-4 mt-4 lg:mt-6">
         {categoriesWithAuthorizedDocuments.map(({ name, documents }) => (
           <Tile
             key={name}

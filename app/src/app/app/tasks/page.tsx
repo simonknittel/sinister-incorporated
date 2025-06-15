@@ -14,7 +14,7 @@ export default async function Page() {
 
   return (
     <Template>
-      <SuspenseWithErrorBoundaryTile className="mt-4 lg:mt-8">
+      <SuspenseWithErrorBoundaryTile className="mt-4 lg:mt-6">
         <OpenTasksTile />
       </SuspenseWithErrorBoundaryTile>
     </Template>

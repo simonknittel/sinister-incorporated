@@ -20,12 +20,12 @@ export default async function Page() {
   );
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
-        <Hero text="Spynet" withGlitch />
+        <Hero text="Spynet" withGlitch size="md" />
       </div>
 
-      <div className="max-w-[400px] mx-auto mt-8">
+      <div className="max-w-[400px] mx-auto mt-6">
         {!(await getUnleashFlag("DisableAlgolia")) && <SpynetSearchTile />}
 
         {(showCreateCitizen || showCreateOrganization) && (

@@ -22,7 +22,7 @@ export const SilcStatistics = async ({ className }: Props) => {
   return (
     <section
       className={clsx(
-        "rounded-primary bg-neutral-800/50 flex justify-evenly p-4 lg:p-8",
+        "rounded-primary bg-neutral-800/50 flex flex-wrap justify-evenly gap-4 p-4",
         className,
       )}
     >

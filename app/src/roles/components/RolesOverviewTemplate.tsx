@@ -18,7 +18,7 @@ interface Props {
 
 export const RolesOverviewTemplate = ({ children }: Props) => {
   return (
-    <main className="p-4 pb-20 lg:p-8 flex flex-col gap-4">
+    <main className="p-4 pb-20 lg:p-6 flex flex-col gap-4">
       <h1 className="text-xl font-bold">Rollen</h1>
 
       <SubNavigation pages={pages} className="flex flex-wrap" />

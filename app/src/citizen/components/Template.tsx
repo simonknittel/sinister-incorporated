@@ -10,7 +10,7 @@ interface Props {
 
 export const Template = ({ citizen, children }: Props) => {
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/app/spynet"

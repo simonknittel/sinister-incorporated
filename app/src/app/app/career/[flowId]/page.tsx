@@ -80,9 +80,9 @@ export default async function Page({ params }: Props) {
   ]);
 
   return (
-    <main className="p-4 pb-20 lg:p-8">
+    <main className="p-4 pb-20 lg:p-6">
       <div className="flex justify-center">
-        <Hero text="Karriere" withGlitch />
+        <Hero text="Karriere" withGlitch size="md" />
       </div>
 
       <Navigation flows={flows} className="mt-2" />

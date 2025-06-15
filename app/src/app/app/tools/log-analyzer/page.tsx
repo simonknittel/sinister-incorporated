@@ -14,7 +14,7 @@ export default async function Page() {
   await authentication.authorizePage("logAnalyzer", "read");
 
   return (
-    <main className="p-4 pb-20 lg:p-8">
+    <main className="p-4 pb-20 lg:p-6">
       <Link
         href="/app/tools"
         className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 inline-flex items-center gap-2"

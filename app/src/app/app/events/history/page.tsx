@@ -14,7 +14,7 @@ export default async function Page() {
   const events = await getPastEvents();
 
   return (
-    <main className="p-4 pb-20 lg:p-8 max-w-[1920px] mx-auto">
+    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
       <h1 className="text-xl font-bold">Vergangene Events</h1>
 
       <div className="flex flex-col gap-4 items-center 3xl:overflow-hidden mt-4 max-w-[400px] 3xl:max-w-none">

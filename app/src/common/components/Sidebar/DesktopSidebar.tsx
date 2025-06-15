@@ -96,15 +96,18 @@ export const DesktopSidebar = async () => {
     showSpynetNotes ||
     showSpynetOther;
 
-  const disableAlgolia = (await getUnleashFlag("DisableAlgolia")) || false;
+  const [disableAlgolia = false, topBarEnabled = false] = await Promise.all([
+    getUnleashFlag("DisableAlgolia"),
+    getUnleashFlag("EnableTopBar"),
+  ]);
 
   return (
-    <div className="overflow-auto pl-8 py-8">
+    <div className="overflow-auto pl-6 py-6 group-data-[top-bar-enabled]/top-bar:pt-24">
       {/* <GlobalAlert /> */}
 
       <div className="background-secondary flex flex-col justify-between rounded-primary">
         <div>
-          <Account isInDesktopSidebar />
+          {!topBarEnabled && <Account isInDesktopSidebar />}
 
           <div className="flex justify-between items-center mt-4 px-8 group-data-[navigation-collapsed]/navigation:px-0 group-data-[navigation-collapsed]/navigation:justify-center">
             <CmdKLoader
@@ -295,7 +298,7 @@ export const DesktopSidebar = async () => {
         </div>
       </div>
 
-      <Footer className="px-8 py-4 group-data-[navigation-collapsed]/navigation:hidden" />
+      <Footer className="px-6 py-4 group-data-[navigation-collapsed]/navigation:hidden" />
     </div>
   );
 };

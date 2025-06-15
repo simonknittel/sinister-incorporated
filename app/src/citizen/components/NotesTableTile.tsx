@@ -192,17 +192,17 @@ export const NotesTableTile = async ({ className, searchParams }: Props) => {
   return (
     <section
       className={clsx(
-        "p-8 pb-10 bg-neutral-800/50 rounded-primary overflow-auto",
+        "p-6 bg-neutral-800/50 rounded-primary overflow-auto",
         className,
       )}
     >
-      <div className="mb-8">
+      <div className="mb-6">
         <NotesTableFilters rows={authenticatedRows} />
       </div>
 
       <NotesTable rows={limitedRows} searchParams={searchParams} />
 
-      <div className="flex justify-center mt-8">
+      <div className="flex justify-center mt-6">
         <Pagination
           totalPages={Math.ceil(sortedRows.length / PER_PAGE)}
           currentPage={currentPage}

@@ -13,7 +13,7 @@ export default async function Page() {
   await authentication.authorizePage("spynetActivity", "read");
 
   return (
-    <main className="p-4 pb-20 lg:p-8">
+    <main className="p-4 pb-20 lg:p-6">
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/app/spynet"

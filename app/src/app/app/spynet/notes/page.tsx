@@ -29,7 +29,7 @@ export default async function Page({ searchParams }: Props) {
     await searchParamsNextjsToURLSearchParams(searchParams);
 
   return (
-    <main className="p-4 pb-20 lg:p-8 flex flex-col gap-4">
+    <main className="p-4 pb-20 lg:p-6 flex flex-col gap-4">
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/app/spynet"
