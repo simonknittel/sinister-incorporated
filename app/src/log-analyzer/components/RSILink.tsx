@@ -2,11 +2,14 @@ import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Link } from "@/common/components/Link";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
-const NPC_HANDLES = ["Hazard-002"];
+const NPC_HANDLES = [
+  "Hazard-00",
+  "StreamingSOC_"
+];
 
 const isNpc = (handle: string) =>
   (handle.length >= 27 && handle.split("_").length - 1 >= 2) ||
-  NPC_HANDLES.includes(handle);
+  NPC_HANDLES.some(NPC_HANDLE => handle.startsWith(NPC_HANDLE));
 
 interface Props {
   readonly handle: string;
