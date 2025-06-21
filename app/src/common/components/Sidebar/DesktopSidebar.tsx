@@ -102,7 +102,7 @@ export const DesktopSidebar = async () => {
   ]);
 
   return (
-    <div className="overflow-auto pl-6 py-6 group-data-[top-bar-enabled]/top-bar:pt-24">
+    <div className="overflow-auto pl-6 py-6 group-data-[top-bar-enabled]/top-bar:pt-28">
       {/* <GlobalAlert /> */}
 
       <div className="background-secondary flex flex-col justify-between rounded-primary">

@@ -1,6 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
 import clsx from "clsx";
 import Avatar from "../Avatar";
+import { Popover } from "../Popover";
 import { Logout } from "./Logout";
 
 interface Props {
@@ -16,18 +17,33 @@ export const Account = async ({ className }: Props) => {
   const image = authentication ? authentication.session.user.image : undefined;
 
   return (
-    <div className={clsx("flex items-center gap-4", className)}>
+    <Popover
+      trigger={
+        <button
+          type="button"
+          className={clsx(
+            "p-2 rounded-secondary hover:background-tertiary focus-visible:background-tertiary",
+            className,
+          )}
+        >
+          <div className="overflow-hidden rounded-secondary">
+            <Avatar name={name} image={image} size={32} />
+          </div>
+        </button>
+      }
+      childrenClassName="w-80"
+    >
       <div className="flex items-center gap-4">
         <div className="overflow-hidden rounded-secondary">
-          <Avatar name={name} image={image} size={32} />
+          <Avatar name={name} image={image} size={64} />
         </div>
 
         <div>
-          <p>{name}</p>
+          <p className="text-lg">{name}</p>
         </div>
       </div>
 
-      <Logout />
-    </div>
+      <Logout className="mt-4" />
+    </Popover>
   );
 };

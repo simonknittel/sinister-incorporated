@@ -1,6 +1,7 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import clsx from "clsx";
 import { Command } from "cmdk";
+import { signOut } from "next-auth/react";
 import {
   useEffect,
   useState,
@@ -20,11 +21,11 @@ import {
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
-import { RiSpyFill } from "react-icons/ri";
+import { RiLogoutCircleRLine, RiSpyFill } from "react-icons/ri";
 import { TbMilitaryRank } from "react-icons/tb";
 import "./CmdK.css";
 import { CornerstoneImageBrowserPage } from "./CornerstoneImageBrowserPage";
-import { LinkItem, PageItem } from "./Item";
+import { CommandItem, LinkItem, PageItem } from "./Item";
 import { SpynetSearchPage } from "./SpynetSearchPage";
 
 interface Props {
@@ -356,6 +357,17 @@ export const CmdK = ({
                 )}
               </>
             )}
+
+            <CommandItem
+              label="Abmelden"
+              keywords={["Log out"]}
+              icon={<RiLogoutCircleRLine />}
+              onSelect={async () => {
+                await signOut({
+                  callbackUrl: "/",
+                });
+              }}
+            />
           </>
         )}
 

@@ -13,11 +13,11 @@ interface ItemBaseProps {
   readonly label: string;
   readonly keywords?: string[];
   readonly section?: string;
-  readonly setSearch: Dispatch<SetStateAction<string>>;
 }
 
 interface LinkItemProps extends ItemBaseProps {
   readonly href: string;
+  readonly setSearch: Dispatch<SetStateAction<string>>;
   readonly setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -59,6 +59,7 @@ export const LinkItem = ({
 };
 
 interface PageItemProps extends ItemBaseProps {
+  readonly setSearch: Dispatch<SetStateAction<string>>;
   readonly setPages: () => void;
 }
 
@@ -86,6 +87,36 @@ export const PageItem = ({
         setSearch("");
       }}
     >
+      {_icon || (!hideIconPlaceholder ? <div className="size-4" /> : null)}
+
+      {label}
+
+      {section && <span className="text-neutral-500 text-xs">{section}</span>}
+    </Command.Item>
+  );
+};
+
+interface CommandItemProps extends ItemBaseProps {
+  readonly onSelect: () => void;
+}
+
+export const CommandItem = ({
+  icon,
+  label,
+  hideIconPlaceholder = false,
+  keywords,
+  section,
+  onSelect,
+}: CommandItemProps) => {
+  const _icon = icon
+    ? cloneElement(icon, {
+        // @ts-expect-error
+        className: "text-neutral-500 text-sm",
+      })
+    : null;
+
+  return (
+    <Command.Item keywords={keywords} onSelect={onSelect}>
       {_icon || (!hideIconPlaceholder ? <div className="size-4" /> : null)}
 
       {label}

@@ -13,7 +13,7 @@ export const TopBar = ({ className }: Props) => {
         className,
       )}
     >
-      <div className="background-secondary rounded-primary p-4">
+      <div className="background-secondary-opaque rounded-primary p-2">
         <Account />
       </div>
     </div>
