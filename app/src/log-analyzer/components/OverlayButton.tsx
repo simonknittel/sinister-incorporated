@@ -113,6 +113,13 @@ const OverlayEntry = ({ entry }: OverlayEntryProps) => {
             <div className="inline-block align-middle">entdeckt</div>
           </>
         )}
+
+        {entry.type === "join_pu" && (
+          <div className="px-2">
+            Shard <span className="text-neutral-500">{entry.shard}</span>{" "}
+            beigetreten
+          </div>
+        )}
       </div>
 
       <div
