@@ -57,6 +57,10 @@ const corpseRegex =
 // const corpse2Regex =
 //   /^<(?<isoDate>[\d\-T:.Z]+)>.+LogCorpse.+'(?<target>.*)'.+$/gm;
 
+// <2025-06-22T09:59:12.293Z> [Notice] <Join PU> address[35.187.166.216] port[64336] shard[pub_euw1b_9873572_100] locationId[-281470681677823] [Team_GameServices][GIM][Matchmaking]
+const joinPURegex =
+  /^<(?<isoDate>[\d\-T:.Z]+)>.+<Join PU>.+shard\[(?<shard>[\d\w_]+)\].+$/gm;
+
 interface Props {
   readonly className?: string;
 }
@@ -149,6 +153,25 @@ export const LogAnalyzer = ({ className }: Props) => {
                 isNew,
                 type: "corpse",
                 target,
+              });
+            }
+
+            const joinPUMatches = fileContent.matchAll(joinPURegex);
+            for (const match of joinPUMatches) {
+              if (!match.groups) continue;
+
+              const { isoDate, shard } = match.groups;
+              const date = new Date(isoDate);
+              const key = `${date.getTime()}_${shard}`;
+
+              if (newEntries.has(key)) continue;
+
+              newEntries.set(key, {
+                key,
+                isoDate: date,
+                isNew,
+                type: "join_pu",
+                shard,
               });
             }
           }

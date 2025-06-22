@@ -26,7 +26,12 @@ interface ICorpseEntry extends IBaseEntry {
   readonly target: string;
 }
 
-export type IEntry = IKillEntry | ICorpseEntry;
+interface IJoinPUEntry extends IBaseEntry {
+  readonly type: "join_pu";
+  readonly shard: string;
+}
+
+export type IEntry = IKillEntry | ICorpseEntry | IJoinPUEntry;
 
 interface Props {
   readonly className?: string;
@@ -75,7 +80,13 @@ export const Entry = memo(
         </td>
 
         <td className="truncate">
-          <RSILink handle={entry.target} />
+          {entry.type === "kill" && <RSILink handle={entry.target} />}
+
+          {entry.type === "corpse" && <RSILink handle={entry.target} />}
+
+          {entry.type === "join_pu" && (
+            <div className="px-2">{entry.shard}</div>
+          )}
         </td>
 
         <td className="truncate">
@@ -83,6 +94,11 @@ export const Entry = memo(
           {entry.type === "corpse" && (
             <div className="text-neutral-500 p-2 h-full flex items-center">
               Leiche entdeckt
+            </div>
+          )}
+          {entry.type === "join_pu" && (
+            <div className="text-neutral-500 p-2 h-full flex items-center">
+              Shard beigetreten
             </div>
           )}
         </td>
