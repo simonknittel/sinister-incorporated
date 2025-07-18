@@ -195,24 +195,26 @@ export const Position = ({
                     </span>
                   </Tooltip.Trigger>
 
-                  <Tooltip.Content
-                    className="px-4 py-2 max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
-                    sideOffset={5}
-                  >
-                    <p className="text-sm text-gray-500">Alternativen</p>
+                  <Tooltip.Portal>
+                    <Tooltip.Content
+                      className="px-4 py-2 max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
+                      sideOffset={5}
+                    >
+                      <p className="text-sm text-gray-500">Alternativen</p>
 
-                    {position.requiredVariants.map((requiredVariant) => (
-                      <VariantWithLogo
-                        key={requiredVariant.id}
-                        variant={requiredVariant.variant}
-                        manufacturer={
-                          requiredVariant.variant.series.manufacturer
-                        }
-                        size={32}
-                      />
-                    ))}
-                    <Tooltip.Arrow className="fill-sinister-red-500" />
-                  </Tooltip.Content>
+                      {position.requiredVariants.map((requiredVariant) => (
+                        <VariantWithLogo
+                          key={requiredVariant.id}
+                          variant={requiredVariant.variant}
+                          manufacturer={
+                            requiredVariant.variant.series.manufacturer
+                          }
+                          size={32}
+                        />
+                      ))}
+                      <Tooltip.Arrow className="fill-sinister-red-500" />
+                    </Tooltip.Content>
+                  </Tooltip.Portal>
                 </Tooltip.Root>
               </Tooltip.Provider>
             )}
