@@ -4,7 +4,8 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 
 const NPC_HANDLES = [
   "Hazard-00",
-  "StreamingSOC_"
+  "StreamingSOC_",
+  "RotationSimple-"
 ];
 
 const isNpc = (handle: string) =>
