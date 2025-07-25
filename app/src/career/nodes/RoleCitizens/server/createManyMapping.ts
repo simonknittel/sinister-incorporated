@@ -14,6 +14,8 @@ export const createManyMapping = (
     width: node.width,
     height: node.height,
     roleId: node.data.role.id,
+    roleCitizensAlignment: node.data.roleCitizensAlignment,
+    roleCitizensHideRole: node.data.roleCitizensHideRole,
     backgroundColor: node.data.backgroundColor,
     backgroundTransparency: node.data.backgroundTransparency,
   };

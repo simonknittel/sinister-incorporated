@@ -3,7 +3,12 @@
 import { Handles } from "@/career/components/Handles";
 import { CitizenLink } from "@/common/components/CitizenLink";
 import { SingleRole } from "@/roles/components/SingleRole";
-import { FlowNodeType, type Role, type Upload } from "@prisma/client";
+import {
+  FlowNodeRoleCitizensAlignment,
+  FlowNodeType,
+  type Role,
+  type Upload,
+} from "@prisma/client";
 import {
   applyNodeChanges,
   NodeResizer,
@@ -40,6 +45,8 @@ export type RoleNode = NodeType<
         icon: Upload | null;
         thumbnail: Upload | null;
       };
+      roleCitizensAlignment: FlowNodeRoleCitizensAlignment;
+      roleCitizensHideRole: boolean;
       backgroundColor: string;
       backgroundTransparency: number;
       unlocked: boolean;
@@ -68,6 +75,8 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
         id: formData.get("id"),
         nodeType: formData.get("nodeType"),
         roleId: formData.get("roleId"),
+        roleCitizensAlignment: formData.get("roleCitizensAlignment"),
+        roleCitizensHideRole: formData.get("roleCitizensHideRole"),
         backgroundColor: formData.get("backgroundColor"),
         backgroundTransparency: formData.get("backgroundTransparency"),
       });
@@ -107,6 +116,8 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
                 height: props.height,
                 data: {
                   role,
+                  roleCitizensAlignment: result.data.roleCitizensAlignment,
+                  roleCitizensHideRole: result.data.roleCitizensHideRole,
                   backgroundColor: result.data.backgroundColor,
                   backgroundTransparency: result.data.backgroundTransparency,
                 },
@@ -171,6 +182,8 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
                 id: props.id,
                 type: FlowNodeType.ROLE_CITIZENS,
                 roleId: props.data.role.id,
+                roleCitizensAlignment: props.data.roleCitizensAlignment,
+                roleCitizensHideRole: props.data.roleCitizensHideRole,
                 backgroundColor: props.data.backgroundColor,
                 backgroundTransparency: props.data.backgroundTransparency,
               }}
@@ -192,23 +205,47 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
       {isResizing && <NodeResizer minWidth={100} minHeight={100} />}
 
       <div
-        className={clsx(
-          "bg-neutral-800 rounded-secondary h-full p-4 flex justify-center items-center",
-          {
-            "grayscale opacity-40 hover:grayscale-0 hover:opacity-100":
-              !unlocked,
-            "opacity-40 grayscale-0": "redacted" in props.data,
-          },
-        )}
+        className={clsx("bg-neutral-800 rounded-secondary h-full p-4", {
+          "grayscale opacity-40 hover:grayscale-0 hover:opacity-100": !unlocked,
+          "opacity-40 grayscale-0": "redacted" in props.data,
+          "flex justify-center":
+            !("roleCitizensAlignment" in props.data) ||
+            ("roleCitizensAlignment" in props.data &&
+              (!props.data.roleCitizensAlignment ||
+                props.data.roleCitizensAlignment ===
+                  FlowNodeRoleCitizensAlignment.CENTER)),
+        })}
         style={{
           backgroundColor,
         }}
       >
         {"role" in props.data && (
-          <div className="flex flex-col items-center gap-4">
-            <SingleRole role={props.data.role} className="text-white" />
+          <div
+            className={clsx("flex gap-4", {
+              "flex-col items-center":
+                !props.data.roleCitizensAlignment ||
+                props.data.roleCitizensAlignment ===
+                  FlowNodeRoleCitizensAlignment.CENTER,
+              "flex-row items-start":
+                props.data.roleCitizensAlignment ===
+                FlowNodeRoleCitizensAlignment.LEFT,
+            })}
+          >
+            {!props.data.roleCitizensHideRole && (
+              <SingleRole role={props.data.role} className="text-white" />
+            )}
 
-            <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center text-lg">
+            <div
+              className={clsx("flex flex-wrap gap-x-4 gap-y-2 text-lg", {
+                "justify-start":
+                  props.data.roleCitizensAlignment ===
+                  FlowNodeRoleCitizensAlignment.LEFT,
+                "justify-center":
+                  !props.data.roleCitizensAlignment ||
+                  props.data.roleCitizensAlignment ===
+                    FlowNodeRoleCitizensAlignment.CENTER,
+              })}
+            >
               {(
                 additionalData as AdditionalDataType
               ).citizensGroupedByVisibleRoles

@@ -1,7 +1,12 @@
 import Button from "@/common/components/Button";
+import { RadioGroup } from "@/common/components/form/RadioGroup";
 import { Select } from "@/common/components/form/Select";
 import { createId } from "@paralleldrive/cuid2";
-import { FlowNodeType, type Role } from "@prisma/client";
+import {
+  FlowNodeRoleCitizensAlignment,
+  FlowNodeType,
+  type Role,
+} from "@prisma/client";
 import { applyNodeChanges } from "@xyflow/react";
 import { useId, useState, type FormEventHandler } from "react";
 import toast from "react-hot-toast";
@@ -15,6 +20,8 @@ interface Props {
     backgroundColor: string;
     backgroundTransparency: number;
     roleId: Role["id"];
+    roleCitizensAlignment: FlowNodeRoleCitizensAlignment;
+    roleCitizensHideRole: boolean;
   };
   onUpdate?: FormEventHandler<HTMLFormElement>;
 }
@@ -24,6 +31,12 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
     useFlowContext();
   const [roleId, setRoleId] = useState<Role["id"]>(
     initialData?.roleId || (additionalData as AdditionalDataType).roles[0].id,
+  );
+  const [alignment, setAlignment] = useState<FlowNodeRoleCitizensAlignment>(
+    initialData?.roleCitizensAlignment || FlowNodeRoleCitizensAlignment.CENTER,
+  );
+  const [hideRole, setHideRole] = useState<boolean>(
+    initialData?.roleCitizensHideRole || false,
   );
   const roleInputId = useId();
   const backgroundColorInputId = useId();
@@ -37,6 +50,8 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
     const result = schema.safeParse({
       id: formData.get("id"),
       roleId: formData.get("roleId"),
+      roleCitizensAlignment: formData.get("roleCitizensAlignment"),
+      roleCitizensHideRole: formData.get("roleCitizensHideRole"),
       backgroundColor: formData.get("backgroundColor"),
       backgroundTransparency: formData.get("backgroundTransparency"),
     });
@@ -72,6 +87,8 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
               height: 100,
               data: {
                 role,
+                roleCitizensAlignment: data.roleCitizensAlignment,
+                roleCitizensHideRole: data.roleCitizensHideRole,
                 backgroundColor: data.backgroundColor,
                 backgroundTransparency: data.backgroundTransparency,
               },
@@ -107,6 +124,43 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
           </option>
         ))}
       </Select>
+
+      <p className="mt-6">Ausrichtung</p>
+      <RadioGroup
+        name="roleCitizensAlignment"
+        items={[
+          {
+            value: FlowNodeRoleCitizensAlignment.CENTER,
+            label: "zentriert",
+          },
+          {
+            value: FlowNodeRoleCitizensAlignment.LEFT,
+            label: "linksbündig",
+          },
+        ]}
+        value={alignment}
+        // @ts-expect-error Don't know how to fix this
+        onChange={setAlignment}
+        className="mt-2"
+      />
+
+      <p className="mt-6">Badge verstecken</p>
+      <RadioGroup
+        name="roleCitizensHideRole"
+        items={[
+          {
+            value: "false",
+            label: "nein",
+          },
+          {
+            value: "true",
+            label: "ja",
+          },
+        ]}
+        value={hideRole ? "true" : "false"}
+        onChange={(value) => setHideRole(value === "true")}
+        className="mt-2"
+      />
 
       <label htmlFor={backgroundColorInputId} className="mt-6 block">
         Hintergrundfarbe

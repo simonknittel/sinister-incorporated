@@ -1,4 +1,4 @@
-import { FlowNodeType } from "@prisma/client";
+import { FlowNodeRoleCitizensAlignment, FlowNodeType } from "@prisma/client";
 import z from "zod";
 
 export const updateFlowSchema = z.object({
@@ -14,6 +14,8 @@ export const updateFlowSchema = z.object({
     role: z.object({
       id: z.cuid(),
     }),
+    roleCitizensAlignment: z.nativeEnum(FlowNodeRoleCitizensAlignment),
+    roleCitizensHideRole: z.boolean(),
     backgroundColor: z.string().optional(),
     backgroundTransparency: z.number().min(0).max(1).optional(),
   }),
