@@ -79,6 +79,11 @@ export default async function Page({ params }: Props) {
     getMyAssignedRoles(),
   ]);
 
+  const additionalData = {
+    roles,
+    assignedRoles,
+  };
+
   return (
     <main className="p-4 pb-20 lg:p-6">
       <div className="flex justify-center">
@@ -91,10 +96,9 @@ export default async function Page({ params }: Props) {
         <div className="h-[1080px] bg-neutral-800/50 rounded-primary overflow-hidden text-black mt-3 relative">
           <Flow
             flow={flow}
-            roles={roles}
-            assignedRoles={assignedRoles}
             canUpdate={canUpdate}
             isUpdating={isUpdating}
+            additionalData={additionalData}
           />
         </div>
       </SuspenseWithErrorBoundaryTile>

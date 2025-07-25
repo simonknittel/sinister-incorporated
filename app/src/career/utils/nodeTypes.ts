@@ -1,8 +1,16 @@
-import { FlowNodeType } from "@prisma/client";
-import { MarkdownNode } from "../components/nodes/MarkdownNode";
-import { RoleNode } from "../components/nodes/RoleNode";
+import { type FlowNodeType } from "@prisma/client";
+import type { NodeProps } from "@xyflow/react";
+import type { ComponentType } from "react";
+import { nodeDefinitions } from "../nodes/client";
 
-export const nodeTypes = {
-  [FlowNodeType.ROLE]: RoleNode,
-  [FlowNodeType.MARKDOWN]: MarkdownNode,
-};
+export const nodeTypes: Record<
+  FlowNodeType,
+  ComponentType<NodeProps>
+> = nodeDefinitions.reduce(
+  (acc, nodeDefinition) => {
+    // @ts-expect-error
+    acc[nodeDefinition.enum] = nodeDefinition.Node;
+    return acc;
+  },
+  {} as Record<FlowNodeType, ComponentType<NodeProps>>,
+);

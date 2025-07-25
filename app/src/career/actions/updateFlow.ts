@@ -3,63 +3,28 @@
 import { authenticateAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
-import {
-  FlowNodeMarkdownPosition,
-  FlowNodeRoleImage,
-  FlowNodeType,
-} from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
+import { nodeDefinitions } from "../nodes/server";
 
 const nodesSchema = z.array(
-  z.discriminatedUnion("type", [
-    z.object({
-      type: z.literal(FlowNodeType.ROLE),
-      id: z.string().cuid2(),
-      position: z.object({
-        x: z.number(),
-        y: z.number(),
-      }),
-      width: z.number(),
-      height: z.number(),
-      data: z.object({
-        role: z.object({
-          id: z.string().cuid(),
-        }),
-        roleImage: z.nativeEnum(FlowNodeRoleImage),
-        backgroundColor: z.string().optional(),
-        backgroundTransparency: z.number().min(0).max(1).optional(),
-      }),
-    }),
-    z.object({
-      type: z.literal(FlowNodeType.MARKDOWN),
-      id: z.string().cuid2(),
-      position: z.object({
-        x: z.number(),
-        y: z.number(),
-      }),
-      width: z.number(),
-      height: z.number(),
-      data: z.object({
-        markdown: z.string(),
-        markdownPosition: z.nativeEnum(FlowNodeMarkdownPosition),
-        backgroundColor: z.string().optional(),
-        backgroundTransparency: z.number().min(0).max(1).optional(),
-      }),
-    }),
-  ]),
+  z.discriminatedUnion(
+    "type",
+    // @ts-expect-error
+    nodeDefinitions.map((nodeDefinition) => nodeDefinition.updateFlowSchema),
+  ),
 );
 
 const edgesSchema = z.array(
   z.object({
     id: z.string(),
     type: z.string(),
-    source: z.string().cuid2(),
+    source: z.cuid2(),
     sourceHandle: z.string(),
-    target: z.string().cuid2(),
+    target: z.cuid2(),
     targetHandle: z.string(),
   }),
 );
@@ -125,30 +90,23 @@ export const updateFlow = async (formData: FormData) => {
       }),
 
       prisma.flowNode.createMany({
+        // @ts-expect-error
         data: result.data.nodes.map((node) => {
-          return {
-            id: node.id,
-            flowId: result.data.flowId,
-            type: node.type,
-            positionX: node.position.x,
-            positionY: node.position.y,
-            width: node.width,
-            height: node.height,
-            ...(node.type === FlowNodeType.ROLE
-              ? {
-                  roleId: node.data.role.id,
-                  roleImage: node.data.roleImage,
-                }
-              : {}),
-            ...(node.type === FlowNodeType.MARKDOWN
-              ? {
-                  markdown: node.data.markdown,
-                  markdownPosition: node.data.markdownPosition,
-                }
-              : {}),
-            backgroundColor: node.data.backgroundColor,
-            backgroundTransparency: node.data.backgroundTransparency,
-          };
+          const matchingNodeDefnition = nodeDefinitions.find(
+            // @ts-expect-error
+            (nodeDefinition) => nodeDefinition.enum === node.type,
+          );
+
+          if (!matchingNodeDefnition) {
+            void log.warn("Bad Request", { error: "Unknown node type", node });
+            return;
+          }
+
+          return matchingNodeDefnition.createManyMapping(
+            // @ts-expect-error
+            node,
+            result.data.flowId,
+          );
         }),
       }),
 
