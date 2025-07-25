@@ -1,9 +1,9 @@
 "use client";
 
+import { Handles } from "@/career/components/Handles";
 import { FlowNodeMarkdownPosition, FlowNodeType } from "@prisma/client";
 import {
   applyNodeChanges,
-  Handle,
   NodeResizer,
   NodeToolbar,
   Position,
@@ -191,30 +191,7 @@ export const Node: ComponentType<NodeProps<Markdown>> = (props) => {
         <Markdown>{props.data.markdown}</Markdown>
       </div>
 
-      <Handle
-        id="left"
-        type="source"
-        position={Position.Left}
-        className={clsx({ "opacity-0": !isUpdating })}
-      />
-      <Handle
-        id="right"
-        type="source"
-        position={Position.Right}
-        className={clsx({ "opacity-0": !isUpdating })}
-      />
-      <Handle
-        id="top"
-        type="target"
-        position={Position.Top}
-        className={clsx({ "opacity-0": !isUpdating })}
-      />
-      <Handle
-        id="bottom"
-        type="source"
-        position={Position.Bottom}
-        className={clsx({ "opacity-0": !isUpdating })}
-      />
+      <Handles isUpdating={isUpdating} />
     </>
   );
 };

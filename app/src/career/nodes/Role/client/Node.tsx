@@ -1,5 +1,6 @@
 "use client";
 
+import { Handles } from "@/career/components/Handles";
 import { env } from "@/env";
 import {
   FlowNodeRoleImage,
@@ -10,7 +11,6 @@ import {
 import * as Tooltip from "@radix-ui/react-tooltip";
 import {
   applyNodeChanges,
-  Handle,
   NodeResizer,
   NodeToolbar,
   Position,
@@ -266,30 +266,7 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
         )}
       </div>
 
-      <Handle
-        id="left"
-        type="source"
-        position={Position.Left}
-        className={clsx({ "opacity-0": !isUpdating })}
-      />
-      <Handle
-        id="right"
-        type="source"
-        position={Position.Right}
-        className={clsx({ "opacity-0": !isUpdating })}
-      />
-      <Handle
-        id="top"
-        type="target"
-        position={Position.Top}
-        className={clsx({ "opacity-0": !isUpdating })}
-      />
-      <Handle
-        id="bottom"
-        type="source"
-        position={Position.Bottom}
-        className={clsx({ "opacity-0": !isUpdating })}
-      />
+      <Handles isUpdating={isUpdating} />
     </>
   );
 };
