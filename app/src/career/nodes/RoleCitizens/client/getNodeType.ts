@@ -13,6 +13,8 @@ export const getNodeType = (
   const data = role
     ? {
         role,
+        roleCitizensAlignment: node.roleCitizensAlignment,
+        roleCitizensHideRole: node.roleCitizensHideRole,
         backgroundColor: node.backgroundColor,
         backgroundTransparency: node.backgroundTransparency,
         unlocked: isUnlocked(role, additionalData.assignedRoles),
