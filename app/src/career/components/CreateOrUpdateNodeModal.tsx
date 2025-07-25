@@ -46,6 +46,10 @@ export const CreateOrUpdateNodeModal = ({
             label: "Rolle",
           },
           {
+            value: FlowNodeType.ROLE_CITIZENS,
+            label: "Citizen einer Rolle",
+          },
+          {
             value: FlowNodeType.MARKDOWN,
             label: "Markdown",
           },

@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "FlowNodeType" ADD VALUE 'ROLE_CITIZENS';

@@ -1,14 +1,9 @@
 "use client";
 
 import { Handles } from "@/career/components/Handles";
-import { env } from "@/env";
-import {
-  FlowNodeRoleImage,
-  FlowNodeType,
-  type Role,
-  type Upload,
-} from "@prisma/client";
-import * as Tooltip from "@radix-ui/react-tooltip";
+import { CitizenLink } from "@/common/components/CitizenLink";
+import { SingleRole } from "@/roles/components/SingleRole";
+import { FlowNodeType, type Role, type Upload } from "@prisma/client";
 import {
   applyNodeChanges,
   NodeResizer,
@@ -20,7 +15,6 @@ import {
   type Node as NodeType,
 } from "@xyflow/react";
 import clsx from "clsx";
-import Image from "next/image";
 import {
   useCallback,
   useState,
@@ -35,7 +29,6 @@ import { CreateOrUpdateNodeModal } from "../../../components/CreateOrUpdateNodeM
 import { useFlowContext } from "../../../components/FlowContext";
 import { getBackground } from "../../../utils/getBackground";
 import type { AdditionalDataType } from "./additionalDataType";
-import styles from "./Node.module.css";
 import { schema } from "./schema";
 
 export type RoleNode = NodeType<
@@ -47,12 +40,11 @@ export type RoleNode = NodeType<
         icon: Upload | null;
         thumbnail: Upload | null;
       };
-      roleImage: FlowNodeRoleImage;
       backgroundColor: string;
       backgroundTransparency: number;
       unlocked: boolean;
     },
-  typeof FlowNodeType.ROLE
+  typeof FlowNodeType.ROLE_CITIZENS
 >;
 
 export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
@@ -76,7 +68,6 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
         id: formData.get("id"),
         nodeType: formData.get("nodeType"),
         roleId: formData.get("roleId"),
-        roleImage: formData.get("roleImage"),
         backgroundColor: formData.get("backgroundColor"),
         backgroundTransparency: formData.get("backgroundTransparency"),
       });
@@ -116,7 +107,6 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
                 height: props.height,
                 data: {
                   role,
-                  roleImage: result.data.roleImage,
                   backgroundColor: result.data.backgroundColor,
                   backgroundTransparency: result.data.backgroundTransparency,
                 },
@@ -146,13 +136,6 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
           props.data.backgroundColor,
           props.data.backgroundTransparency,
         );
-
-  const image =
-    "redacted" in props.data
-      ? null
-      : props.data.roleImage === FlowNodeRoleImage.THUMBNAIL
-        ? props.data.role.thumbnail
-        : props.data.role.icon;
 
   return (
     <>
@@ -186,9 +169,8 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
               onRequestClose={onEdit}
               initialData={{
                 id: props.id,
-                type: FlowNodeType.ROLE,
+                type: FlowNodeType.ROLE_CITIZENS,
                 roleId: props.data.role.id,
-                roleImage: props.data.roleImage,
                 backgroundColor: props.data.backgroundColor,
                 backgroundTransparency: props.data.backgroundTransparency,
               }}
@@ -223,40 +205,19 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
         }}
       >
         {"role" in props.data && (
-          <Tooltip.Provider delayDuration={0}>
-            <Tooltip.Root>
-              <Tooltip.Trigger className="cursor-help w-full h-full">
-                <Image
-                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${image?.id}`}
-                  alt={props.data.role.name}
-                  title={props.data.role.name}
-                  width={100}
-                  height={100}
-                  className="object-contain object-center w-full h-full"
-                  unoptimized={
-                    (image &&
-                      ["image/svg+xml", "image/gif"].includes(
-                        image.mimeType,
-                      )) ??
-                    false
-                  }
-                  loading="lazy"
-                />
-              </Tooltip.Trigger>
+          <div className="flex flex-col items-center gap-4">
+            <SingleRole role={props.data.role} className="text-white" />
 
-              <Tooltip.Content
-                className={clsx(
-                  "px-2 py-1 text-sm leading-tight select-none rounded-secondary bg-sinister-red-500 text-white",
-                  styles.TooltipContent,
-                )}
-                side="top"
-                sideOffset={20}
-              >
-                {props.data.role.name}
-                <Tooltip.Arrow className="fill-sinister-red-500" />
-              </Tooltip.Content>
-            </Tooltip.Root>
-          </Tooltip.Provider>
+            <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center text-lg">
+              {(
+                additionalData as AdditionalDataType
+              ).citizensGroupedByVisibleRoles
+                .get(props.data.role.id)
+                ?.citizens.map((citizen) => (
+                  <CitizenLink key={citizen.id} citizen={citizen} />
+                ))}
+            </div>
+          </div>
         )}
 
         {"redacted" in props.data && (

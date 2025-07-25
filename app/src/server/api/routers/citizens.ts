@@ -1,7 +1,6 @@
+import { getCitizensGroupedByVisibleRoles } from "@/citizen/queries";
 import { prisma } from "@/db";
 import { log } from "@/logging";
-import { getVisibleRoles } from "@/roles/utils/getRoles";
-import type { Entity, Role, Upload } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { serializeError } from "serialize-error";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -35,45 +34,7 @@ export const citizensRouter = createTRPCRouter({
 
   getCitizensGroupedByVisibleRoles: protectedProcedure.query(async () => {
     try {
-      const citizens = await prisma.entity.findMany({
-        where: {
-          roles: {
-            not: null,
-          },
-        },
-        orderBy: {
-          handle: "asc",
-        },
-      });
-
-      const visibleRoles = await getVisibleRoles();
-
-      const groupedCitizens = new Map<
-        string,
-        {
-          role: Role & {
-            icon: Upload | null;
-          };
-          citizens: Entity[];
-        }
-      >();
-
-      for (const citizen of citizens) {
-        const citizenRoleIds = citizen.roles?.split(",") ?? [];
-        for (const citizenRoleId of citizenRoleIds) {
-          const role = visibleRoles.find((r) => r.id === citizenRoleId);
-
-          if (role) {
-            if (!groupedCitizens.has(role.id)) {
-              groupedCitizens.set(role.id, { role, citizens: [] });
-            }
-
-            groupedCitizens.get(role.id)?.citizens.push(citizen);
-          }
-        }
-      }
-
-      return groupedCitizens;
+      return await getCitizensGroupedByVisibleRoles();
     } catch (error) {
       void log.error("Failed to fetch citizens", {
         error: serializeError(error),
