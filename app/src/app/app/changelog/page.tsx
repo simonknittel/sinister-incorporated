@@ -48,6 +48,13 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
+        <Day heading="25. Juli 2025">
+          <DayItem heading="Citizen einer Rolle" badges={["Karriere", "Neu"]}>
+            <p>Unter Karriere gibt es nun ein neues Element um die Citizen anzuzeigen, die eine ausgewählte Rolle tragen.</p>
+            <p>Diese Funktion wird über die nächsten Tage vom Management in den verschiedenen Karrieren aktiviert.</p>
+          </DayItem>
+        </Day>
+
         <Day heading="22. Juni 2025">
           <DayItem heading="Shard-Beitritt" badges={["Log Analyzer", "Neu"]}>
             <p>Es wird nun angezeigt, wenn man selber einem Shard beitritt.</p>

@@ -2,6 +2,7 @@ import { authenticatePage } from "@/auth/server";
 import { Flow } from "@/career/components/Flow";
 import { Navigation } from "@/career/components/Navigation";
 import { getMyReadableFlows } from "@/career/queries";
+import { getCitizensGroupedByVisibleRoles } from "@/citizen/queries";
 import { Hero } from "@/common/components/Hero";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { log } from "@/logging";
@@ -74,14 +75,17 @@ export default async function Page({ params }: Props) {
   const isUpdating =
     canUpdate && (await cookies()).get("is_updating_flow")?.value === flowId;
 
-  const [roles, assignedRoles] = await Promise.all([
-    isUpdating ? getRoles() : getVisibleRoles(),
-    getMyAssignedRoles(),
-  ]);
+  const [roles, assignedRoles, citizensGroupedByVisibleRoles] =
+    await Promise.all([
+      isUpdating ? getRoles() : getVisibleRoles(),
+      getMyAssignedRoles(),
+      getCitizensGroupedByVisibleRoles(),
+    ]);
 
   const additionalData = {
     roles,
     assignedRoles,
+    citizensGroupedByVisibleRoles,
   };
 
   return (

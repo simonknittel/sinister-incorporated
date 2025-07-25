@@ -28,6 +28,7 @@ model FlowNode {
 enum FlowNodeType {
   ROLE
   MARKDOWN
+  ROLE_CITIZENS
 }
 
 enum FlowNodeRoleImage {
