@@ -232,7 +232,10 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
             })}
           >
             {!props.data.roleCitizensHideRole && (
-              <SingleRole role={props.data.role} className="text-white" />
+              <SingleRole
+                role={props.data.role}
+                className="text-white flex-none"
+              />
             )}
 
             <div
@@ -251,7 +254,11 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
               ).citizensGroupedByVisibleRoles
                 .get(props.data.role.id)
                 ?.citizens.map((citizen) => (
-                  <CitizenLink key={citizen.id} citizen={citizen} />
+                  <CitizenLink
+                    key={citizen.id}
+                    citizen={citizen}
+                    className="py-[0.125rem]"
+                  />
                 ))}
             </div>
           </div>
