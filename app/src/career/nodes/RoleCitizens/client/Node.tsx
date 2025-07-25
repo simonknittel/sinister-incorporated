@@ -229,6 +229,9 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
               "flex-row items-start":
                 props.data.roleCitizensAlignment ===
                 FlowNodeRoleCitizensAlignment.LEFT,
+              "flex-row-reverse items-start":
+                props.data.roleCitizensAlignment ===
+                FlowNodeRoleCitizensAlignment.RIGHT,
             })}
           >
             {!props.data.roleCitizensHideRole && (
@@ -243,6 +246,9 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
                 "justify-start":
                   props.data.roleCitizensAlignment ===
                   FlowNodeRoleCitizensAlignment.LEFT,
+                "justify-end":
+                  props.data.roleCitizensAlignment ===
+                  FlowNodeRoleCitizensAlignment.RIGHT,
                 "justify-center":
                   !props.data.roleCitizensAlignment ||
                   props.data.roleCitizensAlignment ===
@@ -253,7 +259,9 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
                 additionalData as AdditionalDataType
               ).citizensGroupedByVisibleRoles
                 .get(props.data.role.id)
-                ?.citizens.map((citizen) => (
+                ?.citizens.filter((citizen) => Boolean(citizen.handle))
+                .toSorted((a, b) => a.handle!.localeCompare(b.handle!))
+                .map((citizen) => (
                   <CitizenLink
                     key={citizen.id}
                     citizen={citizen}
