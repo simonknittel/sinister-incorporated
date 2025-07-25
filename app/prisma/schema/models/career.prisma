@@ -45,8 +45,9 @@ enum FlowNodeMarkdownPosition {
 }
 
 enum FlowNodeRoleCitizensAlignment {
-  CENTER
   LEFT
+  CENTER
+  RIGHT
 }
 
 model FlowEdge {

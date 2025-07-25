@@ -130,12 +130,16 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
         name="roleCitizensAlignment"
         items={[
           {
+            value: FlowNodeRoleCitizensAlignment.LEFT,
+            label: "linksbündig",
+          },
+          {
             value: FlowNodeRoleCitizensAlignment.CENTER,
             label: "zentriert",
           },
           {
-            value: FlowNodeRoleCitizensAlignment.LEFT,
-            label: "linksbündig",
+            value: FlowNodeRoleCitizensAlignment.RIGHT,
+            label: "rechtsbündig",
           },
         ]}
         value={alignment}
