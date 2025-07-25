@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { isUnlocked } from "./getNodeTypeRole";
+import { isUnlocked } from "./helpers";
 
 describe("isUnlocked", () => {
   test("a", () => {

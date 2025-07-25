@@ -8,7 +8,7 @@ type Params = Promise<{
   id: string;
 }>;
 
-const paramsSchema = z.object({ id: z.string().cuid() });
+const paramsSchema = z.object({ id: z.cuid() });
 
 const patchBodySchema = z.object({
   title: z.string().trim(),

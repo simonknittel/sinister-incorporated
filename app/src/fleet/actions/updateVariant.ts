@@ -10,7 +10,7 @@ import { z } from "zod";
 import { createAndReturnTags } from "../utils/createAndReturnTags";
 
 const schema = z.object({
-  id: z.string().cuid(),
+  id: z.cuid(),
   name: z.string().trim().min(1).optional(),
   status: z
     .enum([VariantStatus.FLIGHT_READY, VariantStatus.NOT_FLIGHT_READY])

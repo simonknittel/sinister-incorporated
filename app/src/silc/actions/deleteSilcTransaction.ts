@@ -7,7 +7,7 @@ import { z } from "zod";
 import { updateCitizensSilcBalances } from "../utils/updateCitizensSilcBalances";
 
 const schema = z.object({
-  id: z.string().cuid(),
+  id: z.cuid(),
 });
 
 export const deleteSilcTransaction = createAuthenticatedAction(

@@ -8,8 +8,8 @@ import { isAllowedToManageEvent } from "../utils/isAllowedToManageEvent";
 import { isEventUpdatable } from "../utils/isEventUpdatable";
 
 const schema = z.object({
-  eventId: z.string().cuid(),
-  managerId: z.string().cuid(),
+  eventId: z.cuid(),
+  managerId: z.cuid(),
 });
 
 export const deleteManager = createAuthenticatedAction(

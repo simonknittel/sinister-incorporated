@@ -1,12 +1,5 @@
-import {
-  FlowNodeType,
-  type Flow,
-  type FlowEdge,
-  type FlowNode,
-  type Role,
-} from "@prisma/client";
-import { getNodeTypeMarkdown } from "../components/nodes/getNodeTypeMarkdown";
-import { getNodeTypeRole } from "../components/nodes/getNodeTypeRole";
+import { type Flow, type FlowEdge, type FlowNode } from "@prisma/client";
+import { nodeDefinitions } from "../nodes/client";
 
 export const getInitialNodesAndEdges = (
   flow: Flow & {
@@ -15,22 +8,17 @@ export const getInitialNodesAndEdges = (
       targets: FlowEdge[];
     })[];
   },
-  roles: Role[],
-  assignedRoles: (Role & {
-    inherits: Role[];
-  })[],
+  additionalData: Record<string, unknown>,
 ) => {
   const initialNodes = flow.nodes.map((node) => {
-    switch (node.type) {
-      case FlowNodeType.ROLE:
-        return getNodeTypeRole(node, roles, assignedRoles);
+    const matchingNodeDefinition = nodeDefinitions.find(
+      (nodeDefinition) => nodeDefinition.enum === node.type,
+    );
 
-      case FlowNodeType.MARKDOWN:
-        return getNodeTypeMarkdown(node);
+    if (!matchingNodeDefinition) throw new Error("Invalid node type");
 
-      default:
-        throw new Error("Invalid node type");
-    }
+    // @ts-expect-error
+    return matchingNodeDefinition.getNodeType(node, additionalData);
   });
 
   const uniqueEdges = new Map<FlowEdge["id"], FlowEdge>();

@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const schema = z.object({
-  userId: z.string().cuid(),
+  userId: z.cuid(),
 });
 
 export const verifyEmailAction = createAuthenticatedAction(

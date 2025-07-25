@@ -16,8 +16,8 @@ import { isAllowedToManageTask } from "../utils/isAllowedToTask";
 import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
-  id: z.union([z.string().cuid(), z.string().cuid2()]),
-  completionistIds: z.array(z.string().cuid()),
+  id: z.union([z.cuid(), z.cuid2()]),
+  completionistIds: z.array(z.cuid()),
 });
 
 export const completeTask = async (formData: FormData) => {

@@ -7,15 +7,15 @@ import { z } from "zod";
 const bodySchema = z.discriminatedUnion("resourceType", [
   z.object({
     resourceType: z.literal("manufacturer"),
-    resourceId: z.string().cuid(),
+    resourceId: z.cuid(),
     resourceAttribute: z.literal("imageId"),
-    imageId: z.string().cuid(),
+    imageId: z.cuid(),
   }),
   z.object({
     resourceType: z.literal("role"),
     resourceAttribute: z.enum(["iconId", "thumbnailId"]),
-    resourceId: z.string().cuid(),
-    imageId: z.string().cuid(),
+    resourceId: z.cuid(),
+    imageId: z.cuid(),
   }),
 ]);
 

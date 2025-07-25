@@ -11,7 +11,7 @@ import {
 } from "../utils/isAllowedToTask";
 
 const schema = z.object({
-  id: z.union([z.string().cuid(), z.string().cuid2()]),
+  id: z.union([z.cuid(), z.cuid2()]),
 });
 
 export const deleteTask = createAuthenticatedAction(

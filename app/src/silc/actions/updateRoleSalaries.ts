@@ -10,7 +10,7 @@ import { serializeError } from "serialize-error";
 import { z } from "zod";
 
 const schema = z.object({
-  roleIds: z.array(z.string().cuid()),
+  roleIds: z.array(z.cuid()),
   values: z.array(z.coerce.number()),
   dayOfMonths: z.array(z.coerce.number().min(1).max(31)),
 });

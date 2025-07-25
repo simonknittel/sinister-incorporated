@@ -9,7 +9,7 @@ type Params = Promise<{
   id: string;
 }>;
 
-const paramsSchema = z.string().cuid();
+const paramsSchema = z.cuid();
 
 export async function DELETE(request: Request, props: { params: Params }) {
   try {

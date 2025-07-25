@@ -6,15 +6,15 @@ import { z } from "zod";
 
 const postBodySchema = z.union([
   z.object({
-    operationId: z.string().cuid(),
+    operationId: z.cuid(),
     status: z.literal("pending"),
   }),
   z.object({
-    operationId: z.string().cuid(),
+    operationId: z.cuid(),
     status: z.literal("confirmed"),
-    operationUnitId: z.string().cuid(),
+    operationUnitId: z.cuid(),
     title: z.string().min(1).max(255),
-    shipId: z.string().cuid(),
+    shipId: z.cuid(),
   }),
 ]);
 

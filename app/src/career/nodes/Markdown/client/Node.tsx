@@ -1,13 +1,6 @@
 "use client";
 
-import { env } from "@/env";
-import {
-  FlowNodeRoleImage,
-  FlowNodeType,
-  type Role,
-  type Upload,
-} from "@prisma/client";
-import * as Tooltip from "@radix-ui/react-tooltip";
+import { FlowNodeMarkdownPosition, FlowNodeType } from "@prisma/client";
 import {
   applyNodeChanges,
   Handle,
@@ -16,41 +9,38 @@ import {
   Position,
   useNodeId,
   useReactFlow,
-  type Node,
   type NodeProps,
+  type Node as NodeType,
 } from "@xyflow/react";
 import clsx from "clsx";
-import Image from "next/image";
-import { useCallback, useState, type FormEventHandler } from "react";
+import {
+  useCallback,
+  useState,
+  type ComponentType,
+  type FormEventHandler,
+} from "react";
 import toast from "react-hot-toast";
 import { FaPen } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa6";
 import { IoMdResize } from "react-icons/io";
-import { getBackground } from "../../utils/getBackground";
-import { CreateOrUpdateNodeModal } from "../CreateOrUpdateNodeModal";
-import { useFlowContext } from "../FlowContext";
-import styles from "./RoleNode.module.css";
-import { roleSchema } from "./roleSchema";
+import Markdown from "react-markdown";
+import { CreateOrUpdateNodeModal } from "../../../components/CreateOrUpdateNodeModal";
+import { useFlowContext } from "../../../components/FlowContext";
+import { getBackground } from "../../../utils/getBackground";
+import { schema } from "./schema";
 
-export type RoleNode = Node<
-  | {
-      redacted: true;
-    }
-  | {
-      role: Role & {
-        icon: Upload | null;
-        thumbnail: Upload | null;
-      };
-      roleImage: FlowNodeRoleImage;
-      backgroundColor: string;
-      backgroundTransparency: number;
-      unlocked: boolean;
-    },
-  typeof FlowNodeType.ROLE
+export type Markdown = NodeType<
+  {
+    markdown: string;
+    markdownPosition: FlowNodeMarkdownPosition;
+    backgroundColor: string;
+    backgroundTransparency: number;
+  },
+  typeof FlowNodeType.MARKDOWN
 >;
 
-export const RoleNode = (props: NodeProps<RoleNode>) => {
-  const { roles, isUpdating } = useFlowContext();
+export const Node: ComponentType<NodeProps<Markdown>> = (props) => {
+  const { isUpdating } = useFlowContext();
   const nodeId = useNodeId();
   const { setNodes, setEdges } = useReactFlow();
   const [isResizing, setIsResizing] = useState(false);
@@ -66,11 +56,11 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
       setIsEditModalOpen(false);
 
       const formData = new FormData(event.currentTarget);
-      const result = roleSchema.safeParse({
+      const result = schema.safeParse({
         id: formData.get("id"),
         nodeType: formData.get("nodeType"),
-        roleId: formData.get("roleId"),
-        roleImage: formData.get("roleImage"),
+        markdown: formData.get("markdown"),
+        markdownPosition: formData.get("markdownPosition"),
         backgroundColor: formData.get("backgroundColor"),
         backgroundTransparency: formData.get("backgroundTransparency"),
       });
@@ -80,14 +70,6 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
           "Beim Speichern ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
         );
         console.error(result.error);
-        return;
-      }
-
-      const role = roles.find((role) => role.id === result.data.roleId);
-      if (!role) {
-        toast.error(
-          "Beim Speichern ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
-        );
         return;
       }
 
@@ -107,8 +89,8 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
                 width: props.width,
                 height: props.height,
                 data: {
-                  role,
-                  roleImage: result.data.roleImage,
+                  markdown: result.data.markdown,
+                  markdownPosition: result.data.markdownPosition,
                   backgroundColor: result.data.backgroundColor,
                   backgroundTransparency: result.data.backgroundTransparency,
                 },
@@ -119,7 +101,7 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         );
       });
     },
-    [roles, setNodes, props],
+    [setNodes, props],
   );
 
   const onDelete = useCallback(() => {
@@ -129,22 +111,10 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
     );
   }, [nodeId, setNodes, setEdges]);
 
-  const unlocked = "unlocked" in props.data && props.data.unlocked;
-
-  const backgroundColor =
-    "redacted" in props.data
-      ? "rgb(38, 38, 38)"
-      : getBackground(
-          props.data.backgroundColor,
-          props.data.backgroundTransparency,
-        );
-
-  const image =
-    "redacted" in props.data
-      ? null
-      : props.data.roleImage === FlowNodeRoleImage.THUMBNAIL
-        ? props.data.role.thumbnail
-        : props.data.role.icon;
+  const backgroundColor = getBackground(
+    props.data.backgroundColor,
+    props.data.backgroundTransparency,
+  );
 
   return (
     <>
@@ -173,18 +143,18 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
             <FaPen />
           </button>
 
-          {isEditModalOpen && "role" in props.data && (
+          {isEditModalOpen && (
             <CreateOrUpdateNodeModal
               onRequestClose={onEdit}
-              onSubmit={onUpdate}
               initialData={{
                 id: props.id,
-                type: FlowNodeType.ROLE,
-                roleId: props.data.role.id,
-                roleImage: props.data.roleImage,
+                type: FlowNodeType.MARKDOWN,
+                markdown: props.data.markdown,
+                markdownPosition: props.data.markdownPosition,
                 backgroundColor: props.data.backgroundColor,
                 backgroundTransparency: props.data.backgroundTransparency,
               }}
+              onUpdate={onUpdate}
             />
           )}
 
@@ -199,63 +169,26 @@ export const RoleNode = (props: NodeProps<RoleNode>) => {
         </NodeToolbar>
       )}
 
-      {isResizing && <NodeResizer minWidth={100} minHeight={100} />}
+      {isResizing && <NodeResizer minWidth={1} minHeight={1} />}
 
       <div
         className={clsx(
-          "bg-neutral-800 rounded-secondary h-full p-4 flex justify-center items-center",
+          "rounded-secondary h-full p-4 prose prose-invert prose-sm overflow-hidden flex flex-col justify-center",
           {
-            "grayscale opacity-40 hover:grayscale-0 hover:opacity-100":
-              !unlocked,
-            "opacity-40 grayscale-0": "redacted" in props.data,
+            "text-left":
+              props.data.markdownPosition === FlowNodeMarkdownPosition.LEFT ||
+              !props.data.markdownPosition,
+            "text-right":
+              props.data.markdownPosition === FlowNodeMarkdownPosition.RIGHT,
+            "text-center":
+              props.data.markdownPosition === FlowNodeMarkdownPosition.CENTER,
           },
         )}
         style={{
           backgroundColor,
         }}
       >
-        {"role" in props.data && (
-          <Tooltip.Provider delayDuration={0}>
-            <Tooltip.Root>
-              <Tooltip.Trigger className="cursor-help w-full h-full">
-                <Image
-                  src={`https://${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${image?.id}`}
-                  alt={props.data.role.name}
-                  title={props.data.role.name}
-                  width={100}
-                  height={100}
-                  className="object-contain object-center w-full h-full"
-                  unoptimized={
-                    (image &&
-                      ["image/svg+xml", "image/gif"].includes(
-                        image.mimeType,
-                      )) ??
-                    false
-                  }
-                  loading="lazy"
-                />
-              </Tooltip.Trigger>
-
-              <Tooltip.Content
-                className={clsx(
-                  "px-2 py-1 text-sm leading-tight select-none rounded-secondary bg-sinister-red-500 text-white",
-                  styles.TooltipContent,
-                )}
-                side="top"
-                sideOffset={20}
-              >
-                {props.data.role.name}
-                <Tooltip.Arrow className="fill-sinister-red-500" />
-              </Tooltip.Content>
-            </Tooltip.Root>
-          </Tooltip.Provider>
-        )}
-
-        {"redacted" in props.data && (
-          <p className="text-sinister-red-500 font-bold border border-sinister-red-500 rounded-secondary px-2 py-1 inline-block text-xs">
-            Redacted
-          </p>
-        )}
+        <Markdown>{props.data.markdown}</Markdown>
       </div>
 
       <Handle

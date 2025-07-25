@@ -9,7 +9,7 @@ import { getTaskById } from "../queries";
 import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
-  taskId: z.union([z.string().cuid(), z.string().cuid2()]),
+  taskId: z.union([z.cuid(), z.cuid2()]),
 });
 
 export const deleteTaskAssignmentForCurrentUser = createAuthenticatedAction(

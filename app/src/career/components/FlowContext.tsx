@@ -1,35 +1,51 @@
 "use client";
 
-import type { Role, Upload } from "@prisma/client";
-import type { ReactNode } from "react";
+import { type Node } from "@xyflow/react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { createContext, useContext, useMemo } from "react";
 
 interface FlowContext {
-  roles: (Role & {
-    icon: Upload | null;
-    thumbnail: Upload | null;
-  })[];
   isUpdating: boolean;
+  setIsCreateNodeModalOpen: Dispatch<SetStateAction<boolean>>;
+  setUnsaved: Dispatch<SetStateAction<boolean>>;
+  setNodes: Dispatch<SetStateAction<Node[]>>;
+  additionalData: Record<string, unknown>;
 }
 
 const FlowContext = createContext<FlowContext | undefined>(undefined);
 
 interface Props {
   readonly children: ReactNode;
-  readonly roles: (Role & {
-    icon: Upload | null;
-    thumbnail: Upload | null;
-  })[];
   readonly isUpdating: boolean;
+  readonly setIsCreateNodeModalOpen: Dispatch<SetStateAction<boolean>>;
+  readonly setUnsaved: Dispatch<SetStateAction<boolean>>;
+  readonly setNodes: Dispatch<SetStateAction<Node[]>>;
+  readonly additionalData: Record<string, unknown>;
 }
 
-export const FlowProvider = ({ children, roles, isUpdating }: Props) => {
+export const FlowProvider = ({
+  children,
+  isUpdating,
+  setIsCreateNodeModalOpen,
+  setUnsaved,
+  setNodes,
+  additionalData,
+}: Props) => {
   const value = useMemo(
     () => ({
-      roles,
       isUpdating,
+      setIsCreateNodeModalOpen,
+      setUnsaved,
+      setNodes,
+      additionalData,
     }),
-    [roles, isUpdating],
+    [
+      isUpdating,
+      setIsCreateNodeModalOpen,
+      setUnsaved,
+      setNodes,
+      additionalData,
+    ],
   );
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;

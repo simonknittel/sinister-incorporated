@@ -2,7 +2,7 @@
 
 import { type FlowNode, FlowNodeType } from "@prisma/client";
 
-export const getNodeTypeMarkdown = (node: FlowNode) => {
+export const getNodeType = (node: FlowNode) => {
   const data = {
     markdown: node.markdown,
     markdownPosition: node.markdownPosition,

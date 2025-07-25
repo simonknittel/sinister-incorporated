@@ -2,13 +2,9 @@
 
 import Note from "@/common/components/Note";
 import {
-  FlowNodeRoleImage,
-  FlowNodeType,
   type FlowEdge,
   type FlowNode,
   type Flow as FlowPrisma,
-  type Role,
-  type Upload,
 } from "@prisma/client";
 import {
   addEdge,
@@ -32,7 +28,6 @@ import {
   useCallback,
   useState,
   useTransition,
-  type FormEventHandler,
   type MouseEventHandler,
 } from "react";
 import toast from "react-hot-toast";
@@ -41,7 +36,7 @@ import { FaPlus } from "react-icons/fa6";
 import { updateFlow } from "../actions/updateFlow";
 import { getInitialNodesAndEdges } from "../utils/getInitialNodesAndEdges";
 import { nodeTypes } from "../utils/nodeTypes";
-import { CreateOrUpdateNodeModal, schema } from "./CreateOrUpdateNodeModal";
+import { CreateOrUpdateNodeModal } from "./CreateOrUpdateNodeModal";
 import { FlowProvider } from "./FlowContext";
 
 interface Props {
@@ -52,31 +47,21 @@ interface Props {
       targets: FlowEdge[];
     })[];
   };
-  readonly roles: (Role & {
-    icon: Upload | null;
-    thumbnail: Upload | null;
-  })[];
-  readonly assignedRoles: (Role & {
-    inherits: Role[];
-    icon: Upload | null;
-    thumbnail: Upload | null;
-  })[];
   readonly canUpdate?: boolean;
   readonly isUpdating?: boolean;
+  readonly additionalData: Record<string, unknown>;
 }
 
 export const Flow = ({
   className,
   flow,
-  roles,
   canUpdate = false,
   isUpdating = false,
-  assignedRoles,
+  additionalData,
 }: Props) => {
   const { initialNodes, initialEdges } = getInitialNodesAndEdges(
     flow,
-    roles,
-    assignedRoles,
+    additionalData,
   );
 
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
@@ -105,96 +90,6 @@ export const Flow = ({
     setUnsaved(true);
     return setEdges((eds) => addEdge(params, eds));
   }, []);
-
-  const onCreate: FormEventHandler<HTMLFormElement> = useCallback(
-    (event) => {
-      event.preventDefault();
-      setIsCreateNodeModalOpen(false);
-
-      const formData = new FormData(event.currentTarget);
-      const result = schema.safeParse({
-        id: formData.get("id"),
-        nodeType: formData.get("nodeType"),
-        roleId: formData.get("roleId"),
-        roleImage: formData.get("roleImage"),
-        markdown: formData.get("markdown"),
-        markdownPosition: formData.get("markdownPosition"),
-        backgroundColor: formData.get("backgroundColor"),
-        backgroundTransparency: formData.get("backgroundTransparency"),
-      });
-
-      if (!result.success) {
-        toast.error(
-          "Beim Speichern ist ein unerwarteter Fehler aufgetreten. Bitte versuche es später erneut.",
-        );
-        console.error(result.error);
-        return;
-      }
-
-      setUnsaved(true);
-
-      setNodes((nds) => {
-        if (result.data.nodeType === FlowNodeType.ROLE) {
-          const data = result.data;
-          const role = roles.find((role) => role.id === data.roleId);
-          return applyNodeChanges(
-            [
-              {
-                type: "add",
-                item: {
-                  id: data.id,
-                  type: FlowNodeType.ROLE,
-                  position: {
-                    x: 0,
-                    y: 0,
-                  },
-                  width:
-                    data.roleImage === FlowNodeRoleImage.THUMBNAIL ? 178 : 100,
-                  height: 100,
-                  data: {
-                    role,
-                    roleImage: data.roleImage,
-                    backgroundColor: data.backgroundColor,
-                    backgroundTransparency: data.backgroundTransparency,
-                  },
-                },
-              },
-            ],
-            nds,
-          );
-        } else if (result.data.nodeType === FlowNodeType.MARKDOWN) {
-          const data = result.data;
-          return applyNodeChanges(
-            [
-              {
-                type: "add",
-                item: {
-                  id: data.id,
-                  type: FlowNodeType.MARKDOWN,
-                  position: {
-                    x: 0,
-                    y: 0,
-                  },
-                  width: 178,
-                  height: 316,
-                  data: {
-                    markdown: data.markdown,
-                    markdownPosition: data.markdownPosition,
-                    backgroundColor: data.backgroundColor,
-                    backgroundTransparency: data.backgroundTransparency,
-                  },
-                },
-              },
-            ],
-            nds,
-          );
-        }
-
-        throw new Error("Invalid node type");
-      });
-    },
-    [roles],
-  );
 
   const onSave: MouseEventHandler<HTMLButtonElement> = useCallback(() => {
     startTransition(async () => {
@@ -236,7 +131,13 @@ export const Flow = ({
     }, [isUpdating, flow.id, router]);
 
   return (
-    <FlowProvider roles={roles} isUpdating={isUpdating}>
+    <FlowProvider
+      isUpdating={isUpdating}
+      setIsCreateNodeModalOpen={setIsCreateNodeModalOpen}
+      setUnsaved={setUnsaved}
+      setNodes={setNodes}
+      additionalData={additionalData}
+    >
       {unsaved && (
         <Note
           type="info"
@@ -306,7 +207,6 @@ export const Flow = ({
       {isCreateNodeModalOpen && (
         <CreateOrUpdateNodeModal
           onRequestClose={() => setIsCreateNodeModalOpen(false)}
-          onSubmit={onCreate}
         />
       )}
     </FlowProvider>

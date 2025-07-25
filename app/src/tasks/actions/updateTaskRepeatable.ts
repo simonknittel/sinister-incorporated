@@ -9,7 +9,7 @@ import { isAllowedToManageTask } from "../utils/isAllowedToTask";
 import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
-  id: z.union([z.string().cuid(), z.string().cuid2()]),
+  id: z.union([z.cuid(), z.cuid2()]),
   repeatable: z.coerce.number().min(1),
 });
 

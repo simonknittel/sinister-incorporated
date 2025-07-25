@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const schema = z.object({
-  roleId: z.string().cuid(),
+  roleId: z.cuid(),
   permissionString: z
     .string()
     .trim()

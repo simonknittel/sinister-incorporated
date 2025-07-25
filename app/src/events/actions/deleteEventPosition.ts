@@ -8,7 +8,7 @@ import { isAllowedToManagePositions } from "../utils/isAllowedToManagePositions"
 import { isEventUpdatable } from "../utils/isEventUpdatable";
 
 const schema = z.object({
-  id: z.string().cuid(),
+  id: z.cuid(),
 });
 
 export const deleteEventPosition = createAuthenticatedAction(

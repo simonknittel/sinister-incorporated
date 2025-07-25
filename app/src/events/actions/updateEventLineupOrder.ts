@@ -13,25 +13,25 @@ import { isEventUpdatable } from "../utils/isEventUpdatable";
 
 // TODO: Simplify recursion
 const schema = z.object({
-  eventId: z.string().cuid(),
+  eventId: z.cuid(),
   order: z.array(
     z.object({
-      id: z.string().cuid(),
+      id: z.cuid(),
       order: z.number().int().min(0),
       childPositions: z
         .array(
           z.object({
-            id: z.string().cuid(),
+            id: z.cuid(),
             order: z.number().int().min(0),
             childPositions: z
               .array(
                 z.object({
-                  id: z.string().cuid(),
+                  id: z.cuid(),
                   order: z.number().int().min(0),
                   childPositions: z
                     .array(
                       z.object({
-                        id: z.string().cuid(),
+                        id: z.cuid(),
                         order: z.number().int().min(0),
                       }),
                     )

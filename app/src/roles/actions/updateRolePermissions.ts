@@ -10,7 +10,7 @@ import { serializeError } from "serialize-error";
 import { z } from "zod";
 
 const schema = z.object({
-  id: z.string().cuid(),
+  id: z.cuid(),
   permissionStrings: z.array(
     z
       .string()

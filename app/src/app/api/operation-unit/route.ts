@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const postBodySchema = z.object({
-  operationId: z.string().cuid(),
+  operationId: z.cuid(),
   title: z.string().min(1).max(255),
   type: z.union([
     z.literal("squadron"),
@@ -14,7 +14,7 @@ const postBodySchema = z.object({
     z.literal("squad-fireteam"),
     z.literal("other"),
   ]),
-  parentUnitId: z.string().cuid().optional(),
+  parentUnitId: z.cuid().optional(),
 });
 
 export async function POST(request: Request) {

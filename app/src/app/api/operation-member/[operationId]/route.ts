@@ -8,7 +8,7 @@ type Params = Promise<{
   operationId: string;
 }>;
 
-const paramsSchema = z.string().cuid();
+const paramsSchema = z.cuid();
 
 export async function GET(request: Request, props: { params: Params }) {
   try {
@@ -56,10 +56,10 @@ export async function GET(request: Request, props: { params: Params }) {
 
 const patchBodySchema = z.object({
   status: z.literal("confirmed").optional(),
-  operationUnitId: z.string().cuid().optional(),
+  operationUnitId: z.cuid().optional(),
   title: z.string().trim().min(1).max(255).optional(),
-  userId: z.string().cuid(),
-  shipId: z.string().cuid().optional(),
+  userId: z.cuid(),
+  shipId: z.cuid().optional(),
 });
 
 export async function PATCH(request: Request, props: { params: Params }) {
