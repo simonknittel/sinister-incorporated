@@ -11,7 +11,7 @@ import { z } from "zod";
 import { updateCitizensSilcBalances } from "../utils/updateCitizensSilcBalances";
 
 const schema = z.object({
-  transactionId: z.string().cuid(),
+  transactionId: z.cuid(),
   value: z.coerce.number().int(),
   description: z.string().trim().max(512).optional(),
 });

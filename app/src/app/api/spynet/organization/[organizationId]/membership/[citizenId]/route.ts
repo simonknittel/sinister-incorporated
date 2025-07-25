@@ -12,8 +12,8 @@ type Params = Promise<{
 }>;
 
 const paramsSchema = z.object({
-  organizationId: z.string().cuid(),
-  citizenId: z.string().cuid(),
+  organizationId: z.cuid(),
+  citizenId: z.cuid(),
 });
 
 export async function DELETE(request: Request, props: { params: Params }) {

@@ -8,7 +8,7 @@ import { isAllowedToManagePositions } from "../utils/isAllowedToManagePositions"
 import { isEventUpdatable } from "../utils/isEventUpdatable";
 
 const schema = z.object({
-  positionId: z.string().cuid(),
+  positionId: z.cuid(),
 });
 
 export const resetEventPositionCitizenId = createAuthenticatedAction(

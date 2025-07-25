@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const bodySchema = z.object({
-  id: z.string().cuid(),
+  id: z.cuid(),
   confirmed: z.enum([
     ConfirmationStatus.CONFIRMED,
     ConfirmationStatus.FALSE_REPORT,

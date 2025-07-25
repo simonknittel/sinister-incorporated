@@ -5,7 +5,7 @@ export const variantRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(
       z.object({
-        id: z.string().cuid(),
+        id: z.cuid(),
       }),
     )
     .query(async ({ ctx, input }) => {

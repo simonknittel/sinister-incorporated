@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const schema = z.object({
-  id: z.string().cuid(),
+  id: z.cuid(),
 });
 
 export const deleteShipAction = createAuthenticatedAction(

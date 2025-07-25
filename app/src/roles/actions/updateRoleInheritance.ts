@@ -10,8 +10,8 @@ import { serializeError } from "serialize-error";
 import { z } from "zod";
 
 const schema = z.object({
-  id: z.string().cuid(),
-  roles: z.array(z.string().cuid()),
+  id: z.cuid(),
+  roles: z.array(z.cuid()),
 });
 
 export const updateRoleInheritance = async (

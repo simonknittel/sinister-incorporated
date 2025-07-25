@@ -10,7 +10,7 @@ type Params = Promise<{
   id: string;
 }>;
 
-const paramsSchema = z.string().cuid();
+const paramsSchema = z.cuid();
 
 const postBodySchema = z.union([
   z.object({

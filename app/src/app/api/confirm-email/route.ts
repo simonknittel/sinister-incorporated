@@ -7,7 +7,7 @@ import { z } from "zod";
 export const dynamic = "force-dynamic";
 
 const schema = z.object({
-  token: z.string().cuid2(),
+  token: z.cuid2(),
 });
 
 export async function GET(request: NextRequest) {

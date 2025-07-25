@@ -12,7 +12,7 @@ import { isAllowedToManageEvent } from "../utils/isAllowedToManageEvent";
 import { isEventUpdatable } from "../utils/isEventUpdatable";
 
 const schema = z.object({
-  eventId: z.string().cuid(),
+  eventId: z.cuid(),
   managerIds: z.array(z.string().trim().cuid()),
 });
 

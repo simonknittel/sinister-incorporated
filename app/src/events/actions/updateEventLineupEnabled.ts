@@ -8,7 +8,7 @@ import { isAllowedToManagePositions } from "../utils/isAllowedToManagePositions"
 import { isEventUpdatable } from "../utils/isEventUpdatable";
 
 const schema = z.object({
-  eventId: z.string().cuid(),
+  eventId: z.cuid(),
   value: z.coerce.boolean(),
 });
 

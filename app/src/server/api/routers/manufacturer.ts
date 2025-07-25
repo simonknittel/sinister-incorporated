@@ -5,7 +5,7 @@ export const manufacturerRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(
       z.object({
-        id: z.string().cuid(),
+        id: z.cuid(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -29,7 +29,7 @@ export const manufacturerRouter = createTRPCRouter({
   getSeriesByManufacturerId: protectedProcedure
     .input(
       z.object({
-        manufacturerId: z.string().cuid(),
+        manufacturerId: z.cuid(),
       }),
     )
     .query(async ({ ctx, input }) => {

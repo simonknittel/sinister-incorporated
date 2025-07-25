@@ -10,7 +10,7 @@ import { serializeError } from "serialize-error";
 import { z } from "zod";
 
 const schema = z.object({
-  sinisterId: z.string().cuid(),
+  sinisterId: z.cuid(),
   points: z.coerce.number().int().min(1),
   reason: z.string().trim().max(512).optional(),
   expiresAt: z.coerce.date().optional(),

@@ -12,11 +12,11 @@ import { isAllowedToManagePositions } from "../utils/isAllowedToManagePositions"
 import { isEventUpdatable } from "../utils/isEventUpdatable";
 
 const schema = z.object({
-  eventId: z.string().cuid(),
+  eventId: z.cuid(),
   name: z.string().trim().max(256),
   description: z.string().trim().max(512).optional(),
-  variantIds: z.array(z.string().cuid()),
-  parentPositionId: z.string().cuid().optional(),
+  variantIds: z.array(z.cuid()),
+  parentPositionId: z.cuid().optional(),
 });
 
 export const createEventPosition = async (formData: FormData) => {

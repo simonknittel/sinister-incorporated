@@ -13,10 +13,10 @@ type Params = Promise<{
   organizationId: string;
 }>;
 
-const paramsSchema = z.object({ organizationId: z.string().cuid() });
+const paramsSchema = z.object({ organizationId: z.cuid() });
 
 const postBodySchema = z.object({
-  citizenId: z.string().cuid(),
+  citizenId: z.cuid(),
   type: z.enum([
     OrganizationMembershipType.MAIN,
     OrganizationMembershipType.AFFILIATE,
