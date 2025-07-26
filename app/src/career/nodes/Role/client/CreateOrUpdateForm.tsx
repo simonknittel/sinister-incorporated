@@ -19,6 +19,7 @@ interface Props {
     backgroundTransparency: number;
     roleId: Role["id"];
     roleImage: FlowNodeRoleImage;
+    showUnlocked?: boolean;
   };
   onUpdate?: FormEventHandler<HTMLFormElement>;
 }
@@ -31,6 +32,9 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
   );
   const [roleImage, setRoleImage] = useState<keyof typeof FlowNodeRoleImage>(
     initialData?.roleImage || FlowNodeRoleImage.ICON,
+  );
+  const [showUnlocked, setShowUnlocked] = useState<boolean>(
+    initialData?.showUnlocked || false,
   );
   const roleInputId = useId();
   const backgroundColorInputId = useId();
@@ -47,6 +51,7 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
       roleImage: formData.get("roleImage"),
       backgroundColor: formData.get("backgroundColor"),
       backgroundTransparency: formData.get("backgroundTransparency"),
+      showUnlocked: formData.get("showUnlocked"),
     });
 
     if (!result.success) {
@@ -83,6 +88,7 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
                 roleImage: data.roleImage,
                 backgroundColor: data.backgroundColor,
                 backgroundTransparency: data.backgroundTransparency,
+                showUnlocked: data.showUnlocked,
               },
             },
           },
@@ -163,6 +169,24 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
           )}
         />
       )}
+
+      <p className="mt-6">Dauerhaft farbig anzeigen</p>
+      <RadioGroup
+        name="showUnlocked"
+        items={[
+          {
+            value: "false",
+            label: "nein",
+          },
+          {
+            value: "true",
+            label: "ja",
+          },
+        ]}
+        value={showUnlocked ? "true" : "false"}
+        onChange={(value) => setShowUnlocked(value === "true")}
+        className="mt-2"
+      />
 
       <label htmlFor={backgroundColorInputId} className="mt-6 block">
         Hintergrundfarbe

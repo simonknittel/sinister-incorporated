@@ -16,6 +16,7 @@ export const getNodeType = (
         roleImage: node.roleImage,
         backgroundColor: node.backgroundColor,
         backgroundTransparency: node.backgroundTransparency,
+        showUnlocked: node.showUnlocked,
         unlocked: isUnlocked(role, additionalData.assignedRoles),
       }
     : { redacted: true };

@@ -49,9 +49,18 @@ export default async function Page() {
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
         <Day heading="25. Juli 2025">
-          <DayItem heading="Citizen einer Rolle" badges={["Karriere", "Neu"]}>
-            <p>Unter Karriere gibt es nun ein neues Element um die Citizen anzuzeigen, die eine ausgewählte Rolle tragen.</p>
-            <p>Diese Funktion wird über die nächsten Tage vom Management in den verschiedenen Karrieren aktiviert.</p>
+          <DayItem heading="Teamübersicht" badges={["Karriere", "Neu"]}>
+            <p>
+              Unter{" "}
+              <Link
+                href="/app/career/team"
+                className="text-interaction-500 hover:text-interaction-300 focus-visible:text-interaction-300"
+              >
+                Karriere &gt; Team
+              </Link>{" "}
+              gibt es nun eine stets aktuelle Übersicht der Teammitglieder und
+              Ansprechpartner.
+            </p>
           </DayItem>
         </Day>
 

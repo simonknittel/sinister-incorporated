@@ -18,5 +18,6 @@ export const createManyMapping = (
     roleCitizensHideRole: node.data.roleCitizensHideRole,
     backgroundColor: node.data.backgroundColor,
     backgroundTransparency: node.data.backgroundTransparency,
+    showUnlocked: node.data.showUnlocked,
   };
 };

@@ -17,5 +17,6 @@ export const createManyMapping = (
     roleImage: node.data.roleImage,
     backgroundColor: node.data.backgroundColor,
     backgroundTransparency: node.data.backgroundTransparency,
+    showUnlocked: node.data.showUnlocked,
   };
 };
