@@ -49,6 +49,7 @@ export type RoleNode = NodeType<
       roleCitizensHideRole: boolean;
       backgroundColor: string;
       backgroundTransparency: number;
+      showUnlocked: boolean;
       unlocked: boolean;
     },
   typeof FlowNodeType.ROLE_CITIZENS
@@ -79,6 +80,7 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
         roleCitizensHideRole: formData.get("roleCitizensHideRole"),
         backgroundColor: formData.get("backgroundColor"),
         backgroundTransparency: formData.get("backgroundTransparency"),
+        showUnlocked: formData.get("showUnlocked"),
       });
 
       if (!result.success) {
@@ -120,6 +122,7 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
                   roleCitizensHideRole: result.data.roleCitizensHideRole,
                   backgroundColor: result.data.backgroundColor,
                   backgroundTransparency: result.data.backgroundTransparency,
+                  showUnlocked: result.data.showUnlocked,
                 },
               },
             },
@@ -138,7 +141,9 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
     );
   }, [nodeId, setNodes, setEdges]);
 
-  const unlocked = "unlocked" in props.data && props.data.unlocked;
+  const unlocked =
+    ("showUnlocked" in props.data && props.data.showUnlocked) ||
+    ("unlocked" in props.data && props.data.unlocked);
 
   const backgroundColor =
     "redacted" in props.data
@@ -186,6 +191,7 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
                 roleCitizensHideRole: props.data.roleCitizensHideRole,
                 backgroundColor: props.data.backgroundColor,
                 backgroundTransparency: props.data.backgroundTransparency,
+                showUnlocked: props.data.showUnlocked,
               }}
               onUpdate={onUpdate}
             />
@@ -207,13 +213,15 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
       <div
         className={clsx("bg-neutral-800 rounded-secondary h-full p-4", {
           "grayscale opacity-40 hover:grayscale-0 hover:opacity-100": !unlocked,
-          "opacity-40 grayscale-0": "redacted" in props.data,
+          "opacity-40 grayscale-0 flex justify-center items-center":
+            "redacted" in props.data,
           "flex justify-center":
-            !("roleCitizensAlignment" in props.data) ||
-            ("roleCitizensAlignment" in props.data &&
-              (!props.data.roleCitizensAlignment ||
-                props.data.roleCitizensAlignment ===
-                  FlowNodeRoleCitizensAlignment.CENTER)),
+            !("redacted" in props.data) &&
+            (!("roleCitizensAlignment" in props.data) ||
+              ("roleCitizensAlignment" in props.data &&
+                (!props.data.roleCitizensAlignment ||
+                  props.data.roleCitizensAlignment ===
+                    FlowNodeRoleCitizensAlignment.CENTER))),
         })}
         style={{
           backgroundColor,

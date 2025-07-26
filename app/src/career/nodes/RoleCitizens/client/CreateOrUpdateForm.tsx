@@ -22,6 +22,7 @@ interface Props {
     roleId: Role["id"];
     roleCitizensAlignment: FlowNodeRoleCitizensAlignment;
     roleCitizensHideRole: boolean;
+    showUnlocked: boolean;
   };
   onUpdate?: FormEventHandler<HTMLFormElement>;
 }
@@ -37,6 +38,9 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
   );
   const [hideRole, setHideRole] = useState<boolean>(
     initialData?.roleCitizensHideRole || false,
+  );
+  const [showUnlocked, setShowUnlocked] = useState<boolean>(
+    initialData?.showUnlocked || false,
   );
   const roleInputId = useId();
   const backgroundColorInputId = useId();
@@ -54,6 +58,7 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
       roleCitizensHideRole: formData.get("roleCitizensHideRole"),
       backgroundColor: formData.get("backgroundColor"),
       backgroundTransparency: formData.get("backgroundTransparency"),
+      showUnlocked: formData.get("showUnlocked"),
     });
 
     if (!result.success) {
@@ -91,6 +96,7 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
                 roleCitizensHideRole: data.roleCitizensHideRole,
                 backgroundColor: data.backgroundColor,
                 backgroundTransparency: data.backgroundTransparency,
+                showUnlocked: data.showUnlocked,
               },
             },
           },
@@ -163,6 +169,24 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
         ]}
         value={hideRole ? "true" : "false"}
         onChange={(value) => setHideRole(value === "true")}
+        className="mt-2"
+      />
+
+      <p className="mt-6">Dauerhaft farbig anzeigen</p>
+      <RadioGroup
+        name="showUnlocked"
+        items={[
+          {
+            value: "false",
+            label: "nein",
+          },
+          {
+            value: "true",
+            label: "ja",
+          },
+        ]}
+        value={showUnlocked ? "true" : "false"}
+        onChange={(value) => setShowUnlocked(value === "true")}
         className="mt-2"
       />
 

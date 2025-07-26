@@ -18,5 +18,6 @@ export const updateFlowSchema = z.object({
     roleCitizensHideRole: z.boolean(),
     backgroundColor: z.string().optional(),
     backgroundTransparency: z.number().min(0).max(1).optional(),
+    showUnlocked: z.boolean().nullish(),
   }),
 });

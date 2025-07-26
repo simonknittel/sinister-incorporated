@@ -50,6 +50,7 @@ export type RoleNode = NodeType<
       roleImage: FlowNodeRoleImage;
       backgroundColor: string;
       backgroundTransparency: number;
+      showUnlocked?: boolean;
       unlocked: boolean;
     },
   typeof FlowNodeType.ROLE
@@ -79,6 +80,7 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
         roleImage: formData.get("roleImage"),
         backgroundColor: formData.get("backgroundColor"),
         backgroundTransparency: formData.get("backgroundTransparency"),
+        showUnlocked: formData.get("showUnlocked"),
       });
 
       if (!result.success) {
@@ -119,6 +121,7 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
                   roleImage: result.data.roleImage,
                   backgroundColor: result.data.backgroundColor,
                   backgroundTransparency: result.data.backgroundTransparency,
+                  showUnlocked: result.data.showUnlocked,
                 },
               },
             },
@@ -137,7 +140,9 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
     );
   }, [nodeId, setNodes, setEdges]);
 
-  const unlocked = "unlocked" in props.data && props.data.unlocked;
+  const unlocked =
+    ("showUnlocked" in props.data && props.data.showUnlocked) ||
+    ("unlocked" in props.data && props.data.unlocked);
 
   const backgroundColor =
     "redacted" in props.data
@@ -191,6 +196,7 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
                 roleImage: props.data.roleImage,
                 backgroundColor: props.data.backgroundColor,
                 backgroundTransparency: props.data.backgroundTransparency,
+                showUnlocked: props.data.showUnlocked,
               }}
               onUpdate={onUpdate}
             />

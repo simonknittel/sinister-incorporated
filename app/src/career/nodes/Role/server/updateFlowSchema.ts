@@ -17,5 +17,6 @@ export const updateFlowSchema = z.object({
     roleImage: z.nativeEnum(FlowNodeRoleImage),
     backgroundColor: z.string().optional(),
     backgroundTransparency: z.number().min(0).max(1).optional(),
+    showUnlocked: z.boolean().nullish(),
   }),
 });

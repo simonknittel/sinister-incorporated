@@ -10,4 +10,5 @@ export const schema = z.object({
   roleCitizensHideRole: z.preprocess((value) => value === "true", z.boolean()),
   backgroundColor: z.string(),
   backgroundTransparency: z.coerce.number().min(0).max(1),
+  showUnlocked: z.preprocess((value) => value === "true", z.boolean()),
 });

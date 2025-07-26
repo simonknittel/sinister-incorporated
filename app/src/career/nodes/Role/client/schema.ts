@@ -9,4 +9,5 @@ export const schema = z.object({
   roleImage: z.nativeEnum(FlowNodeRoleImage),
   backgroundColor: z.string(),
   backgroundTransparency: z.coerce.number().min(0).max(1),
+  showUnlocked: z.preprocess((value) => value === "true", z.boolean()),
 });

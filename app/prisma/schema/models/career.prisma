@@ -23,6 +23,7 @@ model FlowNode {
   markdownPosition       FlowNodeMarkdownPosition?
   roleCitizensAlignment  FlowNodeRoleCitizensAlignment?
   roleCitizensHideRole   Boolean?
+  showUnlocked           Boolean?
   backgroundColor        String?
   backgroundTransparency Float?
 }
