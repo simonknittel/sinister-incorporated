@@ -29,7 +29,6 @@ import {
 import toast from "react-hot-toast";
 import { FaPen } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa6";
-import { IoMdResize } from "react-icons/io";
 import { CreateOrUpdateNodeModal } from "../../../components/CreateOrUpdateNodeModal";
 import { useFlowContext } from "../../../components/FlowContext";
 import { getBackground } from "../../../utils/getBackground";
@@ -59,7 +58,6 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
   const { isUpdating, additionalData } = useFlowContext();
   const nodeId = useNodeId();
   const { setNodes, setEdges } = useReactFlow();
-  const [isResizing, setIsResizing] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const onEdit = useCallback(() => {
@@ -154,23 +152,13 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
         );
 
   return (
-    <>
+    <div className="group/node size-full">
       {isUpdating && (
         <NodeToolbar
-          isVisible={true}
           position={Position.Right}
           align="start"
           className="flex flex-col gap-2"
         >
-          <button
-            title="Größe ändern"
-            type="button"
-            onClick={() => setIsResizing((value) => !value)}
-            className="bg-neutral-800 rounded-secondary p-2 text-sinister-red-500 hover:bg-neutral-700"
-          >
-            <IoMdResize />
-          </button>
-
           <button
             onClick={onEdit}
             type="button"
@@ -208,7 +196,7 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
         </NodeToolbar>
       )}
 
-      {isResizing && <NodeResizer minWidth={100} minHeight={100} />}
+      {props.selected && <NodeResizer minWidth={1} minHeight={1} />}
 
       <div
         className={clsx("bg-neutral-800 rounded-secondary h-full p-4", {
@@ -288,6 +276,6 @@ export const Node: ComponentType<NodeProps<RoleNode>> = (props) => {
       </div>
 
       <Handles isUpdating={isUpdating} />
-    </>
+    </div>
   );
 };
