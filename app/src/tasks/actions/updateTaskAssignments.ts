@@ -16,7 +16,7 @@ import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 const schema = z.object({
   id: z.union([z.cuid(), z.cuid2()]),
   assignmentLimit: z.coerce.number().min(1).nullable(),
-  assignedToIds: z.array(z.cuid()).optional(),
+  assignedToIds: z.array(z.cuid()).max(250).optional(), // Arbitrary (untested) limit to prevent DDoS
 });
 
 export const updateTaskAssignments = async (formData: FormData) => {

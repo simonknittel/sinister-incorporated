@@ -10,24 +10,28 @@ import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { nodeDefinitions } from "../nodes/server";
 
-const nodesSchema = z.array(
-  z.discriminatedUnion(
-    "type",
-    // @ts-expect-error
-    nodeDefinitions.map((nodeDefinition) => nodeDefinition.updateFlowSchema),
-  ),
-);
+const nodesSchema = z
+  .array(
+    z.discriminatedUnion(
+      "type",
+      // @ts-expect-error
+      nodeDefinitions.map((nodeDefinition) => nodeDefinition.updateFlowSchema),
+    ),
+  )
+  .max(250); // Arbitrary (untested) limit to prevent DDoS
 
-const edgesSchema = z.array(
-  z.object({
-    id: z.string(),
-    type: z.string(),
-    source: z.cuid2(),
-    sourceHandle: z.string(),
-    target: z.cuid2(),
-    targetHandle: z.string(),
-  }),
-);
+const edgesSchema = z
+  .array(
+    z.object({
+      id: z.string(),
+      type: z.string(),
+      source: z.cuid2(),
+      sourceHandle: z.string(),
+      target: z.cuid2(),
+      targetHandle: z.string(),
+    }),
+  )
+  .max(250); // Arbitrary (untested) limit to prevent DDoS
 
 const schema = z.object({
   flowId: z.string(),

@@ -11,13 +11,15 @@ import { z } from "zod";
 
 const schema = z.object({
   id: z.cuid(),
-  permissionStrings: z.array(
-    z
-      .string()
-      .trim()
-      .min(1)
-      .regex(/^[\w\-]+;[\w\-]+(?:;[\w\-]+=[\w\-\*]+)*$/),
-  ),
+  permissionStrings: z
+    .array(
+      z
+        .string()
+        .trim()
+        .min(1)
+        .regex(/^[\w\-]+;[\w\-]+(?:;[\w\-]+=[\w\-\*]+)*$/),
+    )
+    .max(250), // Arbitrary (untested) limit to prevent DDoS
 });
 
 export const updateRolePermissions = async (

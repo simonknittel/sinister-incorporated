@@ -11,7 +11,7 @@ import { z } from "zod";
 
 const schema = z.object({
   id: z.cuid(),
-  roles: z.array(z.cuid()),
+  roles: z.array(z.cuid()).max(250), // Arbitrary (untested) limit to prevent DDoS
 });
 
 export const updateRoleInheritance = async (

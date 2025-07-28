@@ -14,7 +14,7 @@ import { isTaskUpdatable } from "../utils/isTaskUpdatable";
 
 const schema = z.object({
   id: z.union([z.cuid(), z.cuid2()]),
-  requiredRoles: z.array(z.cuid()),
+  requiredRoles: z.array(z.cuid()).max(50), // Arbitrary (untested) limit to prevent DDoS
   hiddenForOtherRoles: z.coerce.boolean(),
 });
 

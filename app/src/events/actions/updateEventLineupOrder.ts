@@ -14,36 +14,41 @@ import { isEventUpdatable } from "../utils/isEventUpdatable";
 // TODO: Simplify recursion
 const schema = z.object({
   eventId: z.cuid(),
-  order: z.array(
-    z.object({
-      id: z.cuid(),
-      order: z.number().int().min(0),
-      childPositions: z
-        .array(
-          z.object({
-            id: z.cuid(),
-            order: z.number().int().min(0),
-            childPositions: z
-              .array(
-                z.object({
-                  id: z.cuid(),
-                  order: z.number().int().min(0),
-                  childPositions: z
-                    .array(
-                      z.object({
-                        id: z.cuid(),
-                        order: z.number().int().min(0),
-                      }),
-                    )
-                    .optional(),
-                }),
-              )
-              .optional(),
-          }),
-        )
-        .optional(),
-    }),
-  ),
+  order: z
+    .array(
+      z.object({
+        id: z.cuid(),
+        order: z.number().int().min(0),
+        childPositions: z
+          .array(
+            z.object({
+              id: z.cuid(),
+              order: z.number().int().min(0),
+              childPositions: z
+                .array(
+                  z.object({
+                    id: z.cuid(),
+                    order: z.number().int().min(0),
+                    childPositions: z
+                      .array(
+                        z.object({
+                          id: z.cuid(),
+                          order: z.number().int().min(0),
+                        }),
+                      )
+                      .max(50) // Arbitrary (untested) limit to prevent DDoS
+                      .optional(),
+                  }),
+                )
+                .max(50) // Arbitrary (untested) limit to prevent DDoS
+                .optional(),
+            }),
+          )
+          .max(50) // Arbitrary (untested) limit to prevent DDoS
+          .optional(),
+      }),
+    )
+    .max(50), // Arbitrary (untested) limit to prevent DDoS
 });
 
 export interface MappedPosition {
