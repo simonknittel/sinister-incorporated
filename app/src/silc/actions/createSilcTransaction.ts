@@ -11,7 +11,7 @@ import { z } from "zod";
 import { updateCitizensSilcBalances } from "../utils/updateCitizensSilcBalances";
 
 const schema = z.object({
-  receiverIds: z.array(z.string().trim().cuid()).min(1),
+  receiverIds: z.array(z.string().trim().cuid()).min(1).max(250), // Arbitrary (untested) limit to prevent DDoS
   value: z.coerce.number().int(),
   description: z.string().trim().max(512).optional(),
 });

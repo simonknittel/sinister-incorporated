@@ -15,8 +15,8 @@ const schema = z.object({
   status: z
     .enum([VariantStatus.FLIGHT_READY, VariantStatus.NOT_FLIGHT_READY])
     .optional(),
-  tagKeys: z.array(z.string().trim()).optional(),
-  tagValues: z.array(z.string().trim()).optional(),
+  tagKeys: z.array(z.string().trim()).max(50).optional(), // Arbitrary (untested) limit to prevent DDoS
+  tagValues: z.array(z.string().trim()).max(50).optional(), // Arbitrary (untested) limit to prevent DDoS
 });
 
 export const updateVariant: ServerAction = async (formData) => {

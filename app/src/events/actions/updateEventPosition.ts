@@ -15,7 +15,7 @@ const schema = z.object({
   positionId: z.cuid(),
   name: z.string().trim().max(256),
   description: z.string().trim().max(512).optional(),
-  variantIds: z.array(z.cuid()),
+  variantIds: z.array(z.cuid()).max(250), // Arbitrary (untested) limit to prevent DDoS
 });
 
 export const updateEventPosition = async (formData: FormData) => {

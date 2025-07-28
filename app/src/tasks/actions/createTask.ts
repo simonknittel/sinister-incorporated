@@ -14,7 +14,7 @@ import { z } from "zod";
 const schema = z.object({
   visibility: z.nativeEnum(TaskVisibility),
   assignmentLimit: z.coerce.number().min(1).nullable(),
-  assignedToIds: z.array(z.cuid()).optional(),
+  assignedToIds: z.array(z.cuid()).max(250).optional(), // Arbitrary (untested) limit to prevent DDoS
   title: z.string().trim().max(64),
   description: z.string().trim().max(2048).optional(),
   expiresAt: z.coerce.date().optional(),
@@ -23,7 +23,7 @@ const schema = z.object({
   rewardTypeSilcValue: z.coerce.number().optional(),
   rewardTypeNewSilcValue: z.coerce.number().optional(),
   repeatable: z.coerce.number().min(1),
-  requiredRoles: z.array(z.cuid()).optional(),
+  requiredRoles: z.array(z.cuid()).max(50).optional(), // Arbitrary (untested) limit to prevent DDoS
   hiddenForOtherRoles: z.coerce.boolean().optional(),
   canSelfComplete: z.coerce.boolean().optional(),
 });

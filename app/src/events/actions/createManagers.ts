@@ -13,7 +13,7 @@ import { isEventUpdatable } from "../utils/isEventUpdatable";
 
 const schema = z.object({
   eventId: z.cuid(),
-  managerIds: z.array(z.string().trim().cuid()),
+  managerIds: z.array(z.string().trim().cuid()).max(50), // Arbitrary (untested) limit to prevent DDoS
 });
 
 export const createManagers = async (formData: FormData) => {

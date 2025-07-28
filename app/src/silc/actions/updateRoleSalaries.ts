@@ -10,9 +10,9 @@ import { serializeError } from "serialize-error";
 import { z } from "zod";
 
 const schema = z.object({
-  roleIds: z.array(z.cuid()),
-  values: z.array(z.coerce.number()),
-  dayOfMonths: z.array(z.coerce.number().min(1).max(31)),
+  roleIds: z.array(z.cuid()).max(250), // Arbitrary (untested) limit to prevent DDoS
+  values: z.array(z.coerce.number()).max(250), // Arbitrary (untested) limit to prevent DDoS
+  dayOfMonths: z.array(z.coerce.number().min(1).max(31)).max(250), // Arbitrary (untested) limit to prevent DDoS
 });
 
 export const updateRoleSalaries = async (formData: FormData) => {
