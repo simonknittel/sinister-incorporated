@@ -16,7 +16,7 @@ const Note = ({ className, message, type = "info", error }: Props) => {
     <div
       className={clsx(
         className,
-        "rounded-primary border-t-2 p-4 flex gap-4 items-start",
+        "rounded-primary border-t-2 px-4 py-3 flex gap-2 items-start",
         {
           "bg-blue-500/10 border-blue-500": type === "info",
           "bg-green-500/10 border-green-500": type === "success",
