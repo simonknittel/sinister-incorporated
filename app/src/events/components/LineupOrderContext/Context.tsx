@@ -55,7 +55,6 @@ interface Props {
   readonly myShips: Ship[];
   readonly allEventCitizens: { citizen: Entity; ships: Ship[] }[];
   readonly showActions?: boolean;
-  readonly showToggle?: boolean;
 }
 
 export const LineupOrderProvider = ({
@@ -66,7 +65,6 @@ export const LineupOrderProvider = ({
   myShips,
   allEventCitizens,
   showActions,
-  showToggle,
 }: Props) => {
   const [isDragging, setIsDragging] = useState<PositionType | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -237,7 +235,6 @@ export const LineupOrderProvider = ({
             myShips={myShips}
             allEventCitizens={allEventCitizens}
             showActions={showActions}
-            showToggle={showToggle}
             groupLevel={1}
             parentPositions={[]}
           />

@@ -14,7 +14,6 @@ import {
   type Upload,
   type Variant,
 } from "@prisma/client";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import { updateEventPositionName } from "../actions/updateEventPositionName";
 import { checkRequirements } from "../utils/checkRequirements";
@@ -24,6 +23,7 @@ import { useLineupOrder } from "./LineupOrderContext/Context";
 import { DragHandle } from "./LineupOrderContext/DragHandle";
 import { DragTarget } from "./LineupOrderContext/DragTarget";
 import { useLineupVisibility } from "./LineupVisibilityContext";
+import { PositionVariants } from "./PositionVariants";
 import { ToggleEventPositionApplicationForCurrentUser } from "./ToggleEventPositionApplicationForCurrentUser";
 import { UpdateEventPositionCitizenId } from "./UpdateEventPositionCitizenId";
 
@@ -56,7 +56,6 @@ interface Props {
   readonly myShips: Ship[];
   readonly allEventCitizens: { citizen: Entity; ships: Ship[] }[];
   readonly showActions?: boolean;
-  readonly showToggle?: boolean;
   readonly groupLevel: number;
   readonly parentPositions: PositionType["id"][];
 }
@@ -69,7 +68,6 @@ export const Position = ({
   myShips,
   allEventCitizens,
   showActions,
-  showToggle,
   groupLevel,
   parentPositions,
 }: Props) => {
@@ -103,6 +101,10 @@ export const Position = ({
   } = checkRequirements(position, myShips, allEventCitizens);
 
   const newParentPositions = [...parentPositions, position.id];
+
+  const isCurrentUserEventCitizen = allEventCitizens.some(
+    (citizen) => citizen.citizen.id === authentication.session.entity?.id,
+  );
 
   return (
     <div
@@ -178,45 +180,7 @@ export const Position = ({
               />
             )}
             {position.requiredVariants.length > 1 && (
-              <Tooltip.Provider delayDuration={0}>
-                <Tooltip.Root>
-                  <Tooltip.Trigger className="cursor-default hover:bg-neutral-700 rounded-secondary flex gap-2 items-center">
-                    <VariantWithLogo
-                      key={position.requiredVariants[0].id}
-                      variant={position.requiredVariants[0].variant}
-                      manufacturer={
-                        position.requiredVariants[0].variant.series.manufacturer
-                      }
-                      size={32}
-                    />
-
-                    <span className="rounded-full bg-neutral-900 size-6 flex items-center justify-center text-xs border border-sinister-red-500">
-                      +{position.requiredVariants.length - 1}
-                    </span>
-                  </Tooltip.Trigger>
-
-                  <Tooltip.Portal>
-                    <Tooltip.Content
-                      className="px-4 py-2 max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
-                      sideOffset={5}
-                    >
-                      <p className="text-sm text-gray-500">Alternativen</p>
-
-                      {position.requiredVariants.map((requiredVariant) => (
-                        <VariantWithLogo
-                          key={requiredVariant.id}
-                          variant={requiredVariant.variant}
-                          manufacturer={
-                            requiredVariant.variant.series.manufacturer
-                          }
-                          size={32}
-                        />
-                      ))}
-                      <Tooltip.Arrow className="fill-sinister-red-500" />
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
-              </Tooltip.Provider>
+              <PositionVariants position={position} />
             )}
           </div>
 
@@ -276,18 +240,17 @@ export const Position = ({
             </div> */}
           </div>
 
-          {showActions && (showToggle || showManage) && (
+          {(showActions || showManage) && (
             <div className="flex flex-row-reverse justify-between border-t border-white/10 p-4">
               <div className="justify-self-end">
-                {showToggle && (
-                  <ToggleEventPositionApplicationForCurrentUser
-                    position={position}
-                    hasCurrentUserAlreadyApplied={hasCurrentUserAlreadyApplied}
-                    doesCurrentUserSatisfyRequirements={
-                      doesCurrentUserSatisfyRequirements
-                    }
-                  />
-                )}
+                <ToggleEventPositionApplicationForCurrentUser
+                  position={position}
+                  hasCurrentUserAlreadyApplied={hasCurrentUserAlreadyApplied}
+                  doesCurrentUserSatisfyRequirements={
+                    doesCurrentUserSatisfyRequirements
+                  }
+                  showDiscordWarning={!isCurrentUserEventCitizen}
+                />
               </div>
 
               {showManage && (
@@ -336,7 +299,6 @@ export const Position = ({
               myShips={myShips}
               allEventCitizens={allEventCitizens}
               showActions={showActions}
-              showToggle={showToggle}
               groupLevel={groupLevel + 1}
               parentPositions={newParentPositions}
             />

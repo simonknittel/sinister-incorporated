@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import {
   type Entity,
   type Event,
@@ -11,6 +12,7 @@ import {
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
+import { DiscordWarning } from "./DiscordWarning";
 import type { PositionType } from "./Position";
 import { PositionSkeleton } from "./PositionSkeleton";
 import { Unassigned } from "./Unassigned";
@@ -35,7 +37,6 @@ interface Props {
   readonly myShips: Ship[];
   readonly allEventCitizens: { citizen: Entity; ships: Ship[] }[];
   readonly showActions?: boolean;
-  readonly showToggle?: boolean;
 }
 
 export const LineupTab = ({
@@ -46,8 +47,14 @@ export const LineupTab = ({
   myShips,
   allEventCitizens,
   showActions,
-  showToggle,
 }: Props) => {
+  const authentication = useAuthentication();
+  if (!authentication) throw new Error("Unauthorized");
+
+  const isCurrentUserEventCitizen = allEventCitizens.some(
+    (citizen) => citizen.citizen.id === authentication.session.entity?.id,
+  );
+
   return (
     <section className={clsx("flex flex-col gap-4", className)}>
       <div className="flex justify-end">
@@ -70,6 +77,8 @@ export const LineupTab = ({
         allEventCitizens={allEventCitizens}
       />
 
+      {!isCurrentUserEventCitizen && <DiscordWarning />}
+
       {event.positions.length > 0 ? (
         <Positions
           positions={event.positions}
@@ -78,7 +87,6 @@ export const LineupTab = ({
           myShips={myShips}
           allEventCitizens={allEventCitizens}
           showActions={showActions}
-          showToggle={showToggle}
         />
       ) : (
         <p className="rounded-primary bg-neutral-800/50 p-4">

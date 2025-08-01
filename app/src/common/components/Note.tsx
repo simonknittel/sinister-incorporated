@@ -2,11 +2,12 @@ import clsx from "clsx";
 import { type ReactNode } from "react";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaCheckSquare, FaInfoCircle } from "react-icons/fa";
+import { IoIosWarning } from "react-icons/io";
 
 interface Props {
   readonly className?: string;
   readonly message: ReactNode;
-  readonly type?: "info" | "success" | "error";
+  readonly type?: "info" | "success" | "error" | "warning";
   readonly error?: Error;
 }
 
@@ -15,11 +16,12 @@ const Note = ({ className, message, type = "info", error }: Props) => {
     <div
       className={clsx(
         className,
-        "rounded-primary border-t-2 p-4 flex gap-4 items-start",
+        "rounded-primary border-t-2 px-4 py-3 flex gap-2 items-start",
         {
           "bg-blue-500/10 border-blue-500": type === "info",
           "bg-green-500/10 border-green-500": type === "success",
           "bg-sinister-red-500/10 border-sinister-red-500": type === "error",
+          "bg-yellow-500/10 border-yellow-500": type === "warning",
         },
       )}
     >
@@ -31,6 +33,9 @@ const Note = ({ className, message, type = "info", error }: Props) => {
       )}
       {type === "error" && (
         <BsExclamationOctagonFill className="text-sinister-red-500 grow-1 shrink-0 mt-1" />
+      )}
+      {type === "warning" && (
+        <IoIosWarning className="text-yellow-500 grow-1 shrink-0 mt-1" />
       )}
 
       <div>

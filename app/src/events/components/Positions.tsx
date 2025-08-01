@@ -1,29 +1,12 @@
 "use client";
 
-import type {
-  Entity,
-  Manufacturer,
-  Series,
-  Ship,
-  Variant,
-} from "@prisma/client";
+import type { ComponentProps } from "react";
 import { LineupOrderProvider } from "./LineupOrderContext/Context";
 import { LineupVisibilityProvider, ToggleAll } from "./LineupVisibilityContext";
-import { type PositionType } from "./Position";
 
-interface Props {
+interface Props extends ComponentProps<typeof LineupOrderProvider> {
   readonly className?: string;
-  readonly positions: PositionType[];
   readonly canManagePositions?: boolean;
-  readonly variants: (Manufacturer & {
-    series: (Series & {
-      variants: Variant[];
-    })[];
-  })[];
-  readonly myShips: Ship[];
-  readonly allEventCitizens: { citizen: Entity; ships: Ship[] }[];
-  readonly showActions?: boolean;
-  readonly showToggle?: boolean;
 }
 
 export const Positions = ({
@@ -33,7 +16,6 @@ export const Positions = ({
   myShips,
   allEventCitizens,
   showActions,
-  showToggle,
 }: Props) => {
   return (
     <LineupVisibilityProvider items={positions}>
@@ -46,7 +28,6 @@ export const Positions = ({
         myShips={myShips}
         allEventCitizens={allEventCitizens}
         showActions={showActions}
-        showToggle={showToggle}
         className="flex flex-col gap-[1px]"
       />
     </LineupVisibilityProvider>
