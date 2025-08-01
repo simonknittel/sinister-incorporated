@@ -10,12 +10,10 @@ export const DiscordWarning = ({ className }: Props) => {
     <Note
       type="warning"
       message={
-        <div className="flex flex-col">
-          <p>
-            Du musst dich erst in Discord bei diesem Event anmelden, bevor du
-            dich hier in der Aufstellung anmelden kannst.
-          </p>
-        </div>
+        <p>
+          Du musst dich erst in Discord bei diesem Event anmelden, bevor du dich
+          hier in der Aufstellung anmelden kannst.
+        </p>
       }
       className={clsx("!max-w-none", className)}
     />
