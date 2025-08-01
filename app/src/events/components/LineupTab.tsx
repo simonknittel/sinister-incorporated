@@ -35,7 +35,6 @@ interface Props {
   readonly myShips: Ship[];
   readonly allEventCitizens: { citizen: Entity; ships: Ship[] }[];
   readonly showActions?: boolean;
-  readonly showToggle?: boolean;
 }
 
 export const LineupTab = ({
@@ -46,7 +45,6 @@ export const LineupTab = ({
   myShips,
   allEventCitizens,
   showActions,
-  showToggle,
 }: Props) => {
   return (
     <section className={clsx("flex flex-col gap-4", className)}>
@@ -78,7 +76,6 @@ export const LineupTab = ({
           myShips={myShips}
           allEventCitizens={allEventCitizens}
           showActions={showActions}
-          showToggle={showToggle}
         />
       ) : (
         <p className="rounded-primary bg-neutral-800/50 p-4">

@@ -77,10 +77,6 @@ export default async function Page({ params }: Props) {
     getEventCitizens(event.id),
   ]);
 
-  const showToggle = allEventCitizens.some(
-    (citizen) => citizen.citizen.id === authentication.session.entity!.id,
-  );
-
   return (
     <Template event={event}>
       <LineupTab
@@ -90,7 +86,6 @@ export default async function Page({ params }: Props) {
         myShips={myShips}
         allEventCitizens={allEventCitizens}
         showActions={showActions}
-        showToggle={showToggle}
       />
     </Template>
   );

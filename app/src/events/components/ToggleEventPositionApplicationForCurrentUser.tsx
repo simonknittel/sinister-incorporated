@@ -34,6 +34,7 @@ interface Props {
   };
   readonly hasCurrentUserAlreadyApplied?: boolean;
   readonly doesCurrentUserSatisfyRequirements?: boolean;
+  readonly showDiscordWarning?: boolean;
 }
 
 export const ToggleEventPositionApplicationForCurrentUser = ({
@@ -41,6 +42,7 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
   position,
   hasCurrentUserAlreadyApplied,
   doesCurrentUserSatisfyRequirements,
+  showDiscordWarning,
 }: Props) => {
   const [isPending, startTransition] = useTransition();
   const formId = useId();
@@ -73,7 +75,7 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
     <form action={formAction} id={formId} className={clsx(className)}>
       <input type="hidden" name="positionId" value={position.id} />
 
-      {hasCurrentUserAlreadyApplied ? (
+      {hasCurrentUserAlreadyApplied && (
         <Button
           type="submit"
           title="Abmelden"
@@ -83,65 +85,109 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
           Abmelden
           {isPending ? <FaSpinner className="animate-spin" /> : <FaMinus />}
         </Button>
-      ) : doesCurrentUserSatisfyRequirements ? (
-        <Button
-          type="submit"
-          title="Für diesen Posten Interesse anmelden"
-          disabled={isPending}
-          variant="primary"
-        >
-          Interesse anmelden
-          {isPending ? <FaSpinner className="animate-spin" /> : <FaPlus />}
-        </Button>
-      ) : (
+      )}
+
+      {!hasCurrentUserAlreadyApplied &&
+        !showDiscordWarning &&
+        doesCurrentUserSatisfyRequirements && (
+          <Button
+            type="submit"
+            title="Für diesen Posten Interesse anmelden"
+            disabled={isPending}
+            variant="primary"
+          >
+            Interesse anmelden
+            {isPending ? <FaSpinner className="animate-spin" /> : <FaPlus />}
+          </Button>
+        )}
+
+      {!hasCurrentUserAlreadyApplied &&
+        !showDiscordWarning &&
+        !doesCurrentUserSatisfyRequirements && (
+          <Tooltip.Provider delayDuration={0}>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <Button
+                  title="Für diesen Posten Interesse anmelden"
+                  disabled={isPending}
+                  variant="primary"
+                >
+                  Interesse anmelden
+                  {isPending ? (
+                    <FaSpinner className="animate-spin" />
+                  ) : (
+                    <FaPlus />
+                  )}
+                </Button>
+              </Tooltip.Trigger>
+
+              <Tooltip.Portal>
+                <Tooltip.Content
+                  className="p-4 max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
+                  sideOffset={5}
+                >
+                  <div>
+                    <p>
+                      Du erfüllst nicht die Voraussetzungen für diesen Posten.
+                      Du kannst trotzdem Interesse anmelden. Bespreche mit dem
+                      Organisator, was du mitbringen sollst.
+                    </p>
+
+                    {position.requiredVariants.length > 0 && (
+                      <>
+                        <p className="text-sm text-gray-500 mt-4">
+                          Erforderliches Schiff
+                        </p>
+                        {position.requiredVariants.map((requiredVariant) => (
+                          <VariantWithLogo
+                            key={requiredVariant.id}
+                            variant={requiredVariant.variant}
+                            manufacturer={
+                              requiredVariant.variant.series.manufacturer
+                            }
+                            size={32}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </div>
+
+                  <Tooltip.Arrow className="fill-sinister-red-500" />
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+          </Tooltip.Provider>
+        )}
+
+      {!hasCurrentUserAlreadyApplied && showDiscordWarning && (
         <Tooltip.Provider delayDuration={0}>
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
               <Button
                 title="Für diesen Posten Interesse anmelden"
-                disabled={isPending}
+                disabled={true}
                 variant="primary"
               >
                 Interesse anmelden
-                {isPending ? (
-                  <FaSpinner className="animate-spin" />
-                ) : (
-                  <FaPlus />
-                )}
+                <FaPlus />
               </Button>
             </Tooltip.Trigger>
 
-            <Tooltip.Content
-              className="p-4 max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
-              sideOffset={5}
-            >
-              <div>
-                <p>
-                  Du erfüllst nicht die Voraussetzungen für diesen Posten. Du
-                  kannst trotzdem Interesse anmelden. Bespreche mit dem
-                  Organisator, was du mitbringen sollst.
-                </p>
+            <Tooltip.Portal>
+              <Tooltip.Content
+                className="p-4 max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
+                sideOffset={5}
+              >
+                <div>
+                  <p>
+                    Du musst dich erst in Discord bei diesem Event anmelden,
+                    bevor du hier Interesse anmelden kannst.
+                  </p>
+                </div>
 
-                {position.requiredVariants.length > 0 && (
-                  <>
-                    <p className="text-sm text-gray-500 mt-4">
-                      Erforderliches Schiff
-                    </p>
-                    {position.requiredVariants.map((requiredVariant) => (
-                      <VariantWithLogo
-                        key={requiredVariant.id}
-                        variant={requiredVariant.variant}
-                        manufacturer={
-                          requiredVariant.variant.series.manufacturer
-                        }
-                        size={32}
-                      />
-                    ))}
-                  </>
-                )}
-              </div>
-              <Tooltip.Arrow className="fill-sinister-red-500" />
-            </Tooltip.Content>
+                <Tooltip.Arrow className="fill-sinister-red-500" />
+              </Tooltip.Content>
+            </Tooltip.Portal>
           </Tooltip.Root>
         </Tooltip.Provider>
       )}
