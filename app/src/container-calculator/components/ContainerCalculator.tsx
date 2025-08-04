@@ -11,6 +11,7 @@ interface Result {
   result16: number;
   result8: number;
   result4: number;
+  result2: number;
   result1: number;
   leftover: number;
 }
@@ -24,7 +25,6 @@ export const ContainerCalculator = ({ className }: Props) => {
   const [result, setResult] = useState<Result | null>(null);
 
   const handleChange: ChangeEventHandler<HTMLFormElement> = () => {
-    console.log("handleChange");
     if (!formRef.current) return;
     const formData = new FormData(formRef.current);
 
@@ -44,6 +44,9 @@ export const ContainerCalculator = ({ className }: Props) => {
     const max4 = Number.isNaN(parseInt(formData.get("max4") as string, 10))
       ? null
       : parseInt(formData.get("max4") as string, 10);
+    const max2 = Number.isNaN(parseInt(formData.get("max2") as string, 10))
+      ? null
+      : parseInt(formData.get("max2") as string, 10);
     const max1 = Number.isNaN(parseInt(formData.get("max1") as string, 10))
       ? null
       : parseInt(formData.get("max1") as string, 10);
@@ -78,8 +81,14 @@ export const ContainerCalculator = ({ className }: Props) => {
         : Math.floor(leftover8 / 4);
     const leftover4 = leftover8 - result4 * 4;
 
-    const result1 = max1 !== null ? Math.min(leftover4, max1) : leftover4;
-    const leftover1 = leftover4 - result1;
+    const result2 =
+      max2 !== null
+        ? Math.min(Math.floor(leftover4 / 2), max2)
+        : Math.floor(leftover4 / 2);
+    const leftover2 = leftover4 - result2 * 2;
+
+    const result1 = max1 !== null ? Math.min(leftover2, max1) : leftover2;
+    const leftover1 = leftover2 - result1;
 
     setResult({
       result32,
@@ -87,6 +96,7 @@ export const ContainerCalculator = ({ className }: Props) => {
       result16,
       result8,
       result4,
+      result2,
       result1,
       leftover: leftover1,
     });
@@ -115,12 +125,14 @@ export const ContainerCalculator = ({ className }: Props) => {
             <NumberInput name="max24" label="24er Container" hint="optional" />
 
             <NumberInput name="max16" label="16er Container" hint="optional" />
+
+            <NumberInput name="max8" label="8er Container" hint="optional" />
           </div>
 
           <div className="flex-initial w-1/2 flex flex-col gap-4">
-            <NumberInput name="max8" label="8er Container" hint="optional" />
-
             <NumberInput name="max4" label="4er Container" hint="optional" />
+
+            <NumberInput name="max2" label="2er Container" hint="optional" />
 
             <NumberInput name="max1" label="1er Container" hint="optional" />
           </div>
@@ -137,6 +149,7 @@ export const ContainerCalculator = ({ className }: Props) => {
             <li>16er Container: {result.result16}</li>
             <li>8er Container: {result.result8}</li>
             <li>4er Container: {result.result4}</li>
+            <li>2er Container: {result.result2}</li>
             <li>1er Container: {result.result1}</li>
             <li>Verbleibend: {result.leftover}</li>
           </ul>
