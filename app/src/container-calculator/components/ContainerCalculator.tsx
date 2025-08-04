@@ -29,66 +29,86 @@ export const ContainerCalculator = ({ className }: Props) => {
     const formData = new FormData(formRef.current);
 
     const totalScu = parseInt(formData.get("totalScu") as string, 10) || 0;
-    const max32 = Number.isNaN(parseInt(formData.get("max32") as string, 10))
+    const exact32 = Number.isNaN(
+      parseInt(formData.get("exact32") as string, 10),
+    )
       ? null
-      : parseInt(formData.get("max32") as string, 10);
-    const max24 = Number.isNaN(parseInt(formData.get("max24") as string, 10))
+      : parseInt(formData.get("exact32") as string, 10);
+    const exact24 = Number.isNaN(
+      parseInt(formData.get("exact24") as string, 10),
+    )
       ? null
-      : parseInt(formData.get("max24") as string, 10);
-    const max16 = Number.isNaN(parseInt(formData.get("max16") as string, 10))
+      : parseInt(formData.get("exact24") as string, 10);
+    const exact16 = Number.isNaN(
+      parseInt(formData.get("exact16") as string, 10),
+    )
       ? null
-      : parseInt(formData.get("max16") as string, 10);
-    const max8 = Number.isNaN(parseInt(formData.get("max8") as string, 10))
+      : parseInt(formData.get("exact16") as string, 10);
+    const exact8 = Number.isNaN(parseInt(formData.get("exact8") as string, 10))
       ? null
-      : parseInt(formData.get("max8") as string, 10);
-    const max4 = Number.isNaN(parseInt(formData.get("max4") as string, 10))
+      : parseInt(formData.get("exact8") as string, 10);
+    const exact4 = Number.isNaN(parseInt(formData.get("exact4") as string, 10))
       ? null
-      : parseInt(formData.get("max4") as string, 10);
-    const max2 = Number.isNaN(parseInt(formData.get("max2") as string, 10))
+      : parseInt(formData.get("exact4") as string, 10);
+    const exact2 = Number.isNaN(parseInt(formData.get("exact2") as string, 10))
       ? null
-      : parseInt(formData.get("max2") as string, 10);
-    const max1 = Number.isNaN(parseInt(formData.get("max1") as string, 10))
+      : parseInt(formData.get("exact2") as string, 10);
+    const exact1 = Number.isNaN(parseInt(formData.get("exact1") as string, 10))
       ? null
-      : parseInt(formData.get("max1") as string, 10);
+      : parseInt(formData.get("exact1") as string, 10);
 
-    const result32 =
-      max32 !== null
-        ? Math.min(Math.floor(totalScu / 32), max32)
-        : Math.floor(totalScu / 32);
-    const leftover32 = totalScu - result32 * 32;
+    let result32 = exact32 || 0;
+    let result24 = exact24 || 0;
+    let result16 = exact16 || 0;
+    let result8 = exact8 || 0;
+    let result4 = exact4 || 0;
+    let result2 = exact2 || 0;
+    let result1 = exact1 || 0;
 
-    const result24 =
-      max24 !== null
-        ? Math.min(Math.floor(leftover32 / 24), max24)
-        : Math.floor(leftover32 / 24);
-    const leftover24 = leftover32 - result24 * 24;
+    let leftover =
+      totalScu -
+      (result32 * 32 +
+        result24 * 24 +
+        result16 * 16 +
+        result8 * 8 +
+        result4 * 4 +
+        result2 * 2 +
+        result1);
 
-    const result16 =
-      max16 !== null
-        ? Math.min(Math.floor(leftover24 / 16), max16)
-        : Math.floor(leftover24 / 16);
-    const leftover16 = leftover24 - result16 * 16;
+    if (exact32 === null) {
+      result32 = Math.floor(leftover / 32);
+      leftover -= result32 * 32;
+    }
 
-    const result8 =
-      max8 !== null
-        ? Math.min(Math.floor(leftover16 / 8), max8)
-        : Math.floor(leftover16 / 8);
-    const leftover8 = leftover16 - result8 * 8;
+    if (exact24 === null) {
+      result24 = Math.floor(leftover / 24);
+      leftover -= result24 * 24;
+    }
 
-    const result4 =
-      max4 !== null
-        ? Math.min(Math.floor(leftover8 / 4), max4)
-        : Math.floor(leftover8 / 4);
-    const leftover4 = leftover8 - result4 * 4;
+    if (exact16 === null) {
+      result16 = Math.floor(leftover / 16);
+      leftover -= result16 * 16;
+    }
 
-    const result2 =
-      max2 !== null
-        ? Math.min(Math.floor(leftover4 / 2), max2)
-        : Math.floor(leftover4 / 2);
-    const leftover2 = leftover4 - result2 * 2;
+    if (exact8 === null) {
+      result8 = Math.floor(leftover / 8);
+      leftover -= result8 * 8;
+    }
 
-    const result1 = max1 !== null ? Math.min(leftover2, max1) : leftover2;
-    const leftover1 = leftover2 - result1;
+    if (exact4 === null) {
+      result4 = Math.floor(leftover / 4);
+      leftover -= result4 * 4;
+    }
+
+    if (exact2 === null) {
+      result2 = Math.floor(leftover / 2);
+      leftover -= result2 * 2;
+    }
+
+    if (exact1 === null) {
+      result1 = leftover;
+      leftover -= result1;
+    }
 
     setResult({
       result32,
@@ -98,7 +118,7 @@ export const ContainerCalculator = ({ className }: Props) => {
       result4,
       result2,
       result1,
-      leftover: leftover1,
+      leftover: leftover,
     });
   };
 
@@ -120,21 +140,33 @@ export const ContainerCalculator = ({ className }: Props) => {
 
         <div className="flex gap-4">
           <div className="flex-initial w-1/2 flex flex-col gap-4">
-            <NumberInput name="max32" label="32er Container" hint="optional" />
+            <NumberInput
+              name="exact32"
+              label="32er Container"
+              hint="optional"
+            />
 
-            <NumberInput name="max24" label="24er Container" hint="optional" />
+            <NumberInput
+              name="exact24"
+              label="24er Container"
+              hint="optional"
+            />
 
-            <NumberInput name="max16" label="16er Container" hint="optional" />
+            <NumberInput
+              name="exact16"
+              label="16er Container"
+              hint="optional"
+            />
 
-            <NumberInput name="max8" label="8er Container" hint="optional" />
+            <NumberInput name="exact8" label="8er Container" hint="optional" />
           </div>
 
           <div className="flex-initial w-1/2 flex flex-col gap-4">
-            <NumberInput name="max4" label="4er Container" hint="optional" />
+            <NumberInput name="exact4" label="4er Container" hint="optional" />
 
-            <NumberInput name="max2" label="2er Container" hint="optional" />
+            <NumberInput name="exact2" label="2er Container" hint="optional" />
 
-            <NumberInput name="max1" label="1er Container" hint="optional" />
+            <NumberInput name="exact1" label="1er Container" hint="optional" />
           </div>
         </div>
       </form>
