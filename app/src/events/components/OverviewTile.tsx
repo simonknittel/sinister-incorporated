@@ -35,7 +35,7 @@ export const OverviewTile = ({ className, event }: Props) => {
         />
       )}
 
-      <div className="p-4 lg:p-8">
+      <div className="p-4">
         <h1 className="font-bold">{event.name}</h1>
 
         {event.description && (

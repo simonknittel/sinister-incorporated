@@ -81,10 +81,7 @@ const FleetSummary = async ({ className, event }: FleetSummaryProps) => {
 
   return (
     <section
-      className={clsx(
-        "rounded-primary bg-neutral-800/50 p-4 lg:p-8",
-        className,
-      )}
+      className={clsx("rounded-primary bg-neutral-800/50 p-4", className)}
     >
       <h2 className="font-bold">Flotte der Teilnehmer</h2>
       <p className="mb-4 text-neutral-500 text-sm">
@@ -141,10 +138,7 @@ const ParticipantsSummary = async ({
 
   return (
     <section
-      className={clsx(
-        "rounded-primary bg-neutral-800/50 p-4 lg:p-8",
-        className,
-      )}
+      className={clsx("rounded-primary bg-neutral-800/50 p-4", className)}
     >
       <h2 className="font-bold">Rollen/Zertifikate der Teilnehmer</h2>
       <p className="mb-4 text-neutral-500 text-sm">
