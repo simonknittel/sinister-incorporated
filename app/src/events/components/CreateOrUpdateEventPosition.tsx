@@ -1,6 +1,8 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Textarea } from "@/common/components/form/Textarea";
+import { TextInput } from "@/common/components/form/TextInput";
 import Modal from "@/common/components/Modal";
 import { Tooltip } from "@/common/components/Tooltip";
 import type {
@@ -175,26 +177,19 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             />
           )}
 
-          <label className="block" htmlFor={nameInputId}>
-            Name
-          </label>
-          <input
+          <TextInput
+            label="Name"
             autoFocus
-            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
             name="name"
             required
-            type="text"
             maxLength={256}
             defaultValue={("position" in props && props.position?.name) || ""}
             id={nameInputId}
             ref={nameInputRef}
           />
 
-          <label className="block mt-4" htmlFor={descriptionInputId}>
-            Beschreibung (optional)
-          </label>
-          <textarea
-            className="p-2 rounded-secondary bg-neutral-900 w-full h-32 mt-2"
+          <Textarea
+            label="Beschreibung (optional)"
             name="description"
             maxLength={512}
             defaultValue={

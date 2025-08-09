@@ -1,6 +1,8 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Select } from "@/common/components/form/Select";
+import { TextInput } from "@/common/components/form/TextInput";
 import Modal from "@/common/components/Modal";
 import { type Manufacturer, type Series, type Variant } from "@prisma/client";
 import { flatten } from "lodash";
@@ -84,12 +86,7 @@ export const AssignShip = ({ className, data = [] }: Props) => {
           <label className="block" htmlFor={selectId}>
             Schiff
           </label>
-          <select
-            name="variantId"
-            autoFocus
-            id={selectId}
-            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
-          >
+          <Select name="variantId" className="mt-2" id={selectId} autoFocus>
             {options.map((option) => (
               <optgroup
                 key={option.manufacturer.id}
@@ -102,17 +99,15 @@ export const AssignShip = ({ className, data = [] }: Props) => {
                 ))}
               </optgroup>
             ))}
-          </select>
+          </Select>
 
-          <label className="mt-4 block" htmlFor={inputId}>
-            Schiffsname
-          </label>
-          <input
+          <TextInput
+            label="Schiffsname"
             name="name"
-            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
+            className="mt-2"
             id={inputId}
+            hint="optional"
           />
-          <p className="mt-2 text-neutral-500">optional</p>
 
           <div className="flex justify-end mt-8">
             <Button type="submit" disabled={isPending}>

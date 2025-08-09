@@ -22,7 +22,7 @@ export const Textarea = (props: Props) => {
 
       <textarea
         className={clsx(
-          "p-2 rounded-secondary bg-neutral-900 w-full h-32 mt-2 align-middle",
+          "p-2 rounded-secondary bg-neutral-900 border border-solid border-neutral-800 w-full h-32 mt-2 align-middle",
           classNameTextarea,
         )}
         id={id}
