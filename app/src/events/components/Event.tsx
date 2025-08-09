@@ -90,7 +90,7 @@ export const Event = async ({ className, event, index }: Props) => {
             {event.name}
           </h2>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1">
             <Badge
               label="Startzeit"
               value={formattedStartTime!}

@@ -97,8 +97,8 @@ export const ParticipantsTab = async ({
   );
 
   return (
-    <div className={clsx("flex flex-col gap-4", className)}>
-      <section className="rounded-primary bg-neutral-800/50 p-4 lg:p-8">
+    <div className={clsx("flex flex-col gap-2", className)}>
+      <section className="rounded-primary bg-neutral-800/50 p-4">
         <h2 className="font-bold mb-2 text-lg">Organisator</h2>
         {resolvedCreatoreCitizen ? (
           <CitizenLink citizen={resolvedCreatoreCitizen} />
@@ -153,7 +153,7 @@ export const ParticipantsTab = async ({
       </section>
 
       {showCreateSilcTransactionButton && (
-        <section className="rounded-primary bg-neutral-800/50 p-4 lg:p-8">
+        <section className="rounded-primary bg-neutral-800/50 p-4">
           <h2 className="font-bold text-lg">SILC-Belohnung</h2>
           <CreateOrUpdateSilcTransaction
             initialReceiverIds={resolvedParticipants.map(
@@ -165,7 +165,7 @@ export const ParticipantsTab = async ({
         </section>
       )}
 
-      <section className="rounded-primary bg-neutral-800/50 p-4 lg:p-8 overflow-auto">
+      <section className="rounded-primary bg-neutral-800/50 p-4 overflow-auto">
         <h2 className="font-bold mb-4 flex items-center gap-2 text-lg">
           Teilnehmer ({sortedResolvedParticipants.length})
           <Tooltip triggerChildren={<FaInfoCircle />}>
@@ -227,21 +227,21 @@ export const ParticipantsTab = async ({
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="flex flex-col gap-4 mt-2">
               {sortedResolvedParticipants.map((resolvedParticipant) => {
                 return (
                   <tr
                     key={resolvedParticipant.citizen.id}
                     className={clsx(
-                      "grid items-center gap-4 rounded-secondary -mx-2",
+                      "grid items-start gap-4 rounded-secondary -mx-2",
                       GRID_COLS,
                     )}
                   >
-                    <td className="h-full min-h-14">
+                    <td>
                       <Link
                         href={`/app/spynet/citizen/${resolvedParticipant.citizen.id}`}
                         className={clsx(
-                          "hover:bg-neutral-800 block rounded-secondary px-2 h-full",
+                          "hover:bg-neutral-800 rounded-secondary px-2 h-8 flex items-center",
                           {
                             "text-green-500":
                               resolvedParticipant.citizen.id ===
@@ -253,21 +253,19 @@ export const ParticipantsTab = async ({
                         )}
                         prefetch={false}
                       >
-                        <span className="flex items-center h-14">
-                          <span className="overflow-hidden text-ellipsis">
-                            {resolvedParticipant.citizen.handle ? (
-                              <span title={resolvedParticipant.citizen.handle}>
-                                {resolvedParticipant.citizen.handle}
-                              </span>
-                            ) : (
-                              <span className="text-neutral-500 italic">-</span>
-                            )}
-                          </span>
+                        <span className="overflow-hidden text-ellipsis">
+                          {resolvedParticipant.citizen.handle ? (
+                            <span title={resolvedParticipant.citizen.handle}>
+                              {resolvedParticipant.citizen.handle}
+                            </span>
+                          ) : (
+                            <span className="text-neutral-500 italic">-</span>
+                          )}
                         </span>
                       </Link>
                     </td>
 
-                    <td className="h-full min-h-14 flex items-center">
+                    <td className="h-8 flex items-center">
                       {resolvedParticipant.participant?.createdAt ? (
                         <time>
                           {formatDate(
@@ -279,7 +277,7 @@ export const ParticipantsTab = async ({
                       )}
                     </td>
 
-                    <td className="h-full min-h-14 flex items-center">
+                    <td className="min-h-8 flex items-center">
                       <Suspense
                         fallback={
                           <div className="bg-neutral-800 animate-pulse rounded-secondary h-8 w-20" />

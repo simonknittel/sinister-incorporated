@@ -39,7 +39,7 @@ export const RolesCell = async ({
   return (
     <>
       {roles.length > 0 ? (
-        <div className={clsx("flex gap-2", className)}>
+        <div className={clsx("flex gap-1", className)}>
           {roles.map((role) => (
             <SingleRole key={role.id} role={role} />
           ))}

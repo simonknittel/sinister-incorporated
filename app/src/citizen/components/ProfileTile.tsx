@@ -59,7 +59,7 @@ export const ProfileTile = async ({ className }: Props) => {
         <h2 className="font-thin">{name}</h2>
 
         {roles.length > 0 && (
-          <div className="flex gap-2 flex-wrap justify-center">
+          <div className="flex gap-1 flex-wrap justify-center">
             {roles.map((role) => (
               <SingleRole key={role.id} role={role} />
             ))}
