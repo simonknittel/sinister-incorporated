@@ -1,18 +1,13 @@
 "use client";
 
-import { NumberInput } from "@/common/components/form/NumberInput";
 import { Tile } from "@/common/components/Tile";
 import clsx from "clsx";
 import { useRef, useState, type ChangeEventHandler } from "react";
 
-interface Result {
-  result32: number;
-  result24: number;
-  result16: number;
-  result8: number;
-  result4: number;
-  result2: number;
-  result1: number;
+const CONTAINER_SIZES = [32, 24, 16, 8, 4, 2, 1];
+
+export interface ContainerResult {
+  [size: number]: number;
   leftover: number;
 }
 
@@ -21,174 +16,125 @@ interface Props {
 }
 
 export const ContainerCalculator = ({ className }: Props) => {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [result, setResult] = useState<Result | null>(null);
+  const containerFormRef = useRef<HTMLFormElement>(null);
 
-  const handleChange: ChangeEventHandler<HTMLFormElement> = () => {
-    if (!formRef.current) return;
-    const formData = new FormData(formRef.current);
+  const [containerResult, setContainerResult] =
+    useState<ContainerResult | null>(null);
+
+  const handleChangeContainer: ChangeEventHandler<HTMLFormElement> = () => {
+    if (!containerFormRef.current) return;
+    const formData = new FormData(containerFormRef.current);
 
     const totalScu = parseInt(formData.get("totalScu") as string, 10) || 0;
-    const exact32 = Number.isNaN(
-      parseInt(formData.get("exact32") as string, 10),
-    )
-      ? null
-      : parseInt(formData.get("exact32") as string, 10);
-    const exact24 = Number.isNaN(
-      parseInt(formData.get("exact24") as string, 10),
-    )
-      ? null
-      : parseInt(formData.get("exact24") as string, 10);
-    const exact16 = Number.isNaN(
-      parseInt(formData.get("exact16") as string, 10),
-    )
-      ? null
-      : parseInt(formData.get("exact16") as string, 10);
-    const exact8 = Number.isNaN(parseInt(formData.get("exact8") as string, 10))
-      ? null
-      : parseInt(formData.get("exact8") as string, 10);
-    const exact4 = Number.isNaN(parseInt(formData.get("exact4") as string, 10))
-      ? null
-      : parseInt(formData.get("exact4") as string, 10);
-    const exact2 = Number.isNaN(parseInt(formData.get("exact2") as string, 10))
-      ? null
-      : parseInt(formData.get("exact2") as string, 10);
-    const exact1 = Number.isNaN(parseInt(formData.get("exact1") as string, 10))
-      ? null
-      : parseInt(formData.get("exact1") as string, 10);
+    // Parse exact values for each container size
+    const exacts: Record<number, number | null> = {};
+    CONTAINER_SIZES.forEach((size) => {
+      const val = parseInt(formData.get(`exact${size}`) as string, 10);
+      exacts[size] = Number.isNaN(val) ? null : val;
+    });
 
-    let result32 = exact32 || 0;
-    let result24 = exact24 || 0;
-    let result16 = exact16 || 0;
-    let result8 = exact8 || 0;
-    let result4 = exact4 || 0;
-    let result2 = exact2 || 0;
-    let result1 = exact1 || 0;
+    // Calculate results
+    const results: Record<number, number> = {};
+    CONTAINER_SIZES.forEach((size) => {
+      results[size] = exacts[size] || 0;
+    });
 
     let leftover =
       totalScu -
-      (result32 * 32 +
-        result24 * 24 +
-        result16 * 16 +
-        result8 * 8 +
-        result4 * 4 +
-        result2 * 2 +
-        result1);
+      CONTAINER_SIZES.reduce((sum, size) => sum + results[size] * size, 0);
 
-    if (exact32 === null) {
-      result32 = Math.floor(leftover / 32);
-      leftover -= result32 * 32;
-    }
-
-    if (exact24 === null) {
-      result24 = Math.floor(leftover / 24);
-      leftover -= result24 * 24;
-    }
-
-    if (exact16 === null) {
-      result16 = Math.floor(leftover / 16);
-      leftover -= result16 * 16;
-    }
-
-    if (exact8 === null) {
-      result8 = Math.floor(leftover / 8);
-      leftover -= result8 * 8;
-    }
-
-    if (exact4 === null) {
-      result4 = Math.floor(leftover / 4);
-      leftover -= result4 * 4;
-    }
-
-    if (exact2 === null) {
-      result2 = Math.floor(leftover / 2);
-      leftover -= result2 * 2;
-    }
-
-    if (exact1 === null) {
-      result1 = leftover;
-      leftover -= result1;
-    }
-
-    setResult({
-      result32,
-      result24,
-      result16,
-      result8,
-      result4,
-      result2,
-      result1,
-      leftover: leftover,
+    CONTAINER_SIZES.forEach((size) => {
+      if (exacts[size] === null) {
+        results[size] = Math.floor(leftover / size);
+        leftover -= results[size] * size;
+      }
     });
+
+    setContainerResult({ ...results, leftover });
   };
 
   return (
-    <Tile
-      heading="Container Calculator"
-      className={clsx("flex flex-col gap-4", className)}
-    >
-      <form ref={formRef} onChange={handleChange}>
-        <h3 className="text-lg font-semibold">Angaben</h3>
+    <>
+      <Tile
+        heading="Container Calculator"
+        className={clsx(className)}
+        childrenClassName="flex flex-col gap-8"
+      >
+        <form
+          ref={containerFormRef}
+          onChange={handleChangeContainer}
+          className="flex flex-col gap-4"
+        >
+          <h3 className="text-xl font-semibold text-sinister-red-500 text-center">
+            Angaben
+          </h3>
 
-        <NumberInput
-          name="totalScu"
-          label="Gesamt SCU"
-          placeholder="0"
-          required
-          autoFocus
-        />
-
-        <div className="flex gap-4">
-          <div className="flex-initial w-1/2 flex flex-col gap-4">
-            <NumberInput
-              name="exact32"
-              label="32er Container"
-              hint="optional"
+          <div className="flex flex-col items-center gap-1">
+            <input
+              type="number"
+              name="totalScu"
+              className="p-2 rounded-secondary bg-neutral-900 border border-solid border-neutral-800 text-3xl w-44 text-center font-black"
+              placeholder="0"
+              autoFocus
+              required
             />
-
-            <NumberInput
-              name="exact24"
-              label="24er Container"
-              hint="optional"
-            />
-
-            <NumberInput
-              name="exact16"
-              label="16er Container"
-              hint="optional"
-            />
-
-            <NumberInput name="exact8" label="8er Container" hint="optional" />
+            <label>Gesamt SCU</label>
           </div>
 
-          <div className="flex-initial w-1/2 flex flex-col gap-4">
-            <NumberInput name="exact4" label="4er Container" hint="optional" />
-
-            <NumberInput name="exact2" label="2er Container" hint="optional" />
-
-            <NumberInput name="exact1" label="1er Container" hint="optional" />
+          <div className="flex flex-wrap gap-4 justify-center">
+            {CONTAINER_SIZES.map((size) => (
+              <div key={size} className="flex flex-col items-center gap-1">
+                <input
+                  type="number"
+                  name={`exact${size}`}
+                  className="p-2 rounded-secondary bg-neutral-900 border border-solid border-neutral-800 text-3xl w-32 text-center font-black"
+                />
+                <label>{size} SCU</label>
+              </div>
+            ))}
           </div>
+        </form>
+
+        <hr className="border-neutral-800" />
+
+        <div className="flex flex-col gap-4">
+          <h3 className="text-xl font-semibold text-sinister-red-500 text-center">
+            Ergebnis
+          </h3>
+
+          {containerResult ? (
+            <ul className="flex flex-wrap gap-4 justify-center">
+              {CONTAINER_SIZES.map((size) => (
+                <li
+                  key={size}
+                  className="flex flex-col items-center gap-1 w-32"
+                >
+                  <p className="text-3xl font-black">{containerResult[size]}</p>
+
+                  <p>{size} SCU</p>
+                </li>
+              ))}
+
+              <li className="flex flex-col items-center gap-1 w-32">
+                <p className="text-3xl font-black">
+                  {containerResult.leftover}
+                </p>
+
+                <p>Verbleibend</p>
+              </li>
+            </ul>
+          ) : (
+            <p className="text-center">
+              Die Gesamt SCU-Menge muss zuerst angegeben werden.
+            </p>
+          )}
         </div>
-      </form>
+      </Tile>
 
-      <div>
-        <h3 className="text-lg font-semibold">Ergebnis</h3>
-
-        {result ? (
-          <ul className="list-disc pl-5">
-            <li>32er Container: {result.result32}</li>
-            <li>24er Container: {result.result24}</li>
-            <li>16er Container: {result.result16}</li>
-            <li>8er Container: {result.result8}</li>
-            <li>4er Container: {result.result4}</li>
-            <li>2er Container: {result.result2}</li>
-            <li>1er Container: {result.result1}</li>
-            <li>Verbleibend: {result.leftover}</li>
-          </ul>
-        ) : (
-          <p className="text-gray-500">Bitte mind. Total SCU ausfüllen.</p>
-        )}
-      </div>
-    </Tile>
+      {/* <ParticipantsSplitter
+        className="mt-4"
+        containerResult={containerResult}
+      /> */}
+    </>
   );
 };

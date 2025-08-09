@@ -13,11 +13,11 @@ export const OpenTasksList = async ({ tasks }: Props) => {
   const authentication = await requireAuthentication();
   const showCreateTask = await authentication.authorize("task", "create");
 
-  const createdBy = Object.groupBy(tasks, (task) =>
-    task.createdById === authentication.session.entity?.id ? "me" : "others",
+  const createdByMe = tasks.filter(
+    (task) => task.createdById === authentication.session.entity?.id,
   );
   const groupedByVisibility = Object.groupBy(
-    createdBy.others || [],
+    tasks || [],
     (task) => task.visibility,
   );
   const groupedByVisibilityAssignment = Object.groupBy(
@@ -39,12 +39,14 @@ export const OpenTasksList = async ({ tasks }: Props) => {
       {showCreateTask && <CreateTask cta className="mx-auto" />}
 
       <div className="flex flex-col gap-6">
-        {createdBy.me && createdBy.me.length > 0 && (
+        {createdByMe && createdByMe.length > 0 && (
           <section>
             <h3 className="font-thin text-2xl">Von mir erstellt</h3>
 
             <div className="flex flex-col gap-[1px] mt-4">
-              {createdBy.me?.map((task) => <Task key={task.id} task={task} />)}
+              {createdByMe.map((task) => (
+                <Task key={task.id} task={task} />
+              ))}
             </div>
           </section>
         )}
