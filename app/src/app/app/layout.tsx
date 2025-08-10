@@ -49,7 +49,7 @@ export default async function AppLayout({ children }: Readonly<Props>) {
                   <DesktopSidebarContainer />
                   {topBarEnabled && <TopBar />}
 
-                  <div className="lg:ml-[26rem] group-data-[navigation-collapsed]/navigation:lg:ml-[6.5rem] group-data-[top-bar-enabled]/top-bar:lg:pt-[5.5rem] min-h-dvh">
+                  <div className="lg:ml-[26rem] group-data-[navigation-collapsed]/navigation:lg:ml-[5.5rem] group-data-[top-bar-enabled]/top-bar:lg:pt-[5.5rem] min-h-dvh">
                     {children}
                   </div>
                 </div>

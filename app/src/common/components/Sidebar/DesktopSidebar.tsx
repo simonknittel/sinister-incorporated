@@ -137,7 +137,7 @@ export const DesktopSidebar = async () => {
           </div>
 
           <nav
-            className="p-4 border-neutral-800 relative"
+            className="p-4 group-data-[navigation-collapsed]/navigation:p-2 border-neutral-800 relative"
             data-red-bar-container
           >
             <ul>

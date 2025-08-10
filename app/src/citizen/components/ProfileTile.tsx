@@ -47,7 +47,7 @@ export const ProfileTile = async ({ className }: Props) => {
     : undefined;
 
   return (
-    <div className="flex flex-col gap-2 items-center">
+    <div className="flex flex-col gap-[2px] items-center">
       <section
         className={clsx(
           className,
@@ -68,7 +68,7 @@ export const ProfileTile = async ({ className }: Props) => {
       </section>
 
       {(showSilcBalance || showPenaltyPoints) && (
-        <div className="flex gap-2 w-full">
+        <div className="flex gap-[2px] w-full">
           {showSilcBalance && (
             <Link
               href={`/app/spynet/citizen/${authentication.session.entity.id}/silc`}

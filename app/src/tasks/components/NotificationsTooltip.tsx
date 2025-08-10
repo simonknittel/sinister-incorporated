@@ -69,7 +69,7 @@ export const NotificationsTooltip = ({ className }: Props) => {
         <Popover.Content sideOffset={4}>
           <form
             onSubmit={submitHandler}
-            className="px-6 py-4 rounded-secondary bg-neutral-800"
+            className="p-4 rounded-secondary bg-neutral-800"
           >
             <p>Erhalte ein Benachrichtigung wenn ...</p>
 

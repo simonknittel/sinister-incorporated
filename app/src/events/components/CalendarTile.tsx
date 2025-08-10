@@ -14,11 +14,11 @@ export const CalendarTile = async ({ className }: Props) => {
   return (
     <section
       className={clsx(
-        "flex flex-col gap-4 items-center @7xl:overflow-hidden",
+        "flex flex-col gap-[2px] items-center @7xl:overflow-hidden",
         className,
       )}
     >
-      <div className="w-full flex gap-2 items-center">
+      <div className="w-full flex gap-2 items-center mb-2">
         <h2 className="font-thin text-2xl">Discord-Events</h2>
         <NotificationsTooltip />
       </div>
