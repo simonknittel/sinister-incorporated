@@ -19,7 +19,7 @@ export const TasksDashboardTile = async ({ className }: Props) => {
         <NotificationsTooltip />
       </div>
 
-      <div className="mt-4 flex flex-col gap-[1px]">
+      <div className="mt-2 flex flex-col gap-[1px]">
         {myAssignedTasks.map((task) => (
           <Task key={task.id} task={task} />
         ))}

@@ -56,7 +56,7 @@ export const LineupTab = ({
   );
 
   return (
-    <section className={clsx("flex flex-col gap-4", className)}>
+    <section className={clsx("flex flex-col gap-2", className)}>
       <div className="flex justify-end">
         <h2 className="sr-only">Aufstellung</h2>
 

@@ -56,9 +56,11 @@ export default async function Page({ searchParams }: Props) {
         <div className="flex flex-col gap-6 max-w-[400px] flex-none">
           <TasksDashboardTile />
 
-          <section className="flex flex-col gap-4 flex-none">
-            <h2 className="font-thin text-2xl self-start">Spynet</h2>
+          <section className="flex flex-col gap-[2px] flex-none">
+            <h2 className="font-thin text-2xl self-start mb-2">Spynet</h2>
+
             {showSpynetSearchTile && <SpynetSearchTile />}
+
             <SuspenseWithErrorBoundaryTile>
               <ProfileTile />
             </SuspenseWithErrorBoundaryTile>

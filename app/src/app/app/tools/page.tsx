@@ -25,7 +25,7 @@ export default async function Page() {
         <Hero text="Tools" withGlitch size="md" />
       </div>
 
-      <div className="mt-4 lg:mt-6 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-4">
+      <div className="mt-4 lg:mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
         <article className="background-secondary rounded-primary overflow-hidden">
           <Image
             src={cornerstoneImageBrowserScreenshot}
@@ -34,7 +34,7 @@ export default async function Page() {
             className="aspect-video object-cover object-top"
           />
 
-          <div className="p-4 lg:p-6">
+          <div className="p-4">
             <h2 className="font-bold text-xl">Cornerstone Image Browser</h2>
 
             <p className="mt-2">
@@ -42,7 +42,7 @@ export default async function Page() {
               visuell einfach vergleichen zu können.
             </p>
 
-            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+            <div className="mt-2 flex flex-wrap gap-x-2">
               {cornerstoneImageBrowserItemTypes.map((item) => (
                 <Link
                   key={item.page}
@@ -66,7 +66,7 @@ export default async function Page() {
               className="aspect-video object-cover object-top"
             />
 
-            <div className="p-4 lg:p-6">
+            <div className="p-4">
               <h2 className="font-bold text-xl">Log Analyzer</h2>
 
               <p className="mt-2">
@@ -94,7 +94,7 @@ export default async function Page() {
             className="aspect-video object-cover object-center"
           />
 
-          <div className="p-4 lg:p-6">
+          <div className="p-4">
             <h2 className="font-bold text-xl">Dogfight Trainer</h2>
 
             <p className="mt-2">
@@ -120,7 +120,7 @@ const RedactedTile = () => {
     <div className="background-secondary rounded-primary overflow-hidden">
       <div className="aspect-video bg-black" />
 
-      <div className="p-4 lg:p-6 relative">
+      <div className="p-4 relative">
         <h2 className="font-bold text-xl">Redacted</h2>
 
         <p className="mt-2">
