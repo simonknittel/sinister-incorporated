@@ -8,7 +8,6 @@ export const env = createEnv({
    */
   server: {
     DATABASE_URL: z
-      .string()
       .url()
       .default("postgresql://postgres:admin@localhost:5432/db"),
     NODE_ENV: z.enum(["development", "test", "production"]),
@@ -20,7 +19,7 @@ export const env = createEnv({
       .preprocess(
         // Uses VERCEL_URL if NEXTAUTH_URL is not set, e.g. on Vercel's preview deployments
         (str) => str || `https://${process.env.VERCEL_URL}`,
-        z.string().url(),
+        z.url(),
       )
       .default("http://localhost:3000"),
     DISCORD_CLIENT_ID: z.string(),
@@ -32,9 +31,9 @@ export const env = createEnv({
     R2_ACCESS_KEY_ID: z.string(),
     R2_SECRET_ACCESS_KEY: z.string(),
     R2_BUCKET_NAME: z.string(),
-    UNLEASH_SERVER_API_URL: z.string().url(),
+    UNLEASH_SERVER_API_URL: z.url(),
     UNLEASH_SERVER_API_TOKEN: z.string(),
-    LOKI_HOST: z.string().url().optional(),
+    LOKI_HOST: z.url().optional(),
     LOKI_AUTH_USER: z.string().optional(),
     LOKI_AUTH_PASSWORD: z.string().optional(),
     BASE_URL: z.preprocess(
@@ -73,7 +72,7 @@ export const env = createEnv({
     AWS_ACCESS_KEY_ID: z.string().optional(),
     AWS_SECRET_ACCESS_KEY: z.string().optional(),
     AWS_EVENT_BUS_ARN: z.string().optional(),
-    EMAIL_FUNCTION_ENDPOINT: z.string().url().optional(),
+    EMAIL_FUNCTION_ENDPOINT: z.url().optional(),
     API_CLIENT_KEY: z.string().transform((str) => str.replace(/\\n/g, "\n")),
     API_CLIENT_CERT: z.string().transform((str) => str.replace(/\\n/g, "\n")),
     OPENAI_API_KEY: z.string().optional(),
@@ -96,7 +95,8 @@ export const env = createEnv({
     NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY: z.string(),
     NEXT_PUBLIC_R2_PUBLIC_URL: z.string(),
     NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL: z.string().url(),
-    NEXT_PUBLIC_DOWNLOADS_BASE_URL: z.string().url().optional(),
+    NEXT_PUBLIC_DOWNLOADS_BASE_URL: z.url().optional(),
+    NEXT_PUBLIC_DOWNLOADS_BASE_URL_2: z.url().optional(),
     NEXT_PUBLIC_PUSHER_CHANNELS_APP_ID: z.string().optional(),
     NEXT_PUBLIC_PUSHER_CHANNELS_APP_KEY: z.string().optional(),
     NEXT_PUBLIC_PUSHER_CHANNELS_HOST: z.string().optional(),
@@ -151,6 +151,8 @@ export const env = createEnv({
     OTEL_EXPORTER_OTLP_PROTOCOL: process.env.OTEL_EXPORTER_OTLP_PROTOCOL,
     OTEL_EXPORTER_OTLP_ENDPOINT: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
     NEXT_PUBLIC_DOWNLOADS_BASE_URL: process.env.NEXT_PUBLIC_DOWNLOADS_BASE_URL,
+    NEXT_PUBLIC_DOWNLOADS_BASE_URL_2:
+      process.env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2,
     CRON_SECRET: process.env.CRON_SECRET,
     NEXT_PUBLIC_PUSHER_CHANNELS_APP_ID:
       process.env.NEXT_PUBLIC_PUSHER_CHANNELS_APP_ID,
