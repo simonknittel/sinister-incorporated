@@ -47,7 +47,7 @@ const categories = [
       {
         name: "Onboarding",
         src: srcOnboarding,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/onboarding.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}7gZRw8y93aE3Nky`,
       },
       {
         name: "A1",
@@ -62,12 +62,12 @@ const categories = [
       {
         name: "A3",
         src: srcA3,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/a3.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}XwpDeR2dyyKA8Sm`,
       },
       {
         name: "Member",
         src: srcMember,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/member.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}o5Cydra6B7rtgRK`,
       },
     ],
   },
@@ -78,7 +78,7 @@ const categories = [
       {
         name: "Recon",
         src: srcRecon,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/recon.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}Y9cY4dJ5AyJqKty`,
       },
       {
         name: "Dogfight",
@@ -93,7 +93,7 @@ const categories = [
       {
         name: "Hands On Deck",
         src: srcHandsOnDeck,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/hands-on-deck.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}wxDGfB7LKHG52Q4`,
       },
       {
         name: "Engineering",
@@ -103,7 +103,7 @@ const categories = [
       {
         name: "Boots On The Ground",
         src: srcBootsOnTheGround,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/boots-on-the-ground.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}JgP6Aj8Qgyfg8QH`,
       },
       {
         name: "Captain On The Bridge",
@@ -123,7 +123,7 @@ const categories = [
       {
         name: "Interdict & Disable",
         src: srcInterdictAndDisable,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/interdict&disable.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}xCH6dpcisQGqrgq`,
       },
     ],
   },
@@ -134,7 +134,7 @@ const categories = [
       {
         name: "Leadership",
         src: srcLeadership,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/leadership.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}LCwBaiFBdj3B6fz`,
       },
       {
         name: "Tech & Tactic",
@@ -154,7 +154,7 @@ const categories = [
       {
         name: "Supervisor",
         src: srcSupervisor,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/supervisor.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}jBWF7DYkL9xMHpF`,
       },
       {
         name: "Manager",
@@ -175,17 +175,17 @@ const categories = [
       {
         name: "Mining",
         src: srcMining,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/mining.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}fRXkXeyfSoY5Xws`,
       },
       {
         name: "Trade & Transport",
         src: srcTradeAndTransport,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/trade&transport.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}EXpqq82JoKTpW2a`,
       },
       {
         name: "Scavenger",
         src: srcScavenger,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/scavenger.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}gCaqeqtSjsHxtDx`,
       },
       {
         name: "Marketeer",
