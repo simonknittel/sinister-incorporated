@@ -1,5 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
 import clsx from "clsx";
+import { AiOutlineForm } from "react-icons/ai";
 import {
   FaCog,
   FaHome,
@@ -206,18 +207,6 @@ export const MobileActionBar = async ({ className }: Props) => {
                     </li>
                   )}
 
-                  {showSilc && (
-                    <li>
-                      <Link
-                        href="/app/silc"
-                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
-                      >
-                        <FaPiggyBank className="text-neutral-500" />
-                        SILC
-                      </Link>
-                    </li>
-                  )}
-
                   {showPenaltyPoints && (
                     <li>
                       <Link
@@ -250,6 +239,34 @@ export const MobileActionBar = async ({ className }: Props) => {
                     </Link>
                   </li>
                 </ul>
+
+                <div className="mt-4">
+                  <p className="ml-4 text-neutral-500 mt-4">Economics</p>
+
+                  <ul>
+                    <li>
+                      <Link
+                        href="https://forms.gle/mNnrAA6mHF3sh3mm9"
+                        className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
+                      >
+                        <AiOutlineForm className="text-neutral-500" />
+                        SILO-Anfrage
+                      </Link>
+                    </li>
+
+                    {showSilc && (
+                      <li>
+                        <Link
+                          href="/app/silc"
+                          className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
+                        >
+                          <FaPiggyBank className="text-neutral-500" />
+                          SILC
+                        </Link>
+                      </li>
+                    )}
+                  </ul>
+                </div>
 
                 {showSpynetAdmin && (
                   <div className="mt-4">

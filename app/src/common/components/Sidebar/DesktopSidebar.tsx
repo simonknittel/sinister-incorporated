@@ -6,6 +6,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
+import { AiOutlineForm } from "react-icons/ai";
 import {
   FaCog,
   FaHome,
@@ -185,14 +186,6 @@ export const DesktopSidebar = async () => {
                 />
               )}
 
-              {showSilc && (
-                <NavigationItem
-                  href="/app/silc"
-                  label="SILC"
-                  icon={<FaPiggyBank />}
-                />
-              )}
-
               {showPenaltyPoints && (
                 <NavigationItem
                   href="/app/penalty-points"
@@ -212,7 +205,29 @@ export const DesktopSidebar = async () => {
                 label="Changelog"
                 icon={<FaCodePullRequest />}
               />
+
+              <NavigationItem
+                href="/app/documents"
+                label="Dokumente"
+                icon={<IoDocuments />}
+              />
             </ul>
+
+            <NavigationSection heading="Economics">
+              <NavigationItem
+                href="https://forms.gle/mNnrAA6mHF3sh3mm9"
+                label="SILO-Anfrage"
+                icon={<AiOutlineForm />}
+              />
+
+              {showSilc && (
+                <NavigationItem
+                  href="/app/silc"
+                  label="SILC"
+                  icon={<FaPiggyBank />}
+                />
+              )}
+            </NavigationSection>
 
             {showSpynetAdmin && (
               <NavigationSection heading="Spynet">
