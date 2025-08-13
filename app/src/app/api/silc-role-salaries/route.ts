@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
     revalidatePath("/app/silc");
     revalidatePath("/app/silc/transactions");
     revalidatePath("/app/dashboard");
+    revalidatePath("/app/spynet/citizen/[id]/silc");
 
     return NextResponse.json({ success: "ok" });
   } catch (error) {
