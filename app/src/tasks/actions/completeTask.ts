@@ -162,6 +162,7 @@ export const completeTask = async (formData: FormData) => {
       revalidatePath("/app/silc");
       revalidatePath("/app/silc/transactions");
       revalidatePath("/app/dashboard");
+      revalidatePath("/app/spynet/citizen/[id]/silc");
     }
 
     if (task.repeatable && task.repeatable > 1) {

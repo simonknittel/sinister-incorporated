@@ -62,35 +62,44 @@ export const getSilcTransactionsOfAllCitizens = cache(
     )
       forbidden();
 
-    return await prisma.silcTransaction.findMany({
-      where: {
-        deletedAt: null,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-      include: {
-        receiver: {
-          select: {
-            id: true,
-            handle: true,
-          },
-        },
-        createdBy: {
-          select: {
-            id: true,
-            handle: true,
-          },
-        },
-        updatedBy: {
-          select: {
-            id: true,
-            handle: true,
-          },
-        },
-      },
-    });
+    return await getSilcTransactionsOfAllCitizensWithoutAuthorization();
   }),
+);
+
+export const getSilcTransactionsOfAllCitizensWithoutAuthorization = cache(
+  withTrace(
+    "getSilcTransactionsOfAllCitizensWithoutAuthorization",
+    async () => {
+      return await prisma.silcTransaction.findMany({
+        where: {
+          deletedAt: null,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        include: {
+          receiver: {
+            select: {
+              id: true,
+              handle: true,
+            },
+          },
+          createdBy: {
+            select: {
+              id: true,
+              handle: true,
+            },
+          },
+          updatedBy: {
+            select: {
+              id: true,
+              handle: true,
+            },
+          },
+        },
+      });
+    },
+  ),
 );
 
 export const getSilcTransactionsOfCitizen = cache(
