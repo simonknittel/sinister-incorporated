@@ -33,7 +33,7 @@ export const App = ({
         className="aspect-video object-cover object-top grayscale group-hover:grayscale-0 group-focus-visible:grayscale-0 transition"
       />
 
-      <div className="p-4 flex flex-col gap-2">
+      <div className="p-2 sm:p-4 flex flex-col gap-2">
         <h2 className="font-bold">{name}</h2>
 
         {description && (
