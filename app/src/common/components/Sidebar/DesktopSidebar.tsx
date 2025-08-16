@@ -6,14 +6,13 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
-import { AiOutlineForm } from "react-icons/ai";
+import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
 import {
   FaCog,
   FaHome,
   FaLock,
   FaPiggyBank,
   FaTable,
-  FaTools,
   FaUsers,
 } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
@@ -47,6 +46,18 @@ export const DesktopSidebar = async () => {
       {
         key: "flowId",
         value: "economic",
+      },
+    ])) ||
+    (await authentication.authorize("career", "read", [
+      {
+        key: "flowId",
+        value: "management",
+      },
+    ])) ||
+    (await authentication.authorize("career", "read", [
+      {
+        key: "flowId",
+        value: "team",
       },
     ]));
 
@@ -144,6 +155,12 @@ export const DesktopSidebar = async () => {
             <ul>
               <NavigationItem href="/app" label="Dashboard" icon={<FaHome />} />
 
+              <NavigationItem
+                href="/app/apps"
+                label="Apps"
+                icon={<AiFillAppstore />}
+              />
+
               {showTasks && (
                 <NavigationItem
                   href="/app/tasks"
@@ -193,12 +210,6 @@ export const DesktopSidebar = async () => {
                   label="Strafpunkte"
                 />
               )}
-
-              <NavigationItem
-                href="/app/tools"
-                label="Tools"
-                icon={<FaTools />}
-              />
 
               <NavigationItem
                 href="/app/changelog"

@@ -9,6 +9,7 @@ import {
   type MouseEventHandler,
   type SetStateAction,
 } from "react";
+import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
 import {
   FaArrowLeft,
   FaCog,
@@ -146,6 +147,14 @@ export const CmdK = ({
               setSearch={setSearch}
             />
 
+            <LinkItem
+              label="Apps"
+              icon={<AiFillAppstore />}
+              href="/app/apps"
+              setOpen={setOpen}
+              setSearch={setSearch}
+            />
+
             {showTasks && (
               <LinkItem
                 label="Tasks"
@@ -198,6 +207,14 @@ export const CmdK = ({
               />
             )}
 
+            <LinkItem
+              label="SILO-Anfrage"
+              icon={<AiOutlineForm />}
+              href="https://forms.gle/mNnrAA6mHF3sh3mm9"
+              setOpen={setOpen}
+              setSearch={setSearch}
+            />
+
             {showPenaltyPoints && (
               <LinkItem
                 label="Strafpunkte"
@@ -208,14 +225,6 @@ export const CmdK = ({
                 setSearch={setSearch}
               />
             )}
-
-            <LinkItem
-              label="Tools"
-              icon={<FaTools />}
-              href="/app/tools"
-              setOpen={setOpen}
-              setSearch={setSearch}
-            />
 
             <PageItem
               label="Cornerstone Image Browser"
