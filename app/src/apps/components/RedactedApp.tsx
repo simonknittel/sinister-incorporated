@@ -15,7 +15,7 @@ export const RedactedApp = ({ className }: Props) => {
     >
       <div className="aspect-video bg-black" />
 
-      <div className="p-4 relative flex flex-col gap-2">
+      <div className="p-2 sm:p-4 relative flex flex-col gap-2">
         <h2 className="font-bold">Redacted</h2>
 
         <p className="text-xs text-neutral-400">
