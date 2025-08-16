@@ -28,6 +28,7 @@ import { LoremIpsum } from "lorem-ipsum";
 import { type Metadata } from "next";
 import Image from "next/image";
 import { type ReactNode } from "react";
+import { AiFillAppstore } from "react-icons/ai";
 import { FaCalendar } from "react-icons/fa";
 
 export const metadata: Metadata = {
@@ -48,6 +49,34 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
+        <Day heading="16. August 2025">
+          <DayItem heading="Tools -> Apps" badges={["Änderung"]}>
+            <p>
+              Um der wachsenden Anzahl von Funktionen im S.A.M. gerecht zu
+              werden, gibt es nun unter{" "}
+              <Link
+                href="/app/apps"
+                className="text-interaction-500 hover:text-interaction-300 focus-visible:text-interaction-300"
+              >
+                Apps
+              </Link>{" "}
+              eine Übersicht mit allen Apps und Tools.
+            </p>
+
+            <p>
+              Diese Übersicht ist in der Hauptnavigation hinter dem Icon{" "}
+              <AiFillAppstore className="inline-block text-sinister-red-500 align-middle" />{" "}
+              zu finden.
+            </p>
+
+            <p>
+              Zukünftig wird es möglich sein, dass Nutzer ihre eigene
+              Hauptnavigation individualisieren können, indem sie einzelne Apps
+              dieser hinzufügen oder entfernen können.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="25. Juli 2025">
           <DayItem heading="Teamübersicht" badges={["Karriere", "Neu"]}>
             <p>

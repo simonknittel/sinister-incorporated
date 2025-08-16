@@ -1,13 +1,12 @@
 import { requireAuthentication } from "@/auth/server";
 import clsx from "clsx";
-import { AiOutlineForm } from "react-icons/ai";
+import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
 import {
   FaCog,
   FaHome,
   FaLock,
   FaPiggyBank,
   FaTable,
-  FaTools,
   FaUsers,
 } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
@@ -44,6 +43,18 @@ export const MobileActionBar = async ({ className }: Props) => {
       {
         key: "flowId",
         value: "economic",
+      },
+    ])) ||
+    (await authentication.authorize("career", "read", [
+      {
+        key: "flowId",
+        value: "management",
+      },
+    ])) ||
+    (await authentication.authorize("career", "read", [
+      {
+        key: "flowId",
+        value: "team",
       },
     ]));
   const hasCitizenRead = await authentication.authorize("citizen", "read");
@@ -147,6 +158,16 @@ export const MobileActionBar = async ({ className }: Props) => {
                     </Link>
                   </li>
 
+                  <li>
+                    <Link
+                      href="/app/apps"
+                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
+                    >
+                      <AiFillAppstore className="text-neutral-500" />
+                      Apps
+                    </Link>
+                  </li>
+
                   {showTasks && (
                     <li>
                       <Link
@@ -218,16 +239,6 @@ export const MobileActionBar = async ({ className }: Props) => {
                       </Link>
                     </li>
                   )}
-
-                  <li>
-                    <Link
-                      href="/app/tools"
-                      className="flex gap-2 items-center p-4 active:bg-neutral-700 rounded-secondary"
-                    >
-                      <FaTools className="text-neutral-500" />
-                      Tools
-                    </Link>
-                  </li>
 
                   <li>
                     <Link
