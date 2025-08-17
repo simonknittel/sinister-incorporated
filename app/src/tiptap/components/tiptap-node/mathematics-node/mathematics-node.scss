@@ -1,0 +1,41 @@
+.tiptap.ProseMirror {
+  --tiptap-mathematics-bg-color: var(--tt-gray-light-a-200);
+  --tiptap-mathematics-border-color: var(--tt-brand-color-500);
+
+  .dark & {
+    --tiptap-mathematics-bg-color: var(--tt-gray-dark-a-200);
+    --tiptap-mathematics-border-color: var(--tt-brand-color-400);
+  }
+}
+
+/* =====================
+     Mathematics
+     ===================== */
+.tiptap.ProseMirror {
+  .Tiptap-mathematics-editor {
+    padding: 0 0.25rem;
+    margin: 0 0.25rem;
+    border: 1px solid var(--tiptap-mathematics-border-color);
+    font-family: monospace;
+    font-size: 0.875rem;
+  }
+
+  .Tiptap-mathematics-render {
+    padding: 0 0.25rem;
+
+    &--editable {
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: var(--tiptap-mathematics-bg-color);
+      }
+    }
+  }
+
+  .Tiptap-mathematics-editor,
+  .Tiptap-mathematics-render {
+    border-radius: var(--tt-radius-xs);
+    display: inline-block;
+  }
+}
