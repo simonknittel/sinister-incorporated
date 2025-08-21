@@ -1,6 +1,6 @@
 import { requireAuthentication } from "@/auth/server";
+import Avatar from "@/common/components/Avatar";
 import clsx from "clsx";
-import Avatar from "../Avatar";
 import { LogoutButton } from "../LogoutButton";
 
 interface Props {

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Link } from "./Link";
+import { Link } from "../../common/components/Link";
 
 interface Props {
   className?: string;

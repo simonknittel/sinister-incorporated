@@ -1,5 +1,4 @@
 import { authenticate } from "@/auth/server";
-import { Footer } from "@/common/components/Footer";
 import { Hero } from "@/common/components/Hero";
 import { LoginButtons } from "@/common/components/LoginButtons";
 import Note from "@/common/components/Note";
@@ -8,6 +7,7 @@ import {
   searchParamsNextjsToURLSearchParams,
   type NextjsSearchParams,
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
+import { Footer } from "@/shell/components/Footer";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 import { authOptions } from "../auth/server/auth";

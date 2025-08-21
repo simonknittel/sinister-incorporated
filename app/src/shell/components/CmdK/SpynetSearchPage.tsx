@@ -1,11 +1,9 @@
 import { env } from "@/env";
 import { Command } from "cmdk";
 import { debounce } from "lodash";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { type Hit } from "../../../spynet/components/SpynetSearchTile/Search";
-import { Hero } from "../Hero";
 import { SpynetSearchResultEntry } from "./SpynetSearchResultEntry";
 
 const fetcher = async (key: string) => {
@@ -30,7 +28,6 @@ interface Props {
 
 export const SpynetSearchPage = ({ search, onSelect }: Props) => {
   const [debouncedSearch, setDebouncedSearch] = useState(search);
-  const router = useRouter();
 
   const handleSearch = (value: string) => {
     setDebouncedSearch(value);
@@ -50,8 +47,6 @@ export const SpynetSearchPage = ({ search, onSelect }: Props) => {
   useEffect(() => {
     debouncedHandleSearch(search);
   }, [debouncedHandleSearch, search]);
-
-  const showDogfightTrainer = !isValidating && data && /knebel/i.exec(search);
 
   return (
     <Command.Group
@@ -74,24 +69,6 @@ export const SpynetSearchPage = ({ search, onSelect }: Props) => {
         ))
       ) : (
         <Command.Item disabled>Keine Ergebnisse</Command.Item>
-      )}
-
-      {showDogfightTrainer && (
-        <Command.Item
-          onSelect={() => {
-            router.push(
-              "https://sam.sinister-incorporated.de/dogfight-trainer",
-            );
-          }}
-        >
-          <Hero
-            text="Dogfight Trainer"
-            size="md"
-            asSpan
-            withGlitch
-            className="mx-auto"
-          />
-        </Command.Item>
       )}
     </Command.Group>
   );

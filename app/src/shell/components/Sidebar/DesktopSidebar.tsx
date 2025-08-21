@@ -1,4 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
+import { Link } from "@/common/components/Link";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import {
   cloneElement,
@@ -23,7 +24,6 @@ import { RxActivityLog } from "react-icons/rx";
 import { TbMilitaryRank } from "react-icons/tb";
 import { CmdKLoader } from "../CmdK/CmdKLoader";
 import { Footer } from "../Footer";
-import { Link } from "../Link";
 import { Account } from "./Account";
 import { CollapseToggle } from "./CollapseToggle";
 import { RedBar } from "./RedBar";

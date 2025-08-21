@@ -1,6 +1,6 @@
-import { Footer } from "@/common/components/Footer";
 import { Link } from "@/common/components/Link";
 import { RichText } from "@/common/components/RichText";
+import { Footer } from "@/shell/components/Footer";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

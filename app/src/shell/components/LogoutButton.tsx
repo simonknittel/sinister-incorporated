@@ -4,13 +4,13 @@ import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { RiLogoutCircleRLine } from "react-icons/ri";
-import Button from "../Button";
+import Button from "../../common/components/Button";
 
 interface Props {
   readonly className?: string;
 }
 
-export const Logout = ({ className }: Props) => {
+export const LogoutButton = ({ className }: Props) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleClick = async () => {
@@ -22,14 +22,13 @@ export const Logout = ({ className }: Props) => {
 
   return (
     <Button
-      type="button"
-      variant="secondary"
       onClick={() => void handleClick()}
+      variant="secondary"
       title="Abmelden"
+      iconOnly={true}
       disabled={isLoggingOut}
       className={className}
     >
-      Abmelden
       {isLoggingOut ? (
         <FaSpinner className="animate-spin" />
       ) : (

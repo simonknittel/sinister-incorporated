@@ -7,10 +7,10 @@ import {
 } from "@/auth/components/RequestConfirmationEmail";
 import { authenticate } from "@/auth/server";
 import { requiresEmailConfirmation } from "@/auth/utils/emailConfirmation";
-import { Footer } from "@/common/components/Footer";
 import { Link } from "@/common/components/Link";
 import type { NextjsSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { log } from "@/logging";
+import { Footer } from "@/shell/components/Footer";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
