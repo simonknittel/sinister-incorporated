@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { Select } from "@/common/components/form/Select";
 import { TextInput } from "@/common/components/form/TextInput";
 import Modal from "@/common/components/Modal";
@@ -110,10 +111,10 @@ export const AssignShip = ({ className, data = [] }: Props) => {
           />
 
           <div className="flex justify-end mt-8">
-            <Button type="submit" disabled={isPending}>
+            <Button2 type="submit" disabled={isPending}>
               {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
               Hinzufügen
-            </Button>
+            </Button2>
           </div>
         </form>
       </Modal>

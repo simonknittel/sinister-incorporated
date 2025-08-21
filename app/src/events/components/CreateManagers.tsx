@@ -2,6 +2,7 @@
 
 import { CitizenInput } from "@/citizen/components/CitizenInput";
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Modal from "@/common/components/Modal";
 import type { Event } from "@prisma/client";
 import clsx from "clsx";
@@ -74,14 +75,14 @@ export const CreateManagers = (props: Props) => {
           <CitizenInput name="managerId" multiple autoFocus />
 
           <div className="flex flex-col gap-2 mt-4">
-            <Button type="submit" disabled={submitIsPending}>
+            <Button2 type="submit" disabled={submitIsPending}>
               {submitIsPending ? (
                 <FaSpinner className="animate-spin" />
               ) : (
                 <FaSave />
               )}
               Speichern
-            </Button>
+            </Button2>
           </div>
         </form>
       </Modal>

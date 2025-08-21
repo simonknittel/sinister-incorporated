@@ -3,6 +3,7 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { CitizenInput } from "@/citizen/components/CitizenInput";
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { DateTimeInput } from "@/common/components/form/DateTimeInput";
 import { NumberInput } from "@/common/components/form/NumberInput";
 import { RadioGroup } from "@/common/components/form/RadioGroup";
@@ -85,7 +86,7 @@ export const CreateTask = ({ className, cta }: Props) => {
 
   return (
     <>
-      <Button
+      <Button2
         onClick={() => setIsOpen(true)}
         variant={cta ? "primary" : "secondary"}
         className={clsx(className)}
@@ -93,7 +94,7 @@ export const CreateTask = ({ className, cta }: Props) => {
       >
         <span className="hidden md:inline">Task erstellen</span>
         <FaPlus />
-      </Button>
+      </Button2>
 
       <Modal
         isOpen={isOpen}

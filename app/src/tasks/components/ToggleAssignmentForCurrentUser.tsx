@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { SingleRole } from "@/roles/components/SingleRole";
 import {
   TaskVisibility,
@@ -84,7 +84,7 @@ export const ToggleAssignmentForCurrentUser = ({
     (!isCurrentUserAssigned && !doesCurrentUserSatisfyRequirements);
 
   const button = (
-    <Button disabled={disabled} variant="primary">
+    <Button2 disabled={disabled}>
       {isCurrentUserAssigned ? "Aufgeben" : "Annehmen"}
       {isPending ? (
         <FaSpinner className="animate-spin" />
@@ -93,7 +93,7 @@ export const ToggleAssignmentForCurrentUser = ({
       ) : (
         <FaPlus />
       )}
-    </Button>
+    </Button2>
   );
 
   return (

@@ -29,7 +29,7 @@ export default async function Page() {
         {!(await getUnleashFlag("DisableAlgolia")) && <SpynetSearchTile />}
 
         {(showCreateCitizen || showCreateOrganization) && (
-          <div className="flex gap-4 justify-center mt-4">
+          <div className="flex gap-2 justify-center mt-4">
             {showCreateCitizen && <CreateCitizen />}
 
             {showCreateOrganization && <CreateOrganization />}

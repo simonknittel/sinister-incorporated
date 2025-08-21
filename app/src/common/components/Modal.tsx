@@ -42,7 +42,7 @@ export default function Modal({
         )}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="px-4 py-4 lg:px-8 lg:py-4 border-b border-white/5 flex justify-between items-center">
+        <div className="px-4 py-4 lg:py-4 border-b border-white/5 flex justify-between items-center">
           <span className="text-xl font-bold">{heading}</span>
 
           <button
@@ -54,7 +54,7 @@ export default function Modal({
           </button>
         </div>
 
-        <div className="p-4 lg:p-8">{children}</div>
+        <div className="p-4">{children}</div>
       </div>
     </div>,
     document.body,

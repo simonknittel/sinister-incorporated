@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Modal from "@/common/components/Modal";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
@@ -51,13 +52,13 @@ export const CreateOrganization = () => {
 
   return (
     <>
-      <Button
+      <Button2
         variant="secondary"
         onClick={() => setIsOpen(true)}
         title="Neue Organisation anlegen"
       >
         <FaPlus /> Organisation
-      </Button>
+      </Button2>
 
       <Modal
         isOpen={isOpen}

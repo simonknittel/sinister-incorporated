@@ -3,6 +3,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import { Tooltip } from "@/common/components/Tooltip";
 import { useLocalStorage } from "@uidotdev/usehooks";
@@ -267,10 +268,9 @@ export const LogAnalyzer = ({ className }: Props) => {
         <h1 className="text-xl font-bold leading-tight">Log Analyzer</h1>
 
         <div>
-          <Button
+          <Button2
             type="button"
             onClick={handleNewDirectorySelect}
-            variant="primary"
             disabled={isPending}
             className="lg:ml-auto"
           >
@@ -280,7 +280,7 @@ export const LogAnalyzer = ({ className }: Props) => {
               <FaFileArrowUp />
             )}
             Ordner auswählen
-          </Button>
+          </Button2>
 
           <Button
             type="button"
@@ -394,7 +394,7 @@ export const LogAnalyzer = ({ className }: Props) => {
           </div>
         </>
       ) : (
-        <div className="mt-4 p-8 background-secondary rounded-primary overflow-auto flex flex-col gap-2">
+        <div className="mt-4 p-4 background-secondary rounded-primary overflow-auto flex flex-col gap-2">
           <p className="text-neutral-500">Anleitung</p>
           <p>Wähle den Ordner mit deiner Star Citizen-Installation aus.</p>
 

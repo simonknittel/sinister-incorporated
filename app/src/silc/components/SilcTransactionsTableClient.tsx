@@ -51,7 +51,7 @@ export const SilcTransactionsTableClient = ({
         header: "Datum",
         id: "createdAt",
         cell: (row) => (
-          <span className="flex items-center h-10 whitespace-nowrap">
+          <span className="flex items-center h-8 whitespace-nowrap">
             {formatDate(row.getValue())}
           </span>
         ),
@@ -214,7 +214,7 @@ export const SilcTransactionsTableClient = ({
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className="overflow-hidden flex items-center h-10"
+                  className="overflow-hidden flex items-center h-8"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
