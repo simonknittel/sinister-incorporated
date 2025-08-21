@@ -1,7 +1,7 @@
 import { requireAuthentication } from "@/auth/server";
+import Avatar from "@/common/components/Avatar";
+import { Popover } from "@/common/components/Popover";
 import clsx from "clsx";
-import Avatar from "../Avatar";
-import { Popover } from "../Popover";
 import { Logout } from "./Logout";
 
 interface Props {

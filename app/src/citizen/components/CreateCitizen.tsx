@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Modal from "@/common/components/Modal";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
@@ -49,13 +50,13 @@ export const CreateCitizen = () => {
 
   return (
     <>
-      <Button
+      <Button2
         variant="secondary"
         onClick={() => setIsOpen(true)}
         title="Neuen Citizen anlegen"
       >
         <FaPlus /> Citizen
-      </Button>
+      </Button2>
 
       <Modal
         isOpen={isOpen}

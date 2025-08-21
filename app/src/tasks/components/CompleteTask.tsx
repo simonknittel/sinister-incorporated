@@ -2,6 +2,7 @@
 
 import { CitizenInput } from "@/citizen/components/CitizenInput";
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
 import { TaskRewardType, type Task, type TaskAssignment } from "@prisma/client";
@@ -61,17 +62,14 @@ export const CompleteTask = ({ className, task }: Props) => {
 
   return (
     <>
-      <Button
+      <Button2
         variant="secondary"
         onClick={handleClick}
         title="Task abschließen"
-        className={clsx(
-          "text-sinister-red-500 hover:text-sinister-red-300 flex items-center px-2",
-          className,
-        )}
+        className={clsx(className)}
       >
         Abschließen <FaCheck />
-      </Button>
+      </Button2>
 
       <Modal
         isOpen={isOpen}

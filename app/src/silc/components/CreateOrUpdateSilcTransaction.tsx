@@ -2,6 +2,7 @@
 
 import { CitizenInput } from "@/citizen/components/CitizenInput";
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { NumberInput } from "@/common/components/form/NumberInput";
 import { Textarea } from "@/common/components/form/Textarea";
 import Modal from "@/common/components/Modal";
@@ -82,7 +83,7 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
           <FaPen />
         </Button>
       ) : (
-        <Button
+        <Button2
           onClick={() => setIsOpen(true)}
           variant="secondary"
           className={clsx(props.className)}
@@ -90,7 +91,7 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
         >
           <span className="hidden md:inline">Transaktion erstellen</span>
           <FaPlus />
-        </Button>
+        </Button2>
       )}
 
       <Modal
@@ -163,10 +164,10 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
           />
 
           <div className="flex flex-col gap-2 mt-4">
-            <Button type="submit" disabled={isPending}>
+            <Button2 type="submit" disabled={isPending}>
               {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
               Speichern
-            </Button>
+            </Button2>
 
             {!("transaction" in props) && (
               <Button

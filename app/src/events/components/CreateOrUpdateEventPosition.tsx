@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { Textarea } from "@/common/components/form/Textarea";
 import { TextInput } from "@/common/components/form/TextInput";
 import Modal from "@/common/components/Modal";
@@ -108,7 +109,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
   return (
     <>
       {"eventId" in props && !("parentPositionId" in props) && (
-        <Button
+        <Button2
           onClick={handleClick}
           variant="primary"
           className={clsx(props.className)}
@@ -116,7 +117,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
         >
           <span className="hidden md:inline">Hinzufügen</span>
           {isOpen ? <FaSpinner className="animate-spin" /> : <FaPlus />}
-        </Button>
+        </Button2>
       )}
 
       {"eventId" in props && "parentPositionId" in props && (
@@ -211,10 +212,10 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
           />
 
           <div className="flex flex-col gap-2 mt-8">
-            <Button type="submit" disabled={isPending}>
+            <Button2 type="submit" disabled={isPending}>
               {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
               Speichern
-            </Button>
+            </Button2>
 
             {"eventId" in props && (
               <Button
@@ -396,7 +397,7 @@ const RequiredVariants = ({
         </div>
       ))}
 
-      <Button
+      <Button2
         onClick={handleCreate}
         type="button"
         variant="secondary"
@@ -407,7 +408,7 @@ const RequiredVariants = ({
       >
         <FaPlus />
         {items.length > 0 ? "Alternative hinzufügen" : "Hinzufügen"}
-      </Button>
+      </Button2>
 
       {items
         .filter((item) => item !== "-")

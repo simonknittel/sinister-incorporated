@@ -3,13 +3,13 @@ import { SessionProviderContainer } from "@/auth/components/SessionProviderConta
 import { authenticatePage } from "@/auth/server";
 import ImpersonationBannerContainer from "@/common/components/ImpersonationBannerContainer";
 import QueryClientProviderContainer from "@/common/components/QueryClientProviderContainer";
-import { DesktopSidebarContainer } from "@/common/components/Sidebar/DesktopSidebarContainer";
-import { MobileActionBarContainer } from "@/common/components/Sidebar/MobileActionBarContainer";
-import { TopBar } from "@/common/components/TopBar";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { env } from "@/env";
 import { BeamsProvider } from "@/pusher/components/BeamsContext";
 import { ChannelsProvider } from "@/pusher/components/ChannelsContext";
+import { DesktopSidebarContainer } from "@/shell/components/Sidebar/DesktopSidebarContainer";
+import { MobileActionBarContainer } from "@/shell/components/Sidebar/MobileActionBarContainer";
+import { TopBar } from "@/shell/components/TopBar";
 import { TRPCReactProvider } from "@/trpc/react";
 import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";

@@ -20,18 +20,13 @@ export const SilcStatistics = async ({ className }: Props) => {
     totalSilc * Number.parseInt(auecConversionRateSetting?.value || "1", 10);
 
   return (
-    <section
-      className={clsx(
-        "rounded-primary bg-neutral-800/50 flex flex-wrap justify-evenly gap-4 p-4",
-        className,
-      )}
-    >
-      <div className="flex flex-col items-center">
+    <section className={clsx("flex flex-wrap gap-[2px]", className)}>
+      <div className="flex-1 rounded-primary bg-neutral-800/50 p-4 flex flex-col items-center">
         <span className="font-black text-4xl">{totalSilc}</span>
         <p className="text-neutral-500">SILC im Umlauf</p>
       </div>
 
-      <div className="flex flex-col items-center">
+      <div className="flex-1 rounded-primary bg-neutral-800/50 p-4 flex flex-col items-center">
         <span className="font-black text-4xl">
           {totalAuec.toLocaleString("de-de")}
         </span>

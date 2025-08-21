@@ -1,4 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
+import { Link } from "@/common/components/Link";
 import clsx from "clsx";
 import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
 import {
@@ -16,7 +17,6 @@ import { RiSpyFill } from "react-icons/ri";
 import { RxActivityLog } from "react-icons/rx";
 import { TbMilitaryRank } from "react-icons/tb";
 import { Footer } from "../Footer";
-import { Link } from "../Link";
 import { Account } from "./Account";
 import { MobileActionBarFlyout } from "./MobileActionBarFlyout";
 import { RedBar } from "./RedBar";

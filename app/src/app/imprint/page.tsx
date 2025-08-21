@@ -1,5 +1,5 @@
-import { Footer } from "@/common/components/Footer";
 import { Wip } from "@/common/components/Wip";
+import { Footer } from "@/shell/components/Footer";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

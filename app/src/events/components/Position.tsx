@@ -241,7 +241,7 @@ export const Position = ({
           </div>
 
           {(showActions || showManage) && (
-            <div className="flex flex-row-reverse justify-between border-t border-white/10 p-4">
+            <div className="flex flex-row-reverse justify-between border-t border-white/10 p-2">
               <div className="justify-self-end">
                 <ToggleEventPositionApplicationForCurrentUser
                   position={position}

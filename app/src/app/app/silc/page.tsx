@@ -15,7 +15,7 @@ export default async function Page() {
 
   return (
     <Template>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-[2px]">
         <SuspenseWithErrorBoundaryTile>
           <SilcStatistics />
         </SuspenseWithErrorBoundaryTile>

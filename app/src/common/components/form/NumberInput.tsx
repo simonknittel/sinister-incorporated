@@ -23,7 +23,7 @@ export const NumberInput = (props: Props) => {
 
       <input
         type="number"
-        className="p-2 rounded-secondary bg-neutral-900 border border-solid border-neutral-800 w-full"
+        className="p-2 rounded-secondary bg-neutral-900 border border-solid border-neutral-800 w-full focus-visible:outline outline-2 outline-interaction-700 outline-offset-4"
         id={id}
         {...rest}
       />

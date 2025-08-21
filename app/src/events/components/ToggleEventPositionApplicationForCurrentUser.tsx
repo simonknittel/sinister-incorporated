@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { VariantWithLogo } from "@/fleet/components/VariantWithLogo";
 import type {
   EventPosition,
@@ -90,7 +91,7 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
       {!hasCurrentUserAlreadyApplied &&
         !showDiscordWarning &&
         doesCurrentUserSatisfyRequirements && (
-          <Button
+          <Button2
             type="submit"
             title="Für diesen Posten Interesse anmelden"
             disabled={isPending}
@@ -98,7 +99,7 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
           >
             Interesse anmelden
             {isPending ? <FaSpinner className="animate-spin" /> : <FaPlus />}
-          </Button>
+          </Button2>
         )}
 
       {!hasCurrentUserAlreadyApplied &&
@@ -107,7 +108,7 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
           <Tooltip.Provider delayDuration={0}>
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
-                <Button
+                <Button2
                   title="Für diesen Posten Interesse anmelden"
                   disabled={isPending}
                   variant="primary"
@@ -118,12 +119,12 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
                   ) : (
                     <FaPlus />
                   )}
-                </Button>
+                </Button2>
               </Tooltip.Trigger>
 
               <Tooltip.Portal>
                 <Tooltip.Content
-                  className="p-4 max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
+                  className="p-2 text-sm max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
                   sideOffset={5}
                 >
                   <div>
@@ -163,19 +164,19 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
         <Tooltip.Provider delayDuration={0}>
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
-              <Button
+              <Button2
                 title="Für diesen Posten Interesse anmelden"
                 disabled={true}
                 variant="primary"
               >
                 Interesse anmelden
                 <FaPlus />
-              </Button>
+              </Button2>
             </Tooltip.Trigger>
 
             <Tooltip.Portal>
               <Tooltip.Content
-                className="p-4 max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
+                className="p-2 text-sm max-w-[320px] select-none rounded-secondary bg-neutral-950 border border-sinister-red-500 text-white font-normal"
                 sideOffset={5}
               >
                 <div>
