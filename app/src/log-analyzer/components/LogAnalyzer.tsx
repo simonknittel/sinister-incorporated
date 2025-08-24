@@ -20,7 +20,9 @@ import {
 import { FaInfoCircle, FaSpinner } from "react-icons/fa";
 import { FaFileArrowUp } from "react-icons/fa6";
 import { TfiReload } from "react-icons/tfi";
+import { isNpc } from "../utils/isNpc";
 import { Entry, type IEntry } from "./Entry";
+import { Introduction } from "./Introduction";
 import { OverlayButton } from "./OverlayButton";
 import { OverlayProvider } from "./OverlayContext";
 
@@ -77,6 +79,10 @@ export const LogAnalyzer = ({ className }: Props) => {
   );
   const [isHideCorpsesEnabled, setIsHideCorpsesEnabled] = useLocalStorage(
     "is_hide_corpses_enabled",
+    false,
+  );
+  const [isHideNpcsEnabled, setIsHideNpcsEnabled] = useLocalStorage(
+    "is_hide_npcs_enabled",
     false,
   );
 
@@ -262,6 +268,15 @@ export const LogAnalyzer = ({ className }: Props) => {
     parseLogs(true);
   };
 
+  const entryFilter = (entry: IEntry) => {
+    if (isHideCorpsesEnabled && entry.type === "corpse") return false;
+
+    if (isHideNpcsEnabled && entry.type === "kill" && isNpc(entry.target))
+      return false;
+
+    return true;
+  };
+
   return (
     <div className={clsx(className)}>
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 items-baseline justify-between">
@@ -296,7 +311,7 @@ export const LogAnalyzer = ({ className }: Props) => {
 
       {entries.size > 0 ? (
         <>
-          <div className="mt-2 background-secondary rounded-primary p-4 flex items-center gap-4">
+          <div className="mt-1 background-secondary rounded-primary p-2 flex items-center gap-4">
             <Button2
               type="button"
               variant="secondary"
@@ -341,13 +356,7 @@ export const LogAnalyzer = ({ className }: Props) => {
 
             <OverlayProvider>
               <OverlayButton
-                entries={Array.from(
-                  entries.values().filter((entry) => {
-                    if (isHideCorpsesEnabled && entry.type === "corpse")
-                      return false;
-                    return true;
-                  }),
-                )}
+                entries={Array.from(entries.values().filter(entryFilter))}
               />
             </OverlayProvider>
 
@@ -357,6 +366,14 @@ export const LogAnalyzer = ({ className }: Props) => {
               labelClassName="w-auto"
               checked={isHideCorpsesEnabled}
               onChange={(e) => setIsHideCorpsesEnabled(e.target.checked)}
+            />
+
+            <YesNoCheckbox
+              yesLabel="NPC-Kills ausblenden"
+              noLabel="NPC-Kills ausblenden"
+              labelClassName="w-auto"
+              checked={isHideNpcsEnabled}
+              onChange={(e) => setIsHideNpcsEnabled(e.target.checked)}
             />
           </div>
 
@@ -381,11 +398,7 @@ export const LogAnalyzer = ({ className }: Props) => {
               <tbody>
                 {Array.from(entries.values())
                   .toSorted((a, b) => b.isoDate.getTime() - a.isoDate.getTime())
-                  .filter((entry) => {
-                    if (isHideCorpsesEnabled && entry.type === "corpse")
-                      return false;
-                    return true;
-                  })
+                  .filter(entryFilter)
                   .map((entry) => (
                     <Entry key={entry.key} entry={entry} />
                   ))}
@@ -394,33 +407,7 @@ export const LogAnalyzer = ({ className }: Props) => {
           </div>
         </>
       ) : (
-        <div className="mt-2 p-4 background-secondary rounded-primary overflow-auto flex flex-col gap-2">
-          <p className="text-neutral-500">Anleitung</p>
-          <p>Wähle den Ordner mit deiner Star Citizen-Installation aus.</p>
-
-          <p className="text-neutral-500 mt-4">Info</p>
-          <p>
-            Keine Dateien werden auf den Server hochgeladen. Die Logs werden
-            ausschließlich client-seitig im Browser ausgewertet.
-          </p>
-
-          <p>Es werden die Logs der letzten 7 Tage ausgewertet.</p>
-
-          <p className="text-neutral-500 mt-4">Voraussetzungen</p>
-          <p>
-            Aktuell werden nur in Google Chrome und Microsoft Edge unterstützt.
-            Mozilla Firefox, Safari und Brave werden aktuell nicht unterstützt.
-          </p>
-          <p>
-            Die Star Citizen-Installation darf nicht unter{" "}
-            <span className="italic font-mono">C:\Program Files</span> liegen.
-          </p>
-          <p>
-            Für das Overlay muss der Star Citizen Window Mode auf entweder
-            Borderless oder Windowed gestellt sein.
-          </p>
-          <p>Nein, das Overlay kann nicht transparent gemacht werden.</p>
-        </div>
+        <Introduction className="mt-1" />
       )}
     </div>
   );

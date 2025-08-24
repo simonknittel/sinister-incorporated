@@ -49,6 +49,18 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
+        <Day heading="24. August 2025">
+          <DayItem
+            heading="NPC-Kills ausblenden"
+            badges={["Log Analyzer", "Neu"]}
+          >
+            <p>
+              Im Log Analyzer gibt es nun einen neuen Filter um Kills von NPCs
+              auszublenden.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="16. August 2025">
           <DayItem heading="Tools -> Apps" badges={["Änderung"]}>
             <p>
