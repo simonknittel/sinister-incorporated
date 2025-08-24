@@ -30,10 +30,9 @@ enum Step {
 
 interface Props {
   readonly className?: string;
-  readonly cta?: boolean;
 }
 
-export const CreateTask = ({ className, cta }: Props) => {
+export const CreateTask = ({ className }: Props) => {
   const authentication = useAuthentication();
   if (!authentication) throw new Error("Forbidden");
   const showPersonalizedAndGroup = authentication.authorize("task", "create", [
@@ -87,12 +86,11 @@ export const CreateTask = ({ className, cta }: Props) => {
     <>
       <Button2
         onClick={() => setIsOpen(true)}
-        variant={cta ? "primary" : "secondary"}
         className={clsx(className)}
         title="Task erstellen"
       >
-        <span className="hidden md:inline">Task erstellen</span>
         <FaPlus />
+        <span className="hidden md:inline">Neuer Task</span>
       </Button2>
 
       <Modal
