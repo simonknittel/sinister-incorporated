@@ -59,6 +59,16 @@ export default async function Page() {
               auszublenden.
             </p>
           </DayItem>
+
+          <DayItem
+            heading="Tasks-Übersicht Redesign"
+            badges={["Tasks", "Änderung"]}
+          >
+            <p>
+              Die Tasks-Übersicht wurde neu gestaltet, um zusätzliche Filter zu
+              ermöglichen.
+            </p>
+          </DayItem>
         </Day>
 
         <Day heading="16. August 2025">

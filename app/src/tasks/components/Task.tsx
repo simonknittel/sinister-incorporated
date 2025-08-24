@@ -7,10 +7,8 @@ import { Link } from "@/common/components/Link";
 import { formatDate } from "@/common/utils/formatDate";
 import {
   type Entity,
-  type Role,
   type TaskAssignment,
   type Task as TaskType,
-  type Upload,
 } from "@prisma/client";
 import clsx from "clsx";
 import type { ReactNode } from "react";
@@ -19,17 +17,10 @@ import { FaCheck, FaCheckSquare, FaClock, FaInfoCircle } from "react-icons/fa";
 import { TbRepeatOnce } from "react-icons/tb";
 
 interface TaskWithIncludes extends TaskType {
-  createdBy: Entity | null;
   assignments: (TaskAssignment & {
     citizen: Entity;
   })[];
-  completedBy?: Entity | null;
   completionists?: Entity[];
-  cancelledBy?: Entity | null;
-  deletedBy?: Entity | null;
-  requiredRoles: (Role & {
-    icon: Upload | null;
-  })[];
 }
 
 interface Props {

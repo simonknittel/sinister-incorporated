@@ -13,6 +13,7 @@ import { TopBar } from "@/shell/components/TopBar";
 import { TRPCReactProvider } from "@/trpc/react";
 import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense, type ReactNode } from "react";
 
 interface Props {
@@ -30,46 +31,48 @@ export default async function AppLayout({ children }: Readonly<Props>) {
 
   return (
     <SessionProviderContainer session={authentication.session}>
-      <QueryClientProviderContainer>
-        <TRPCReactProvider>
-          <ChannelsProvider userId={authentication.session.user.id}>
-            <BeamsProvider
-              instanceId={env.PUSHER_BEAMS_INSTANCE_ID}
-              userId={authentication.session.user.id}
-            >
-              <NextIntlClientProvider>
-                <div
-                  className="min-h-dvh background-primary group/navigation group/top-bar"
-                  data-navigation-collapsed={
-                    isNavigationCollapsed ? "true" : undefined
-                  }
-                  data-top-bar-enabled={topBarEnabled ? "true" : undefined}
-                >
-                  <MobileActionBarContainer />
-                  <DesktopSidebarContainer />
-                  {topBarEnabled && <TopBar />}
-
-                  <div className="lg:ml-64 group-data-[navigation-collapsed]/navigation:lg:ml-[4.5rem] group-data-[top-bar-enabled]/top-bar:lg:pt-16 min-h-dvh">
-                    {children}
-                  </div>
-                </div>
-
-                <Suspense>
-                  <ImpersonationBannerContainer />
-                </Suspense>
-
-                {authentication.session.user.role === "admin" && (
-                  <AdminEnabler
-                    enabled={
-                      (await cookies()).get("enable_admin")?.value === "1"
+      <NuqsAdapter>
+        <QueryClientProviderContainer>
+          <TRPCReactProvider>
+            <ChannelsProvider userId={authentication.session.user.id}>
+              <BeamsProvider
+                instanceId={env.PUSHER_BEAMS_INSTANCE_ID}
+                userId={authentication.session.user.id}
+              >
+                <NextIntlClientProvider>
+                  <div
+                    className="min-h-dvh background-primary group/navigation group/top-bar"
+                    data-navigation-collapsed={
+                      isNavigationCollapsed ? "true" : undefined
                     }
-                  />
-                )}
-              </NextIntlClientProvider>
-            </BeamsProvider>
-          </ChannelsProvider>
-        </TRPCReactProvider>
-      </QueryClientProviderContainer>
+                    data-top-bar-enabled={topBarEnabled ? "true" : undefined}
+                  >
+                    <MobileActionBarContainer />
+                    <DesktopSidebarContainer />
+                    {topBarEnabled && <TopBar />}
+
+                    <div className="lg:ml-64 group-data-[navigation-collapsed]/navigation:lg:ml-[4.5rem] group-data-[top-bar-enabled]/top-bar:lg:pt-16 min-h-dvh">
+                      {children}
+                    </div>
+                  </div>
+
+                  <Suspense>
+                    <ImpersonationBannerContainer />
+                  </Suspense>
+
+                  {authentication.session.user.role === "admin" && (
+                    <AdminEnabler
+                      enabled={
+                        (await cookies()).get("enable_admin")?.value === "1"
+                      }
+                    />
+                  )}
+                </NextIntlClientProvider>
+              </BeamsProvider>
+            </ChannelsProvider>
+          </TRPCReactProvider>
+        </QueryClientProviderContainer>
+      </NuqsAdapter>
     </SessionProviderContainer>
   );
 }

@@ -12,126 +12,126 @@ import { forbidden } from "next/navigation";
 import { cache } from "react";
 
 export const getTasks = cache(
-  withTrace("getTasks", async () => {
-    const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("task", "read"))) forbidden();
+  withTrace(
+    "getTasks",
+    async ({
+      filters: { status = "open", accepted = "all", created_by = "others" },
+    }) => {
+      const authentication = await requireAuthentication();
+      if (!(await authentication.authorize("task", "read"))) forbidden();
 
-    let tasks = await prisma.task.findMany({
-      where: {
-        cancelledAt: null,
-        deletedAt: null,
-        completedAt: null,
-        OR: [
-          {
-            expiresAt: {
-              gte: new Date(),
+      let tasks;
+
+      if (status === "closed") {
+        tasks = await prisma.task.findMany({
+          where: {
+            deletedAt: null,
+            OR: [
+              {
+                cancelledAt: {
+                  not: null,
+                },
+              },
+              {
+                completedAt: {
+                  not: null,
+                },
+              },
+              {
+                expiresAt: {
+                  lt: new Date(),
+                },
+              },
+            ],
+            ...(accepted === "yes" && {
+              assignments: {
+                some: {
+                  citizenId: authentication.session.entity?.id,
+                },
+              },
+            }),
+            ...(created_by === "me" && {
+              createdById: authentication.session.entity?.id,
+            }),
+          },
+          include: {
+            assignments: {
+              include: {
+                citizen: true,
+              },
+            },
+            requiredRoles: {
+              include: {
+                icon: true,
+              },
+            },
+            completionists: true,
+          },
+          orderBy: { createdAt: "desc" },
+        });
+      } else {
+        tasks = await prisma.task.findMany({
+          where: {
+            cancelledAt: null,
+            deletedAt: null,
+            completedAt: null,
+            OR: [
+              {
+                expiresAt: {
+                  gte: new Date(),
+                },
+              },
+              {
+                expiresAt: null,
+              },
+            ],
+            ...(accepted === "yes" && {
+              assignments: {
+                some: {
+                  citizenId: authentication.session.entity?.id,
+                },
+              },
+            }),
+            ...(created_by === "me" && {
+              createdById: authentication.session.entity?.id,
+            }),
+          },
+          include: {
+            assignments: {
+              include: {
+                citizen: true,
+              },
+            },
+            requiredRoles: {
+              include: {
+                icon: true,
+              },
             },
           },
-          {
-            expiresAt: null,
+          orderBy: {
+            createdAt: "desc",
           },
-        ],
-      },
-      include: {
-        createdBy: true,
-        assignments: {
-          include: {
-            citizen: true,
-          },
-        },
-        requiredRoles: {
-          include: {
-            icon: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+        });
+      }
 
-    tasks = (
-      await Promise.all(
-        tasks.map(async (task) => {
-          const include = await isVisibleForCurrentUser(task);
+      tasks = (
+        await Promise.all(
+          tasks.map(async (task) => {
+            const include = await isVisibleForCurrentUser(task);
 
-          return {
-            include,
-            task,
-          };
-        }),
+            return {
+              include,
+              task,
+            };
+          }),
+        )
       )
-    )
-      .filter(({ include }) => include)
-      .map(({ task }) => task);
+        .filter(({ include }) => include)
+        .map(({ task }) => task);
 
-    return tasks;
-  }),
-);
-
-export const getClosedTasks = cache(
-  withTrace("getClosedTasks", async () => {
-    const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("task", "read"))) forbidden();
-
-    let tasks = await prisma.task.findMany({
-      where: {
-        deletedAt: null,
-        OR: [
-          {
-            cancelledAt: {
-              not: null,
-            },
-          },
-          {
-            completedAt: {
-              not: null,
-            },
-          },
-          {
-            expiresAt: {
-              lt: new Date(),
-            },
-          },
-        ],
-      },
-      include: {
-        createdBy: true,
-        assignments: {
-          include: {
-            citizen: true,
-          },
-        },
-        completedBy: true,
-        completionists: true,
-        cancelledBy: true,
-        deletedBy: true,
-        requiredRoles: {
-          include: {
-            icon: true,
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    tasks = (
-      await Promise.all(
-        tasks.map(async (task) => {
-          const include = await isVisibleForCurrentUser(task);
-
-          return {
-            include,
-            task,
-          };
-        }),
-      )
-    )
-      .filter(({ include }) => include)
-      .map(({ task }) => task);
-
-    return tasks;
-  }),
+      return tasks;
+    },
+  ),
 );
 
 export const getTaskById = cache(
