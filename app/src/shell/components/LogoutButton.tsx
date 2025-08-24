@@ -1,10 +1,10 @@
 "use client";
 
+import { Button2 } from "@/common/components/Button2";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { RiLogoutCircleRLine } from "react-icons/ri";
-import Button from "../../common/components/Button";
 
 interface Props {
   readonly className?: string;
@@ -21,11 +21,10 @@ export const LogoutButton = ({ className }: Props) => {
   };
 
   return (
-    <Button
+    <Button2
       onClick={() => void handleClick()}
       variant="secondary"
       title="Abmelden"
-      iconOnly={true}
       disabled={isLoggingOut}
       className={className}
     >
@@ -34,6 +33,6 @@ export const LogoutButton = ({ className }: Props) => {
       ) : (
         <RiLogoutCircleRLine />
       )}
-    </Button>
+    </Button2>
   );
 };

@@ -296,7 +296,7 @@ export const LogAnalyzer = ({ className }: Props) => {
 
       {entries.size > 0 ? (
         <>
-          <div className="mt-4 background-secondary rounded-primary p-4 flex items-center gap-4">
+          <div className="mt-2 background-secondary rounded-primary p-4 flex items-center gap-4">
             <Button2
               type="button"
               variant="secondary"
@@ -360,7 +360,7 @@ export const LogAnalyzer = ({ className }: Props) => {
             />
           </div>
 
-          <div className="mt-4 p-4 background-secondary rounded-primary overflow-auto">
+          <div className="mt-[2px] p-4 background-secondary rounded-primary overflow-auto">
             <table className="w-full min-w-[1200px]">
               <thead>
                 <tr
@@ -394,7 +394,7 @@ export const LogAnalyzer = ({ className }: Props) => {
           </div>
         </>
       ) : (
-        <div className="mt-4 p-4 background-secondary rounded-primary overflow-auto flex flex-col gap-2">
+        <div className="mt-2 p-4 background-secondary rounded-primary overflow-auto flex flex-col gap-2">
           <p className="text-neutral-500">Anleitung</p>
           <p>Wähle den Ordner mit deiner Star Citizen-Installation aus.</p>
 
