@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import * as Popover from "@radix-ui/react-popover";
 import {
   createContext,
@@ -30,9 +30,9 @@ export const Filter = ({ name, children }: Props) => {
     <FilterContext.Provider value={value}>
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Trigger asChild>
-          <Button variant="secondary" className="!py-0 !min-h-8 !px-3">
+          <Button2 variant="secondary">
             <FaChevronDown /> {name}
-          </Button>
+          </Button2>
         </Popover.Trigger>
 
         <Popover.Portal>

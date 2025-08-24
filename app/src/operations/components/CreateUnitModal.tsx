@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Modal from "@/common/components/Modal";
 import { type Operation } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -100,10 +100,10 @@ const CreateUnitModal = ({
         />
 
         <div className="flex justify-end mt-8">
-          <Button type="submit" disabled={isLoading}>
+          <Button2 type="submit" disabled={isLoading}>
             {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Hinzufügen
-          </Button>
+          </Button2>
         </div>
       </form>
     </Modal>

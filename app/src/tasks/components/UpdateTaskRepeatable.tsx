@@ -1,7 +1,7 @@
 "use client";
 
 import { useAction } from "@/actions/utils/useAction";
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { NumberInput } from "@/common/components/form/NumberInput";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
@@ -69,10 +69,10 @@ export const UpdateTaskRepeatable = ({ className, task }: Props) => {
             min={1}
           />
 
-          <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
+          <Button2 type="submit" disabled={isPending} className="mt-4 ml-auto">
             {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Speichern
-          </Button>
+          </Button2>
 
           {state && "error" in state && (
             <Note type="error" message={state.error} className="mt-4" />

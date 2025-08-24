@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { type Manufacturer } from "@prisma/client";
 import dynamic from "next/dynamic";
 import { Suspense, useState } from "react";
@@ -20,14 +20,14 @@ export const CreateSeriesButton = ({ className, manufacturerId }: Props) => {
 
   return (
     <>
-      <Button
+      <Button2
         className={className}
         variant="secondary"
         onClick={() => setIsOpen(true)}
         title="Serie anlegen"
       >
         Anlegen {isOpen ? <FaSpinner className="animate-spin" /> : <FaPlus />}
-      </Button>
+      </Button2>
 
       {isOpen && (
         /**

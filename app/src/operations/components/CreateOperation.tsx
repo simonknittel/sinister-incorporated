@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { CreateOperationModal } from "./CreateOperationModal";
@@ -10,9 +10,9 @@ export const CreateOperation = () => {
 
   return (
     <>
-      <Button variant="secondary" onClick={() => setIsOpen(true)}>
+      <Button2 variant="secondary" onClick={() => setIsOpen(true)}>
         Neue Operation <FaPlus />
-      </Button>
+      </Button2>
 
       <CreateOperationModal
         isOpen={isOpen}

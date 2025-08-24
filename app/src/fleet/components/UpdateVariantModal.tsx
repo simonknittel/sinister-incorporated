@@ -1,4 +1,5 @@
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Modal from "@/common/components/Modal";
 import { api } from "@/trpc/react";
 import { createId } from "@paralleldrive/cuid2";
@@ -152,10 +153,10 @@ export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {
         </Button>
 
         <div className="flex justify-end mt-8">
-          <Button disabled={isPending || _variant.isFetching} type="submit">
+          <Button2 disabled={isPending || _variant.isFetching} type="submit">
             {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Speichern
-          </Button>
+          </Button2>
         </div>
       </form>
     </Modal>

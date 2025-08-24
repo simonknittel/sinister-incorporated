@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import Modal from "@/common/components/Modal";
 import Note from "@/common/components/Note";
@@ -84,10 +85,10 @@ export const UpdateRequiredRoles = ({ className, task }: Props) => {
             defaultChecked={task.hiddenForOtherRoles || false}
           />
 
-          <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
+          <Button2 type="submit" disabled={isPending} className="mt-4 ml-auto">
             {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Speichern
-          </Button>
+          </Button2>
 
           {state?.error && (
             <Note type="error" message={state.error} className="mt-4" />

@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { Button2 } from "./Button2";
 import { Link } from "./Link";
 
 interface Props {
@@ -9,15 +10,15 @@ interface Props {
 
 export const RSIButton = ({ className, href }: Props) => {
   return (
-    <Link
+    <Button2
+      as={Link}
       href={href}
-      className={clsx(
-        className,
-        "inline-flex items-center justify-center gap-2 rounded-secondary uppercase h-11 border text-base border-rsi-blue-200 text-rsi-blue-200 hover:border-rsi-blue-100 active:border-rsi-blue-100 hover:text-rsi-blue-100 active:text-rsi-blue-100 px-6",
-      )}
+      className={clsx("inline-flex", className)}
       rel="noreferrer"
+      variant="secondary"
+      colorSchema="rsi"
     >
       RSI <FaExternalLinkAlt />
-    </Link>
+    </Button2>
   );
 };

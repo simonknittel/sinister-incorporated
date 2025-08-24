@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import clsx from "clsx";
 import { useEffect, type MouseEventHandler } from "react";
 import { FaRegWindowRestore } from "react-icons/fa";
@@ -42,7 +42,7 @@ export const OverlayButton = ({ className, entries }: Props) => {
 
   return (
     <>
-      <Button
+      <Button2
         type="button"
         variant="secondary"
         onClick={handleToggleOverlay}
@@ -50,7 +50,7 @@ export const OverlayButton = ({ className, entries }: Props) => {
       >
         <FaRegWindowRestore />
         Overlay
-      </Button>
+      </Button2>
 
       {pipWindow && (
         <OverlayWindow pipWindow={pipWindow}>

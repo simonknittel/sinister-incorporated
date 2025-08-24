@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Note from "@/common/components/Note";
 import Tab from "@/common/components/tabs/Tab";
 import TabList from "@/common/components/tabs/TabList";
@@ -115,10 +115,10 @@ export const Permissions = ({
         <OtherTab roles={allRoles} flows={flows} />
       </TabsProvider>
 
-      <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
+      <Button2 type="submit" disabled={isPending} className="mt-4 ml-auto">
         {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
         Speichern
-      </Button>
+      </Button2>
 
       {state && (
         <Note

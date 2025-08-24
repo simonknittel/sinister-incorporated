@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Modal from "@/common/components/Modal";
 import { type NoteType } from "@prisma/client";
 import clsx from "clsx";
@@ -87,10 +88,10 @@ const Update = ({ className, noteType }: Readonly<Props>) => {
           />
 
           <div className="flex justify-end mt-8">
-            <Button type="submit" disabled={isLoading}>
+            <Button2 type="submit" disabled={isLoading}>
               {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
               Speichern
-            </Button>
+            </Button2>
           </div>
         </form>
       </Modal>

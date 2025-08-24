@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { useBeamsContext } from "@/pusher/components/BeamsContext";
 import * as Popover from "@radix-ui/react-popover";
 import clsx from "clsx";
@@ -133,9 +134,9 @@ export const NotificationsTooltip = ({ className }: Props) => {
               Absagen
             </label>
 
-            <Button type="submit" className="ml-auto mt-2">
+            <Button2 type="submit" className="ml-auto mt-2">
               Speichern
-            </Button>
+            </Button2>
 
             <p className="text-neutral-500 text-xs max-w-80 mt-2">
               Unterstützt werden Google Chrome (Desktop und Android), Microsoft

@@ -111,7 +111,6 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
       {"eventId" in props && !("parentPositionId" in props) && (
         <Button2
           onClick={handleClick}
-          variant="primary"
           className={clsx(props.className)}
           title="Posten oder Gruppe hinzufügen"
         >
