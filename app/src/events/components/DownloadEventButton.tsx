@@ -1,4 +1,4 @@
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { Link } from "@/common/components/Link";
 import type { Event } from "@prisma/client";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -22,10 +22,10 @@ export const DownloadEventButton = ({ className, event }: Props) => {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
-        <Button variant="secondary" className={clsx(className)}>
+        <Button2 variant="secondary" className={clsx(className)}>
           <LuCalendarArrowDown />
           Zum eigenen Kalender hinzufügen
-        </Button>
+        </Button2>
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>

@@ -1,6 +1,5 @@
 "use client";
 
-import Button from "@/common/components/Button";
 import { Button2 } from "@/common/components/Button2";
 import { VariantWithLogo } from "@/fleet/components/VariantWithLogo";
 import type {
@@ -77,15 +76,10 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
       <input type="hidden" name="positionId" value={position.id} />
 
       {hasCurrentUserAlreadyApplied && (
-        <Button
-          type="submit"
-          title="Abmelden"
-          disabled={isPending}
-          variant="primary"
-        >
+        <Button2 type="submit" title="Abmelden" disabled={isPending}>
           Abmelden
           {isPending ? <FaSpinner className="animate-spin" /> : <FaMinus />}
-        </Button>
+        </Button2>
       )}
 
       {!hasCurrentUserAlreadyApplied &&
@@ -95,7 +89,6 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
             type="submit"
             title="Für diesen Posten Interesse anmelden"
             disabled={isPending}
-            variant="primary"
           >
             Interesse anmelden
             {isPending ? <FaSpinner className="animate-spin" /> : <FaPlus />}
@@ -111,7 +104,6 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
                 <Button2
                   title="Für diesen Posten Interesse anmelden"
                   disabled={isPending}
-                  variant="primary"
                 >
                   Interesse anmelden
                   {isPending ? (
@@ -167,7 +159,6 @@ export const ToggleEventPositionApplicationForCurrentUser = ({
               <Button2
                 title="Für diesen Posten Interesse anmelden"
                 disabled={true}
-                variant="primary"
               >
                 Interesse anmelden
                 <FaPlus />

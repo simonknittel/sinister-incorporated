@@ -1,7 +1,7 @@
 "use client";
 
 import { updateIndices } from "@/algolia/actions/updateIndices";
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Note from "@/common/components/Note";
 import clsx from "clsx";
 import { useActionState } from "react";
@@ -17,10 +17,10 @@ export const Algolia = ({ className }: Props) => {
 
   return (
     <form action={formAction} className={clsx(className)}>
-      <Button type="submit">
+      <Button2 type="submit">
         {isPending ? <FaSpinner className="animate-spin" /> : <TbRestore />}
         Update Algolia indices
-      </Button>
+      </Button2>
 
       {state?.success && (
         <Note

@@ -1,4 +1,4 @@
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { RadioGroup } from "@/common/components/form/RadioGroup";
 import { Select } from "@/common/components/form/Select";
 import { createId } from "@paralleldrive/cuid2";
@@ -151,7 +151,7 @@ export const CreateOrUpdateForm = ({ initialData, onUpdate }: Props) => {
       </div>
 
       <div className="flex justify-end mt-8">
-        <Button type="submit">Speichern</Button>
+        <Button2 type="submit">Speichern</Button2>
       </div>
     </form>
   );

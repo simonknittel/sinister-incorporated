@@ -1,7 +1,7 @@
 "use client";
 
 import { useAction } from "@/actions/utils/useAction";
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { ImageUpload } from "@/common/components/ImageUpload";
 import Note from "@/common/components/Note";
 import type { Role, Upload } from "@prisma/client";
@@ -32,10 +32,7 @@ export const OverviewTab = ({ className, role }: Props) => {
     <div className={clsx("flex flex-col gap-2", className)}>
       <form
         action={updateNameFormAction}
-        className={clsx(
-          "rounded-primary bg-neutral-800/50 p-4 lg:p-8",
-          className,
-        )}
+        className={clsx("rounded-primary bg-neutral-800/50 p-4", className)}
       >
         <input type="hidden" name="id" value={role.id} />
 
@@ -46,9 +43,8 @@ export const OverviewTab = ({ className, role }: Props) => {
           id={nameInputId}
           className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
         />
-        <Button
+        <Button2
           type="submit"
-          variant="primary"
           disabled={updateNameIsPending}
           className="ml-auto mt-4"
         >
@@ -58,7 +54,7 @@ export const OverviewTab = ({ className, role }: Props) => {
             <FaSave />
           )}
           Speichern
-        </Button>
+        </Button2>
 
         {updateNameState && (
           <Note
@@ -76,10 +72,7 @@ export const OverviewTab = ({ className, role }: Props) => {
       </form>
 
       <section
-        className={clsx(
-          "rounded-primary bg-neutral-800/50 p-4 lg:p-8",
-          className,
-        )}
+        className={clsx("rounded-primary bg-neutral-800/50 p-4", className)}
       >
         <h2 className="font-bold">Bilder</h2>
 
@@ -138,21 +131,18 @@ export const OverviewTab = ({ className, role }: Props) => {
       </section>
 
       <section
-        className={clsx(
-          "rounded-primary bg-neutral-800/50 p-4 lg:p-8",
-          className,
-        )}
+        className={clsx("rounded-primary bg-neutral-800/50 p-4", className)}
       >
         <form action={deleteFormAction}>
           <input type="hidden" name="id" value={role.id} />
-          <Button type="submit" variant="primary" disabled={deleteIsPending}>
+          <Button2 type="submit" disabled={deleteIsPending}>
             {deleteIsPending ? (
               <FaSpinner className="animate-spin" />
             ) : (
               <FaTrash />
             )}
             Löschen
-          </Button>
+          </Button2>
 
           {deleteState && "error" in deleteState && (
             <Note

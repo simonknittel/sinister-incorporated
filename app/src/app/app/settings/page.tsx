@@ -55,9 +55,7 @@ export default async function Page() {
 
         {showAnalytics && (
           <Tile heading="Disable analytics">
-            <p className="mt-4 mb-4">
-              Disables Vercel Analytics for this browser.
-            </p>
+            <p className="mb-4">Disables Vercel Analytics for this browser.</p>
 
             <AnalyticsCheckboxLoader />
           </Tile>

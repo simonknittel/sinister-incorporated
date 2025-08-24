@@ -1,7 +1,7 @@
 "use client";
 
 import { CitizenInput } from "@/citizen/components/CitizenInput";
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { DateTimeInput } from "@/common/components/form/DateTimeInput";
 import { NumberInput } from "@/common/components/form/NumberInput";
 import { Textarea } from "@/common/components/form/Textarea";
@@ -60,7 +60,7 @@ export const CreatePenaltyEntry = ({ className }: Props) => {
 
   return (
     <>
-      <Button
+      <Button2
         onClick={handleClick}
         variant="secondary"
         className={clsx(className)}
@@ -68,7 +68,7 @@ export const CreatePenaltyEntry = ({ className }: Props) => {
       >
         <span className="hidden md:inline">Strafpunkte eintragen</span>
         {isOpen ? <FaSpinner className="animate-spin" /> : <FaPlus />}
-      </Button>
+      </Button2>
 
       <Modal
         isOpen={isOpen}
@@ -115,10 +115,10 @@ export const CreatePenaltyEntry = ({ className }: Props) => {
             }
           />
 
-          <Button type="submit" disabled={isPending} className="ml-auto mt-4">
+          <Button2 type="submit" disabled={isPending} className="ml-auto mt-4">
             {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Speichern
-          </Button>
+          </Button2>
 
           {state?.error && (
             <Note type="error" message={state.error} className="mt-4" />

@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { Select } from "@/common/components/form/Select";
 import {
   type ClassificationLevel,
@@ -129,7 +129,7 @@ export const AddNote = ({
             bestätigen
           </Button> */}
 
-          <Button
+          <Button2
             type="submit"
             disabled={isLoading}
             title="Speichern"
@@ -137,7 +137,7 @@ export const AddNote = ({
           >
             {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
             Speichern
-          </Button>
+          </Button2>
         </div>
       </div>
     </form>

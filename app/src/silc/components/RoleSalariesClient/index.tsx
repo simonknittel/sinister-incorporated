@@ -2,6 +2,7 @@
 
 import { useAction } from "@/actions/utils/useAction";
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Note from "@/common/components/Note";
 import { api } from "@/trpc/react";
 import { createId } from "@paralleldrive/cuid2";
@@ -183,10 +184,10 @@ export const RoleSalariesClient = ({
         </div>
       )}
 
-      <Button type="submit" className="mt-4 ml-auto">
+      <Button2 type="submit" className="mt-4 ml-auto">
         {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
         Speichern
-      </Button>
+      </Button2>
 
       {state && "success" in state && (
         <Note

@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Modal from "@/common/components/Modal";
 import YesNoCheckbox from "@/common/components/form/YesNoCheckbox";
 import {
@@ -140,10 +141,10 @@ export const CreateMembership = ({
           </div>
 
           <div className="flex flex-row-reverse gap-4 items-center mt-8">
-            <Button type="submit" disabled={isLoading}>
+            <Button2 type="submit" disabled={isLoading}>
               {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
               Speichern
-            </Button>
+            </Button2>
 
             {showConfirmButton && (
               <Button

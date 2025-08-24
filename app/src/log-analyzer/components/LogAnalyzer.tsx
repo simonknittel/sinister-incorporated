@@ -297,7 +297,7 @@ export const LogAnalyzer = ({ className }: Props) => {
       {entries.size > 0 ? (
         <>
           <div className="mt-4 background-secondary rounded-primary px-8 py-4 flex items-center gap-4">
-            <Button
+            <Button2
               type="button"
               variant="secondary"
               disabled={isPending}
@@ -309,7 +309,7 @@ export const LogAnalyzer = ({ className }: Props) => {
                 <TfiReload />
               )}
               Aktualisieren
-            </Button>
+            </Button2>
 
             <YesNoCheckbox
               yesLabel={

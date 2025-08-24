@@ -1,4 +1,4 @@
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import { api } from "@/common/utils/api";
 import { SingleRole } from "@/roles/components/SingleRole";
 import type { Role } from "@prisma/client";
@@ -35,11 +35,11 @@ export const RequiredRoles = ({ className, defaultValue }: Props) => {
 
   return (
     <div className={clsx(className)}>
-      <p className="mb-2">Erforderliche Rolle(n)</p>
+      <p className="mb-1">Erforderliche Rolle(n)</p>
 
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Trigger asChild>
-          <Button
+          <Button2
             type="button"
             title="Rolle auswählen"
             variant="secondary"
@@ -47,7 +47,7 @@ export const RequiredRoles = ({ className, defaultValue }: Props) => {
             disabled={isPending}
           >
             <FaUsers /> Rolle auswählen
-          </Button>
+          </Button2>
         </Popover.Trigger>
 
         {/* eslint-disable-next-line react-compiler/react-compiler */}

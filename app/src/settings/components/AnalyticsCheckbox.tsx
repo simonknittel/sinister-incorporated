@@ -2,7 +2,7 @@
 
 import { useState, type ChangeEventHandler } from "react";
 
-const AnalyticsCheckbox = () => {
+export const AnalyticsCheckbox = () => {
   const [value, setValue] = useState(
     localStorage.getItem("va-disable") === "true",
   );

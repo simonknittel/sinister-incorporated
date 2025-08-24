@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import Note from "@/common/components/Note";
 import { SingleRole } from "@/roles/components/SingleRole";
 import type { Role, Upload } from "@prisma/client";
@@ -62,10 +62,10 @@ export const InheritanceForm = ({ className, currentRole, roles }: Props) => {
         ))}
       </div>
 
-      <Button type="submit" disabled={isPending} className="mt-4">
+      <Button2 type="submit" disabled={isPending} className="mt-4">
         {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
         Speichern
-      </Button>
+      </Button2>
 
       {state && (
         <Note

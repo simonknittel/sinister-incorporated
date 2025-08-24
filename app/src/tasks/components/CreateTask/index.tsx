@@ -2,7 +2,6 @@
 
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { CitizenInput } from "@/citizen/components/CitizenInput";
-import Button from "@/common/components/Button";
 import { Button2 } from "@/common/components/Button2";
 import { DateTimeInput } from "@/common/components/form/DateTimeInput";
 import { NumberInput } from "@/common/components/form/NumberInput";
@@ -209,7 +208,7 @@ export const CreateTask = ({ className, cta }: Props) => {
               classNameTextarea="h-64"
             />
 
-            <Button
+            <Button2
               type="button"
               variant="secondary"
               onClick={() => setStep(Step.Visibility)}
@@ -217,7 +216,7 @@ export const CreateTask = ({ className, cta }: Props) => {
             >
               <FaChevronRight />
               Weiter
-            </Button>
+            </Button2>
           </div>
 
           <div
@@ -291,7 +290,7 @@ export const CreateTask = ({ className, cta }: Props) => {
               </>
             )}
 
-            <Button
+            <Button2
               type="button"
               variant="secondary"
               onClick={() => setStep(Step.Reward)}
@@ -299,7 +298,7 @@ export const CreateTask = ({ className, cta }: Props) => {
             >
               <FaChevronRight />
               Weiter
-            </Button>
+            </Button2>
           </div>
 
           <div
@@ -405,7 +404,7 @@ export const CreateTask = ({ className, cta }: Props) => {
               />
             )}
 
-            <Button
+            <Button2
               type="button"
               variant="secondary"
               onClick={() => setStep(Step.Other)}
@@ -413,7 +412,7 @@ export const CreateTask = ({ className, cta }: Props) => {
             >
               <FaChevronRight />
               Weiter
-            </Button>
+            </Button2>
           </div>
 
           <div
@@ -447,10 +446,14 @@ export const CreateTask = ({ className, cta }: Props) => {
               className="mt-4"
             />
 
-            <Button type="submit" disabled={isPending} className="mt-4 ml-auto">
+            <Button2
+              type="submit"
+              disabled={isPending}
+              className="mt-4 ml-auto"
+            >
               {isPending ? <FaSpinner className="animate-spin" /> : <FaSave />}
               Speichern
-            </Button>
+            </Button2>
           </div>
 
           {state?.error && (

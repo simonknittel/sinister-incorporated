@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/common/components/Button";
+import { Button2 } from "@/common/components/Button2";
 import dynamic from "next/dynamic";
 import { Suspense, useState } from "react";
 import { FaPlus, FaSpinner } from "react-icons/fa";
@@ -16,9 +16,9 @@ export const CreateManufacturereButton = () => {
 
   return (
     <>
-      <Button variant="secondary" onClick={() => setIsOpen(true)}>
+      <Button2 variant="secondary" onClick={() => setIsOpen(true)}>
         Neu {isOpen ? <FaSpinner className="animate-spin" /> : <FaPlus />}
-      </Button>
+      </Button2>
 
       {isOpen && (
         /**
