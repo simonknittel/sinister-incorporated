@@ -216,12 +216,6 @@ export const DesktopSidebar = async () => {
                 label="Changelog"
                 icon={<FaCodePullRequest />}
               />
-
-              <NavigationItem
-                href="/app/documents"
-                label="Dokumente"
-                icon={<IoDocuments />}
-              />
             </ul>
 
             <NavigationSection heading="Economics">
