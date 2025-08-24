@@ -167,7 +167,7 @@ export const RoleSalariesClient = ({
             ))}
           </div>
 
-          <Button
+          <Button2
             type="button"
             variant="secondary"
             onClick={handleCreate}
@@ -175,7 +175,7 @@ export const RoleSalariesClient = ({
           >
             <FaPlus />
             Neu
-          </Button>
+          </Button2>
         </>
       ) : (
         <div className="flex items-center gap-2 justify-center text-sinister-red-500 mt-2">
