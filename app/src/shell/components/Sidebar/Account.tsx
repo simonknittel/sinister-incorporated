@@ -18,9 +18,9 @@ export const Account = async ({ isInDesktopSidebar = false }: Props) => {
   return (
     <div
       className={clsx(
-        "flex items-center justify-between border-b border-neutral-800 px-8 py-4",
+        "flex items-center justify-between border-b border-neutral-800 p-4",
         {
-          "group-data-[navigation-collapsed]/navigation:px-4":
+          "group-data-[navigation-collapsed]/navigation:p-2":
             isInDesktopSidebar,
         },
       )}

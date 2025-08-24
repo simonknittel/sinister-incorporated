@@ -7,7 +7,7 @@ interface Props {
 
 export const Footer = ({ className }: Readonly<Props>) => {
   return (
-    <footer className={clsx("text-neutral-500 text-center text-sm", className)}>
+    <footer className={clsx("text-neutral-500 text-center text-xs", className)}>
       <div>
         <Link href="/privacy" className="underline">
           Datenschutzerklärung

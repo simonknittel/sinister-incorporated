@@ -114,7 +114,7 @@ export const DesktopSidebar = async () => {
   ]);
 
   return (
-    <div className="overflow-auto pl-6 py-6 group-data-[top-bar-enabled]/top-bar:pt-28">
+    <div className="overflow-auto pl-2 py-2 group-data-[top-bar-enabled]/top-bar:pt-16">
       {/* <GlobalAlert /> */}
 
       <div className="background-secondary flex flex-col justify-between rounded-primary">
@@ -149,7 +149,7 @@ export const DesktopSidebar = async () => {
           </div>
 
           <nav
-            className="p-4 group-data-[navigation-collapsed]/navigation:p-2 border-neutral-800 relative"
+            className="p-2 border-neutral-800 relative"
             data-red-bar-container
           >
             <ul>
@@ -324,7 +324,7 @@ export const DesktopSidebar = async () => {
         </div>
       </div>
 
-      <Footer className="px-6 py-4 group-data-[navigation-collapsed]/navigation:hidden" />
+      <Footer className="p-2 group-data-[navigation-collapsed]/navigation:hidden" />
     </div>
   );
 };
@@ -351,7 +351,7 @@ const NavigationItem = ({
     <li>
       <Link
         href={href}
-        className="flex gap-2 items-center p-4 hover:bg-neutral-800 active:bg-neutral-700 rounded-secondary relative"
+        className="flex gap-2 items-center px-4 py-2 hover:bg-neutral-800 active:bg-neutral-700 rounded-secondary relative"
         title={label}
       >
         {_icon}

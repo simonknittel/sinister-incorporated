@@ -9,11 +9,11 @@ export const TopBar = ({ className }: Props) => {
   return (
     <div
       className={clsx(
-        "hidden lg:block px-6 pt-6 fixed z-10 left-0 right-0 top-0",
+        "hidden lg:block px-2 pt-2 fixed z-10 left-0 right-0 top-0",
         className,
       )}
     >
-      <div className="background-secondary-opaque rounded-primary p-2">
+      <div className="background-secondary-opaque rounded-primary">
         <Account />
       </div>
     </div>
