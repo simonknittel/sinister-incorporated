@@ -53,11 +53,6 @@ export const getTasks = cache(
             ...(created_by === "me" && {
               createdById: authentication.session.entity?.id,
             }),
-            ...(created_by === "all" && {
-              createdById: {
-                not: authentication.session.entity?.id,
-              },
-            }),
           },
           include: {
             assignments: {
@@ -99,11 +94,6 @@ export const getTasks = cache(
             }),
             ...(created_by === "me" && {
               createdById: authentication.session.entity?.id,
-            }),
-            ...(created_by === "all" && {
-              createdById: {
-                not: authentication.session.entity?.id,
-              },
             }),
           },
           include: {
