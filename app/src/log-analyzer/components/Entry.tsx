@@ -85,7 +85,7 @@ export const Entry = memo(
           {entry.type === "corpse" && <RSILink handle={entry.target} />}
 
           {entry.type === "join_pu" && (
-            <div className="px-2">{entry.shard}</div>
+            <div className="px-2 h-full flex items-center">{entry.shard}</div>
           )}
         </td>
 
