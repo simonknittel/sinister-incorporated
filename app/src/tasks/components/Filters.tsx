@@ -3,8 +3,9 @@
 import { Button2 } from "@/common/components/Button2";
 import { RadioGroup } from "@/common/components/form/RadioGroup";
 import clsx from "clsx";
+import { useTopLoader } from "nextjs-toploader";
 import { useQueryState } from "nuqs";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { FaFilter } from "react-icons/fa";
 import { CreateTask } from "./CreateTask";
 
@@ -15,15 +16,26 @@ interface Props {
 
 export const Filters = ({ className, showCreateTask = false }: Props) => {
   const [showFilters, setShowFilters] = useState(false);
+  const [isLoading, startTransition] = useTransition();
+  const loader = useTopLoader();
   const [status, setStatus] = useQueryState("status", {
     shallow: false,
+    startTransition,
   });
   const [createdBy, setCreatedBy] = useQueryState("created_by", {
     shallow: false,
+    startTransition,
   });
   const [accepted, setAccepted] = useQueryState("accepted", {
     shallow: false,
+    startTransition,
   });
+
+  useEffect(() => {
+    if (isLoading) {
+      loader.start();
+    }
+  }, [loader, isLoading]);
 
   return (
     <div className={clsx(className)}>
