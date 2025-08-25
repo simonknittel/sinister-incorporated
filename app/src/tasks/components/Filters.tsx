@@ -74,13 +74,13 @@ export const Filters = ({ className, showCreateTask = false }: Props) => {
         </div>
 
         <div className="background-secondary rounded-primary p-2">
-          <p className="text-sm text-neutral-500">Angenommen</p>
+          <p className="text-sm text-neutral-500">Angenommen von</p>
 
           <RadioGroup
             name="accepted"
             items={[
               { value: "all", label: "Alle" },
-              { value: "yes", label: "Von mir" },
+              { value: "yes", label: "Mir" },
             ]}
             value={accepted || "all"}
             onChange={setAccepted}
@@ -94,7 +94,7 @@ export const Filters = ({ className, showCreateTask = false }: Props) => {
           <RadioGroup
             name="created_by"
             items={[
-              { value: "others", label: "Anderen" },
+              { value: "others", label: "Alle" },
               { value: "me", label: "Mir" },
             ]}
             value={createdBy || "others"}
