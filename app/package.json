@@ -62,6 +62,7 @@
     "next": "15.4.5",
     "next-auth": "4.24.11",
     "next-intl": "4.3.4",
+    "nextjs-toploader": "3.8.16",
     "nuqs": "2.5.0",
     "openai": "4.104.0",
     "pusher": "5.2.0",

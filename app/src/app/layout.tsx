@@ -4,6 +4,7 @@ import { env } from "@/env";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { type Metadata } from "next";
 import { getLocale } from "next-intl/server";
+import NextTopLoader from "nextjs-toploader";
 import { type ReactNode } from "react";
 import "../styles/globals.css";
 
@@ -22,6 +23,7 @@ export default async function RootLayout({ children }: Readonly<Props>) {
     <html lang={locale}>
       <body className="bg-neutral-800 text-text-primary">
         {children}
+        <NextTopLoader color="#c22424" showSpinner={false} />
         <ToasterContainer />
         <AnalyticsLoader />
         <SpeedInsights sampleRate={0.5} />
