@@ -49,6 +49,17 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
+        <Day heading="26. August 2025">
+          <DayItem heading="Topbar" badges={["Änderung"]}>
+            <p>
+              Es gibt nun eine Topbar. Diese wurde implementiert um zukünftigen
+              Funktionen einen Platz zu bieten. Hier sind bereits ein paar
+              Funktionen aus der aktuellen Hauptnavigation hingewandert, Strg +
+              K-Menü und Abmelden.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="24. August 2025">
           <DayItem
             heading="NPC-Kills ausblenden"

@@ -22,7 +22,7 @@ export const Account = async ({ className }: Props) => {
         <button
           type="button"
           className={clsx(
-            "p-2 rounded-l-secondary hover:background-tertiary focus-visible:background-tertiary",
+            "p-2 rounded-r-primary hover:background-tertiary focus-visible:background-tertiary",
             className,
           )}
         >
@@ -31,7 +31,7 @@ export const Account = async ({ className }: Props) => {
           </div>
         </button>
       }
-      childrenClassName="w-80"
+      childrenClassName="w-64"
     >
       <div className="flex items-center gap-4">
         <div className="overflow-hidden rounded-secondary">

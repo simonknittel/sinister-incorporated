@@ -1,6 +1,5 @@
 import { requireAuthentication } from "@/auth/server";
 import { Link } from "@/common/components/Link";
-import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import {
   cloneElement,
   Suspense,
@@ -22,9 +21,7 @@ import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
 import { RxActivityLog } from "react-icons/rx";
 import { TbMilitaryRank } from "react-icons/tb";
-import { CmdKLoader } from "../CmdK/CmdKLoader";
 import { Footer } from "../Footer";
-import { Account } from "./Account";
 import { CollapseToggle } from "./CollapseToggle";
 import { RedBar } from "./RedBar";
 import { TasksBadge } from "./TasksBadge";
@@ -66,7 +63,6 @@ export const DesktopSidebar = async () => {
     showOrgFleetRead,
     showCitizenRead,
     showUserRead,
-    showOrganizationRead,
     showRoleManage,
     showClassificationLevelManage,
     showNoteTypeManage,
@@ -76,13 +72,11 @@ export const DesktopSidebar = async () => {
     showSilc,
     showSpynetActivity,
     showTasks,
-    showLogAnalyzer,
   ] = await Promise.all([
     authentication.authorize("ship", "manage"),
     authentication.authorize("orgFleet", "read"),
     authentication.authorize("citizen", "read"),
     authentication.authorize("user", "read"),
-    authentication.authorize("organization", "read"),
     authentication.authorize("role", "manage"),
     authentication.authorize("classificationLevel", "manage"),
     authentication.authorize("noteType", "manage"),
@@ -92,7 +86,6 @@ export const DesktopSidebar = async () => {
     authentication.authorize("silcBalanceOfOtherCitizen", "read"),
     authentication.authorize("spynetActivity", "read"),
     authentication.authorize("task", "read"),
-    authentication.authorize("logAnalyzer", "read"),
   ]);
 
   const showSpynetCitizen =
@@ -108,43 +101,13 @@ export const DesktopSidebar = async () => {
     showSpynetNotes ||
     showSpynetOther;
 
-  const [disableAlgolia = false, topBarEnabled = false] = await Promise.all([
-    getUnleashFlag("DisableAlgolia"),
-    getUnleashFlag("EnableTopBar"),
-  ]);
-
   return (
-    <div className="overflow-auto pl-2 py-2 group-data-[top-bar-enabled]/top-bar:pt-16">
+    <div className="overflow-auto pl-2 py-2 pt-16">
       {/* <GlobalAlert /> */}
 
       <div className="background-secondary flex flex-col justify-between rounded-primary">
         <div>
-          {!topBarEnabled && <Account isInDesktopSidebar />}
-
-          <div className="flex justify-between items-center mt-4 px-8 group-data-[navigation-collapsed]/navigation:px-0 group-data-[navigation-collapsed]/navigation:justify-center">
-            <CmdKLoader
-              disableAlgolia={disableAlgolia}
-              showCitizenRead={showCitizenRead}
-              showOrganizationRead={showOrganizationRead}
-              showOrgFleetRead={showOrgFleetRead}
-              showShipManage={showShipManage}
-              showUserRead={showUserRead}
-              showRoleManage={showRoleManage}
-              showClassificationLevelManage={showClassificationLevelManage}
-              showNoteTypeManage={showNoteTypeManage}
-              showAnalyticsManage={showAnalyticsManage}
-              showManufacturersSeriesAndVariantsManage={
-                showManufacturersSeriesAndVariantsManage
-              }
-              showTasks={showTasks}
-              showCareer={showCareer}
-              showSilc={showSilc}
-              showPenaltyPoints={showPenaltyPoints}
-              showLogAnalyzer={showLogAnalyzer}
-              className="group-data-[navigation-collapsed]/navigation:hidden"
-            />
-
-            {/* <InstallPWA /> */}
+          <div className="flex justify-center items-center mt-4 px-8 group-data-[navigation-collapsed]/navigation:px-0">
             <CollapseToggle />
           </div>
 

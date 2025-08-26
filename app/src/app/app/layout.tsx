@@ -7,6 +7,7 @@ import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { env } from "@/env";
 import { BeamsProvider } from "@/pusher/components/BeamsContext";
 import { ChannelsProvider } from "@/pusher/components/ChannelsContext";
+import { CmdKProvider } from "@/shell/components/CmdK/CmdKContext";
 import { DesktopSidebarContainer } from "@/shell/components/Sidebar/DesktopSidebarContainer";
 import { MobileActionBarContainer } from "@/shell/components/Sidebar/MobileActionBarContainer";
 import { TopBar } from "@/shell/components/TopBar";
@@ -21,10 +22,10 @@ interface Props {
 }
 
 export default async function AppLayout({ children }: Readonly<Props>) {
-  const [authentication, _cookies, topBarEnabled] = await Promise.all([
+  const [authentication, _cookies, disableAlgolia] = await Promise.all([
     authenticatePage(),
     cookies(),
-    getUnleashFlag("EnableTopBar"),
+    getUnleashFlag("DisableAlgolia"),
   ]);
   const isNavigationCollapsed =
     _cookies.get("navigation_collapsed")?.value === "true";
@@ -41,17 +42,18 @@ export default async function AppLayout({ children }: Readonly<Props>) {
               >
                 <NextIntlClientProvider>
                   <div
-                    className="min-h-dvh background-primary group/navigation group/top-bar"
+                    className="min-h-dvh background-primary group/navigation"
                     data-navigation-collapsed={
                       isNavigationCollapsed ? "true" : undefined
                     }
-                    data-top-bar-enabled={topBarEnabled ? "true" : undefined}
                   >
-                    <MobileActionBarContainer />
-                    <DesktopSidebarContainer />
-                    {topBarEnabled && <TopBar />}
+                    <CmdKProvider disableAlgolia={disableAlgolia}>
+                      <MobileActionBarContainer />
+                      <DesktopSidebarContainer />
+                      <TopBar />
+                    </CmdKProvider>
 
-                    <div className="lg:ml-64 group-data-[navigation-collapsed]/navigation:lg:ml-[4.5rem] group-data-[top-bar-enabled]/top-bar:lg:pt-16 min-h-dvh">
+                    <div className="lg:ml-64 group-data-[navigation-collapsed]/navigation:lg:ml-[4.5rem] lg:pt-16 min-h-dvh">
                       {children}
                     </div>
                   </div>

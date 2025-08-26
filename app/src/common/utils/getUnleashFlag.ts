@@ -17,8 +17,7 @@ export const getUnleashFlag = cache(
         | "DisableConfirmationEmail"
         | "DisableRoleNameSuggestions"
         | "EnableOperations"
-        | "EnableNotifications"
-        | "EnableTopBar",
+        | "EnableNotifications",
     ) => {
       try {
         const authentication = await authenticate();
