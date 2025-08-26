@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { CmdKLoader } from "../CmdK/CmdKLoader";
 import { Account } from "./Account";
 
 interface Props {
@@ -9,13 +10,15 @@ export const TopBar = ({ className }: Props) => {
   return (
     <div
       className={clsx(
-        "hidden lg:block px-2 pt-2 fixed z-10 left-0 right-0 top-0",
+        "hidden lg:flex fixed left-2 right-2 top-2 z-10 background-secondary-opaque rounded-primary",
         className,
       )}
     >
-      <div className="background-secondary-opaque rounded-primary">
-        <Account />
+      <div className="flex-1 flex justify-center">
+        <CmdKLoader className="w-full max-w-96" />
       </div>
+
+      <Account />
     </div>
   );
 };

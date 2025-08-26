@@ -2,37 +2,40 @@
 
 import clsx from "clsx";
 import dynamic from "next/dynamic";
-import { Suspense, useState, type ComponentProps } from "react";
+import { Suspense } from "react";
+import { useCmdKContext } from "./CmdKContext";
 
-const CmdK = dynamic(() => import("./CmdK").then((mod) => mod.CmdK), {
-  ssr: false,
-});
+const CmdK = dynamic(
+  () => import("./CmdKDialog").then((mod) => mod.CmdKDialog),
+  {
+    ssr: false,
+  },
+);
 
-interface Props extends Omit<ComponentProps<typeof CmdK>, "open" | "setOpen"> {
+interface Props {
   readonly className?: string;
 }
 
-export const CmdKLoader = ({ className, ...cmdKProps }: Props) => {
-  const [open, setOpen] = useState(false);
+export const CmdKLoader = ({ className }: Props) => {
+  const { setOpen } = useCmdKContext();
 
   return (
     <>
-      <button
-        className={clsx(
-          className,
-          "hidden lg:block text-neutral-600 text-center text-sm hover:text-neutral-400 active:text-neutral-300 group",
-        )}
-        type="button"
-        onClick={() => setOpen(true)}
-      >
-        Hotkey{" "}
-        <span className="px-2 py-1 rounded-secondary border border-neutral-800 group-hover:border-neutral-600 group-active:border-neutral-500">
-          Strg + K
-        </span>
-      </button>
+      <div className={clsx("p-2", className)}>
+        <button
+          className="flex justify-between w-full h-full rounded-secondary py-1 px-2 border border-neutral-700 bg-neutral-800 text-neutral-600 text-center text-sm hover:text-neutral-400 focus-visible:text-neutral-400 active:text-neutral-300 group"
+          type="button"
+          onClick={() => setOpen(true)}
+        >
+          Suche ...
+          <span className="px-1 py-0.5 rounded-secondary border border-neutral-700 group-hover:border-neutral-600 group-active:border-neutral-500 text-xs">
+            Strg + K
+          </span>
+        </button>
+      </div>
 
       <Suspense>
-        <CmdK open={open} setOpen={setOpen} {...cmdKProps} />
+        <CmdK />
       </Suspense>
     </>
   );
