@@ -17,10 +17,8 @@ import { FaCheck, FaCheckSquare, FaClock, FaInfoCircle } from "react-icons/fa";
 import { TbRepeatOnce } from "react-icons/tb";
 
 interface TaskWithIncludes extends TaskType {
-  assignments: (TaskAssignment & {
-    citizen: Entity;
-  })[];
-  completionists?: Entity[];
+  assignments: Pick<TaskAssignment, "citizenId">[];
+  completionists?: Pick<Entity, "id">[];
 }
 
 interface Props {
@@ -102,7 +100,7 @@ export const Task = ({ className, task }: Props) => {
   }
 
   const isTaskAssignedToCurrentCitizen = task.assignments.some(
-    (assignment) => assignment.citizen.id === authentication.session.entity?.id,
+    (assignment) => assignment.citizenId === authentication.session.entity?.id,
   );
 
   return (

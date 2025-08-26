@@ -56,16 +56,20 @@ export const getTasks = cache(
           },
           include: {
             assignments: {
-              include: {
-                citizen: true,
+              select: {
+                citizenId: true,
               },
             },
             requiredRoles: {
-              include: {
-                icon: true,
+              select: {
+                id: true,
               },
             },
-            completionists: true,
+            completionists: {
+              select: {
+                id: true,
+              },
+            },
           },
           orderBy: { createdAt: "desc" },
         });
@@ -98,13 +102,18 @@ export const getTasks = cache(
           },
           include: {
             assignments: {
-              include: {
-                citizen: true,
+              select: {
+                citizenId: true,
               },
             },
             requiredRoles: {
-              include: {
-                icon: true,
+              select: {
+                id: true,
+              },
+            },
+            completionists: {
+              select: {
+                id: true,
               },
             },
           },
@@ -150,12 +159,12 @@ export const getTaskById = cache(
             citizen: true,
           },
         },
-        completionists: true,
         requiredRoles: {
           include: {
             icon: true,
           },
         },
+        completionists: true,
         createdBy: true,
       },
     });
@@ -170,9 +179,9 @@ export const getTaskById = cache(
 
 const isVisibleForCurrentUser = async (
   task: Task & {
-    assignments: TaskAssignment[];
-    completionists?: Entity[];
-    requiredRoles: Role[];
+    assignments: Pick<TaskAssignment, "citizenId">[];
+    completionists?: Pick<Entity, "id">[];
+    requiredRoles: Pick<Role, "id">[];
   },
 ) => {
   const authentication = await requireAuthentication();
@@ -236,14 +245,21 @@ export const getMyAssignedTasks = cache(
         ],
       },
       include: {
-        assignments: { include: { citizen: true } },
-        completionists: true,
-        requiredRoles: {
-          include: {
-            icon: true,
+        assignments: {
+          select: {
+            citizenId: true,
           },
         },
-        createdBy: true,
+        requiredRoles: {
+          select: {
+            id: true,
+          },
+        },
+        completionists: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 

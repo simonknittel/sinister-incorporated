@@ -20,7 +20,7 @@ jobs:
         with:
           bun-version: 1.2.4
 
-      - uses: actions/cache@v4.2.3
+      - uses: actions/cache@v4.2.4
         id: node-modules-cache
         with:
           path: bun-packages/node_modules
