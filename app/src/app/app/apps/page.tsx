@@ -7,6 +7,7 @@ import careerScreenshot from "@/career/assets/screenshot.png";
 import changelogScreenshot from "@/changelog/assets/screenshot.png";
 import { Hero } from "@/common/components/Hero";
 import cornerstoneImageBrowserScreenshot from "@/cornerstone-image-browser/assets/screenshot.png";
+import dashboardScreenshot from "@/dashboard/assets/screenshot.png";
 import documentsScreenshot from "@/documents/assets/screenshot.png";
 import dogfightTrainerScreenshot from "@/dogfight-trainer/assets/screenshot.png";
 import fleetScreenshot from "@/fleet/assets/screenshot.png";
@@ -82,6 +83,13 @@ export default async function Page() {
     careerReadTeam;
 
   const apps = [
+    {
+      name: "Dashboard",
+      href: "/app",
+      imageSrc: dashboardScreenshot,
+      description: "Übersicht mit aktuellen Informationen",
+      featured: true,
+    },
     {
       name: "Dokumente",
       href: "/app/documents",
