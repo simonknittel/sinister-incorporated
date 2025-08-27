@@ -201,7 +201,9 @@ export default async function Page() {
     .filter((app) => app.featured)
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
-  const otherApps = apps.filter((app) => !app.featured);
+  const otherApps = apps
+    .filter((app) => !app.featured)
+    .toSorted((a, b) => a.name.localeCompare(b.name));
 
   return (
     <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
