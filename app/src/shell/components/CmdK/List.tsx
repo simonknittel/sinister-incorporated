@@ -2,14 +2,7 @@ import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Command } from "cmdk";
 import { signOut } from "next-auth/react";
 import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
-import {
-  FaCog,
-  FaHome,
-  FaLock,
-  FaPiggyBank,
-  FaTools,
-  FaUsers,
-} from "react-icons/fa";
+import { FaCog, FaHome, FaLock, FaPiggyBank, FaTools } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
@@ -265,29 +258,6 @@ export const List = () => {
                 />
               )}
 
-              {showRoleManage && (
-                <>
-                  <LinkItem
-                    label="Rollen"
-                    keywords={["Berechtigungen", "Permissions"]}
-                    icon={<FaLock />}
-                    section="Admin"
-                    href="/app/roles"
-                    setOpen={setOpen}
-                    setSearch={setSearch}
-                  />
-                  <LinkItem
-                    label="Berechtigungsmatrix"
-                    keywords={["Berechtigungen", "Permissions"]}
-                    icon={<FaLock />}
-                    section="Admin"
-                    href="/app/roles/permission-matrix"
-                    setOpen={setOpen}
-                    setSearch={setSearch}
-                  />
-                </>
-              )}
-
               {showManufacturersSeriesAndVariantsManage && (
                 <LinkItem
                   label="Schiffe"
@@ -299,13 +269,36 @@ export const List = () => {
                 />
               )}
 
+              {showRoleManage && (
+                <>
+                  <LinkItem
+                    label="Rollen"
+                    keywords={["Berechtigungen", "Permissions"]}
+                    icon={<FaLock />}
+                    section="IAM"
+                    href="/app/iam/roles"
+                    setOpen={setOpen}
+                    setSearch={setSearch}
+                  />
+                  <LinkItem
+                    label="Berechtigungsmatrix"
+                    keywords={["Berechtigungen", "Permissions"]}
+                    icon={<FaLock />}
+                    section="IAM"
+                    href="/app/iam/permission-matrix"
+                    setOpen={setOpen}
+                    setSearch={setSearch}
+                  />
+                </>
+              )}
+
               {showUserRead && (
                 <LinkItem
                   label="Benutzer"
                   keywords={["Users"]}
-                  icon={<FaUsers />}
-                  section="Admin"
-                  href="/app/users"
+                  icon={<FaLock />}
+                  section="IAM"
+                  href="/app/iam/users"
                   setOpen={setOpen}
                   setSearch={setSearch}
                 />
