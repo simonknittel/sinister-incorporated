@@ -55,7 +55,10 @@ export const Table = ({ users }: Props) => {
                 className="grow-1 shrink-0"
               />
 
-              <span className="text-ellipsis overflow-hidden">
+              <span
+                title={props.getValue()}
+                className="text-ellipsis overflow-hidden whitespace-nowrap"
+              >
                 {props.getValue()}
               </span>
             </div>
@@ -66,7 +69,10 @@ export const Table = ({ users }: Props) => {
         header: "User ID",
         cell: (props) => {
           return (
-            <span className="text-ellipsis block overflow-hidden">
+            <span
+              title={props.getValue()}
+              className="text-ellipsis block overflow-hidden whitespace-nowrap"
+            >
               {props.getValue()}
             </span>
           );
@@ -78,7 +84,14 @@ export const Table = ({ users }: Props) => {
           if (!props.getValue())
             return <VerifyEmailButton userId={props.row.original.user.id} />;
 
-          return <span>{formatDate(props.getValue())}</span>;
+          return (
+            <span
+              title={formatDate(props.getValue()) || undefined}
+              className="text-ellipsis block overflow-hidden whitespace-nowrap"
+            >
+              {formatDate(props.getValue())}
+            </span>
+          );
         },
       }),
       columnHelper.accessor("user.name", {
@@ -87,7 +100,10 @@ export const Table = ({ users }: Props) => {
           if (!props.getValue())
             return <span className="italic text-neutral-500">-</span>;
           return (
-            <span className="block text-ellipsis overflow-hidden">
+            <span
+              title={props.getValue() || undefined}
+              className="block text-ellipsis overflow-hidden whitespace-nowrap"
+            >
               {props.getValue()}
             </span>
           );

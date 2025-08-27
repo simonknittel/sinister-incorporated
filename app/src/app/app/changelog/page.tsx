@@ -37,9 +37,10 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const authentication = await authenticatePage("/app/changelog");
-  const [showLogAnalyzer, showManageRoles] = await Promise.all([
+  const [showLogAnalyzer, showManageRoles, showUserRead] = await Promise.all([
     authentication.authorize("logAnalyzer", "read"),
     authentication.authorize("role", "manage"),
+    authentication.authorize("user", "read"),
   ]);
 
   return (
@@ -49,6 +50,24 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
+        <Day heading="27. August 2025">
+          <DayItem heading="Apps-Link" badges={["Änderung"]}>
+            <p>Der Link zu den Apps ist in die Topbar gewandet, oben links.</p>
+          </DayItem>
+
+          {showManageRoles || showUserRead ? (
+            <DayItem heading="Rollen und Benutzer -> IAM" badges={["Änderung"]}>
+              <p>
+                Die Seiten Rollen, Berechtigungsmatrix und Benutzer wurden
+                zusammengeführt und sind nun über die App &ldquo;IAM&rdquo;
+                erreichbar.
+              </p>
+            </DayItem>
+          ) : (
+            <RedactedDayItem />
+          )}
+        </Day>
+
         <Day heading="26. August 2025">
           <DayItem heading="Topbar" badges={["Änderung"]}>
             <p>

@@ -2,14 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import { Link } from "@/common/components/Link";
 import clsx from "clsx";
 import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
-import {
-  FaCog,
-  FaHome,
-  FaLock,
-  FaPiggyBank,
-  FaTable,
-  FaUsers,
-} from "react-icons/fa";
+import { FaCog, FaHome, FaLock, FaPiggyBank, FaTable } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
@@ -141,10 +134,6 @@ export const MobileActionBar = async ({ className }: Props) => {
           <li className="h-full py-1">
             <MobileActionBarFlyout>
               <Account />
-
-              {/* <div className="flex justify-evenly items-center mt-4">
-                <InstallPWA />
-              </div> */}
 
               <div className="p-4 relative" data-red-bar-container>
                 <ul>
@@ -374,18 +363,6 @@ export const MobileActionBar = async ({ className }: Props) => {
                         </li>
                       )}
 
-                      {(await authentication.authorize("role", "manage")) && (
-                        <li>
-                          <Link
-                            href="/app/roles"
-                            className="flex gap-2 items-center p-2 active:bg-neutral-700 rounded-secondary"
-                          >
-                            <FaLock className="text-neutral-500" />
-                            Rollen
-                          </Link>
-                        </li>
-                      )}
-
                       {(await authentication.authorize(
                         "manufacturersSeriesAndVariants",
                         "manage",
@@ -400,14 +377,16 @@ export const MobileActionBar = async ({ className }: Props) => {
                           </Link>
                         </li>
                       )}
-                      {(await authentication.authorize("user", "read")) && (
+
+                      {((await authentication.authorize("role", "manage")) ||
+                        (await authentication.authorize("user", "read"))) && (
                         <li>
                           <Link
-                            href="/app/users"
+                            href="/app/iam"
                             className="flex gap-2 items-center p-2 active:bg-neutral-700 rounded-secondary"
                           >
-                            <FaUsers className="text-neutral-500" />
-                            Benutzer
+                            <FaLock className="text-neutral-500" />
+                            IAM
                           </Link>
                         </li>
                       )}

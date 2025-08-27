@@ -1,10 +1,11 @@
 "use client";
 
 import { Button2 } from "@/common/components/Button2";
+import { TextInput } from "@/common/components/form/TextInput";
 import Modal from "@/common/components/Modal";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaPlus, FaSave, FaSpinner } from "react-icons/fa";
@@ -24,7 +25,6 @@ export const Create = ({ className, enableSuggestions }: Readonly<Props>) => {
   const router = useRouter();
   const { register, handleSubmit, reset, setValue } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
-  const inputId = useId();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
@@ -57,23 +57,19 @@ export const Create = ({ className, enableSuggestions }: Readonly<Props>) => {
     <>
       <Button2 onClick={() => setIsOpen(true)} className={clsx(className)}>
         <FaPlus />
-        Hinzufügen
+        Neue Rolle
       </Button2>
 
       <Modal
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
         className="w-[480px]"
-        heading={<h2>Hinzufügen</h2>}
+        heading={<h2>Neue Rolle</h2>}
       >
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label className="block" htmlFor={inputId}>
-            Name
-          </label>
-
-          <input
-            className="p-2 rounded-secondary bg-neutral-900 w-full mt-2"
-            id={inputId}
+          <TextInput
+            label="Name"
+            className="mt-2"
             {...register("name", { required: true })}
             autoFocus
           />

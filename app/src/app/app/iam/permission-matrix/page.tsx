@@ -1,22 +1,22 @@
 import { authenticatePage } from "@/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
+import { Template } from "@/iam/components/Template";
 import { PermissionMatrix } from "@/roles/components/PermissionMatrix";
-import { RolesOverviewTemplate } from "@/roles/components/RolesOverviewTemplate";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Berechtigungsmatrix - Rollen | S.A.M. - Sinister Incorporated",
+  title: "Berechtigungsmatrix - IAM | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/roles/permission-matrix");
+  const authentication = await authenticatePage("/app/iam/permission-matrix");
   await authentication.authorizePage("role", "manage");
 
   return (
-    <RolesOverviewTemplate>
+    <Template mainClassName="overflow-x-hidden">
       <SuspenseWithErrorBoundaryTile>
         <PermissionMatrix />
       </SuspenseWithErrorBoundaryTile>
-    </RolesOverviewTemplate>
+    </Template>
   );
 }
