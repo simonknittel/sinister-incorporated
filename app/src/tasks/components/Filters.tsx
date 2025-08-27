@@ -15,7 +15,7 @@ interface Props {
 }
 
 export const Filters = ({ className, showCreateTask = false }: Props) => {
-  const [showFilters, setShowFilters] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [isLoading, startTransition] = useTransition();
   const loader = useTopLoader();
   const [status, setStatus] = useQueryState("status", {
@@ -42,7 +42,7 @@ export const Filters = ({ className, showCreateTask = false }: Props) => {
       <div className="flex gap-2">
         <Button2
           type="button"
-          onClick={() => setShowFilters((prev) => !prev)}
+          onClick={() => setIsOpen((prev) => !prev)}
           variant="secondary"
           className="flex-1 md:hidden"
         >
@@ -55,7 +55,7 @@ export const Filters = ({ className, showCreateTask = false }: Props) => {
 
       <div
         className={clsx("flex flex-col gap-[2px] mt-4", {
-          "hidden md:flex": !showFilters,
+          "hidden md:flex": !isOpen,
         })}
       >
         <div className="background-secondary rounded-primary p-2">

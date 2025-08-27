@@ -7,14 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { AiOutlineForm } from "react-icons/ai";
-import {
-  FaCog,
-  FaHome,
-  FaLock,
-  FaPiggyBank,
-  FaTable,
-  FaUsers,
-} from "react-icons/fa";
+import { FaCog, FaHome, FaLock, FaPiggyBank, FaTable } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
@@ -244,14 +237,6 @@ export const DesktopSidebar = async () => {
                   />
                 )}
 
-                {showRoleManage && (
-                  <NavigationItem
-                    href="/app/roles"
-                    label="Rollen"
-                    icon={<FaLock />}
-                  />
-                )}
-
                 {showManufacturersSeriesAndVariantsManage && (
                   <NavigationItem
                     href="/app/fleet/settings/manufacturer"
@@ -260,11 +245,11 @@ export const DesktopSidebar = async () => {
                   />
                 )}
 
-                {showUserRead && (
+                {(showRoleManage || showUserRead) && (
                   <NavigationItem
-                    href="/app/users"
-                    label="Benutzer"
-                    icon={<FaUsers />}
+                    href="/app/iam"
+                    label="IAM"
+                    icon={<FaLock />}
                   />
                 )}
               </NavigationSection>

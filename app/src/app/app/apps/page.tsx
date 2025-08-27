@@ -11,6 +11,7 @@ import dashboardScreenshot from "@/dashboard/assets/screenshot.png";
 import documentsScreenshot from "@/documents/assets/screenshot.png";
 import dogfightTrainerScreenshot from "@/dogfight-trainer/assets/screenshot.png";
 import fleetScreenshot from "@/fleet/assets/screenshot.png";
+import iamScreenshot from "@/iam/assets/screenshot.png";
 import logAnalyzerScreenshot from "@/log-analyzer/assets/screenshot.png";
 import penaltyPointsScreenshot from "@/penalty-points/assets/screenshot.png";
 import silcScreenshot from "@/silc/assets/screenshot.png";
@@ -40,6 +41,8 @@ export default async function Page() {
     careerReadTeam,
     showSilc,
     showPenaltyPoints,
+    showRoleManage,
+    showUserRead,
   ] = await Promise.all([
     authentication.authorize("logAnalyzer", "read"),
     authentication.authorize("task", "read"),
@@ -73,6 +76,8 @@ export default async function Page() {
     ]),
     authentication.authorize("silcBalanceOfOtherCitizen", "read"),
     authentication.authorize("penaltyEntry", "create"),
+    authentication.authorize("role", "manage"),
+    authentication.authorize("user", "read"),
   ]);
   const showSpynet = citizenRead || organizationRead;
   const showFleet = orgFleetRead || shipManage;
@@ -182,6 +187,13 @@ export default async function Page() {
       href: "/app/changelog",
       imageSrc: changelogScreenshot,
       description: "Übersicht der letzten Änderungen im S.A.M.",
+    },
+    {
+      name: "IAM",
+      href: "/app/iam",
+      imageSrc: iamScreenshot,
+      description: "Übersicht und Verwaltung der Rollen und Benutzer.",
+      redacted: !showRoleManage && !showUserRead,
     },
   ];
 

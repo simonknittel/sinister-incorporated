@@ -523,7 +523,7 @@ export const PermissionMatrix = async ({ className }: Props) => {
     ]),
   ];
 
-  const gridTemplateColumns = `256px repeat(${permissions.length}, 32px)`;
+  const gridTemplateColumns = `240px repeat(${permissions.length}, 32px)`;
 
   return (
     <section
