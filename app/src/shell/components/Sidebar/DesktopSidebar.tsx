@@ -6,7 +6,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
-import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
+import { AiOutlineForm } from "react-icons/ai";
 import {
   FaCog,
   FaHome,
@@ -117,12 +117,6 @@ export const DesktopSidebar = async () => {
           >
             <ul>
               <NavigationItem href="/app" label="Dashboard" icon={<FaHome />} />
-
-              <NavigationItem
-                href="/app/apps"
-                label="Apps"
-                icon={<AiFillAppstore />}
-              />
 
               {showTasks && (
                 <NavigationItem

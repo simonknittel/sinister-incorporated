@@ -49,6 +49,12 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
+        <Day heading="27. August 2025">
+          <DayItem heading="Apps-Link" badges={["Änderung"]}>
+            <p>Der Link zu den Apps ist in die Topbar gewandet, oben links.</p>
+          </DayItem>
+        </Day>
+
         <Day heading="26. August 2025">
           <DayItem heading="Topbar" badges={["Änderung"]}>
             <p>
