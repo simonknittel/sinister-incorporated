@@ -6,6 +6,7 @@ import {
   useCreateContext,
   type createForms,
 } from "@/common/components/CreateContext";
+import { Link } from "@/common/components/Link";
 import * as RadixPopover from "@radix-ui/react-popover";
 import clsx from "clsx";
 import { useState } from "react";
@@ -94,6 +95,15 @@ export const Create = ({ className }: Props) => {
                   Rolle
                 </Button2>
               )}
+
+              <Button2
+                as={Link}
+                href="https://forms.gle/mNnrAA6mHF3sh3mm9"
+                className="px-3 !justify-start rounded-none"
+              >
+                <FaPlus />
+                SILO-Anfrage
+              </Button2>
 
               {showCreatePenaltyEntry && (
                 <Button2
