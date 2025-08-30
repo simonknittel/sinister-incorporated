@@ -33,7 +33,7 @@ export const Popover = ({ trigger, children, childrenClassName }: Props) => {
 
         <RadixPopover.Portal>
           <RadixPopover.Content
-            collisionPadding={{ left: 24, right: 24 }}
+            collisionPadding={{ left: 8, right: 8 }}
             className="z-10"
           >
             <div

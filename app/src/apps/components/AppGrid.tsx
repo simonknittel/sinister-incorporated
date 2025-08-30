@@ -4,13 +4,23 @@ import type { ReactNode } from "react";
 interface Props {
   readonly className?: string;
   readonly children: ReactNode;
+  readonly variant?: "default" | "compact";
 }
 
-export const AppGrid = ({ className, children }: Props) => {
+export const AppGrid = ({
+  className,
+  children,
+  variant = "default",
+}: Props) => {
   return (
     <div
       className={clsx(
-        "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4",
+        "grid",
+        {
+          "grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4":
+            variant === "default",
+          "grid-cols-1 gap-[2px]": variant === "compact",
+        },
         className,
       )}
     >

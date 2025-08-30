@@ -9,6 +9,8 @@ interface Props {
   readonly href: string;
   readonly imageSrc: ComponentProps<typeof Image>["src"];
   readonly description?: string;
+  readonly variant?: "default" | "compact";
+  readonly onClick?: () => void;
 }
 
 export const App = ({
@@ -17,7 +19,24 @@ export const App = ({
   href,
   imageSrc,
   description,
+  variant = "default",
+  onClick,
 }: Props) => {
+  if (variant === "compact") {
+    return (
+      <NextLink
+        href={href}
+        className={clsx(
+          "block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs",
+          className,
+        )}
+        onClick={onClick}
+      >
+        {name}
+      </NextLink>
+    );
+  }
+
   return (
     <NextLink
       href={href}

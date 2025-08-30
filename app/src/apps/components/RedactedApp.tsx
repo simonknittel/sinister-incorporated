@@ -3,9 +3,33 @@ import { random } from "lodash";
 
 interface Props {
   readonly className?: string;
+  readonly variant?: "default" | "compact";
 }
 
-export const RedactedApp = ({ className }: Props) => {
+export const RedactedApp = ({ className, variant = "default" }: Props) => {
+  if (variant === "compact") {
+    return (
+      <div
+        className={clsx(
+          "background-secondary rounded-primary relative p-2 text-xs",
+          className,
+        )}
+      >
+        Redacted
+        <div className="absolute inset-0 flex items-center justify-center backdrop-blur">
+          <p
+            className="text-sinister-red-700 border border-sinister-red-700 rounded-secondary px-2 py-1 text-xs relative"
+            style={{
+              transform: `rotate(${random(-15, 15)}deg)`,
+            }}
+          >
+            Redacted
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={clsx(
