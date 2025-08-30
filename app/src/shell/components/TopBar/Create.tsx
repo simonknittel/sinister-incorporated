@@ -7,6 +7,7 @@ import {
   type createForms,
 } from "@/common/components/CreateContext";
 import { Link } from "@/common/components/Link";
+import { useMouseEnterCounter } from "@/common/utils/useMouseEnterCounter";
 import * as RadixPopover from "@radix-ui/react-popover";
 import clsx from "clsx";
 import { useState } from "react";
@@ -20,6 +21,10 @@ export const Create = ({ className }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const authentication = useAuthentication();
   const { openCreateModal } = useCreateContext();
+  const { handleMouseEnter, handleMouseLeave } = useMouseEnterCounter(
+    setIsOpen.bind(null, true),
+    setIsOpen.bind(null, false),
+  );
 
   const handleClick = (modalId: keyof typeof createForms) => {
     openCreateModal(modalId);
@@ -54,6 +59,8 @@ export const Create = ({ className }: Props) => {
             variant="secondary"
             colorSchema="interactionMuted"
             className="h-full px-6"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <FaPlus />
             Neu
@@ -63,15 +70,16 @@ export const Create = ({ className }: Props) => {
         <RadixPopover.Portal>
           <RadixPopover.Content
             collisionPadding={{ left: 24, right: 24 }}
-            className="z-10 rounded-secondary overflow-hidden"
+            className="z-10"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
-            <div className="flex flex-col gap-[1px]">
+            <div className="flex flex-col gap-[1px] bg-black relative">
               {showCreateCitizen && (
                 <Button2
                   onClick={() => handleClick("citizen")}
-                  className="px-3 !justify-start !rounded-none"
+                  className="px-3 !justify-start !rounded-b-none"
                 >
-                  <FaPlus />
                   Citizen
                 </Button2>
               )}
@@ -81,7 +89,6 @@ export const Create = ({ className }: Props) => {
                   onClick={() => handleClick("organization")}
                   className="px-3 !justify-start !rounded-none"
                 >
-                  <FaPlus />
                   Organisation
                 </Button2>
               )}
@@ -91,7 +98,6 @@ export const Create = ({ className }: Props) => {
                   onClick={() => handleClick("role")}
                   className="px-3 !justify-start !rounded-none"
                 >
-                  <FaPlus />
                   Rolle
                 </Button2>
               )}
@@ -102,7 +108,6 @@ export const Create = ({ className }: Props) => {
                 href="/app/silo-request"
                 className="px-3 !justify-start !rounded-none"
               >
-                <FaPlus />
                 SILO-Anfrage
               </Button2>
 
@@ -111,7 +116,6 @@ export const Create = ({ className }: Props) => {
                   onClick={() => handleClick("penaltyEntry")}
                   className="px-3 !justify-start !rounded-none"
                 >
-                  <FaPlus />
                   Strafpunkte
                 </Button2>
               )}
@@ -119,12 +123,13 @@ export const Create = ({ className }: Props) => {
               {showCreateTask && (
                 <Button2
                   onClick={() => handleClick("task")}
-                  className="px-3 !justify-start !rounded-none"
+                  className="px-3 !justify-start !rounded-t-none"
                 >
-                  <FaPlus />
                   Task
                 </Button2>
               )}
+
+              <div className="h-2 absolute left-0 right-0 bottom-full" />
             </div>
 
             <RadixPopover.Arrow className="fill-sinister-red-500" />
