@@ -1,6 +1,7 @@
 import { AdminEnabler } from "@/auth/components/AdminEnabler";
 import { SessionProviderContainer } from "@/auth/components/SessionProviderContainer";
 import { authenticatePage } from "@/auth/server";
+import { CreateContextProvider } from "@/common/components/CreateContext";
 import ImpersonationBannerContainer from "@/common/components/ImpersonationBannerContainer";
 import QueryClientProviderContainer from "@/common/components/QueryClientProviderContainer";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
@@ -47,15 +48,17 @@ export default async function AppLayout({ children }: Readonly<Props>) {
                       isNavigationCollapsed ? "true" : undefined
                     }
                   >
-                    <CmdKProvider disableAlgolia={disableAlgolia}>
-                      <MobileActionBarContainer />
-                      <DesktopSidebarContainer />
-                      <TopBar />
-                    </CmdKProvider>
+                    <CreateContextProvider>
+                      <CmdKProvider disableAlgolia={disableAlgolia}>
+                        <MobileActionBarContainer />
+                        <DesktopSidebarContainer />
+                        <TopBar />
+                      </CmdKProvider>
 
-                    <div className="lg:ml-64 group-data-[navigation-collapsed]/navigation:lg:ml-[4.5rem] lg:pt-16 min-h-dvh">
-                      {children}
-                    </div>
+                      <div className="lg:ml-64 group-data-[navigation-collapsed]/navigation:lg:ml-[4.5rem] lg:pt-16 min-h-dvh">
+                        {children}
+                      </div>
+                    </CreateContextProvider>
                   </div>
 
                   <Suspense>

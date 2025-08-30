@@ -4,7 +4,7 @@ import type { Entity } from "@prisma/client";
 import clsx from "clsx";
 import { getEntriesOfCitizen } from "../queries";
 import { AllEntriesTableClient } from "./AllEntriesTableClient";
-import { CreatePenaltyEntry } from "./CreatePenaltyEntry";
+import { CreatePenaltyEntryButton } from "./CreatePenaltyEntry/CreatePenaltyEntryButton";
 
 interface Props {
   readonly className?: string;
@@ -27,7 +27,7 @@ export const EntriesOfCitizenTable = async ({
   return (
     <Tile
       heading="Aktive Strafpunkte"
-      cta={showCreate ? <CreatePenaltyEntry /> : null}
+      cta={showCreate ? <CreatePenaltyEntryButton /> : null}
       className={clsx(className)}
     >
       {hasEntries ? (

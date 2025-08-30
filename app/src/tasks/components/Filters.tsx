@@ -7,7 +7,7 @@ import { useTopLoader } from "nextjs-toploader";
 import { useQueryState } from "nuqs";
 import { useEffect, useState, useTransition } from "react";
 import { FaFilter } from "react-icons/fa";
-import { CreateTask } from "./CreateTask";
+import { CreateTaskButton } from "./CreateTask/CreateTaskButton";
 
 interface Props {
   readonly className?: string;
@@ -50,7 +50,7 @@ export const Filters = ({ className, showCreateTask = false }: Props) => {
           Filter
         </Button2>
 
-        {showCreateTask && <CreateTask className="flex-1" />}
+        {showCreateTask && <CreateTaskButton className="flex-1" />}
       </div>
 
       <div

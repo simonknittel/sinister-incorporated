@@ -11,7 +11,7 @@ interface Props {
   readonly error?: Error;
 }
 
-const Note = ({ className, message, type = "info", error }: Props) => {
+export const Note = ({ className, message, type = "info", error }: Props) => {
   return (
     <div
       className={clsx(

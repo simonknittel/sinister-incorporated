@@ -50,6 +50,15 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
+        <Day heading="30. August 2025">
+          <DayItem heading="&ldquo;Neu&rdquo; in der Topbar" badges={["Neu"]}>
+            <p>
+              Die Topbar enthält nun einen neuen Button, um von überall Tasks,
+              Citizen usw. erstellen zu können.
+            </p>
+          </DayItem>
+        </Day>
+
         <Day heading="27. August 2025">
           <DayItem heading="Apps-Link" badges={["Änderung"]}>
             <p>Der Link zu den Apps ist in die Topbar gewandet, oben links.</p>
