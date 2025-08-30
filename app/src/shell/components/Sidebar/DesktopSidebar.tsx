@@ -170,7 +170,7 @@ export const DesktopSidebar = async () => {
 
             <NavigationSection heading="Economics">
               <NavigationItem
-                href="https://forms.gle/mNnrAA6mHF3sh3mm9"
+                href="/app/silo-request"
                 label="SILO-Anfrage"
                 icon={<AiOutlineForm />}
               />

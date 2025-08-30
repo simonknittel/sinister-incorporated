@@ -98,7 +98,8 @@ export const Create = ({ className }: Props) => {
 
               <Button2
                 as={Link}
-                href="https://forms.gle/mNnrAA6mHF3sh3mm9"
+                onClick={() => setIsOpen(false)}
+                href="/app/silo-request"
                 className="px-3 !justify-start rounded-none"
               >
                 <FaPlus />
