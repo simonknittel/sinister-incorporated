@@ -78,7 +78,7 @@ export const Create = ({ className }: Props) => {
               {showCreateCitizen && (
                 <Button2
                   onClick={() => handleClick("citizen")}
-                  className="px-3 !justify-start !rounded-b-none"
+                  className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
                 >
                   Citizen
                 </Button2>
@@ -87,7 +87,7 @@ export const Create = ({ className }: Props) => {
               {showCreateOrganization && (
                 <Button2
                   onClick={() => handleClick("organization")}
-                  className="px-3 !justify-start !rounded-none"
+                  className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
                 >
                   Organisation
                 </Button2>
@@ -96,7 +96,7 @@ export const Create = ({ className }: Props) => {
               {showCreateRole && (
                 <Button2
                   onClick={() => handleClick("role")}
-                  className="px-3 !justify-start !rounded-none"
+                  className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
                 >
                   Rolle
                 </Button2>
@@ -106,7 +106,7 @@ export const Create = ({ className }: Props) => {
                 as={Link}
                 onClick={() => setIsOpen(false)}
                 href="/app/silo-request"
-                className="px-3 !justify-start !rounded-none"
+                className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
               >
                 SILO-Anfrage
               </Button2>
@@ -114,7 +114,7 @@ export const Create = ({ className }: Props) => {
               {showCreatePenaltyEntry && (
                 <Button2
                   onClick={() => handleClick("penaltyEntry")}
-                  className="px-3 !justify-start !rounded-none"
+                  className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
                 >
                   Strafpunkte
                 </Button2>
@@ -123,14 +123,14 @@ export const Create = ({ className }: Props) => {
               {showCreateTask && (
                 <Button2
                   onClick={() => handleClick("task")}
-                  className="px-3 !justify-start !rounded-t-none"
+                  className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
                 >
                   Task
                 </Button2>
               )}
-
-              <div className="h-2 absolute left-0 right-0 bottom-full" />
             </div>
+
+            <div className="h-2 absolute left-0 right-0 bottom-full" />
 
             <RadixPopover.Arrow className="fill-sinister-red-500" />
           </RadixPopover.Content>
