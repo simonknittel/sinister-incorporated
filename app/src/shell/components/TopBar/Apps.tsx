@@ -104,9 +104,9 @@ export const Apps = ({ className }: Props) => {
                 Alle Apps
               </Link>
             </div>
-
-            <div className="h-2 absolute left-0 right-0 bottom-full" />
           </div>
+
+          <div className="h-2 absolute left-0 right-0 bottom-full" />
 
           <RadixPopover.Arrow className="fill-neutral-700" />
         </RadixPopover.Content>

@@ -11,7 +11,7 @@ export const RedactedApp = ({ className, variant = "default" }: Props) => {
     return (
       <div
         className={clsx(
-          "background-secondary rounded-primary relative p-2 text-xs",
+          "background-secondary rounded-primary overflow-hidden relative p-2 text-xs",
           className,
         )}
       >
@@ -20,7 +20,7 @@ export const RedactedApp = ({ className, variant = "default" }: Props) => {
           <p
             className="text-sinister-red-700 border border-sinister-red-700 rounded-secondary px-2 py-1 text-xs relative"
             style={{
-              transform: `rotate(${random(-15, 15)}deg)`,
+              transform: `rotate(${random(-8, 8)}deg)`,
             }}
           >
             Redacted
