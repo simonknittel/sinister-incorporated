@@ -1,8 +1,8 @@
 import { authenticatePage } from "@/auth/server";
-import { CreateCitizen } from "@/citizen/components/CreateCitizen";
+import { CreateCitizenButton } from "@/citizen/components/CreateCitizenButton";
 import { Hero } from "@/common/components/Hero";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { CreateOrganization } from "@/spynet/components/CreateOrganization";
+import { CreateOrganizationButton } from "@/spynet/components/CreateOrganization/CreateOrganizationButton";
 import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
 import { type Metadata } from "next";
 
@@ -30,9 +30,9 @@ export default async function Page() {
 
         {(showCreateCitizen || showCreateOrganization) && (
           <div className="flex gap-2 justify-center mt-4">
-            {showCreateCitizen && <CreateCitizen />}
+            {showCreateCitizen && <CreateCitizenButton />}
 
-            {showCreateOrganization && <CreateOrganization />}
+            {showCreateOrganization && <CreateOrganizationButton />}
           </div>
         )}
       </div>

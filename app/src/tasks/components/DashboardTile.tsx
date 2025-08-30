@@ -1,3 +1,4 @@
+import { Link } from "@/common/components/Link";
 import clsx from "clsx";
 import { getMyAssignedTasks } from "../queries";
 import { NotificationsTooltip } from "./NotificationsTooltip";
@@ -23,6 +24,15 @@ export const TasksDashboardTile = async ({ className }: Props) => {
         {myAssignedTasks.map((task) => (
           <Task key={task.id} task={task} />
         ))}
+      </div>
+
+      <div className="flex justify-center mt-1">
+        <Link
+          href="/app/tasks"
+          className="text-interaction-500 hover:underline focus-visible:underline"
+        >
+          Alle Tasks
+        </Link>
       </div>
     </section>
   );

@@ -3,7 +3,7 @@
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Button2 } from "@/common/components/Button2";
 import { Link } from "@/common/components/Link";
-import { Create } from "@/roles/components/Create";
+import { CreateRoleButton } from "@/roles/components/CreateRole/CreateRoleButton";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
@@ -11,10 +11,9 @@ import { FaBars } from "react-icons/fa";
 
 interface Props {
   readonly className?: string;
-  readonly isOpenAIEnabled?: boolean;
 }
 
-export const Navigation = ({ className, isOpenAIEnabled }: Props) => {
+export const Navigation = ({ className }: Props) => {
   const authentication = useAuthentication();
   if (!authentication || !authentication.session.entity)
     throw new Error("Forbidden");
@@ -55,9 +54,7 @@ export const Navigation = ({ className, isOpenAIEnabled }: Props) => {
           Navigation
         </Button2>
 
-        {showRoleManage && (
-          <Create enableSuggestions={isOpenAIEnabled} className="flex-1" />
-        )}
+        {showRoleManage && <CreateRoleButton className="flex-1" />}
       </div>
 
       <div

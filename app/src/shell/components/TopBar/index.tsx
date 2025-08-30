@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { CmdKLoader } from "../CmdK/CmdKLoader";
 import { Account } from "./Account";
 import { Apps } from "./Apps";
+import { Create } from "./Create";
 
 interface Props {
   readonly className?: string;
@@ -15,8 +16,9 @@ export const TopBar = ({ className }: Props) => {
         className,
       )}
     >
-      <div className="flex-1">
+      <div className="flex-1 flex items-center">
         <Apps />
+        <Create />
       </div>
 
       <CmdKLoader className="flex-initial w-96" />
