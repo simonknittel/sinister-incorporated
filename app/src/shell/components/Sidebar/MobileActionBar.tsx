@@ -246,7 +246,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                   <ul>
                     <li>
                       <Link
-                        href="https://forms.gle/mNnrAA6mHF3sh3mm9"
+                        href="/app/silo-request"
                         className="flex gap-2 items-center p-2 active:bg-neutral-700 rounded-secondary"
                       >
                         <AiOutlineForm className="text-neutral-500" />

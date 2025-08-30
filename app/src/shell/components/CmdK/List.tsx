@@ -149,7 +149,7 @@ export const List = () => {
           <LinkItem
             label="SILO-Anfrage"
             icon={<AiOutlineForm />}
-            href="https://forms.gle/mNnrAA6mHF3sh3mm9"
+            href="/app/silo-request"
             setOpen={setOpen}
             setSearch={setSearch}
           />

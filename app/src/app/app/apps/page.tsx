@@ -122,7 +122,7 @@ export default async function Page() {
     },
     {
       name: "SILC",
-      href: "/apps/silc",
+      href: "/app/silc",
       imageSrc: silcScreenshot,
       description: "Übersicht und Verwaltung von SILC",
       featured: true,
@@ -130,7 +130,7 @@ export default async function Page() {
     },
     {
       name: "SILO-Anfrage",
-      href: "https://forms.gle/mNnrAA6mHF3sh3mm9",
+      href: "/app/silo-request",
       imageSrc: siloAnfrageScreenshot,
       description:
         "Hier kannst du Materialeinträge anmelden, aktuelle Angebote und Preislisten anfordern.",
@@ -146,7 +146,7 @@ export default async function Page() {
     },
     {
       name: "Strafpunkte",
-      href: "/apps/penalty-points",
+      href: "/app/penalty-points",
       imageSrc: penaltyPointsScreenshot,
       description: "Übersicht und Verwaltung von Strafpunkten",
       featured: true,
@@ -206,7 +206,7 @@ export default async function Page() {
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
+    <main className="p-4 pb-20 lg:pb-4 max-w-[1920px] mx-auto">
       <div className="flex justify-center">
         <Hero text="Apps" withGlitch size="md" />
       </div>
