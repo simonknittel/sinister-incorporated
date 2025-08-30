@@ -69,7 +69,7 @@ export const Create = ({ className }: Props) => {
               {showCreateCitizen && (
                 <Button2
                   onClick={() => handleClick("citizen")}
-                  className="px-3 !justify-start rounded-none"
+                  className="px-3 !justify-start !rounded-none"
                 >
                   <FaPlus />
                   Citizen
@@ -79,7 +79,7 @@ export const Create = ({ className }: Props) => {
               {showCreateOrganization && (
                 <Button2
                   onClick={() => handleClick("organization")}
-                  className="px-3 !justify-start rounded-none"
+                  className="px-3 !justify-start !rounded-none"
                 >
                   <FaPlus />
                   Organisation
@@ -89,7 +89,7 @@ export const Create = ({ className }: Props) => {
               {showCreateRole && (
                 <Button2
                   onClick={() => handleClick("role")}
-                  className="px-3 !justify-start rounded-none"
+                  className="px-3 !justify-start !rounded-none"
                 >
                   <FaPlus />
                   Rolle
@@ -100,7 +100,7 @@ export const Create = ({ className }: Props) => {
                 as={Link}
                 onClick={() => setIsOpen(false)}
                 href="/app/silo-request"
-                className="px-3 !justify-start rounded-none"
+                className="px-3 !justify-start !rounded-none"
               >
                 <FaPlus />
                 SILO-Anfrage
@@ -109,7 +109,7 @@ export const Create = ({ className }: Props) => {
               {showCreatePenaltyEntry && (
                 <Button2
                   onClick={() => handleClick("penaltyEntry")}
-                  className="px-3 !justify-start rounded-none"
+                  className="px-3 !justify-start !rounded-none"
                 >
                   <FaPlus />
                   Strafpunkte
@@ -119,7 +119,7 @@ export const Create = ({ className }: Props) => {
               {showCreateTask && (
                 <Button2
                   onClick={() => handleClick("task")}
-                  className="px-3 !justify-start rounded-none"
+                  className="px-3 !justify-start !rounded-none"
                 >
                   <FaPlus />
                   Task
