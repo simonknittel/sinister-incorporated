@@ -301,7 +301,7 @@ export default async function Page() {
             <p>
               Der{" "}
               <Link
-                href="/dogfight-trainer"
+                href="/app/dogfight-trainer"
                 className="text-interaction-500 hover:text-interaction-300 focus-visible:text-interaction-300"
               >
                 Dogfight Trainer
