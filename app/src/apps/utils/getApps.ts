@@ -158,7 +158,7 @@ export const getApps = async () => {
     },
     {
       name: "Dogfight Trainer",
-      href: "/dogfight-trainer",
+      href: "/app/dogfight-trainer",
       imageSrc: dogfightTrainerScreenshot,
       description:
         "Zeige deinen Dogfight Skill in unserer Hommage an den Klassiker, Asteroids. Achte darauf was du abschießt!",

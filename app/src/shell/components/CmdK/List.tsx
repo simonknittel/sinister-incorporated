@@ -191,7 +191,7 @@ export const List = () => {
             keywords={["Dogfight Trainer", "Asteroids"]}
             icon={<FaTools />}
             section="Tools"
-            href="/dogfight-trainer"
+            href="/app/dogfight-trainer"
             setOpen={setOpen}
             setSearch={setSearch}
           />
