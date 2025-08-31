@@ -32,6 +32,7 @@ export const Account = async ({ className }: Props) => {
         </button>
       }
       childrenClassName="w-64"
+      enableHover
     >
       <div className="flex items-center gap-4">
         <div className="overflow-hidden rounded-secondary">

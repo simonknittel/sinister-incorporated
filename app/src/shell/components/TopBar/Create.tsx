@@ -7,10 +7,8 @@ import {
   type createForms,
 } from "@/common/components/CreateContext";
 import { Link } from "@/common/components/Link";
-import { useMouseEnterCounter } from "@/common/utils/useMouseEnterCounter";
-import * as RadixPopover from "@radix-ui/react-popover";
+import { Popover, usePopover } from "@/common/components/Popover";
 import clsx from "clsx";
-import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 
 interface Props {
@@ -18,29 +16,23 @@ interface Props {
 }
 
 export const Create = ({ className }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
   const authentication = useAuthentication();
-  const { openCreateModal } = useCreateContext();
-  const { handleMouseEnter, handleMouseLeave } = useMouseEnterCounter(
-    setIsOpen.bind(null, true),
-    setIsOpen.bind(null, false),
+
+  const showCreateCitizen = Boolean(
+    authentication && authentication.authorize("citizen", "create"),
   );
-
-  const handleClick = (modalId: keyof typeof createForms) => {
-    openCreateModal(modalId);
-    setIsOpen(false);
-  };
-
-  const showCreateCitizen =
-    authentication && authentication.authorize("citizen", "create");
-  const showCreateOrganization =
-    authentication && authentication.authorize("organization", "create");
-  const showCreateRole =
-    authentication && authentication.authorize("role", "manage");
-  const showCreatePenaltyEntry =
-    authentication && authentication.authorize("penaltyEntry", "create");
-  const showCreateTask =
-    authentication && authentication.authorize("task", "create");
+  const showCreateOrganization = Boolean(
+    authentication && authentication.authorize("organization", "create"),
+  );
+  const showCreateRole = Boolean(
+    authentication && authentication.authorize("role", "manage"),
+  );
+  const showCreatePenaltyEntry = Boolean(
+    authentication && authentication.authorize("penaltyEntry", "create"),
+  );
+  const showCreateTask = Boolean(
+    authentication && authentication.authorize("task", "create"),
+  );
 
   if (
     !showCreateCitizen &&
@@ -53,89 +45,109 @@ export const Create = ({ className }: Props) => {
 
   return (
     <div className={clsx("h-full p-2", className)}>
-      <RadixPopover.Root open={isOpen} onOpenChange={setIsOpen}>
-        <RadixPopover.Trigger asChild>
+      <Popover
+        trigger={
           <Button2
             variant="secondary"
             colorSchema="interactionMuted"
             className="h-full px-6"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
           >
             <FaPlus />
             Neu
           </Button2>
-        </RadixPopover.Trigger>
-
-        <RadixPopover.Portal>
-          <RadixPopover.Content
-            collisionPadding={{ left: 24, right: 24 }}
-            className="z-10"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <div className="flex flex-col gap-[1px] bg-black relative">
-              {showCreateCitizen && (
-                <Button2
-                  onClick={() => handleClick("citizen")}
-                  className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
-                >
-                  Citizen
-                </Button2>
-              )}
-
-              {showCreateOrganization && (
-                <Button2
-                  onClick={() => handleClick("organization")}
-                  className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
-                >
-                  Organisation
-                </Button2>
-              )}
-
-              {showCreateRole && (
-                <Button2
-                  onClick={() => handleClick("role")}
-                  className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
-                >
-                  Rolle
-                </Button2>
-              )}
-
-              <Button2
-                as={Link}
-                onClick={() => setIsOpen(false)}
-                href="/app/silo-request"
-                className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
-              >
-                SILO-Anfrage
-              </Button2>
-
-              {showCreatePenaltyEntry && (
-                <Button2
-                  onClick={() => handleClick("penaltyEntry")}
-                  className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
-                >
-                  Strafpunkte
-                </Button2>
-              )}
-
-              {showCreateTask && (
-                <Button2
-                  onClick={() => handleClick("task")}
-                  className="px-3 !justify-start !rounded-none first:!rounded-t-secondary last:!rounded-b-secondary"
-                >
-                  Task
-                </Button2>
-              )}
-            </div>
-
-            <div className="h-2 absolute left-0 right-0 bottom-full" />
-
-            <RadixPopover.Arrow className="fill-sinister-red-500" />
-          </RadixPopover.Content>
-        </RadixPopover.Portal>
-      </RadixPopover.Root>
+        }
+        childrenClassName="flex flex-col gap-[1px] w-48"
+        enableHover
+      >
+        <PopoverChildren
+          showCreateCitizen={showCreateCitizen}
+          showCreateOrganization={showCreateOrganization}
+          showCreateRole={showCreateRole}
+          showCreatePenaltyEntry={showCreatePenaltyEntry}
+          showCreateTask={showCreateTask}
+        />
+      </Popover>
     </div>
+  );
+};
+
+interface PopoverChildrenProps {
+  readonly showCreateCitizen: boolean;
+  readonly showCreateOrganization: boolean;
+  readonly showCreateRole: boolean;
+  readonly showCreatePenaltyEntry: boolean;
+  readonly showCreateTask: boolean;
+}
+
+const PopoverChildren = ({
+  showCreateCitizen,
+  showCreateOrganization,
+  showCreateRole,
+  showCreatePenaltyEntry,
+  showCreateTask,
+}: PopoverChildrenProps) => {
+  const { closePopover } = usePopover();
+  const { openCreateModal } = useCreateContext();
+
+  const handleClick = (modalId: keyof typeof createForms) => {
+    openCreateModal(modalId);
+    closePopover();
+  };
+
+  return (
+    <>
+      {showCreateCitizen && (
+        <button
+          onClick={() => handleClick("citizen")}
+          className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
+        >
+          Citizen
+        </button>
+      )}
+
+      {showCreateOrganization && (
+        <button
+          onClick={() => handleClick("organization")}
+          className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
+        >
+          Organisation
+        </button>
+      )}
+
+      {showCreateRole && (
+        <button
+          onClick={() => handleClick("role")}
+          className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
+        >
+          Rolle
+        </button>
+      )}
+
+      <Link
+        onClick={() => closePopover()}
+        href="/app/silo-request"
+        className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
+      >
+        SILO-Anfrage
+      </Link>
+
+      {showCreatePenaltyEntry && (
+        <button
+          onClick={() => handleClick("penaltyEntry")}
+          className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
+        >
+          Strafpunkte
+        </button>
+      )}
+
+      {showCreateTask && (
+        <button
+          onClick={() => handleClick("task")}
+          className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
+        >
+          Task
+        </button>
+      )}
+    </>
   );
 };
