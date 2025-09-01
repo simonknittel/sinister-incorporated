@@ -84,11 +84,6 @@ const nextConfig: NextConfig = {
       destination: "/app/career/security",
       permanent: false,
     },
-    {
-      source: "/app/iam",
-      destination: "/app/iam/roles",
-      permanent: false,
-    },
   ],
 
   experimental: {
