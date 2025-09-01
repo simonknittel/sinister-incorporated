@@ -8,6 +8,7 @@ import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { FaBars } from "react-icons/fa";
+import { useNavigationItems } from "./useNavigationItems";
 
 interface Props {
   readonly className?: string;
@@ -19,27 +20,9 @@ export const Navigation = ({ className }: Props) => {
     throw new Error("Forbidden");
 
   const [isOpen, setIsOpen] = useState(false);
+  const pages = useNavigationItems();
 
   const showRoleManage = authentication.authorize("role", "manage");
-  const showUserRead = authentication.authorize("user", "read");
-
-  const pages = [];
-  if (showRoleManage)
-    pages.push(
-      {
-        name: "Rollen",
-        path: "/app/iam/roles",
-      },
-      {
-        name: "Berechtigungsmatrix",
-        path: "/app/iam/permission-matrix",
-      },
-    );
-  if (showUserRead)
-    pages.push({
-      name: "Benutzer",
-      path: "/app/iam/users",
-    });
 
   return (
     <div className={clsx(className)}>
@@ -58,12 +41,13 @@ export const Navigation = ({ className }: Props) => {
       </div>
 
       <div
-        className={clsx("flex flex-col gap-[2px] mt-4", {
+        className={clsx("flex flex-col gap-[2px]", {
           "hidden md:flex": !isOpen,
+          "mt-4": showRoleManage,
         })}
       >
         <nav className="background-secondary rounded-primary p-2 flex flex-col gap-1">
-          {pages.map((page) => (
+          {pages?.map((page) => (
             <Item key={page.path} page={page} />
           ))}
         </nav>

@@ -1,7 +1,7 @@
 import { Hero } from "@/common/components/Hero";
 import clsx from "clsx";
 import type { ReactNode } from "react";
-import { Navigation } from "./Navigation";
+import { Navigation } from "./Navigation/Navigation";
 
 interface Props {
   readonly children: ReactNode;
