@@ -1,15 +1,9 @@
 import type { Session } from "next-auth";
 
-export const getPages = ({
-  showRoleManage,
-  showUserRead,
-}: {
-  showRoleManage: boolean | Session;
-  showUserRead: boolean | Session;
-}) => {
+export const items = (permissions: (boolean | Session)[]) => {
   const pages = [];
 
-  if (showRoleManage) {
+  if (permissions[0]) {
     pages.push(
       {
         name: "Rollen",
@@ -22,7 +16,7 @@ export const getPages = ({
     );
   }
 
-  if (showUserRead) {
+  if (permissions[1]) {
     pages.push({
       name: "Benutzer",
       path: "/app/iam/users",

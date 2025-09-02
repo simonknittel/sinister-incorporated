@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   await requireAuthenticationPage("/app/apps");
 
-  const { featuredApps, otherApps } = await getApps();
+  const apps = await getApps();
 
   return (
     <main className="p-4 pb-20 lg:pb-4 max-w-[1920px] mx-auto">
@@ -26,7 +26,7 @@ export default async function Page() {
       <h2 className="font-bold mt-8">Featured</h2>
 
       <AppGrid className="mt-2">
-        {featuredApps.map((app) =>
+        {apps?.featured.map((app) =>
           app.redacted ? (
             <RedactedApp key={app.name} />
           ) : (
@@ -44,7 +44,7 @@ export default async function Page() {
       <h2 className="font-bold mt-8">Weitere</h2>
 
       <AppGrid className="mt-2">
-        {otherApps.map((app) =>
+        {apps?.other.map((app) =>
           app.redacted ? (
             <RedactedApp key={app.name} />
           ) : (
