@@ -72,7 +72,7 @@ export const apps = ([
       description:
         "Verwalte deine Schiffe und erhalte eine Übersicht über unsere Org-Flotte",
       featured: true,
-      redacted: !shipManage || !orgFleetRead,
+      redacted: !shipManage && !orgFleetRead,
     },
     {
       name: "Karriere",
