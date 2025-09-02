@@ -1,11 +1,9 @@
 "use client";
 
 import { Button2 } from "@/common/components/Button2";
-import { RadioGroup } from "@/common/components/form/RadioGroup";
+import { RadioFilter } from "@/common/components/SidebarFilters/RadioFilter";
 import clsx from "clsx";
-import { useTopLoader } from "nextjs-toploader";
-import { useQueryState } from "nuqs";
-import { useEffect, useState, useTransition } from "react";
+import { useState } from "react";
 import { FaFilter } from "react-icons/fa";
 import { CreateTaskButton } from "./CreateTask/CreateTaskButton";
 
@@ -16,26 +14,6 @@ interface Props {
 
 export const Filters = ({ className, showCreateTask = false }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, startTransition] = useTransition();
-  const loader = useTopLoader();
-  const [status, setStatus] = useQueryState("status", {
-    shallow: false,
-    startTransition,
-  });
-  const [createdBy, setCreatedBy] = useQueryState("created_by", {
-    shallow: false,
-    startTransition,
-  });
-  const [accepted, setAccepted] = useQueryState("accepted", {
-    shallow: false,
-    startTransition,
-  });
-
-  useEffect(() => {
-    if (isLoading) {
-      loader.start();
-    }
-  }, [loader, isLoading]);
 
   return (
     <div className={clsx(className)}>
@@ -59,50 +37,32 @@ export const Filters = ({ className, showCreateTask = false }: Props) => {
           "hidden md:flex": !isOpen,
         })}
       >
-        <div className="background-secondary rounded-primary p-2">
-          <p className="text-sm text-neutral-500">Status</p>
+        <RadioFilter
+          name="status"
+          label="Status"
+          items={[
+            { value: "open", label: "Offen", default: true },
+            { value: "closed", label: "Geschlossen" },
+          ]}
+        />
 
-          <RadioGroup
-            name="status"
-            items={[
-              { value: "open", label: "Offen" },
-              { value: "closed", label: "Geschlossen" },
-            ]}
-            value={status || "open"}
-            onChange={setStatus}
-            className="mt-1"
-          />
-        </div>
+        <RadioFilter
+          name="accepted"
+          label="Angenommen von"
+          items={[
+            { value: "all", label: "Alle", default: true },
+            { value: "yes", label: "Mir" },
+          ]}
+        />
 
-        <div className="background-secondary rounded-primary p-2">
-          <p className="text-sm text-neutral-500">Angenommen von</p>
-
-          <RadioGroup
-            name="accepted"
-            items={[
-              { value: "all", label: "Alle" },
-              { value: "yes", label: "Mir" },
-            ]}
-            value={accepted || "all"}
-            onChange={setAccepted}
-            className="mt-1"
-          />
-        </div>
-
-        <div className="background-secondary rounded-primary p-2">
-          <p className="text-sm text-neutral-500">Erstellt von</p>
-
-          <RadioGroup
-            name="created_by"
-            items={[
-              { value: "others", label: "Alle" },
-              { value: "me", label: "Mir" },
-            ]}
-            value={createdBy || "others"}
-            onChange={setCreatedBy}
-            className="mt-1"
-          />
-        </div>
+        <RadioFilter
+          name="created_by"
+          label="Erstellt von"
+          items={[
+            { value: "others", label: "Alle", default: true },
+            { value: "me", label: "Mir" },
+          ]}
+        />
       </div>
     </div>
   );

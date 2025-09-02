@@ -1,11 +1,9 @@
 "use client";
 
 import { Button2 } from "@/common/components/Button2";
-import { RadioGroup } from "@/common/components/form/RadioGroup";
+import { RadioFilter } from "@/common/components/SidebarFilters/RadioFilter";
 import clsx from "clsx";
-import { useTopLoader } from "nextjs-toploader";
-import { useQueryState } from "nuqs";
-import { useEffect, useState, useTransition } from "react";
+import { useState } from "react";
 import { FaFilter } from "react-icons/fa";
 
 interface Props {
@@ -14,22 +12,6 @@ interface Props {
 
 export const Filters = ({ className }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, startTransition] = useTransition();
-  const loader = useTopLoader();
-  const [status, setStatus] = useQueryState("status", {
-    shallow: false,
-    startTransition,
-  });
-  const [participating, setParticipating] = useQueryState("participating", {
-    shallow: false,
-    startTransition,
-  });
-
-  useEffect(() => {
-    if (isLoading) {
-      loader.start();
-    }
-  }, [loader, isLoading]);
 
   return (
     <div className={clsx(className)}>
@@ -50,35 +32,23 @@ export const Filters = ({ className }: Props) => {
           "hidden md:flex": !isOpen,
         })}
       >
-        <div className="background-secondary rounded-primary p-2">
-          <p className="text-sm text-neutral-500">Status</p>
+        <RadioFilter
+          name="status"
+          label="Status"
+          items={[
+            { value: "open", label: "Offen", default: true },
+            { value: "closed", label: "Geschlossen" },
+          ]}
+        />
 
-          <RadioGroup
-            name="status"
-            items={[
-              { value: "open", label: "Offen" },
-              { value: "closed", label: "Geschlossen" },
-            ]}
-            value={status || "open"}
-            onChange={setStatus}
-            className="mt-1"
-          />
-        </div>
-
-        <div className="background-secondary rounded-primary p-2">
-          <p className="text-sm text-neutral-500">Zugesagt von</p>
-
-          <RadioGroup
-            name="participating"
-            items={[
-              { value: "all", label: "Alle" },
-              { value: "me", label: "Mir" },
-            ]}
-            value={participating || "all"}
-            onChange={setParticipating}
-            className="mt-1"
-          />
-        </div>
+        <RadioFilter
+          name="participating"
+          label="Zugesagt von"
+          items={[
+            { value: "all", label: "Alle", default: true },
+            { value: "me", label: "Mir" },
+          ]}
+        />
       </div>
     </div>
   );
