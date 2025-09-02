@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { getTranslations } from "next-intl/server";
@@ -23,7 +23,7 @@ export const createManagers = async (formData: FormData) => {
     /**
      * Authenticate and authorize the request
      */
-    await authenticateAction("createManagers");
+    await requireAuthenticationAction("createManagers");
 
     /**
      * Validate the request

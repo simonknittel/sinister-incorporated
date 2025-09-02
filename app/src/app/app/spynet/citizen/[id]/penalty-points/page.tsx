@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Template } from "@/citizen/components/Template";
 import { getCitizenById } from "@/citizen/queries";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
@@ -43,7 +43,7 @@ interface Props {
 }
 
 export default async function Page(props: Props) {
-  const authentication = await authenticatePage(
+  const authentication = await requireAuthenticationPage(
     "/app/spynet/citizen/[id]/penalty-points",
   );
   if (!authentication.session.entity) forbidden();

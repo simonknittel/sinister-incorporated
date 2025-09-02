@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 
@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Forbidden() {
-  await authenticatePage("/app/forbidden");
+  await requireAuthenticationPage("/app/forbidden");
 
   return (
     <main className="min-h-dvh flex flex-col justify-center items-center">

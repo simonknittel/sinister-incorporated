@@ -1,5 +1,5 @@
 import { deleteObject } from "@/algolia";
-import { authenticateApi } from "@/auth/server";
+import { requireAuthenticationApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { NextResponse } from "next/server";
@@ -16,7 +16,7 @@ export async function DELETE(request: Request, props: { params: Params }) {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateApi(
+    const authentication = await requireAuthenticationApi(
       "/api/spynet/citizen/[id]",
       "DELETE",
     );

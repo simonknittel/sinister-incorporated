@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { Template } from "@/iam/components/Template";
 import { Tile } from "@/users/components/Tile";
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/users");
+  const authentication = await requireAuthenticationPage("/app/users");
   await authentication.authorizePage("user", "read");
 
   return (

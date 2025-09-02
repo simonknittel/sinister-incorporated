@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Link } from "@/common/components/Link";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import {
@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default async function Page({ searchParams }: Props) {
-  const authentication = await authenticatePage("/app/spynet/citizen");
+  const authentication = await requireAuthenticationPage("/app/spynet/citizen");
   await Promise.all([
     authentication.authorizePage("citizen", "read"),
     authentication.authorizePage("spynetCitizen", "read"),

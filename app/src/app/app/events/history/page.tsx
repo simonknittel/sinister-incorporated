@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Event } from "@/events/components/Event";
 import { getPastEvents } from "@/events/queries";
 import { type Metadata } from "next";
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/events/history");
+  const authentication = await requireAuthenticationPage("/app/events/history");
   await authentication.authorizePage("event", "read");
 
   const events = await getPastEvents();

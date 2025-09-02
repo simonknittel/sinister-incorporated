@@ -1,6 +1,6 @@
 import { AdminEnabler } from "@/auth/components/AdminEnabler";
 import { SessionProviderContainer } from "@/auth/components/SessionProviderContainer";
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { CreateContextProvider } from "@/common/components/CreateContext";
 import ImpersonationBannerContainer from "@/common/components/ImpersonationBannerContainer";
 import QueryClientProviderContainer from "@/common/components/QueryClientProviderContainer";
@@ -24,7 +24,7 @@ interface Props {
 
 export default async function AppLayout({ children }: Readonly<Props>) {
   const [authentication, _cookies, disableAlgolia] = await Promise.all([
-    authenticatePage(),
+    requireAuthenticationPage(),
     cookies(),
     getUnleashFlag("DisableAlgolia"),
   ]);

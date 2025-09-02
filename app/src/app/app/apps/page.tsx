@@ -2,7 +2,7 @@ import { App } from "@/apps/components/App";
 import { AppGrid } from "@/apps/components/AppGrid";
 import { RedactedApp } from "@/apps/components/RedactedApp";
 import { getApps } from "@/apps/utils/getApps";
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await authenticatePage("/app/apps");
+  await requireAuthenticationPage("/app/apps");
 
   const { featuredApps, otherApps } = await getApps();
 

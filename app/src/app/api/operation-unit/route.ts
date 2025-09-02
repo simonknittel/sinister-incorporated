@@ -1,4 +1,4 @@
-import { authenticateApi } from "@/auth/server";
+import { requireAuthenticationApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { NextResponse } from "next/server";
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     /**
      * Authenticate the request
      */
-    await authenticateApi("/api/operation-unit", "POST");
+    await requireAuthenticationApi("/api/operation-unit", "POST");
 
     /**
      * Validate the request body

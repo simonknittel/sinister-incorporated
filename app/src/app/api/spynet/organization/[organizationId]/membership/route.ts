@@ -1,4 +1,4 @@
-import { authenticateApi } from "@/auth/server";
+import { requireAuthenticationApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import {
@@ -33,7 +33,7 @@ export async function POST(request: Request, props: { params: Params }) {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateApi(
+    const authentication = await requireAuthenticationApi(
       "/api/spynet/organization/[organizationId]/membership",
       "POST",
     );

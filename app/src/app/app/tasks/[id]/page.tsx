@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { log } from "@/logging";
 import { Overview } from "@/tasks/components/Overview";
 import { getTaskById } from "@/tasks/queries";
@@ -44,7 +44,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  const authentication = await authenticatePage("/app/tasks/[id]");
+  const authentication = await requireAuthenticationPage("/app/tasks/[id]");
   await authentication.authorizePage("task", "read");
 
   const task = await getTaskById((await params).id);

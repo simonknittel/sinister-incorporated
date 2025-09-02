@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { IframePage } from "@/common/components/IframePage";
 import { type Metadata } from "next";
 
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await authenticatePage("/app/dogfight-trainer");
+  await requireAuthenticationPage("/app/dogfight-trainer");
 
   return <IframePage url="/dogfight-trainer" />;
 }

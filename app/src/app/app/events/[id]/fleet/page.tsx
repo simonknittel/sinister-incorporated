@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { FleetTab } from "@/events/components/FleetTab";
 import { Template } from "@/events/components/Template";
@@ -41,7 +41,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  const authentication = await authenticatePage("/app/events/[id]");
+  const authentication = await requireAuthenticationPage("/app/events/[id]");
   await authentication.authorizePage("event", "read");
   await authentication.authorizePage("orgFleet", "read");
 

@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { SilcSettingKey } from "@prisma/client";
@@ -28,7 +28,8 @@ export const updateSilcSetting = async (
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("updateSilcSetting");
+    const authentication =
+      await requireAuthenticationAction("updateSilcSetting");
     await authentication.authorizeAction("silcSetting", "update");
     if (!authentication.session.entity)
       return {

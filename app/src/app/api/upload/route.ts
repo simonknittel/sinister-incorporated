@@ -1,4 +1,4 @@
-import { authenticateApi } from "@/auth/server";
+import { requireAuthenticationApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { env } from "@/env";
@@ -17,7 +17,10 @@ export async function POST(request: Request) {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateApi("/api/upload", "POST");
+    const authentication = await requireAuthenticationApi(
+      "/api/upload",
+      "POST",
+    );
     await authentication.authorizeApi("role", "manage");
 
     /**

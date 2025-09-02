@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { log } from "@/logging";
 import { OverviewTab } from "@/roles/components/OverviewTab";
 import { RoleDetailsTemplate } from "@/roles/components/RoleDetailsTemplate";
@@ -39,7 +39,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  const authentication = await authenticatePage("/app/roles");
+  const authentication = await requireAuthenticationPage("/app/roles");
   await authentication.authorizePage("role", "manage");
 
   const roleId = (await params).id;

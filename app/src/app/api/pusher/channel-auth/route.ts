@@ -1,4 +1,4 @@
-import { authenticateApi } from "@/auth/server";
+import { requireAuthenticationApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { log } from "@/logging";
 import { channelsClient } from "@/pusher/utils/channelsClient";
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateApi(
+    const authentication = await requireAuthenticationApi(
       "/api/pusher/user-auth",
       "POST",
     );

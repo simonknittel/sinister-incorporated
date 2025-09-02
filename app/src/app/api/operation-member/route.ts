@@ -1,4 +1,4 @@
-import { authenticateApi } from "@/auth/server";
+import { requireAuthenticationApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { NextResponse } from "next/server";
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     /**
      * Authenticate the request
      */
-    const authentication = await authenticateApi(
+    const authentication = await requireAuthenticationApi(
       "/api/operation-member",
       "POST",
     );

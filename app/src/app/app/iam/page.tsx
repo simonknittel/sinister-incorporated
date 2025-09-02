@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { getNavigationItems } from "@/iam/components/Navigation/getNavigationItems";
 import { type Metadata } from "next";
 import { forbidden, redirect } from "next/navigation";
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await authenticatePage("/app/iam");
+  await requireAuthenticationPage("/app/iam");
 
   const pages = await getNavigationItems();
   if (!pages?.[0]) forbidden();

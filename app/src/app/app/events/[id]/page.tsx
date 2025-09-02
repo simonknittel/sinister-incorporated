@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { OverviewTab } from "@/events/components/OverviewTab";
 import { Template } from "@/events/components/Template";
 import { getEventById } from "@/events/queries";
@@ -40,7 +40,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  const authentication = await authenticatePage("/app/events/[id]");
+  const authentication = await requireAuthenticationPage("/app/events/[id]");
   await authentication.authorizePage("event", "read");
 
   const event = await getEventById((await params).id);

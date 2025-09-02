@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { getTranslations } from "next-intl/server";
@@ -24,7 +24,7 @@ export const updateTaskExpiresAt = async (formData: FormData) => {
     /**
      * Authenticate and authorize the request
      */
-    await authenticateAction("updateTaskExpiresAt");
+    await requireAuthenticationAction("updateTaskExpiresAt");
 
     /**
      * Validate the request

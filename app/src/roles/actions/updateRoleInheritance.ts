@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { getTranslations } from "next-intl/server";
@@ -24,7 +24,9 @@ export const updateRoleInheritance = async (
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("updateRoleInheritance");
+    const authentication = await requireAuthenticationAction(
+      "updateRoleInheritance",
+    );
     await authentication.authorizeAction("role", "manage");
 
     /**

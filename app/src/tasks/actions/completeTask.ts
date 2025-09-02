@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { updateCitizensSilcBalances } from "@/silc/utils/updateCitizensSilcBalances";
@@ -27,7 +27,7 @@ export const completeTask = async (formData: FormData) => {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("completeTask");
+    const authentication = await requireAuthenticationAction("completeTask");
     if (!authentication.session.entity)
       return {
         error: t("Common.forbidden"),

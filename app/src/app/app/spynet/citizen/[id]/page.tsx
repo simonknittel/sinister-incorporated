@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Overview } from "@/citizen/components/Overview";
 import { Roles } from "@/citizen/components/roles/Roles";
 import { Template } from "@/citizen/components/Template";
@@ -44,7 +44,9 @@ interface Props {
 }
 
 export default async function Page(props: Props) {
-  const authentication = await authenticatePage("/app/spynet/citizen/[id]");
+  const authentication = await requireAuthenticationPage(
+    "/app/spynet/citizen/[id]",
+  );
   await authentication.authorizePage("citizen", "read");
 
   const entity = await getCitizenById((await props.params).id);

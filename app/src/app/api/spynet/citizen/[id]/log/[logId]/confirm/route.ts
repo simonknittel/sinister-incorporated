@@ -1,4 +1,4 @@
-import { authenticateApi } from "@/auth/server";
+import { requireAuthenticationApi } from "@/auth/server";
 import { confirmLog } from "@/citizen/utils/confirmLog";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
@@ -24,7 +24,7 @@ export async function PATCH(request: Request, props: { params: Params }) {
     /**
      * Authenticate the request
      */
-    await authenticateApi(
+    await requireAuthenticationApi(
       "/api/spynet/citizen/[id]/log/[logId]/confirm",
       "PATCH",
     );

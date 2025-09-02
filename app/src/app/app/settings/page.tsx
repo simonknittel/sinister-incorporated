@@ -1,5 +1,5 @@
 import { Algolia } from "@/algolia/components/Algolia";
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Tile } from "@/common/components/Tile";
 import { log } from "@/logging";
 import { AnalyticsCheckboxLoader } from "@/settings/components/AnalyticsCheckboxLoader";
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/settings");
+  const authentication = await requireAuthenticationPage("/app/settings");
 
   const [
     showNoteTypes,
