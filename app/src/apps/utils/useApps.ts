@@ -33,6 +33,7 @@ export const useApps = () => {
       },
     ]),
     authentication.authorize("citizen", "read"),
+    authentication.authorize("event", "read"),
     authentication.authorize("logAnalyzer", "read"),
     authentication.authorize("organization", "read"),
     authentication.authorize("orgFleet", "read"),

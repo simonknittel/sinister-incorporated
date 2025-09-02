@@ -5,6 +5,7 @@ import cornerstoneImageBrowserScreenshot from "@/cornerstone-image-browser/asset
 import dashboardScreenshot from "@/dashboard/assets/screenshot.png";
 import documentsScreenshot from "@/documents/assets/screenshot.png";
 import dogfightTrainerScreenshot from "@/dogfight-trainer/assets/screenshot.png";
+import eventsScreenshot from "@/events/assets/screenshot.png";
 import fleetScreenshot from "@/fleet/assets/screenshot.png";
 import iamScreenshot from "@/iam/assets/screenshot.png";
 import logAnalyzerScreenshot from "@/log-analyzer/assets/screenshot.png";
@@ -30,6 +31,7 @@ export const apps = ([
   careerReadSecurity,
   careerReadTeam,
   citizenRead,
+  eventRead,
   logAnalyzerRead,
   organizationRead,
   orgFleetRead,
@@ -54,6 +56,14 @@ export const apps = ([
       imageSrc: documentsScreenshot,
       description: "Alles was du zu deinem nächsten Zertifikat wissen möchtest",
       featured: true,
+    },
+    {
+      name: "Events",
+      href: "/app/events",
+      imageSrc: eventsScreenshot,
+      description: "Übersicht aller anstehenden und vergangenen Events",
+      featured: true,
+      redacted: !eventRead,
     },
     {
       name: "Flotte",

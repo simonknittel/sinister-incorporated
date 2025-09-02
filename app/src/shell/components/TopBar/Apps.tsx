@@ -87,10 +87,10 @@ const PopoverChildren = ({ apps }: PopoverChildrenProps) => {
         )}
       </AppGrid>
 
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center">
         <Link
           href="/app/apps"
-          className="text-interaction-500 hover:underline focus-visible:underline text-sm"
+          className="text-interaction-500 hover:underline focus-visible:underline text-sm p-4 -mb-4"
           onClick={closePopover}
         >
           Alle Apps

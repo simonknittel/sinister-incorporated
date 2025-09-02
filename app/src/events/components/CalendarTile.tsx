@@ -1,5 +1,5 @@
 import { Link } from "@/common/components/Link";
-import { getFutureEvents } from "@/events/queries";
+import { getEvents } from "@/events/queries";
 import clsx from "clsx";
 import { Event } from "./Event";
 import { NotificationsTooltip } from "./NotificationsTooltip";
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const CalendarTile = async ({ className }: Props) => {
-  const events = await getFutureEvents();
+  const events = await getEvents("open");
 
   return (
     <section
@@ -34,10 +34,10 @@ export const CalendarTile = async ({ className }: Props) => {
       )}
 
       <Link
-        href="/app/events/history"
+        href="/app/events"
         className="text-interaction-500 hover:underline focus-visible:underline"
       >
-        Vergangene Events
+        Alle Events
       </Link>
     </section>
   );

@@ -14,16 +14,14 @@ import { cache } from "react";
 export const getTasks = cache(
   withTrace(
     "getTasks",
-    async ({
-      filters: { status = "open", accepted = "all", created_by = "others" },
-    }) => {
+    async (status = "open", accepted = "all", created_by = "others") => {
       const authentication = await requireAuthentication();
       if (!(await authentication.authorize("task", "read"))) forbidden();
 
-      let tasks;
+      let rows;
 
       if (status === "closed") {
-        tasks = await prisma.task.findMany({
+        rows = await prisma.task.findMany({
           where: {
             deletedAt: null,
             OR: [
@@ -74,7 +72,7 @@ export const getTasks = cache(
           orderBy: { createdAt: "desc" },
         });
       } else {
-        tasks = await prisma.task.findMany({
+        rows = await prisma.task.findMany({
           where: {
             cancelledAt: null,
             deletedAt: null,
@@ -123,22 +121,22 @@ export const getTasks = cache(
         });
       }
 
-      tasks = (
+      rows = (
         await Promise.all(
-          tasks.map(async (task) => {
-            const include = await isVisibleForCurrentUser(task);
+          rows.map(async (row) => {
+            const include = await isVisibleForCurrentUser(row);
 
             return {
               include,
-              task,
+              row,
             };
           }),
         )
       )
         .filter(({ include }) => include)
-        .map(({ task }) => task);
+        .map(({ row }) => row);
 
-      return tasks;
+      return rows;
     },
   ),
 );

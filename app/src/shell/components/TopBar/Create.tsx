@@ -131,27 +131,31 @@ const PopoverChildren = ({
   const className =
     "block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left";
 
-  return items.map((item) => {
-    if (item.type === "link")
-      return (
-        <Link
-          key={item.label}
-          onClick={() => closePopover()}
-          href={item.href}
-          className={className}
-        >
-          {item.label}
-        </Link>
-      );
+  return (
+    <div className="flex flex-col gap-[2px]">
+      {items.map((item) => {
+        if (item.type === "link")
+          return (
+            <Link
+              key={item.label}
+              onClick={() => closePopover()}
+              href={item.href}
+              className={className}
+            >
+              {item.label}
+            </Link>
+          );
 
-    return (
-      <button
-        key={item.label}
-        onClick={() => handleClick(item.modalId)}
-        className={className}
-      >
-        {item.label}
-      </button>
-    );
-  });
+        return (
+          <button
+            key={item.label}
+            onClick={() => handleClick(item.modalId)}
+            className={className}
+          >
+            {item.label}
+          </button>
+        );
+      })}
+    </div>
+  );
 };
