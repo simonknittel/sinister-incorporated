@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { AuecConversionRateSetting } from "@/silc/components/AuecConversionRateSetting";
 import { RoleSalaries } from "@/silc/components/RoleSalaries";
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/silc/settings");
+  const authentication = await requireAuthenticationPage("/app/silc/settings");
   await authentication.authorizePage("silcSetting", "manage");
 
   return (

@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import {
@@ -18,7 +18,7 @@ interface Props {
 }
 
 export default async function Page({ searchParams }: Props) {
-  const authentication = await authenticatePage("/app/fleet");
+  const authentication = await requireAuthenticationPage("/app/fleet");
   const showOrgFleetTile = await authentication.authorize("orgFleet", "read");
   const showMyFleetTile = await authentication.authorize("ship", "manage");
 

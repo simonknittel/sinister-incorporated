@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { VariantStatus } from "@prisma/client";
@@ -28,7 +28,7 @@ export const createVariant = async (formData: FormData) => {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("createVariant");
+    const authentication = await requireAuthenticationAction("createVariant");
     await authentication.authorizeAction(
       "manufacturersSeriesAndVariants",
       "manage",

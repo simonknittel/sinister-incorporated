@@ -5,14 +5,12 @@ import { RadioFilter } from "@/common/components/SidebarFilters/RadioFilter";
 import clsx from "clsx";
 import { useState } from "react";
 import { FaFilter } from "react-icons/fa";
-import { CreateTaskButton } from "./CreateTask/CreateTaskButton";
 
 interface Props {
   readonly className?: string;
-  readonly showCreateTask?: boolean | null;
 }
 
-export const Filters = ({ className, showCreateTask = false }: Props) => {
+export const Filters = ({ className }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -27,13 +25,10 @@ export const Filters = ({ className, showCreateTask = false }: Props) => {
           <FaFilter />
           Filter
         </Button2>
-
-        {showCreateTask && <CreateTaskButton className="flex-1" />}
       </div>
 
       <div
         className={clsx("flex flex-col gap-[2px]", {
-          "mt-4": showCreateTask,
           "hidden md:flex": !isOpen,
         })}
       >
@@ -47,19 +42,10 @@ export const Filters = ({ className, showCreateTask = false }: Props) => {
         />
 
         <RadioFilter
-          name="accepted"
-          label="Angenommen von"
+          name="participating"
+          label="Zugesagt von"
           items={[
             { value: "all", label: "Alle", default: true },
-            { value: "yes", label: "Mir" },
-          ]}
-        />
-
-        <RadioFilter
-          name="created_by"
-          label="Erstellt von"
-          items={[
-            { value: "others", label: "Alle", default: true },
             { value: "me", label: "Mir" },
           ]}
         />

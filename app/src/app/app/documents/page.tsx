@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
 import { Tile } from "@/common/components/Tile";
@@ -212,7 +212,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/documents");
+  const authentication = await requireAuthenticationPage("/app/documents");
 
   const authorizations = await Promise.all([
     authentication.authorize("documentAlliance", "read"),

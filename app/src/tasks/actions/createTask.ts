@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { publishNotification } from "@/pusher/utils/publishNotification";
@@ -35,7 +35,7 @@ export const createTask = async (formData: FormData) => {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("createTask");
+    const authentication = await requireAuthenticationAction("createTask");
     await authentication.authorizeAction("task", "create");
     if (!authentication.session.entity)
       return {

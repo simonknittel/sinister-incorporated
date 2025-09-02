@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { AllEntriesTable } from "@/penalty-points/components/AllEntriesTable";
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/penalty-points");
+  const authentication = await requireAuthenticationPage("/app/penalty-points");
   await authentication.authorizePage("penaltyEntry", "read");
 
   return (

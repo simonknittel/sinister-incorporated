@@ -5,7 +5,7 @@ import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
 import { FaCog, FaHome, FaLock, FaPiggyBank, FaTools } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
-import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
+import { MdEvent, MdTaskAlt, MdWorkspaces } from "react-icons/md";
 import { RiLogoutCircleRLine, RiSpyFill } from "react-icons/ri";
 import { TbMilitaryRank } from "react-icons/tb";
 import { useCmdKContext } from "./CmdKContext";
@@ -69,6 +69,7 @@ export const List = () => {
   );
   const showPenaltyPoints = authentication.authorize("penaltyEntry", "create");
   const showLogAnalyzer = authentication.authorize("logAnalyzer", "read");
+  const eventRead = authentication.authorize("event", "read");
 
   const showSpynet = showCitizenRead || showOrganizationRead;
   const page = pages[pages.length - 1];
@@ -93,6 +94,17 @@ export const List = () => {
             setOpen={setOpen}
             setSearch={setSearch}
           />
+
+          {eventRead && (
+            <LinkItem
+              label="Events"
+              keywords={["Events", "Veranstaltungen"]}
+              icon={<MdEvent />}
+              href="/app/events"
+              setOpen={setOpen}
+              setSearch={setSearch}
+            />
+          )}
 
           {showTasks && (
             <LinkItem

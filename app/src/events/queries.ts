@@ -157,59 +157,72 @@ export const getEventById = cache(
   }),
 );
 
-export const getFutureEvents = cache(
-  withTrace("getFutureEvents", async () => {
+export const getEvents = cache(
+  withTrace("getEvents", async (status = "open", participating = "all") => {
     const authentication = await requireAuthentication();
     if (!(await authentication.authorize("event", "read"))) forbidden();
 
     const now = new Date();
 
-    return prisma.event.findMany({
-      where: {
-        OR: [
-          {
-            startTime: {
-              gte: now,
-            },
+    let rows;
+
+    if (status === "closed") {
+      rows = prisma.event.findMany({
+        where: {
+          startTime: {
+            lt: now,
           },
-          {
-            endTime: {
-              gte: now,
-            },
-          },
-        ],
-      },
-      include: {
-        discordParticipants: true,
-        managers: true,
-      },
-      orderBy: {
-        startTime: "asc",
-      },
-    });
-  }),
-);
-
-export const getPastEvents = cache(
-  withTrace("getPastEvents", async () => {
-    const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("event", "read"))) forbidden();
-
-    const now = new Date();
-
-    return prisma.event.findMany({
-      where: {
-        startTime: {
-          lt: now,
+          discordParticipants:
+            participating === "me"
+              ? {
+                  some: {
+                    discordUserId: authentication.session.discordId,
+                  },
+                }
+              : undefined,
         },
-      },
-      include: {
-        discordParticipants: true,
-        managers: true,
-      },
-      orderBy: {
-        startTime: "desc",
-      },
-    });
+        include: {
+          discordParticipants: true,
+          managers: true,
+        },
+        orderBy: {
+          startTime: "desc",
+        },
+      });
+    } else {
+      rows = prisma.event.findMany({
+        where: {
+          OR: [
+            {
+              startTime: {
+                gte: now,
+              },
+            },
+            {
+              endTime: {
+                gte: now,
+              },
+            },
+          ],
+          discordParticipants:
+            participating === "me"
+              ? {
+                  some: {
+                    discordUserId: authentication.session.discordId,
+                  },
+                }
+              : undefined,
+        },
+        include: {
+          discordParticipants: true,
+          managers: true,
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+      });
+    }
+
+    return rows;
   }),
 );

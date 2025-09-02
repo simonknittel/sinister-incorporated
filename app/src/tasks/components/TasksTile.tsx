@@ -22,13 +22,7 @@ interface Props {
 export const TasksTile = async ({ className, searchParams }: Props) => {
   const { status, accepted, created_by } = await loadSearchParams(searchParams);
 
-  let tasks = await getTasks({
-    filters: {
-      status,
-      accepted,
-      created_by,
-    },
-  });
+  let tasks = await getTasks(status, accepted, created_by);
 
   if (tasks.length <= 0)
     return (

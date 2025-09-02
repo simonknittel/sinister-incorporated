@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { getTranslations } from "next-intl/server";
@@ -22,7 +22,8 @@ export const updateRoleSalaries = async (formData: FormData) => {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("updateRoleSalaries");
+    const authentication =
+      await requireAuthenticationAction("updateRoleSalaries");
     await authentication.authorizeAction("silcSetting", "update");
     if (!authentication.session.entity)
       return {

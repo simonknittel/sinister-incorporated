@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { getLeaderboard } from "@/leaderboards/queries";
 import clsx from "clsx";
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/leaderboards");
+  const authentication = await requireAuthenticationPage("/app/leaderboards");
   await authentication.authorizePage("leaderboards", "read");
 
   const leaderboard = await getLeaderboard("SB", "47", 15);

@@ -1,4 +1,4 @@
-import { authenticateApi } from "@/auth/server";
+import { requireAuthenticationApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { NextResponse } from "next/server";
@@ -24,7 +24,10 @@ export async function PATCH(request: Request) {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateApi("/api/upload/assign", "PATCH");
+    const authentication = await requireAuthenticationApi(
+      "/api/upload/assign",
+      "PATCH",
+    );
     await authentication.authorizeApi(
       "manufacturersSeriesAndVariants",
       "manage",

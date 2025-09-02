@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
 import { Tile } from "@/common/components/Tile";
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  await authenticatePage("/app/tools/cornerstone-image-browser");
+  await requireAuthenticationPage("/app/tools/cornerstone-image-browser");
 
   return (
     <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">

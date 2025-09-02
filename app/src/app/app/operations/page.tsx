@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import Note from "@/common/components/Note";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { CreateOperation } from "@/operations/components/CreateOperation";
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   if (!(await getUnleashFlag("EnableOperations"))) notFound();
 
-  const authentication = await authenticatePage("/app/operations");
+  const authentication = await requireAuthenticationPage("/app/operations");
   await authentication.authorizePage("operation", "manage");
 
   const operations = await getOperations();

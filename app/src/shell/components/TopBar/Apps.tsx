@@ -45,14 +45,12 @@ interface PopoverChildrenProps {
 const PopoverChildren = ({ apps }: PopoverChildrenProps) => {
   const { closePopover } = usePopover();
 
-  const { featuredApps, otherApps } = apps;
-
   return (
     <>
       <p className="font-bold text-sm text-center">Featured</p>
 
       <AppGrid variant="compact" className="mt-2">
-        {featuredApps.map((app) =>
+        {apps.featured.map((app) =>
           app.redacted ? (
             <RedactedApp key={app.name} variant="compact" />
           ) : (
@@ -72,7 +70,7 @@ const PopoverChildren = ({ apps }: PopoverChildrenProps) => {
       <p className="font-bold text-sm text-center mt-4">Weitere</p>
 
       <AppGrid variant="compact" className="mt-2">
-        {otherApps.map((app) =>
+        {apps.other.map((app) =>
           app.redacted ? (
             <RedactedApp key={app.name} variant="compact" />
           ) : (
@@ -89,10 +87,10 @@ const PopoverChildren = ({ apps }: PopoverChildrenProps) => {
         )}
       </AppGrid>
 
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center">
         <Link
           href="/app/apps"
-          className="text-interaction-500 hover:underline focus-visible:underline text-sm"
+          className="text-interaction-500 hover:underline focus-visible:underline text-sm p-4 -mb-4"
           onClick={closePopover}
         >
           Alle Apps

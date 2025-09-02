@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { CreateCitizenButton } from "@/citizen/components/CreateCitizenButton";
 import { Hero } from "@/common/components/Hero";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
@@ -11,13 +11,12 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/spynet");
+  const authentication = await requireAuthenticationPage("/app/spynet");
 
-  const showCreateCitizen = await authentication.authorize("citizen", "create");
-  const showCreateOrganization = await authentication.authorize(
-    "organization",
-    "create",
-  );
+  const [showCreateCitizen, showCreateOrganization] = await Promise.all([
+    authentication.authorize("citizen", "create"),
+    authentication.authorize("organization", "create"),
+  ]);
 
   return (
     <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">

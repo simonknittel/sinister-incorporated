@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { OrganizationMembershipHistory } from "@/citizen/components/OrganizationMembershipHistory";
 import { OrganizationMembershipsTile } from "@/citizen/components/OrganizationMembershipsTile";
 import { Template } from "@/citizen/components/Template";
@@ -44,7 +44,7 @@ interface Props {
 }
 
 export default async function Page(props: Props) {
-  const authentication = await authenticatePage(
+  const authentication = await requireAuthenticationPage(
     "/app/spynet/citizen/[id]/organizations",
   );
   await authentication.authorizePage("organizationMembership", "read");

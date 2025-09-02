@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Link } from "@/common/components/Link";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { ActivityTile } from "@/spynet/components/ActivityTile/ActivityTile";
@@ -9,7 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/spynet/activity");
+  const authentication = await requireAuthenticationPage(
+    "/app/spynet/activity",
+  );
   await authentication.authorizePage("spynetActivity", "read");
 
   return (

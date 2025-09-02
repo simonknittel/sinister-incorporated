@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { revalidatePath } from "next/cache";
@@ -13,7 +13,9 @@ export const refreshSilcBalances = async () => {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("refreshSilcBalances");
+    const authentication = await requireAuthenticationAction(
+      "refreshSilcBalances",
+    );
     await authentication.authorizeAction("silcBalanceOfOtherCitizen", "manage");
 
     /**

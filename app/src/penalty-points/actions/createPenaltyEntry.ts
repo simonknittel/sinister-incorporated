@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { getTranslations } from "next-intl/server";
@@ -23,7 +23,8 @@ export const createPenaltyEntry = async (formData: FormData) => {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("createPenaltyEntry");
+    const authentication =
+      await requireAuthenticationAction("createPenaltyEntry");
     await authentication.authorizeAction("penaltyEntry", "create");
     if (!authentication.session.entity)
       return {

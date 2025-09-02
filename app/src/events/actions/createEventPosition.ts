@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { getTranslations } from "next-intl/server";
@@ -26,7 +26,7 @@ export const createEventPosition = async (formData: FormData) => {
     /**
      * Authenticate
      */
-    await authenticateAction("createEventPosition");
+    await requireAuthenticationAction("createEventPosition");
 
     /**
      * Validate the request

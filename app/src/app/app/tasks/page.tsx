@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { Filters } from "@/tasks/components/Filters";
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default async function Page({ searchParams }: Props) {
-  const authentication = await authenticatePage("/app/tasks");
+  const authentication = await requireAuthenticationPage("/app/tasks");
   await authentication.authorizePage("task", "read");
   const showCreateTask = await authentication.authorize("task", "create");
 

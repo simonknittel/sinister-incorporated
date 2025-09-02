@@ -1,4 +1,4 @@
-import { authenticateApi } from "@/auth/server";
+import { requireAuthenticationApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import { prisma } from "@/db";
@@ -27,7 +27,7 @@ export async function PATCH(request: Request, props: { params: Params }) {
     /**
      * Authenticate the request
      */
-    const authentication = await authenticateApi(
+    const authentication = await requireAuthenticationApi(
       "/api/spynet/citizen/[id]/log/[logId]",
       "PATCH",
     );
@@ -126,7 +126,7 @@ export async function DELETE(request: Request, props: { params: Params }) {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateApi(
+    const authentication = await requireAuthenticationApi(
       "/api/spynet/citizen/[id]/log/[logId]",
       "DELETE",
     );

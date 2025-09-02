@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Flow } from "@/career/components/Flow";
 import { Navigation } from "@/career/components/Navigation";
 import { getMyReadableFlows } from "@/career/queries";
@@ -53,7 +53,7 @@ interface Props {
 export default async function Page({ params }: Props) {
   const { flowId } = await params;
 
-  const authentication = await authenticatePage("/app/career");
+  const authentication = await requireAuthenticationPage("/app/career");
   await authentication.authorizePage("career", "read", [
     {
       key: "flowId",

@@ -29,7 +29,7 @@ export const authenticate = cache(
   }),
 );
 
-export async function authenticatePage(requestPath?: string) {
+export async function requireAuthenticationPage(requestPath?: string) {
   const authentication = await authenticate();
 
   if (!authentication) {
@@ -74,7 +74,7 @@ export async function authenticatePage(requestPath?: string) {
   };
 }
 
-export async function authenticateApi(
+export async function requireAuthenticationApi(
   requestPath?: string,
   requestMethod?: string,
 ) {
@@ -124,7 +124,7 @@ export async function authenticateApi(
   };
 }
 
-export async function authenticateAction(actionName?: string) {
+export async function requireAuthenticationAction(actionName?: string) {
   const authentication = await authenticate();
 
   if (!authentication) {

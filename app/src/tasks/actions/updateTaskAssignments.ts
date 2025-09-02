@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { publishNotification } from "@/pusher/utils/publishNotification";
@@ -26,7 +26,9 @@ export const updateTaskAssignments = async (formData: FormData) => {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("updateTaskAssignments");
+    const authentication = await requireAuthenticationAction(
+      "updateTaskAssignments",
+    );
     if (!authentication.session.entity)
       return {
         error: t("Common.forbidden"),

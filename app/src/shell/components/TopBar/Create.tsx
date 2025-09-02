@@ -94,60 +94,68 @@ const PopoverChildren = ({
     closePopover();
   };
 
+  let items: (
+    | {
+        label: string;
+        type: "button";
+        modalId: keyof typeof createForms;
+      }
+    | {
+        label: string;
+        type: "link";
+        href: string;
+      }
+  )[] = [{ label: "SILO-Anfrage", type: "link", href: "/app/silo-request" }];
+
+  if (showCreateCitizen)
+    items.push({ label: "Citizen", type: "button", modalId: "citizen" });
+  if (showCreateOrganization)
+    items.push({
+      label: "Organisation",
+      type: "button",
+      modalId: "organization",
+    });
+  if (showCreateRole)
+    items.push({ label: "Rolle", type: "button", modalId: "role" });
+  if (showCreatePenaltyEntry)
+    items.push({
+      label: "Strafpunkte",
+      type: "button",
+      modalId: "penaltyEntry",
+    });
+  if (showCreateTask)
+    items.push({ label: "Task", type: "button", modalId: "task" });
+
+  items = items.toSorted((a, b) => a.label.localeCompare(b.label));
+
+  const className =
+    "block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left";
+
   return (
-    <>
-      {showCreateCitizen && (
-        <button
-          onClick={() => handleClick("citizen")}
-          className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
-        >
-          Citizen
-        </button>
-      )}
+    <div className="flex flex-col gap-[2px]">
+      {items.map((item) => {
+        if (item.type === "link")
+          return (
+            <Link
+              key={item.label}
+              onClick={() => closePopover()}
+              href={item.href}
+              className={className}
+            >
+              {item.label}
+            </Link>
+          );
 
-      {showCreateOrganization && (
-        <button
-          onClick={() => handleClick("organization")}
-          className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
-        >
-          Organisation
-        </button>
-      )}
-
-      {showCreateRole && (
-        <button
-          onClick={() => handleClick("role")}
-          className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
-        >
-          Rolle
-        </button>
-      )}
-
-      <Link
-        onClick={() => closePopover()}
-        href="/app/silo-request"
-        className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
-      >
-        SILO-Anfrage
-      </Link>
-
-      {showCreatePenaltyEntry && (
-        <button
-          onClick={() => handleClick("penaltyEntry")}
-          className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
-        >
-          Strafpunkte
-        </button>
-      )}
-
-      {showCreateTask && (
-        <button
-          onClick={() => handleClick("task")}
-          className="block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs text-left"
-        >
-          Task
-        </button>
-      )}
-    </>
+        return (
+          <button
+            key={item.label}
+            onClick={() => handleClick(item.modalId)}
+            className={className}
+          >
+            {item.label}
+          </button>
+        );
+      })}
+    </div>
   );
 };

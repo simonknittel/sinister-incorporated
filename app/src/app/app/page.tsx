@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { ProfileTile } from "@/citizen/components/ProfileTile";
 import { Hero } from "@/common/components/Hero";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
@@ -24,7 +24,7 @@ interface Props {
 }
 
 export default async function Page({ searchParams }: Props) {
-  const authentication = await authenticatePage("/app");
+  const authentication = await requireAuthenticationPage("/app");
 
   const showCalendar = await authentication.authorize("event", "read");
   const showSpynetSearchTile =

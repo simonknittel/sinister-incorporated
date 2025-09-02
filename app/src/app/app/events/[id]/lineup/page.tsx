@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { prisma } from "@/db";
 import { LineupTab } from "@/events/components/LineupTab";
 import { Template } from "@/events/components/Template";
@@ -46,7 +46,7 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  const authentication = await authenticatePage("/app/events/[id]");
+  const authentication = await requireAuthenticationPage("/app/events/[id]");
   if (!authentication.session.entity) forbidden();
   await authentication.authorizePage("event", "read");
 

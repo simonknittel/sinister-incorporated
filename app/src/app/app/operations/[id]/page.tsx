@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
 import { Link } from "@/common/components/Link";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
@@ -50,7 +50,9 @@ interface Props {
 export default async function Page(props: Readonly<Props>) {
   if (!(await getUnleashFlag("EnableOperations"))) notFound();
 
-  const authentication = await authenticatePage("/app/operations/[id]");
+  const authentication = await requireAuthenticationPage(
+    "/app/operations/[id]",
+  );
   await authentication.authorizePage("operation", "manage");
 
   const operation = await getOperation((await props.params).id);

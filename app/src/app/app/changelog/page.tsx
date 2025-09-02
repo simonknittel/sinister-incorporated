@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import image20250227Dropdown from "@/changelog/assets/2025-02-27-dropdown.png";
 import image20250228PenaltyPoints from "@/changelog/assets/2025-02-28-penalty-points.png";
 import image20250302SilcDashboard from "@/changelog/assets/2025-03-02-silc-dashboard.png";
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/changelog");
+  const authentication = await requireAuthenticationPage("/app/changelog");
   const [showLogAnalyzer, showManageRoles, showUserRead] = await Promise.all([
     authentication.authorize("logAnalyzer", "read"),
     authentication.authorize("role", "manage"),

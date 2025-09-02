@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { prisma } from "@/db";
 import { log } from "@/logging";
 import { getTranslations } from "next-intl/server";
@@ -23,7 +23,9 @@ export const createSilcTransaction = async (formData: FormData) => {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("createSilcTransaction");
+    const authentication = await requireAuthenticationAction(
+      "createSilcTransaction",
+    );
     await authentication.authorizeAction(
       "silcTransactionOfOtherCitizen",
       "create",

@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { Template } from "@/iam/components/Template";
 import { RolesTile } from "@/roles/components/RolesTile";
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const authentication = await authenticatePage("/app/iam/roles");
+  const authentication = await requireAuthenticationPage("/app/iam/roles");
   await authentication.authorizePage("role", "manage");
 
   return (

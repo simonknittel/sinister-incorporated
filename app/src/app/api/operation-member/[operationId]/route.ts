@@ -1,4 +1,4 @@
-import { authenticateApi } from "@/auth/server";
+import { requireAuthenticationApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { NextResponse } from "next/server";
@@ -15,7 +15,10 @@ export async function GET(request: Request, props: { params: Params }) {
     /**
      * Authenticate the request
      */
-    await authenticateApi("/api/operation-member/[operationId]", "GET");
+    await requireAuthenticationApi(
+      "/api/operation-member/[operationId]",
+      "GET",
+    );
 
     /**
      * Validate the request params
@@ -67,7 +70,10 @@ export async function PATCH(request: Request, props: { params: Params }) {
     /**
      * Authenticate the request
      */
-    await authenticateApi("/api/operation-member/[operationId]", "PATCH");
+    await requireAuthenticationApi(
+      "/api/operation-member/[operationId]",
+      "PATCH",
+    );
 
     /**
      * Validate the request params
@@ -123,7 +129,7 @@ export async function DELETE(request: Request, props: { params: Params }) {
     /**
      * Authenticate the request
      */
-    const authentication = await authenticateApi(
+    const authentication = await requireAuthenticationApi(
       "/api/operation-member/[operationId]",
       "DELETE",
     );

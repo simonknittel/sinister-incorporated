@@ -1,6 +1,6 @@
 "use server";
 
-import { authenticateAction } from "@/auth/server";
+import { requireAuthenticationAction } from "@/auth/server";
 import { serverActionErrorHandler } from "@/common/actions/serverActionErrorHandler";
 import type { ServerAction } from "@/common/actions/types";
 import { prisma } from "@/db";
@@ -17,7 +17,7 @@ export const updateSeries: ServerAction = async (formData) => {
     /**
      * Authenticate and authorize the request
      */
-    const authentication = await authenticateAction("updateSeries");
+    const authentication = await requireAuthenticationAction("updateSeries");
     await authentication.authorizeAction(
       "manufacturersSeriesAndVariants",
       "manage",

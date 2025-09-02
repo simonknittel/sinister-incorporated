@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import {
   searchParamsNextjsToURLSearchParams,
@@ -46,7 +46,7 @@ interface Props {
 }
 
 export default async function Page({ params, searchParams }: Props) {
-  const authentication = await authenticatePage("/app/events/[id]");
+  const authentication = await requireAuthenticationPage("/app/events/[id]");
   await authentication.authorizePage("event", "read");
 
   const eventId = (await params).id;

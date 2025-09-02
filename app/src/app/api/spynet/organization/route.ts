@@ -1,5 +1,5 @@
 import { saveObject } from "@/algolia";
-import { authenticateApi } from "@/auth/server";
+import { requireAuthenticationApi } from "@/auth/server";
 import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { scrapeOrganizationLogo } from "@/common/utils/scrapeOrganizationLogo";
 import { prisma } from "@/db";
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     /**
      * Authenticate the request
      */
-    const authentication = await authenticateApi(
+    const authentication = await requireAuthenticationApi(
       "/api/spynet/organization",
       "POST",
     );

@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Link } from "@/common/components/Link";
 import Note from "@/common/components/Note";
 import { cornerstoneImageBrowserItemTypes } from "@/cornerstone-image-browser/utils/config";
@@ -43,7 +43,9 @@ interface Props {
 }
 
 export default async function Page({ params }: Props) {
-  await authenticatePage("/app/tools/cornerstone-image-browser/[itemType]");
+  await requireAuthenticationPage(
+    "/app/tools/cornerstone-image-browser/[itemType]",
+  );
 
   const { itemTypePage } = await params;
   const itemTypeConfig = cornerstoneImageBrowserItemTypes.find(

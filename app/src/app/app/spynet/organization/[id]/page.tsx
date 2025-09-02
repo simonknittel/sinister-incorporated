@@ -1,4 +1,4 @@
-import { authenticatePage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/auth/server";
 import { Link } from "@/common/components/Link";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { prisma } from "@/db";
@@ -57,7 +57,7 @@ interface Props {
 }
 
 export default async function Page(props: Props) {
-  const authentication = await authenticatePage(
+  const authentication = await requireAuthenticationPage(
     "/app/spynet/organization/[id]",
   );
   await authentication.authorizePage("organization", "read");
