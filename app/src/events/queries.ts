@@ -158,7 +158,7 @@ export const getEventById = cache(
 );
 
 export const getEvents = cache(
-  withTrace("getEvents", async (status = open) => {
+  withTrace("getEvents", async (status = "open", participating = "all") => {
     const authentication = await requireAuthentication();
     if (!(await authentication.authorize("event", "read"))) forbidden();
 
@@ -172,6 +172,14 @@ export const getEvents = cache(
           startTime: {
             lt: now,
           },
+          discordParticipants:
+            participating === "me"
+              ? {
+                  some: {
+                    discordUserId: authentication.session.discordId,
+                  },
+                }
+              : undefined,
         },
         include: {
           discordParticipants: true,
@@ -196,6 +204,14 @@ export const getEvents = cache(
               },
             },
           ],
+          discordParticipants:
+            participating === "me"
+              ? {
+                  some: {
+                    discordUserId: authentication.session.discordId,
+                  },
+                }
+              : undefined,
         },
         include: {
           discordParticipants: true,

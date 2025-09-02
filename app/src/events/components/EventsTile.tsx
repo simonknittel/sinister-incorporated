@@ -1,10 +1,16 @@
 import clsx from "clsx";
-import { createLoader, parseAsString, type SearchParams } from "nuqs/server";
+import {
+  createLoader,
+  parseAsString,
+  parseAsStringLiteral,
+  type SearchParams,
+} from "nuqs/server";
 import { getEvents } from "../queries";
 import { Event } from "./Event";
 
 const loadSearchParams = createLoader({
   status: parseAsString.withDefault("open"),
+  participating: parseAsStringLiteral(["all", "me"]).withDefault("all"),
 });
 
 interface Props {
@@ -13,9 +19,9 @@ interface Props {
 }
 
 export const EventsTile = async ({ className, searchParams }: Props) => {
-  const { status } = await loadSearchParams(searchParams);
+  const { status, participating } = await loadSearchParams(searchParams);
 
-  const events = await getEvents(status);
+  const events = await getEvents(status, participating);
 
   if (events.length <= 0)
     return (

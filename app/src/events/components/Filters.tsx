@@ -20,6 +20,10 @@ export const Filters = ({ className }: Props) => {
     shallow: false,
     startTransition,
   });
+  const [participating, setParticipating] = useQueryState("participating", {
+    shallow: false,
+    startTransition,
+  });
 
   useEffect(() => {
     if (isLoading) {
@@ -57,6 +61,21 @@ export const Filters = ({ className }: Props) => {
             ]}
             value={status || "open"}
             onChange={setStatus}
+            className="mt-1"
+          />
+        </div>
+
+        <div className="background-secondary rounded-primary p-2">
+          <p className="text-sm text-neutral-500">Zugesagt von</p>
+
+          <RadioGroup
+            name="participating"
+            items={[
+              { value: "all", label: "Alle" },
+              { value: "me", label: "Mir" },
+            ]}
+            value={participating || "all"}
+            onChange={setParticipating}
             className="mt-1"
           />
         </div>
