@@ -1,7 +1,7 @@
-import { App } from "@/apps/components/App";
-import { AppGrid } from "@/apps/components/AppGrid";
-import { RedactedApp } from "@/apps/components/RedactedApp";
-import { getApps } from "@/apps/utils/getApps";
+import { AppTile } from "@/apps/components/AppTile";
+import { AppTileGrid } from "@/apps/components/AppTileGrid";
+import { RedactedAppTile } from "@/apps/components/RedactedAppTile";
+import { getApps } from "@/apps/utils/queries";
 import { requireAuthenticationPage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
@@ -16,6 +16,12 @@ export default async function Page() {
   await requireAuthenticationPage("/app/apps");
 
   const apps = await getApps();
+  const featured = apps
+    ?.filter((app) => app.featured)
+    .toSorted((a, b) => a.name.localeCompare(b.name));
+  const other = apps
+    ?.filter((app) => !app.featured)
+    .toSorted((a, b) => a.name.localeCompare(b.name));
 
   return (
     <main className="p-4 pb-20 lg:pb-4 max-w-[1920px] mx-auto">
@@ -25,12 +31,12 @@ export default async function Page() {
 
       <h2 className="font-bold mt-8">Featured</h2>
 
-      <AppGrid className="mt-2">
-        {apps?.featured.map((app) =>
+      <AppTileGrid className="mt-2">
+        {featured?.map((app) =>
           app.redacted ? (
-            <RedactedApp key={app.name} />
+            <RedactedAppTile key={app.name} />
           ) : (
-            <App
+            <AppTile
               key={app.name}
               name={app.name}
               href={app.href}
@@ -39,16 +45,16 @@ export default async function Page() {
             />
           ),
         )}
-      </AppGrid>
+      </AppTileGrid>
 
       <h2 className="font-bold mt-8">Weitere</h2>
 
-      <AppGrid className="mt-2">
-        {apps?.other.map((app) =>
+      <AppTileGrid className="mt-2">
+        {other?.map((app) =>
           app.redacted ? (
-            <RedactedApp key={app.name} />
+            <RedactedAppTile key={app.name} />
           ) : (
-            <App
+            <AppTile
               key={app.name}
               name={app.name}
               href={app.href}
@@ -57,7 +63,7 @@ export default async function Page() {
             />
           ),
         )}
-      </AppGrid>
+      </AppTileGrid>
     </main>
   );
 }

@@ -6,7 +6,7 @@ interface Props {
   readonly variant?: "default" | "compact";
 }
 
-export const RedactedApp = ({ className, variant = "default" }: Props) => {
+export const RedactedAppTile = ({ className, variant = "default" }: Props) => {
   if (variant === "compact") {
     return (
       <div

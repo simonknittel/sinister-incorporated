@@ -7,7 +7,7 @@ interface Props {
   readonly variant?: "default" | "compact";
 }
 
-export const AppGrid = ({
+export const AppTileGrid = ({
   className,
   children,
   variant = "default",

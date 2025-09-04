@@ -13,7 +13,7 @@ interface Props {
   readonly onClick?: () => void;
 }
 
-export const App = ({
+export const AppTile = ({
   className,
   name,
   href,
