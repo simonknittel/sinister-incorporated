@@ -12,7 +12,6 @@ export const CreateCitizenButton = () => {
       variant="secondary"
       onClick={() => openCreateModal("citizen")}
       title="Neuen Citizen erstellen"
-      as="a"
     >
       <FaPlus /> Citizen
     </Button2>

@@ -1,9 +1,10 @@
 "use client";
 
-import { App } from "@/apps/components/App";
-import { AppGrid } from "@/apps/components/AppGrid";
-import { RedactedApp } from "@/apps/components/RedactedApp";
-import { useApps } from "@/apps/utils/useApps";
+import { useAppsContext } from "@/apps/components/AppsContext";
+import { AppTile } from "@/apps/components/AppTile";
+import { AppTileGrid } from "@/apps/components/AppTileGrid";
+import { RedactedAppTile } from "@/apps/components/RedactedAppTile";
+import type { App, AppList } from "@/apps/utils/types";
 import { Link } from "@/common/components/Link";
 import { Popover, usePopover } from "@/common/components/Popover";
 import clsx from "clsx";
@@ -14,7 +15,7 @@ interface Props {
 }
 
 export const Apps = ({ className }: Props) => {
-  const apps = useApps();
+  const { apps } = useAppsContext();
   if (!apps) return null;
 
   return (
@@ -39,53 +40,55 @@ export const Apps = ({ className }: Props) => {
 };
 
 interface PopoverChildrenProps {
-  apps: NonNullable<Awaited<ReturnType<typeof useApps>>>;
+  apps: AppList;
 }
 
 const PopoverChildren = ({ apps }: PopoverChildrenProps) => {
   const { closePopover } = usePopover();
 
+  const featured = apps
+    .filter((app) => "featured" in app && app.featured)
+    .toSorted((a, b) => a.name.localeCompare(b.name));
+
+  const other = apps
+    .filter((app) => !("featured" in app) || !app.featured)
+    .toSorted((a, b) => a.name.localeCompare(b.name));
+
   return (
     <>
       <p className="font-bold text-sm text-center">Featured</p>
 
-      <AppGrid variant="compact" className="mt-2">
-        {apps.featured.map((app) =>
-          app.redacted ? (
-            <RedactedApp key={app.name} variant="compact" />
+      <AppTileGrid variant="compact" className="mt-2">
+        {featured.map((app) =>
+          "redacted" in app && app.redacted ? (
+            <RedactedAppTile key={app.name} variant="compact" />
           ) : (
-            <App
+            <AppTile
               key={app.name}
-              name={app.name}
-              href={app.href}
-              imageSrc={app.imageSrc}
-              description={app.description}
+              app={app as App}
               variant="compact"
               onClick={closePopover}
             />
           ),
         )}
-      </AppGrid>
+      </AppTileGrid>
 
       <p className="font-bold text-sm text-center mt-4">Weitere</p>
 
-      <AppGrid variant="compact" className="mt-2">
-        {apps.other.map((app) =>
-          app.redacted ? (
-            <RedactedApp key={app.name} variant="compact" />
+      <AppTileGrid variant="compact" className="mt-2">
+        {other.map((app) =>
+          "redacted" in app && app.redacted ? (
+            <RedactedAppTile key={app.name} variant="compact" />
           ) : (
-            <App
+            <AppTile
               key={app.name}
-              name={app.name}
-              href={app.href}
-              imageSrc={app.imageSrc}
-              description={app.description}
+              app={app as App}
               variant="compact"
               onClick={closePopover}
             />
           ),
         )}
-      </AppGrid>
+      </AppTileGrid>
 
       <div className="flex justify-center">
         <Link

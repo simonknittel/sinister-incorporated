@@ -2,7 +2,14 @@ import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Command } from "cmdk";
 import { signOut } from "next-auth/react";
 import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
-import { FaCog, FaHome, FaLock, FaPiggyBank, FaTools } from "react-icons/fa";
+import {
+  FaCog,
+  FaHome,
+  FaLock,
+  FaPiggyBank,
+  FaTools,
+  FaUser,
+} from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdEvent, MdTaskAlt, MdWorkspaces } from "react-icons/md";
@@ -317,6 +324,14 @@ export const List = () => {
               )}
             </>
           )}
+
+          <LinkItem
+            label="Account"
+            icon={<FaUser />}
+            href="/app/account"
+            setOpen={setOpen}
+            setSearch={setSearch}
+          />
 
           <CommandItem
             label="Abmelden"

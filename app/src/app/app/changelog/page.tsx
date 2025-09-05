@@ -51,10 +51,26 @@ export default async function Page() {
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
         <Day heading="30. August 2025">
-          <DayItem heading="&ldquo;Neu&rdquo; in der Topbar" badges={["Neu"]}>
+          <DayItem
+            heading="Accounteinstellungen und Benachrichtigungen"
+            badges={["Neu", "Änderungen"]}
+          >
             <p>
-              Die Topbar enthält nun einen neuen Button, um von überall Tasks,
-              Citizen usw. erstellen zu können.
+              Sämtliche Benachrichtigungen werden nun in den neuen{" "}
+              <Link
+                href="/app/account"
+                className="text-interaction-500 hover:text-interaction-300 focus-visible:text-interaction-300"
+              >
+                Accounteinstellungen
+              </Link>{" "}
+              verwaltet. Um dahin zu gelangen, klicke auf dein Avatar oben
+              rechts und dann auf &ldquo;Einstellungen&rdquo;. Alternativ kannst
+              du oben links unter Apps &ldquo;Account&rdquo; wählen.
+            </p>
+
+            <p>
+              Zukünftig wird es auch möglich sein sich über Discord
+              benachrichtigen zu lassen.
             </p>
           </DayItem>
         </Day>

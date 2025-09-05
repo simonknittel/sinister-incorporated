@@ -1,3 +1,5 @@
+import { AppsContextProvider } from "@/apps/components/AppsContext";
+import { getApps } from "@/apps/utils/queries";
 import { AdminEnabler } from "@/auth/components/AdminEnabler";
 import { SessionProviderContainer } from "@/auth/components/SessionProviderContainer";
 import { requireAuthenticationPage } from "@/auth/server";
@@ -23,10 +25,11 @@ interface Props {
 }
 
 export default async function AppLayout({ children }: Readonly<Props>) {
-  const [authentication, _cookies, disableAlgolia] = await Promise.all([
+  const [authentication, _cookies, disableAlgolia, apps] = await Promise.all([
     requireAuthenticationPage(),
     cookies(),
     getUnleashFlag("DisableAlgolia"),
+    getApps(),
   ]);
   const isNavigationCollapsed =
     _cookies.get("navigation_collapsed")?.value === "true";
@@ -48,17 +51,19 @@ export default async function AppLayout({ children }: Readonly<Props>) {
                       isNavigationCollapsed ? "true" : undefined
                     }
                   >
-                    <CreateContextProvider>
-                      <CmdKProvider disableAlgolia={disableAlgolia}>
-                        <MobileActionBarContainer />
-                        <DesktopSidebarContainer />
-                        <TopBar />
-                      </CmdKProvider>
+                    <AppsContextProvider apps={apps}>
+                      <CreateContextProvider>
+                        <CmdKProvider disableAlgolia={disableAlgolia}>
+                          <MobileActionBarContainer />
+                          <DesktopSidebarContainer />
+                          <TopBar />
+                        </CmdKProvider>
 
-                      <div className="lg:ml-64 group-data-[navigation-collapsed]/navigation:lg:ml-[4.5rem] lg:pt-16 min-h-dvh">
-                        {children}
-                      </div>
-                    </CreateContextProvider>
+                        <div className="lg:ml-64 group-data-[navigation-collapsed]/navigation:lg:ml-[4.5rem] lg:pt-16 min-h-dvh">
+                          {children}
+                        </div>
+                      </CreateContextProvider>
+                    </AppsContextProvider>
                   </div>
 
                   <Suspense>

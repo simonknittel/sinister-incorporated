@@ -1,62 +1,56 @@
 import clsx from "clsx";
 import Image from "next/image";
 import NextLink from "next/link";
-import type { ComponentProps } from "react";
+import type { App } from "../utils/types";
 
 interface Props {
   readonly className?: string;
-  readonly name: string;
-  readonly href: string;
-  readonly imageSrc: ComponentProps<typeof Image>["src"];
-  readonly description?: string;
+  readonly app: App;
   readonly variant?: "default" | "compact";
   readonly onClick?: () => void;
 }
 
-export const App = ({
+export const AppTile = ({
   className,
-  name,
-  href,
-  imageSrc,
-  description,
+  app,
   variant = "default",
   onClick,
 }: Props) => {
   if (variant === "compact") {
     return (
       <NextLink
-        href={href}
+        href={app.href}
         className={clsx(
           "block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group p-2 text-xs",
           className,
         )}
         onClick={onClick}
       >
-        {name}
+        {app.name}
       </NextLink>
     );
   }
 
   return (
     <NextLink
-      href={href}
+      href={app.href}
       className={clsx(
         "block hover:outline-interaction-700 focus-visible:outline-interaction-700 active:outline-interaction-500 outline outline-offset-4 outline-1 outline-transparent transition-colors rounded-primary overflow-hidden background-secondary group",
         className,
       )}
     >
       <Image
-        src={imageSrc}
-        alt={`Screenshot der ${name} App`}
+        src={app.imageSrc}
+        alt={`Screenshot der ${app.name} App`}
         priority
         className="aspect-video object-cover object-top grayscale group-hover:grayscale-0 group-focus-visible:grayscale-0 transition"
       />
 
       <div className="p-2 sm:p-4 flex flex-col gap-2">
-        <h2 className="font-bold">{name}</h2>
+        <h2 className="font-bold">{app.name}</h2>
 
-        {description && (
-          <p className="text-xs text-neutral-400">{description}</p>
+        {app.description && (
+          <p className="text-xs text-neutral-400">{app.description}</p>
         )}
       </div>
     </NextLink>
