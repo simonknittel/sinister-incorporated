@@ -1,26 +1,22 @@
 import { requireAuthenticationPage } from "@/auth/server";
 import { SidebarLayout } from "@/common/components/layouts/sidebar/Layout";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { Navigation } from "@/iam/components/Navigation/Navigation";
-import { RolesTile } from "@/roles/components/RolesTile";
+import { MyFleetTile } from "@/fleet/components/MyFleetTile";
+import { Navigation } from "@/fleet/components/Navigation/Navigation";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Rollen - IAM | S.A.M. - Sinister Incorporated",
+  title: "Meine Schiffe - Flotte | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {
-  const authentication = await requireAuthenticationPage("/app/iam/roles");
-  await authentication.authorizePage("role", "manage");
+  const authentication = await requireAuthenticationPage("/app/fleet");
+  await authentication.authorizePage("ship", "manage");
 
   return (
-    <SidebarLayout
-      title="IAM"
-      sidebar={<Navigation />}
-      childrenContainerClassName="overflow-x-hidden"
-    >
+    <SidebarLayout title="Flotte" sidebar={<Navigation />}>
       <SuspenseWithErrorBoundaryTile>
-        <RolesTile />
+        <MyFleetTile />
       </SuspenseWithErrorBoundaryTile>
     </SidebarLayout>
   );

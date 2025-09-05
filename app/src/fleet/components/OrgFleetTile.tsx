@@ -27,12 +27,11 @@ export const OrgFleetTile = async ({ className, urlSearchParams }: Props) => {
 
   return (
     <section className={className}>
-      <h2 className="font-thin text-2xl">Sinister Incorporated</h2>
-      <p className="text-neutral-500 text-sm">
+      <p className="text-neutral-500 text-sm mb-1">
         Schiffe von {Object.keys(groupedByUser).length} Citizen
       </p>
 
-      <div className="rounded-primary bg-neutral-800/50 p-4 lg:p-6 mt-4 overflow-x-auto">
+      <div className="rounded-primary bg-neutral-800/50 p-4 overflow-x-auto">
         <Filters />
 
         <FleetTable fleet={countedFleet} className="mt-6" />

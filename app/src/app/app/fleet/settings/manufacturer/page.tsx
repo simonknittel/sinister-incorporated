@@ -4,7 +4,7 @@ import { ManufacturersTile } from "@/fleet/components/ManufacturersTile";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Hersteller - Schiffe | S.A.M. - Sinister Incorporated",
+  title: "Einstellungen - Flotte | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {
@@ -17,10 +17,8 @@ export default async function Page() {
   );
 
   return (
-    <main>
-      <SuspenseWithErrorBoundaryTile>
-        <ManufacturersTile />
-      </SuspenseWithErrorBoundaryTile>
-    </main>
+    <SuspenseWithErrorBoundaryTile>
+      <ManufacturersTile />
+    </SuspenseWithErrorBoundaryTile>
   );
 }

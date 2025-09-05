@@ -37,7 +37,8 @@ export const deleteManufacturer = createAuthenticatedAction(
      * Revalidate cache(s)
      */
     revalidatePath("/app/fleet/settings");
-    revalidatePath("/app/fleet");
+    revalidatePath("/app/fleet/org");
+    revalidatePath("/app/fleet/my-ships");
 
     /**
      * Respond with the result

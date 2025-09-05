@@ -59,7 +59,7 @@ export default async function AppLayout({ children }: Readonly<Props>) {
                           <TopBar />
                         </CmdKProvider>
 
-                        <div className="lg:ml-64 group-data-[navigation-collapsed]/navigation:lg:ml-[4.5rem] lg:pt-16 min-h-dvh">
+                        <div className="lg:ml-64 group-data-[navigation-collapsed]/navigation:lg:ml-[4.5rem] lg:pt-14 min-h-dvh">
                           {children}
                         </div>
                       </CreateContextProvider>

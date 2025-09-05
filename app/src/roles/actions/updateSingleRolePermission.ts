@@ -48,7 +48,7 @@ export const updateSingleRolePermission = createAuthenticatedAction(
      * Revalidate cache(s)
      */
     revalidatePath(`/app/roles/${data.roleId}/permissions`);
-    revalidatePath("/app/roles/permission-matrix");
+    revalidatePath("/app/iam/permission-matrix");
 
     /**
      * Respond with the result

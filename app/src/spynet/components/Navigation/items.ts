@@ -38,5 +38,12 @@ export const items = (permissions: (boolean | Session)[]) => {
     });
   }
 
+  if (permissions[8] || permissions[9]) {
+    pages.push({
+      name: "Einstellungen",
+      path: "/app/spynet/settings",
+    });
+  }
+
   return pages;
 };

@@ -1,6 +1,6 @@
 import { requireAuthenticationPage } from "@/auth/server";
 import { CreateCitizenButton } from "@/citizen/components/CreateCitizenButton";
-import { Layout } from "@/common/components/layouts/sidebar/Layout";
+import { SidebarLayout } from "@/common/components/layouts/sidebar/Layout";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { CreateOrganizationButton } from "@/spynet/components/CreateOrganization/CreateOrganizationButton";
 import { Navigation } from "@/spynet/components/Navigation/Navigation";
@@ -20,7 +20,7 @@ export default async function Page() {
   ]);
 
   return (
-    <Layout title="Spynet" sidebar={<Navigation />}>
+    <SidebarLayout title="Spynet" sidebar={<Navigation />}>
       <div className="max-w-[400px] mx-auto mt-6">
         {!(await getUnleashFlag("DisableAlgolia")) && <SpynetSearchTile />}
 
@@ -31,6 +31,6 @@ export default async function Page() {
           </div>
         )}
       </div>
-    </Layout>
+    </SidebarLayout>
   );
 }

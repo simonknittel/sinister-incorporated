@@ -1,5 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
-import { Layout } from "@/common/components/layouts/sidebar/Layout";
+import { SidebarLayout } from "@/common/components/layouts/sidebar/Layout";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { Filters } from "@/tasks/components/Filters";
 import { TasksTile } from "@/tasks/components/TasksTile";
@@ -20,10 +20,13 @@ export default async function Page({ searchParams }: Props) {
   const showCreateTask = await authentication.authorize("task", "create");
 
   return (
-    <Layout title="Tasks" sidebar={<Filters showCreateTask={showCreateTask} />}>
+    <SidebarLayout
+      title="Tasks"
+      sidebar={<Filters showCreateTask={showCreateTask} />}
+    >
       <SuspenseWithErrorBoundaryTile>
         <TasksTile searchParams={searchParams} />
       </SuspenseWithErrorBoundaryTile>
-    </Layout>
+    </SidebarLayout>
   );
 }

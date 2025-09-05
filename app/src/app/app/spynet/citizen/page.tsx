@@ -1,5 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
-import { Layout } from "@/common/components/layouts/sidebar/Layout";
+import { SidebarLayout } from "@/common/components/layouts/sidebar/Layout";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import {
   searchParamsNextjsToURLSearchParams,
@@ -30,7 +30,7 @@ export default async function Page({ searchParams }: Props) {
     await searchParamsNextjsToURLSearchParams(searchParams);
 
   return (
-    <Layout
+    <SidebarLayout
       title="Spynet"
       sidebar={<Navigation />}
       childrenContainerClassName="overflow-x-hidden"
@@ -38,6 +38,6 @@ export default async function Page({ searchParams }: Props) {
       <SuspenseWithErrorBoundaryTile>
         <CitizenTableTile searchParams={urlSearchParams} />
       </SuspenseWithErrorBoundaryTile>
-    </Layout>
+    </SidebarLayout>
   );
 }

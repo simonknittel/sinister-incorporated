@@ -42,7 +42,7 @@ export const verifyEmailAction = createAuthenticatedAction(
     /**
      * Revalidate cache(s)
      */
-    revalidatePath("/app/users");
+    revalidatePath("/app/iam/users");
 
     /**
      * Respond with the result

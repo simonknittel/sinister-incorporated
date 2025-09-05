@@ -9,7 +9,7 @@ interface Props {
   readonly sidebar: ReactElement;
 }
 
-export const Layout = ({
+export const SidebarLayout = ({
   title,
   children,
   childrenContainerClassName,

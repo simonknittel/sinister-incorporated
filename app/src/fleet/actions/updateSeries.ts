@@ -48,7 +48,8 @@ export const updateSeries: ServerAction = async (formData) => {
     revalidatePath(
       `/app/fleet/settings/manufacturers/${updatedItem.manufacturerId}`,
     );
-    revalidatePath("/app/fleet");
+    revalidatePath("/app/fleet/org");
+    revalidatePath("/app/fleet/my-ships");
 
     /**
      * Respond with the result

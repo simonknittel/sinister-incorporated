@@ -8,10 +8,10 @@ interface Props {
 
 export const IframePage = ({ url }: Props) => {
   return (
-    <main className="pb-16 lg:px-2 lg:pb-2 relative">
+    <main className="lg:pl-2 lg:pt-2 pb-16 lg:pb-0 relative">
       <iframe
         src={url}
-        className="w-full h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-4.75rem)] relative z-10"
+        className="w-full h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-4rem)] relative z-10"
         title="Formular für eine SILO-Anfrage"
       />
 
@@ -24,7 +24,7 @@ export const IframePage = ({ url }: Props) => {
         href={url}
         title="In einem neuen Tab öffnen"
         variant="secondary"
-        className="absolute right-3 top-1 z-10"
+        className="absolute right-1 top-3 z-10"
       >
         <FaExternalLinkAlt />
       </Button2>

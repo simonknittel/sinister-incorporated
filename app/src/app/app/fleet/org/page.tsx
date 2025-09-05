@@ -5,14 +5,12 @@ import {
   searchParamsNextjsToURLSearchParams,
   type NextjsSearchParams,
 } from "@/common/utils/searchParamsNextjsToURLSearchParams";
-import { Navigation } from "@/spynet/components/Navigation/Navigation";
+import { Navigation } from "@/fleet/components/Navigation/Navigation";
+import { OrgFleetTile } from "@/fleet/components/OrgFleetTile";
 import { type Metadata } from "next";
-import OtherTableTile from "../../../../citizen/components/OtherTableTile";
-
-export const revalidate = 0; // TODO: Revert to 60
 
 export const metadata: Metadata = {
-  title: "Sonstige - Spynet | S.A.M. - Sinister Incorporated",
+  title: "Sinister Incorporated - Flotte | S.A.M. - Sinister Incorporated",
 };
 
 interface Props {
@@ -20,23 +18,16 @@ interface Props {
 }
 
 export default async function Page({ searchParams }: Props) {
-  const authentication = await requireAuthenticationPage("/app/spynet/other");
-  await Promise.all([
-    authentication.authorizePage("citizen", "read"),
-    authentication.authorizePage("spynetOther", "read"),
-  ]);
+  const authentication = await requireAuthenticationPage("/app/fleet/org");
+  await authentication.authorizePage("orgFleet", "read");
 
   const urlSearchParams =
     await searchParamsNextjsToURLSearchParams(searchParams);
 
   return (
-    <SidebarLayout
-      title="Spynet"
-      sidebar={<Navigation />}
-      childrenContainerClassName="overflow-x-hidden"
-    >
+    <SidebarLayout title="Flotte" sidebar={<Navigation />}>
       <SuspenseWithErrorBoundaryTile>
-        <OtherTableTile searchParams={urlSearchParams} />
+        <OrgFleetTile urlSearchParams={urlSearchParams} />
       </SuspenseWithErrorBoundaryTile>
     </SidebarLayout>
   );

@@ -58,7 +58,7 @@ export const updateRoleName = async (
      * Revalidate cache(s)
      */
     revalidatePath(`/app/roles/${updatedRole.id}`);
-    revalidatePath("/app/roles");
+    revalidatePath("/app/iam/roles");
 
     /**
      * Respond with the result

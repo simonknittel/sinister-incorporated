@@ -84,6 +84,13 @@ export default async function Page() {
               verschoben.
             </p>
           </DayItem>
+
+          <DayItem heading="Flotten-App mit Sidebar" badges={["Änderungen"]}>
+            <p>
+              Für die Flotten-App wurde nun ebenfalls das neue Sidebar-Layout
+              übernommen.
+            </p>
+          </DayItem>
         </Day>
 
         <Day heading="27. August 2025">
