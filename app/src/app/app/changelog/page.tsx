@@ -50,7 +50,7 @@ export default async function Page() {
       </div>
 
       <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
-        <Day heading="30. August 2025">
+        <Day heading="5. September 2025">
           <DayItem
             heading="Accounteinstellungen und Benachrichtigungen"
             badges={["Neu", "Änderungen"]}
