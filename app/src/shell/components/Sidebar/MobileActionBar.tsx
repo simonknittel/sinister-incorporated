@@ -258,11 +258,7 @@ export const MobileActionBar = async ({ className }: Props) => {
                     "manage",
                   )) ||
                   (await authentication.authorize("noteType", "manage")) ||
-                  (await authentication.authorize("analytics", "manage")) ||
-                  (await authentication.authorize(
-                    "manufacturersSeriesAndVariants",
-                    "manage",
-                  ))) && (
+                  (await authentication.authorize("analytics", "manage"))) && (
                   <div className="mt-4">
                     <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
@@ -286,21 +282,6 @@ export const MobileActionBar = async ({ className }: Props) => {
                           >
                             <FaCog className="text-neutral-500" />
                             Einstellungen
-                          </Link>
-                        </li>
-                      )}
-
-                      {(await authentication.authorize(
-                        "manufacturersSeriesAndVariants",
-                        "manage",
-                      )) && (
-                        <li>
-                          <Link
-                            href="/app/fleet/settings/manufacturer"
-                            className="flex gap-2 items-center p-2 active:bg-neutral-700 rounded-secondary"
-                          >
-                            <FaCog className="text-neutral-500" />
-                            Schiffe
                           </Link>
                         </li>
                       )}

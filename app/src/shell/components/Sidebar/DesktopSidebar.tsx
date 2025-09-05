@@ -58,7 +58,6 @@ export const DesktopSidebar = async () => {
     showClassificationLevelManage,
     showNoteTypeManage,
     showAnalyticsManage,
-    showManufacturersSeriesAndVariantsManage,
     showPenaltyPoints,
     showSilc,
     showTasks,
@@ -70,7 +69,6 @@ export const DesktopSidebar = async () => {
     authentication.authorize("classificationLevel", "manage"),
     authentication.authorize("noteType", "manage"),
     authentication.authorize("analytics", "manage"),
-    authentication.authorize("manufacturersSeriesAndVariants", "manage"),
     authentication.authorize("penaltyEntry", "create"),
     authentication.authorize("silcBalanceOfOtherCitizen", "read"),
     authentication.authorize("task", "read"),
@@ -170,8 +168,7 @@ export const DesktopSidebar = async () => {
               showRoleManage ||
               showClassificationLevelManage ||
               showNoteTypeManage ||
-              showAnalyticsManage ||
-              showManufacturersSeriesAndVariantsManage) && (
+              showAnalyticsManage) && (
               <NavigationSection heading="Admin">
                 {(showNoteTypeManage ||
                   showClassificationLevelManage ||
@@ -179,14 +176,6 @@ export const DesktopSidebar = async () => {
                   <NavigationItem
                     href="/app/settings"
                     label="Einstellungen"
-                    icon={<FaCog />}
-                  />
-                )}
-
-                {showManufacturersSeriesAndVariantsManage && (
-                  <NavigationItem
-                    href="/app/fleet/settings/manufacturer"
-                    label="Schiffe"
                     icon={<FaCog />}
                   />
                 )}

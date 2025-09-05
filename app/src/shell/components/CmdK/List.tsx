@@ -40,10 +40,6 @@ export const List = () => {
   );
   const showNoteTypeManage = authentication.authorize("noteType", "manage");
   const showAnalyticsManage = authentication.authorize("analytics", "manage");
-  const showManufacturersSeriesAndVariantsManage = authentication.authorize(
-    "manufacturersSeriesAndVariants",
-    "manage",
-  );
   const showTasks = authentication.authorize("task", "read");
   const showCareer =
     authentication.authorize("career", "read", [
@@ -261,8 +257,7 @@ export const List = () => {
             showRoleManage ||
             showClassificationLevelManage ||
             showNoteTypeManage ||
-            showAnalyticsManage ||
-            showManufacturersSeriesAndVariantsManage) && (
+            showAnalyticsManage) && (
             <>
               {(showNoteTypeManage ||
                 showClassificationLevelManage ||
@@ -272,17 +267,6 @@ export const List = () => {
                   icon={<FaCog />}
                   section="Admin"
                   href="/app/settings"
-                  setOpen={setOpen}
-                  setSearch={setSearch}
-                />
-              )}
-
-              {showManufacturersSeriesAndVariantsManage && (
-                <LinkItem
-                  label="Schiffe"
-                  icon={<FaCog />}
-                  section="Admin"
-                  href="/app/fleet/settings/manufacturer"
                   setOpen={setOpen}
                   setSearch={setSearch}
                 />

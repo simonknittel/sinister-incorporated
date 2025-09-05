@@ -1,5 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
-import { Layout } from "@/common/components/layouts/sidebar/Layout";
+import { SidebarLayout } from "@/common/components/layouts/sidebar/Layout";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { EventsTile } from "@/events/components/EventsTile";
 import { Filters } from "@/events/components/Filters";
@@ -19,7 +19,7 @@ export default async function Page({ searchParams }: Props) {
   await authentication.authorizePage("event", "read");
 
   return (
-    <Layout
+    <SidebarLayout
       title="Events"
       sidebar={<Filters />}
       childrenContainerClassName="@container"
@@ -29,6 +29,6 @@ export default async function Page({ searchParams }: Props) {
           <EventsTile searchParams={searchParams} />
         </SuspenseWithErrorBoundaryTile>
       </div>
-    </Layout>
+    </SidebarLayout>
   );
 }
