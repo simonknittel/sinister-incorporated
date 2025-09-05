@@ -7,12 +7,11 @@ import {
   type ReactNode,
 } from "react";
 import { AiOutlineForm } from "react-icons/ai";
-import { FaCog, FaHome, FaLock, FaPiggyBank, FaTable } from "react-icons/fa";
+import { FaCog, FaHome, FaLock, FaPiggyBank } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
 import { RiSpyFill } from "react-icons/ri";
-import { RxActivityLog } from "react-icons/rx";
 import { TbMilitaryRank } from "react-icons/tb";
 import { Footer } from "../Footer";
 import { CollapseToggle } from "./CollapseToggle";
@@ -54,7 +53,6 @@ export const DesktopSidebar = async () => {
   const [
     showShipManage,
     showOrgFleetRead,
-    showCitizenRead,
     showUserRead,
     showRoleManage,
     showClassificationLevelManage,
@@ -63,12 +61,10 @@ export const DesktopSidebar = async () => {
     showManufacturersSeriesAndVariantsManage,
     showPenaltyPoints,
     showSilc,
-    showSpynetActivity,
     showTasks,
   ] = await Promise.all([
     authentication.authorize("ship", "manage"),
     authentication.authorize("orgFleet", "read"),
-    authentication.authorize("citizen", "read"),
     authentication.authorize("user", "read"),
     authentication.authorize("role", "manage"),
     authentication.authorize("classificationLevel", "manage"),
@@ -77,22 +73,8 @@ export const DesktopSidebar = async () => {
     authentication.authorize("manufacturersSeriesAndVariants", "manage"),
     authentication.authorize("penaltyEntry", "create"),
     authentication.authorize("silcBalanceOfOtherCitizen", "read"),
-    authentication.authorize("spynetActivity", "read"),
     authentication.authorize("task", "read"),
   ]);
-
-  const showSpynetCitizen =
-    showCitizenRead &&
-    (await authentication.authorize("spynetCitizen", "read"));
-  const showSpynetNotes =
-    showCitizenRead && (await authentication.authorize("spynetNotes", "read"));
-  const showSpynetOther =
-    showCitizenRead && (await authentication.authorize("spynetOther", "read"));
-  const showSpynetAdmin =
-    showSpynetActivity ||
-    showSpynetCitizen ||
-    showSpynetNotes ||
-    showSpynetOther;
 
   return (
     <div className="overflow-auto pl-2 py-2 pt-16">
@@ -183,42 +165,6 @@ export const DesktopSidebar = async () => {
                 />
               )}
             </NavigationSection>
-
-            {showSpynetAdmin && (
-              <NavigationSection heading="Spynet">
-                {showSpynetActivity && (
-                  <NavigationItem
-                    href="/app/spynet/activity"
-                    label="Aktivität"
-                    icon={<RxActivityLog />}
-                  />
-                )}
-
-                {showSpynetCitizen && (
-                  <NavigationItem
-                    href="/app/spynet/citizen"
-                    label="Citizen"
-                    icon={<FaTable />}
-                  />
-                )}
-
-                {showSpynetNotes && (
-                  <NavigationItem
-                    href="/app/spynet/notes"
-                    label="Notizen"
-                    icon={<FaTable />}
-                  />
-                )}
-
-                {showSpynetOther && (
-                  <NavigationItem
-                    href="/app/spynet/other"
-                    label="Sonstige"
-                    icon={<FaTable />}
-                  />
-                )}
-              </NavigationSection>
-            )}
 
             {(showUserRead ||
               showRoleManage ||
