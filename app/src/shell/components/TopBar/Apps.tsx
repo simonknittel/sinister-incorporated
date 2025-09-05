@@ -32,7 +32,7 @@ export const Apps = ({ className }: Props) => {
         </button>
       }
       enableHover
-      childrenClassName="w-64"
+      childrenClassName="w-92"
     >
       <PopoverChildren apps={apps} />
     </Popover>
