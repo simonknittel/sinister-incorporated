@@ -45,7 +45,8 @@ export const deleteVariant = createAuthenticatedAction(
     revalidatePath(
       `/app/fleet/settings/manufacturers/${deletedItem.series.manufacturerId}/series/${deletedItem.seriesId}`,
     );
-    revalidatePath("/app/fleet");
+    revalidatePath("/app/fleet/org");
+    revalidatePath("/app/fleet/my-ships");
 
     /**
      * Respond with the result

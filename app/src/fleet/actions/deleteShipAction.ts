@@ -32,7 +32,8 @@ export const deleteShipAction = createAuthenticatedAction(
     /**
      * Revalidate cache(s)
      */
-    revalidatePath("/app/fleet");
+    revalidatePath("/app/fleet/org");
+    revalidatePath("/app/fleet/my-ships");
 
     /**
      * Respond with the result

@@ -40,7 +40,8 @@ export const deleteSeries = createAuthenticatedAction(
     revalidatePath(
       `/app/fleet/settings/manufacturers/${deletedSeries.manufacturerId}`,
     );
-    revalidatePath("/app/fleet");
+    revalidatePath("/app/fleet/org");
+    revalidatePath("/app/fleet/my-ships");
 
     /**
      * Respond with the result

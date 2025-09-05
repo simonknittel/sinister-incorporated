@@ -2,7 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import { Link } from "@/common/components/Link";
 import clsx from "clsx";
 import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
-import { FaCog, FaHome, FaLock, FaPiggyBank } from "react-icons/fa";
+import { FaHome, FaLock, FaPiggyBank } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
@@ -252,40 +252,11 @@ export const MobileActionBar = async ({ className }: Props) => {
                 </div>
 
                 {((await authentication.authorize("user", "read")) ||
-                  (await authentication.authorize("role", "manage")) ||
-                  (await authentication.authorize(
-                    "classificationLevel",
-                    "manage",
-                  )) ||
-                  (await authentication.authorize("noteType", "manage")) ||
-                  (await authentication.authorize("analytics", "manage"))) && (
+                  (await authentication.authorize("role", "manage"))) && (
                   <div className="mt-4">
                     <p className="ml-4 text-neutral-500 mt-4">Admin</p>
 
                     <ul>
-                      {((await authentication.authorize(
-                        "noteType",
-                        "manage",
-                      )) ||
-                        (await authentication.authorize(
-                          "classificationLevel",
-                          "manage",
-                        )) ||
-                        (await authentication.authorize(
-                          "analytics",
-                          "manage",
-                        ))) && (
-                        <li>
-                          <Link
-                            href="/app/settings"
-                            className="flex gap-2 items-center p-2 active:bg-neutral-700 rounded-secondary"
-                          >
-                            <FaCog className="text-neutral-500" />
-                            Einstellungen
-                          </Link>
-                        </li>
-                      )}
-
                       {((await authentication.authorize("role", "manage")) ||
                         (await authentication.authorize("user", "read"))) && (
                         <li>

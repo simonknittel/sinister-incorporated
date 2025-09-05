@@ -16,6 +16,8 @@ export const useNavigationItems = () => {
     authentication.authorize("spynetCitizen", "read"),
     authentication.authorize("spynetNotes", "read"),
     authentication.authorize("spynetOther", "read"),
+    authentication.authorize("noteType", "manage"),
+    authentication.authorize("classificationLevel", "manage"),
   ];
 
   return items(permissions);

@@ -1,6 +1,8 @@
 import { requireAuthenticationPage } from "@/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
+import { Tile } from "@/common/components/Tile";
 import { AuecConversionRateSetting } from "@/silc/components/AuecConversionRateSetting";
+import { RefreshSilcBalances } from "@/silc/components/RefreshSilcBalances";
 import { RoleSalaries } from "@/silc/components/RoleSalaries";
 import { Template } from "@/silc/components/Template";
 import { type Metadata } from "next";
@@ -13,6 +15,11 @@ export default async function Page() {
   const authentication = await requireAuthenticationPage("/app/silc/settings");
   await authentication.authorizePage("silcSetting", "manage");
 
+  const silcBalanceOfOtherCitizenManage = await authentication.authorize(
+    "silcBalanceOfOtherCitizen",
+    "manage",
+  );
+
   return (
     <Template>
       <div className="flex flex-col gap-4">
@@ -23,6 +30,12 @@ export default async function Page() {
         <SuspenseWithErrorBoundaryTile>
           <RoleSalaries />
         </SuspenseWithErrorBoundaryTile>
+
+        {silcBalanceOfOtherCitizenManage && (
+          <Tile heading="Other">
+            <RefreshSilcBalances />
+          </Tile>
+        )}
       </div>
     </Template>
   );

@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { AiOutlineForm } from "react-icons/ai";
-import { FaCog, FaHome, FaLock, FaPiggyBank } from "react-icons/fa";
+import { FaHome, FaLock, FaPiggyBank } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdTaskAlt, MdWorkspaces } from "react-icons/md";
@@ -55,9 +55,6 @@ export const DesktopSidebar = async () => {
     showOrgFleetRead,
     showUserRead,
     showRoleManage,
-    showClassificationLevelManage,
-    showNoteTypeManage,
-    showAnalyticsManage,
     showPenaltyPoints,
     showSilc,
     showTasks,
@@ -66,9 +63,6 @@ export const DesktopSidebar = async () => {
     authentication.authorize("orgFleet", "read"),
     authentication.authorize("user", "read"),
     authentication.authorize("role", "manage"),
-    authentication.authorize("classificationLevel", "manage"),
-    authentication.authorize("noteType", "manage"),
-    authentication.authorize("analytics", "manage"),
     authentication.authorize("penaltyEntry", "create"),
     authentication.authorize("silcBalanceOfOtherCitizen", "read"),
     authentication.authorize("task", "read"),
@@ -164,22 +158,8 @@ export const DesktopSidebar = async () => {
               )}
             </NavigationSection>
 
-            {(showUserRead ||
-              showRoleManage ||
-              showClassificationLevelManage ||
-              showNoteTypeManage ||
-              showAnalyticsManage) && (
+            {(showUserRead || showRoleManage) && (
               <NavigationSection heading="Admin">
-                {(showNoteTypeManage ||
-                  showClassificationLevelManage ||
-                  showAnalyticsManage) && (
-                  <NavigationItem
-                    href="/app/settings"
-                    label="Einstellungen"
-                    icon={<FaCog />}
-                  />
-                )}
-
                 {(showRoleManage || showUserRead) && (
                   <NavigationItem
                     href="/app/iam"

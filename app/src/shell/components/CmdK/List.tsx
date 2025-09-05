@@ -2,14 +2,7 @@ import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Command } from "cmdk";
 import { signOut } from "next-auth/react";
 import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
-import {
-  FaCog,
-  FaHome,
-  FaLock,
-  FaPiggyBank,
-  FaTools,
-  FaUser,
-} from "react-icons/fa";
+import { FaHome, FaLock, FaPiggyBank, FaTools, FaUser } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
 import { IoDocuments } from "react-icons/io5";
 import { MdEvent, MdTaskAlt, MdWorkspaces } from "react-icons/md";
@@ -34,12 +27,6 @@ export const List = () => {
   const showShipManage = authentication.authorize("ship", "manage");
   const showUserRead = authentication.authorize("user", "read");
   const showRoleManage = authentication.authorize("role", "manage");
-  const showClassificationLevelManage = authentication.authorize(
-    "classificationLevel",
-    "manage",
-  );
-  const showNoteTypeManage = authentication.authorize("noteType", "manage");
-  const showAnalyticsManage = authentication.authorize("analytics", "manage");
   const showTasks = authentication.authorize("task", "read");
   const showCareer =
     authentication.authorize("career", "read", [
@@ -253,25 +240,8 @@ export const List = () => {
             </>
           )}
 
-          {(showUserRead ||
-            showRoleManage ||
-            showClassificationLevelManage ||
-            showNoteTypeManage ||
-            showAnalyticsManage) && (
+          {(showUserRead || showRoleManage) && (
             <>
-              {(showNoteTypeManage ||
-                showClassificationLevelManage ||
-                showAnalyticsManage) && (
-                <LinkItem
-                  label="Notizarten- und Geheimhaltungsstufen"
-                  icon={<FaCog />}
-                  section="Admin"
-                  href="/app/settings"
-                  setOpen={setOpen}
-                  setSearch={setSearch}
-                />
-              )}
-
               {showRoleManage && (
                 <>
                   <LinkItem
