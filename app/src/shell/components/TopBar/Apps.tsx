@@ -23,7 +23,7 @@ export const Apps = ({ className }: Props) => {
       trigger={
         <button
           className={clsx(
-            "border-r border-neutral-700 rounded-l-primary hover:background-tertiary focus-visible:background-tertiary p-2 inline-flex items-center gap-1 h-full text-neutral-500",
+            "border-r border-neutral-700 rounded-l-primary hover:background-tertiary focus-visible:background-tertiary px-6 inline-flex items-center gap-1 h-full text-neutral-500",
             className,
           )}
         >
