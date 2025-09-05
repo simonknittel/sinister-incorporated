@@ -4,7 +4,7 @@ import { useAppsContext } from "@/apps/components/AppsContext";
 import { AppTile } from "@/apps/components/AppTile";
 import { AppTileGrid } from "@/apps/components/AppTileGrid";
 import { RedactedAppTile } from "@/apps/components/RedactedAppTile";
-import type { App } from "@/apps/utils/types";
+import type { App, AppList } from "@/apps/utils/types";
 import { Link } from "@/common/components/Link";
 import { Popover, usePopover } from "@/common/components/Popover";
 import clsx from "clsx";
@@ -40,18 +40,18 @@ export const Apps = ({ className }: Props) => {
 };
 
 interface PopoverChildrenProps {
-  apps: App[];
+  apps: AppList;
 }
 
 const PopoverChildren = ({ apps }: PopoverChildrenProps) => {
   const { closePopover } = usePopover();
 
   const featured = apps
-    .filter((app) => app.featured)
+    .filter((app) => "featured" in app && app.featured)
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
   const other = apps
-    .filter((app) => !app.featured)
+    .filter((app) => !("featured" in app) || !app.featured)
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
   return (
@@ -60,15 +60,12 @@ const PopoverChildren = ({ apps }: PopoverChildrenProps) => {
 
       <AppTileGrid variant="compact" className="mt-2">
         {featured.map((app) =>
-          app.redacted ? (
+          "redacted" in app && app.redacted ? (
             <RedactedAppTile key={app.name} variant="compact" />
           ) : (
             <AppTile
               key={app.name}
-              name={app.name}
-              href={app.href}
-              imageSrc={app.imageSrc}
-              description={app.description}
+              app={app as App}
               variant="compact"
               onClick={closePopover}
             />
@@ -80,15 +77,12 @@ const PopoverChildren = ({ apps }: PopoverChildrenProps) => {
 
       <AppTileGrid variant="compact" className="mt-2">
         {other.map((app) =>
-          app.redacted ? (
+          "redacted" in app && app.redacted ? (
             <RedactedAppTile key={app.name} variant="compact" />
           ) : (
             <AppTile
               key={app.name}
-              name={app.name}
-              href={app.href}
-              imageSrc={app.imageSrc}
-              description={app.description}
+              app={app as App}
               variant="compact"
               onClick={closePopover}
             />

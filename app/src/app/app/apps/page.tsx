@@ -2,6 +2,7 @@ import { AppTile } from "@/apps/components/AppTile";
 import { AppTileGrid } from "@/apps/components/AppTileGrid";
 import { RedactedAppTile } from "@/apps/components/RedactedAppTile";
 import { getApps } from "@/apps/utils/queries";
+import type { App } from "@/apps/utils/types";
 import { requireAuthenticationPage } from "@/auth/server";
 import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
@@ -17,10 +18,10 @@ export default async function Page() {
 
   const apps = await getApps();
   const featured = apps
-    ?.filter((app) => app.featured)
+    ?.filter((app) => "featured" in app && app.featured)
     .toSorted((a, b) => a.name.localeCompare(b.name));
   const other = apps
-    ?.filter((app) => !app.featured)
+    ?.filter((app) => !("featured" in app) || !app.featured)
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
   return (
@@ -33,16 +34,10 @@ export default async function Page() {
 
       <AppTileGrid className="mt-2">
         {featured?.map((app) =>
-          app.redacted ? (
+          "redacted" in app && app.redacted ? (
             <RedactedAppTile key={app.name} />
           ) : (
-            <AppTile
-              key={app.name}
-              name={app.name}
-              href={app.href}
-              imageSrc={app.imageSrc}
-              description={app.description}
-            />
+            <AppTile key={app.name} app={app as App} />
           ),
         )}
       </AppTileGrid>
@@ -51,16 +46,10 @@ export default async function Page() {
 
       <AppTileGrid className="mt-2">
         {other?.map((app) =>
-          app.redacted ? (
+          "redacted" in app && app.redacted ? (
             <RedactedAppTile key={app.name} />
           ) : (
-            <AppTile
-              key={app.name}
-              name={app.name}
-              href={app.href}
-              imageSrc={app.imageSrc}
-              description={app.description}
-            />
+            <AppTile key={app.name} app={app as App} />
           ),
         )}
       </AppTileGrid>

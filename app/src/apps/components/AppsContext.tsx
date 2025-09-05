@@ -2,16 +2,16 @@
 
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo } from "react";
-import type { App } from "../utils/types";
+import type { AppList } from "../utils/types";
 
 interface AppsContext {
-  readonly apps: App[] | null;
+  readonly apps: AppList | null;
 }
 
 const AppsContext = createContext<AppsContext | undefined>(undefined);
 
 interface Props {
-  readonly apps: App[] | null;
+  readonly apps: AppList | null;
   readonly children: ReactNode;
 }
 
