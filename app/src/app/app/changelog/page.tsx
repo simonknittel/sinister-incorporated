@@ -73,6 +73,17 @@ export default async function Page() {
               benachrichtigen zu lassen.
             </p>
           </DayItem>
+
+          <DayItem
+            heading="Spynet-Unterseiten verschoben"
+            badges={["Änderungen"]}
+          >
+            <p>
+              Die Links zu den Unterseiten des Spynet (Aktivität, Citizen,
+              Notizen, Sonstige) wurden in die neue Sidebar der Spynet-App
+              verschoben.
+            </p>
+          </DayItem>
         </Day>
 
         <Day heading="27. August 2025">
