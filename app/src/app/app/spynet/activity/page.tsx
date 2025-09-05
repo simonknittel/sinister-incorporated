@@ -1,7 +1,8 @@
 import { requireAuthenticationPage } from "@/auth/server";
+import { Layout } from "@/common/components/layouts/sidebar/Layout";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { ActivityTile } from "@/spynet/components/ActivityTile/ActivityTile";
-import { Template } from "@/spynet/components/Template";
+import { Navigation } from "@/spynet/components/Navigation/Navigation";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,10 +16,10 @@ export default async function Page() {
   await authentication.authorizePage("spynetActivity", "read");
 
   return (
-    <Template mainClassName="overflow-x-hidden">
+    <Layout title="Spynet" sidebar={<Navigation />}>
       <SuspenseWithErrorBoundaryTile>
         <ActivityTile />
       </SuspenseWithErrorBoundaryTile>
-    </Template>
+    </Layout>
   );
 }

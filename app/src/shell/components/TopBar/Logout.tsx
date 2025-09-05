@@ -1,6 +1,7 @@
 "use client";
 
 import { Button2 } from "@/common/components/Button2";
+import clsx from "clsx";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { FaSpinner } from "react-icons/fa";
@@ -27,14 +28,14 @@ export const Logout = ({ className }: Props) => {
       onClick={() => void handleClick()}
       title="Abmelden"
       disabled={isLoggingOut}
-      className={className}
+      className={clsx(className)}
     >
-      Abmelden
       {isLoggingOut ? (
         <FaSpinner className="animate-spin" />
       ) : (
         <RiLogoutCircleRLine />
       )}
+      Abmelden
     </Button2>
   );
 };

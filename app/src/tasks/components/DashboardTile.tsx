@@ -1,7 +1,6 @@
 import { Link } from "@/common/components/Link";
 import clsx from "clsx";
 import { getMyAssignedTasks } from "../queries";
-import { NotificationsTooltip } from "./NotificationsTooltip";
 import { Task } from "./Task";
 
 interface Props {
@@ -15,10 +14,7 @@ export const TasksDashboardTile = async ({ className }: Props) => {
 
   return (
     <section className={clsx(className)}>
-      <div className="flex items-center gap-2">
-        <h2 className="font-thin text-2xl self-start">Meine Tasks</h2>
-        <NotificationsTooltip />
-      </div>
+      <h2 className="font-thin text-2xl self-start">Meine Tasks</h2>
 
       <div className="mt-2 flex flex-col gap-[1px]">
         {myAssignedTasks.map((task) => (

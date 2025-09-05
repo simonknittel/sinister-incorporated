@@ -1,9 +1,10 @@
 import { requireAuthenticationPage } from "@/auth/server";
 import { CreateCitizenButton } from "@/citizen/components/CreateCitizenButton";
+import { Layout } from "@/common/components/layouts/sidebar/Layout";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { CreateOrganizationButton } from "@/spynet/components/CreateOrganization/CreateOrganizationButton";
+import { Navigation } from "@/spynet/components/Navigation/Navigation";
 import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
-import { Template } from "@/spynet/components/Template";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,7 +20,7 @@ export default async function Page() {
   ]);
 
   return (
-    <Template>
+    <Layout title="Spynet" sidebar={<Navigation />}>
       <div className="max-w-[400px] mx-auto mt-6">
         {!(await getUnleashFlag("DisableAlgolia")) && <SpynetSearchTile />}
 
@@ -30,6 +31,6 @@ export default async function Page() {
           </div>
         )}
       </div>
-    </Template>
+    </Layout>
   );
 }

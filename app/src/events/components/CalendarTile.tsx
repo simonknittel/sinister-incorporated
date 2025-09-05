@@ -2,7 +2,6 @@ import { Link } from "@/common/components/Link";
 import { getEvents } from "@/events/queries";
 import clsx from "clsx";
 import { Event } from "./Event";
-import { NotificationsTooltip } from "./NotificationsTooltip";
 
 interface Props {
   readonly className?: string;
@@ -18,10 +17,7 @@ export const CalendarTile = async ({ className }: Props) => {
         className,
       )}
     >
-      <div className="w-full flex gap-2 items-center mb-2">
-        <h2 className="font-thin text-2xl">Discord-Events</h2>
-        <NotificationsTooltip />
-      </div>
+      <h2 className="font-thin text-2xl mb-2 w-full">Discord-Events</h2>
 
       {events.length > 0 ? (
         events.map((event, index) => (

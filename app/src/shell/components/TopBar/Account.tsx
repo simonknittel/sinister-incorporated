@@ -2,6 +2,7 @@ import { requireAuthentication } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
 import { Popover } from "@/common/components/Popover";
 import clsx from "clsx";
+import { AccountSettings } from "./AccountSettings";
 import { Logout } from "./Logout";
 
 interface Props {
@@ -44,7 +45,9 @@ export const Account = async ({ className }: Props) => {
         </div>
       </div>
 
-      <Logout className="mt-4" />
+      <AccountSettings className="w-full mt-4" />
+
+      <Logout className="w-full mt-2" />
     </Popover>
   );
 };

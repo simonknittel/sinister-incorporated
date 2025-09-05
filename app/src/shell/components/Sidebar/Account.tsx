@@ -1,6 +1,9 @@
 import { requireAuthentication } from "@/auth/server";
 import Avatar from "@/common/components/Avatar";
+import { Button2 } from "@/common/components/Button2";
+import { Link } from "@/common/components/Link";
 import clsx from "clsx";
+import { FaUser } from "react-icons/fa";
 import { LogoutButton } from "../LogoutButton";
 
 interface Props {
@@ -40,12 +43,18 @@ export const Account = async ({ isInDesktopSidebar = false }: Props) => {
         </div>
       </div>
 
-      <LogoutButton
-        className={clsx({
-          "group-data-[navigation-collapsed]/navigation:hidden":
-            isInDesktopSidebar,
-        })}
-      />
+      <div className="flex gap-1">
+        <Button2 as={Link} href="/app/account" title="Account">
+          <FaUser />
+        </Button2>
+
+        <LogoutButton
+          className={clsx({
+            "group-data-[navigation-collapsed]/navigation:hidden":
+              isInDesktopSidebar,
+          })}
+        />
+      </div>
     </div>
   );
 };

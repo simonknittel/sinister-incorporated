@@ -1,3 +1,4 @@
+import accountScreenshot from "@/account/assets/screenshot.png";
 import careerScreenshot from "@/career/assets/screenshot.png";
 import changelogScreenshot from "@/changelog/assets/screenshot.png";
 import cornerstoneImageBrowserScreenshot from "@/cornerstone-image-browser/assets/screenshot.png";
@@ -15,6 +16,12 @@ import tasksScreenshot from "@/tasks/assets/screenshot.png";
 import type { IntegratedApp } from "./types";
 
 export const INTEGRATED_APPS: IntegratedApp[] = [
+  {
+    name: "Account",
+    href: "/app/account",
+    imageSrc: accountScreenshot,
+    description: "Einstellungen zu deinem Account",
+  },
   {
     name: "Dashboard",
     href: "/app",
