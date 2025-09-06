@@ -51,13 +51,11 @@ export default async function Page({ params }: Props) {
   if (!task) notFound();
 
   return (
-    <main className="p-4 pb-20 lg:p-6">
-      <Overview
-        task={task}
-        isAllowedToManageTask={await isAllowedToManageTask(task)}
-        isAllowedToDeleteTask={await isAllowedToDeleteTask()}
-        isTaskUpdatable={isTaskUpdatable(task)}
-      />
-    </main>
+    <Overview
+      task={task}
+      isAllowedToManageTask={await isAllowedToManageTask(task)}
+      isAllowedToDeleteTask={await isAllowedToDeleteTask()}
+      isTaskUpdatable={isTaskUpdatable(task)}
+    />
   );
 }

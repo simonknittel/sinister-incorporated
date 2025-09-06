@@ -1,7 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
-import { SidebarLayout } from "@/common/components/layouts/sidebar/Layout";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { Navigation } from "@/iam/components/Navigation/Navigation";
 import { RolesTile } from "@/roles/components/RolesTile";
 import { type Metadata } from "next";
 
@@ -14,14 +12,8 @@ export default async function Page() {
   await authentication.authorizePage("role", "manage");
 
   return (
-    <SidebarLayout
-      title="IAM"
-      sidebar={<Navigation />}
-      childrenContainerClassName="overflow-x-hidden"
-    >
-      <SuspenseWithErrorBoundaryTile>
-        <RolesTile />
-      </SuspenseWithErrorBoundaryTile>
-    </SidebarLayout>
+    <SuspenseWithErrorBoundaryTile>
+      <RolesTile />
+    </SuspenseWithErrorBoundaryTile>
   );
 }

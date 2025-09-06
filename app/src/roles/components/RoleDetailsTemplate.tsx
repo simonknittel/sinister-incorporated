@@ -36,7 +36,7 @@ export const RoleDetailsTemplate = ({ role, children }: Props) => {
   ];
 
   return (
-    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
+    <>
       <div className="flex gap-2 font-bold text-xl">
         <span className="text-neutral-500">Rolle /</span>
         <p>{role?.name}</p>
@@ -45,6 +45,6 @@ export const RoleDetailsTemplate = ({ role, children }: Props) => {
       <SubNavigation pages={pages} className="flex flex-wrap my-4" />
 
       {children}
-    </main>
+    </>
   );
 };

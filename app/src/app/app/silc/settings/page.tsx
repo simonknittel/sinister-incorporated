@@ -4,7 +4,6 @@ import { Tile } from "@/common/components/Tile";
 import { AuecConversionRateSetting } from "@/silc/components/AuecConversionRateSetting";
 import { RefreshSilcBalances } from "@/silc/components/RefreshSilcBalances";
 import { RoleSalaries } from "@/silc/components/RoleSalaries";
-import { Template } from "@/silc/components/Template";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -21,22 +20,20 @@ export default async function Page() {
   );
 
   return (
-    <Template>
-      <div className="flex flex-col gap-4">
-        <SuspenseWithErrorBoundaryTile>
-          <AuecConversionRateSetting />
-        </SuspenseWithErrorBoundaryTile>
+    <div className="flex flex-col gap-4">
+      <SuspenseWithErrorBoundaryTile>
+        <AuecConversionRateSetting />
+      </SuspenseWithErrorBoundaryTile>
 
-        <SuspenseWithErrorBoundaryTile>
-          <RoleSalaries />
-        </SuspenseWithErrorBoundaryTile>
+      <SuspenseWithErrorBoundaryTile>
+        <RoleSalaries />
+      </SuspenseWithErrorBoundaryTile>
 
-        {silcBalanceOfOtherCitizenManage && (
-          <Tile heading="Other">
-            <RefreshSilcBalances />
-          </Tile>
-        )}
-      </div>
-    </Template>
+      {silcBalanceOfOtherCitizenManage && (
+        <Tile heading="Other">
+          <RefreshSilcBalances />
+        </Tile>
+      )}
+    </div>
   );
 }

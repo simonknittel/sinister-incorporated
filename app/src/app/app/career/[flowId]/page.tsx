@@ -1,9 +1,7 @@
 import { requireAuthenticationPage } from "@/auth/server";
 import { Flow } from "@/career/components/Flow";
-import { Navigation } from "@/career/components/Navigation";
 import { getMyReadableFlows } from "@/career/queries";
 import { getCitizensGroupedByVisibleRoles } from "@/citizen/queries";
-import { Hero } from "@/common/components/Hero";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { log } from "@/logging";
 import { getRoles } from "@/roles/queries";
@@ -89,23 +87,15 @@ export default async function Page({ params }: Props) {
   };
 
   return (
-    <main className="p-4 pb-20 lg:p-6">
-      <div className="flex justify-center">
-        <Hero text="Karriere" withGlitch size="md" />
+    <SuspenseWithErrorBoundaryTile className="h-[1080px]">
+      <div className="h-[1080px] bg-neutral-800/50 rounded-primary overflow-hidden text-black relative">
+        <Flow
+          flow={flow}
+          canUpdate={canUpdate}
+          isUpdating={isUpdating}
+          additionalData={additionalData}
+        />
       </div>
-
-      <Navigation flows={flows} className="mt-2" />
-
-      <SuspenseWithErrorBoundaryTile className="h-[1080px] mt-3">
-        <div className="h-[1080px] bg-neutral-800/50 rounded-primary overflow-hidden text-black mt-3 relative">
-          <Flow
-            flow={flow}
-            canUpdate={canUpdate}
-            isUpdating={isUpdating}
-            additionalData={additionalData}
-          />
-        </div>
-      </SuspenseWithErrorBoundaryTile>
-    </main>
+    </SuspenseWithErrorBoundaryTile>
   );
 }

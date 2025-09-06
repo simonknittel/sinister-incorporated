@@ -4,7 +4,6 @@ import { RedactedAppTile } from "@/apps/components/RedactedAppTile";
 import { getApps } from "@/apps/utils/queries";
 import type { App } from "@/apps/utils/types";
 import { requireAuthenticationPage } from "@/auth/server";
-import { Hero } from "@/common/components/Hero";
 import { type Metadata } from "next";
 
 export const revalidate = 86400; // 24 hours
@@ -25,12 +24,8 @@ export default async function Page() {
     .toSorted((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <main className="p-4 pb-20 lg:pb-4 max-w-[1920px] mx-auto">
-      <div className="flex justify-center">
-        <Hero text="Apps" withGlitch size="md" />
-      </div>
-
-      <h2 className="font-bold mt-8">Featured</h2>
+    <div className="max-w-[1920px] mx-auto">
+      <h2 className="font-bold">Featured</h2>
 
       <AppTileGrid className="mt-2">
         {featured?.map((app) =>
@@ -53,6 +48,6 @@ export default async function Page() {
           ),
         )}
       </AppTileGrid>
-    </main>
+    </div>
   );
 }

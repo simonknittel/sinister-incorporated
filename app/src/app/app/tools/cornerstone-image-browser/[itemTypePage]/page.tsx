@@ -66,7 +66,7 @@ export default async function Page({ params }: Props) {
       responseBody: await response.text(),
     });
     return (
-      <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
+      <main className="max-w-[1920px] mx-auto">
         <Link
           href="/app/tools"
           className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 inline-flex items-center gap-2"
@@ -94,17 +94,9 @@ export default async function Page({ params }: Props) {
       error: serializeError(parsedData.error),
     });
     return (
-      <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
-        <Link
-          href="/app/tools"
-          className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 inline-flex items-center gap-2"
-        >
-          <FaChevronLeft />
-          Alle Tools
-        </Link>
-
-        <h1 className="text-xl font-bold mt-2 leading-tight">
-          {itemTypeConfig.title} - Cornerstone Image Browser
+      <main className="max-w-[1920px] mx-auto">
+        <h1 className="text-xl font-bold leading-tight">
+          {itemTypeConfig.title}
         </h1>
 
         <Note
@@ -117,17 +109,9 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
-      <Link
-        href="/app/tools"
-        className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 inline-flex items-center gap-2"
-      >
-        <FaChevronLeft />
-        Alle Tools
-      </Link>
-
-      <h1 className="text-xl font-bold mt-2 leading-tight">
-        {itemTypeConfig.title} - Cornerstone Image Browser
+    <main className="max-w-[1920px] mx-auto">
+      <h1 className="text-xl font-bold leading-tight">
+        {itemTypeConfig.title}
       </h1>
 
       {!parsedData.success ? (

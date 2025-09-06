@@ -15,17 +15,15 @@ export const Filters = ({ className }: Props) => {
 
   return (
     <div className={clsx(className)}>
-      <div className="flex gap-2">
-        <Button2
-          type="button"
-          onClick={() => setIsOpen((prev) => !prev)}
-          variant="secondary"
-          className="flex-1 md:hidden"
-        >
-          <FaFilter />
-          Filter
-        </Button2>
-      </div>
+      <Button2
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        variant="secondary"
+        className="w-full md:hidden"
+      >
+        <FaFilter />
+        Filter
+      </Button2>
 
       <div
         className={clsx("flex flex-col gap-[2px]", {

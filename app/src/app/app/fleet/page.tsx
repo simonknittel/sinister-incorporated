@@ -1,5 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
-import { getNavigationItems } from "@/fleet/components/Navigation/getNavigationItems";
+import { getNavigationItems } from "@/fleet/utils/getNavigationItems";
 import { type Metadata } from "next";
 import { forbidden, redirect } from "next/navigation";
 

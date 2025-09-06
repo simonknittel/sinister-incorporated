@@ -1,4 +1,4 @@
-import { getNavigationItems } from "@/account/components/Navigation/getNavigationItems";
+import { getNavigationItems } from "@/account/utils/getNavigationItems";
 import { requireAuthenticationPage } from "@/auth/server";
 import { type Metadata } from "next";
 import { forbidden, redirect } from "next/navigation";

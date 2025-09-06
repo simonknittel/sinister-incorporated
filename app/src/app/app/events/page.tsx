@@ -1,5 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
-import { SidebarLayout } from "@/common/components/layouts/sidebar/Layout";
+import { SidebarLayout } from "@/common/components/layouts/SidebarLayout";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { EventsTile } from "@/events/components/EventsTile";
 import { Filters } from "@/events/components/Filters";
@@ -20,7 +20,6 @@ export default async function Page({ searchParams }: Props) {
 
   return (
     <SidebarLayout
-      title="Events"
       sidebar={<Filters />}
       childrenContainerClassName="@container"
     >

@@ -19,7 +19,7 @@ export const CreateTaskButton = ({ className }: Props) => {
       title="Neuer Task"
     >
       <FaPlus />
-      <span className="hidden md:inline">Neuer Task</span>
+      <span className="hidden sm:inline">Neuer Task</span>
     </Button2>
   );
 };

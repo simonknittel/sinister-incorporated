@@ -1,5 +1,4 @@
 import { requireAuthenticationPage } from "@/auth/server";
-import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
 import { Tile } from "@/common/components/Tile";
 import { cornerstoneImageBrowserItemTypes } from "@/cornerstone-image-browser/utils/config";
@@ -15,14 +14,9 @@ export default async function Page() {
   await requireAuthenticationPage("/app/tools/cornerstone-image-browser");
 
   return (
-    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
-      <div className="flex justify-center">
-        <Hero text="Cornerstone Image Browser" withGlitch size="md" />
-      </div>
-
+    <div className="max-w-[1920px] mx-auto">
       <Tile
         heading="Ausrüstungstypen"
-        className="mt-4"
         childrenClassName="flex flex-wrap gap-x-4"
       >
         {cornerstoneImageBrowserItemTypes.map((item) => (
@@ -36,6 +30,6 @@ export default async function Page() {
           </Link>
         ))}
       </Tile>
-    </main>
+    </div>
   );
 }

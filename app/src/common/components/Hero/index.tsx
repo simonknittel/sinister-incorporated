@@ -4,7 +4,7 @@ import styles from "./Hero.module.css";
 interface Props {
   readonly className?: string;
   readonly text: string;
-  readonly size?: "md" | "lg";
+  readonly size?: "sm" | "md" | "lg";
   readonly withGlitch?: boolean;
   readonly asSpan?: boolean;
 }
@@ -27,6 +27,7 @@ export const Hero = ({
             [styles.layers]: withGlitch,
             [styles.glitch]: withGlitch,
             "text-3xl lg:text-4xl": size === "md",
+            "text-xl lg:text-2xl": size === "sm",
           },
         )}
         data-text={text}
@@ -45,6 +46,7 @@ export const Hero = ({
           [styles.layers]: withGlitch,
           [styles.glitch]: withGlitch,
           "text-3xl lg:text-4xl": size === "md",
+          "text-xl lg:text-2xl": size === "sm",
         },
       )}
       data-text={text}

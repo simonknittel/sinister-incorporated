@@ -1,5 +1,4 @@
 import { requireAuthenticationPage } from "@/auth/server";
-import { Hero } from "@/common/components/Hero";
 import { Link } from "@/common/components/Link";
 import { Tile } from "@/common/components/Tile";
 import srcA1 from "@/documents/assets/a1.svg";
@@ -260,41 +259,35 @@ export default async function Page() {
   }
 
   return (
-    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
-      <div className="flex justify-center">
-        <Hero text="Dokumente" withGlitch size="md" />
-      </div>
-
-      <div className="flex flex-col gap-4 mt-4 lg:mt-6">
-        {categoriesWithAuthorizedDocuments.map(({ name, documents }) => (
-          <Tile
-            key={name}
-            heading={name}
-            childrenClassName="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-2 p-4 border-t border-neutral-800"
-          >
-            {documents.map(({ name, src, href }) => (
-              <div key={name} className="flex items-center justify-center">
-                <Link
-                  href={href}
-                  className="block"
-                  rel="noreferrer"
-                  title={name}
-                  prefetch={false}
-                >
-                  <Image
-                    src={src}
-                    alt=""
-                    width={391}
-                    height={219}
-                    unoptimized
-                    loading="lazy"
-                  />
-                </Link>
-              </div>
-            ))}
-          </Tile>
-        ))}
-      </div>
-    </main>
+    <div className="max-w-[1920px] mx-auto flex flex-col gap-4">
+      {categoriesWithAuthorizedDocuments.map(({ name, documents }) => (
+        <Tile
+          key={name}
+          heading={name}
+          childrenClassName="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-2 p-4 border-t border-neutral-800"
+        >
+          {documents.map(({ name, src, href }) => (
+            <div key={name} className="flex items-center justify-center">
+              <Link
+                href={href}
+                className="block"
+                rel="noreferrer"
+                title={name}
+                prefetch={false}
+              >
+                <Image
+                  src={src}
+                  alt=""
+                  width={391}
+                  height={219}
+                  unoptimized
+                  loading="lazy"
+                />
+              </Link>
+            </div>
+          ))}
+        </Tile>
+      ))}
+    </div>
   );
 }

@@ -6,11 +6,7 @@ import clsx from "clsx";
 import { FaUser } from "react-icons/fa";
 import { LogoutButton } from "../LogoutButton";
 
-interface Props {
-  readonly isInDesktopSidebar?: boolean;
-}
-
-export const Account = async ({ isInDesktopSidebar = false }: Props) => {
+export const Account = async () => {
   const authentication = await requireAuthentication();
 
   const name =
@@ -22,10 +18,6 @@ export const Account = async ({ isInDesktopSidebar = false }: Props) => {
     <div
       className={clsx(
         "flex items-center justify-between border-b border-neutral-800 p-4",
-        {
-          "group-data-[navigation-collapsed]/navigation:p-2":
-            isInDesktopSidebar,
-        },
       )}
     >
       <div className="flex items-center gap-4">
@@ -33,12 +25,7 @@ export const Account = async ({ isInDesktopSidebar = false }: Props) => {
           <Avatar name={name} image={image} size={48} />
         </div>
 
-        <div
-          className={clsx({
-            "group-data-[navigation-collapsed]/navigation:hidden":
-              isInDesktopSidebar,
-          })}
-        >
+        <div>
           <p>{name}</p>
         </div>
       </div>
@@ -48,12 +35,7 @@ export const Account = async ({ isInDesktopSidebar = false }: Props) => {
           <FaUser />
         </Button2>
 
-        <LogoutButton
-          className={clsx({
-            "group-data-[navigation-collapsed]/navigation:hidden":
-              isInDesktopSidebar,
-          })}
-        />
+        <LogoutButton />
       </div>
     </div>
   );
