@@ -1,9 +1,7 @@
 import { requireAuthenticationPage } from "@/auth/server";
 import { CreateCitizenButton } from "@/citizen/components/CreateCitizenButton";
-import { SidebarLayout } from "@/common/components/layouts/sidebar/Layout";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { CreateOrganizationButton } from "@/spynet/components/CreateOrganization/CreateOrganizationButton";
-import { Navigation } from "@/spynet/components/Navigation/Navigation";
 import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
 import { type Metadata } from "next";
 
@@ -20,17 +18,15 @@ export default async function Page() {
   ]);
 
   return (
-    <SidebarLayout title="Spynet" sidebar={<Navigation />}>
-      <div className="max-w-[400px] mx-auto mt-6">
-        {!(await getUnleashFlag("DisableAlgolia")) && <SpynetSearchTile />}
+    <div className="max-w-[400px] mx-auto mt-6">
+      {!(await getUnleashFlag("DisableAlgolia")) && <SpynetSearchTile />}
 
-        {(citizenCreate || organisationCreate) && (
-          <div className="flex gap-2 justify-center mt-4">
-            {citizenCreate && <CreateCitizenButton />}
-            {organisationCreate && <CreateOrganizationButton />}
-          </div>
-        )}
-      </div>
-    </SidebarLayout>
+      {(citizenCreate || organisationCreate) && (
+        <div className="flex gap-2 justify-center mt-4">
+          {citizenCreate && <CreateCitizenButton />}
+          {organisationCreate && <CreateOrganizationButton />}
+        </div>
+      )}
+    </div>
   );
 }

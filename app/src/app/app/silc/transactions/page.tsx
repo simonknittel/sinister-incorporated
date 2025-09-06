@@ -1,7 +1,6 @@
 import { requireAuthenticationPage } from "@/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { AllSilcTransactionsTable } from "@/silc/components/AllSilcTransactionsTable";
-import { Template } from "@/silc/components/Template";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,10 +14,8 @@ export default async function Page() {
   await authentication.authorizePage("silcTransactionOfOtherCitizen", "read");
 
   return (
-    <Template>
-      <SuspenseWithErrorBoundaryTile>
-        <AllSilcTransactionsTable />
-      </SuspenseWithErrorBoundaryTile>
-    </Template>
+    <SuspenseWithErrorBoundaryTile>
+      <AllSilcTransactionsTable />
+    </SuspenseWithErrorBoundaryTile>
   );
 }

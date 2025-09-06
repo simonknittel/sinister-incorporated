@@ -20,7 +20,7 @@ import image20250531Overlay from "@/changelog/assets/2025-05-31-overlay.png";
 import image20250609Collapsed from "@/changelog/assets/2025-06-09-collapsed.png";
 import image20250609Uncollapsed from "@/changelog/assets/2025-06-09-uncollapsed.png";
 import image20250614CmdK from "@/changelog/assets/2025-06-14-cmdk.png";
-import { Hero } from "@/common/components/Hero";
+import image20250906NewLayout from "@/changelog/assets/2025-09-06-new-layout.png";
 import { Link } from "@/common/components/Link";
 import { SmallBadge } from "@/common/components/SmallBadge";
 import { random } from "lodash";
@@ -44,12 +44,26 @@ export default async function Page() {
   ]);
 
   return (
-    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
-      <div className="flex justify-center">
-        <Hero text="Changelog" withGlitch size="md" />
-      </div>
+    <div className="max-w-[1920px] mx-auto">
+      <div className="flex flex-col gap-4 max-w-prose mx-auto">
+        <Day heading="6. September 2025">
+          <DayItem heading="Layout-Überarbeitung" badges={["Änderungen"]}>
+            <p>
+              Alle Apps wurden nun in ein neues einheitliches Layout überführt.
+              Dieses Layout ist wie folgt strukturiert:
+            </p>
 
-      <div className="flex flex-col gap-4 max-w-prose mt-4 lg:mt-6 mx-auto">
+            <Link href={image20250906NewLayout.src}>
+              <Image
+                quality={100}
+                src={image20250906NewLayout}
+                alt=""
+                loading="lazy"
+              />
+            </Link>
+          </DayItem>
+        </Day>
+
         <Day heading="5. September 2025">
           <DayItem
             heading="Accounteinstellungen und Benachrichtigungen"
@@ -1343,7 +1357,7 @@ export default async function Page() {
           Ältere Einträge werden nicht nachgetragen
         </small>
       </div>
-    </main>
+    </div>
   );
 }
 

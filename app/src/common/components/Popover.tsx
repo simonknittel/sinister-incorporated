@@ -63,7 +63,7 @@ export const Popover = ({
         <RadixPopover.Portal>
           <RadixPopover.Content
             collisionPadding={{ left: 8, right: 8 }}
-            className="z-10"
+            className="z-20"
             onMouseEnter={enableHover ? handleMouseEnter : undefined}
             onMouseLeave={enableHover ? handleMouseLeave : undefined}
           >

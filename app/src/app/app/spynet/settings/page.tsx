@@ -1,8 +1,6 @@
 import { requireAuthenticationPage } from "@/auth/server";
-import { SidebarLayout } from "@/common/components/layouts/sidebar/Layout";
 import { log } from "@/logging";
 import ClassificationLevelsTile from "@/spynet/components/classification-level/ClassificationLevelsTile";
-import { Navigation } from "@/spynet/components/Navigation/Navigation";
 import NoteTypesTile from "@/spynet/components/note-type/NoteTypesTile";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -30,13 +28,9 @@ export default async function Page() {
   }
 
   return (
-    <SidebarLayout
-      title="Spynet"
-      sidebar={<Navigation />}
-      childrenContainerClassName="flex flex-col gap-2"
-    >
+    <div className="flex flex-col gap-2">
       {showNoteTypes && <NoteTypesTile />}
       {showClassificationLevels && <ClassificationLevelsTile />}
-    </SidebarLayout>
+    </div>
   );
 }

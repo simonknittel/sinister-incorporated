@@ -14,10 +14,8 @@ export default async function Page() {
   await authentication.authorizePage("logAnalyzer", "read");
 
   return (
-    <main className="p-4 pb-20 lg:px-6">
-      <SuspenseWithErrorBoundaryTile>
-        <LogAnalyzerWrapper />
-      </SuspenseWithErrorBoundaryTile>
-    </main>
+    <SuspenseWithErrorBoundaryTile>
+      <LogAnalyzerWrapper />
+    </SuspenseWithErrorBoundaryTile>
   );
 }

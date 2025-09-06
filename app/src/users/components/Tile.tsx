@@ -11,10 +11,7 @@ export const Tile = async ({ className }: Props) => {
 
   return (
     <section
-      className={clsx(
-        "p-4 lg:p-8 bg-neutral-800/50 rounded-primary",
-        className,
-      )}
+      className={clsx("p-4 background-secondary rounded-primary", className)}
     >
       <Table users={users} />
     </section>

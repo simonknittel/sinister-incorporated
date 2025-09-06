@@ -6,7 +6,6 @@ import { CitizenLink } from "@/common/components/CitizenLink";
 import { EditableDateTimeInput } from "@/common/components/form/EditableDateTimeInput";
 import { EditableInput } from "@/common/components/form/EditableInput";
 import { EditableTextarea } from "@/common/components/form/EditableTextarea";
-import { Link } from "@/common/components/Link";
 import { Markdown } from "@/common/components/Markdown";
 import { Tile } from "@/common/components/Tile";
 import { Tooltip } from "@/common/components/Tooltip";
@@ -23,7 +22,7 @@ import {
 } from "@prisma/client";
 import clsx from "clsx";
 import { forbidden } from "next/navigation";
-import { FaChevronLeft, FaEye, FaInfoCircle } from "react-icons/fa";
+import { FaEye, FaInfoCircle } from "react-icons/fa";
 import { updateTaskDescription } from "../actions/updateTaskDescription";
 import { updateTaskExpiresAt } from "../actions/updateTaskExpiresAt";
 import { updateTaskRewardTypeNewSilcValue } from "../actions/updateTaskRewardTypeNewSilcValue";
@@ -83,14 +82,6 @@ export const Overview = ({
 
   return (
     <div className={clsx("flex flex-col gap-4", className)}>
-      <Link
-        href="/app/tasks"
-        className="self-start text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 flex items-center gap-2"
-      >
-        <FaChevronLeft />
-        Alle Tasks
-      </Link>
-
       <div className="text-2xl font-bold">
         {isTaskUpdatable && isAllowedToManageTask ? (
           <EditableInput

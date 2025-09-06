@@ -24,7 +24,7 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
   },
   {
     name: "Dashboard",
-    href: "/app",
+    href: "/app/dashboard",
     imageSrc: dashboardScreenshot,
     description: "Übersicht mit aktuellen Informationen",
     featured: true,

@@ -1,5 +1,4 @@
 import { requireAuthenticationPage } from "@/auth/server";
-import { Hero } from "@/common/components/Hero";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { AllEntriesTable } from "@/penalty-points/components/AllEntriesTable";
 import { type Metadata } from "next";
@@ -13,14 +12,8 @@ export default async function Page() {
   await authentication.authorizePage("penaltyEntry", "read");
 
   return (
-    <main className="p-4 pb-20 lg:p-6 flex flex-col gap-8">
-      <div className="flex justify-center">
-        <Hero text="Strafpunkte" withGlitch size="md" />
-      </div>
-
-      <SuspenseWithErrorBoundaryTile>
-        <AllEntriesTable />
-      </SuspenseWithErrorBoundaryTile>
-    </main>
+    <SuspenseWithErrorBoundaryTile>
+      <AllEntriesTable />
+    </SuspenseWithErrorBoundaryTile>
   );
 }

@@ -11,7 +11,6 @@ import { env } from "@/env";
 import { BeamsProvider } from "@/pusher/components/BeamsContext";
 import { ChannelsProvider } from "@/pusher/components/ChannelsContext";
 import { CmdKProvider } from "@/shell/components/CmdK/CmdKContext";
-import { DesktopSidebarContainer } from "@/shell/components/Sidebar/DesktopSidebarContainer";
 import { MobileActionBarContainer } from "@/shell/components/Sidebar/MobileActionBarContainer";
 import { TopBar } from "@/shell/components/TopBar";
 import { TRPCReactProvider } from "@/trpc/react";
@@ -25,14 +24,11 @@ interface Props {
 }
 
 export default async function AppLayout({ children }: Readonly<Props>) {
-  const [authentication, _cookies, disableAlgolia, apps] = await Promise.all([
+  const [authentication, disableAlgolia, apps] = await Promise.all([
     requireAuthenticationPage(),
-    cookies(),
     getUnleashFlag("DisableAlgolia"),
     getApps(),
   ]);
-  const isNavigationCollapsed =
-    _cookies.get("navigation_collapsed")?.value === "true";
 
   return (
     <SessionProviderContainer session={authentication.session}>
@@ -45,21 +41,15 @@ export default async function AppLayout({ children }: Readonly<Props>) {
                 userId={authentication.session.user.id}
               >
                 <NextIntlClientProvider>
-                  <div
-                    className="min-h-dvh background-primary group/navigation"
-                    data-navigation-collapsed={
-                      isNavigationCollapsed ? "true" : undefined
-                    }
-                  >
+                  <div className="min-h-dvh background-primary">
                     <AppsContextProvider apps={apps}>
                       <CreateContextProvider>
                         <CmdKProvider disableAlgolia={disableAlgolia}>
-                          <MobileActionBarContainer />
-                          <DesktopSidebarContainer />
                           <TopBar />
+                          <MobileActionBarContainer />
                         </CmdKProvider>
 
-                        <div className="lg:ml-64 group-data-[navigation-collapsed]/navigation:lg:ml-[4.5rem] lg:pt-14 min-h-dvh">
+                        <div className="pt-12 lg:pt-[104px] pb-[64px] lg:pb-0 min-h-dvh">
                           {children}
                         </div>
                       </CreateContextProvider>

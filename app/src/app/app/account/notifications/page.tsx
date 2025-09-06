@@ -1,6 +1,4 @@
-import { Navigation } from "@/account/components/Navigation/Navigation";
 import { requireAuthenticationPage } from "@/auth/server";
-import { SidebarLayout } from "@/common/components/layouts/sidebar/Layout";
 import { Note } from "@/common/components/Note";
 import { Tile } from "@/common/components/Tile";
 import { EventsNotifications } from "@/events/components/EventsNotifications";
@@ -15,11 +13,7 @@ export default async function Page() {
   await requireAuthenticationPage("/app/account/notifications");
 
   return (
-    <SidebarLayout
-      title="Account"
-      sidebar={<Navigation />}
-      childrenContainerClassName="flex flex-col gap-2"
-    >
+    <div className="flex flex-col gap-2">
       <Tile heading="Events">
         <EventsNotifications />
       </Tile>
@@ -42,6 +36,6 @@ export default async function Page() {
           </div>
         }
       />
-    </SidebarLayout>
+    </div>
   );
 }
