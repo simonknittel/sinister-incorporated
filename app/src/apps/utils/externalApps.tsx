@@ -28,5 +28,11 @@ export const externalApps: ExternalApp[] = [
     //       "https://docs.google.com/forms/d/e/1FAIpQLSeHEgpv4GmnZhu7MS2aQc9zgETWQw8tusJ7oaGLsyuHeD1LMw/viewform",
     //   },
     // ],
+    createLinks: [
+      {
+        title: "SILO-Anfrage",
+        slug: "",
+      },
+    ],
   },
 ];

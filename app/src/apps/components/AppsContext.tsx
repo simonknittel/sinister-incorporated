@@ -2,25 +2,32 @@
 
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo } from "react";
-import type { AppList } from "../utils/types";
+import type { AppList, ExternalApp } from "../utils/types";
 
 interface AppsContext {
   readonly apps: AppList | null;
+  readonly externalApps: ExternalApp[];
 }
 
 const AppsContext = createContext<AppsContext | undefined>(undefined);
 
 interface Props {
   readonly apps: AppList | null;
+  readonly externalApps: ExternalApp[];
   readonly children: ReactNode;
 }
 
-export const AppsContextProvider = ({ apps, children }: Props) => {
+export const AppsContextProvider = ({
+  apps,
+  externalApps,
+  children,
+}: Props) => {
   const value = useMemo(
     () => ({
       apps,
+      externalApps,
     }),
-    [apps],
+    [apps, externalApps],
   );
 
   return <AppsContext.Provider value={value}>{children}</AppsContext.Provider>;

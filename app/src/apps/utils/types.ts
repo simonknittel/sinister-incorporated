@@ -32,6 +32,10 @@ export interface ExternalApp extends App {
         externalUrl: string;
       }
   )[];
+  createLinks?: {
+    title: string;
+    slug: string;
+  }[];
 }
 
 export interface RedactedApp {
