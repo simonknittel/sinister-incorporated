@@ -9,8 +9,8 @@ export const getNavigationItems = async () => {
   const flows = await getMyReadableFlows();
 
   const pages: Page[] = flows.map((flow) => ({
-    name: flow.name,
-    path: `/app/career/${flow.id}`,
+    title: flow.name,
+    url: `/app/career/${flow.id}`,
   }));
 
   return pages;

@@ -13,5 +13,5 @@ export default async function Page() {
   const pages = await getNavigationItems();
   if (!pages?.[0]) forbidden();
 
-  redirect(pages[0].path);
+  redirect(pages[0].url);
 }
