@@ -11,7 +11,7 @@ import type { AppList } from "./types";
  * as redacted when the user lacks the permissions to access them.
  */
 export const getAppLinks = cache(
-  withTrace("getApps", async () => {
+  withTrace("getAppLinks", async () => {
     const authentication = await authenticate();
     if (!authentication) return null;
 

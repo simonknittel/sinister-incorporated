@@ -1,6 +1,7 @@
 import { AppTile } from "@/apps/components/AppTile";
 import { AppTileGrid } from "@/apps/components/AppTileGrid";
 import { RedactedAppTile } from "@/apps/components/RedactedAppTile";
+import { groupByFeatured } from "@/apps/utils/groupByFeatured";
 import { getAppLinks } from "@/apps/utils/queries";
 import type { App } from "@/apps/utils/types";
 import { requireAuthenticationPage } from "@/auth/server";
@@ -16,12 +17,7 @@ export default async function Page() {
   await requireAuthenticationPage("/app/apps");
 
   const apps = await getAppLinks();
-  const featured = apps
-    ?.filter((app) => "featured" in app && app.featured)
-    .toSorted((a, b) => a.name.localeCompare(b.name));
-  const other = apps
-    ?.filter((app) => !("featured" in app) || !app.featured)
-    .toSorted((a, b) => a.name.localeCompare(b.name));
+  const { featured, other } = groupByFeatured(apps);
 
   return (
     <div className="max-w-[1920px] mx-auto">
