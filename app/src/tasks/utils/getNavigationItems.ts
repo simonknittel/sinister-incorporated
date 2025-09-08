@@ -10,7 +10,7 @@ export const getNavigationItems = async () => {
   const pages: Page[] = [];
 
   pages.push({
-    title: "Übersicht",
+    title: "Alle Tasks",
     url: "/app/tasks",
   });
 

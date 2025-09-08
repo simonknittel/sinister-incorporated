@@ -15,7 +15,7 @@ export const getNavigationItems = async () => {
 
   if (permissions[0]) {
     pages.push({
-      title: "Übersicht",
+      title: "Dashboard",
       url: "/app/silc",
     });
   }
