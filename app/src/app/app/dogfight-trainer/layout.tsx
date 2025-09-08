@@ -22,6 +22,7 @@ export default function Layout({ children }: Props) {
       title="Dogfight Trainer"
       pages={pages}
       disableChildrenPadding
+      slug="dogfight-trainer"
     >
       {children}
     </DefaultLayout>

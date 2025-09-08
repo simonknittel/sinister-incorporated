@@ -6,5 +6,12 @@ interface Props {
 }
 
 export default function Layout({ children }: Props) {
-  return <DefaultLayout title="Container Calculator">{children}</DefaultLayout>;
+  return (
+    <DefaultLayout
+      title="Container Calculator"
+      slug="tools/container-calculator"
+    >
+      {children}
+    </DefaultLayout>
+  );
 }

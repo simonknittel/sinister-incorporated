@@ -1,6 +1,7 @@
 import { Hero } from "@/common/components/Hero";
 import clsx from "clsx";
 import { type ComponentProps, type ReactNode } from "react";
+import { Link } from "../../Link";
 import { Navigation } from "./Navigation";
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
   readonly cta?: ReactNode;
   readonly children: ReactNode;
   readonly disableChildrenPadding?: boolean;
+  readonly slug: string;
 }
 
 export const DefaultLayout = ({
@@ -17,16 +19,19 @@ export const DefaultLayout = ({
   cta,
   children,
   disableChildrenPadding = false,
+  slug,
 }: Props) => {
   return (
     <>
       <div className="fixed left-0 right-0 top-0 lg:top-14 z-20 bg-black p-2 flex gap-2 justify-between lg:justify-start border-b border-neutral-800">
-        <Hero
-          text={title}
-          withGlitch
-          size="sm"
-          className="lg:px-6 overflow-hidden flex-initial"
-        />
+        <Link href={`/app/${slug}`}>
+          <Hero
+            text={title}
+            withGlitch
+            size="sm"
+            className="lg:px-6 overflow-hidden flex-initial"
+          />
+        </Link>
 
         <div className="flex-1 flex flex-row-reverse lg:flex-row gap-1 lg:justify-between">
           {pages && <Navigation pages={pages} />}

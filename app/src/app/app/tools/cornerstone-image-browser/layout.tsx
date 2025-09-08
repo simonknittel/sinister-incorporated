@@ -10,7 +10,11 @@ export default async function Layout({ children }: Props) {
   const pages = await getNavigationItems();
 
   return (
-    <DefaultLayout title="Cornerstone Image Browser" pages={pages}>
+    <DefaultLayout
+      title="Cornerstone Image Browser"
+      pages={pages}
+      slug="tools/cornerstone-image-browser"
+    >
       {children}
     </DefaultLayout>
   );

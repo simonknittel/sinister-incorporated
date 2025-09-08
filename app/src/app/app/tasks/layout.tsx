@@ -22,6 +22,7 @@ export default async function Layout({ children }: Props) {
       title="Tasks"
       pages={pages}
       cta={showCreateTaskButton ? <CreateTaskButton /> : undefined}
+      slug="tasks"
     >
       {children}
     </DefaultLayout>

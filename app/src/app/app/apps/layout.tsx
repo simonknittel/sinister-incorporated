@@ -6,5 +6,9 @@ interface Props {
 }
 
 export default function Layout({ children }: Props) {
-  return <DefaultLayout title="Apps">{children}</DefaultLayout>;
+  return (
+    <DefaultLayout title="Apps" slug="apps">
+      {children}
+    </DefaultLayout>
+  );
 }

@@ -10,7 +10,7 @@ export default async function Layout({ children }: Props) {
   const pages = await getNavigationItems();
 
   return (
-    <DefaultLayout title="Strafpunkte" pages={pages}>
+    <DefaultLayout title="Strafpunkte" pages={pages} slug="penalty-points">
       {children}
     </DefaultLayout>
   );

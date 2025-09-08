@@ -69,7 +69,12 @@ export default async function Page({ params }: Props) {
     });
 
   return (
-    <DefaultLayout title={app.name} pages={pages} disableChildrenPadding>
+    <DefaultLayout
+      title={app.name}
+      pages={pages}
+      disableChildrenPadding
+      slug={`external/${app.slug}`}
+    >
       <IframeLayout url={iframeUrl} />
     </DefaultLayout>
   );
