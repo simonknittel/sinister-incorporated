@@ -6,5 +6,9 @@ interface Props {
 }
 
 export default function Layout({ children }: Props) {
-  return <DefaultLayout title="Log Analyzer">{children}</DefaultLayout>;
+  return (
+    <DefaultLayout title="Log Analyzer" slug="tools/log-analyzer">
+      {children}
+    </DefaultLayout>
+  );
 }

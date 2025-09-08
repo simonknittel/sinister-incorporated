@@ -1,7 +1,8 @@
 import { AppTile } from "@/apps/components/AppTile";
 import { AppTileGrid } from "@/apps/components/AppTileGrid";
 import { RedactedAppTile } from "@/apps/components/RedactedAppTile";
-import { getApps } from "@/apps/utils/queries";
+import { groupByFeatured } from "@/apps/utils/groupByFeatured";
+import { getAppLinks } from "@/apps/utils/queries";
 import type { App } from "@/apps/utils/types";
 import { requireAuthenticationPage } from "@/auth/server";
 import { type Metadata } from "next";
@@ -15,13 +16,8 @@ export const metadata: Metadata = {
 export default async function Page() {
   await requireAuthenticationPage("/app/apps");
 
-  const apps = await getApps();
-  const featured = apps
-    ?.filter((app) => "featured" in app && app.featured)
-    .toSorted((a, b) => a.name.localeCompare(b.name));
-  const other = apps
-    ?.filter((app) => !("featured" in app) || !app.featured)
-    .toSorted((a, b) => a.name.localeCompare(b.name));
+  const apps = await getAppLinks();
+  const { featured, other } = groupByFeatured(apps);
 
   return (
     <div className="max-w-[1920px] mx-auto">

@@ -10,8 +10,8 @@ import type { AppList } from "./types";
  * Retrieves all apps from static configuration and database. Then marks apps
  * as redacted when the user lacks the permissions to access them.
  */
-export const getApps = cache(
-  withTrace("getApps", async () => {
+export const getAppLinks = cache(
+  withTrace("getAppLinks", async () => {
     const authentication = await authenticate();
     if (!authentication) return null;
 
@@ -52,9 +52,43 @@ export const getApps = cache(
         };
       }),
 
-      ...externalApps,
+      // TODO: Implement permission check
+      ...externalApps.map((externalApp) => {
+        return {
+          name: externalApp.name,
+          description: externalApp.description,
+          imageSrc: externalApp.imageSrc,
+          href: `/app/external/${externalApp.slug}`,
+          featured: externalApp.featured,
+        };
+      }),
     ]);
 
     return apps;
+  }),
+);
+
+export const getExternalApps = cache(
+  // eslint-disable-next-line @typescript-eslint/require-await
+  withTrace("getExternalApps", async () => {
+    // TODO: Implement fetching apps from database
+
+    // TODO: Implement permission check
+
+    return externalApps;
+  }),
+);
+
+export const getExternalAppBySlug = cache(
+  withTrace("getExternalApp", async (slug: string) => {
+    const authentication = await authenticate();
+    if (!authentication) return null;
+
+    // TODO: Implement fetching apps from database
+
+    const app = externalApps.find((app) => app.slug === slug);
+    if (!app) return null;
+
+    return app;
   }),
 );

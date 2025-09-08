@@ -1,4 +1,5 @@
 import { authenticate } from "@/auth/server";
+import type { Page } from "@/common/components/layouts/DefaultLayout/Navigation";
 
 export const getNavigationItems = async () => {
   const authentication = await authenticate();
@@ -10,26 +11,26 @@ export const getNavigationItems = async () => {
     authentication.authorize("manufacturersSeriesAndVariants", "manage"),
   ]);
 
-  const pages = [];
+  const pages: Page[] = [];
 
   if (permissions[0]) {
     pages.push({
-      name: "Sinister Incorporated",
-      path: "/app/fleet/org",
+      title: "Sinister Incorporated",
+      url: "/app/fleet/org",
     });
   }
 
   if (permissions[1]) {
     pages.push({
-      name: "Meine Schiffe",
-      path: "/app/fleet/my-ships",
+      title: "Meine Schiffe",
+      url: "/app/fleet/my-ships",
     });
   }
 
   if (permissions[2]) {
     pages.push({
-      name: "Einstellungen",
-      path: "/app/fleet/settings/manufacturer",
+      title: "Einstellungen",
+      url: "/app/fleet/settings/manufacturer",
     });
   }
 

@@ -46,6 +46,12 @@ export default async function Page() {
   return (
     <div className="max-w-[1920px] mx-auto">
       <div className="flex flex-col gap-4 max-w-prose mx-auto">
+        <Day heading="8. September 2025">
+          <DayItem heading="Strg + K umsortiert" badges={["Änderungen"]}>
+            <p>Es gab Anpassungen an der Sortierung vom Strg + K Menü.</p>
+          </DayItem>
+        </Day>
+
         <Day heading="6. September 2025">
           <DayItem heading="Layout-Überarbeitung" badges={["Änderungen"]}>
             <p>

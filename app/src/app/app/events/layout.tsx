@@ -10,7 +10,7 @@ export default async function Layout({ children }: Props) {
   const pages = await getNavigationItems();
 
   return (
-    <DefaultLayout title="Events" pages={pages}>
+    <DefaultLayout title="Events" pages={pages} slug="events">
       {children}
     </DefaultLayout>
   );

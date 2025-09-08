@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppsContext } from "@/apps/components/AppsContext";
 import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Button2 } from "@/common/components/Button2";
 import {
@@ -88,12 +89,14 @@ const PopoverChildren = ({
 }: PopoverChildrenProps) => {
   const { closePopover } = usePopover();
   const { openCreateModal } = useCreateContext();
+  const { externalApps } = useAppsContext();
 
   const handleClick = (modalId: keyof typeof createForms) => {
     openCreateModal(modalId);
     closePopover();
   };
 
+  // @ts-expect-error Doesn't make any sense
   let items: (
     | {
         label: string;
@@ -105,7 +108,17 @@ const PopoverChildren = ({
         type: "link";
         href: string;
       }
-  )[] = [{ label: "SILO-Anfrage", type: "link", href: "/app/silo-request" }];
+  )[] = [
+    ...externalApps
+      .filter((app) => app.createLinks && app.createLinks.length > 0)
+      .flatMap((app) => {
+        return app.createLinks!.map((link) => ({
+          label: link.title,
+          type: "link",
+          href: `/app/external/${app.slug}/${link.slug}`,
+        }));
+      }),
+  ];
 
   if (showCreateCitizen)
     items.push({ label: "Citizen", type: "button", modalId: "citizen" });

@@ -4,11 +4,11 @@ export interface App {
   name: string;
   description: string;
   imageSrc: StaticImageData;
-  href: string;
   featured?: boolean;
 }
 
 export interface IntegratedApp extends App {
+  href: string;
   /**
    * Either of these permission strings must be permitted in order to access the app.
    */
@@ -18,6 +18,24 @@ export interface IntegratedApp extends App {
 export interface ExternalApp extends App {
   id: string;
   slug: string;
+  defaultPage: {
+    iframeUrl: string;
+  };
+  pages?: (
+    | {
+        title: string;
+        slug: string;
+        iframeUrl: string;
+      }
+    | {
+        title: string;
+        externalUrl: string;
+      }
+  )[];
+  createLinks?: {
+    title: string;
+    slug: string;
+  }[];
 }
 
 export interface RedactedApp {

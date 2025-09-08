@@ -11,8 +11,8 @@ export default function Layout({ children }: Props) {
   const pages: Page[] = [
     {
       icon: <FaExternalLinkAlt />,
-      name: "In einem neuen Tab öffnen",
-      path: "/dogfight-trainer",
+      title: "In einem neuen Tab öffnen",
+      url: "/dogfight-trainer",
       external: true,
     },
   ];
@@ -22,6 +22,7 @@ export default function Layout({ children }: Props) {
       title="Dogfight Trainer"
       pages={pages}
       disableChildrenPadding
+      slug="dogfight-trainer"
     >
       {children}
     </DefaultLayout>

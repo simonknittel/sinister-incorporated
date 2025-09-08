@@ -4,6 +4,7 @@ import { useAppsContext } from "@/apps/components/AppsContext";
 import { AppTile } from "@/apps/components/AppTile";
 import { AppTileGrid } from "@/apps/components/AppTileGrid";
 import { RedactedAppTile } from "@/apps/components/RedactedAppTile";
+import { groupByFeatured } from "@/apps/utils/groupByFeatured";
 import type { App, AppList } from "@/apps/utils/types";
 import { Link } from "@/common/components/Link";
 import { Popover, usePopover } from "@/common/components/Popover";
@@ -46,49 +47,51 @@ interface PopoverChildrenProps {
 const PopoverChildren = ({ apps }: PopoverChildrenProps) => {
   const { closePopover } = usePopover();
 
-  const featured = apps
-    .filter((app) => "featured" in app && app.featured)
-    .toSorted((a, b) => a.name.localeCompare(b.name));
-
-  const other = apps
-    .filter((app) => !("featured" in app) || !app.featured)
-    .toSorted((a, b) => a.name.localeCompare(b.name));
+  const { featured, other } = groupByFeatured(apps);
 
   return (
     <>
-      <p className="font-bold text-sm text-center">Featured</p>
+      {featured && (
+        <>
+          <p className="font-bold text-sm text-center">Featured</p>
 
-      <AppTileGrid variant="compact" className="mt-2">
-        {featured.map((app) =>
-          "redacted" in app && app.redacted ? (
-            <RedactedAppTile key={app.name} variant="compact" />
-          ) : (
-            <AppTile
-              key={app.name}
-              app={app as App}
-              variant="compact"
-              onClick={closePopover}
-            />
-          ),
-        )}
-      </AppTileGrid>
+          <AppTileGrid variant="compact" className="mt-2">
+            {featured.map((app) =>
+              "redacted" in app && app.redacted ? (
+                <RedactedAppTile key={app.name} variant="compact" />
+              ) : (
+                <AppTile
+                  key={app.name}
+                  app={app as App}
+                  variant="compact"
+                  onClick={closePopover}
+                />
+              ),
+            )}
+          </AppTileGrid>
+        </>
+      )}
 
-      <p className="font-bold text-sm text-center mt-4">Weitere</p>
+      {other && (
+        <>
+          <p className="font-bold text-sm text-center mt-4">Weitere</p>
 
-      <AppTileGrid variant="compact" className="mt-2">
-        {other.map((app) =>
-          "redacted" in app && app.redacted ? (
-            <RedactedAppTile key={app.name} variant="compact" />
-          ) : (
-            <AppTile
-              key={app.name}
-              app={app as App}
-              variant="compact"
-              onClick={closePopover}
-            />
-          ),
-        )}
-      </AppTileGrid>
+          <AppTileGrid variant="compact" className="mt-2">
+            {other.map((app) =>
+              "redacted" in app && app.redacted ? (
+                <RedactedAppTile key={app.name} variant="compact" />
+              ) : (
+                <AppTile
+                  key={app.name}
+                  app={app as App}
+                  variant="compact"
+                  onClick={closePopover}
+                />
+              ),
+            )}
+          </AppTileGrid>
+        </>
+      )}
 
       <div className="flex justify-center">
         <Link

@@ -22,6 +22,7 @@ export default async function Layout({ children }: Props) {
       title="IAM"
       pages={pages}
       cta={showCreateRoleButton ? <CreateRoleButton /> : undefined}
+      slug="iam"
     >
       {children}
     </DefaultLayout>

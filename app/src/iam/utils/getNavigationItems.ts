@@ -1,4 +1,5 @@
 import { authenticate } from "@/auth/server";
+import type { Page } from "@/common/components/layouts/DefaultLayout/Navigation";
 
 export const getNavigationItems = async () => {
   const authentication = await authenticate();
@@ -9,25 +10,25 @@ export const getNavigationItems = async () => {
     authentication.authorize("user", "read"),
   ]);
 
-  const pages = [];
+  const pages: Page[] = [];
 
   if (permissions[0]) {
     pages.push(
       {
-        name: "Rollen",
-        path: "/app/iam/roles",
+        title: "Rollen",
+        url: "/app/iam/roles",
       },
       {
-        name: "Berechtigungsmatrix",
-        path: "/app/iam/permission-matrix",
+        title: "Berechtigungsmatrix",
+        url: "/app/iam/permission-matrix",
       },
     );
   }
 
   if (permissions[1]) {
     pages.push({
-      name: "Benutzer",
-      path: "/app/iam/users",
+      title: "Benutzer",
+      url: "/app/iam/users",
     });
   }
 

@@ -1,16 +1,15 @@
 "use client";
 
-import { useAuthentication } from "@/auth/hooks/useAuthentication";
 import { Button2 } from "@/common/components/Button2";
 import { Link } from "@/common/components/Link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaExternalLinkAlt } from "react-icons/fa";
 
 export interface Page {
-  path: string;
-  name: string;
+  url: string;
+  title: string;
   icon?: ReactNode;
   external?: boolean;
 }
@@ -20,10 +19,6 @@ interface Props {
 }
 
 export const Navigation = ({ pages }: Props) => {
-  const authentication = useAuthentication();
-  if (!authentication || !authentication.session.entity)
-    throw new Error("Forbidden");
-
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -49,7 +44,7 @@ export const Navigation = ({ pages }: Props) => {
         )}
       >
         {pages?.map((page) => (
-          <Item key={page.path} page={page} />
+          <Item key={page.url} page={page} />
         ))}
       </nav>
     </>
@@ -64,12 +59,12 @@ interface ItemProps {
 const Item = ({ className, page }: ItemProps) => {
   const pathname = usePathname();
 
-  const isActive = page.path === pathname;
+  const isActive = page.url === pathname;
 
   return (
     <Link
-      key={page.path}
-      href={page.path}
+      key={page.url}
+      href={page.url}
       className={clsx(
         "rounded-secondary hover:bg-neutral-800 active:bg-neutral-700 py-1 px-2 flex gap-2 items-center [&>svg]:text-xs [&>svg]:opacity-50",
         {
@@ -79,8 +74,8 @@ const Item = ({ className, page }: ItemProps) => {
       )}
       {...(page.external ? { target: "_blank", rel: "noreferrer" } : {})}
     >
-      {page.icon}
-      {page.name}
+      {page.external ? <FaExternalLinkAlt /> : page.icon}
+      {page.title}
     </Link>
   );
 };
