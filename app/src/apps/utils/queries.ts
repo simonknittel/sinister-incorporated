@@ -52,9 +52,31 @@ export const getApps = cache(
         };
       }),
 
-      ...externalApps,
+      ...externalApps.map((externalApp) => {
+        return {
+          name: externalApp.name,
+          description: externalApp.description,
+          imageSrc: externalApp.imageSrc,
+          href: `/app/external/${externalApp.slug}`,
+          featured: externalApp.featured,
+        };
+      }),
     ]);
 
     return apps;
+  }),
+);
+
+export const getExternalAppBySlug = cache(
+  withTrace("getExternalApp", async (slug: string) => {
+    const authentication = await authenticate();
+    if (!authentication) return null;
+
+    // TODO: Implement fetching apps from database
+
+    const app = externalApps.find((app) => app.slug === slug);
+    if (!app) return null;
+
+    return app;
   }),
 );

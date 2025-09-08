@@ -1,4 +1,5 @@
 import { authenticate } from "@/auth/server";
+import type { Page } from "@/common/components/layouts/DefaultLayout/Navigation";
 
 export const getNavigationItems = async () => {
   const authentication = await authenticate();
@@ -10,26 +11,26 @@ export const getNavigationItems = async () => {
     authentication.authorize("silcSetting", "manage"),
   ]);
 
-  const pages = [];
+  const pages: Page[] = [];
 
   if (permissions[0]) {
     pages.push({
-      name: "Übersicht",
-      path: "/app/silc",
+      title: "Übersicht",
+      url: "/app/silc",
     });
   }
 
   if (permissions[1]) {
     pages.push({
-      name: "Transaktionen",
-      path: "/app/silc/transactions",
+      title: "Transaktionen",
+      url: "/app/silc/transactions",
     });
   }
 
   if (permissions[2]) {
     pages.push({
-      name: "Einstellungen",
-      path: "/app/silc/settings",
+      title: "Einstellungen",
+      url: "/app/silc/settings",
     });
   }
 

@@ -1,4 +1,5 @@
 import { authenticate } from "@/auth/server";
+import type { Page } from "@/common/components/layouts/DefaultLayout/Navigation";
 
 export const getNavigationItems = async () => {
   const authentication = await authenticate();
@@ -17,47 +18,47 @@ export const getNavigationItems = async () => {
     authentication.authorize("classificationLevel", "manage"),
   ]);
 
-  const pages = [];
+  const pages: Page[] = [];
 
   if (permissions[0] || permissions[1]) {
     pages.push({
-      name: "Suche",
-      path: "/app/spynet",
+      title: "Suche",
+      url: "/app/spynet",
     });
   }
 
   if (permissions[4]) {
     pages.push({
-      name: "Aktivität",
-      path: "/app/spynet/activity",
+      title: "Aktivität",
+      url: "/app/spynet/activity",
     });
   }
 
   if (permissions[0] && permissions[5]) {
     pages.push({
-      name: "Citizen",
-      path: "/app/spynet/citizen",
+      title: "Citizen",
+      url: "/app/spynet/citizen",
     });
   }
 
   if (permissions[0] && permissions[6]) {
     pages.push({
-      name: "Notizen",
-      path: "/app/spynet/notes",
+      title: "Notizen",
+      url: "/app/spynet/notes",
     });
   }
 
   if (permissions[0] && permissions[7]) {
     pages.push({
-      name: "Sonstige",
-      path: "/app/spynet/other",
+      title: "Sonstige",
+      url: "/app/spynet/other",
     });
   }
 
   if (permissions[8] || permissions[9]) {
     pages.push({
-      name: "Einstellungen",
-      path: "/app/spynet/settings",
+      title: "Einstellungen",
+      url: "/app/spynet/settings",
     });
   }
 

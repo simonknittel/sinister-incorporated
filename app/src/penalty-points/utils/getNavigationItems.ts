@@ -1,4 +1,5 @@
 import { authenticate } from "@/auth/server";
+import type { Page } from "@/common/components/layouts/DefaultLayout/Navigation";
 
 export const getNavigationItems = async () => {
   const authentication = await authenticate();
@@ -6,11 +7,11 @@ export const getNavigationItems = async () => {
 
   // const permissions = await Promise.all([]);
 
-  const pages = [];
+  const pages: Page[] = [];
 
   pages.push({
-    name: "Übersicht",
-    path: "/app/penalty-points",
+    title: "Übersicht",
+    url: "/app/penalty-points",
   });
 
   return pages;

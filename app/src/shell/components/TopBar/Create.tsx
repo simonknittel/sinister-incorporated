@@ -105,7 +105,9 @@ const PopoverChildren = ({
         type: "link";
         href: string;
       }
-  )[] = [{ label: "SILO-Anfrage", type: "link", href: "/app/silo-request" }];
+  )[] = [
+    { label: "SILO-Anfrage", type: "link", href: "/app/external/silo-request" },
+  ];
 
   if (showCreateCitizen)
     items.push({ label: "Citizen", type: "button", modalId: "citizen" });
