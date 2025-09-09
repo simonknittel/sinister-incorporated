@@ -1,13 +1,16 @@
 import { DefaultLayout } from "@/common/components/layouts/DefaultLayout";
+import { getNavigationItems } from "@/documents/utils/getNavigationItems";
 import type { ReactNode } from "react";
 
 interface Props {
   readonly children?: ReactNode;
 }
 
-export default function Layout({ children }: Props) {
+export default async function Layout({ children }: Props) {
+  const pages = await getNavigationItems();
+
   return (
-    <DefaultLayout title="Dokumente" slug="documents">
+    <DefaultLayout title="Dokumente" slug="documents" pages={pages}>
       {children}
     </DefaultLayout>
   );
