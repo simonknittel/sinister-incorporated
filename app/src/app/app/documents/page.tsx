@@ -29,8 +29,7 @@ export default async function Page() {
               className="flex items-center justify-center"
             >
               <Link
-                // href={`/app/documents/${document.slug}`} // TODO: Enable once CSP of Nextcloud is correct
-                href={document.href}
+                href={`/app/documents/${document.slug}`}
                 className="block"
                 rel="noreferrer"
                 title={document.name}
