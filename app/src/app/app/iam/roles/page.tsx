@@ -1,4 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { RolesTile } from "@/roles/components/RolesTile";
 import { type Metadata } from "next";
@@ -12,8 +13,10 @@ export default async function Page() {
   await authentication.authorizePage("role", "manage");
 
   return (
-    <SuspenseWithErrorBoundaryTile>
-      <RolesTile />
-    </SuspenseWithErrorBoundaryTile>
+    <MaxWidthContent>
+      <SuspenseWithErrorBoundaryTile>
+        <RolesTile />
+      </SuspenseWithErrorBoundaryTile>
+    </MaxWidthContent>
   );
 }

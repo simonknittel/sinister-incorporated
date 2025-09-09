@@ -1,4 +1,5 @@
 import { DefaultLayout } from "@/common/components/layouts/DefaultLayout";
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import { getNavigationItems } from "@/iam/utils/getNavigationItems";
 import type { ReactNode } from "react";
 
@@ -11,7 +12,7 @@ export default async function Layout({ children }: Props) {
 
   return (
     <DefaultLayout title="IAM" pages={pages} slug="iam">
-      {children}
+      <MaxWidthContent>{children}</MaxWidthContent>
     </DefaultLayout>
   );
 }

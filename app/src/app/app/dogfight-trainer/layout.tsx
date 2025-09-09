@@ -21,8 +21,6 @@ export default function Layout({ children }: Props) {
     <DefaultLayout
       title="Dogfight Trainer"
       pages={pages}
-      disableChildrenMaxWidth
-      disableChildrenPadding
       slug="dogfight-trainer"
     >
       {children}

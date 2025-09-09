@@ -1,4 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import { log } from "@/logging";
 import ClassificationLevelsTile from "@/spynet/components/classification-level/ClassificationLevelsTile";
 import NoteTypesTile from "@/spynet/components/note-type/NoteTypesTile";
@@ -28,9 +29,9 @@ export default async function Page() {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <MaxWidthContent className="flex flex-col gap-2">
       {showNoteTypes && <NoteTypesTile />}
       {showClassificationLevels && <ClassificationLevelsTile />}
-    </div>
+    </MaxWidthContent>
   );
 }

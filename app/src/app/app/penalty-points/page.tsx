@@ -1,4 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { AllEntriesTable } from "@/penalty-points/components/AllEntriesTable";
 import { type Metadata } from "next";
@@ -12,8 +13,10 @@ export default async function Page() {
   await authentication.authorizePage("penaltyEntry", "read");
 
   return (
-    <SuspenseWithErrorBoundaryTile>
-      <AllEntriesTable />
-    </SuspenseWithErrorBoundaryTile>
+    <MaxWidthContent>
+      <SuspenseWithErrorBoundaryTile>
+        <AllEntriesTable />
+      </SuspenseWithErrorBoundaryTile>
+    </MaxWidthContent>
   );
 }

@@ -1,4 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import { Link } from "@/common/components/Link";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { prisma } from "@/db";
@@ -68,7 +69,7 @@ export default async function Page(props: Props) {
   if (!organization) notFound();
 
   return (
-    <>
+    <MaxWidthContent>
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/app/spynet"
@@ -110,6 +111,6 @@ export default async function Page(props: Props) {
           <ActivityTile className="flex-1 3xl:self-start" id={params.id} />
         </SuspenseWithErrorBoundaryTile>
       </div>
-    </>
+    </MaxWidthContent>
   );
 }

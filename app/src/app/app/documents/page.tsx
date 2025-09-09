@@ -1,4 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import { Link } from "@/common/components/Link";
 import { Tile } from "@/common/components/Tile";
 import srcA1 from "@/documents/assets/a1.svg";
@@ -259,7 +260,7 @@ export default async function Page() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <MaxWidthContent className="flex flex-col gap-4">
       {categoriesWithAuthorizedDocuments.map(({ name, documents }) => (
         <Tile
           key={name}
@@ -288,6 +289,6 @@ export default async function Page() {
           ))}
         </Tile>
       ))}
-    </div>
+    </MaxWidthContent>
   );
 }

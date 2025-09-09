@@ -1,5 +1,6 @@
 import { requireAuthenticationPage } from "@/auth/server";
 import { CreateCitizenButton } from "@/citizen/components/CreateCitizenButton";
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
 import { CreateOrganizationButton } from "@/spynet/components/CreateOrganization/CreateOrganizationButton";
 import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
@@ -18,15 +19,17 @@ export default async function Page() {
   ]);
 
   return (
-    <div className="max-w-[400px] mx-auto mt-6">
-      {!(await getUnleashFlag("DisableAlgolia")) && <SpynetSearchTile />}
+    <MaxWidthContent>
+      <div className="max-w-[400px] mx-auto">
+        {!(await getUnleashFlag("DisableAlgolia")) && <SpynetSearchTile />}
 
-      {(citizenCreate || organisationCreate) && (
-        <div className="flex gap-2 justify-center mt-4">
-          {citizenCreate && <CreateCitizenButton />}
-          {organisationCreate && <CreateOrganizationButton />}
-        </div>
-      )}
-    </div>
+        {(citizenCreate || organisationCreate) && (
+          <div className="flex gap-2 justify-center mt-4">
+            {citizenCreate && <CreateCitizenButton />}
+            {organisationCreate && <CreateOrganizationButton />}
+          </div>
+        )}
+      </div>
+    </MaxWidthContent>
   );
 }

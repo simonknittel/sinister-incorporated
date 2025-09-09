@@ -1,5 +1,6 @@
 import { authenticate } from "@/auth/server";
 import { DefaultLayout } from "@/common/components/layouts/DefaultLayout";
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import { CreateTaskButton } from "@/tasks/components/CreateTask/CreateTaskButton";
 import { getNavigationItems } from "@/tasks/utils/getNavigationItems";
 import type { ReactNode } from "react";
@@ -24,7 +25,7 @@ export default async function Layout({ children }: Props) {
       cta={showCreateTaskButton ? <CreateTaskButton /> : undefined}
       slug="tasks"
     >
-      {children}
+      <MaxWidthContent>{children}</MaxWidthContent>
     </DefaultLayout>
   );
 }

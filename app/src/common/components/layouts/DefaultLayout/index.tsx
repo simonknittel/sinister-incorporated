@@ -1,5 +1,4 @@
 import { Hero } from "@/common/components/Hero";
-import clsx from "clsx";
 import { type ComponentProps, type ReactNode } from "react";
 import { Link } from "../../Link";
 import { Navigation } from "./Navigation";
@@ -9,20 +8,10 @@ interface Props {
   readonly pages?: ComponentProps<typeof Navigation>["pages"] | null;
   readonly cta?: ReactNode;
   readonly children: ReactNode;
-  readonly disableChildrenMaxWidth?: boolean;
-  readonly disableChildrenPadding?: boolean;
   readonly slug: string;
 }
 
-export const DefaultLayout = ({
-  title,
-  pages,
-  cta,
-  children,
-  disableChildrenMaxWidth = false,
-  disableChildrenPadding = false,
-  slug,
-}: Props) => {
+export const DefaultLayout = ({ title, pages, cta, children, slug }: Props) => {
   return (
     <>
       <div className="fixed left-0 right-0 top-0 lg:top-14 z-20 bg-black p-2 flex gap-2 justify-between lg:justify-start border-b border-neutral-800">
@@ -41,14 +30,7 @@ export const DefaultLayout = ({
         </div>
       </div>
 
-      <main
-        className={clsx({
-          "p-4": !disableChildrenPadding,
-          "max-w-[1920px] mx-auto": !disableChildrenMaxWidth,
-        })}
-      >
-        {children}
-      </main>
+      <main>{children}</main>
     </>
   );
 };

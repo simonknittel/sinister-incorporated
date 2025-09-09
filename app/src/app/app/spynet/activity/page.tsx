@@ -1,4 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { ActivityTile } from "@/spynet/components/ActivityTile/ActivityTile";
 import { type Metadata } from "next";
@@ -14,8 +15,10 @@ export default async function Page() {
   await authentication.authorizePage("spynetActivity", "read");
 
   return (
-    <SuspenseWithErrorBoundaryTile>
-      <ActivityTile />
-    </SuspenseWithErrorBoundaryTile>
+    <MaxWidthContent>
+      <SuspenseWithErrorBoundaryTile>
+        <ActivityTile />
+      </SuspenseWithErrorBoundaryTile>
+    </MaxWidthContent>
   );
 }
