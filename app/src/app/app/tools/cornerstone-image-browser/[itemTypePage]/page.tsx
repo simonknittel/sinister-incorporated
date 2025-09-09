@@ -38,11 +38,9 @@ export async function generateMetadata(props: {
   };
 }
 
-interface Props {
-  readonly params: Params;
-}
-
-export default async function Page({ params }: Props) {
+export default async function Page({
+  params,
+}: PageProps<"/app/tools/cornerstone-image-browser/[itemTypePage]">) {
   await requireAuthenticationPage(
     "/app/tools/cornerstone-image-browser/[itemType]",
   );
@@ -66,7 +64,7 @@ export default async function Page({ params }: Props) {
       responseBody: await response.text(),
     });
     return (
-      <main className="max-w-[1920px] mx-auto">
+      <>
         <Link
           href="/app/tools"
           className="text-sinister-red-500 hover:text-sinister-red-300 focus-visible:text-sinister-red-300 inline-flex items-center gap-2"
@@ -84,7 +82,7 @@ export default async function Page({ params }: Props) {
           className="mt-4"
           message={t("Common.internalServerError")}
         />
-      </main>
+      </>
     );
   }
   const data = (await response.json()) as unknown;
@@ -94,7 +92,7 @@ export default async function Page({ params }: Props) {
       error: serializeError(parsedData.error),
     });
     return (
-      <main className="max-w-[1920px] mx-auto">
+      <>
         <h1 className="text-xl font-bold leading-tight">
           {itemTypeConfig.title}
         </h1>
@@ -104,12 +102,12 @@ export default async function Page({ params }: Props) {
           className="mt-4"
           message={t("Common.internalServerError")}
         />
-      </main>
+      </>
     );
   }
 
   return (
-    <main className="max-w-[1920px] mx-auto">
+    <>
       <h1 className="text-xl font-bold leading-tight">
         {itemTypeConfig.title}
       </h1>
@@ -156,6 +154,6 @@ export default async function Page({ params }: Props) {
           ))}
         </div>
       )}
-    </main>
+    </>
   );
 }

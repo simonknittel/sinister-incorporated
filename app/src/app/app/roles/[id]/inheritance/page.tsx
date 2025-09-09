@@ -35,11 +35,9 @@ export async function generateMetadata(props: {
   }
 }
 
-interface Props {
-  readonly params: Params;
-}
-
-export default async function Page({ params }: Props) {
+export default async function Page({
+  params,
+}: PageProps<"/app/roles/[id]/inheritance">) {
   const authentication = await requireAuthenticationPage("/app/roles");
   await authentication.authorizePage("role", "manage");
 

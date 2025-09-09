@@ -20,7 +20,7 @@ export default async function Page() {
   const { featured, other } = groupByFeatured(apps);
 
   return (
-    <div className="max-w-[1920px] mx-auto">
+    <>
       <h2 className="font-bold">Featured</h2>
 
       <AppTileGrid className="mt-2">
@@ -44,6 +44,6 @@ export default async function Page() {
           ),
         )}
       </AppTileGrid>
-    </div>
+    </>
   );
 }

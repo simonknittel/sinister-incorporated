@@ -3,10 +3,7 @@ import { Hero } from "@/common/components/Hero";
 import { LoginButtons } from "@/common/components/LoginButtons";
 import Note from "@/common/components/Note";
 import { UwuHero } from "@/common/components/UwuHero";
-import {
-  searchParamsNextjsToURLSearchParams,
-  type NextjsSearchParams,
-} from "@/common/utils/searchParamsNextjsToURLSearchParams";
+import { searchParamsNextjsToURLSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { Footer } from "@/shell/components/Footer";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -18,11 +15,7 @@ export const metadata: Metadata = {
     "Sinister Administration Module (S.A.M.) of the Star Citizen organization Sinister Incorporated",
 };
 
-interface Props {
-  readonly searchParams: NextjsSearchParams;
-}
-
-export default async function Page({ searchParams }: Props) {
+export default async function Page({ searchParams }: PageProps<"/">) {
   const authentication = await authenticate();
   if (authentication) redirect("/app");
 

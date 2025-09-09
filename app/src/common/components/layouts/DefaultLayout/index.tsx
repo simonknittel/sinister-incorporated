@@ -9,6 +9,7 @@ interface Props {
   readonly pages?: ComponentProps<typeof Navigation>["pages"] | null;
   readonly cta?: ReactNode;
   readonly children: ReactNode;
+  readonly disableChildrenMaxWidth?: boolean;
   readonly disableChildrenPadding?: boolean;
   readonly slug: string;
 }
@@ -18,6 +19,7 @@ export const DefaultLayout = ({
   pages,
   cta,
   children,
+  disableChildrenMaxWidth = false,
   disableChildrenPadding = false,
   slug,
 }: Props) => {
@@ -39,7 +41,12 @@ export const DefaultLayout = ({
         </div>
       </div>
 
-      <main className={clsx({ "p-4": !disableChildrenPadding })}>
+      <main
+        className={clsx({
+          "p-4": !disableChildrenPadding,
+          "max-w-[1920px] mx-auto": !disableChildrenMaxWidth,
+        })}
+      >
         {children}
       </main>
     </>

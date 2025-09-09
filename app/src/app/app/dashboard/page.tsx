@@ -29,7 +29,7 @@ export default async function Page() {
     !disableAlgolia && (canCitizenRead || canOrgRead);
 
   return (
-    <div className="max-w-[1920px] flex gap-6 flex-row flex-wrap justify-center mx-auto @container">
+    <div className="flex gap-6 flex-row flex-wrap justify-center @container">
       {showCalendar && (
         <Suspense
           fallback={

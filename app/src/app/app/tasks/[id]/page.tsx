@@ -39,11 +39,7 @@ export async function generateMetadata(props: {
   }
 }
 
-interface Props {
-  readonly params: Params;
-}
-
-export default async function Page({ params }: Props) {
+export default async function Page({ params }: PageProps<"/app/tasks/[id]">) {
   const authentication = await requireAuthenticationPage("/app/tasks/[id]");
   await authentication.authorizePage("task", "read");
 
