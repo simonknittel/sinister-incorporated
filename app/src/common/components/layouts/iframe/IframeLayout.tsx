@@ -1,16 +1,19 @@
+import type { ComponentProps } from "react";
 import { FaSpinner } from "react-icons/fa";
 
 interface Props {
-  readonly url: string;
+  readonly src: string;
+  readonly iframeProps?: ComponentProps<"iframe">;
 }
 
-export const IframeLayout = ({ url }: Props) => {
+export const IframeLayout = ({ src, iframeProps }: Props) => {
   return (
     <div className="relative">
       <iframe
-        src={url}
+        src={src}
         className="w-full h-[calc(100dvh-64px-48px)] lg:h-[calc(100dvh-104px)] relative z-10"
         title="Formular für eine SILO-Anfrage"
+        {...iframeProps}
       />
 
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">

@@ -74,7 +74,7 @@ export default async function Page({
       disableChildrenPadding
       slug={`external/${app.slug}`}
     >
-      <IframeLayout url={iframeUrl} />
+      <IframeLayout src={iframeUrl} />
     </DefaultLayout>
   );
 }
