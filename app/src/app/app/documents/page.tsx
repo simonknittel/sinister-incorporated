@@ -259,7 +259,7 @@ export default async function Page() {
   }
 
   return (
-    <div className="max-w-[1920px] mx-auto flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       {categoriesWithAuthorizedDocuments.map(({ name, documents }) => (
         <Tile
           key={name}

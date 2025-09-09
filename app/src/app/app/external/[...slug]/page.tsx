@@ -72,6 +72,7 @@ export default async function Page({ params }: Props) {
     <DefaultLayout
       title={app.name}
       pages={pages}
+      disableChildrenMaxWidth
       disableChildrenPadding
       slug={`external/${app.slug}`}
     >

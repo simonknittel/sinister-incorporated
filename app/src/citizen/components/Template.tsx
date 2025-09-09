@@ -10,7 +10,7 @@ interface Props {
 
 export const Template = ({ citizen, children }: Props) => {
   return (
-    <main className="px-4 pt-4 lg:pt-0 pb-20 lg:pb-0 max-w-[1920px] mx-auto">
+    <>
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/app/spynet"
@@ -35,6 +35,6 @@ export const Template = ({ citizen, children }: Props) => {
       <CitizenNavigation citizenId={citizen.id} className="mt-2 mb-4" />
 
       {children}
-    </main>
+    </>
   );
 };

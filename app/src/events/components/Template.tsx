@@ -11,7 +11,7 @@ interface Props {
 
 export const Template = ({ event, children }: Props) => {
   return (
-    <div className="max-w-[1920px] mx-auto">
+    <>
       <div className="flex gap-2 font-bold text-xl">
         <span className="text-neutral-500">Event /</span>
         <p>{event.name}</p>
@@ -20,6 +20,6 @@ export const Template = ({ event, children }: Props) => {
       <Navigation event={event} className="my-4" />
 
       {children}
-    </div>
+    </>
   );
 };

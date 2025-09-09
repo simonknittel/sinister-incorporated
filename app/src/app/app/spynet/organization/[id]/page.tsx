@@ -68,7 +68,7 @@ export default async function Page(props: Props) {
   if (!organization) notFound();
 
   return (
-    <main className="p-4 pb-20 lg:p-6 max-w-[1920px] mx-auto">
+    <>
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/app/spynet"
@@ -110,6 +110,6 @@ export default async function Page(props: Props) {
           <ActivityTile className="flex-1 3xl:self-start" id={params.id} />
         </SuspenseWithErrorBoundaryTile>
       </div>
-    </main>
+    </>
   );
 }

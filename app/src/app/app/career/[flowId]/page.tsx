@@ -87,8 +87,8 @@ export default async function Page({ params }: Props) {
   };
 
   return (
-    <SuspenseWithErrorBoundaryTile className="h-[1080px]">
-      <div className="h-[1080px] bg-neutral-800/50 rounded-primary overflow-hidden text-black relative">
+    <SuspenseWithErrorBoundaryTile className="h-[calc(100dvh-64px-48px)] lg:h-[calc(100dvh-104px)]">
+      <div className="h-[calc(100dvh-64px-48px)] lg:h-[calc(100dvh-104px)] bg-neutral-800/50 rounded-primary overflow-hidden text-black relative">
         <Flow
           flow={flow}
           canUpdate={canUpdate}
