@@ -1,4 +1,5 @@
 import { DefaultLayout } from "@/common/components/layouts/DefaultLayout";
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import type { ReactNode } from "react";
 
 interface Props {
@@ -11,7 +12,7 @@ export default function Layout({ children }: Props) {
       title="Container Calculator"
       slug="tools/container-calculator"
     >
-      {children}
+      <MaxWidthContent>{children}</MaxWidthContent>
     </DefaultLayout>
   );
 }

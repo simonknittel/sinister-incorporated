@@ -1,4 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
 import { Tile } from "@/users/components/Tile";
 import { type Metadata } from "next";
@@ -12,8 +13,10 @@ export default async function Page() {
   await authentication.authorizePage("user", "read");
 
   return (
-    <SuspenseWithErrorBoundaryTile>
-      <Tile />
-    </SuspenseWithErrorBoundaryTile>
+    <MaxWidthContent>
+      <SuspenseWithErrorBoundaryTile>
+        <Tile />
+      </SuspenseWithErrorBoundaryTile>
+    </MaxWidthContent>
   );
 }

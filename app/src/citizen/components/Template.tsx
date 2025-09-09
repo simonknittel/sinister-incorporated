@@ -1,3 +1,4 @@
+import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
 import { Link } from "@/common/components/Link";
 import type { Entity } from "@prisma/client";
 import type { ReactNode } from "react";
@@ -10,7 +11,7 @@ interface Props {
 
 export const Template = ({ citizen, children }: Props) => {
   return (
-    <>
+    <MaxWidthContent>
       <div className="flex gap-2 font-bold text-xl">
         <Link
           href="/app/spynet"
@@ -35,6 +36,6 @@ export const Template = ({ citizen, children }: Props) => {
       <CitizenNavigation citizenId={citizen.id} className="mt-2 mb-4" />
 
       {children}
-    </>
+    </MaxWidthContent>
   );
 };

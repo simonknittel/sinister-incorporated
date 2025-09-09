@@ -1,7 +1,7 @@
 import { getExternalAppBySlug } from "@/apps/utils/queries";
 import { requireAuthenticationPage } from "@/auth/server";
 import { DefaultLayout } from "@/common/components/layouts/DefaultLayout";
-import { IframeLayout } from "@/common/components/layouts/iframe/IframeLayout";
+import { IframeLayout } from "@/common/components/layouts/IframeLayout";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -67,13 +67,7 @@ export default async function Page({
     });
 
   return (
-    <DefaultLayout
-      title={app.name}
-      pages={pages}
-      disableChildrenMaxWidth
-      disableChildrenPadding
-      slug={`external/${app.slug}`}
-    >
+    <DefaultLayout title={app.name} pages={pages} slug={`external/${app.slug}`}>
       <IframeLayout src={iframeUrl} />
     </DefaultLayout>
   );

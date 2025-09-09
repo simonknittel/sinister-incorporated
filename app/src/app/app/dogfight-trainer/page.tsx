@@ -1,5 +1,5 @@
 import { requireAuthenticationPage } from "@/auth/server";
-import { IframeLayout } from "@/common/components/layouts/iframe/IframeLayout";
+import { IframeLayout } from "@/common/components/layouts/IframeLayout";
 import { type Metadata } from "next";
 
 export const revalidate = 86400; // 24 hours
