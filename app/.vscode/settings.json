@@ -67,7 +67,7 @@
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
   },
-  "eslint.useFlatConfig": false,
+  "eslint.useFlatConfig": true,
   "i18n-ally.localesPaths": ["messages"],
   "i18n-ally.keystyle": "nested"
 }
