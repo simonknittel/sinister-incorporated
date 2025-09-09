@@ -25,7 +25,7 @@ export async function generateMetadata(props: {
 export default async function Page({
   params,
 }: PageProps<"/app/external/[...slug]">) {
-  await requireAuthenticationPage("/app/external/[slug]");
+  await requireAuthenticationPage("/app/external/[...slug]");
 
   const { slug } = await params;
   const app = await getExternalAppBySlug(slug[0]);
