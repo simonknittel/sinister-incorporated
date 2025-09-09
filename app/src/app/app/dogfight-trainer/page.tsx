@@ -11,5 +11,5 @@ export const metadata: Metadata = {
 export default async function Page() {
   await requireAuthenticationPage("/app/dogfight-trainer");
 
-  return <IframeLayout url="/dogfight-trainer" />;
+  return <IframeLayout src="/dogfight-trainer" />;
 }
