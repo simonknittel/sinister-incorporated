@@ -1,9 +1,6 @@
 import { requireAuthenticationPage } from "@/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import {
-  searchParamsNextjsToURLSearchParams,
-  type NextjsSearchParams,
-} from "@/common/utils/searchParamsNextjsToURLSearchParams";
+import { searchParamsNextjsToURLSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { type Metadata } from "next";
 import OtherTableTile from "../../../../citizen/components/OtherTableTile";
 
@@ -13,11 +10,9 @@ export const metadata: Metadata = {
   title: "Sonstige - Spynet | S.A.M. - Sinister Incorporated",
 };
 
-interface Props {
-  readonly searchParams: NextjsSearchParams;
-}
-
-export default async function Page({ searchParams }: Props) {
+export default async function Page({
+  searchParams,
+}: PageProps<"/app/spynet/other">) {
   const authentication = await requireAuthenticationPage("/app/spynet/other");
   await Promise.all([
     authentication.authorizePage("citizen", "read"),

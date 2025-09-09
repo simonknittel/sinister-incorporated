@@ -22,11 +22,9 @@ export async function generateMetadata(props: {
   };
 }
 
-interface Props {
-  readonly params: Params;
-}
-
-export default async function Page({ params }: Props) {
+export default async function Page({
+  params,
+}: PageProps<"/app/external/[...slug]">) {
   await requireAuthenticationPage("/app/external/[slug]");
 
   const { slug } = await params;

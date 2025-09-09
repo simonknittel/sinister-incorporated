@@ -36,11 +36,9 @@ export async function generateMetadata(props: {
   }
 }
 
-interface Props {
-  readonly params: Params;
-}
-
-export default async function Page({ params }: Props) {
+export default async function Page({
+  params,
+}: PageProps<"/app/events/[id]/fleet">) {
   const authentication = await requireAuthenticationPage("/app/events/[id]");
   await authentication.authorizePage("event", "read");
   await authentication.authorizePage("orgFleet", "read");

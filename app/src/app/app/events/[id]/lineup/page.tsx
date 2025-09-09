@@ -41,11 +41,9 @@ export async function generateMetadata(props: {
   }
 }
 
-interface Props {
-  readonly params: Params;
-}
-
-export default async function Page({ params }: Props) {
+export default async function Page({
+  params,
+}: PageProps<"/app/events/[id]/lineup">) {
   const authentication = await requireAuthenticationPage("/app/events/[id]");
   if (!authentication.session.entity) forbidden();
   await authentication.authorizePage("event", "read");

@@ -4,17 +4,12 @@ import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithE
 import { EventsTile } from "@/events/components/EventsTile";
 import { Filters } from "@/events/components/Filters";
 import { type Metadata } from "next";
-import type { SearchParams } from "nuqs";
 
 export const metadata: Metadata = {
   title: "Events | S.A.M. - Sinister Incorporated",
 };
 
-interface Props {
-  readonly searchParams: Promise<SearchParams>;
-}
-
-export default async function Page({ searchParams }: Props) {
+export default async function Page({ searchParams }: PageProps<"/app/events">) {
   const authentication = await requireAuthenticationPage("/app/events");
   await authentication.authorizePage("event", "read");
 

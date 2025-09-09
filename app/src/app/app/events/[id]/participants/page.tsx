@@ -1,9 +1,6 @@
 import { requireAuthenticationPage } from "@/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import {
-  searchParamsNextjsToURLSearchParams,
-  type NextjsSearchParams,
-} from "@/common/utils/searchParamsNextjsToURLSearchParams";
+import { searchParamsNextjsToURLSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
 import { ParticipantsTab } from "@/events/components/ParticipantsTab";
 import { Template } from "@/events/components/Template";
 import { getEventById } from "@/events/queries";
@@ -40,12 +37,10 @@ export async function generateMetadata(props: {
   }
 }
 
-interface Props {
-  readonly params: Params;
-  readonly searchParams: NextjsSearchParams;
-}
-
-export default async function Page({ params, searchParams }: Props) {
+export default async function Page({
+  params,
+  searchParams,
+}: PageProps<"/app/events/[id]/participants">) {
   const authentication = await requireAuthenticationPage("/app/events/[id]");
   await authentication.authorizePage("event", "read");
 
