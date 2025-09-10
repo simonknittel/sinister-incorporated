@@ -189,3 +189,45 @@ export const getMonthlySalaryOfCurrentCitizen = cache(
     return roleSalaries.reduce((total, salary) => total + salary.value, 0);
   }),
 );
+
+export const getProfitDistributionCycles = cache(
+  withTrace("getProfitDistributionCycles", async () => {
+    const authentication = await requireAuthentication();
+    if (!authentication.session.entity) forbidden();
+    const profitDistributionCycleManage = await authentication.authorize(
+      "profitDistributionCycle",
+      "manage",
+    );
+
+    const now = new Date();
+
+    if (profitDistributionCycleManage) {
+      return prisma.profitDistributionCycle.findMany({
+        orderBy: {
+          collectionCycleStartedAt: "desc",
+        },
+        include: {
+          participants: true,
+        },
+      });
+    }
+
+    return prisma.profitDistributionCycle.findMany({
+      where: {
+        payoutCycleStartedAt: {
+          lt: now,
+        },
+      },
+      orderBy: {
+        collectionCycleStartedAt: "desc",
+      },
+      include: {
+        participants: {
+          where: {
+            citizenId: authentication.session.entity.id,
+          },
+        },
+      },
+    });
+  }),
+);

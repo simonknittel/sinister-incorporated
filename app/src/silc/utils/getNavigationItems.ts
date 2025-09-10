@@ -9,6 +9,8 @@ export const getNavigationItems = async () => {
     authentication.authorize("silcBalanceOfOtherCitizen", "read"),
     authentication.authorize("silcTransactionOfOtherCitizen", "read"),
     authentication.authorize("silcSetting", "manage"),
+    authentication.authorize("profitDistributionCycle", "read"),
+    authentication.authorize("profitDistributionCycle", "manage"),
   ]);
 
   const pages: Page[] = [];
@@ -17,6 +19,13 @@ export const getNavigationItems = async () => {
     pages.push({
       title: "Dashboard",
       url: "/app/silc",
+    });
+  }
+
+  if (permissions[3] || permissions[4]) {
+    pages.push({
+      title: "Gewinnverteilung",
+      url: "/app/silc/profit-distribution",
     });
   }
 
