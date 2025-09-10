@@ -36,3 +36,33 @@ model SilcRoleSalary {
   value      Int
   dayOfMonth Int
 }
+
+model ProfitDistributionCycle {
+  id                       String                               @id @default(cuid(2))
+  title                    String
+  collectionCycleStartedAt DateTime?
+  collectionCycleEndedAt   DateTime?
+  payoutCycleStartedAt     DateTime?
+  payoutCycleEndedAt       DateTime?
+  auecProfit               Int?
+  participants             ProfitDistributionCycleParticipant[]
+}
+
+model ProfitDistributionCycleParticipant {
+  id                        String                  @id @default(cuid(2))
+  profitDistributionCycleId String
+  profitDistributionCycle   ProfitDistributionCycle @relation(fields: [profitDistributionCycleId], references: [id], onDelete: Cascade)
+  citizenId                 String
+  citizen                   Entity                  @relation("citizen", fields: [citizenId], references: [id], onDelete: Cascade)
+  silcBalanceSnapshot       Int
+  createdAt                 DateTime                @default(now())
+  cededAt                   DateTime?
+  cededById                 String?
+  cededBy                   Entity?                 @relation("cededBy", fields: [cededById], references: [id], onDelete: SetNull)
+  acceptedAt                DateTime?
+  acceptedById              String?
+  acceptedBy                Entity?                 @relation("acceptedBy", fields: [acceptedById], references: [id], onDelete: SetNull)
+  disbursedAt               DateTime?
+  disbursedById             String?
+  disbursedBy               Entity?                 @relation("disbursedBy", fields: [disbursedById], references: [id], onDelete: SetNull)
+}

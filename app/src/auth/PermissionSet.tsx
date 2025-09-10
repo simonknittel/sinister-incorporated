@@ -66,7 +66,8 @@ export interface PermissionSet {
     | "silcTransactionOfCurrentCitizen"
     | "silcSetting"
     | "task"
-    | "logAnalyzer";
+    | "logAnalyzer"
+    | "profitDistributionCycle";
   // TODO: Use ENUM (https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums)
   operation:
     | "create"
