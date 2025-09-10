@@ -35,6 +35,30 @@ export const SilcTab = () => {
 
       <div className="py-2 flex justify-between items-center gap-2 mt-2">
         <div>
+          <h4 className="font-bold">Gewinnverteilung einsehen</h4>
+          <p className="text-sm">
+            Citizen mit dieser Berechtigung können die Gewinnverteilung
+            einsehen.
+          </p>
+        </div>
+
+        <YesNoCheckbox {...register("profitDistributionCycle;read")} />
+      </div>
+
+      <div className="py-2 flex justify-between items-center gap-2 mt-2">
+        <div>
+          <h4 className="font-bold">Gewinnverteilung verwalten</h4>
+          <p className="text-sm">
+            Citizen mit dieser Berechtigung können die Gewinnverteilung
+            verwalten.
+          </p>
+        </div>
+
+        <YesNoCheckbox {...register("profitDistributionCycle;manage")} />
+      </div>
+
+      <div className="py-2 flex justify-between items-center gap-2 mt-2">
+        <div>
           <h4 className="font-bold">Eigene Transaktionen einsehen</h4>
           <p className="text-sm">
             Citizen mit dieser Berechtigung können die SILC-Transaktionen zum

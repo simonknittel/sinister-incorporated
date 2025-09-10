@@ -27,7 +27,7 @@ export const TasksTile = async ({ className, searchParams }: Props) => {
   if (tasks.length <= 0)
     return (
       <section className={clsx(className)}>
-        <div className="rounded-primary bg-neutral-800/50 p-4 flex flex-col items-center gap-4">
+        <div className="rounded-primary background-secondary p-4 text-center">
           <p>Keine Tasks gefunden</p>
         </div>
       </section>
