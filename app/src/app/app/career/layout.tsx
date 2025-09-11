@@ -1,5 +1,5 @@
-import { getNavigationItems } from "@/career/utils/getNavigationItems";
-import { DefaultLayout } from "@/common/components/layouts/DefaultLayout";
+import { getNavigationItems } from "@/modules/career/utils/getNavigationItems";
+import { DefaultLayout } from "@/modules/common/components/layouts/DefaultLayout";
 import type { ReactNode } from "react";
 
 interface Props {

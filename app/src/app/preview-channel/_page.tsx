@@ -1,6 +1,6 @@
-import { CurrentStatusLoader } from "@//preview-channel/components/CurrentStatusLoader";
-import { FullScheduleLoader } from "@//preview-channel/components/FullScheduleLoader";
-import { schedule } from "@//preview-channel/utils/schedule";
+import { CurrentStatusLoader } from "@/modules/preview-channel/components/CurrentStatusLoader";
+import { FullScheduleLoader } from "@/modules/preview-channel/components/FullScheduleLoader";
+import { schedule } from "@/modules/preview-channel/utils/schedule";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

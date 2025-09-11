@@ -1,11 +1,14 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { Flow } from "@/career/components/Flow";
-import { getMyReadableFlows } from "@/career/queries";
-import { getCitizensGroupedByVisibleRoles } from "@/citizen/queries";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { log } from "@/logging";
-import { getRoles } from "@/roles/queries";
-import { getMyAssignedRoles, getVisibleRoles } from "@/roles/utils/getRoles";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { Flow } from "@/modules/career/components/Flow";
+import { getMyReadableFlows } from "@/modules/career/queries";
+import { getCitizensGroupedByVisibleRoles } from "@/modules/citizen/queries";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { log } from "@/modules/logging";
+import { getRoles } from "@/modules/roles/queries";
+import {
+  getMyAssignedRoles,
+  getVisibleRoles,
+} from "@/modules/roles/utils/getRoles";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";

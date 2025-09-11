@@ -1,7 +1,7 @@
-import { requireAuthenticationApi } from "@/auth/server";
-import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
-import { updateActiveMembership } from "@/organizations/utils/updateActiveMembership";
+import { requireAuthenticationApi } from "@/modules/auth/server";
+import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
+import { updateActiveMembership } from "@/modules/organizations/utils/updateActiveMembership";
 import { ConfirmationStatus, OrganizationMembershipType } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";

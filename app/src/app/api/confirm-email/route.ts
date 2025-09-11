@@ -1,6 +1,6 @@
-import { getEmailConfirmationToken } from "@/auth/queries";
-import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
+import { getEmailConfirmationToken } from "@/modules/auth/queries";
+import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 

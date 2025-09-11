@@ -1,4 +1,4 @@
-import { requireAuthenticationPage } from "@/auth/server";
+import { requireAuthenticationPage } from "@/modules/auth/server";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

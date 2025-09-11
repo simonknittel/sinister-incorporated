@@ -1,7 +1,7 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { Link } from "@/common/components/Link";
-import { Tile } from "@/common/components/Tile";
-import { cornerstoneImageBrowserItemTypes } from "@/cornerstone-image-browser/utils/config";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { Link } from "@/modules/common/components/Link";
+import { Tile } from "@/modules/common/components/Tile";
+import { cornerstoneImageBrowserItemTypes } from "@/modules/cornerstone-image-browser/utils/config";
 import { type Metadata } from "next";
 
 export const revalidate = 86400; // 24 hours

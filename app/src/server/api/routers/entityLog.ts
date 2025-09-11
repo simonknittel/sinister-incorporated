@@ -1,4 +1,4 @@
-import { authorize } from "@/auth/server";
+import { authorize } from "@/modules/auth/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 

@@ -1,6 +1,6 @@
-import { isOpenAIEnabled } from "@/common/utils/isOpenAIEnabled";
-import { log } from "@/logging";
-import { getRoles } from "@/roles/queries";
+import { isOpenAIEnabled } from "@/modules/common/utils/isOpenAIEnabled";
+import { log } from "@/modules/logging";
+import { getRoles } from "@/modules/roles/queries";
 import { TRPCError } from "@trpc/server";
 import OpenAI from "openai";
 import { type ChatCompletionMessageParam } from "openai/resources/index.mjs";

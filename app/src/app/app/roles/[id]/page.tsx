@@ -1,8 +1,8 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { log } from "@/logging";
-import { OverviewTab } from "@/roles/components/OverviewTab";
-import { RoleDetailsTemplate } from "@/roles/components/RoleDetailsTemplate";
-import { getRoleById } from "@/roles/queries";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { log } from "@/modules/logging";
+import { OverviewTab } from "@/modules/roles/components/OverviewTab";
+import { RoleDetailsTemplate } from "@/modules/roles/components/RoleDetailsTemplate";
+import { getRoleById } from "@/modules/roles/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";

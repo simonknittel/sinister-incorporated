@@ -1,6 +1,6 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { AllSilcTransactionsTable } from "@/silc/components/AllSilcTransactionsTable";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { AllSilcTransactionsTable } from "@/modules/silc/components/AllSilcTransactionsTable";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

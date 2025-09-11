@@ -1,6 +1,6 @@
-import { getCitizensGroupedByVisibleRoles } from "@/citizen/queries";
 import { prisma } from "@/db";
-import { log } from "@/logging";
+import { getCitizensGroupedByVisibleRoles } from "@/modules/citizen/queries";
+import { log } from "@/modules/logging";
 import { TRPCError } from "@trpc/server";
 import { serializeError } from "serialize-error";
 import { createTRPCRouter, protectedProcedure } from "../trpc";

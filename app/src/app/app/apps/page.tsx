@@ -1,10 +1,10 @@
-import { AppTile } from "@/apps/components/AppTile";
-import { AppTileGrid } from "@/apps/components/AppTileGrid";
-import { RedactedAppTile } from "@/apps/components/RedactedAppTile";
-import { groupByFeatured } from "@/apps/utils/groupByFeatured";
-import { getAppLinks } from "@/apps/utils/queries";
-import type { App } from "@/apps/utils/types";
-import { requireAuthenticationPage } from "@/auth/server";
+import { AppTile } from "@/modules/apps/components/AppTile";
+import { AppTileGrid } from "@/modules/apps/components/AppTileGrid";
+import { RedactedAppTile } from "@/modules/apps/components/RedactedAppTile";
+import { groupByFeatured } from "@/modules/apps/utils/groupByFeatured";
+import { getAppLinks } from "@/modules/apps/utils/queries";
+import type { App } from "@/modules/apps/utils/types";
+import { requireAuthenticationPage } from "@/modules/auth/server";
 import { type Metadata } from "next";
 
 export const revalidate = 86400; // 24 hours

@@ -1,7 +1,7 @@
-import { authenticate } from "@/auth/server";
-import { DefaultLayout } from "@/common/components/layouts/DefaultLayout";
-import { getNavigationItems } from "@/iam/utils/getNavigationItems";
-import { CreateRoleButton } from "@/roles/components/CreateRole/CreateRoleButton";
+import { authenticate } from "@/modules/auth/server";
+import { DefaultLayout } from "@/modules/common/components/layouts/DefaultLayout";
+import { getNavigationItems } from "@/modules/iam/utils/getNavigationItems";
+import { CreateRoleButton } from "@/modules/roles/components/CreateRole/CreateRoleButton";
 import type { ReactNode } from "react";
 
 interface Props {

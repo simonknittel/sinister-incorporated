@@ -1,5 +1,5 @@
-import { DefaultLayout } from "@/common/components/layouts/DefaultLayout";
-import type { Page } from "@/common/components/layouts/DefaultLayout/Navigation";
+import { DefaultLayout } from "@/modules/common/components/layouts/DefaultLayout";
+import type { Page } from "@/modules/common/components/layouts/DefaultLayout/Navigation";
 import type { ReactNode } from "react";
 import { FaExternalLinkAlt } from "react-icons/fa";
 

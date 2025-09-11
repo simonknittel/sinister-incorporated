@@ -1,5 +1,5 @@
-import { updateObject } from "@/algolia";
 import { prisma } from "@/db";
+import { updateObject } from "@/modules/algolia";
 import { type EntityLog } from "@prisma/client";
 
 export async function updateAlgoliaWithGenericLogType(

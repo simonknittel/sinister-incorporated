@@ -1,8 +1,8 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { Link } from "@/common/components/Link";
-import Note from "@/common/components/Note";
-import { cornerstoneImageBrowserItemTypes } from "@/cornerstone-image-browser/utils/config";
-import { log } from "@/logging";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { Link } from "@/modules/common/components/Link";
+import Note from "@/modules/common/components/Note";
+import { cornerstoneImageBrowserItemTypes } from "@/modules/cornerstone-image-browser/utils/config";
+import { log } from "@/modules/logging";
 import { type Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";

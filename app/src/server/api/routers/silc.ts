@@ -1,6 +1,6 @@
 import { prisma } from "@/db";
-import { log } from "@/logging";
-import { getRoles } from "@/roles/queries";
+import { log } from "@/modules/logging";
+import { getRoles } from "@/modules/roles/queries";
 import type { Role, Upload } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { serializeError } from "serialize-error";

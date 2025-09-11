@@ -1,5 +1,5 @@
-import { log } from "@/logging";
-import { getVisibleRoles } from "@/roles/utils/getRoles";
+import { log } from "@/modules/logging";
+import { getVisibleRoles } from "@/modules/roles/utils/getRoles";
 import { TRPCError } from "@trpc/server";
 import { serializeError } from "serialize-error";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
