@@ -1,5 +1,5 @@
-import { getNavigationItems } from "@/account/utils/getNavigationItems";
-import { requireAuthenticationPage } from "@/auth/server";
+import { getNavigationItems } from "@/modules/account/utils/getNavigationItems";
+import { requireAuthenticationPage } from "@/modules/auth/server";
 import { type Metadata } from "next";
 import { forbidden, redirect } from "next/navigation";
 

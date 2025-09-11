@@ -1,8 +1,8 @@
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { EditableSeriesName } from "@/fleet/components/EditableSeriesName";
-import { VariantsTile } from "@/fleet/components/VariantsTile";
-import { getSeriesAndManufacturerById } from "@/fleet/queries";
-import { log } from "@/logging";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { EditableSeriesName } from "@/modules/fleet/components/EditableSeriesName";
+import { VariantsTile } from "@/modules/fleet/components/VariantsTile";
+import { getSeriesAndManufacturerById } from "@/modules/fleet/queries";
+import { log } from "@/modules/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";

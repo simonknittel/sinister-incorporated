@@ -1,5 +1,5 @@
-import { DefaultLayout } from "@/common/components/layouts/DefaultLayout";
-import { getNavigationItems } from "@/spynet/utils/getNavigationItems";
+import { DefaultLayout } from "@/modules/common/components/layouts/DefaultLayout";
+import { getNavigationItems } from "@/modules/spynet/utils/getNavigationItems";
 import type { ReactNode } from "react";
 
 interface Props {

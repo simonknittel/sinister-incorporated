@@ -1,9 +1,9 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { Template } from "@/citizen/components/Template";
-import { getCitizenById } from "@/citizen/queries";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { log } from "@/logging";
-import { EntriesOfCitizenTable } from "@/penalty-points/components/EntriesOfCitizenTable";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { Template } from "@/modules/citizen/components/Template";
+import { getCitizenById } from "@/modules/citizen/queries";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { log } from "@/modules/logging";
+import { EntriesOfCitizenTable } from "@/modules/penalty-points/components/EntriesOfCitizenTable";
 import { type Metadata } from "next";
 import { forbidden, notFound } from "next/navigation";
 import { serializeError } from "serialize-error";

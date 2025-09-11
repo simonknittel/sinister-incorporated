@@ -1,7 +1,7 @@
-import { getExternalAppBySlug } from "@/apps/utils/queries";
-import { requireAuthenticationPage } from "@/auth/server";
-import { DefaultLayout } from "@/common/components/layouts/DefaultLayout";
-import { IframeLayout } from "@/common/components/layouts/IframeLayout";
+import { getExternalAppBySlug } from "@/modules/apps/utils/queries";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { DefaultLayout } from "@/modules/common/components/layouts/DefaultLayout";
+import { IframeLayout } from "@/modules/common/components/layouts/IframeLayout";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 

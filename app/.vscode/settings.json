@@ -37,6 +37,7 @@
     "nuqs",
     "openai",
     "OPENAI",
+    "polaris",
     "postgres",
     "postgresql",
     "prisma",

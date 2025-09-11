@@ -1,10 +1,10 @@
-import { saveObject } from "@/algolia";
-import { requireAuthenticationApi } from "@/auth/server";
-import apiErrorHandler from "@/common/utils/apiErrorHandler";
-import { scrapeOrganizationLogo } from "@/common/utils/scrapeOrganizationLogo";
 import { prisma } from "@/db";
-import { log } from "@/logging";
-import { getOrganizationBySpectrumId } from "@/organizations/queries";
+import { saveObject } from "@/modules/algolia";
+import { requireAuthenticationApi } from "@/modules/auth/server";
+import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
+import { scrapeOrganizationLogo } from "@/modules/common/utils/scrapeOrganizationLogo";
+import { log } from "@/modules/logging";
+import { getOrganizationBySpectrumId } from "@/modules/organizations/queries";
 import { ConfirmationStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { serializeError } from "serialize-error";

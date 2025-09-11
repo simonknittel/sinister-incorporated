@@ -1,5 +1,5 @@
-import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { GameLoader } from "@/dogfight-trainer/components/GameLoader";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { GameLoader } from "@/modules/dogfight-trainer/components/GameLoader";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";

@@ -1,4 +1,4 @@
-import { Link } from "@/common/components/Link";
+import { Link } from "@/modules/common/components/Link";
 import { type ReactNode } from "react";
 
 interface Props {

@@ -1,9 +1,9 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { FleetTab } from "@/events/components/FleetTab";
-import { Template } from "@/events/components/Template";
-import { getEventById } from "@/events/queries";
-import { log } from "@/logging";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { FleetTab } from "@/modules/events/components/FleetTab";
+import { Template } from "@/modules/events/components/Template";
+import { getEventById } from "@/modules/events/queries";
+import { log } from "@/modules/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";

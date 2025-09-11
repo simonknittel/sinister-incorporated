@@ -1,8 +1,8 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { Note } from "@/common/components/Note";
-import { Tile } from "@/common/components/Tile";
-import { EventsNotifications } from "@/events/components/EventsNotifications";
-import { TasksNotifications } from "@/tasks/components/TasksNotifications";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { Note } from "@/modules/common/components/Note";
+import { Tile } from "@/modules/common/components/Tile";
+import { EventsNotifications } from "@/modules/events/components/EventsNotifications";
+import { TasksNotifications } from "@/modules/tasks/components/TasksNotifications";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

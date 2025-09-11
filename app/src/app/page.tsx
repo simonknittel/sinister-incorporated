@@ -1,13 +1,13 @@
-import { authenticate } from "@/auth/server";
-import { Hero } from "@/common/components/Hero";
-import { LoginButtons } from "@/common/components/LoginButtons";
-import Note from "@/common/components/Note";
-import { UwuHero } from "@/common/components/UwuHero";
-import { searchParamsNextjsToURLSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
-import { Footer } from "@/shell/components/Footer";
+import { authenticate } from "@/modules/auth/server";
+import { Hero } from "@/modules/common/components/Hero";
+import { LoginButtons } from "@/modules/common/components/LoginButtons";
+import Note from "@/modules/common/components/Note";
+import { UwuHero } from "@/modules/common/components/UwuHero";
+import { searchParamsNextjsToURLSearchParams } from "@/modules/common/utils/searchParamsNextjsToURLSearchParams";
+import { Footer } from "@/modules/shell/components/Footer";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
-import { authOptions } from "../auth/server/auth";
+import { authOptions } from "../modules/auth/server/auth";
 
 export const metadata: Metadata = {
   title: "S.A.M. - Sinister Incorporated",

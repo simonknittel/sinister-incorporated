@@ -1,8 +1,8 @@
-import { Algolia } from "@/algolia/components/Algolia";
-import { requireAuthenticationPage } from "@/auth/server";
-import { Tile } from "@/common/components/Tile";
-import { log } from "@/logging";
-import { AnalyticsCheckboxLoader } from "@/settings/components/AnalyticsCheckboxLoader";
+import { Algolia } from "@/modules/algolia/components/Algolia";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { Tile } from "@/modules/common/components/Tile";
+import { log } from "@/modules/logging";
+import { AnalyticsCheckboxLoader } from "@/modules/settings/components/AnalyticsCheckboxLoader";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 

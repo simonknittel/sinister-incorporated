@@ -1,9 +1,9 @@
-import { ImageUpload } from "@/common/components/ImageUpload";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { EditableManufacturerName } from "@/fleet/components/EditableManufacturerName";
-import { SeriesTile } from "@/fleet/components/SeriesTile";
-import { getManufacturerById } from "@/fleet/queries";
-import { log } from "@/logging";
+import { ImageUpload } from "@/modules/common/components/ImageUpload";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { EditableManufacturerName } from "@/modules/fleet/components/EditableManufacturerName";
+import { SeriesTile } from "@/modules/fleet/components/SeriesTile";
+import { getManufacturerById } from "@/modules/fleet/queries";
+import { log } from "@/modules/logging";
 import clsx from "clsx";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";

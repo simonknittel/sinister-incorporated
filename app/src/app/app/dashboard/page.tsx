@@ -1,11 +1,11 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { ProfileTile } from "@/citizen/components/ProfileTile";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { TileSkeleton } from "@/dashboard/components/TileSkeleton";
-import { CalendarTile } from "@/events/components/CalendarTile";
-import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
-import { TasksDashboardTile } from "@/tasks/components/DashboardTile";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { ProfileTile } from "@/modules/citizen/components/ProfileTile";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { TileSkeleton } from "@/modules/dashboard/components/TileSkeleton";
+import { CalendarTile } from "@/modules/events/components/CalendarTile";
+import { SpynetSearchTile } from "@/modules/spynet/components/SpynetSearchTile/SpynetSearchTile";
+import { TasksDashboardTile } from "@/modules/tasks/components/DashboardTile";
 import { type Metadata } from "next";
 import { Suspense } from "react";
 

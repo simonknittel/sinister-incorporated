@@ -1,8 +1,8 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
-import { Link } from "@/common/components/Link";
-import { Tile } from "@/common/components/Tile";
-import { getDocuments } from "@/documents/utils/queries";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { MaxWidthContent } from "@/modules/common/components/layouts/MaxWidthContent";
+import { Link } from "@/modules/common/components/Link";
+import { Tile } from "@/modules/common/components/Tile";
+import { getDocuments } from "@/modules/documents/utils/queries";
 import { type Metadata } from "next";
 import Image from "next/image";
 
