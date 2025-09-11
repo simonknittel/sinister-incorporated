@@ -1,11 +1,14 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { getAllFlows } from "@/career/queries";
-import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { log } from "@/logging";
-import { PermissionsTab } from "@/roles/components/PermissionsTab";
-import { RoleDetailsTemplate } from "@/roles/components/RoleDetailsTemplate";
-import { getRoleById, getRoles } from "@/roles/queries";
-import { getAllClassificationLevels, getAllNoteTypes } from "@/spynet/queries";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { getAllFlows } from "@/modules/career/queries";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { log } from "@/modules/logging";
+import { PermissionsTab } from "@/modules/roles/components/PermissionsTab";
+import { RoleDetailsTemplate } from "@/modules/roles/components/RoleDetailsTemplate";
+import { getRoleById, getRoles } from "@/modules/roles/queries";
+import {
+  getAllClassificationLevels,
+  getAllNoteTypes,
+} from "@/modules/spynet/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";

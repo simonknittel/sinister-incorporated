@@ -1,8 +1,8 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { searchParamsNextjsToURLSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { searchParamsNextjsToURLSearchParams } from "@/modules/common/utils/searchParamsNextjsToURLSearchParams";
 import { type Metadata } from "next";
-import OtherTableTile from "../../../../citizen/components/OtherTableTile";
+import OtherTableTile from "../../../../modules/citizen/components/OtherTableTile";
 
 export const revalidate = 0; // TODO: Revert to 60
 

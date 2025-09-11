@@ -1,10 +1,10 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { searchParamsNextjsToURLSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
-import { ParticipantsTab } from "@/events/components/ParticipantsTab";
-import { Template } from "@/events/components/Template";
-import { getEventById } from "@/events/queries";
-import { log } from "@/logging";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { searchParamsNextjsToURLSearchParams } from "@/modules/common/utils/searchParamsNextjsToURLSearchParams";
+import { ParticipantsTab } from "@/modules/events/components/ParticipantsTab";
+import { Template } from "@/modules/events/components/Template";
+import { getEventById } from "@/modules/events/queries";
+import { log } from "@/modules/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";

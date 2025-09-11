@@ -1,16 +1,16 @@
-import { requestEmailConfirmationAction } from "@/auth/actions/requestEmailConfirmationAction";
-import { AdminEnabler } from "@/auth/components/AdminEnabler";
-import { PageRefresher } from "@/auth/components/PageRefresher";
+import { requestEmailConfirmationAction } from "@/modules/auth/actions/requestEmailConfirmationAction";
+import { AdminEnabler } from "@/modules/auth/components/AdminEnabler";
+import { PageRefresher } from "@/modules/auth/components/PageRefresher";
 import {
   RequestConfirmationEmailButton,
   RequestConfirmationEmailLink,
-} from "@/auth/components/RequestConfirmationEmail";
-import { authenticate } from "@/auth/server";
-import { requiresEmailConfirmation } from "@/auth/utils/emailConfirmation";
-import { Link } from "@/common/components/Link";
-import type { NextjsSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
-import { log } from "@/logging";
-import { Footer } from "@/shell/components/Footer";
+} from "@/modules/auth/components/RequestConfirmationEmail";
+import { authenticate } from "@/modules/auth/server";
+import { requiresEmailConfirmation } from "@/modules/auth/utils/emailConfirmation";
+import { Link } from "@/modules/common/components/Link";
+import type { NextjsSearchParams } from "@/modules/common/utils/searchParamsNextjsToURLSearchParams";
+import { log } from "@/modules/logging";
+import { Footer } from "@/modules/shell/components/Footer";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";

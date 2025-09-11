@@ -1,7 +1,7 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { SilcBalancesTable } from "@/silc/components/SilcBalancesTable";
-import { SilcStatistics } from "@/silc/components/SilcStatistics";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { SilcBalancesTable } from "@/modules/silc/components/SilcBalancesTable";
+import { SilcStatistics } from "@/modules/silc/components/SilcStatistics";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

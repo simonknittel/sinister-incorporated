@@ -1,7 +1,7 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { Tile } from "@/users/components/Tile";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { MaxWidthContent } from "@/modules/common/components/layouts/MaxWidthContent";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { Tile } from "@/modules/users/components/Tile";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

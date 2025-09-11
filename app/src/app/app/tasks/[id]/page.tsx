@@ -1,12 +1,12 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { log } from "@/logging";
-import { Overview } from "@/tasks/components/Overview";
-import { getTaskById } from "@/tasks/queries";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { log } from "@/modules/logging";
+import { Overview } from "@/modules/tasks/components/Overview";
+import { getTaskById } from "@/modules/tasks/queries";
 import {
   isAllowedToDeleteTask,
   isAllowedToManageTask,
-} from "@/tasks/utils/isAllowedToTask";
-import { isTaskUpdatable } from "@/tasks/utils/isTaskUpdatable";
+} from "@/modules/tasks/utils/isAllowedToTask";
+import { isTaskUpdatable } from "@/modules/tasks/utils/isTaskUpdatable";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";

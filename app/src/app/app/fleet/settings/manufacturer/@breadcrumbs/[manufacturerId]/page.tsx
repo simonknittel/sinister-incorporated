@@ -1,4 +1,4 @@
-import { getManufacturerById } from "@/fleet/queries";
+import { getManufacturerById } from "@/modules/fleet/queries";
 import { notFound } from "next/navigation";
 
 type Params = Promise<

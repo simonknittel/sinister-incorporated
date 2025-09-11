@@ -1,7 +1,7 @@
-import { requireAuthenticationApi } from "@/auth/server";
-import { confirmLog } from "@/citizen/utils/confirmLog";
-import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
+import { requireAuthenticationApi } from "@/modules/auth/server";
+import { confirmLog } from "@/modules/citizen/utils/confirmLog";
+import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 

@@ -1,7 +1,7 @@
-import { requireAuthenticationApi } from "@/auth/server";
-import apiErrorHandler from "@/common/utils/apiErrorHandler";
-import getLatestNoteAttributes from "@/common/utils/getLatestNoteAttributes";
 import { prisma } from "@/db";
+import { requireAuthenticationApi } from "@/modules/auth/server";
+import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
+import getLatestNoteAttributes from "@/modules/common/utils/getLatestNoteAttributes";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { updateAlgoliaWithGenericLogType } from "./_lib/updateAlgoliaWithGenericLogType";

@@ -1,7 +1,7 @@
-import { requireAuthenticationApi } from "@/auth/server";
-import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { env } from "@/env";
+import { requireAuthenticationApi } from "@/modules/auth/server";
+import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";

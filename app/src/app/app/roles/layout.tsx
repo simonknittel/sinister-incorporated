@@ -1,6 +1,6 @@
-import { DefaultLayout } from "@/common/components/layouts/DefaultLayout";
-import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
-import { getNavigationItems } from "@/iam/utils/getNavigationItems";
+import { DefaultLayout } from "@/modules/common/components/layouts/DefaultLayout";
+import { MaxWidthContent } from "@/modules/common/components/layouts/MaxWidthContent";
+import { getNavigationItems } from "@/modules/iam/utils/getNavigationItems";
 import type { ReactNode } from "react";
 
 interface Props {

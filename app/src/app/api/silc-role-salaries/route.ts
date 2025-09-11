@@ -1,8 +1,8 @@
-import apiErrorHandler from "@/common/utils/apiErrorHandler";
 import { prisma } from "@/db";
 import { env } from "@/env";
-import { getRoleSalaries } from "@/silc/queries";
-import { updateCitizensSilcBalances } from "@/silc/utils/updateCitizensSilcBalances";
+import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
+import { getRoleSalaries } from "@/modules/silc/queries";
+import { updateCitizensSilcBalances } from "@/modules/silc/utils/updateCitizensSilcBalances";
 import type { Entity, Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { forbidden } from "next/navigation";

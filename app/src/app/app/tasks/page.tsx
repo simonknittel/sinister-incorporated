@@ -1,8 +1,8 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { SidebarLayout } from "@/common/components/layouts/SidebarLayout";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { Filters } from "@/tasks/components/Filters";
-import { TasksTile } from "@/tasks/components/TasksTile";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { SidebarLayout } from "@/modules/common/components/layouts/SidebarLayout";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { Filters } from "@/modules/tasks/components/Filters";
+import { TasksTile } from "@/modules/tasks/components/TasksTile";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

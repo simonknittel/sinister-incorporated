@@ -1,4 +1,4 @@
-import apiErrorHandler from "@/common/utils/apiErrorHandler";
+import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
 import { type NextRequest } from "next/server";
 import { z } from "zod";
 

@@ -1,10 +1,10 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { Overview } from "@/citizen/components/Overview";
-import { Roles } from "@/citizen/components/roles/Roles";
-import { Template } from "@/citizen/components/Template";
-import { getCitizenById } from "@/citizen/queries";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { log } from "@/logging";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { Overview } from "@/modules/citizen/components/Overview";
+import { Roles } from "@/modules/citizen/components/roles/Roles";
+import { Template } from "@/modules/citizen/components/Template";
+import { getCitizenById } from "@/modules/citizen/queries";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { log } from "@/modules/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";

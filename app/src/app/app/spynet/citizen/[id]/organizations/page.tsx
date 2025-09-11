@@ -1,10 +1,10 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { OrganizationMembershipHistory } from "@/citizen/components/OrganizationMembershipHistory";
-import { OrganizationMembershipsTile } from "@/citizen/components/OrganizationMembershipsTile";
-import { Template } from "@/citizen/components/Template";
-import { getCitizenById } from "@/citizen/queries";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { log } from "@/logging";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { OrganizationMembershipHistory } from "@/modules/citizen/components/OrganizationMembershipHistory";
+import { OrganizationMembershipsTile } from "@/modules/citizen/components/OrganizationMembershipsTile";
+import { Template } from "@/modules/citizen/components/Template";
+import { getCitizenById } from "@/modules/citizen/queries";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { log } from "@/modules/logging";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";

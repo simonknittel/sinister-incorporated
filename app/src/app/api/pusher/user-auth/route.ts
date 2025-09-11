@@ -1,7 +1,7 @@
-import { requireAuthenticationApi } from "@/auth/server";
-import apiErrorHandler from "@/common/utils/apiErrorHandler";
-import { log } from "@/logging";
-import { channelsClient } from "@/pusher/utils/channelsClient";
+import { requireAuthenticationApi } from "@/modules/auth/server";
+import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
+import { log } from "@/modules/logging";
+import { channelsClient } from "@/modules/pusher/utils/channelsClient";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 

@@ -1,6 +1,6 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { ProfitDistributionCycleExcerptList } from "@/silc/components/ProfitDistributionCycleExcerptList";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { ProfitDistributionCycleExcerptList } from "@/modules/silc/components/ProfitDistributionCycleExcerptList";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

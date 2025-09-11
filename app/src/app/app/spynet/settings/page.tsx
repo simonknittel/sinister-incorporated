@@ -1,8 +1,8 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
-import { log } from "@/logging";
-import ClassificationLevelsTile from "@/spynet/components/classification-level/ClassificationLevelsTile";
-import NoteTypesTile from "@/spynet/components/note-type/NoteTypesTile";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { MaxWidthContent } from "@/modules/common/components/layouts/MaxWidthContent";
+import { log } from "@/modules/logging";
+import ClassificationLevelsTile from "@/modules/spynet/components/classification-level/ClassificationLevelsTile";
+import NoteTypesTile from "@/modules/spynet/components/note-type/NoteTypesTile";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 
