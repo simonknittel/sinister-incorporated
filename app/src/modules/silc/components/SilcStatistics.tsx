@@ -1,3 +1,4 @@
+import { StatisticTile } from "@/modules/common/components/StatisticTile";
 import { SilcSettingKey } from "@prisma/client";
 import clsx from "clsx";
 import { getSilcBalanceOfAllCitizens, getSilcSetting } from "../queries";
@@ -21,17 +22,13 @@ export const SilcStatistics = async ({ className }: Props) => {
 
   return (
     <section className={clsx("flex flex-wrap gap-[2px]", className)}>
-      <div className="flex-1 rounded-primary bg-neutral-800/50 p-4 flex flex-col items-center">
-        <span className="font-black text-4xl">{totalSilc}</span>
-        <p className="text-neutral-500">SILC im Umlauf</p>
-      </div>
+      <StatisticTile label="SILC im Umlauf" className="flex-1">
+        {totalSilc}
+      </StatisticTile>
 
-      <div className="flex-1 rounded-primary bg-neutral-800/50 p-4 flex flex-col items-center">
-        <span className="font-black text-4xl">
-          {totalAuec.toLocaleString("de-de")}
-        </span>
-        <p className="text-neutral-500">aUEC im Umlauf</p>
-      </div>
+      <StatisticTile label="aUEC im Umlauf" className="flex-1">
+        {totalAuec.toLocaleString("de-de")}
+      </StatisticTile>
     </section>
   );
 };

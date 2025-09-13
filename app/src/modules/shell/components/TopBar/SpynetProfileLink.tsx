@@ -1,8 +1,8 @@
 "use client";
 
-import { Button2 } from "@/common/components/Button2";
-import { Link } from "@/common/components/Link";
-import { usePopover } from "@/common/components/Popover";
+import { Button2 } from "@/modules/common/components/Button2";
+import { Link } from "@/modules/common/components/Link";
+import { usePopover } from "@/modules/common/components/Popover";
 import clsx from "clsx";
 import { FaUserSecret } from "react-icons/fa";
 

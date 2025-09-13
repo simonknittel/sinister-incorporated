@@ -43,30 +43,41 @@ const CreateTaskForm = dynamic(() =>
   ),
 );
 
+const CreateProfitDistributionCycleForm = dynamic(() =>
+  import(
+    "@/modules/silc/components/profit-distribution/CreateProfitDistributionCycleForm"
+  ).then((mod) => mod.CreateProfitDistributionCycleForm),
+);
+
 export const createForms = {
   citizen: {
     formComponent: CreateCitizenForm,
-    modalHeading: "Citizen erstellen",
+    modalHeading: "Neuer Citizen",
+    modalWidth: "w-[480px]",
+  },
+  profitDistributionCycle: {
+    formComponent: CreateProfitDistributionCycleForm,
+    modalHeading: "Neuer Gewinnverteilungszeitraum",
     modalWidth: "w-[480px]",
   },
   organization: {
     formComponent: CreateOrganizationForm,
-    modalHeading: "Organisation erstellen",
+    modalHeading: "Neue Organisation",
     modalWidth: "w-[480px]",
   },
   role: {
     formComponent: CreateRoleForm,
-    modalHeading: "Rolle erstellen",
+    modalHeading: "Neue Rolle",
     modalWidth: "w-[480px]",
   },
   penaltyEntry: {
     formComponent: CreatePenaltyEntryForm,
-    modalHeading: "Strafpunkte erstellen",
+    modalHeading: "Neue Strafpunkte",
     modalWidth: "w-[480px]",
   },
   task: {
     formComponent: CreateTaskForm,
-    modalHeading: "Task erstellen",
+    modalHeading: "Neuer Task",
     modalWidth: "w-[768px]",
   },
 };
