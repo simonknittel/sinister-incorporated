@@ -7,15 +7,18 @@ import { Link } from "./Link";
 
 interface Props {
   readonly className?: string;
-  readonly citizen: Entity;
+  readonly citizen?: { id: Entity["id"]; handle: Entity["handle"] } | null;
   readonly page?: string;
 }
 
 export const CitizenLink = ({ className, citizen, page = "" }: Props) => {
   const authentication = useAuthentication();
-  const isCitizenCurrentUser = authentication
-    ? citizen.id === authentication.session.entity?.id
-    : false;
+  const isCitizenCurrentUser =
+    authentication && authentication.session.entity && citizen
+      ? citizen.id === authentication.session.entity.id
+      : false;
+
+  if (!citizen) return <span className="text-neutral-500">Unbekannt</span>;
 
   return (
     <Link
