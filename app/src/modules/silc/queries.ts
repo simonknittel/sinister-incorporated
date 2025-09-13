@@ -1,7 +1,11 @@
 import { prisma } from "@/db";
 import { requireAuthentication } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import type { Entity, SilcSettingKey } from "@prisma/client";
+import type {
+  Entity,
+  ProfitDistributionCycle,
+  SilcSettingKey,
+} from "@prisma/client";
 import { forbidden } from "next/navigation";
 import { cache } from "react";
 
@@ -191,43 +195,47 @@ export const getMonthlySalaryOfCurrentCitizen = cache(
 );
 
 export const getProfitDistributionCycles = cache(
-  withTrace("getProfitDistributionCycles", async () => {
+  withTrace("getProfitDistributionCycles", async (status = "open") => {
     const authentication = await requireAuthentication();
-    if (!authentication.session.entity) forbidden();
-    const profitDistributionCycleManage = await authentication.authorize(
-      "profitDistributionCycle",
-      "manage",
-    );
+    if (!(await authentication.authorize("profitDistributionCycle", "read")))
+      forbidden();
 
-    const now = new Date();
-
-    if (profitDistributionCycleManage) {
-      return prisma.profitDistributionCycle.findMany({
-        orderBy: {
-          collectionCycleStartedAt: "desc",
-        },
-        include: {
-          participants: true,
-        },
-      });
-    }
+    // TODO: Only return past and current cycle for users without the manage permission
 
     return prisma.profitDistributionCycle.findMany({
-      where: {
-        payoutCycleStartedAt: {
-          lt: now,
-        },
-      },
+      ...(status === "open"
+        ? {
+            where: {
+              payoutEndedAt: null,
+            },
+          }
+        : {}),
       orderBy: {
-        collectionCycleStartedAt: "desc",
+        collectionEndedAt: "desc",
       },
       include: {
-        participants: {
-          where: {
-            citizenId: authentication.session.entity.id,
-          },
-        },
+        participants: true,
       },
     });
   }),
+);
+
+export const getProfitDistributionCyclesById = cache(
+  withTrace(
+    "getProfitDistributionCyclesById",
+    async (id: ProfitDistributionCycle["id"]) => {
+      const authentication = await requireAuthentication();
+      if (!(await authentication.authorize("profitDistributionCycle", "read")))
+        forbidden();
+
+      return prisma.profitDistributionCycle.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          createdBy: true,
+        },
+      });
+    },
+  ),
 );

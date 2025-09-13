@@ -22,6 +22,10 @@ export const Create = ({ className }: Props) => {
   const showCreateCitizen = Boolean(
     authentication && authentication.authorize("citizen", "create"),
   );
+  const showCreateDistributionCycle = Boolean(
+    authentication &&
+      authentication.authorize("profitDistributionCycle", "create"),
+  );
   const showCreateOrganization = Boolean(
     authentication && authentication.authorize("organization", "create"),
   );
@@ -37,6 +41,7 @@ export const Create = ({ className }: Props) => {
 
   if (
     !showCreateCitizen &&
+    !showCreateDistributionCycle &&
     !showCreateOrganization &&
     !showCreateRole &&
     !showCreatePenaltyEntry &&
@@ -57,11 +62,12 @@ export const Create = ({ className }: Props) => {
             Neu
           </Button2>
         }
-        childrenClassName="flex flex-col gap-[1px] w-48"
+        childrenClassName="flex flex-col gap-[1px] w-52"
         enableHover
       >
         <PopoverChildren
           showCreateCitizen={showCreateCitizen}
+          showCreateDistributionCycle={showCreateDistributionCycle}
           showCreateOrganization={showCreateOrganization}
           showCreateRole={showCreateRole}
           showCreatePenaltyEntry={showCreatePenaltyEntry}
@@ -74,6 +80,7 @@ export const Create = ({ className }: Props) => {
 
 interface PopoverChildrenProps {
   readonly showCreateCitizen: boolean;
+  readonly showCreateDistributionCycle: boolean;
   readonly showCreateOrganization: boolean;
   readonly showCreateRole: boolean;
   readonly showCreatePenaltyEntry: boolean;
@@ -82,6 +89,7 @@ interface PopoverChildrenProps {
 
 const PopoverChildren = ({
   showCreateCitizen,
+  showCreateDistributionCycle,
   showCreateOrganization,
   showCreateRole,
   showCreatePenaltyEntry,
@@ -122,6 +130,12 @@ const PopoverChildren = ({
 
   if (showCreateCitizen)
     items.push({ label: "Citizen", type: "button", modalId: "citizen" });
+  if (showCreateDistributionCycle)
+    items.push({
+      label: "Gewinnverteilungszeitraum",
+      type: "button",
+      modalId: "profitDistributionCycle",
+    });
   if (showCreateOrganization)
     items.push({
       label: "Organisation",

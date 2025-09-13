@@ -1,25 +1,34 @@
 import clsx from "clsx";
+import { createLoader, parseAsString, type SearchParams } from "nuqs/server";
 import { getProfitDistributionCycles } from "../queries";
 import { ProfitDistributionCycleExcerpt } from "./ProfitDistributionCycleExcerpt";
 
+const loadSearchParams = createLoader({
+  status: parseAsString.withDefault("open"),
+});
+
 interface Props {
   readonly className?: string;
+  readonly searchParams: Promise<SearchParams>;
 }
 
 export const ProfitDistributionCycleExcerptList = async ({
   className,
+  searchParams,
 }: Props) => {
-  const profitDistributionCycles = await getProfitDistributionCycles();
+  const { status } = await loadSearchParams(searchParams);
+
+  const profitDistributionCycles = await getProfitDistributionCycles(status);
 
   return (
-    <div className={clsx("flex flex-col gap-2", className)}>
+    <div className={clsx("flex flex-col gap-[2px]", className)}>
       {profitDistributionCycles.length > 0 ? (
         profitDistributionCycles.map((cycle) => (
           <ProfitDistributionCycleExcerpt key={cycle.id} cycle={cycle} />
         ))
       ) : (
         <div className="rounded-primary background-secondary p-4 text-center">
-          <p>Keine Gewinnverteilungszyklen gefunden</p>
+          <p>Keine Gewinnverteilungszeiträume gefunden</p>
         </div>
       )}
     </div>
