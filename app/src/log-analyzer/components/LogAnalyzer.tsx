@@ -66,6 +66,7 @@ const joinPURegex =
 
 interface Props {
   readonly className?: string;
+  readonly crashLogAnalyzer?: boolean;
 }
 
 export const LogAnalyzer = ({ className }: Props) => {

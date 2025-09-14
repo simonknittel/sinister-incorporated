@@ -14,5 +14,7 @@ const LogAnalyzer = dynamic(
 type Props = ComponentProps<typeof LogAnalyzer>;
 
 export const LogAnalyzerWrapper = (props: Props) => {
+  if (props.crashLogAnalyzer) throw new Error("Internal Server Error");
+
   return <LogAnalyzer {...props} />;
 };
