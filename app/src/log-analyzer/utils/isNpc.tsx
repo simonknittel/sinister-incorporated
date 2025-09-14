@@ -1,4 +1,5 @@
-const NPC_HANDLES = ["Hazard-00", "StreamingSOC_", "RotationSimple-"];
+const PREFIXES = ["Hazard-00", "StreamingSOC_", "RotationSimple-", "Kopion_"];
+
 export const isNpc = (handle: string) =>
   (handle.length >= 27 && handle.split("_").length - 1 >= 2) ||
-  NPC_HANDLES.some((NPC_HANDLE) => handle.startsWith(NPC_HANDLE));
+  PREFIXES.some((NPC_HANDLE) => handle.startsWith(NPC_HANDLE));
