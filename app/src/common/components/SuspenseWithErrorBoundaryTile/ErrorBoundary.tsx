@@ -46,7 +46,10 @@ export const Fallback = ({ className, error }: FallbackProps) => {
 
       <div className="p-4 lg:p-4">
         <div>{t("Common.internalServerError")}</div>
-        <p className="text-neutral-500 text-sm mt-2">Digest: {error.digest}</p>
+
+        <p className="text-neutral-500 text-sm mt-2">
+          Digest: {error.digest ? error.digest : "unknown"}
+        </p>
       </div>
     </section>
   );
