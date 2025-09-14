@@ -117,5 +117,6 @@
   },
   "prisma": {
     "schema": "./prisma/schema"
-  }
+  },
+  "packageManager": "npm@10.9.3"
 }
