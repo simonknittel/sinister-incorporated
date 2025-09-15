@@ -4,6 +4,7 @@ import { Popover } from "@/common/components/Popover";
 import clsx from "clsx";
 import { AccountSettings } from "./AccountSettings";
 import { Logout } from "./Logout";
+import { SpynetProfileLink } from "./SpynetProfileLink";
 
 interface Props {
   readonly className?: string;
@@ -45,7 +46,9 @@ export const Account = async ({ className }: Props) => {
         </div>
       </div>
 
-      <AccountSettings className="w-full mt-4" />
+      <SpynetProfileLink className="w-full mt-4" entityId={authentication.session.entity?.id} />
+
+      <AccountSettings className="w-full mt-2" />
 
       <Logout className="w-full mt-2" />
     </Popover>
