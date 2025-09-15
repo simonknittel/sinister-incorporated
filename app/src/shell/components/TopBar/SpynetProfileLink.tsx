@@ -8,16 +8,11 @@ import { FaUserSecret } from "react-icons/fa";
 
 interface Props {
   readonly className?: string;
-  readonly entityId?: string | null;
+  readonly entityId: string;
 }
 
 export const SpynetProfileLink = ({ className, entityId }: Props) => {
   const { closePopover } = usePopover();
-
-  // Only show the link if the user has an entity
-  if (!entityId) {
-    return null;
-  }
 
   return (
     <Button2
