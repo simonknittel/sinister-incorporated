@@ -203,16 +203,18 @@ export const getProfitDistributionCycles = cache(
       forbidden();
 
     // TODO: Only return past and current cycle for users without the manage permission
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     const cycles = await prisma.profitDistributionCycle.findMany({
       where: {
         ...(status === "open"
           ? {
-              payoutEndedAt: null,
+              OR: [{ payoutEndedAt: null }, { payoutEndedAt: { gt: today } }],
             }
           : {
               payoutEndedAt: {
-                not: null,
+                lt: today,
               },
             }),
       },
@@ -297,7 +299,7 @@ export const getProfitDistributionCyclesById = cache(
           ? await getSilcBalanceOfCurrentCitizen()
           : myParticipant?.silcBalanceSnapshot || 0;
 
-      const myShare = "-"; // TODO: Calculate based on auecProfit and myParticipant.silcBalanceSnapshot
+      const myShare = "???"; // TODO: Calculate based on auecProfit and myParticipant.silcBalanceSnapshot
 
       const myPayoutState = getMyPayoutState(cycle, myParticipant);
 

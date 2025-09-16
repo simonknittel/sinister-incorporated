@@ -11,7 +11,7 @@ import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Gewinnausschüttung - SILC | S.A.M. - Sinister Incorporated",
+  title: "Gewinnausschüttung - SILC | S.A.M. - Sinister Incorporated", // TODO
 };
 
 export default async function Page({
@@ -63,14 +63,10 @@ export default async function Page({
               <span>-</span>
             )}
             {cycleData.myPayoutState === PayoutState.AWAITING_ACCEPTANCE && (
-              <span className="text-red-500">
-                Zustimmung von dir ausstehend
-              </span>
+              <span className="text-red-500">Zustimmung ausstehend</span>
             )}
             {cycleData.myPayoutState === PayoutState.AWAITING_PAYOUT && (
-              <span className="text-blue-500">
-                Auszahlung von Economics ausstehend
-              </span>
+              <span className="text-blue-500">Auszahlung ausstehend</span>
             )}
             {cycleData.myPayoutState === PayoutState.DISBURSED && (
               <span className="text-green-500">Ausgezahlt</span>
@@ -94,7 +90,9 @@ export default async function Page({
             </p>
           )}
 
-          {cycleData.myPayoutState !== PayoutState.NOT_PARTICIPATING && (
+          {[PayoutState.NOT_PARTICIPATING, PayoutState.DISBURSED].includes(
+            cycleData.myPayoutState,
+          ) === false && (
             <div className="flex flex-col justify-center items-center gap-2 border-t border-white/5 mt-4 pt-2">
               <div className="text-sm text-center flex flex-col gap-2">
                 <p>
@@ -118,7 +116,7 @@ export default async function Page({
 
               {cycleData.myPayoutState === PayoutState.AWAITING_PAYOUT && (
                 <>
-                  <p className="text-green-500">
+                  <p className="text-green-500 text-sm">
                     Du hast der Auszahlung am{" "}
                     {formatDate(cycleData.myParticipant!.acceptedAt)}{" "}
                     zugestimmt.
@@ -188,7 +186,7 @@ export default async function Page({
           </div>
         </div>
 
-        <div className="flex justify-center items-center gap-2 border-t border-white/5 pt-4">
+        <div className="flex flex-col justify-center items-center gap-2 border-t border-white/5 pt-4">
           <p className="text-center text-sm">
             Du kannst deinen Anteil für diesen Phase freiwillig abtreten. Dieser
             wird dann auf die anderen Member verteilt.

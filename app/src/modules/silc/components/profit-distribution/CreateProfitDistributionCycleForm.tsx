@@ -82,7 +82,7 @@ export const CreateProfitDistributionCycleForm = ({
 
             <li>
               Member müssen selbstständig der Auszahlung zustimmen. Die
-              Auszahlungen werden händisch von Econmics durchgeführt.
+              Auszahlungen werden händisch von Economics durchgeführt.
             </li>
 
             <li>
@@ -101,6 +101,13 @@ export const CreateProfitDistributionCycleForm = ({
         className="mt-4"
         required
         autoFocus
+        defaultValue={
+          state &&
+          "requestPayload" in state &&
+          state.requestPayload.has("title")
+            ? (state.requestPayload.get("title") as string)
+            : ""
+        }
       />
 
       <DateInput
