@@ -32,7 +32,11 @@ export const createProfitDistributionCycle = createAuthenticatedAction(
     /**
      * Validate request data
      */
-    if (data.collectionEndedAt <= new Date())
+    const collectionEndedAt = new Date(data.collectionEndedAt);
+    collectionEndedAt.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (collectionEndedAt < today)
       return {
         error: "Das Ende des Sammelzeitraums muss in der Zukunft liegen.",
         requestPayload: formData,
@@ -41,8 +45,6 @@ export const createProfitDistributionCycle = createAuthenticatedAction(
     /**
      * Create
      */
-    const collectionEndedAt = new Date(data.collectionEndedAt);
-    collectionEndedAt.setHours(0, 0, 0, 0);
     const created = await prisma.profitDistributionCycle.create({
       data: {
         title: data.title,

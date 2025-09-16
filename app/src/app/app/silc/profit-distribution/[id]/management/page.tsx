@@ -1,5 +1,6 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { Button2 } from "@/modules/common/components/Button2";
+import { DateInput } from "@/modules/common/components/form/DateInput";
 import { NumberInput } from "@/modules/common/components/form/NumberInput";
 import { StatisticTile } from "@/modules/common/components/StatisticTile";
 import { formatDate } from "@/modules/common/utils/formatDate";
@@ -27,21 +28,19 @@ export default async function Page({
     <div className="flex flex-col gap-4">
       <div className="text-2xl font-bold">
         <h1 className="text-center">{cycleData.cycle.title}</h1>
+        {/* TODO: Implement edit button */}
       </div>
 
       {cycleData.currentPhase >= 4 && (
         <Phase phase={4} currentPhase={cycleData.currentPhase}>
           <h2 className="font-bold text-center">Auszahlung abgeschlossen</h2>
 
-          <div className="flex gap-[2px]">
-            <StatisticTile label="Gesamt aUEC ausgezahlt" className="flex-1">
+          <div className="flex gap-[2px] mt-4">
+            <StatisticTile label="aUEC ausgezahlt" className="flex-1">
               ???
             </StatisticTile>
 
-            <StatisticTile
-              label="Gesamt aUEC nicht ausgezahlt"
-              className="flex-1"
-            >
+            <StatisticTile label="aUEC nicht ausgezahlt" className="flex-1">
               ???
             </StatisticTile>
           </div>
@@ -56,9 +55,14 @@ export default async function Page({
             <div className="flex flex-col justify-center items-center text-sm">
               <h3 className="text-neutral-500">Endet am</h3>
 
-              <p>{formatDate(cycleData.cycle.collectionEndedAt, "short")}</p>
+              <p>{formatDate(cycleData.cycle.payoutEndedAt, "short") || "-"}</p>
+              {/* TODO: Implement edit button */}
             </div>
+
+            {/* TODO: Es müssen noch N aUEC ausgezahlt werden */}
           </div>
+
+          {/* TODO: Hinweis: Es gibt noch N zugestimmten Auszahlungen, die noch nicht ausgezahlt wurden */}
 
           <div className="flex justify-center items-center gap-2 border-t border-white/5 pt-4">
             <p className="text-center text-sm">
@@ -71,6 +75,8 @@ export default async function Page({
             >
               Phase beenden
             </Button2>
+
+            {/* TODO: Implement confirmation prompt */}
           </div>
 
           <div className="flex justify-center items-center gap-2 border-t border-white/5 pt-4 mt-4">
@@ -89,13 +95,25 @@ export default async function Page({
               name="auecProfit"
               label="Gesamter aUEC-Überschuss"
               disabled={cycleData.currentPhase !== 2}
+              defaultValue={cycleData.cycle.auecProfit || 0}
             />
           </div>
 
           <div className="flex gap-[2px] mt-4">
-            <StatisticTile label="aUEC pro Member" className="flex-1">
+            <StatisticTile label="aUEC pro SILC" className="flex-1">
               ???
             </StatisticTile>
+          </div>
+
+          <div className="max-w-80 mx-auto text-center mt-2">
+            <DateInput
+              name="payoutEndedAt"
+              label="Auszahlungsphase endet am"
+              disabled={cycleData.currentPhase !== 2}
+              defaultValue={
+                cycleData.cycle.payoutEndedAt?.toISOString().split("T")[0] || ""
+              }
+            />
           </div>
 
           <Button2
@@ -113,10 +131,12 @@ export default async function Page({
 
         <div className="flex gap-[2px]">
           <StatisticTile label="Anzahl Teilnehmer" className="flex-1">
+            {/* TODO */}
             ???
           </StatisticTile>
 
           <StatisticTile label="Gesamt verdiente SILC" className="flex-1">
+            {/* TODO */}
             ???
           </StatisticTile>
         </div>
@@ -126,6 +146,8 @@ export default async function Page({
             <h3 className="text-neutral-500">Endet am</h3>
 
             <p>{formatDate(cycleData.cycle.collectionEndedAt, "short")}</p>
+
+            {/* TODO: Implement edit button */}
           </div>
         </div>
 
