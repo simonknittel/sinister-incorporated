@@ -1,4 +1,5 @@
 import { FlatCompat } from "@eslint/eslintrc";
+import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need-an-effect";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -73,6 +74,8 @@ const eslintConfig = [
       ],
     },
   }),
+
+  reactYouMightNotNeedAnEffect.configs.recommended,
 ];
 
 export default eslintConfig;
