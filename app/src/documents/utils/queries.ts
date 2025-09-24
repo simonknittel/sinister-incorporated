@@ -39,7 +39,7 @@ const categories = [
         name: "Alliance",
         slug: "alliance",
         src: srcAlliance,
-        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL}/alliance.pdf`,
+        href: `${env.NEXT_PUBLIC_DOWNLOADS_BASE_URL_2}/fJ4JG5QbTnHYLp5`,
       },
       {
         name: "Onboarding",
