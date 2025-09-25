@@ -214,7 +214,7 @@ export const ParticipantsTab = async ({
                   </Link>
 
                   <Tooltip triggerChildren={<FaInfoCircle />}>
-                    Auf etwa 3 Minuten genau
+                    Auf etwa 4 Minuten genau
                   </Tooltip>
                 </th>
 
