@@ -1,5 +1,5 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { Hero } from "@/common/components/Hero";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { Hero } from "@/modules/common/components/Hero";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

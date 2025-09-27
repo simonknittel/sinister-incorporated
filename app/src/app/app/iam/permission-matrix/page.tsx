@@ -1,6 +1,6 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { PermissionMatrix } from "@/roles/components/PermissionMatrix";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { PermissionMatrix } from "@/modules/roles/components/PermissionMatrix";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

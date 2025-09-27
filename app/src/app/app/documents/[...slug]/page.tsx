@@ -1,6 +1,6 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { IframeLayout } from "@/common/components/layouts/IframeLayout";
-import { getDocuments } from "@/documents/utils/queries";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { IframeLayout } from "@/modules/common/components/layouts/IframeLayout";
+import { getDocuments } from "@/modules/documents/utils/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 

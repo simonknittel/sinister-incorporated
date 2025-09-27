@@ -20,36 +20,6 @@ resource "aws_cloudwatch_metric_alarm" "api_gateway_5xx_error" {
   alarm_description   = "This alarm helps to detect a high rate of 500er responses of the API Gateway."
 }
 
-resource "aws_cloudwatch_metric_alarm" "lambda_throttles" {
-  alarm_name = "lambda-throttles"
-
-  namespace   = "AWS/Lambda"
-  metric_name = "Throttles"
-
-  statistic           = "Sum"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  threshold           = 1
-  evaluation_periods  = 1
-  datapoints_to_alarm = 1
-  period              = 60
-  alarm_description   = "This alarm detects a high number of throttled invocation requests for any Lambda function."
-}
-
-resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
-  alarm_name = "lambda-errors"
-
-  namespace   = "AWS/Lambda"
-  metric_name = "Errors"
-
-  statistic           = "Sum"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  threshold           = 1
-  evaluation_periods  = 1
-  datapoints_to_alarm = 1
-  period              = 60
-  alarm_description   = "This alarm detects a high number of errors for any Lambda function."
-}
-
 resource "aws_cloudwatch_metric_alarm" "api_gateway_count" {
   alarm_name          = "api-gateway-count"
   comparison_operator = "GreaterThanUpperThreshold"

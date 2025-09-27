@@ -1,6 +1,6 @@
-import { AnalyticsLoader } from "@/common/components/AnalyticsLoader";
-import ToasterContainer from "@/common/components/ToasterContainer";
 import { env } from "@/env";
+import { AnalyticsLoader } from "@/modules/common/components/AnalyticsLoader";
+import ToasterContainer from "@/modules/common/components/ToasterContainer";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { type Metadata } from "next";
 import { getLocale } from "next-intl/server";

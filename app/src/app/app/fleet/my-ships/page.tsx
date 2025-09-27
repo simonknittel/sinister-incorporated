@@ -1,6 +1,6 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { MyFleetTile } from "@/fleet/components/MyFleetTile";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { MyFleetTile } from "@/modules/fleet/components/MyFleetTile";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

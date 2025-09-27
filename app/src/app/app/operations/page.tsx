@@ -1,9 +1,10 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import Note from "@/common/components/Note";
-import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { CreateOperation } from "@/operations/components/CreateOperation";
-import OperationTile from "@/operations/components/OperationTile";
-import { getOperations } from "@/operations/queries";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import Note from "@/modules/common/components/Note";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
+import { CreateOperation } from "@/modules/operations/components/CreateOperation";
+import OperationTile from "@/modules/operations/components/OperationTile";
+import { getOperations } from "@/modules/operations/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  if (!(await getUnleashFlag("EnableOperations"))) notFound();
+  if (!(await getUnleashFlag(UNLEASH_FLAG.EnableOperations))) notFound();
 
   const authentication = await requireAuthenticationPage("/app/operations");
   await authentication.authorizePage("operation", "manage");

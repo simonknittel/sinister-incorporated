@@ -1,7 +1,7 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { searchParamsNextjsToURLSearchParams } from "@/common/utils/searchParamsNextjsToURLSearchParams";
-import { OrgFleetTile } from "@/fleet/components/OrgFleetTile";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { searchParamsNextjsToURLSearchParams } from "@/modules/common/utils/searchParamsNextjsToURLSearchParams";
+import { OrgFleetTile } from "@/modules/fleet/components/OrgFleetTile";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

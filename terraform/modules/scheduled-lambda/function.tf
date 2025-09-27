@@ -11,7 +11,7 @@ resource "aws_lambda_function" "main" {
 
   # https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html
   # https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
-  reserved_concurrent_executions = 2
+  reserved_concurrent_executions = 1
 
   tracing_config {
     mode = "Active"

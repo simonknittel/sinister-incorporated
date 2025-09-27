@@ -25,6 +25,14 @@ model Entity {
   completedTasks                               Task[]                               @relation("completedBy")
   createdTaskAssignments                       TaskAssignment[]                     @relation("createdBy")
   completionistsTask                           Task[]                               @relation("completionists")
+  participatedProfitDistributionCycles         ProfitDistributionCycleParticipant[] @relation("citizen")
+  cededProfitDistributionCycles                ProfitDistributionCycleParticipant[] @relation("cededBy")
+  acceptedProfitDistributionCycles             ProfitDistributionCycleParticipant[] @relation("acceptedBy")
+  disbursedProfitDistributionCycles            ProfitDistributionCycleParticipant[] @relation("disbursedBy")
+  createdProfitDistributionCycles              ProfitDistributionCycle[]            @relation("createdBy")
+  collectionEndedProfitDistributionCycles      ProfitDistributionCycle[]            @relation("collectionEndedBy")
+  payoutStartedProfitDistributionCycles        ProfitDistributionCycle[]            @relation("payoutStartedBy")
+  payoutEndedProfitDistributionCycles          ProfitDistributionCycle[]            @relation("payoutEndedBy")
 
   // Holds the latest confirmed values
   spectrumId                String?

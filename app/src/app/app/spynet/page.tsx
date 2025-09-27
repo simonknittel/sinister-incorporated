@@ -1,9 +1,10 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { CreateCitizenButton } from "@/citizen/components/CreateCitizenButton";
-import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
-import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { CreateOrganizationButton } from "@/spynet/components/CreateOrganization/CreateOrganizationButton";
-import { SpynetSearchTile } from "@/spynet/components/SpynetSearchTile/SpynetSearchTile";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { CreateCitizenButton } from "@/modules/citizen/components/CreateCitizenButton";
+import { MaxWidthContent } from "@/modules/common/components/layouts/MaxWidthContent";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
+import { CreateOrganizationButton } from "@/modules/spynet/components/CreateOrganization/CreateOrganizationButton";
+import { SpynetSearchTile } from "@/modules/spynet/components/SpynetSearchTile/SpynetSearchTile";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -21,7 +22,9 @@ export default async function Page() {
   return (
     <MaxWidthContent>
       <div className="max-w-[400px] mx-auto">
-        {!(await getUnleashFlag("DisableAlgolia")) && <SpynetSearchTile />}
+        {!(await getUnleashFlag(UNLEASH_FLAG.DisableAlgolia)) && (
+          <SpynetSearchTile />
+        )}
 
         {(citizenCreate || organisationCreate) && (
           <div className="flex gap-2 justify-center mt-4">

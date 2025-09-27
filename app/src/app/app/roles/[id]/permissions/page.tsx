@@ -1,11 +1,15 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { getAllFlows } from "@/career/queries";
-import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { log } from "@/logging";
-import { PermissionsTab } from "@/roles/components/PermissionsTab";
-import { RoleDetailsTemplate } from "@/roles/components/RoleDetailsTemplate";
-import { getRoleById, getRoles } from "@/roles/queries";
-import { getAllClassificationLevels, getAllNoteTypes } from "@/spynet/queries";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { getAllFlows } from "@/modules/career/queries";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
+import { log } from "@/modules/logging";
+import { PermissionsTab } from "@/modules/roles/components/PermissionsTab";
+import { RoleDetailsTemplate } from "@/modules/roles/components/RoleDetailsTemplate";
+import { getRoleById, getRoles } from "@/modules/roles/queries";
+import {
+  getAllClassificationLevels,
+  getAllNoteTypes,
+} from "@/modules/spynet/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";
@@ -47,14 +51,21 @@ export default async function Page({
   const role = await getRoleById(roleId);
   if (!role) notFound();
 
-  const [allRoles, noteTypes, classificationLevels, flows] = await Promise.all([
+  const [
+    allRoles,
+    noteTypes,
+    classificationLevels,
+    flows,
+    enableOperations,
+    EnableProfitDistribution,
+  ] = await Promise.all([
     getRoles(true),
     getAllNoteTypes(),
     getAllClassificationLevels(),
     getAllFlows(),
+    getUnleashFlag(UNLEASH_FLAG.EnableOperations),
+    getUnleashFlag(UNLEASH_FLAG.EnableProfitDistribution),
   ]);
-
-  const enableOperations = Boolean(await getUnleashFlag("EnableOperations"));
 
   return (
     <RoleDetailsTemplate role={role}>
@@ -63,8 +74,9 @@ export default async function Page({
         allRoles={allRoles}
         noteTypes={noteTypes}
         classificationLevels={classificationLevels}
-        enableOperations={enableOperations}
+        enableOperations={Boolean(enableOperations)}
         flows={flows}
+        enableProfitDistribution={Boolean(EnableProfitDistribution)}
       />
     </RoleDetailsTemplate>
   );

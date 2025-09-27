@@ -1,7 +1,7 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import { MaxWidthContent } from "@/common/components/layouts/MaxWidthContent";
-import { SuspenseWithErrorBoundaryTile } from "@/common/components/SuspenseWithErrorBoundaryTile";
-import { ActivityTile } from "@/spynet/components/ActivityTile/ActivityTile";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import { MaxWidthContent } from "@/modules/common/components/layouts/MaxWidthContent";
+import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { ActivityTile } from "@/modules/spynet/components/ActivityTile/ActivityTile";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {

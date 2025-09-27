@@ -1,16 +1,17 @@
-import { requireAuthenticationPage } from "@/auth/server";
-import Avatar from "@/common/components/Avatar";
-import { Link } from "@/common/components/Link";
-import { getUnleashFlag } from "@/common/utils/getUnleashFlag";
-import { log } from "@/logging";
-import ConfirmParticipation from "@/operations/components/ConfirmParticipation";
-import CreateUnit from "@/operations/components/CreateUnit";
-import DeleteOperation from "@/operations/components/DeleteOperation";
-import EditOperation from "@/operations/components/EditOperation";
-import JoinOperation from "@/operations/components/JoinOperation";
-import RemoveParticipation from "@/operations/components/RemoveParticipation";
-import SquadronTile from "@/operations/components/SquadronTile";
-import { getOperation } from "@/operations/queries";
+import { requireAuthenticationPage } from "@/modules/auth/server";
+import Avatar from "@/modules/common/components/Avatar";
+import { Link } from "@/modules/common/components/Link";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
+import { log } from "@/modules/logging";
+import ConfirmParticipation from "@/modules/operations/components/ConfirmParticipation";
+import CreateUnit from "@/modules/operations/components/CreateUnit";
+import DeleteOperation from "@/modules/operations/components/DeleteOperation";
+import EditOperation from "@/modules/operations/components/EditOperation";
+import JoinOperation from "@/modules/operations/components/JoinOperation";
+import RemoveParticipation from "@/modules/operations/components/RemoveParticipation";
+import SquadronTile from "@/modules/operations/components/SquadronTile";
+import { getOperation } from "@/modules/operations/queries";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { serializeError } from "serialize-error";
@@ -48,7 +49,7 @@ interface Props {
 }
 
 export default async function Page(props: Readonly<Props>) {
-  if (!(await getUnleashFlag("EnableOperations"))) notFound();
+  if (!(await getUnleashFlag(UNLEASH_FLAG.EnableOperations))) notFound();
 
   const authentication = await requireAuthenticationPage(
     "/app/operations/[id]",
