@@ -3,6 +3,8 @@ import { Button2 } from "@/modules/common/components/Button2";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import { StatisticTile } from "@/modules/common/components/StatisticTile";
 import { formatDate } from "@/modules/common/utils/formatDate";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import { Phase } from "@/modules/silc/components/profit-distribution/Phase";
 import { getProfitDistributionCyclesById } from "@/modules/silc/queries";
 import { PayoutState } from "@/modules/silc/utils/getMyPayoutStatus";
@@ -17,6 +19,9 @@ export const metadata: Metadata = {
 export default async function Page({
   params,
 }: PageProps<"/app/silc/profit-distribution/[id]">) {
+  if (!(await getUnleashFlag(UNLEASH_FLAG.EnableProfitDistribution)))
+    notFound();
+
   const authentication = await requireAuthenticationPage(
     "/app/silc/profit-distribution/[id]",
   );

@@ -92,7 +92,7 @@ export const ParticipantsTab = async ({
     }
   });
 
-  const resolvedCreatoreCitizen = await getCitizenByDiscordId(
+  const resolvedCreatorCitizen = await getCitizenByDiscordId(
     event.discordCreatorId,
   );
 
@@ -100,8 +100,8 @@ export const ParticipantsTab = async ({
     <div className={clsx("flex flex-col gap-2", className)}>
       <section className="rounded-primary bg-neutral-800/50 p-4">
         <h2 className="font-bold mb-2 text-lg">Organisator</h2>
-        {resolvedCreatoreCitizen ? (
-          <CitizenLink citizen={resolvedCreatoreCitizen} />
+        {resolvedCreatorCitizen ? (
+          <CitizenLink citizen={resolvedCreatorCitizen} />
         ) : (
           "-"
         )}

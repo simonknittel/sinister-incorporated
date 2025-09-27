@@ -1,5 +1,7 @@
 import { authenticate } from "@/modules/auth/server";
 import type { Page } from "@/modules/common/components/layouts/DefaultLayout/Navigation";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 
 export const getNavigationItems = async () => {
   const authentication = await authenticate();
@@ -13,6 +15,10 @@ export const getNavigationItems = async () => {
     authentication.authorize("profitDistributionCycle", "manage"),
   ]);
 
+  const EnableProfitDistribution = await getUnleashFlag(
+    UNLEASH_FLAG.EnableProfitDistribution,
+  );
+
   const pages: Page[] = [];
 
   if (permissions[0]) {
@@ -22,7 +28,7 @@ export const getNavigationItems = async () => {
     });
   }
 
-  if (permissions[3] || permissions[4]) {
+  if (EnableProfitDistribution && (permissions[3] || permissions[4])) {
     pages.push({
       title: "Gewinnverteilung",
       url: "/app/silc/profit-distribution",

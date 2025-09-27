@@ -1,6 +1,7 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
 import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import { LogAnalyzerWrapper } from "@/modules/log-analyzer/components/LogAnalyzerWrapper";
 import { type Metadata } from "next";
 
@@ -14,7 +15,7 @@ export default async function Page() {
   );
   await authentication.authorizePage("logAnalyzer", "read");
 
-  const crashLogAnalyzer = await getUnleashFlag("CrashLogAnalyzer");
+  const crashLogAnalyzer = await getUnleashFlag(UNLEASH_FLAG.CrashLogAnalyzer);
 
   return (
     <SuspenseWithErrorBoundaryTile>

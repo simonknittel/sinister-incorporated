@@ -5,43 +5,31 @@ import { evaluateFlags, flagsClient, getDefinitions } from "@unleash/nextjs";
 import { unstable_rethrow } from "next/navigation";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
+import type { UNLEASH_FLAG } from "./UNLEASH_FLAG";
 
 export const getUnleashFlag = cache(
-  withTrace(
-    "getUnleashFlag",
-    async (
-      name:
-        | "DisableAlgolia"
-        | "EnablePreviewComments"
-        | "EnableCareBearShooter"
-        | "DisableConfirmationEmail"
-        | "DisableRoleNameSuggestions"
-        | "EnableOperations"
-        | "EnableNotifications"
-        | "CrashLogAnalyzer",
-    ) => {
-      try {
-        const authentication = await authenticate();
+  withTrace("getUnleashFlag", async (name: UNLEASH_FLAG) => {
+    try {
+      const authentication = await authenticate();
 
-        const definitions = await getDefinitions({
-          fetchOptions: {
-            next: { revalidate: 30 },
-          },
-        });
+      const definitions = await getDefinitions({
+        fetchOptions: {
+          next: { revalidate: 30 },
+        },
+      });
 
-        const { toggles } = evaluateFlags(definitions, {
-          userId: authentication ? authentication.session.user.id : undefined,
-        });
+      const { toggles } = evaluateFlags(definitions, {
+        userId: authentication ? authentication.session.user.id : undefined,
+      });
 
-        const flags = flagsClient(toggles);
+      const flags = flagsClient(toggles);
 
-        return flags.isEnabled(name);
-      } catch (error) {
-        unstable_rethrow(error);
-        void log.error("Error fetching feature flag", {
-          error: serializeError(error),
-        });
-      }
-    },
-  ),
+      return flags.isEnabled(name);
+    } catch (error) {
+      unstable_rethrow(error);
+      void log.error("Error fetching feature flag", {
+        error: serializeError(error),
+      });
+    }
+  }),
 );

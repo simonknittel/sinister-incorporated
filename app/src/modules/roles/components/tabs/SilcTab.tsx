@@ -4,7 +4,11 @@ import YesNoCheckbox from "@/modules/common/components/form/YesNoCheckbox";
 import TabPanel from "@/modules/common/components/tabs/TabPanel";
 import { usePermissionsContext } from "../PermissionsContext";
 
-export const SilcTab = () => {
+interface Props {
+  readonly enableProfitDistribution?: boolean;
+}
+
+export const SilcTab = ({ enableProfitDistribution }: Props) => {
   const { register } = usePermissionsContext();
 
   return (
@@ -33,41 +37,47 @@ export const SilcTab = () => {
         <YesNoCheckbox {...register("silcBalanceOfOtherCitizen;read")} />
       </div>
 
-      <div className="py-2 flex justify-between items-center gap-2 mt-2">
-        <div>
-          <h4 className="font-bold">Gewinnverteilung einsehen</h4>
-          <p className="text-sm">
-            Citizen mit dieser Berechtigung können die Gewinnverteilung
-            einsehen.
-          </p>
-        </div>
+      {enableProfitDistribution && (
+        <>
+          <div className="py-2 flex justify-between items-center gap-2 mt-2">
+            <div>
+              <h4 className="font-bold">Gewinnverteilung einsehen</h4>
+              <p className="text-sm">
+                Citizen mit dieser Berechtigung können die Gewinnverteilung
+                einsehen.
+              </p>
+            </div>
 
-        <YesNoCheckbox {...register("profitDistributionCycle;read")} />
-      </div>
+            <YesNoCheckbox {...register("profitDistributionCycle;read")} />
+          </div>
 
-      <div className="py-2 flex justify-between items-center gap-2 mt-2">
-        <div>
-          <h4 className="font-bold">Gewinnverteilung verwalten</h4>
-          <p className="text-sm">
-            Citizen mit dieser Berechtigung können die Gewinnverteilung
-            verwalten.
-          </p>
-        </div>
+          <div className="py-2 flex justify-between items-center gap-2 mt-2">
+            <div>
+              <h4 className="font-bold">Gewinnverteilung verwalten</h4>
+              <p className="text-sm">
+                Citizen mit dieser Berechtigung können die Gewinnverteilung
+                verwalten.
+              </p>
+            </div>
 
-        <YesNoCheckbox {...register("profitDistributionCycle;manage")} />
-      </div>
+            <YesNoCheckbox {...register("profitDistributionCycle;manage")} />
+          </div>
 
-      <div className="py-2 flex justify-between items-center gap-2 mt-2">
-        <div>
-          <h4 className="font-bold">Eigene Transaktionen einsehen</h4>
-          <p className="text-sm">
-            Citizen mit dieser Berechtigung können die SILC-Transaktionen zum
-            eigenen Konto einsehen.
-          </p>
-        </div>
+          <div className="py-2 flex justify-between items-center gap-2 mt-2">
+            <div>
+              <h4 className="font-bold">Eigene Transaktionen einsehen</h4>
+              <p className="text-sm">
+                Citizen mit dieser Berechtigung können die SILC-Transaktionen
+                zum eigenen Konto einsehen.
+              </p>
+            </div>
 
-        <YesNoCheckbox {...register("silcTransactionOfCurrentCitizen;read")} />
-      </div>
+            <YesNoCheckbox
+              {...register("silcTransactionOfCurrentCitizen;read")}
+            />
+          </div>
+        </>
+      )}
 
       <div className="py-2 flex justify-between items-center gap-2 mt-2">
         <div>

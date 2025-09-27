@@ -2,8 +2,10 @@
 
 import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
 
 const schema = z.object({
@@ -15,6 +17,9 @@ export const createProfitDistributionCycle = createAuthenticatedAction(
   "createProfitDistributionCycle",
   schema,
   async (formData, authentication, data, t) => {
+    if (!(await getUnleashFlag(UNLEASH_FLAG.EnableProfitDistribution)))
+      notFound();
+
     /**
      * Authorize the request
      */

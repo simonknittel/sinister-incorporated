@@ -1,9 +1,12 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { SidebarLayout } from "@/modules/common/components/layouts/SidebarLayout";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import { ProfitDistributionCycleExcerptList } from "@/modules/silc/components/profit-distribution/ProfitDistributionCycleExcerptList";
 import { ProfitDistributionCycleSidebar } from "@/modules/silc/components/profit-distribution/ProfitDistributionCycleSidebar";
 import { type Metadata } from "next";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Gewinnausschüttung - SILC | S.A.M. - Sinister Incorporated",
@@ -12,6 +15,9 @@ export const metadata: Metadata = {
 export default async function Page({
   searchParams,
 }: PageProps<"/app/silc/profit-distribution">) {
+  if (!(await getUnleashFlag(UNLEASH_FLAG.EnableProfitDistribution)))
+    notFound();
+
   const authentication = await requireAuthenticationPage(
     "/app/silc/profit-distribution",
   );

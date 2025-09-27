@@ -2,6 +2,7 @@ import { requireAuthenticationPage } from "@/modules/auth/server";
 import Avatar from "@/modules/common/components/Avatar";
 import { Link } from "@/modules/common/components/Link";
 import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import { log } from "@/modules/logging";
 import ConfirmParticipation from "@/modules/operations/components/ConfirmParticipation";
 import CreateUnit from "@/modules/operations/components/CreateUnit";
@@ -48,7 +49,7 @@ interface Props {
 }
 
 export default async function Page(props: Readonly<Props>) {
-  if (!(await getUnleashFlag("EnableOperations"))) notFound();
+  if (!(await getUnleashFlag(UNLEASH_FLAG.EnableOperations))) notFound();
 
   const authentication = await requireAuthenticationPage(
     "/app/operations/[id]",

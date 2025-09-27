@@ -8,6 +8,7 @@ import { CreateContextProvider } from "@/modules/common/components/CreateContext
 import ImpersonationBannerContainer from "@/modules/common/components/ImpersonationBannerContainer";
 import QueryClientProviderContainer from "@/modules/common/components/QueryClientProviderContainer";
 import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import { BeamsProvider } from "@/modules/pusher/components/BeamsContext";
 import { ChannelsProvider } from "@/modules/pusher/components/ChannelsContext";
 import { CmdKProvider } from "@/modules/shell/components/CmdK/CmdKContext";
@@ -27,7 +28,7 @@ export default async function AppLayout({ children }: Readonly<Props>) {
   const [authentication, disableAlgolia, apps, externalApps] =
     await Promise.all([
       requireAuthenticationPage(),
-      getUnleashFlag("DisableAlgolia"),
+      getUnleashFlag(UNLEASH_FLAG.DisableAlgolia),
       getAppLinks(),
       getExternalApps(),
     ]);

@@ -1,5 +1,6 @@
 import { prisma } from "@/db";
 import { env } from "@/env";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import { log } from "@/modules/logging";
 import { createId } from "@paralleldrive/cuid2";
 import { TRPCError } from "@trpc/server";
@@ -13,7 +14,7 @@ export const requestEmailConfirmation = async (
   userId: string,
   userEmail: string,
 ) => {
-  if (await getUnleashFlag("DisableConfirmationEmail")) return;
+  if (await getUnleashFlag(UNLEASH_FLAG.DisableConfirmationEmail)) return;
 
   const emailConfirmationToken = createId();
 

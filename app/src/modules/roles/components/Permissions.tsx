@@ -43,6 +43,7 @@ interface Props {
   readonly allRoles: Role[];
   readonly enableOperations: boolean;
   readonly flows: Flow[];
+  readonly enableProfitDistribution?: boolean;
 }
 
 export const Permissions = ({
@@ -52,6 +53,7 @@ export const Permissions = ({
   allRoles,
   enableOperations,
   flows,
+  enableProfitDistribution,
 }: Props) => {
   const [state, formAction, isPending] = useActionState(
     updateRolePermissions,
@@ -109,7 +111,7 @@ export const Permissions = ({
         <FleetTab />
         <EventsTab enableOperations={enableOperations} />
         <DocumentsTab />
-        <SilcTab />
+        <SilcTab enableProfitDistribution={enableProfitDistribution} />
         <PenaltyPointsTab />
         <TasksTab />
         <OtherTab roles={allRoles} flows={flows} />

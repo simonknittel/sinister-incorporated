@@ -21,6 +21,7 @@ interface Props {
   readonly allRoles: Role[];
   readonly enableOperations: boolean;
   readonly flows: Flow[];
+  readonly enableProfitDistribution?: boolean;
 }
 
 export const PermissionsTab = ({
@@ -31,6 +32,7 @@ export const PermissionsTab = ({
   allRoles,
   enableOperations,
   flows,
+  enableProfitDistribution,
 }: Props) => {
   return (
     <Tile heading="Berechtigungen" className={className}>
@@ -42,6 +44,7 @@ export const PermissionsTab = ({
           allRoles={allRoles}
           enableOperations={Boolean(enableOperations)}
           flows={flows}
+          enableProfitDistribution={Boolean(enableProfitDistribution)}
         />
       </PermissionsProvider>
     </Tile>
