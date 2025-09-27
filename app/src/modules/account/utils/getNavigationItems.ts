@@ -5,7 +5,9 @@ export const getNavigationItems = async () => {
   const authentication = await authenticate();
   if (!authentication) return null;
 
-  // const permissions: boolean[] = await Promise.all([]);
+  const permissions: boolean[] = await Promise.all([
+    authentication.authorize("analytics", "manage"),
+  ]);
 
   const pages: Page[] = [];
 
@@ -13,6 +15,13 @@ export const getNavigationItems = async () => {
     title: "Benachrichtigungen",
     url: "/app/account/notifications",
   });
+
+  if (permissions[0]) {
+    pages.push({
+      title: "Analytics",
+      url: "/app/account/analytics",
+    });
+  }
 
   return pages;
 };
