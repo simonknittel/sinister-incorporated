@@ -61,5 +61,21 @@ resource "aws_cloudwatch_log_metric_filter" "max_memory_used" {
     name      = "MaxMemoryUsedMB"
     namespace = var.function_name
     value     = "$max_memory_used_value"
+    unit      = "Megabytes"
   }
+}
+
+resource "aws_cloudwatch_metric_alarm" "max_memory_used" {
+  alarm_name = "${var.function_name}-max-memory-used"
+
+  namespace   = var.function_name
+  metric_name = "MaxMemoryUsedMB"
+
+  statistic           = "Maximum"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = (aws_lambda_function.main.memory_size * 0.9)
+  evaluation_periods  = 1
+  datapoints_to_alarm = 1
+  period              = 60
+  alarm_description   = "This alarm detects when this Lambda function is using a high amount of memory."
 }
