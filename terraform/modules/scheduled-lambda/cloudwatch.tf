@@ -46,8 +46,20 @@ resource "aws_cloudwatch_query_definition" "max_memory_used" {
   query_string = <<EOF
 fields @timestamp, @message
 | sort @timestamp desc
-| limit 100
+| limit 1000
 | filter @message like "Max Memory Used"
 | parse @message "Max Memory Used: * MB" as maxMemoryUsedMB
 EOF
+}
+
+resource "aws_cloudwatch_log_metric_filter" "max_memory_used" {
+  name           = "Max Memory Used (${var.function_name})"
+  log_group_name = "/aws/lambda/${var.function_name}"
+  pattern        = "[report_name=\"REPORT\", request_id_name=\"RequestId:\", request_id_value, duration_name=\"Duration:\", duration_value, duration_unit=\"ms\", billed_duration_name_1=\"Billed\", bill_duration_name_2=\"Duration:\", billed_duration_value, billed_duration_unit=\"ms\", memory_size_name_1=\"Memory\", memory_size_name_2=\"Size:\", memory_size_value, memory_size_unit=\"MB\", max_memory_used_name_1=\"Max\", max_memory_used_name_2=\"Memory\", max_memory_used_name_3=\"Used:\", max_memory_used_value, max_memory_used_unit=\"MB\", xray_trace_id_name_1=\"XRAY\", xray_trace_id_name_2=\"TraceId:\", xray_trace_id_value, xray_segment_id_name=\"SegmentId:\", xray_segment_id_value]"
+
+  metric_transformation {
+    name      = "MaxMemoryUsedMB"
+    namespace = var.function_name
+    value     = "$max_memory_used_value"
+  }
 }
