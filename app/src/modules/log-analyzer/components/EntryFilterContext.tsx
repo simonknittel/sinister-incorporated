@@ -12,6 +12,7 @@ export enum EntryFilterKey {
   HideNpcKill = "hideNpcKill",
   HideJoinPu = "hideJoinPu",
   HideContestedZoneElevator = "hideContestedZoneElevator",
+  HideAsdElevator = "hideAsdElevator",
 }
 
 interface EntryFilterContext {
@@ -38,6 +39,7 @@ export const EntryFilterContextProvider = ({ children }: ProviderProps) => {
     [EntryFilterKey.HideNpcKill]: false,
     [EntryFilterKey.HideJoinPu]: false,
     [EntryFilterKey.HideContestedZoneElevator]: false,
+    [EntryFilterKey.HideAsdElevator]: false,
   });
 
   const setEntryFilters = useCallback(
@@ -81,6 +83,12 @@ export const EntryFilterContextProvider = ({ children }: ProviderProps) => {
       if (
         entryFilters[EntryFilterKey.HideContestedZoneElevator] &&
         entry.type === EntryType.ContestedZoneElevator
+      )
+        return false;
+
+      if (
+        entryFilters[EntryFilterKey.HideAsdElevator] &&
+        entry.type === EntryType.AsdElevator
       )
         return false;
 

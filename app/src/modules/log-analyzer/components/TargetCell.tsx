@@ -24,6 +24,14 @@ export const TargetCell = ({ className, entry }: Props) => {
           </span>
         </div>
       )}
+
+      {entry.type === EntryType.AsdElevator && (
+        <div className="px-2 h-full flex items-center">
+          <span title={entry.elevatorName} className="truncate">
+            {entry.elevatorName}
+          </span>
+        </div>
+      )}
     </td>
   );
 };

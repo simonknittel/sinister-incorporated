@@ -37,6 +37,16 @@ export const EntryFilters = ({ className }: Props) => {
       />
 
       <YesNoCheckbox
+        yesLabel="Aufzüge (ASD)"
+        noLabel="Aufzüge (ASD)"
+        labelClassName="text-sm flex-1"
+        checked={!entryFilters[EntryFilterKey.HideAsdElevator]}
+        onChange={(e) =>
+          setEntryFilters(EntryFilterKey.HideAsdElevator, !e.target.checked)
+        }
+      />
+
+      <YesNoCheckbox
         yesLabel="Kills (NPCs)"
         noLabel="Kills (NPCs)"
         labelClassName="text-xs flex-1"
