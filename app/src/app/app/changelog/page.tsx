@@ -45,6 +45,35 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col gap-4 max-w-prose mx-auto">
+      <Day heading="28. September 2025">
+        <DayItem
+          heading="Aufzüge in Contested Zones"
+          badges={["Log Analyzer", "Neu"]}
+        >
+          <p>
+            Das Benutzen von Aufzügen in den Contested Zones wird nun erkannt.
+            Es wird auch das Benutzen durch andere Spieler erkannt.
+          </p>
+
+          <p>Vielen Dank an O-C für das Herausfinden dieser Log-Einträge.</p>
+
+          <p>
+            Ebenso vielen Dank an Zettman für das Korrigieren einiger Einträge.
+          </p>
+        </DayItem>
+
+        <DayItem
+          heading="Filter zurückgesetzt"
+          badges={["Log Analyzer", "Änderungen"]}
+        >
+          <p>
+            Um zukünftig mehr Filter im Log Analyzer anzubieten, musste ich die
+            Datenstruktur dieser ändern. Dazu haben sich eure aktuell
+            eingestellten Filter zurückgesetzt.
+          </p>
+        </DayItem>
+      </Day>
+
       <Day heading="8. September 2025">
         <DayItem heading="Strg + K umsortiert" badges={["Änderungen"]}>
           <p>Es gab Anpassungen an der Sortierung vom Strg + K Menü.</p>

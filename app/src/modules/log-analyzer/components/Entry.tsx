@@ -5,6 +5,14 @@ import { memo } from "react";
 import styles from "./Entry.module.css";
 import { gridTemplateColumns } from "./LogAnalyzer";
 import { RSILink } from "./RSILink";
+import { TargetCell } from "./TargetCell";
+
+export enum EntryType {
+  Kill,
+  Corpse,
+  JoinPu,
+  ContestedZoneElevator,
+}
 
 interface IBaseEntry {
   readonly key: string;
@@ -13,7 +21,7 @@ interface IBaseEntry {
 }
 
 interface IKillEntry extends IBaseEntry {
-  readonly type: "kill";
+  readonly type: EntryType.Kill;
   readonly target: string;
   readonly zone: string;
   readonly killer: string;
@@ -22,16 +30,25 @@ interface IKillEntry extends IBaseEntry {
 }
 
 interface ICorpseEntry extends IBaseEntry {
-  readonly type: "corpse";
+  readonly type: EntryType.Corpse;
   readonly target: string;
 }
 
-interface IJoinPUEntry extends IBaseEntry {
-  readonly type: "join_pu";
+interface IJoinPuEntry extends IBaseEntry {
+  readonly type: EntryType.JoinPu;
   readonly shard: string;
 }
 
-export type IEntry = IKillEntry | ICorpseEntry | IJoinPUEntry;
+interface IContestedZoneElevatorEntry extends IBaseEntry {
+  readonly type: EntryType.ContestedZoneElevator;
+  readonly elevatorName: string;
+}
+
+export type IEntry =
+  | IKillEntry
+  | ICorpseEntry
+  | IJoinPuEntry
+  | IContestedZoneElevatorEntry;
 
 interface Props {
   readonly className?: string;
@@ -79,32 +96,41 @@ export const Entry = memo(
           )}
         </td>
 
-        <td className="truncate">
-          {entry.type === "kill" && <RSILink handle={entry.target} />}
+        <TargetCell entry={entry} />
 
-          {entry.type === "corpse" && <RSILink handle={entry.target} />}
+        <td className="overflow-hidden">
+          {entry.type === EntryType.Kill && <RSILink handle={entry.killer} />}
 
-          {entry.type === "join_pu" && (
-            <div className="px-2 h-full flex items-center">{entry.shard}</div>
-          )}
-        </td>
-
-        <td className="truncate">
-          {entry.type === "kill" && <RSILink handle={entry.killer} />}
-          {entry.type === "corpse" && (
+          {entry.type === EntryType.Corpse && (
             <div className="text-neutral-500 p-2 h-full flex items-center">
-              Leiche entdeckt
+              <span className="truncate" title="Leiche entdeckt">
+                Leiche entdeckt
+              </span>
             </div>
           )}
-          {entry.type === "join_pu" && (
+
+          {entry.type === EntryType.JoinPu && (
             <div className="text-neutral-500 p-2 h-full flex items-center">
-              Shard beigetreten
+              <span className="truncate" title="Shard beigetreten">
+                Shard beigetreten
+              </span>
+            </div>
+          )}
+
+          {entry.type === EntryType.ContestedZoneElevator && (
+            <div className="text-neutral-500 p-2 h-full flex items-center">
+              <span
+                className="truncate"
+                title="Aufzug (Contested Zone) benutzt"
+              >
+                Aufzug (Contested Zone) benutzt
+              </span>
             </div>
           )}
         </td>
 
         <td className="p-2 flex items-center truncate">
-          {entry.type === "kill" && (
+          {entry.type === EntryType.Kill && (
             <span className="truncate" title={entry.weapon}>
               {entry.weapon}
             </span>
@@ -112,7 +138,7 @@ export const Entry = memo(
         </td>
 
         <td className="p-2 flex items-center truncate">
-          {entry.type === "kill" && (
+          {entry.type === EntryType.Kill && (
             <span className="truncate" title={entry.damageType}>
               {entry.damageType}
             </span>
@@ -120,7 +146,7 @@ export const Entry = memo(
         </td>
 
         <td className="p-2 flex items-center truncate">
-          {entry.type === "kill" && (
+          {entry.type === EntryType.Kill && (
             <span className="truncate" title={entry.zone}>
               {entry.zone}
             </span>
