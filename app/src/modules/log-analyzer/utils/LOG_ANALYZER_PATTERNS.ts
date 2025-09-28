@@ -13,6 +13,7 @@ export const LOG_ANALYZER_PATTERNS = {
   joinPu:
     /^<(?<isoDate>[\d\-T:.Z]+)>.+<Join PU>.+shard\[(?<shard>[\d\w_]+)\].+$/gm,
 
+  // <2025-09-25T18:10:58.240Z> [Notice] <TransitCarriageStartTransit> [TRANSITDEBUG] [TRANSIT CARRIAGE] [ECarriageGeneral] : Carriage 0 (Id: 6282799725663) for manager TransitManager_TransitDungeonRewardRoom_A_6136502412541 starting transit in zone rs_cz_rewards_001 at position x: -0.000001, y: 135.000002, z: 0.249999 [Team_CGP2][TransitSystem]
   contestedZoneElevator:
-    /^<(?<isoDate>[\d\-T:.Z]+)>.+TransitManager_(?<elevatorName>[a-zA-Z]*Dungeon[a-zA-Z]*).+$/gm,
+    /^<(?<isoDate>[\d\-T:.Z]+)>.*TransitManager_(?<elevatorName>[a-zA-Z]*Dungeon[a-zA-Z]*).*starting.*$/gm,
 };
