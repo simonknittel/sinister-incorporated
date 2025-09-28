@@ -6,6 +6,12 @@ import styles from "./Entry.module.css";
 import { gridTemplateColumns } from "./LogAnalyzer";
 import { RSILink } from "./RSILink";
 
+export enum EntryType {
+  Kill,
+  Corpse,
+  JoinPu,
+}
+
 interface IBaseEntry {
   readonly key: string;
   readonly isoDate: Date;
@@ -13,7 +19,7 @@ interface IBaseEntry {
 }
 
 interface IKillEntry extends IBaseEntry {
-  readonly type: "kill";
+  readonly type: EntryType.Kill;
   readonly target: string;
   readonly zone: string;
   readonly killer: string;
@@ -22,12 +28,12 @@ interface IKillEntry extends IBaseEntry {
 }
 
 interface ICorpseEntry extends IBaseEntry {
-  readonly type: "corpse";
+  readonly type: EntryType.Corpse;
   readonly target: string;
 }
 
 interface IJoinPUEntry extends IBaseEntry {
-  readonly type: "join_pu";
+  readonly type: EntryType.JoinPu;
   readonly shard: string;
 }
 
@@ -80,23 +86,25 @@ export const Entry = memo(
         </td>
 
         <td className="truncate">
-          {entry.type === "kill" && <RSILink handle={entry.target} />}
+          {entry.type === EntryType.Kill && <RSILink handle={entry.target} />}
 
-          {entry.type === "corpse" && <RSILink handle={entry.target} />}
+          {entry.type === EntryType.Corpse && <RSILink handle={entry.target} />}
 
-          {entry.type === "join_pu" && (
+          {entry.type === EntryType.JoinPu && (
             <div className="px-2 h-full flex items-center">{entry.shard}</div>
           )}
         </td>
 
         <td className="truncate">
-          {entry.type === "kill" && <RSILink handle={entry.killer} />}
-          {entry.type === "corpse" && (
+          {entry.type === EntryType.Kill && <RSILink handle={entry.killer} />}
+
+          {entry.type === EntryType.Corpse && (
             <div className="text-neutral-500 p-2 h-full flex items-center">
               Leiche entdeckt
             </div>
           )}
-          {entry.type === "join_pu" && (
+
+          {entry.type === EntryType.JoinPu && (
             <div className="text-neutral-500 p-2 h-full flex items-center">
               Shard beigetreten
             </div>
@@ -104,7 +112,7 @@ export const Entry = memo(
         </td>
 
         <td className="p-2 flex items-center truncate">
-          {entry.type === "kill" && (
+          {entry.type === EntryType.Kill && (
             <span className="truncate" title={entry.weapon}>
               {entry.weapon}
             </span>
@@ -112,7 +120,7 @@ export const Entry = memo(
         </td>
 
         <td className="p-2 flex items-center truncate">
-          {entry.type === "kill" && (
+          {entry.type === EntryType.Kill && (
             <span className="truncate" title={entry.damageType}>
               {entry.damageType}
             </span>
@@ -120,7 +128,7 @@ export const Entry = memo(
         </td>
 
         <td className="p-2 flex items-center truncate">
-          {entry.type === "kill" && (
+          {entry.type === EntryType.Kill && (
             <span className="truncate" title={entry.zone}>
               {entry.zone}
             </span>

@@ -22,7 +22,7 @@ import { FaFileArrowUp } from "react-icons/fa6";
 import { TfiReload } from "react-icons/tfi";
 import { getFilesRecursively } from "../utils/getFilesRecursively";
 import { LOG_ANALYZER_PATTERNS } from "../utils/LOG_ANALYZER_PATTERNS";
-import { Entry, type IEntry } from "./Entry";
+import { Entry, EntryType, type IEntry } from "./Entry";
 import { useEntryFilterContext } from "./EntryFilterContext";
 import { EntryFilters } from "./EntryFilters";
 import { Introduction } from "./Introduction";
@@ -98,7 +98,7 @@ export const LogAnalyzer = ({ className }: Props) => {
                 key,
                 isoDate: date,
                 isNew,
-                type: "kill",
+                type: EntryType.Kill,
                 target,
                 zone,
                 killer,
@@ -123,13 +123,13 @@ export const LogAnalyzer = ({ className }: Props) => {
                 key,
                 isoDate: date,
                 isNew,
-                type: "corpse",
+                type: EntryType.Corpse,
                 target,
               });
             }
 
             const joinPUMatches = fileContent.matchAll(
-              LOG_ANALYZER_PATTERNS.joinPU,
+              LOG_ANALYZER_PATTERNS.joinPu,
             );
             for (const match of joinPUMatches) {
               if (!match.groups) continue;
@@ -144,7 +144,7 @@ export const LogAnalyzer = ({ className }: Props) => {
                 key,
                 isoDate: date,
                 isNew,
-                type: "join_pu",
+                type: EntryType.JoinPu,
                 shard,
               });
             }

@@ -4,14 +4,22 @@ import { useLocalStorage } from "@uidotdev/usehooks";
 import type { ReactNode } from "react";
 import { createContext, useCallback, useContext, useMemo } from "react";
 import { isNpc } from "../utils/isNpc";
-import type { IEntry } from "./Entry";
+import { EntryType, type IEntry } from "./Entry";
+
+export enum EntryFilterKey {
+  HideCorpses = "hideCorpses",
+  HidePlayerKills = "hidePlayerKills",
+  HideNpcKills = "hideNpcKills",
+  HideJoinPu = "hideJoinPu",
+}
 
 interface EntryFilterContext {
-  isHideCorpsesEnabled: boolean;
-  setIsHideCorpsesEnabled: (value: boolean) => void;
-  isHideNpcsEnabled: boolean;
-  setIsHideNpcsEnabled: (value: boolean) => void;
-  entryFilterFn: (entry: IEntry) => boolean;
+  readonly entryFilters: Record<EntryFilterKey, boolean>;
+  readonly setEntryFilters: (
+    key: keyof EntryFilterContext["entryFilters"],
+    value: boolean,
+  ) => void;
+  readonly entryFilterFn: (entry: IEntry) => boolean;
 }
 
 const EntryFilterContext = createContext<EntryFilterContext | undefined>(
@@ -23,43 +31,63 @@ interface ProviderProps {
 }
 
 export const EntryFilterContextProvider = ({ children }: ProviderProps) => {
-  const [isHideCorpsesEnabled, setIsHideCorpsesEnabled] = useLocalStorage(
-    "is_hide_corpses_enabled",
-    false,
-  );
+  const [entryFilters, _setEntryFilters] = useLocalStorage("entry_filters", {
+    [EntryFilterKey.HideCorpses]: false,
+    [EntryFilterKey.HidePlayerKills]: false,
+    [EntryFilterKey.HideNpcKills]: false,
+    [EntryFilterKey.HideJoinPu]: false,
+  });
 
-  const [isHideNpcsEnabled, setIsHideNpcsEnabled] = useLocalStorage(
-    "is_hide_npcs_enabled",
-    false,
+  const setEntryFilters = useCallback(
+    (key: keyof typeof entryFilters, value: boolean) => {
+      _setEntryFilters((previous) => ({
+        ...previous,
+        [key]: value,
+      }));
+    },
+    [_setEntryFilters],
   );
 
   const entryFilterFn = useCallback(
     (entry: IEntry) => {
-      if (isHideCorpsesEnabled && entry.type === "corpse") return false;
+      if (
+        entryFilters[EntryFilterKey.HideCorpses] &&
+        entry.type === EntryType.Corpse
+      )
+        return false;
 
-      if (isHideNpcsEnabled && entry.type === "kill" && isNpc(entry.target))
+      if (
+        entryFilters[EntryFilterKey.HidePlayerKills] &&
+        entry.type === EntryType.Kill &&
+        !isNpc(entry.target)
+      )
+        return false;
+
+      if (
+        entryFilters[EntryFilterKey.HideNpcKills] &&
+        entry.type === EntryType.Kill &&
+        isNpc(entry.target)
+      )
+        return false;
+
+      if (
+        entryFilters[EntryFilterKey.HideJoinPu] &&
+        entry.type === EntryType.JoinPu
+      )
         return false;
 
       return true;
     },
-    [isHideCorpsesEnabled, isHideNpcsEnabled],
+    [entryFilters],
   );
 
   const value = useMemo(
     () => ({
-      isHideCorpsesEnabled,
-      setIsHideCorpsesEnabled,
-      isHideNpcsEnabled,
-      setIsHideNpcsEnabled,
+      entryFilters,
+      setEntryFilters,
       entryFilterFn,
     }),
-    [
-      isHideCorpsesEnabled,
-      setIsHideCorpsesEnabled,
-      isHideNpcsEnabled,
-      setIsHideNpcsEnabled,
-      entryFilterFn,
-    ],
+    [entryFilters, setEntryFilters, entryFilterFn],
   );
 
   return (
