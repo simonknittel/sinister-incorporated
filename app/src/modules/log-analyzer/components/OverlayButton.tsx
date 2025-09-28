@@ -4,7 +4,7 @@ import { Button2 } from "@/modules/common/components/Button2";
 import clsx from "clsx";
 import { useEffect, type MouseEventHandler } from "react";
 import { FaRegWindowRestore } from "react-icons/fa";
-import type { IEntry } from "./Entry";
+import { EntryType, type IEntry } from "./Entry";
 import styles from "./Entry.module.css";
 import { useOverlay } from "./OverlayContext";
 import { OverlayWindow } from "./OverlayWindow";
@@ -79,7 +79,7 @@ const OverlayEntry = ({ entry }: OverlayEntryProps) => {
   return (
     <div className={clsx("relative", styles.Row)}>
       <div className="whitespace-nowrap overflow-hidden">
-        {entry.type === "kill" && (
+        {entry.type === EntryType.Kill && (
           <>
             <div
               className="max-w-32 truncate inline-block align-middle"
@@ -99,7 +99,7 @@ const OverlayEntry = ({ entry }: OverlayEntryProps) => {
           </>
         )}
 
-        {entry.type === "corpse" && (
+        {entry.type === EntryType.Corpse && (
           <>
             <div className="inline-block align-middle pl-2">Leiche von</div>
 
@@ -114,10 +114,18 @@ const OverlayEntry = ({ entry }: OverlayEntryProps) => {
           </>
         )}
 
-        {entry.type === "join_pu" && (
+        {entry.type === EntryType.JoinPu && (
           <div className="px-2">
             Shard <span className="text-neutral-500">{entry.shard}</span>{" "}
             beigetreten
+          </div>
+        )}
+
+        {entry.type === EntryType.ContestedZoneElevator && (
+          <div className="px-2">
+            Aufzug (Contested Zone){" "}
+            <span className="text-neutral-500">{entry.elevatorName}</span>{" "}
+            benutzt
           </div>
         )}
       </div>

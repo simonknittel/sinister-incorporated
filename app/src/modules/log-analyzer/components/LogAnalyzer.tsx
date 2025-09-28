@@ -128,10 +128,8 @@ export const LogAnalyzer = ({ className }: Props) => {
               });
             }
 
-            const joinPUMatches = fileContent.matchAll(
-              LOG_ANALYZER_PATTERNS.joinPu,
-            );
-            for (const match of joinPUMatches) {
+            const joinPu = fileContent.matchAll(LOG_ANALYZER_PATTERNS.joinPu);
+            for (const match of joinPu) {
               if (!match.groups) continue;
 
               const { isoDate, shard } = match.groups;
@@ -146,6 +144,27 @@ export const LogAnalyzer = ({ className }: Props) => {
                 isNew,
                 type: EntryType.JoinPu,
                 shard,
+              });
+            }
+
+            const contestedZoneElevatorMatches = fileContent.matchAll(
+              LOG_ANALYZER_PATTERNS.contestedZoneElevator,
+            );
+            for (const match of contestedZoneElevatorMatches) {
+              if (!match.groups) continue;
+
+              const { isoDate, elevatorName } = match.groups;
+              const date = new Date(isoDate);
+              const key = `${date.getTime()}_${elevatorName}`;
+
+              if (newEntries.has(key)) continue;
+
+              newEntries.set(key, {
+                key,
+                isoDate: date,
+                isNew,
+                type: EntryType.ContestedZoneElevator,
+                elevatorName,
               });
             }
           }

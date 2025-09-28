@@ -7,10 +7,11 @@ import { isNpc } from "../utils/isNpc";
 import { EntryType, type IEntry } from "./Entry";
 
 export enum EntryFilterKey {
-  HideCorpses = "hideCorpses",
-  HidePlayerKills = "hidePlayerKills",
-  HideNpcKills = "hideNpcKills",
+  HideCorpse = "hideCorpse",
+  HidePlayerKill = "hidePlayerKill",
+  HideNpcKill = "hideNpcKill",
   HideJoinPu = "hideJoinPu",
+  HideContestedZoneElevator = "hideContestedZoneElevator",
 }
 
 interface EntryFilterContext {
@@ -32,10 +33,11 @@ interface ProviderProps {
 
 export const EntryFilterContextProvider = ({ children }: ProviderProps) => {
   const [entryFilters, _setEntryFilters] = useLocalStorage("entry_filters", {
-    [EntryFilterKey.HideCorpses]: false,
-    [EntryFilterKey.HidePlayerKills]: false,
-    [EntryFilterKey.HideNpcKills]: false,
+    [EntryFilterKey.HideCorpse]: false,
+    [EntryFilterKey.HidePlayerKill]: false,
+    [EntryFilterKey.HideNpcKill]: false,
     [EntryFilterKey.HideJoinPu]: false,
+    [EntryFilterKey.HideContestedZoneElevator]: false,
   });
 
   const setEntryFilters = useCallback(
@@ -51,20 +53,20 @@ export const EntryFilterContextProvider = ({ children }: ProviderProps) => {
   const entryFilterFn = useCallback(
     (entry: IEntry) => {
       if (
-        entryFilters[EntryFilterKey.HideCorpses] &&
+        entryFilters[EntryFilterKey.HideCorpse] &&
         entry.type === EntryType.Corpse
       )
         return false;
 
       if (
-        entryFilters[EntryFilterKey.HidePlayerKills] &&
+        entryFilters[EntryFilterKey.HidePlayerKill] &&
         entry.type === EntryType.Kill &&
         !isNpc(entry.target)
       )
         return false;
 
       if (
-        entryFilters[EntryFilterKey.HideNpcKills] &&
+        entryFilters[EntryFilterKey.HideNpcKill] &&
         entry.type === EntryType.Kill &&
         isNpc(entry.target)
       )
@@ -73,6 +75,12 @@ export const EntryFilterContextProvider = ({ children }: ProviderProps) => {
       if (
         entryFilters[EntryFilterKey.HideJoinPu] &&
         entry.type === EntryType.JoinPu
+      )
+        return false;
+
+      if (
+        entryFilters[EntryFilterKey.HideContestedZoneElevator] &&
+        entry.type === EntryType.ContestedZoneElevator
       )
         return false;
 

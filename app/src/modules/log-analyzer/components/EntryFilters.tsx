@@ -24,32 +24,45 @@ export const EntryFilters = ({ className }: Props) => {
       enableHover
     >
       <YesNoCheckbox
+        yesLabel="Aufzüge (Contested Zone)"
+        noLabel="Aufzüge (Contested Zone)"
+        labelClassName="text-sm flex-1"
+        checked={!entryFilters[EntryFilterKey.HideContestedZoneElevator]}
+        onChange={(e) =>
+          setEntryFilters(
+            EntryFilterKey.HideContestedZoneElevator,
+            !e.target.checked,
+          )
+        }
+      />
+
+      <YesNoCheckbox
+        yesLabel="Kills (NPCs)"
+        noLabel="Kills (NPCs)"
+        labelClassName="text-xs flex-1"
+        checked={!entryFilters[EntryFilterKey.HideNpcKill]}
+        onChange={(e) =>
+          setEntryFilters(EntryFilterKey.HideNpcKill, !e.target.checked)
+        }
+      />
+
+      <YesNoCheckbox
+        yesLabel="Kills (Spieler)"
+        noLabel="Kills (Spieler)"
+        labelClassName="text-xs flex-1"
+        checked={!entryFilters[EntryFilterKey.HidePlayerKill]}
+        onChange={(e) =>
+          setEntryFilters(EntryFilterKey.HidePlayerKill, !e.target.checked)
+        }
+      />
+
+      <YesNoCheckbox
         yesLabel="Leichen"
         noLabel="Leichen"
         labelClassName="text-sm flex-1"
-        checked={!entryFilters[EntryFilterKey.HideCorpses]}
+        checked={!entryFilters[EntryFilterKey.HideCorpse]}
         onChange={(e) =>
-          setEntryFilters(EntryFilterKey.HideCorpses, !e.target.checked)
-        }
-      />
-
-      <YesNoCheckbox
-        yesLabel="Spieler-Kills"
-        noLabel="Spieler-Kills"
-        labelClassName="text-xs flex-1"
-        checked={!entryFilters[EntryFilterKey.HidePlayerKills]}
-        onChange={(e) =>
-          setEntryFilters(EntryFilterKey.HidePlayerKills, !e.target.checked)
-        }
-      />
-
-      <YesNoCheckbox
-        yesLabel="NPC-Kills"
-        noLabel="NPC-Kills"
-        labelClassName="text-xs flex-1"
-        checked={!entryFilters[EntryFilterKey.HideNpcKills]}
-        onChange={(e) =>
-          setEntryFilters(EntryFilterKey.HideNpcKills, !e.target.checked)
+          setEntryFilters(EntryFilterKey.HideCorpse, !e.target.checked)
         }
       />
 
