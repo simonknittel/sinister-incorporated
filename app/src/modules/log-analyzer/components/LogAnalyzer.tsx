@@ -20,33 +20,16 @@ import {
 import { FaInfoCircle, FaSpinner } from "react-icons/fa";
 import { FaFileArrowUp } from "react-icons/fa6";
 import { TfiReload } from "react-icons/tfi";
-import { isNpc } from "../utils/isNpc";
+import { getFilesRecursively } from "../utils/getFilesRecursively";
 import { LOG_ANALYZER_PATTERNS } from "../utils/LOG_ANALYZER_PATTERNS";
 import { Entry, type IEntry } from "./Entry";
+import { useEntryFilterContext } from "./EntryFilterContext";
+import { EntryFilters } from "./EntryFilters";
 import { Introduction } from "./Introduction";
 import { OverlayButton } from "./OverlayButton";
 import { OverlayProvider } from "./OverlayContext";
 
 export const gridTemplateColumns = "144px 1fr 1fr 1fr 1fr 1fr";
-
-async function* getFilesRecursively(
-  entry: FileSystemFileHandle | FileSystemDirectoryHandle,
-): AsyncGenerator<File | null> {
-  if (entry.kind === "file") {
-    try {
-      const file = await entry.getFile();
-      if (file) yield file;
-    } catch (error) {
-      console.error(`[Log Analyzer] Error getting file: ${entry.name}`, error);
-      yield null;
-    }
-  } else if (entry.kind === "directory") {
-    // TODO: Ignore subdirectories
-    for await (const handle of entry.values()) {
-      yield* getFilesRecursively(handle);
-    }
-  }
-}
 
 interface Props {
   readonly className?: string;
@@ -62,14 +45,7 @@ export const LogAnalyzer = ({ className }: Props) => {
     "is_live_mode_enabled",
     false,
   );
-  const [isHideCorpsesEnabled, setIsHideCorpsesEnabled] = useLocalStorage(
-    "is_hide_corpses_enabled",
-    false,
-  );
-  const [isHideNpcsEnabled, setIsHideNpcsEnabled] = useLocalStorage(
-    "is_hide_npcs_enabled",
-    false,
-  );
+  const { entryFilterFn } = useEntryFilterContext();
 
   const parseLogs = useCallback((isNew = false) => {
     startTransition(async () => {
@@ -255,19 +231,6 @@ export const LogAnalyzer = ({ className }: Props) => {
       });
   };
 
-  const handleManualRefresh = () => {
-    parseLogs(true);
-  };
-
-  const entryFilter = (entry: IEntry) => {
-    if (isHideCorpsesEnabled && entry.type === "corpse") return false;
-
-    if (isHideNpcsEnabled && entry.type === "kill" && isNpc(entry.target))
-      return false;
-
-    return true;
-  };
-
   return (
     <div className={clsx(className)}>
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 items-baseline justify-end">
@@ -305,7 +268,7 @@ export const LogAnalyzer = ({ className }: Props) => {
               type="button"
               variant="secondary"
               disabled={isPending}
-              onClick={handleManualRefresh}
+              onClick={() => parseLogs(true)}
             >
               {isPending ? (
                 <FaSpinner className="animate-spin" />
@@ -345,25 +308,11 @@ export const LogAnalyzer = ({ className }: Props) => {
 
             <OverlayProvider>
               <OverlayButton
-                entries={Array.from(entries.values().filter(entryFilter))}
+                entries={Array.from(entries.values().filter(entryFilterFn))}
               />
             </OverlayProvider>
 
-            <YesNoCheckbox
-              yesLabel="Leichen ausblenden"
-              noLabel="Leichen ausblenden"
-              labelClassName="w-auto"
-              checked={isHideCorpsesEnabled}
-              onChange={(e) => setIsHideCorpsesEnabled(e.target.checked)}
-            />
-
-            <YesNoCheckbox
-              yesLabel="NPC-Kills ausblenden"
-              noLabel="NPC-Kills ausblenden"
-              labelClassName="w-auto"
-              checked={isHideNpcsEnabled}
-              onChange={(e) => setIsHideNpcsEnabled(e.target.checked)}
-            />
+            <EntryFilters />
           </div>
 
           <div className="mt-[2px] p-4 background-secondary rounded-primary overflow-auto">
@@ -387,7 +336,7 @@ export const LogAnalyzer = ({ className }: Props) => {
               <tbody>
                 {Array.from(entries.values())
                   .toSorted((a, b) => b.isoDate.getTime() - a.isoDate.getTime())
-                  .filter(entryFilter)
+                  .filter(entryFilterFn)
                   .map((entry) => (
                     <Entry key={entry.key} entry={entry} />
                   ))}

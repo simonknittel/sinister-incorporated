@@ -2,7 +2,7 @@ import { requireAuthenticationPage } from "@/modules/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
 import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
 import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
-import { LogAnalyzerWrapper } from "@/modules/log-analyzer/components/LogAnalyzerWrapper";
+import { BundleLoader } from "@/modules/log-analyzer/components/BundleLoader";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default async function Page() {
 
   return (
     <SuspenseWithErrorBoundaryTile>
-      <LogAnalyzerWrapper crashLogAnalyzer={crashLogAnalyzer} />
+      <BundleLoader crashLogAnalyzer={crashLogAnalyzer} />
     </SuspenseWithErrorBoundaryTile>
   );
 }
