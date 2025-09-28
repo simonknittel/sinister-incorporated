@@ -20,7 +20,7 @@ interface IBaseEntry {
   readonly isNew?: boolean;
 }
 
-interface IKillEntry extends IBaseEntry {
+export interface IKillEntry extends IBaseEntry {
   readonly type: EntryType.Kill;
   readonly target: string;
   readonly zone: string;
@@ -29,17 +29,17 @@ interface IKillEntry extends IBaseEntry {
   readonly damageType: string;
 }
 
-interface ICorpseEntry extends IBaseEntry {
+export interface ICorpseEntry extends IBaseEntry {
   readonly type: EntryType.Corpse;
   readonly target: string;
 }
 
-interface IJoinPuEntry extends IBaseEntry {
+export interface IJoinPuEntry extends IBaseEntry {
   readonly type: EntryType.JoinPu;
   readonly shard: string;
 }
 
-interface IContestedZoneElevatorEntry extends IBaseEntry {
+export interface IContestedZoneElevatorEntry extends IBaseEntry {
   readonly type: EntryType.ContestedZoneElevator;
   readonly elevatorName: string;
 }
