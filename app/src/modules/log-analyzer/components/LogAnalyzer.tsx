@@ -167,6 +167,27 @@ export const LogAnalyzer = ({ className }: Props) => {
                 elevatorName,
               });
             }
+
+            const asdElevatorMatches = fileContent.matchAll(
+              LOG_ANALYZER_PATTERNS.asdElevator,
+            );
+            for (const match of asdElevatorMatches) {
+              if (!match.groups) continue;
+
+              const { isoDate, elevatorName } = match.groups;
+              const date = new Date(isoDate);
+              const key = `${date.getTime()}_${elevatorName}`;
+
+              if (newEntries.has(key)) continue;
+
+              newEntries.set(key, {
+                key,
+                isoDate: date,
+                isNew,
+                type: EntryType.AsdElevator,
+                elevatorName,
+              });
+            }
           }
 
           return newEntries;

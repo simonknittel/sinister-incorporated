@@ -12,6 +12,7 @@ export enum EntryType {
   Corpse,
   JoinPu,
   ContestedZoneElevator,
+  AsdElevator,
 }
 
 interface IBaseEntry {
@@ -44,11 +45,17 @@ export interface IContestedZoneElevatorEntry extends IBaseEntry {
   readonly elevatorName: string;
 }
 
+export interface IAsdElevatorEntry extends IBaseEntry {
+  readonly type: EntryType.AsdElevator;
+  readonly elevatorName: string;
+}
+
 export type IEntry =
   | IKillEntry
   | ICorpseEntry
   | IJoinPuEntry
-  | IContestedZoneElevatorEntry;
+  | IContestedZoneElevatorEntry
+  | IAsdElevatorEntry;
 
 interface Props {
   readonly className?: string;
@@ -124,6 +131,14 @@ export const Entry = memo(
                 title="Aufzug (Contested Zone) benutzt"
               >
                 Aufzug (Contested Zone) benutzt
+              </span>
+            </div>
+          )}
+
+          {entry.type === EntryType.AsdElevator && (
+            <div className="text-neutral-500 p-2 h-full flex items-center">
+              <span className="truncate" title="Aufzug (ASD) benutzt">
+                Aufzug (ASD) benutzt
               </span>
             </div>
           )}

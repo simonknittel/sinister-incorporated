@@ -128,6 +128,14 @@ const OverlayEntry = ({ entry }: OverlayEntryProps) => {
             benutzt
           </div>
         )}
+
+        {entry.type === EntryType.AsdElevator && (
+          <div className="px-2">
+            Aufzug (ASD){" "}
+            <span className="text-neutral-500">{entry.elevatorName}</span>{" "}
+            benutzt
+          </div>
+        )}
       </div>
 
       <div

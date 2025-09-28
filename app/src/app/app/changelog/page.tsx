@@ -47,12 +47,13 @@ export default async function Page() {
     <div className="flex flex-col gap-4 max-w-prose mx-auto">
       <Day heading="28. September 2025">
         <DayItem
-          heading="Aufzüge in Contested Zones"
+          heading="Aufzüge in Contested Zones und ASD Facilities"
           badges={["Log Analyzer", "Neu"]}
         >
           <p>
-            Das Benutzen von Aufzügen in den Contested Zones wird nun erkannt.
-            Es wird auch das Benutzen durch andere Spieler erkannt.
+            Das Benutzen von Aufzügen in den Contested Zones und ASD Facilities
+            wird nun erkannt. Es wird auch das Benutzen durch andere Spieler
+            erkannt.
           </p>
 
           <p>Vielen Dank an O-C für das Herausfinden dieser Log-Einträge.</p>
