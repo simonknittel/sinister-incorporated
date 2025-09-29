@@ -4,7 +4,7 @@ import { Template } from "@/modules/events/components/Template";
 import { getEventById } from "@/modules/events/queries";
 import { log } from "@/modules/logging";
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<{
@@ -22,6 +22,7 @@ export async function generateMetadata(props: {
       title: `${event.name} - Event | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error(
       "Error while generating metadata for /app/events/[id]/fleet/page.tsx",
       {

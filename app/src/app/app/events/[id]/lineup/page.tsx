@@ -10,7 +10,7 @@ import { isLineupVisible } from "@/modules/events/utils/isLineupVisible";
 import { getMyFleet } from "@/modules/fleet/queries";
 import { log } from "@/modules/logging";
 import { type Metadata } from "next";
-import { forbidden, notFound } from "next/navigation";
+import { forbidden, notFound, unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<{
@@ -28,6 +28,7 @@ export async function generateMetadata(props: {
       title: `Aufstellung - ${event.name} - Event | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error(
       "Error while generating metadata for /app/events/[id]/fleet/page.tsx",
       {

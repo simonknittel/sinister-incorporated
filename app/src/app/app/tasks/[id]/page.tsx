@@ -8,7 +8,7 @@ import {
 } from "@/modules/tasks/utils/isAllowedToTask";
 import { isTaskUpdatable } from "@/modules/tasks/utils/isTaskUpdatable";
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<{
@@ -26,6 +26,7 @@ export async function generateMetadata(props: {
       title: `${task.title} - Task | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error(
       "Error while generating metadata for /app/tasks/[id]/page.tsx",
       {

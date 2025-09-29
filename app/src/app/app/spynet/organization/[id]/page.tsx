@@ -8,7 +8,7 @@ import { ActivityTile } from "@/modules/organizations/components/ActivityTile";
 import { MembershipsTile } from "@/modules/organizations/components/MembershipsTile";
 import { OverviewTile } from "@/modules/organizations/components/OverviewTile";
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { cache } from "react";
 import { serializeError } from "serialize-error";
 
@@ -40,6 +40,7 @@ export async function generateMetadata(props: {
       title: `${organization.name} - Spynet | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error(
       "Error while generating metadata for /app/spynet/organization/[id]/page.tsx",
       {

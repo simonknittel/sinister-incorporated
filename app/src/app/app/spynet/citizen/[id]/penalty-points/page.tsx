@@ -5,7 +5,7 @@ import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/Suspe
 import { log } from "@/modules/logging";
 import { EntriesOfCitizenTable } from "@/modules/penalty-points/components/EntriesOfCitizenTable";
 import { type Metadata } from "next";
-import { forbidden, notFound } from "next/navigation";
+import { forbidden, notFound, unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<
@@ -25,6 +25,7 @@ export async function generateMetadata(props: {
       title: `Strafpunkte - ${entity.handle || entity.id} - Spynet | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error(
       "Error while generating metadata for /app/spynet/citizen/[id]/penalty-points/page.tsx",
       {

@@ -13,7 +13,7 @@ import RemoveParticipation from "@/modules/operations/components/RemoveParticipa
 import SquadronTile from "@/modules/operations/components/SquadronTile";
 import { getOperation } from "@/modules/operations/queries";
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<{
@@ -31,6 +31,7 @@ export async function generateMetadata(props: {
       title: `${operation.title} - Operation | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error(
       "Error while generating metadata for /app/operations/[id]/page.tsx",
       {
