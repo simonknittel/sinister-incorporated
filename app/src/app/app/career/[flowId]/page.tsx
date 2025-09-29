@@ -11,7 +11,7 @@ import {
 } from "@/modules/roles/utils/getRoles";
 import { type Metadata } from "next";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<
@@ -34,6 +34,7 @@ export async function generateMetadata(props: {
       title: `${flow?.name} - Karriere | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error(
       "Error while generating metadata for /app/career/[flowId]/page.tsx",
       {

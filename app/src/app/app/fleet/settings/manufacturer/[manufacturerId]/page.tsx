@@ -6,7 +6,7 @@ import { getManufacturerById } from "@/modules/fleet/queries";
 import { log } from "@/modules/logging";
 import clsx from "clsx";
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<
@@ -28,6 +28,7 @@ export async function generateMetadata(props: {
       title: `${manufacturer.name} - Schiffe | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error(
       "Error while generating metadata for /app/spynet/citizen/[id]/page.tsx",
       {

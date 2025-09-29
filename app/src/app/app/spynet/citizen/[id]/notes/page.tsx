@@ -5,7 +5,7 @@ import { getCitizenById } from "@/modules/citizen/queries";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
 import { log } from "@/modules/logging";
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { serializeError } from "serialize-error";
 
 type Params = Promise<
@@ -25,6 +25,7 @@ export async function generateMetadata(props: {
       title: `Notizen - ${entity.handle || entity.id} - Spynet | S.A.M. - Sinister Incorporated`,
     };
   } catch (error) {
+    unstable_rethrow(error);
     void log.error(
       "Error while generating metadata for /app/spynet/citizen/[id]/notes/page.tsx",
       {
