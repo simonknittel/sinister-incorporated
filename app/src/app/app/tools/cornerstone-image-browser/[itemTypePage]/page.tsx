@@ -1,9 +1,9 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { Link } from "@/modules/common/components/Link";
 import Note from "@/modules/common/components/Note";
+import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
 import { cornerstoneImageBrowserItemTypes } from "@/modules/cornerstone-image-browser/utils/config";
 import { log } from "@/modules/logging";
-import { type Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { FaChevronLeft } from "react-icons/fa";
@@ -24,19 +24,19 @@ type Params = Promise<{
   itemTypePage: string;
 }>;
 
-export async function generateMetadata(props: {
-  params: Params;
-}): Promise<Metadata> {
-  const { itemTypePage } = await props.params;
-  const itemTypeConfig = cornerstoneImageBrowserItemTypes.find(
-    (itemType) => itemType.page === itemTypePage,
-  );
-  if (!itemTypeConfig) notFound();
+export const generateMetadata = generateMetadataWithTryCatch(
+  async (props: { params: Params }) => {
+    const { itemTypePage } = await props.params;
+    const itemTypeConfig = cornerstoneImageBrowserItemTypes.find(
+      (itemType) => itemType.page === itemTypePage,
+    );
+    if (!itemTypeConfig) notFound();
 
-  return {
-    title: `${itemTypeConfig.title} - Cornerstone Image Browser | S.A.M. - Sinister Incorporated`,
-  };
-}
+    return {
+      title: `${itemTypeConfig.title} - Cornerstone Image Browser | S.A.M. - Sinister Incorporated`,
+    };
+  },
+);
 
 export default async function Page({
   params,

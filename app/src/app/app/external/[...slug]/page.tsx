@@ -2,25 +2,25 @@ import { getExternalAppBySlug } from "@/modules/apps/utils/queries";
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { DefaultLayout } from "@/modules/common/components/layouts/DefaultLayout";
 import { IframeLayout } from "@/modules/common/components/layouts/IframeLayout";
-import type { Metadata } from "next";
+import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
 import { notFound } from "next/navigation";
 
 type Params = Promise<{
   slug: string[];
 }>;
 
-export async function generateMetadata(props: {
-  params: Params;
-}): Promise<Metadata> {
-  const { slug } = await props.params;
-  const app = await getExternalAppBySlug(slug[0]);
-  if (!app) notFound();
+export const generateMetadata = generateMetadataWithTryCatch(
+  async (props: { params: Params }) => {
+    const { slug } = await props.params;
+    const app = await getExternalAppBySlug(slug[0]);
+    if (!app) notFound();
 
-  return {
-    title: `${app.name} | S.A.M. - Sinister Incorporated`,
-    description: app.description || undefined,
-  };
-}
+    return {
+      title: `${app.name} | S.A.M. - Sinister Incorporated`,
+      description: app.description || undefined,
+    };
+  },
+);
 
 export default async function Page({
   params,

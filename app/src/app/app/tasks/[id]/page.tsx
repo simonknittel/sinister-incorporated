@@ -1,5 +1,5 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
-import { log } from "@/modules/logging";
+import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
 import { Overview } from "@/modules/tasks/components/Overview";
 import { getTaskById } from "@/modules/tasks/queries";
 import {
@@ -7,38 +7,22 @@ import {
   isAllowedToManageTask,
 } from "@/modules/tasks/utils/isAllowedToTask";
 import { isTaskUpdatable } from "@/modules/tasks/utils/isTaskUpdatable";
-import { type Metadata } from "next";
-import { notFound, unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
+import { notFound } from "next/navigation";
 
 type Params = Promise<{
   id: string;
 }>;
 
-export async function generateMetadata(props: {
-  params: Params;
-}): Promise<Metadata> {
-  try {
+export const generateMetadata = generateMetadataWithTryCatch(
+  async (props: { params: Params }) => {
     const task = await getTaskById((await props.params).id);
     if (!task) notFound();
 
     return {
       title: `${task.title} - Task | S.A.M. - Sinister Incorporated`,
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error(
-      "Error while generating metadata for /app/tasks/[id]/page.tsx",
-      {
-        error: serializeError(error),
-      },
-    );
-
-    return {
-      title: `Error | S.A.M. - Sinister Incorporated`,
-    };
-  }
-}
+  },
+);
 
 export default async function Page({ params }: PageProps<"/app/tasks/[id]">) {
   const authentication = await requireAuthenticationPage("/app/tasks/[id]");

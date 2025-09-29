@@ -1,39 +1,23 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
-import { log } from "@/modules/logging";
+import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
 import { OverviewTab } from "@/modules/roles/components/OverviewTab";
 import { RoleDetailsTemplate } from "@/modules/roles/components/RoleDetailsTemplate";
 import { getRoleById } from "@/modules/roles/queries";
-import { type Metadata } from "next";
-import { notFound, unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
+import { notFound } from "next/navigation";
 
 type Params = Promise<{
   id: string;
 }>;
 
-export async function generateMetadata(props: {
-  params: Params;
-}): Promise<Metadata> {
-  try {
+export const generateMetadata = generateMetadataWithTryCatch(
+  async (props: { params: Params }) => {
     const role = await getRoleById((await props.params).id);
 
     return {
       title: `${role?.name} - Rollen | S.A.M. - Sinister Incorporated`,
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error(
-      "Error while generating metadata for /app/roles/[id]/page.tsx",
-      {
-        error: serializeError(error),
-      },
-    );
-
-    return {
-      title: `Error | S.A.M. - Sinister Incorporated`,
-    };
-  }
-}
+  },
+);
 
 export default async function Page({ params }: PageProps<"/app/roles/[id]">) {
   const authentication = await requireAuthenticationPage("/app/roles");
