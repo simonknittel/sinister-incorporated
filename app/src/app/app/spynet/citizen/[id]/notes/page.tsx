@@ -3,10 +3,8 @@ import { Notes } from "@/modules/citizen/components/notes/Notes";
 import { Template } from "@/modules/citizen/components/Template";
 import { getCitizenById } from "@/modules/citizen/queries";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
-import { log } from "@/modules/logging";
-import { type Metadata } from "next";
-import { notFound, unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
+import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
+import { notFound } from "next/navigation";
 
 type Params = Promise<
   Readonly<{
@@ -14,30 +12,16 @@ type Params = Promise<
   }>
 >;
 
-export async function generateMetadata(props: {
-  params: Params;
-}): Promise<Metadata> {
-  try {
+export const generateMetadata = generateMetadataWithTryCatch(
+  async (props: { params: Params }) => {
     const entity = await getCitizenById((await props.params).id);
     if (!entity) return {};
 
     return {
       title: `Notizen - ${entity.handle || entity.id} - Spynet | S.A.M. - Sinister Incorporated`,
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error(
-      "Error while generating metadata for /app/spynet/citizen/[id]/notes/page.tsx",
-      {
-        error: serializeError(error),
-      },
-    );
-
-    return {
-      title: `Error | S.A.M. - Sinister Incorporated`,
-    };
-  }
-}
+  },
+);
 
 interface Props {
   readonly params: Params;

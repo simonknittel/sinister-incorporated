@@ -3,16 +3,14 @@ import { Flow } from "@/modules/career/components/Flow";
 import { getMyReadableFlows } from "@/modules/career/queries";
 import { getCitizensGroupedByVisibleRoles } from "@/modules/citizen/queries";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
-import { log } from "@/modules/logging";
+import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
 import { getRoles } from "@/modules/roles/queries";
 import {
   getMyAssignedRoles,
   getVisibleRoles,
 } from "@/modules/roles/utils/getRoles";
-import { type Metadata } from "next";
 import { cookies } from "next/headers";
-import { notFound, unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
+import { notFound } from "next/navigation";
 
 type Params = Promise<
   Readonly<{
@@ -20,10 +18,8 @@ type Params = Promise<
   }>
 >;
 
-export async function generateMetadata(props: {
-  params: Params;
-}): Promise<Metadata> {
-  try {
+export const generateMetadata = generateMetadataWithTryCatch(
+  async (props: { params: Params }) => {
     const flowId = (await props.params).flowId;
     const flows = await getMyReadableFlows();
     const flow = flows.find((flow) => flow.id === flowId);
@@ -33,20 +29,8 @@ export async function generateMetadata(props: {
     return {
       title: `${flow?.name} - Karriere | S.A.M. - Sinister Incorporated`,
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error(
-      "Error while generating metadata for /app/career/[flowId]/page.tsx",
-      {
-        error: serializeError(error),
-      },
-    );
-
-    return {
-      title: `Error | S.A.M. - Sinister Incorporated`,
-    };
-  }
-}
+  },
+);
 
 export default async function Page({
   params,

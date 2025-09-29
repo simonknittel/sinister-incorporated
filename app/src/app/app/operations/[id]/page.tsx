@@ -1,9 +1,9 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import Avatar from "@/modules/common/components/Avatar";
 import { Link } from "@/modules/common/components/Link";
+import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
 import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
 import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
-import { log } from "@/modules/logging";
 import ConfirmParticipation from "@/modules/operations/components/ConfirmParticipation";
 import CreateUnit from "@/modules/operations/components/CreateUnit";
 import DeleteOperation from "@/modules/operations/components/DeleteOperation";
@@ -12,38 +12,22 @@ import JoinOperation from "@/modules/operations/components/JoinOperation";
 import RemoveParticipation from "@/modules/operations/components/RemoveParticipation";
 import SquadronTile from "@/modules/operations/components/SquadronTile";
 import { getOperation } from "@/modules/operations/queries";
-import { type Metadata } from "next";
-import { notFound, unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
+import { notFound } from "next/navigation";
 
 type Params = Promise<{
   id: string;
 }>;
 
-export async function generateMetadata(props: {
-  params: Params;
-}): Promise<Metadata> {
-  try {
+export const generateMetadata = generateMetadataWithTryCatch(
+  async (props: { params: Params }) => {
     const operation = await getOperation((await props.params).id);
     if (!operation) return {};
 
     return {
       title: `${operation.title} - Operation | S.A.M. - Sinister Incorporated`,
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error(
-      "Error while generating metadata for /app/operations/[id]/page.tsx",
-      {
-        error: serializeError(error),
-      },
-    );
-
-    return {
-      title: `Error | S.A.M. - Sinister Incorporated`,
-    };
-  }
-}
+  },
+);
 
 interface Props {
   params: Params;

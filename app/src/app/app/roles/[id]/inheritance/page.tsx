@@ -1,40 +1,24 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
-import { log } from "@/modules/logging";
+import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
 import { InheritanceForm } from "@/modules/roles/components/InheritanceForm";
 import { RoleDetailsTemplate } from "@/modules/roles/components/RoleDetailsTemplate";
 import { SingleRole } from "@/modules/roles/components/SingleRole";
 import { getRoleById, getRoles } from "@/modules/roles/queries";
-import { type Metadata } from "next";
-import { notFound, unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
+import { notFound } from "next/navigation";
 
 type Params = Promise<{
   id: string;
 }>;
 
-export async function generateMetadata(props: {
-  params: Params;
-}): Promise<Metadata> {
-  try {
+export const generateMetadata = generateMetadataWithTryCatch(
+  async (props: { params: Params }) => {
     const role = await getRoleById((await props.params).id);
 
     return {
       title: `${role?.name} - Vererbungen | S.A.M. - Sinister Incorporated`,
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error(
-      "Error while generating metadata for /app/roles/[id]/inheritance/page.tsx",
-      {
-        error: serializeError(error),
-      },
-    );
-
-    return {
-      title: `Error | S.A.M. - Sinister Incorporated`,
-    };
-  }
-}
+  },
+);
 
 export default async function Page({
   params,

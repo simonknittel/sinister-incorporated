@@ -1,11 +1,9 @@
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
+import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
 import { EditableSeriesName } from "@/modules/fleet/components/EditableSeriesName";
 import { VariantsTile } from "@/modules/fleet/components/VariantsTile";
 import { getSeriesAndManufacturerById } from "@/modules/fleet/queries";
-import { log } from "@/modules/logging";
-import { type Metadata } from "next";
-import { notFound, unstable_rethrow } from "next/navigation";
-import { serializeError } from "serialize-error";
+import { notFound } from "next/navigation";
 
 type Params = Promise<
   Readonly<{
@@ -14,10 +12,8 @@ type Params = Promise<
   }>
 >;
 
-export async function generateMetadata(props: {
-  params: Params;
-}): Promise<Metadata> {
-  try {
+export const generateMetadata = generateMetadataWithTryCatch(
+  async (props: { params: Params }) => {
     const params = await props.params;
     const [series] = await getSeriesAndManufacturerById(
       params.seriesId,
@@ -29,20 +25,8 @@ export async function generateMetadata(props: {
     return {
       title: `${series.name} - Schiffe | S.A.M. - Sinister Incorporated`,
     };
-  } catch (error) {
-    unstable_rethrow(error);
-    void log.error(
-      "Error while generating metadata for /app/spynet/citizen/[id]/page.tsx",
-      {
-        error: serializeError(error),
-      },
-    );
-
-    return {
-      title: `Error | S.A.M. - Sinister Incorporated`,
-    };
-  }
-}
+  },
+);
 
 interface Props {
   readonly params: Params;
