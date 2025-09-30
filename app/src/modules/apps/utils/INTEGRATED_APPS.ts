@@ -27,21 +27,21 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     href: "/app/dashboard",
     imageSrc: dashboardScreenshot,
     description: "Übersicht mit aktuellen Informationen",
-    featured: true,
+    tags: ["featured"],
   },
   {
     name: "Dokumente",
     href: "/app/documents",
     imageSrc: documentsScreenshot,
     description: "Alles was du zu deinem nächsten Zertifikat wissen möchtest",
-    featured: true,
+    tags: ["featured"],
   },
   {
     name: "Events",
     href: "/app/events",
     imageSrc: eventsScreenshot,
     description: "Übersicht aller anstehenden und vergangenen Events",
-    featured: true,
+    tags: ["featured"],
     permissionStrings: ["event;read"],
   },
   {
@@ -50,7 +50,7 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     imageSrc: fleetScreenshot,
     description:
       "Verwalte deine Schiffe und erhalte eine Übersicht über unsere Org-Flotte",
-    featured: true,
+    tags: ["featured"],
     permissionStrings: ["ship;manage", "orgFleet;read"],
   },
   {
@@ -59,7 +59,7 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     imageSrc: careerScreenshot,
     description:
       "Org-interner Karrierebaum in unseren Bereichen Security und Economics",
-    featured: true,
+    tags: ["featured", "security", "economics"],
     permissionStrings: [
       "career;read;flowId=security",
       "career;read;flowId=economic",
@@ -72,7 +72,7 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     href: "/app/silc",
     imageSrc: silcScreenshot,
     description: "Übersicht und Verwaltung von SILC",
-    featured: true,
+    tags: ["featured", "economics"],
     permissionStrings: ["silcBalanceOfOtherCitizen;read"],
   },
   {
@@ -80,7 +80,7 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     href: "/app/spynet",
     imageSrc: spynetScreenshot,
     description: "Übersicht und Verwaltung von Citizen und Organisations",
-    featured: true,
+    tags: ["featured", "security"],
     permissionStrings: ["citizen;read", "organization;read"],
   },
   {
@@ -88,7 +88,7 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     href: "/app/penalty-points",
     imageSrc: penaltyPointsScreenshot,
     description: "Übersicht und Verwaltung von Strafpunkten",
-    featured: true,
+    tags: ["featured"],
     permissionStrings: ["penaltyEntry;create"],
   },
   {
@@ -96,7 +96,7 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     href: "/app/tasks",
     imageSrc: tasksScreenshot,
     description: "Org-internes Quest System",
-    featured: true,
+    tags: ["featured"],
     permissionStrings: ["task;read"],
   },
   {
@@ -105,6 +105,7 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     imageSrc: cornerstoneImageBrowserScreenshot,
     description:
       "Stellt die Bilder von Cornerstone nebeneinander dar, um sie visuell einfach vergleichen zu können.",
+    tags: ["fun"],
   },
   {
     name: "Dogfight Trainer",
@@ -112,6 +113,7 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     imageSrc: dogfightTrainerScreenshot,
     description:
       "Zeige deinen Dogfight Skill in unserer Hommage an den Klassiker, Asteroids. Achte darauf was du abschießt!",
+    tags: ["fun"],
   },
   {
     name: "Log Analyzer",
@@ -119,6 +121,7 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     imageSrc: logAnalyzerScreenshot,
     description:
       "Wertet die Game Logs von Star Citizen aus um nach Kills zu filtern.",
+    tags: ["security"],
     permissionStrings: ["logAnalyzer;read"],
   },
   {

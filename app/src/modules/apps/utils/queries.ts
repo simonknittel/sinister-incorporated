@@ -42,7 +42,7 @@ export const getAppLinks = cache(
         if (redacted) {
           return {
             name: app.name,
-            featured: app.featured,
+            tags: app.tags,
             redacted: true,
           };
         }
@@ -53,13 +53,14 @@ export const getAppLinks = cache(
       }),
 
       // TODO: Implement permission check
+      // eslint-disable-next-line @typescript-eslint/await-thenable
       ...externalApps.map((externalApp) => {
         return {
           name: externalApp.name,
           description: externalApp.description,
           imageSrc: externalApp.imageSrc,
           href: `/app/external/${externalApp.slug}`,
-          featured: externalApp.featured,
+          tags: externalApp.tags,
         };
       }),
     ]);
