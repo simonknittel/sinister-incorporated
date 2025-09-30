@@ -2,18 +2,34 @@ import { requireAuthenticationPage } from "@/modules/auth/server";
 import { Button2 } from "@/modules/common/components/Button2";
 import { DateInput } from "@/modules/common/components/form/DateInput";
 import { NumberInput } from "@/modules/common/components/form/NumberInput";
+import { Link } from "@/modules/common/components/Link";
 import { StatisticTile } from "@/modules/common/components/StatisticTile";
 import { formatDate } from "@/modules/common/utils/formatDate";
+import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
 import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
 import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
+import { EndCollectionPhaseButton } from "@/modules/silc/components/profit-distribution/EndCollectionPhaseButton";
 import { Phase } from "@/modules/silc/components/profit-distribution/Phase";
 import { getProfitDistributionCyclesById } from "@/modules/silc/queries";
-import { type Metadata } from "next";
 import { notFound } from "next/navigation";
+import { FaChevronLeft } from "react-icons/fa";
 
-export const metadata: Metadata = {
-  title: "Gewinnausschüttung - SILC | S.A.M. - Sinister Incorporated",
-};
+type Params = Promise<{
+  id: string;
+}>;
+
+export const generateMetadata = generateMetadataWithTryCatch(
+  async (props: { params: Params }) => {
+    const cycleData = await getProfitDistributionCyclesById(
+      (await props.params).id,
+    );
+    if (!cycleData) notFound();
+
+    return {
+      title: `${cycleData.cycle.title} - Gewinnausschüttung - SILC | S.A.M. - Sinister Incorporated`,
+    };
+  },
+);
 
 export default async function Page({
   params,
@@ -31,9 +47,23 @@ export default async function Page({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-2xl font-bold">
-        <h1 className="text-center">{cycleData.cycle.title}</h1>
+      <div className="flex">
+        <Button2
+          as={Link}
+          href={`/app/silc/profit-distribution/${cycleData.cycle.id}`}
+          variant="secondary"
+          className="w-9 flex-initial"
+          title="Zurück"
+        >
+          <FaChevronLeft />
+        </Button2>
+
+        <h1 className="text-2xl font-bold text-center flex-1">
+          {cycleData.cycle.title}
+        </h1>
         {/* TODO: Implement edit button */}
+
+        <div className="w-9 flex-initial" />
       </div>
 
       {cycleData.currentPhase >= 4 && (
@@ -74,6 +104,7 @@ export default async function Page({
               Du kannst diese Phase sofort beenden.
             </p>
 
+            {/* TODO: Implement functionality incl. confirmation prompt */}
             <Button2
               variant="secondary"
               disabled={cycleData.currentPhase !== 3}
@@ -121,6 +152,7 @@ export default async function Page({
             />
           </div>
 
+          {/* TODO: Implement functionality incl. confirmation prompt */}
           <Button2
             variant="primary"
             disabled={cycleData.currentPhase !== 2}
@@ -161,9 +193,7 @@ export default async function Page({
             Du kannst diese Phase sofort beenden.
           </p>
 
-          <Button2 variant="secondary" disabled={cycleData.currentPhase !== 1}>
-            Phase beenden
-          </Button2>
+          <EndCollectionPhaseButton cycleData={cycleData} />
         </div>
 
         <div className="flex justify-center items-center gap-2 border-t border-white/5 pt-4 mt-4">

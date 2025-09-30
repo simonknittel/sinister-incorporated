@@ -1,20 +1,35 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { Button2 } from "@/modules/common/components/Button2";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
+import { Link } from "@/modules/common/components/Link";
 import { StatisticTile } from "@/modules/common/components/StatisticTile";
 import { formatDate } from "@/modules/common/utils/formatDate";
+import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
 import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
 import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import { Phase } from "@/modules/silc/components/profit-distribution/Phase";
 import { getProfitDistributionCyclesById } from "@/modules/silc/queries";
 import { PayoutState } from "@/modules/silc/utils/getMyPayoutStatus";
 import clsx from "clsx";
-import { type Metadata } from "next";
 import { notFound } from "next/navigation";
+import { FaCog } from "react-icons/fa";
 
-export const metadata: Metadata = {
-  title: "Gewinnausschüttung - SILC | S.A.M. - Sinister Incorporated", // TODO
-};
+type Params = Promise<{
+  id: string;
+}>;
+
+export const generateMetadata = generateMetadataWithTryCatch(
+  async (props: { params: Params }) => {
+    const cycleData = await getProfitDistributionCyclesById(
+      (await props.params).id,
+    );
+    if (!cycleData) notFound();
+
+    return {
+      title: `${cycleData.cycle.title} - Gewinnausschüttung - SILC | S.A.M. - Sinister Incorporated`,
+    };
+  },
+);
 
 export default async function Page({
   params,
@@ -30,10 +45,30 @@ export default async function Page({
   const cycleData = await getProfitDistributionCyclesById((await params).id);
   if (!cycleData) notFound();
 
+  const [hasProfitDistributionCycleManage] = await Promise.all([
+    authentication.authorizePage("profitDistributionCycle", "manage"),
+  ]);
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-2xl font-bold">
-        <h1 className="text-center">{cycleData.cycle.title}</h1>
+      <div className="flex">
+        <div className="w-9 flex-initial" />
+
+        <h1 className="text-2xl font-bold text-center flex-1">
+          {cycleData.cycle.title}
+        </h1>
+
+        {hasProfitDistributionCycleManage && (
+          <Button2
+            as={Link}
+            href={`/app/silc/profit-distribution/${cycleData.cycle.id}/management`}
+            variant="secondary"
+            className="w-9 flex-initial"
+            title="Verwalten"
+          >
+            <FaCog />
+          </Button2>
+        )}
       </div>
 
       {cycleData.currentPhase >= 4 && (
@@ -127,6 +162,7 @@ export default async function Page({
                     zugestimmt.
                   </p>
 
+                  {/* TODO: Implement functionality */}
                   <Button2
                     type="button"
                     disabled={cycleData.currentPhase !== 3}
@@ -137,6 +173,7 @@ export default async function Page({
               )}
 
               {cycleData.myPayoutState === PayoutState.AWAITING_ACCEPTANCE && (
+                // TODO: Implement functionality
                 <Button2 type="button" disabled={cycleData.currentPhase !== 3}>
                   Auszahlung zustimmen
                 </Button2>
@@ -204,6 +241,7 @@ export default async function Page({
                 {formatDate(cycleData.myParticipant.cededAt)} abgetreten.
               </p>
 
+              {/* TODO: Implement functionality */}
               <Button2
                 variant="secondary"
                 disabled={cycleData.currentPhase !== 1}
@@ -212,6 +250,7 @@ export default async function Page({
               </Button2>
             </>
           ) : (
+            // TODO: Implement functionality
             <Button2
               variant="secondary"
               disabled={cycleData.currentPhase !== 1}
