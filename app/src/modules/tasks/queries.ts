@@ -258,6 +258,12 @@ export const getMyAssignedTasks = cache(
         assignments: {
           select: {
             citizenId: true,
+            citizen: {
+              select: {
+                id: true,
+                handle: true,
+              },
+            },
           },
         },
         requiredRoles: {
