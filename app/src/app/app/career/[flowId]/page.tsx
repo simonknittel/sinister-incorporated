@@ -23,11 +23,10 @@ export const generateMetadata = generateMetadataWithTryCatch(
     const flowId = (await props.params).flowId;
     const flows = await getMyReadableFlows();
     const flow = flows.find((flow) => flow.id === flowId);
-    if (!flow) {
-    }
+    if (!flow) notFound();
 
     return {
-      title: `${flow?.name} - Karriere | S.A.M. - Sinister Incorporated`,
+      title: `${flow.name} - Karriere | S.A.M. - Sinister Incorporated`,
     };
   },
 );
