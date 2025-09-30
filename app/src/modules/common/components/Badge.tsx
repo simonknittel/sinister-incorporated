@@ -5,6 +5,7 @@ interface Props {
   readonly className?: string;
   readonly label: string;
   readonly value: string;
+  readonly valueNode?: ReactNode;
   readonly showLabel?: boolean;
   readonly icon?: ReactNode;
   readonly cta?: ReactNode;
@@ -14,6 +15,7 @@ export const Badge = ({
   className,
   label,
   value,
+  valueNode,
   showLabel,
   icon,
   cta,
@@ -41,7 +43,7 @@ export const Badge = ({
         </span>
 
         <span className="overflow-hidden whitespace-nowrap text-ellipsis">
-          {value}
+          {valueNode || value}
         </span>
       </div>
 
