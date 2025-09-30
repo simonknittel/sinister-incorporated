@@ -10,7 +10,7 @@ export const externalApps: ExternalApp[] = [
     imageSrc: siloAnfrageScreenshot,
     description:
       "Hier kannst du Materialeinträge anmelden, aktuelle Angebote und Preislisten anfordern.",
-    featured: true,
+    tags: ["featured", "economics"],
     defaultPage: {
       iframeUrl:
         "https://docs.google.com/forms/d/e/1FAIpQLSeHEgpv4GmnZhu7MS2aQc9zgETWQw8tusJ7oaGLsyuHeD1LMw/viewform",

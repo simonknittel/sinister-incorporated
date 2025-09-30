@@ -4,7 +4,7 @@ export interface App {
   name: string;
   description: string;
   imageSrc: StaticImageData;
-  featured?: boolean;
+  tags?: string[];
 }
 
 export interface IntegratedApp extends App {
