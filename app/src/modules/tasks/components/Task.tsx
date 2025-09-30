@@ -14,10 +14,13 @@ import clsx from "clsx";
 import type { ReactNode } from "react";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaCheck, FaCheckSquare, FaClock, FaInfoCircle } from "react-icons/fa";
+import { IoPerson } from "react-icons/io5";
 import { TbRepeatOnce } from "react-icons/tb";
 
 interface TaskWithIncludes extends TaskType {
-  assignments: Pick<TaskAssignment, "citizenId">[];
+  assignments: (Pick<TaskAssignment, "citizenId"> & {
+    citizen: Pick<Entity, "id" | "handle">;
+  })[];
   completionists?: Pick<Entity, "id">[];
 }
 
@@ -95,6 +98,21 @@ export const Task = ({ className, task }: Props) => {
         value="Abgelaufen"
         icon={<BsExclamationOctagonFill />}
         className="text-sm text-red-500"
+      />,
+    );
+  }
+  if (task.assignments.length > 0) {
+    badges.push(
+      <Badge
+        key="assignments"
+        label="Angenommen von"
+        value={`${task.assignments[0].citizen.handle || task.assignments[0].citizen.id}${
+          task.assignments.length > 1
+            ? ` + ${task.assignments.length - 1} weitere`
+            : ""
+        }`}
+        icon={<IoPerson />}
+        className="text-sm"
       />,
     );
   }
