@@ -263,8 +263,8 @@ export default async function Page() {
           <RichText className="ml-9">
             <p>
               Das S.A.M. kann für deine externe App die
-              Benutzerauthentifizierung übernehmen. Hierbei spielt das S.A.M.
-              den Identity Provider. Die Benutzer deiner App melden sich hierbei
+              Benutzerauthentifizierung übernehmen. Hierbei übernimmt das S.A.M.
+              die Rolle des Identity Provider. Die Benutzer deiner App melden sich hierbei
               über S.A.M. an und werden im Anschluss im authentifizierten
               Zustand zu deiner App weitergeleitet.
             </p>
