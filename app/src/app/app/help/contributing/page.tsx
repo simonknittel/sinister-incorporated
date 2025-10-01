@@ -275,7 +275,7 @@ export default async function Page() {
             </p>
 
             <p>
-              Zusätzlich bietet das S.A.M. eine SCIM-Schnittstelle an. Hierrüber
+              Zusätzlich bietet das S.A.M. eine SCIM-Schnittstelle an. Hierüber
               können Benutzer in deiner App automatisiert provisioniert und
               deprovisioniert werden. Beispiel: Sollte ein Benutzer im S.A.M.
               gelöscht werden, dann diese Information über SCIM an deine App
