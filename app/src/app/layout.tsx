@@ -20,7 +20,7 @@ export default async function RootLayout({ children }: Readonly<Props>) {
   const locale = await getLocale();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} style={{ scrollPaddingTop: "122px" }}>
       <body className="bg-neutral-800 text-text-primary">
         {children}
         <NextTopLoader color="#c22424" showSpinner={false} />
