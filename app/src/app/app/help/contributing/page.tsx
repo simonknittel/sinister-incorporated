@@ -208,6 +208,8 @@ export default async function Page() {
             <br />
             Diese Platform ermöglicht es über eine grafische Oberfläche einfache
             Apps zu entwickeln und hosten.
+            <br />
+            Dieser Bereich wird ergänzt, sobald es hierzu weitere Details gibt.
           </RoadmapNote>
 
           <RichText className="ml-9 mt-4">
@@ -263,8 +265,8 @@ export default async function Page() {
           <RichText className="ml-9">
             <p>
               Das S.A.M. kann für deine externe App die
-              Benutzerauthentifizierung übernehmen. Hierbei spielt das S.A.M.
-              den Identity Provider. Die Benutzer deiner App melden sich hierbei
+              Benutzerauthentifizierung übernehmen. Hierbei übernimmt das S.A.M.
+              die Rolle des Identity Provider. Die Benutzer deiner App melden sich hierbei
               über S.A.M. an und werden im Anschluss im authentifizierten
               Zustand zu deiner App weitergeleitet.
             </p>
@@ -275,10 +277,10 @@ export default async function Page() {
             </p>
 
             <p>
-              Zusätzlich bietet das S.A.M. eine SCIM-Schnittstelle an. Hierrüber
+              Zusätzlich bietet das S.A.M. eine SCIM-Schnittstelle an. Hierüber
               können Benutzer in deiner App automatisiert provisioniert und
               deprovisioniert werden. Beispiel: Sollte ein Benutzer im S.A.M.
-              gelöscht werden, dann diese Information über SCIM an deine App
+              gelöscht werden, dann kann diese Information über SCIM an deine App
               weitergeleitet werden, so dass der Benutzer auch in deiner App
               gelöscht wird.
             </p>
@@ -287,6 +289,8 @@ export default async function Page() {
           <RoadmapNote className="ml-9 mt-4 max-w-[65ch]">
             Diese Funktionen stehen aktuell noch nicht zur Verfügung, befinden
             sich aber in der Entwicklung.
+            <br />
+            Dieser Bereich wird ergänzt, sobald es hierzu weitere Details gibt.
           </RoadmapNote>
 
           <SectionHeading
@@ -314,6 +318,8 @@ export default async function Page() {
           <RoadmapNote className="ml-9 mt-4 max-w-[65ch]">
             Diese Funktion steht aktuell noch nicht zur Verfügung, befindet sich
             aber in der Entwicklung.
+            <br />
+            Dieser Bereich wird ergänzt, sobald es hierzu weitere Details gibt.
           </RoadmapNote>
 
           <SectionHeading
@@ -334,6 +340,8 @@ export default async function Page() {
           <RoadmapNote className="ml-9 mt-4 max-w-[65ch]">
             Diese Funktion steht aktuell noch nicht zur Verfügung, befindet sich
             aber in der Entwicklung.
+            <br />
+            Dieser Bereich wird ergänzt, sobald es hierzu weitere Details gibt.
           </RoadmapNote>
         </section>
 
@@ -372,8 +380,8 @@ export default async function Page() {
           <RichText className="ml-9">
             <p>
               Wenn du an den integrierten Apps mitarbeiten möchtest und du
-              denkst den strengen Anforderungen von ind3x zu bestehen? Dann
-              melde dich gerne bei ihm.
+              denkst den strengen Anforderungen von ind3x zu bestehen, dann
+              melde dich gerne bei uns.
             </p>
 
             <p>

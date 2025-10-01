@@ -59,7 +59,7 @@ export const SectionHeading = ({
 
         {showTooltip && (
           <span className="absolute left-1/2 transform -translate-x-1/2 -translate-y-full bg-black dark:bg-white text-neutral-300 dark:text-black px-2 py-1 rounded text-sm font-medium">
-            Kopiert!
+            Link kopiert!
           </span>
         )}
       </a>
