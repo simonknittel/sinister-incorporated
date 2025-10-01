@@ -6,6 +6,7 @@ import { signOut } from "next-auth/react";
 import { AiFillAppstore, AiOutlineForm } from "react-icons/ai";
 import { FaHome, FaLock, FaPiggyBank, FaTools, FaUser } from "react-icons/fa";
 import { FaCodePullRequest, FaScaleBalanced } from "react-icons/fa6";
+import { IoIosHelpCircleOutline } from "react-icons/io";
 import { IoDocuments } from "react-icons/io5";
 import { MdEvent, MdTaskAlt, MdWorkspaces } from "react-icons/md";
 import { RiLogoutCircleRLine, RiSpyFill } from "react-icons/ri";
@@ -182,6 +183,15 @@ export const List = () => {
               setSearch={setSearch}
             />
           )}
+
+          <LinkItem
+            label="Hilfe"
+            keywords={["Hilfe", "Help", "Support"]}
+            icon={<IoIosHelpCircleOutline />}
+            href="/app/help"
+            setOpen={setOpen}
+            setSearch={setSearch}
+          />
 
           {iamRead && (
             <PageItem

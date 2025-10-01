@@ -45,6 +45,28 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col gap-4 max-w-prose mx-auto">
+      <Day heading="2. Oktober 2025">
+        <DayItem heading="Mithilfe" badges={["Ankündigung"]}>
+          <p>
+            Du hast eine Idee, einen Verbesserungsvorschlag oder einen Wunsch
+            f&uuml;r&apos;s S.A.M.? Oder, du m&ouml;chtest sogar selbst an der
+            Entwicklung des S.A.M. mitwirken?
+          </p>
+
+          <p>
+            Unter{" "}
+            <Link
+              href="/app/help/contributing"
+              className="text-interaction-500 hover:text-interaction-300 focus-visible:text-interaction-300"
+            >
+              Hilfe &gt; Mithilfe
+            </Link>{" "}
+            bekommst du nun eine Übersicht dar&uuml;ber, wie du uns bei der
+            Entwicklung des S.A.M. unterstützen kannst.
+          </p>
+        </DayItem>
+      </Day>
+
       <Day heading="28. September 2025">
         <DayItem
           heading="Aufzüge in Contested Zones und ASD Facilities"

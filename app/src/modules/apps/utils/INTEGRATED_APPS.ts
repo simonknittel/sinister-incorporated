@@ -7,6 +7,7 @@ import documentsScreenshot from "@/modules/documents/assets/screenshot.png";
 import dogfightTrainerScreenshot from "@/modules/dogfight-trainer/assets/screenshot.png";
 import eventsScreenshot from "@/modules/events/assets/screenshot.png";
 import fleetScreenshot from "@/modules/fleet/assets/screenshot.png";
+import helpScreenshot from "@/modules/help/assets/screenshot.png";
 import iamScreenshot from "@/modules/iam/assets/screenshot.png";
 import logAnalyzerScreenshot from "@/modules/log-analyzer/assets/screenshot.png";
 import penaltyPointsScreenshot from "@/modules/penalty-points/assets/screenshot.png";
@@ -52,6 +53,12 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
       "Verwalte deine Schiffe und erhalte eine Übersicht über unsere Org-Flotte",
     tags: ["featured"],
     permissionStrings: ["ship;manage", "orgFleet;read"],
+  },
+  {
+    name: "Hilfe",
+    href: "/app/help",
+    imageSrc: helpScreenshot,
+    description: "Hilfe und Anleitungen zur Nutzung des S.A.M.",
   },
   {
     name: "Karriere",
