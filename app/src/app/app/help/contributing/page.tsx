@@ -208,6 +208,8 @@ export default async function Page() {
             <br />
             Diese Platform ermöglicht es über eine grafische Oberfläche einfache
             Apps zu entwickeln und hosten.
+            <br />
+            Dieser Bereich wird ergänzt, sobald es hierzu weitere Details gibt.
           </RoadmapNote>
 
           <RichText className="ml-9 mt-4">
@@ -287,6 +289,8 @@ export default async function Page() {
           <RoadmapNote className="ml-9 mt-4 max-w-[65ch]">
             Diese Funktionen stehen aktuell noch nicht zur Verfügung, befinden
             sich aber in der Entwicklung.
+            <br />
+            Dieser Bereich wird ergänzt, sobald es hierzu weitere Details gibt.
           </RoadmapNote>
 
           <SectionHeading
@@ -314,6 +318,8 @@ export default async function Page() {
           <RoadmapNote className="ml-9 mt-4 max-w-[65ch]">
             Diese Funktion steht aktuell noch nicht zur Verfügung, befindet sich
             aber in der Entwicklung.
+            <br />
+            Dieser Bereich wird ergänzt, sobald es hierzu weitere Details gibt.
           </RoadmapNote>
 
           <SectionHeading
@@ -334,6 +340,8 @@ export default async function Page() {
           <RoadmapNote className="ml-9 mt-4 max-w-[65ch]">
             Diese Funktion steht aktuell noch nicht zur Verfügung, befindet sich
             aber in der Entwicklung.
+            <br />
+            Dieser Bereich wird ergänzt, sobald es hierzu weitere Details gibt.
           </RoadmapNote>
         </section>
 
