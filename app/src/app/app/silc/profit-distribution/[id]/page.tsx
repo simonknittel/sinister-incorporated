@@ -83,7 +83,7 @@ export default async function Page({
         <Phase phase={3} currentPhase={cycleData.currentPhase}>
           <h2 className="font-bold text-center">Auszahlung</h2>
 
-          <div className="flex gap-[2px] mt-4">
+          <div className="flex gap-[2px] border-t border-white/5 mt-4 pt-4">
             <StatisticTile label="Gesamter aUEC-Überschuss" className="flex-1">
               {cycleData.cycle.auecProfit || "-"}
             </StatisticTile>
@@ -197,38 +197,36 @@ export default async function Page({
 
       {cycleData.currentPhase >= 2 && (
         <Phase phase={2} currentPhase={cycleData.currentPhase}>
-          <p className="text-center text-sm flex flex-col justify-center h-full">
-            Die Auszahlung wird durch Economics vorbereitet. Bitte schaue später
-            nochmal vorbei.
-          </p>
+          <h2 className="font-bold text-center">Vorbereitung der Auszahlung</h2>
+
+          <div className="border-t border-white/5 mt-4 pt-8 pb-4">
+            <p className="text-center text-sm flex flex-col justify-center">
+              Die Auszahlung wird durch Economics vorbereitet. Bitte schaue
+              später nochmal vorbei.
+            </p>
+          </div>
         </Phase>
       )}
 
       <Phase phase={1} currentPhase={cycleData.currentPhase}>
-        <h2 className="sr-only">Sammelphase</h2>
+        <h2 className="font-bold text-center">Sammelphase</h2>
 
-        <StatisticTile label="Von dir verdiente SILC">
-          <span
-            className={clsx({
-              "text-green-500":
-                cycleData.mySilcBalance && cycleData.mySilcBalance > 0,
-              "text-red-500":
-                cycleData.mySilcBalance && cycleData.mySilcBalance < 0,
-            })}
-          >
-            {cycleData.mySilcBalance || 0}
-          </span>
-        </StatisticTile>
-
-        <div className="flex justify-center py-2">
-          <div className="flex flex-col justify-center items-center text-sm">
-            <h3 className="text-neutral-500">Endet am</h3>
-
-            <p>{formatDate(cycleData.cycle.collectionEndedAt, "short")}</p>
-          </div>
+        <div className="border-t border-white/5 mt-4 pt-4">
+          <StatisticTile label="Von dir verdiente SILC">
+            <span
+              className={clsx({
+                "text-green-500":
+                  cycleData.mySilcBalance && cycleData.mySilcBalance > 0,
+                "text-red-500":
+                  cycleData.mySilcBalance && cycleData.mySilcBalance < 0,
+              })}
+            >
+              {cycleData.mySilcBalance || 0}
+            </span>
+          </StatisticTile>
         </div>
 
-        <div className="flex flex-col justify-center items-center gap-2 border-t border-white/5 pt-4">
+        <div className="flex flex-col justify-center items-center gap-2 mt-4">
           <p className="text-center text-sm">
             Du kannst deinen Anteil für diesen Phase freiwillig abtreten. Dieser
             wird dann auf die anderen Member verteilt.
@@ -258,6 +256,14 @@ export default async function Page({
               Anteil abtreten
             </Button2>
           )}
+        </div>
+
+        <div className="flex justify-center border-t border-white/5 mt-4 pt-4">
+          <div className="flex flex-col justify-center items-center text-sm">
+            <h3 className="text-neutral-500">Endet am</h3>
+
+            <p>{formatDate(cycleData.cycle.collectionEndedAt, "short")}</p>
+          </div>
         </div>
       </Phase>
     </div>

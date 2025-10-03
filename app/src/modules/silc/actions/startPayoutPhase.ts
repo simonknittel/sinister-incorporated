@@ -1,0 +1,75 @@
+"use server";
+
+import { prisma } from "@/db";
+import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
+import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
+import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
+import { revalidatePath } from "next/cache";
+import { notFound } from "next/navigation";
+import { z } from "zod";
+
+const schema = z.object({
+  id: z.cuid2(),
+  auecProfit: z.coerce.number().min(0),
+  payoutEndedAt: z.coerce.date().nullish(), // TODO: Fix nullish
+});
+
+export const startPayoutPhase = createAuthenticatedAction(
+  "startPayoutPhase",
+  schema,
+  async (formData, authentication, data, t) => {
+    if (!(await getUnleashFlag(UNLEASH_FLAG.EnableProfitDistribution)))
+      notFound();
+
+    /**
+     * Authorize the request
+     */
+    if (!authentication.session.entity)
+      return {
+        error: t("Common.forbidden"),
+        requestPayload: formData,
+      };
+    if (!(await authentication.authorize("profitDistributionCycle", "update")))
+      return {
+        error: t("Common.forbidden"),
+        requestPayload: formData,
+      };
+
+    /**
+     * Validate the request
+     */
+    const cycle = await prisma.profitDistributionCycle.findUnique({
+      where: { id: data.id },
+    });
+    if (!cycle)
+      return {
+        error: t("Common.notFound"),
+        requestPayload: formData,
+      };
+
+    /**
+     *
+     */
+    await prisma.profitDistributionCycle.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        payoutStartedAt: new Date(),
+        payoutStartedById: authentication.session.entity.id,
+        auecProfit: data.auecProfit,
+        payoutEndedAt: data.payoutEndedAt,
+      },
+    });
+    /**
+     * Revalidate cache(s)
+     */
+    revalidatePath(`/app/silc/profit-distribution/${data.id}/management`);
+    revalidatePath(`/app/silc/profit-distribution/${data.id}`);
+    revalidatePath("/app/silc/profit-distribution");
+
+    return {
+      success: t("Common.successfullySaved"),
+    };
+  },
+);
