@@ -303,6 +303,10 @@ export const getProfitDistributionCyclesById = cache(
 
       const myPayoutState = getMyPayoutState(cycle, myParticipant);
 
+      const allSilcBalances = (await getSilcBalanceOfAllCitizens()).filter(
+        (citizen) => citizen.silcBalance > 0,
+      );
+
       // TODO: Remove cycle.participants if the user doesn't have the manage permission
 
       return {
@@ -312,6 +316,7 @@ export const getProfitDistributionCyclesById = cache(
         mySilcBalance,
         myShare,
         myPayoutState,
+        allSilcBalances,
       };
     },
   ),

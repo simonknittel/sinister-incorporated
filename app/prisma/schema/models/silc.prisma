@@ -73,4 +73,6 @@ model ProfitDistributionCycleParticipant {
   disbursedAt         DateTime?
   disbursedById       String?
   disbursedBy         Entity?                 @relation("disbursedBy", fields: [disbursedById], references: [id], onDelete: SetNull)
+
+  @@unique([cycleId, citizenId])
 }

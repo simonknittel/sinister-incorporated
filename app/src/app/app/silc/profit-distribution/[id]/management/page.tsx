@@ -48,6 +48,13 @@ export default async function Page({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex">
+        <div className="w-9 flex-initial" />
+
+        <h1 className="text-2xl font-bold text-center flex-1">
+          {cycleData.cycle.title}
+        </h1>
+        {/* TODO: Implement edit button */}
+
         <Button2
           as={Link}
           href={`/app/silc/profit-distribution/${cycleData.cycle.id}`}
@@ -57,13 +64,6 @@ export default async function Page({
         >
           <FaChevronLeft />
         </Button2>
-
-        <h1 className="text-2xl font-bold text-center flex-1">
-          {cycleData.cycle.title}
-        </h1>
-        {/* TODO: Implement edit button */}
-
-        <div className="w-9 flex-initial" />
       </div>
 
       {cycleData.currentPhase >= 4 && (
@@ -72,10 +72,12 @@ export default async function Page({
 
           <div className="flex gap-[2px] mt-4">
             <StatisticTile label="aUEC ausgezahlt" className="flex-1">
+              {/* TODO */}
               ???
             </StatisticTile>
 
             <StatisticTile label="aUEC nicht ausgezahlt" className="flex-1">
+              {/* TODO */}
               ???
             </StatisticTile>
           </div>
@@ -168,13 +170,22 @@ export default async function Page({
 
         <div className="flex gap-[2px]">
           <StatisticTile label="Anzahl Teilnehmer" className="flex-1">
-            {/* TODO */}
-            ???
+            {cycleData.currentPhase === 1
+              ? cycleData.allSilcBalances.length
+              : cycleData.cycle.participants.length}
           </StatisticTile>
 
           <StatisticTile label="Gesamt verdiente SILC" className="flex-1">
-            {/* TODO */}
-            ???
+            {cycleData.currentPhase === 1
+              ? cycleData.allSilcBalances.reduce(
+                  (total, citizen) => total + citizen.silcBalance,
+                  0,
+                )
+              : cycleData.cycle.participants.reduce(
+                  (total, participant) =>
+                    total + (participant.silcBalanceSnapshot || 0),
+                  0,
+                )}
           </StatisticTile>
         </div>
 
