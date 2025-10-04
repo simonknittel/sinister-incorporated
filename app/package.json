@@ -45,7 +45,7 @@
     "@uidotdev/usehooks": "2.4.1",
     "@unleash/nextjs": "1.6.2",
     "@vercel/analytics": "1.5.0",
-    "@vercel/otel": "1.13.0",
+    "@vercel/otel": "2.0.1",
     "@vercel/speed-insights": "1.2.0",
     "@xyflow/react": "12.8.4",
     "algoliasearch": "4.25.2",
