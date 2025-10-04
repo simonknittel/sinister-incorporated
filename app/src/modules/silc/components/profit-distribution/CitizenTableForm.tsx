@@ -17,12 +17,13 @@ export const CitizenTableForm = ({ children, className }: Props) => {
 
   const handleChange: ChangeEventHandler<HTMLFormElement> = (event) => {
     const input = event.target as unknown as HTMLInputElement;
-    const [attribute, participantId] = input.name.split("_");
+    const [attribute, cycleId, citizenId] = input.name.split("_");
     const checked = input.checked ? "true" : "";
 
     const formData = new FormData();
     formData.set("attribute", attribute);
-    formData.set("participantId", participantId);
+    formData.set("cycleId", cycleId);
+    formData.set("citizenId", citizenId);
     formData.set("checked", checked);
 
     updateParticipantAttribute(formData)

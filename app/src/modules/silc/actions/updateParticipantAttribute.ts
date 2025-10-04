@@ -11,7 +11,8 @@ import { CyclePhase, getCurrentPhase } from "../utils/getCurrentPhase";
 
 const schema = z.object({
   attribute: z.enum(["ceded", "accepted", "disbursed"]),
-  participantId: z.cuid2(),
+  cycleId: z.cuid2(),
+  citizenId: z.cuid2(),
   checked: z.coerce.boolean().default(false),
 });
 
@@ -39,17 +40,15 @@ export const updateParticipantAttribute = createAuthenticatedAction(
     /**
      * Validate the request
      */
-    const participant =
-      await prisma.profitDistributionCycleParticipant.findUnique({
-        where: { id: data.participantId },
-        include: { cycle: true },
-      });
-    if (!participant)
+    const cycle = await prisma.profitDistributionCycle.findUnique({
+      where: { id: data.cycleId },
+    });
+    if (!cycle)
       return {
         error: t("Common.notFound"),
         requestPayload: formData,
       };
-    const currentPhase = getCurrentPhase(participant.cycle);
+    const currentPhase = getCurrentPhase(cycle);
     switch (data.attribute) {
       case "ceded":
         if (currentPhase !== CyclePhase.Collection)
@@ -78,9 +77,20 @@ export const updateParticipantAttribute = createAuthenticatedAction(
     /**
      *
      */
-    await prisma.profitDistributionCycleParticipant.update({
-      where: { id: participant.id },
-      data: {
+    await prisma.profitDistributionCycleParticipant.upsert({
+      where: {
+        cycleId_citizenId: {
+          cycleId: data.cycleId,
+          citizenId: data.citizenId,
+        },
+      },
+      update: {
+        [`${data.attribute}At`]: data.checked ? new Date() : null,
+        [`${data.attribute}ById`]: authentication.session.entity.id,
+      },
+      create: {
+        cycleId: data.cycleId,
+        citizenId: data.citizenId,
         [`${data.attribute}At`]: data.checked ? new Date() : null,
         [`${data.attribute}ById`]: authentication.session.entity.id,
       },
@@ -89,10 +99,8 @@ export const updateParticipantAttribute = createAuthenticatedAction(
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(
-      `/app/silc/profit-distribution/${participant.cycleId}/management`,
-    );
-    revalidatePath(`/app/silc/profit-distribution/${participant.cycleId}`);
+    revalidatePath(`/app/silc/profit-distribution/${cycle.id}/management`);
+    revalidatePath(`/app/silc/profit-distribution/${cycle.id}`);
     revalidatePath("/app/silc/profit-distribution");
 
     return {
