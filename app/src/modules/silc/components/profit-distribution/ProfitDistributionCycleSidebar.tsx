@@ -38,6 +38,12 @@ export const ProfitDistributionCycleSidebar = ({ className }: Props) => {
             { value: "closed", label: "Geschlossen" },
           ]}
         />
+
+        <div className="background-secondary rounded-primary p-2">
+          <p className="text-sm text-neutral-500">Sortierung</p>
+
+          <p className="text-sm">Ende der Sammelphase (absteigend)</p>
+        </div>
       </div>
     </div>
   );

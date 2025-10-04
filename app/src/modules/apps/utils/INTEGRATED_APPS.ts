@@ -80,7 +80,10 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     imageSrc: silcScreenshot,
     description: "Übersicht und Verwaltung von SILC",
     tags: ["featured", "economics"],
-    permissionStrings: ["silcBalanceOfOtherCitizen;read"],
+    permissionStrings: [
+      "silcBalanceOfOtherCitizen;read",
+      "profitDistributionCycle;read",
+    ],
   },
   {
     name: "Spynet",

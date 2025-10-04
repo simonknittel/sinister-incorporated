@@ -45,7 +45,7 @@ export default async function Page({
   if (!cycleData) notFound();
 
   const [hasProfitDistributionCycleManage] = await Promise.all([
-    authentication.authorizePage("profitDistributionCycle", "manage"),
+    authentication.authorize("profitDistributionCycle", "manage"),
   ]);
 
   return (

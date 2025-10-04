@@ -1,5 +1,6 @@
 import { AccordeonLink } from "@/modules/common/components/Accordeon";
 import { Badge } from "@/modules/common/components/Badge";
+import { formatDate } from "@/modules/common/utils/formatDate";
 import clsx from "clsx";
 import Link from "next/link";
 import type { getProfitDistributionCycles } from "../../queries";
@@ -91,6 +92,11 @@ export const ProfitDistributionCycleExcerpt = ({
                 showLabel
                 value={cycleData.mySilcBalance.toLocaleString("de") ?? "-"}
               />
+              <Badge
+                label="Endet am"
+                showLabel
+                value={formatDate(cycleData.cycle.collectionEndedAt) ?? "-"}
+              />
             </>
           )}
 
@@ -118,6 +124,11 @@ export const ProfitDistributionCycleExcerpt = ({
                 value={cycleData.myShare?.toLocaleString("de") ?? "-"}
               />
               {myPayoutStateBadge}
+              <Badge
+                label="Endet am"
+                showLabel
+                value={formatDate(cycleData.cycle.payoutEndedAt) ?? "-"}
+              />
             </>
           )}
 
@@ -134,6 +145,11 @@ export const ProfitDistributionCycleExcerpt = ({
                 value={cycleData.myShare?.toLocaleString("de") ?? "-"}
               />
               {myPayoutStateBadge}
+              <Badge
+                label="Endet am"
+                showLabel
+                value={formatDate(cycleData.cycle.payoutEndedAt) ?? "-"}
+              />
             </>
           )}
         </div>
