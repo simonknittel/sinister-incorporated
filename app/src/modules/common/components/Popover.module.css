@@ -1,0 +1,13 @@
+.popover {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  transform-origin: center top;
+
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}

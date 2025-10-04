@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { useMouseEnterCounter } from "../utils/useMouseEnterCounter";
+import styles from "./Popover.module.css";
 
 interface PopoverContext {
   closePopover: () => void;
@@ -70,6 +71,7 @@ export const Popover = ({
             <div
               className={clsx(
                 "bg-neutral-950 border border-neutral-700 p-4 rounded-secondary",
+                styles.popover,
                 {
                   relative: enableHover,
                 },
