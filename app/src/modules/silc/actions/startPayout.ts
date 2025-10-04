@@ -8,14 +8,19 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { CyclePhase, getCurrentPhase } from "../utils/getCurrentPhase";
-import { updateCitizensSilcBalances } from "../utils/updateCitizensSilcBalances";
 
 const schema = z.object({
   id: z.cuid2(),
+  auecProfit: z.coerce.number().min(0),
+  payoutEndedAt: z.preprocess((value) => {
+    if (!value) return null;
+    if (typeof value !== "string" && typeof value !== "number") return null;
+    return new Date(value);
+  }, z.date().nullish()),
 });
 
-export const endCollectionPhase = createAuthenticatedAction(
-  "endCollectionPhase",
+export const startPayout = createAuthenticatedAction(
+  "startPayout",
   schema,
   async (formData, authentication, data, t) => {
     if (!(await getUnleashFlag(UNLEASH_FLAG.EnableProfitDistribution)))
@@ -24,6 +29,11 @@ export const endCollectionPhase = createAuthenticatedAction(
     /**
      * Authorize the request
      */
+    if (!authentication.session.entity)
+      return {
+        error: t("Common.forbidden"),
+        requestPayload: formData,
+      };
     if (!(await authentication.authorize("profitDistributionCycle", "update")))
       return {
         error: t("Common.forbidden"),
@@ -42,7 +52,7 @@ export const endCollectionPhase = createAuthenticatedAction(
         requestPayload: formData,
       };
     const currentPhase = getCurrentPhase(cycle);
-    if (currentPhase !== CyclePhase.Collection)
+    if (currentPhase !== CyclePhase.PayoutPreparation)
       return {
         error: t("Common.badRequest"),
         requestPayload: formData,
@@ -51,57 +61,17 @@ export const endCollectionPhase = createAuthenticatedAction(
     /**
      *
      */
-    const allSilcBalances = await prisma.entity.findMany({
+    await prisma.profitDistributionCycle.update({
       where: {
-        silcBalance: {
-          gt: 0,
-        },
+        id: data.id,
+      },
+      data: {
+        payoutStartedAt: new Date(),
+        payoutStartedById: authentication.session.entity.id,
+        auecProfit: data.auecProfit,
+        payoutEndedAt: data.payoutEndedAt,
       },
     });
-
-    await prisma.$transaction([
-      prisma.profitDistributionCycle.update({
-        where: {
-          id: data.id,
-        },
-        data: {
-          collectionEndedAt: new Date(),
-          collectionEndedById: authentication.session.entity?.id,
-        },
-      }),
-
-      ...allSilcBalances.map((entity) =>
-        prisma.profitDistributionCycleParticipant.upsert({
-          where: {
-            cycleId_citizenId: {
-              cycleId: data.id,
-              citizenId: entity.id,
-            },
-          },
-          update: {
-            silcBalanceSnapshot: entity.silcBalance,
-          },
-          create: {
-            cycleId: data.id,
-            citizenId: entity.id,
-            silcBalanceSnapshot: entity.silcBalance,
-          },
-        }),
-      ),
-
-      prisma.silcTransaction.createMany({
-        data: allSilcBalances.map((citizen) => ({
-          receiverId: citizen.id,
-          value: -citizen.silcBalance,
-          description: `Gewinnverteilung: ${cycle.title}`,
-          createdById: authentication.session.entity!.id,
-        })),
-      }),
-    ]);
-
-    await updateCitizensSilcBalances(
-      allSilcBalances.map((citizen) => citizen.id),
-    );
 
     /**
      * Revalidate cache(s)

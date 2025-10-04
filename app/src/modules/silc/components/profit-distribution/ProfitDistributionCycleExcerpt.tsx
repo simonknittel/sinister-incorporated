@@ -1,8 +1,10 @@
 import { AccordeonLink } from "@/modules/common/components/Accordeon";
 import { Badge } from "@/modules/common/components/Badge";
+import { formatDate } from "@/modules/common/utils/formatDate";
 import clsx from "clsx";
 import Link from "next/link";
 import type { getProfitDistributionCycles } from "../../queries";
+import { CyclePhase } from "../../utils/getCurrentPhase";
 import { PayoutState } from "../../utils/getMyPayoutStatus";
 
 interface Props {
@@ -16,55 +18,61 @@ export const ProfitDistributionCycleExcerpt = ({
   className,
   cycleData,
 }: Props) => {
-  let myShareBadge;
+  let myPayoutStateBadge;
   switch (cycleData.myPayoutState) {
     case PayoutState.NOT_PARTICIPATING:
-      myShareBadge = (
+      myPayoutStateBadge = (
         <Badge label="Status deiner Auszahlung" showLabel value="-" />
       );
       break;
 
+    case PayoutState.CEDED:
+      myPayoutStateBadge = (
+        <Badge label="Status deiner Auszahlung" showLabel value="Abgetreten" />
+      );
+      break;
+
     case PayoutState.AWAITING_ACCEPTANCE:
-      myShareBadge = (
+      myPayoutStateBadge = (
         <Badge
           label="Status deiner Auszahlung"
           showLabel
-          value="Zustimmung von dir ausstehend"
+          value="Zustimmung ausstehend"
         />
       );
       break;
 
     case PayoutState.AWAITING_PAYOUT:
-      myShareBadge = (
+      myPayoutStateBadge = (
         <Badge
           label="Status deiner Auszahlung"
           showLabel
-          value="Auszahlung von Economics ausstehend"
+          value="Auszahlung ausstehend"
         />
       );
       break;
 
     case PayoutState.DISBURSED:
-      myShareBadge = (
+      myPayoutStateBadge = (
         <Badge label="Status deiner Auszahlung" showLabel value="Ausgezahlt" />
       );
       break;
 
     case PayoutState.EXPIRED:
-      myShareBadge = (
+      myPayoutStateBadge = (
         <Badge label="Status deiner Auszahlung" showLabel value="Verfallen" />
       );
       break;
 
     case PayoutState.PAYOUT_OVERDUE:
-      myShareBadge = (
+      myPayoutStateBadge = (
         <Badge label="Status deiner Auszahlung" showLabel value="Überfällig" />
       );
       break;
 
     case PayoutState.UNKNOWN:
     default:
-      myShareBadge = (
+      myPayoutStateBadge = (
         <Badge label="Status deiner Auszahlung" showLabel value="Unbekannt" />
       );
       break;
@@ -81,26 +89,24 @@ export const ProfitDistributionCycleExcerpt = ({
       <div className="flex-1 p-2 flex flex-col gap-1">
         <h2 className="font-bold">{cycleData.cycle.title}</h2>
 
-        {/* <div className="flex">
-          <div className="flex flex-col justify-center py-1 text-sm">
-            <h3 className="text-gray-500">Endet am</h3>
-            <p>{formatDate(cycle.collectionEndedAt)}</p>
-          </div>
-        </div> */}
-
         <div className="flex flex-wrap gap-[2px] text-sm">
-          {cycleData.currentPhase === 1 && (
+          {cycleData.currentPhase === CyclePhase.Collection && (
             <>
               <Badge label="Aktuelle Phase" showLabel value="Sammelphase" />
               <Badge
-                label="Von dir verdiente SILC"
+                label="Bisher von dir verdiente SILC"
                 showLabel
-                value={cycleData.mySilcBalance.toString()}
+                value={cycleData.mySilcBalance.toLocaleString("de") ?? "-"}
+              />
+              <Badge
+                label="Endet am"
+                showLabel
+                value={formatDate(cycleData.cycle.collectionEndedAt) ?? "-"}
               />
             </>
           )}
 
-          {cycleData.currentPhase === 2 && (
+          {cycleData.currentPhase === CyclePhase.PayoutPreparation && (
             <>
               <Badge
                 label="Aktuelle Phase"
@@ -110,24 +116,29 @@ export const ProfitDistributionCycleExcerpt = ({
               <Badge
                 label="Von dir verdiente SILC"
                 showLabel
-                value={cycleData.mySilcBalance.toString()}
+                value={cycleData.mySilcBalance.toLocaleString("de") ?? "-"}
               />
             </>
           )}
 
-          {cycleData.currentPhase === 3 && (
+          {cycleData.currentPhase === CyclePhase.Payout && (
             <>
               <Badge label="Aktuelle Phase" showLabel value="Auszahlung" />
               <Badge
                 label="Dein aUEC-Anteil"
                 showLabel
-                value={cycleData.myShare}
+                value={cycleData.myShare?.toLocaleString("de") ?? "-"}
               />
-              {myShareBadge}
+              {myPayoutStateBadge}
+              <Badge
+                label="Endet am"
+                showLabel
+                value={formatDate(cycleData.cycle.payoutEndedAt) ?? "-"}
+              />
             </>
           )}
 
-          {cycleData.currentPhase === 4 && (
+          {cycleData.currentPhase === CyclePhase.Completed && (
             <>
               <Badge
                 label="Aktuelle Phase"
@@ -137,9 +148,14 @@ export const ProfitDistributionCycleExcerpt = ({
               <Badge
                 label="Dein aUEC-Anteil"
                 showLabel
-                value={cycleData.myShare}
+                value={cycleData.myShare?.toLocaleString("de") ?? "-"}
               />
-              {myShareBadge}
+              {myPayoutStateBadge}
+              <Badge
+                label="Endet am"
+                showLabel
+                value={formatDate(cycleData.cycle.payoutEndedAt) ?? "-"}
+              />
             </>
           )}
         </div>

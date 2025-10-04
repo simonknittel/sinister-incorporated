@@ -17,7 +17,7 @@ import type { getProfitDistributionCycleById } from "@/modules/silc/queries";
 import clsx from "clsx";
 import { useId } from "react";
 import { FaSpinner } from "react-icons/fa";
-import { endCollectionPhase } from "../../actions/endCollectionPhase";
+import { endPayout } from "../../actions/endPayout";
 import { CyclePhase } from "../../utils/getCurrentPhase";
 
 interface Props {
@@ -27,9 +27,13 @@ interface Props {
   >;
 }
 
-export const EndCollectionPhaseButton = ({ className, cycleData }: Props) => {
-  const { formAction, isPending } = useAction(endCollectionPhase);
+export const EndPayoutButton = ({ className, cycleData }: Props) => {
+  const { formAction, isPending } = useAction(endPayout);
   const id = useId();
+
+  const openAcceptances = cycleData.cycle.participants.filter(
+    (participant) => participant.acceptedAt && !participant.disbursedAt,
+  ).length;
 
   return (
     <form action={formAction} id={id} className={clsx(className)}>
@@ -38,9 +42,7 @@ export const EndCollectionPhaseButton = ({ className, cycleData }: Props) => {
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button2
-            disabled={
-              cycleData.currentPhase !== CyclePhase.Collection || isPending
-            }
+            disabled={cycleData.currentPhase !== CyclePhase.Payout || isPending}
             variant="secondary"
           >
             {isPending && <FaSpinner className="animate-spin" />}
@@ -50,19 +52,23 @@ export const EndCollectionPhaseButton = ({ className, cycleData }: Props) => {
 
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Sammelphase beenden?</AlertDialogTitle>
+            <AlertDialogTitle>Auszahlung beenden?</AlertDialogTitle>
             <AlertDialogDescription>
-              Willst du die Sammelphase von{" "}
+              Willst du die Auszahlung von{" "}
               <strong>
                 &ldquo;{cycleData.cycle.title}
                 &rdquo;
               </strong>{" "}
               beenden?
               <br />
-              Es wird ein Abbild der aktuellen SILC-Konten von allen Membern
-              erstellt. Im Anschluss werden die Konten auf 0 zurückgesetzt,
-              womit die Sammelphase des nächsten Gewinnverteilungszeitraums
-              startet.
+              Dieser Gewinnverteilungszeitraum wird hiermit geschlossen.
+              {openAcceptances > 0 && (
+                <>
+                  <br />
+                  <strong>{openAcceptances}</strong> Member haben der Auszahlung
+                  zugestimmt, wurden aber noch nicht ausgezahlt.
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
 

@@ -1,26 +1,17 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
-import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
-import { SilcBalancesTable } from "@/modules/silc/components/SilcBalancesTable";
-import { SilcStatistics } from "@/modules/silc/components/SilcStatistics";
+import { getNavigationItems } from "@/modules/silc/utils/getNavigationItems";
 import { type Metadata } from "next";
+import { forbidden, redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "SILC | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page() {
-  const authentication = await requireAuthenticationPage("/app/silc");
-  await authentication.authorizePage("silcBalanceOfOtherCitizen", "read");
+  await requireAuthenticationPage("/app/silc");
 
-  return (
-    <div className="flex flex-col gap-[2px]">
-      <SuspenseWithErrorBoundaryTile>
-        <SilcStatistics />
-      </SuspenseWithErrorBoundaryTile>
+  const pages = await getNavigationItems();
+  if (!pages?.[0]) forbidden();
 
-      <SuspenseWithErrorBoundaryTile>
-        <SilcBalancesTable />
-      </SuspenseWithErrorBoundaryTile>
-    </div>
-  );
+  redirect(pages[0].url);
 }

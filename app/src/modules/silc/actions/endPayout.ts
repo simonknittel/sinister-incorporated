@@ -7,15 +7,14 @@ import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { z } from "zod";
+import { CyclePhase, getCurrentPhase } from "../utils/getCurrentPhase";
 
 const schema = z.object({
   id: z.cuid2(),
-  auecProfit: z.coerce.number().min(0),
-  payoutEndedAt: z.coerce.date().nullish(), // TODO: Fix nullish
 });
 
-export const startPayoutPhase = createAuthenticatedAction(
-  "startPayoutPhase",
+export const endPayout = createAuthenticatedAction(
+  "endPayout",
   schema,
   async (formData, authentication, data, t) => {
     if (!(await getUnleashFlag(UNLEASH_FLAG.EnableProfitDistribution)))
@@ -24,11 +23,6 @@ export const startPayoutPhase = createAuthenticatedAction(
     /**
      * Authorize the request
      */
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
     if (!(await authentication.authorize("profitDistributionCycle", "update")))
       return {
         error: t("Common.forbidden"),
@@ -46,6 +40,12 @@ export const startPayoutPhase = createAuthenticatedAction(
         error: t("Common.notFound"),
         requestPayload: formData,
       };
+    const currentPhase = getCurrentPhase(cycle);
+    if (currentPhase !== CyclePhase.Payout)
+      return {
+        error: t("Common.badRequest"),
+        requestPayload: formData,
+      };
 
     /**
      *
@@ -55,12 +55,11 @@ export const startPayoutPhase = createAuthenticatedAction(
         id: data.id,
       },
       data: {
-        payoutStartedAt: new Date(),
-        payoutStartedById: authentication.session.entity.id,
-        auecProfit: data.auecProfit,
-        payoutEndedAt: data.payoutEndedAt,
+        payoutEndedAt: new Date(),
+        payoutEndedById: authentication.session.entity?.id,
       },
     });
+
     /**
      * Revalidate cache(s)
      */

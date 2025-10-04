@@ -61,7 +61,7 @@ export const CreatePenaltyEntryForm = ({ className, onSuccess }: Props) => {
             : 1
         }
         required
-        className="mt-4"
+        labelClassName="mt-4"
       />
 
       <Textarea

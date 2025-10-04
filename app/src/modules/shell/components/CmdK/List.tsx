@@ -31,6 +31,7 @@ export const List = () => {
     roleManage,
     taskRead,
     silcRead,
+    profitDistributionCycleRead,
     penaltyEntryCreate,
     logAnalyzerRead,
     eventRead,
@@ -47,6 +48,7 @@ export const List = () => {
     authentication.authorize("role", "manage"),
     authentication.authorize("task", "read"),
     authentication.authorize("silcBalanceOfOtherCitizen", "read"),
+    authentication.authorize("profitDistributionCycle", "read"),
     authentication.authorize("penaltyEntry", "create"),
     authentication.authorize("logAnalyzer", "read"),
     authentication.authorize("event", "read"),
@@ -223,7 +225,7 @@ export const List = () => {
             />
           )}
 
-          {silcRead && (
+          {(silcRead || profitDistributionCycleRead) && (
             <LinkItem
               label="SILC"
               icon={<FaPiggyBank />}
