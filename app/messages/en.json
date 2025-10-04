@@ -1,5 +1,6 @@
 {
   "Common": {
+    "notFound": "The requested resource was not found.",
     "forbidden": "You are not allowed to perform this action.",
     "internalServerError": "An unexpected error has occurred. Please try again later. If the error persists, contact support (ind3x).",
     "badRequest": "Bad Request",

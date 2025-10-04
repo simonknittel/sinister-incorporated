@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useHotkeys } from "react-hotkeys-hook";
 import { FaRegTimesCircle } from "react-icons/fa";
+import styles from "./Modal.module.css";
 
 interface Props {
   readonly className?: string;
@@ -38,6 +39,7 @@ export default function Modal({
       <div
         className={clsx(
           "max-h-full max-w-full cursor-auto overflow-auto rounded-primary bg-neutral-800 text-neutral-50",
+          styles.modal,
           className,
         )}
         onMouseDown={(e) => e.stopPropagation()}
