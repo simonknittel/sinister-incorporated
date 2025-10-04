@@ -44,6 +44,6 @@ export const deleteRole = createAuthenticatedAction(
     /**
      * Redirect
      */
-    redirect("/app/roles");
+    redirect("/app/iam/roles");
   },
 );

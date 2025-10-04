@@ -23,7 +23,9 @@ export const generateMetadata = generateMetadataWithTryCatch(
 export default async function Page({
   params,
 }: PageProps<"/app/roles/[id]/inheritance">) {
-  const authentication = await requireAuthenticationPage("/app/roles");
+  const authentication = await requireAuthenticationPage(
+    "/app/roles/[id]/inheritance",
+  );
   await authentication.authorizePage("role", "manage");
 
   const roleId = (await params).id;
