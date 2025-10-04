@@ -115,7 +115,7 @@ export const CreateProfitDistributionCycleForm = ({
         label="Ende der Sammelphase"
         value={end}
         onChange={(e) => setEnd(e.target.value)}
-        className="mt-4"
+        labelClassName="mt-4"
         min={min}
         required
       />

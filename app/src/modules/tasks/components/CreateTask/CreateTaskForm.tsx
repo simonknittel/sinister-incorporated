@@ -245,7 +245,7 @@ export const CreateTaskForm = ({ className, onSuccess }: Props) => {
                   : undefined
               }
               min={1}
-              className="mt-4"
+              labelClassName="mt-4"
             />
 
             <RequiredRoles className="mt-4" />
@@ -332,7 +332,7 @@ export const CreateTaskForm = ({ className, onSuccess }: Props) => {
                 : 1
             }
             required
-            className="mt-4"
+            labelClassName="mt-4"
           />
         )}
 
@@ -346,7 +346,7 @@ export const CreateTaskForm = ({ className, onSuccess }: Props) => {
                 : 1
             }
             required
-            className="mt-4"
+            labelClassName="mt-4"
           />
         )}
 
@@ -416,7 +416,7 @@ export const CreateTaskForm = ({ className, onSuccess }: Props) => {
           }
           required
           min={1}
-          className="mt-4"
+          labelClassName="mt-4"
         />
 
         <Button2 type="submit" disabled={isPending} className="mt-4 ml-auto">

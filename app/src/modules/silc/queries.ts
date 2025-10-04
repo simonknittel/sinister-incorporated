@@ -8,8 +8,13 @@ import type {
 } from "@prisma/client";
 import { forbidden } from "next/navigation";
 import { cache } from "react";
-import { getCurrentPhase } from "./utils/getCurrentPhase";
+import { getAuecPerSilc } from "./utils/getAuecPerSilc";
+import { CyclePhase, getCurrentPhase } from "./utils/getCurrentPhase";
 import { getMyPayoutState } from "./utils/getMyPayoutStatus";
+import { getMyShare } from "./utils/getMyShare";
+import { getOpenAuecPayout } from "./utils/getOpenAuecPayout";
+import { getPaidAuec } from "./utils/getPaidAuec";
+import { getTotalSilc } from "./utils/getTotalSilc";
 
 export const getSilcBalanceOfCurrentCitizen = cache(
   withTrace("getSilcBalanceOfCurrentCitizen", async () => {
@@ -229,19 +234,20 @@ export const getProfitDistributionCycles = cache(
     return Promise.all(
       cycles.map(async (cycle) => {
         const currentPhase = getCurrentPhase(cycle);
-
         const myParticipant = cycle.participants.find(
           (participant) =>
             participant.citizenId === authentication.session.entity!.id,
         );
-
         const mySilcBalance =
-          currentPhase === 1
+          currentPhase === CyclePhase.Collection
             ? await getSilcBalanceOfCurrentCitizen()
             : myParticipant?.silcBalanceSnapshot || 0;
-
-        const myShare = "-"; // TODO: Calculate based on auecProfit and myParticipant.silcBalanceSnapshot
-
+        const totalSilc = getTotalSilc(cycle.participants);
+        const auecPerSilc =
+          cycle.auecProfit !== null
+            ? getAuecPerSilc(cycle.auecProfit, totalSilc)
+            : 0;
+        const myShare = getMyShare(mySilcBalance, auecPerSilc);
         const myPayoutState = getMyPayoutState(cycle, myParticipant);
 
         // TODO: Remove cycle.participants if the user doesn't have the manage permission
@@ -259,9 +265,9 @@ export const getProfitDistributionCycles = cache(
   }),
 );
 
-export const getProfitDistributionCyclesById = cache(
+export const getProfitDistributionCycleById = cache(
   withTrace(
-    "getProfitDistributionCyclesById",
+    "getProfitDistributionCycleById",
     async (id: ProfitDistributionCycle["id"]) => {
       const authentication = await requireAuthentication();
       if (!(await authentication.authorize("profitDistributionCycle", "read")))
@@ -288,24 +294,33 @@ export const getProfitDistributionCyclesById = cache(
       if (!cycle) return null;
 
       const currentPhase = getCurrentPhase(cycle);
-
       const myParticipant = cycle.participants.find(
         (participant) =>
           participant.citizenId === authentication.session.entity!.id,
       );
-
       const mySilcBalance =
-        currentPhase === 1
+        currentPhase === CyclePhase.Collection
           ? await getSilcBalanceOfCurrentCitizen()
           : myParticipant?.silcBalanceSnapshot || 0;
-
-      const myShare = "???"; // TODO: Calculate based on auecProfit and myParticipant.silcBalanceSnapshot
-
+      const totalSilc = getTotalSilc(cycle.participants);
+      const auecPerSilc =
+        cycle.auecProfit !== null
+          ? getAuecPerSilc(cycle.auecProfit, totalSilc)
+          : null;
+      const myShare =
+        auecPerSilc !== null ? getMyShare(mySilcBalance, auecPerSilc) : null;
       const myPayoutState = getMyPayoutState(cycle, myParticipant);
-
       const allSilcBalances = (await getSilcBalanceOfAllCitizens()).filter(
         (citizen) => citizen.silcBalance > 0,
       );
+      const openAuecPayout =
+        auecPerSilc !== null
+          ? getOpenAuecPayout(cycle.participants, auecPerSilc)
+          : null;
+      const paidAuec =
+        auecPerSilc !== null
+          ? getPaidAuec(cycle.participants, auecPerSilc)
+          : null;
 
       // TODO: Remove cycle.participants if the user doesn't have the manage permission
 
@@ -317,6 +332,9 @@ export const getProfitDistributionCyclesById = cache(
         myShare,
         myPayoutState,
         allSilcBalances,
+        totalSilc,
+        openAuecPayout,
+        paidAuec,
       };
     },
   ),

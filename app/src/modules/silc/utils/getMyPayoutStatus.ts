@@ -24,12 +24,17 @@ export const getMyPayoutState = (
   if (!cycle.payoutStartedAt || cycle.payoutStartedAt > now)
     return PayoutState.PAYOUT_NOT_YET_STARTED;
 
-  if (cycle.payoutStartedAt <= now && !myParticipant.acceptedAt)
+  if (
+    cycle.payoutStartedAt <= now &&
+    (!cycle.payoutEndedAt || cycle.payoutEndedAt > now) &&
+    !myParticipant.acceptedAt
+  )
     return PayoutState.AWAITING_ACCEPTANCE;
 
   if (
     cycle.payoutStartedAt <= now &&
     myParticipant.acceptedAt &&
+    (!cycle.payoutEndedAt || cycle.payoutEndedAt > now) &&
     !myParticipant.disbursedAt
   )
     return PayoutState.AWAITING_PAYOUT;

@@ -1,11 +1,12 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { FaArrowUp } from "react-icons/fa";
+import { CyclePhase } from "../../utils/getCurrentPhase";
 
 interface Props {
   readonly className?: string;
-  readonly phase: number;
-  readonly currentPhase: number;
+  readonly phase: CyclePhase;
+  readonly currentPhase: CyclePhase;
   readonly children: ReactNode;
 }
 
@@ -43,7 +44,7 @@ export const Phase = ({ className, phase, currentPhase, children }: Props) => {
         <div className="flex-1 p-4 background-secondary">{children}</div>
       </section>
 
-      {phase > 1 && (
+      {phase > CyclePhase.Collection && (
         <div className="my-4 flex justify-center">
           <FaArrowUp className="text-4xl text-neutral-700" />
         </div>

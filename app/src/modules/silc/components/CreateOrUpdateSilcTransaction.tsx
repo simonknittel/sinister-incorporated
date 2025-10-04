@@ -143,7 +143,7 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
                 ? (state.requestPayload.get("value") as string)
                 : ("transaction" in props && props.transaction?.value) || 1
             }
-            className="mt-4"
+            labelClassName="mt-4"
           />
 
           <Textarea

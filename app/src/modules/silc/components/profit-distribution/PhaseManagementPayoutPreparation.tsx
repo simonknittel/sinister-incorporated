@@ -14,59 +14,74 @@ import {
 } from "@/modules/common/components/AlertDialog";
 import { Button2 } from "@/modules/common/components/Button2";
 import { DateInput } from "@/modules/common/components/form/DateInput";
-import { NumberInput } from "@/modules/common/components/form/NumberInput";
+import { NumberInputFormatted } from "@/modules/common/components/form/NumberInput";
 import { StatisticTile } from "@/modules/common/components/StatisticTile";
-import { useId, useState } from "react";
+import { useId, useState, type KeyboardEventHandler } from "react";
 import { FaSpinner } from "react-icons/fa";
-import { startPayoutPhase } from "../../actions/startPayoutPhase";
-import type { getProfitDistributionCyclesById } from "../../queries";
+import { startPayout } from "../../actions/startPayout";
+import type { getProfitDistributionCycleById } from "../../queries";
+import { getAuecPerSilc } from "../../utils/getAuecPerSilc";
+import { CyclePhase } from "../../utils/getCurrentPhase";
 import { Phase } from "./Phase";
 
 interface Props {
   readonly cycleData: NonNullable<
-    Awaited<ReturnType<typeof getProfitDistributionCyclesById>>
+    Awaited<ReturnType<typeof getProfitDistributionCycleById>>
   >;
 }
 
-export const Phase2 = ({ cycleData }: Props) => {
-  const { formAction, isPending } = useAction(startPayoutPhase);
+export const PhaseManagementPayoutPreparation = ({ cycleData }: Props) => {
+  const { formAction, isPending } = useAction(startPayout);
   const id = useId();
   const [auecProfit, setAuecProfit] = useState(cycleData.cycle.auecProfit || 0);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  const totalSilc = cycleData.cycle.participants.reduce(
-    (total, participant) => total + (participant.silcBalanceSnapshot || 0),
-    0,
-  );
-  const auecPerSilc = totalSilc > 0 ? Math.round(auecProfit / totalSilc) : 0;
+  const auecPerSilc = getAuecPerSilc(auecProfit, cycleData.totalSilc);
+
+  const handleKeyDown: KeyboardEventHandler = (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    setIsAlertOpen(true);
+  };
 
   return (
-    <Phase phase={2} currentPhase={cycleData.currentPhase}>
+    <Phase
+      phase={CyclePhase.PayoutPreparation}
+      currentPhase={cycleData.currentPhase}
+    >
       <form action={formAction} id={id}>
         <input type="hidden" name="id" value={cycleData.cycle.id} />
 
         <h2 className="text-center font-bold">Vorbereitung der Auszahlung</h2>
 
-        <div className="flex border-t border-white/5 mt-4 pt-4">
+        <div
+          className="flex border-t border-white/5 mt-4 pt-4"
+          onKeyDown={handleKeyDown}
+        >
           <div className="w-full max-w-80 mx-auto text-center">
-            <NumberInput
-              name="auecProfit"
+            <NumberInputFormatted
               label="Gesamter aUEC-Überschuss"
-              disabled={cycleData.currentPhase !== 2}
+              disabled={cycleData.currentPhase !== CyclePhase.PayoutPreparation}
               value={auecProfit}
-              onChange={(e) => setAuecProfit(e.target.valueAsNumber || 0)}
+              onValueChange={(values) => {
+                setAuecProfit(values.floatValue || 0);
+              }}
               min={0}
               step={0}
+              className="text-center"
             />
+            <input type="hidden" name="auecProfit" value={auecProfit} />
           </div>
 
           <div className="w-full max-w-80 mx-auto text-center">
             <DateInput
               name="payoutEndedAt"
               label="Auszahlungsphase endet am"
-              disabled={cycleData.currentPhase !== 2}
+              disabled={cycleData.currentPhase !== CyclePhase.PayoutPreparation}
               defaultValue={
                 cycleData.cycle.payoutEndedAt?.toISOString().split("T")[0] || ""
               }
+              className="text-center"
             />
           </div>
         </div>
@@ -80,10 +95,13 @@ export const Phase2 = ({ cycleData }: Props) => {
           </StatisticTile>
         </div>
 
-        <AlertDialog>
+        <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
           <AlertDialogTrigger asChild>
             <Button2
-              disabled={cycleData.currentPhase !== 2 || isPending}
+              disabled={
+                cycleData.currentPhase !== CyclePhase.PayoutPreparation ||
+                isPending
+              }
               variant="secondary"
               className="mx-auto mt-4"
             >

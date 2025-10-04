@@ -1,10 +1,25 @@
 import type { ProfitDistributionCycle } from "@prisma/client";
 
+export enum CyclePhase {
+  Collection,
+  PayoutPreparation,
+  Payout,
+  Completed,
+}
+
 export const getCurrentPhase = (cycle: ProfitDistributionCycle) => {
-  let currentPhase = 1;
+  let currentPhase = CyclePhase.Collection;
+
   const now = new Date();
-  if (cycle.collectionEndedAt < now) currentPhase = 2;
-  if (cycle.payoutStartedAt && cycle.payoutStartedAt < now) currentPhase = 3;
-  if (cycle.payoutEndedAt && cycle.payoutEndedAt < now) currentPhase = 4;
+
+  if (cycle.collectionEndedAt < now)
+    currentPhase = CyclePhase.PayoutPreparation;
+
+  if (cycle.payoutStartedAt && cycle.payoutStartedAt < now)
+    currentPhase = CyclePhase.Payout;
+
+  if (cycle.payoutEndedAt && cycle.payoutEndedAt < now)
+    currentPhase = CyclePhase.Completed;
+
   return currentPhase;
 };

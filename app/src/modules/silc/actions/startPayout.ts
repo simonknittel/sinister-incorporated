@@ -7,15 +7,20 @@ import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { z } from "zod";
+import { CyclePhase, getCurrentPhase } from "../utils/getCurrentPhase";
 
 const schema = z.object({
   id: z.cuid2(),
   auecProfit: z.coerce.number().min(0),
-  payoutEndedAt: z.coerce.date().nullish(), // TODO: Fix nullish
+  payoutEndedAt: z.preprocess((value) => {
+    if (!value) return null;
+    if (typeof value !== "string" && typeof value !== "number") return null;
+    return new Date(value);
+  }, z.date().nullish()),
 });
 
-export const startPayoutPhase = createAuthenticatedAction(
-  "startPayoutPhase",
+export const startPayout = createAuthenticatedAction(
+  "startPayout",
   schema,
   async (formData, authentication, data, t) => {
     if (!(await getUnleashFlag(UNLEASH_FLAG.EnableProfitDistribution)))
@@ -44,6 +49,12 @@ export const startPayoutPhase = createAuthenticatedAction(
     if (!cycle)
       return {
         error: t("Common.notFound"),
+        requestPayload: formData,
+      };
+    const currentPhase = getCurrentPhase(cycle);
+    if (currentPhase !== CyclePhase.PayoutPreparation)
+      return {
+        error: t("Common.badRequest"),
         requestPayload: formData,
       };
 
