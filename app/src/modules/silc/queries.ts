@@ -211,19 +211,16 @@ export const getProfitDistributionCycles = cache(
       "manage",
     );
 
-    // TODO: Only return past and current cycle for users without the manage permission
-    const today = new Date();
-    // today.setHours(0, 0, 0, 0);
-
+    const now = new Date();
     const cycles = await prisma.profitDistributionCycle.findMany({
       where: {
         ...(status === "open"
           ? {
-              OR: [{ payoutEndedAt: null }, { payoutEndedAt: { gt: today } }],
+              OR: [{ payoutEndedAt: null }, { payoutEndedAt: { gt: now } }],
             }
           : {
               payoutEndedAt: {
-                lt: today,
+                lt: now,
               },
             }),
       },
