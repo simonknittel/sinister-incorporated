@@ -2,10 +2,7 @@
 
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import YesNoCheckbox from "@/modules/common/components/form/YesNoCheckbox";
-import type {
-  Entity,
-  ProfitDistributionCycleParticipant,
-} from "@prisma/client";
+import type { Entity } from "@prisma/client";
 import {
   createColumnHelper,
   flexRender,
@@ -24,12 +21,14 @@ import { CitizenTableForm } from "./CitizenTableForm";
 
 interface Row {
   readonly id: string;
-  readonly participant: ProfitDistributionCycleParticipant;
   readonly citizen: Pick<Entity, "id" | "handle">;
   readonly handle: string;
   readonly silc: number;
   readonly auec: number | null;
   readonly payoutState: PayoutState;
+  readonly cededAt: Date | null;
+  readonly acceptedAt: Date | null;
+  readonly disbursedAt: Date | null;
 }
 
 const columnHelper = createColumnHelper<Row>();
@@ -46,30 +45,65 @@ interface Props {
 
 export const CitizenTable = ({ className, cycleData }: Props) => {
   const rows: Row[] = useMemo(() => {
+    if (cycleData.currentPhase === CyclePhase.Collection) {
+      return cycleData.allSilcBalances.map((citizen) => {
+        const silc = citizen.silcBalance;
+
+        const participant = cycleData.cycle.participants.find(
+          (participant) => participant.citizenId === citizen.id,
+        );
+        let cededAt = null;
+        let acceptedAt = null;
+        let disbursedAt = null;
+        if (participant) {
+          cededAt = participant.cededAt;
+          acceptedAt = participant.acceptedAt;
+          disbursedAt = participant.disbursedAt;
+        }
+
+        return {
+          id: citizen.id,
+          citizen,
+          handle: citizen.handle!,
+          silc,
+          auec: null,
+          payoutState: PayoutState.PAYOUT_NOT_YET_STARTED,
+          cededAt,
+          acceptedAt,
+          disbursedAt,
+        };
+      });
+    }
+
     return cycleData.cycle.participants.map((participant) => {
-      const silcBalanceSnapshot =
+      const silc =
         (cycleData.currentPhase === CyclePhase.Collection
           ? participant.citizen.silcBalance
           : participant.silcBalanceSnapshot) || 0;
 
       const auec =
-        silcBalanceSnapshot && cycleData.auecPerSilc
-          ? silcBalanceSnapshot * cycleData.auecPerSilc
-          : null;
+        silc && cycleData.auecPerSilc ? silc * cycleData.auecPerSilc : null;
 
       const payoutState = getPayoutState(cycleData.cycle, participant);
 
       return {
-        id: participant.id,
-        participant,
+        id: participant.citizen.id,
         citizen: participant.citizen,
         handle: participant.citizen.handle!,
-        silc: silcBalanceSnapshot,
+        silc,
         auec,
         payoutState,
+        cededAt: participant.cededAt,
+        acceptedAt: participant.acceptedAt,
+        disbursedAt: participant.disbursedAt,
       };
     });
-  }, [cycleData.currentPhase, cycleData.auecPerSilc, cycleData.cycle]);
+  }, [
+    cycleData.currentPhase,
+    cycleData.auecPerSilc,
+    cycleData.cycle,
+    cycleData.allSilcBalances,
+  ]);
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: "handle", desc: false },
@@ -136,13 +170,12 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
           }
         },
       }),
-      columnHelper.accessor("participant.cededAt", {
+      columnHelper.accessor("cededAt", {
         header: "Abgetreten",
         cell: (row) => {
           return (
             <YesNoCheckbox
-              key={`ceded_${row.row.original.participant.id}`}
-              name={`ceded_${row.row.original.participant.id}`}
+              name={`ceded_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
               defaultChecked={!!row.getValue()}
               disabled={cycleData.currentPhase !== CyclePhase.Collection}
               yesLabel=""
@@ -151,13 +184,12 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
           );
         },
       }),
-      columnHelper.accessor("participant.acceptedAt", {
+      columnHelper.accessor("acceptedAt", {
         header: "Zugestimmt",
         cell: (row) => {
           return (
             <YesNoCheckbox
-              key={`accepted_${row.row.original.participant.id}`}
-              name={`accepted_${row.row.original.participant.id}`}
+              name={`accepted_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
               defaultChecked={!!row.getValue()}
               disabled={cycleData.currentPhase !== CyclePhase.Payout}
               yesLabel=""
@@ -166,13 +198,12 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
           );
         },
       }),
-      columnHelper.accessor("participant.disbursedAt", {
+      columnHelper.accessor("disbursedAt", {
         header: "Ausgezahlt",
         cell: (row) => {
           return (
             <YesNoCheckbox
-              key={`disbursed_${row.row.original.participant.id}`}
-              name={`disbursed_${row.row.original.participant.id}`}
+              name={`disbursed_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
               defaultChecked={!!row.getValue()}
               disabled={cycleData.currentPhase !== CyclePhase.Payout}
               yesLabel=""
@@ -182,7 +213,7 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
         },
       }),
     ];
-  }, [cycleData.currentPhase]);
+  }, [cycleData.currentPhase, cycleData.cycle.id]);
 
   const table = useReactTable({
     data: rows,
