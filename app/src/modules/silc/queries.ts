@@ -10,7 +10,7 @@ import { forbidden } from "next/navigation";
 import { cache } from "react";
 import { getAuecPerSilc } from "./utils/getAuecPerSilc";
 import { CyclePhase, getCurrentPhase } from "./utils/getCurrentPhase";
-import { getMyPayoutState } from "./utils/getMyPayoutStatus";
+import { getPayoutState } from "./utils/getMyPayoutStatus";
 import { getMyShare } from "./utils/getMyShare";
 import { getOpenAuecPayout } from "./utils/getOpenAuecPayout";
 import { getPaidAuec } from "./utils/getPaidAuec";
@@ -279,7 +279,7 @@ export const getProfitDistributionCycles = cache(
               ? getAuecPerSilc(cycle.auecProfit, totalSilc)
               : 0;
           const myShare = getMyShare(mySilcBalance, auecPerSilc);
-          const myPayoutState = getMyPayoutState(cycle, myParticipant);
+          const myPayoutState = getPayoutState(cycle, myParticipant);
 
           // TODO: Remove cycle.participants if the user doesn't have the manage permission
 
@@ -315,6 +315,13 @@ export const getProfitDistributionCycleById = cache(
         include: {
           participants: {
             include: {
+              citizen: {
+                select: {
+                  id: true,
+                  handle: true,
+                  silcBalance: true,
+                },
+              },
               disbursedBy: {
                 select: {
                   id: true,
@@ -343,7 +350,7 @@ export const getProfitDistributionCycleById = cache(
           : null;
       const myShare =
         auecPerSilc !== null ? getMyShare(mySilcBalance, auecPerSilc) : null;
-      const myPayoutState = getMyPayoutState(cycle, myParticipant);
+      const myPayoutState = getPayoutState(cycle, myParticipant);
       const allSilcBalances = hasProfitDistributionCycleManage
         ? (await getSilcBalanceOfAllCitizens()).filter(
             (citizen) => citizen.silcBalance > 0,
@@ -371,6 +378,7 @@ export const getProfitDistributionCycleById = cache(
         totalSilc,
         openAuecPayout,
         paidAuec,
+        auecPerSilc,
       };
     },
   ),

@@ -72,6 +72,7 @@ export const startPayout = createAuthenticatedAction(
         payoutEndedAt: data.payoutEndedAt,
       },
     });
+
     /**
      * Revalidate cache(s)
      */

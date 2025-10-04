@@ -26,12 +26,18 @@ export const ProfitDistributionCycleExcerpt = ({
       );
       break;
 
+    case PayoutState.CEDED:
+      myPayoutStateBadge = (
+        <Badge label="Status deiner Auszahlung" showLabel value="Abgetreten" />
+      );
+      break;
+
     case PayoutState.AWAITING_ACCEPTANCE:
       myPayoutStateBadge = (
         <Badge
           label="Status deiner Auszahlung"
           showLabel
-          value="Zustimmung von dir ausstehend"
+          value="Zustimmung ausstehend"
         />
       );
       break;
@@ -41,7 +47,7 @@ export const ProfitDistributionCycleExcerpt = ({
         <Badge
           label="Status deiner Auszahlung"
           showLabel
-          value="Auszahlung von Economics ausstehend"
+          value="Auszahlung ausstehend"
         />
       );
       break;

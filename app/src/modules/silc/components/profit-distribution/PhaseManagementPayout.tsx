@@ -4,6 +4,7 @@ import { StatisticTile } from "@/modules/common/components/StatisticTile";
 import { formatDate } from "@/modules/common/utils/formatDate";
 import type { getProfitDistributionCycleById } from "../../queries";
 import { CyclePhase } from "../../utils/getCurrentPhase";
+import { CitizenTable } from "./CitizenTable";
 import { EndPayoutButton } from "./EndPayoutButton";
 import { Phase } from "./Phase";
 
@@ -15,7 +16,11 @@ interface Props {
 
 export const PhaseManagementPayout = ({ cycleData }: Props) => {
   return (
-    <Phase phase={CyclePhase.Payout} currentPhase={cycleData.currentPhase}>
+    <Phase
+      phase={CyclePhase.Payout}
+      currentPhase={cycleData.currentPhase}
+      innerClassName="overflow-hidden"
+    >
       <h2 className="font-bold text-center">Auszahlung</h2>
 
       <div className="flex gap-[2px] border-t border-white/5 mt-4 pt-4">
@@ -49,10 +54,13 @@ export const PhaseManagementPayout = ({ cycleData }: Props) => {
         <EndPayoutButton cycleData={cycleData} />
       </div>
 
-      <div className="flex justify-center items-center gap-2 border-t border-white/5 pt-4 mt-4">
-        TODO: Tabelle mit Membern (Handle, verdiente SILC, abgetreten ja/nein,
-        zugestimmt ja/nein, ausgezahlt ja/nein)
-      </div>
+      {[CyclePhase.Payout, CyclePhase.Completed].includes(
+        cycleData.currentPhase,
+      ) && (
+        <div className="flex justify-center items-center gap-2 border-t border-white/5 pt-4 mt-4">
+          <CitizenTable cycleData={cycleData} />
+        </div>
+      )}
     </Phase>
   );
 };

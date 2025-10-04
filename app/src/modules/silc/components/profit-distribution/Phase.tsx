@@ -5,12 +5,19 @@ import { CyclePhase } from "../../utils/getCurrentPhase";
 
 interface Props {
   readonly className?: string;
+  readonly innerClassName?: string;
   readonly phase: CyclePhase;
   readonly currentPhase: CyclePhase;
   readonly children: ReactNode;
 }
 
-export const Phase = ({ className, phase, currentPhase, children }: Props) => {
+export const Phase = ({
+  className,
+  innerClassName,
+  phase,
+  currentPhase,
+  children,
+}: Props) => {
   const isCurrentPhase = phase === currentPhase;
 
   return (
@@ -41,7 +48,11 @@ export const Phase = ({ className, phase, currentPhase, children }: Props) => {
           {phase > currentPhase && "Nächste Phase"}
         </div>
 
-        <div className="flex-1 p-4 background-secondary">{children}</div>
+        <div
+          className={clsx("flex-1 p-4 background-secondary", innerClassName)}
+        >
+          {children}
+        </div>
       </section>
 
       {phase > CyclePhase.Collection && (

@@ -39,6 +39,9 @@ export const PhasePayout = ({ cycleData }: Props) => {
         {cycleData.myPayoutState === PayoutState.NOT_PARTICIPATING && (
           <span>-</span>
         )}
+        {cycleData.myPayoutState === PayoutState.CEDED && (
+          <span>Abgetreten</span>
+        )}
         {cycleData.myPayoutState === PayoutState.AWAITING_ACCEPTANCE && (
           <span className="text-red-500">Zustimmung ausstehend</span>
         )}
@@ -51,11 +54,11 @@ export const PhasePayout = ({ cycleData }: Props) => {
         {cycleData.myPayoutState === PayoutState.EXPIRED && (
           <span className="text-red-500">Verfallen</span>
         )}
-        {cycleData.myPayoutState === PayoutState.UNKNOWN && (
-          <span className="text-red-500">Unbekannt</span>
-        )}
         {cycleData.myPayoutState === PayoutState.PAYOUT_OVERDUE && (
           <span className="text-red-500">Überfällig</span>
+        )}
+        {cycleData.myPayoutState === PayoutState.UNKNOWN && (
+          <span className="text-red-500">Unbekannt</span>
         )}
       </StatisticTile>
 
