@@ -30,6 +30,14 @@
         "!@prisma/client",
         "!@prisma/instrumentation"
       ]
+    },
+    {
+      "groupName": "Major Releases",
+      "groupSlug": "major-releases",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
     }
   ],
   "osvVulnerabilityAlerts": true,
