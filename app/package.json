@@ -48,7 +48,7 @@
     "@vercel/otel": "1.13.0",
     "@vercel/speed-insights": "1.2.0",
     "@xyflow/react": "12.8.4",
-    "algoliasearch": "4.25.2",
+    "algoliasearch": "5.7.0",
     "change-case": "5.4.4",
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
