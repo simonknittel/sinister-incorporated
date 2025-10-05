@@ -43,6 +43,23 @@ export const PhaseManagementCollection = ({ cycleData }: Props) => {
                 )
                 .toLocaleString("de")}
         </StatisticTile>
+
+        <StatisticTile
+          label="Gesamt abgetretene SILC bisher"
+          className="flex-1"
+        >
+          {cycleData.currentPhase === CyclePhase.Collection
+            ? cycleData.allSilcBalances
+                .reduce((total, citizen) => total + citizen.silcBalance, 0)
+                .toLocaleString("de")
+            : cycleData.cycle.participants
+                .reduce(
+                  (total, participant) =>
+                    total + (participant.silcBalanceSnapshot || 0),
+                  0,
+                )
+                .toLocaleString("de")}
+        </StatisticTile>
       </div>
 
       <div className="flex justify-center mt-4">

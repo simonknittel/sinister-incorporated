@@ -49,6 +49,7 @@ export const PhaseManagementPayoutPreparation = ({ cycleData }: Props) => {
     <Phase
       phase={CyclePhase.PayoutPreparation}
       currentPhase={cycleData.currentPhase}
+      innerClassName="overflow-hidden"
     >
       <form action={formAction} id={id}>
         <input type="hidden" name="id" value={cycleData.cycle.id} />
@@ -90,9 +91,28 @@ export const PhaseManagementPayoutPreparation = ({ cycleData }: Props) => {
         <div className="flex gap-[2px] mt-4">
           <StatisticTile
             label="aUEC pro SILC (kaufmännisch gerundet)"
+            preLabel={
+              <>
+                {auecProfit.toLocaleString("de")} aUEC /{" "}
+                {cycleData.totalSilc.toLocaleString("de")} SILC =
+              </>
+            }
             className="flex-1"
           >
             {auecPerSilc.toLocaleString("de")}
+          </StatisticTile>
+
+          <StatisticTile
+            label="auszuzahlende aUEC (kaufmännisch gerundet)"
+            preLabel={
+              <>
+                {auecPerSilc.toLocaleString("de")} aUEC *{" "}
+                {cycleData.totalSilc.toLocaleString("de")} SILC =
+              </>
+            }
+            className="flex-1"
+          >
+            {(auecPerSilc * cycleData.totalSilc).toLocaleString("de")}
           </StatisticTile>
         </div>
 
