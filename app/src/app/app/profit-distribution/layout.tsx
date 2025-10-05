@@ -16,7 +16,8 @@ export default async function Layout({ children }: Props) {
   ]);
 
   const showCta =
-    authentication && (await authentication.authorize("task", "create"));
+    authentication &&
+    (await authentication.authorize("profitDistributionCycle", "create"));
 
   return (
     <DefaultLayout
