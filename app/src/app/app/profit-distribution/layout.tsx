@@ -1,8 +1,8 @@
 import { authenticate } from "@/modules/auth/server";
 import { DefaultLayout } from "@/modules/common/components/layouts/DefaultLayout";
 import { MaxWidthContent } from "@/modules/common/components/layouts/MaxWidthContent";
-import { CreateTaskButton } from "@/modules/tasks/components/CreateTask/CreateTaskButton";
-import { getNavigationItems } from "@/modules/tasks/utils/getNavigationItems";
+import { CreateProfitDistributionCycleButton } from "@/modules/profit-distribution/components/CreateProfitDistributionCycleButton";
+import { getNavigationItems } from "@/modules/profit-distribution/utils/getNavigationItems";
 import type { ReactNode } from "react";
 
 interface Props {
@@ -16,14 +16,15 @@ export default async function Layout({ children }: Props) {
   ]);
 
   const showCta =
-    authentication && (await authentication.authorize("task", "create"));
+    authentication &&
+    (await authentication.authorize("profitDistributionCycle", "create"));
 
   return (
     <DefaultLayout
-      title="Tasks"
+      title="Gewinnverteilung"
       pages={pages}
-      cta={showCta ? <CreateTaskButton /> : undefined}
-      slug="tasks"
+      cta={showCta ? <CreateProfitDistributionCycleButton /> : undefined}
+      slug="profit-distribution"
     >
       <MaxWidthContent>{children}</MaxWidthContent>
     </DefaultLayout>

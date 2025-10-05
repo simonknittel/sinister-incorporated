@@ -45,7 +45,7 @@ const CreateTaskForm = dynamic(() =>
 
 const CreateProfitDistributionCycleForm = dynamic(() =>
   import(
-    "@/modules/silc/components/profit-distribution/CreateProfitDistributionCycleForm"
+    "@/modules/profit-distribution/components/CreateProfitDistributionCycleForm"
   ).then((mod) => mod.CreateProfitDistributionCycleForm),
 );
 

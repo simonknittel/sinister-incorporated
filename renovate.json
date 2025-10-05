@@ -30,6 +30,12 @@
         "!@prisma/client",
         "!@prisma/instrumentation"
       ]
+    },
+    {
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "minimumReleaseAge": "730 days"
     }
   ],
   "osvVulnerabilityAlerts": true,

@@ -11,6 +11,7 @@ import helpScreenshot from "@/modules/help/assets/screenshot.png";
 import iamScreenshot from "@/modules/iam/assets/screenshot.png";
 import logAnalyzerScreenshot from "@/modules/log-analyzer/assets/screenshot.png";
 import penaltyPointsScreenshot from "@/modules/penalty-points/assets/screenshot.png";
+import profitDistributionScreenshot from "@/modules/profit-distribution/assets/screenshot.png";
 import silcScreenshot from "@/modules/silc/assets/screenshot.png";
 import spynetScreenshot from "@/modules/spynet/assets/screenshot.png";
 import tasksScreenshot from "@/modules/tasks/assets/screenshot.png";
@@ -24,11 +25,33 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     description: "Einstellungen zu deinem Account",
   },
   {
+    name: "Changelog",
+    href: "/app/changelog",
+    imageSrc: changelogScreenshot,
+    description: "Übersicht der letzten Änderungen im S.A.M.",
+  },
+  {
+    name: "Cornerstone Image Browser",
+    href: "/app/tools/cornerstone-image-browser",
+    imageSrc: cornerstoneImageBrowserScreenshot,
+    description:
+      "Stellt die Bilder von Cornerstone nebeneinander dar, um sie visuell einfach vergleichen zu können.",
+    tags: ["fun"],
+  },
+  {
     name: "Dashboard",
     href: "/app/dashboard",
     imageSrc: dashboardScreenshot,
     description: "Übersicht mit aktuellen Informationen",
     tags: ["featured"],
+  },
+  {
+    name: "Dogfight Trainer",
+    href: "/app/dogfight-trainer",
+    imageSrc: dogfightTrainerScreenshot,
+    description:
+      "Zeige deinen Dogfight Skill in unserer Hommage an den Klassiker, Asteroids. Achte darauf was du abschießt!",
+    tags: ["fun"],
   },
   {
     name: "Dokumente",
@@ -55,10 +78,25 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     permissionStrings: ["ship;manage", "orgFleet;read"],
   },
   {
+    name: "Gewinnverteilung",
+    href: "/app/profit-distribution",
+    imageSrc: profitDistributionScreenshot,
+    description: "Übersicht und Verwaltung der SILC-Gewinnverteilung",
+    tags: ["featured", "economics"],
+    permissionStrings: ["profitDistributionCycle;read"],
+  },
+  {
     name: "Hilfe",
     href: "/app/help",
     imageSrc: helpScreenshot,
     description: "Hilfe und Anleitungen zur Nutzung des S.A.M.",
+  },
+  {
+    name: "IAM",
+    href: "/app/iam",
+    imageSrc: iamScreenshot,
+    description: "Übersicht und Verwaltung der Rollen und Benutzer.",
+    permissionStrings: ["role;manage", "user;read"],
   },
   {
     name: "Karriere",
@@ -75,15 +113,21 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     ],
   },
   {
+    name: "Log Analyzer",
+    href: "/app/tools/log-analyzer",
+    imageSrc: logAnalyzerScreenshot,
+    description:
+      "Wertet die Game Logs von Star Citizen aus um nach Kills zu filtern.",
+    tags: ["security"],
+    permissionStrings: ["logAnalyzer;read"],
+  },
+  {
     name: "SILC",
     href: "/app/silc",
     imageSrc: silcScreenshot,
     description: "Übersicht und Verwaltung von SILC",
     tags: ["featured", "economics"],
-    permissionStrings: [
-      "silcBalanceOfOtherCitizen;read",
-      "profitDistributionCycle;read",
-    ],
+    permissionStrings: ["silcBalanceOfOtherCitizen;read"],
   },
   {
     name: "Spynet",
@@ -108,43 +152,5 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     description: "Org-internes Quest System",
     tags: ["featured"],
     permissionStrings: ["task;read"],
-  },
-  {
-    name: "Cornerstone Image Browser",
-    href: "/app/tools/cornerstone-image-browser",
-    imageSrc: cornerstoneImageBrowserScreenshot,
-    description:
-      "Stellt die Bilder von Cornerstone nebeneinander dar, um sie visuell einfach vergleichen zu können.",
-    tags: ["fun"],
-  },
-  {
-    name: "Dogfight Trainer",
-    href: "/app/dogfight-trainer",
-    imageSrc: dogfightTrainerScreenshot,
-    description:
-      "Zeige deinen Dogfight Skill in unserer Hommage an den Klassiker, Asteroids. Achte darauf was du abschießt!",
-    tags: ["fun"],
-  },
-  {
-    name: "Log Analyzer",
-    href: "/app/tools/log-analyzer",
-    imageSrc: logAnalyzerScreenshot,
-    description:
-      "Wertet die Game Logs von Star Citizen aus um nach Kills zu filtern.",
-    tags: ["security"],
-    permissionStrings: ["logAnalyzer;read"],
-  },
-  {
-    name: "Changelog",
-    href: "/app/changelog",
-    imageSrc: changelogScreenshot,
-    description: "Übersicht der letzten Änderungen im S.A.M.",
-  },
-  {
-    name: "IAM",
-    href: "/app/iam",
-    imageSrc: iamScreenshot,
-    description: "Übersicht und Verwaltung der Rollen und Benutzer.",
-    permissionStrings: ["role;manage", "user;read"],
   },
 ];

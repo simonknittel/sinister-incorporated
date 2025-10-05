@@ -186,6 +186,16 @@ export const List = () => {
             />
           )}
 
+          {profitDistributionCycleRead && (
+            <LinkItem
+              label="Gewinnverteilung"
+              icon={<FaPiggyBank />}
+              href="/app/profit-distribution"
+              setOpen={setOpen}
+              setSearch={setSearch}
+            />
+          )}
+
           <LinkItem
             label="Hilfe"
             keywords={["Hilfe", "Help", "Support"]}
@@ -225,7 +235,7 @@ export const List = () => {
             />
           )}
 
-          {(silcRead || profitDistributionCycleRead) && (
+          {silcRead && (
             <LinkItem
               label="SILC"
               icon={<FaPiggyBank />}
