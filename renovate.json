@@ -32,12 +32,10 @@
       ]
     },
     {
-      "groupName": "Major Releases",
-      "groupSlug": "major-releases",
       "matchUpdateTypes": [
         "major"
       ],
-      "minimumReleaseAge": "365 days"
+      "minimumReleaseAge": "730 days"
     }
   ],
   "osvVulnerabilityAlerts": true,
