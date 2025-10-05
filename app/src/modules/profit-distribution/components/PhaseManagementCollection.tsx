@@ -63,9 +63,7 @@ export const PhaseManagementCollection = ({ cycleData }: Props) => {
         <EndCollectionPhaseButton cycleData={cycleData} />
       </div>
 
-      {[CyclePhase.Collection, CyclePhase.PayoutPreparation].includes(
-        cycleData.currentPhase,
-      ) && (
+      {cycleData.currentPhase === CyclePhase.Collection && (
         <div className="flex justify-center items-center gap-2 border-t border-white/5 pt-4 mt-4">
           <CitizenTable cycleData={cycleData} />
         </div>

@@ -22,6 +22,7 @@ import { startPayout } from "../actions/startPayout";
 import type { getProfitDistributionCycleById } from "../queries";
 import { getAuecPerSilc } from "../utils/getAuecPerSilc";
 import { CyclePhase } from "../utils/getCurrentPhase";
+import { CitizenTable } from "./CitizenTable";
 import { Phase } from "./Phase";
 
 interface Props {
@@ -130,6 +131,12 @@ export const PhaseManagementPayoutPreparation = ({ cycleData }: Props) => {
           </AlertDialogContent>
         </AlertDialog>
       </form>
+
+      {cycleData.currentPhase === CyclePhase.PayoutPreparation && (
+        <div className="flex justify-center items-center gap-2 border-t border-white/5 pt-4 mt-4">
+          <CitizenTable cycleData={cycleData} />
+        </div>
+      )}
     </Phase>
   );
 };

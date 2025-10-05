@@ -177,7 +177,11 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
             <YesNoCheckbox
               name={`ceded_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
               defaultChecked={!!row.getValue()}
-              disabled={cycleData.currentPhase !== CyclePhase.Collection}
+              disabled={
+                ![CyclePhase.Collection, CyclePhase.PayoutPreparation].includes(
+                  cycleData.currentPhase,
+                )
+              }
               yesLabel=""
               noLabel=""
             />

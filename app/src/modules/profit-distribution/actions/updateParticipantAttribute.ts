@@ -51,7 +51,11 @@ export const updateParticipantAttribute = createAuthenticatedAction(
     const currentPhase = getCurrentPhase(cycle);
     switch (data.attribute) {
       case "ceded":
-        if (currentPhase !== CyclePhase.Collection)
+        if (
+          ![CyclePhase.Collection, CyclePhase.PayoutPreparation].includes(
+            currentPhase,
+          )
+        )
           return {
             error: t("Common.badRequest"),
             requestPayload: formData,
