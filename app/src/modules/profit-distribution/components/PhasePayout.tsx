@@ -52,7 +52,7 @@ export const PhasePayout = ({ cycleData }: Props) => {
           <span className="text-green-500">Ausgezahlt</span>
         )}
         {cycleData.myPayoutState === PayoutState.EXPIRED && (
-          <span className="text-red-500">Verfallen</span>
+          <span className="text-blue-500">Verfallen</span>
         )}
         {cycleData.myPayoutState === PayoutState.PAYOUT_OVERDUE && (
           <span className="text-red-500">Überfällig</span>

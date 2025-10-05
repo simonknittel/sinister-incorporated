@@ -159,7 +159,7 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
               return <span className="text-green-500">Ausgezahlt</span>;
 
             case PayoutState.EXPIRED:
-              return <span className="text-red-500">Verfallen</span>;
+              return <span className="text-blue-500">Verfallen</span>;
 
             case PayoutState.PAYOUT_OVERDUE:
               return <span className="text-red-500">Überfällig</span>;
