@@ -37,7 +37,7 @@
       "matchUpdateTypes": [
         "major"
       ],
-      "enabled": false
+      "minimumReleaseAge": "365 days"
     }
   ],
   "osvVulnerabilityAlerts": true,
