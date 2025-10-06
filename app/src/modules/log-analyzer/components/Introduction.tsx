@@ -25,7 +25,7 @@ export const Introduction = ({ className }: Props) => {
 
       <p className="text-neutral-500 mt-4">Voraussetzungen</p>
       <p>
-        Aktuell werden nur in Google Chrome und Microsoft Edge unterstützt.
+        Aktuell werden nur in Google Chrome, Microsoft Edge und Opera GX unterstützt.
         Mozilla Firefox, Safari und Brave werden aktuell nicht unterstützt.
       </p>
 
