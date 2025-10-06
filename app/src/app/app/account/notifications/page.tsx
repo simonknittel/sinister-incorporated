@@ -1,8 +1,6 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { Note } from "@/modules/common/components/Note";
-import { Tile } from "@/modules/common/components/Tile";
-import { EventsNotifications } from "@/modules/events/components/EventsNotifications";
-import { TasksNotifications } from "@/modules/tasks/components/TasksNotifications";
+import { NotificationSettings } from "@/modules/notifications/components/NotificationSettings";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,25 +12,22 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col gap-2">
-      <Tile heading="Events">
-        <EventsNotifications />
-      </Tile>
-
-      <Tile heading="Tasks">
-        <TasksNotifications />
-      </Tile>
+      <NotificationSettings />
 
       <Note
         type="info"
         message={
           <div className="flex flex-col gap-2">
             <p>
-              Unterstützt werden Google Chrome (Desktop und Android), Microsoft
-              Edge (Desktop und Android) sowie Firefox (nur, wenn geöffnet).
-              Safari wird nicht unterstützt.
+              Browser-Benachrichtigungen werden nur von Google Chrome (Desktop
+              und Android), Microsoft Edge (Desktop und Android) sowie Firefox
+              (nur, wenn geöffnet) unterstützt. Safari wird nicht unterstützt.
             </p>
 
-            <p>Diese Einstellungen werden pro Browser und Gerät gespeichert.</p>
+            <p>
+              Browser-Benachrichtigungen werden pro Browser und Gerät
+              gespeichert.
+            </p>
           </div>
         }
       />

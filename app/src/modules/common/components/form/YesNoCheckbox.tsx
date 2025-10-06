@@ -28,13 +28,10 @@ export const YesNoCheckbox = (props: Props) => {
           "opacity-50 pointer-events-none": props.disabled,
           "cursor-pointer": !props.disabled,
         },
+        className,
       )}
     >
-      <input
-        type="checkbox"
-        className={clsx("hidden peer", className)}
-        {...rest}
-      />
+      <input type="checkbox" className="hidden peer" {...rest} />
 
       <span className="flex-none size-8 bg-neutral-700 rounded-secondary block relative peer-checked:hidden">
         <span className="absolute inset-1 rounded-secondary bg-green-500/50 hidden group-hover:block" />
