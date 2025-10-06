@@ -159,12 +159,12 @@ export const NotificationSettings = ({ className }: Props) => {
   );
 };
 
-interface AppSettinsProp {
+interface AppSettingsProp {
   readonly title: string;
   readonly notifications: SingleNotificationSettingsProps[];
 }
 
-const AppSettings = ({ title, notifications }: AppSettinsProp) => {
+const AppSettings = ({ title, notifications }: AppSettingsProp) => {
   return (
     <article>
       <h2 className="text-xl font-bold border-b border-white/5 pb-2">
