@@ -171,48 +171,58 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
         },
       }),
       columnHelper.accessor("cededAt", {
-        header: "Abgetreten",
+        header: () => {
+          return <div className="flex-1 text-center">Abgetreten</div>;
+        },
         cell: (row) => {
           return (
-            <YesNoCheckbox
-              name={`ceded_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
-              defaultChecked={!!row.getValue()}
-              disabled={
-                ![CyclePhase.Collection, CyclePhase.PayoutPreparation].includes(
-                  cycleData.currentPhase,
-                )
-              }
-              yesLabel=""
-              noLabel=""
-            />
+            <div className="flex justify-center">
+              <YesNoCheckbox
+                name={`ceded_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
+                defaultChecked={!!row.getValue()}
+                disabled={
+                  ![
+                    CyclePhase.Collection,
+                    CyclePhase.PayoutPreparation,
+                  ].includes(cycleData.currentPhase)
+                }
+                hideLabel
+              />
+            </div>
           );
         },
       }),
       columnHelper.accessor("acceptedAt", {
-        header: "Zugestimmt",
+        header: () => {
+          return <div className="flex-1 text-center">Zugestimmt</div>;
+        },
         cell: (row) => {
           return (
-            <YesNoCheckbox
-              name={`accepted_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
-              defaultChecked={!!row.getValue()}
-              disabled={cycleData.currentPhase !== CyclePhase.Payout}
-              yesLabel=""
-              noLabel=""
-            />
+            <div className="flex justify-center">
+              <YesNoCheckbox
+                name={`accepted_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
+                defaultChecked={!!row.getValue()}
+                disabled={cycleData.currentPhase !== CyclePhase.Payout}
+                hideLabel
+              />
+            </div>
           );
         },
       }),
       columnHelper.accessor("disbursedAt", {
-        header: "Ausgezahlt",
+        header: () => {
+          return <div className="flex-1 text-center">Ausgezahlt</div>;
+        },
         cell: (row) => {
           return (
-            <YesNoCheckbox
-              name={`disbursed_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
-              defaultChecked={!!row.getValue()}
-              disabled={cycleData.currentPhase !== CyclePhase.Payout}
-              yesLabel=""
-              noLabel=""
-            />
+            <div className="flex justify-center">
+              <YesNoCheckbox
+                name={`disbursed_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
+                defaultChecked={!!row.getValue()}
+                disabled={cycleData.currentPhase !== CyclePhase.Payout}
+                hideLabel
+              />
+            </div>
           );
         },
       }),
