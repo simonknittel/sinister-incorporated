@@ -126,7 +126,7 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     href: "/app/silc",
     imageSrc: silcScreenshot,
     description: "Übersicht und Verwaltung von SILC",
-    tags: ["featured", "economics"],
+    tags: ["economics"],
     permissionStrings: ["silcBalanceOfOtherCitizen;read"],
   },
   {
@@ -142,7 +142,6 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     href: "/app/penalty-points",
     imageSrc: penaltyPointsScreenshot,
     description: "Übersicht und Verwaltung von Strafpunkten",
-    tags: ["featured"],
     permissionStrings: ["penaltyEntry;create"],
   },
   {
