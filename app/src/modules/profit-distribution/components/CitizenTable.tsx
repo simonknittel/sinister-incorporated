@@ -1,7 +1,7 @@
 "use client";
 
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
-import YesNoCheckbox from "@/modules/common/components/form/YesNoCheckbox";
+import { YesNoCheckbox } from "@/modules/common/components/form/YesNoCheckbox";
 import type { Entity } from "@prisma/client";
 import {
   createColumnHelper,
@@ -196,7 +196,7 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
             <div className="flex justify-center">
               <YesNoCheckbox
                 name={`ceded_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
-                defaultChecked={!!row.getValue()}
+                defaultChecked={Boolean(row.getValue())}
                 disabled={
                   ![
                     CyclePhase.Collection,
@@ -218,7 +218,7 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
             <div className="flex justify-center">
               <YesNoCheckbox
                 name={`accepted_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
-                defaultChecked={!!row.getValue()}
+                defaultChecked={Boolean(row.getValue())}
                 disabled={cycleData.currentPhase !== CyclePhase.Payout}
                 hideLabel
               />
@@ -235,7 +235,7 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
             <div className="flex justify-center">
               <YesNoCheckbox
                 name={`disbursed_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
-                defaultChecked={!!row.getValue()}
+                defaultChecked={Boolean(row.getValue())}
                 disabled={cycleData.currentPhase !== CyclePhase.Payout}
                 hideLabel
               />
@@ -258,7 +258,7 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
   });
 
   return (
-    <CitizenTableForm className="overflow-x-auto">
+    <CitizenTableForm cycleId={cycleData.cycle.id} className="overflow-x-auto">
       <table className={clsx("w-full", TABLE_MIN_WIDTH, className)}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (

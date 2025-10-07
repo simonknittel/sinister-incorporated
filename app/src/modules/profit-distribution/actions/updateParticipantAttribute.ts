@@ -9,12 +9,7 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { CyclePhase, getCurrentPhase } from "../utils/getCurrentPhase";
 
-const schema = z.object({
-  attribute: z.enum(["ceded", "accepted", "disbursed"]),
-  cycleId: z.cuid2(),
-  citizenId: z.cuid2(),
-  checked: z.coerce.boolean().default(false),
-});
+const schema = z.record(z.string(), z.string());
 
 export const updateParticipantAttribute = createAuthenticatedAction(
   "updateParticipantAttribute",
@@ -38,67 +33,115 @@ export const updateParticipantAttribute = createAuthenticatedAction(
       };
 
     /**
-     * Validate the request
+     *
      */
     const cycle = await prisma.profitDistributionCycle.findUnique({
       where: { id: data.cycleId },
+      include: {
+        participants: {
+          select: {
+            citizenId: true,
+            cededAt: true,
+            acceptedAt: true,
+            disbursedAt: true,
+          },
+        },
+      },
     });
     if (!cycle)
       return {
         error: t("Common.notFound"),
         requestPayload: formData,
       };
+
     const currentPhase = getCurrentPhase(cycle);
-    switch (data.attribute) {
-      case "ceded":
+    const validAttributes = [];
+    if (
+      [CyclePhase.Collection, CyclePhase.PayoutPreparation].includes(
+        currentPhase,
+      )
+    )
+      validAttributes.push("ceded");
+    if (currentPhase === CyclePhase.Payout)
+      validAttributes.push("accepted", "disbursed");
+
+    const changes = [];
+    for (const participant of cycle.participants) {
+      const enabledAttributes = Array.from(formData.keys())
+        .filter((key) => {
+          const [, , citizenId] = key.split("_");
+          return citizenId === participant.citizenId;
+        })
+        .map((key) => {
+          const [attribute] = key.split("_");
+          return attribute;
+        });
+
+      for (const attribute of validAttributes) {
         if (
-          ![CyclePhase.Collection, CyclePhase.PayoutPreparation].includes(
-            currentPhase,
-          )
+          // @ts-expect-error
+          participant[`${attribute}At`] &&
+          enabledAttributes.includes(attribute)
         )
-          return {
-            error: t("Common.badRequest"),
-            requestPayload: formData,
-          };
-        break;
+          continue;
 
-      case "accepted":
-      case "disbursed":
-        if (currentPhase !== CyclePhase.Payout)
-          return {
-            error: t("Common.badRequest"),
-            requestPayload: formData,
-          };
-        break;
+        if (
+          // @ts-expect-error
+          !participant[`${attribute}At`] &&
+          !enabledAttributes.includes(attribute)
+        )
+          continue;
 
-      default:
-        return {
-          error: t("Common.badRequest"),
-          requestPayload: formData,
-        };
+        if (
+          // @ts-expect-error
+          participant[`${attribute}At`] &&
+          !enabledAttributes.includes(attribute)
+        ) {
+          changes.push({
+            citizenId: participant.citizenId,
+            attribute,
+            enabled: false,
+          });
+          continue;
+        }
+
+        if (
+          // @ts-expect-error
+          !participant[`${attribute}At`] &&
+          enabledAttributes.includes(attribute)
+        ) {
+          changes.push({
+            citizenId: participant.citizenId,
+            attribute,
+            enabled: true,
+          });
+          continue;
+        }
+      }
     }
 
-    /**
-     *
-     */
-    await prisma.profitDistributionCycleParticipant.upsert({
-      where: {
-        cycleId_citizenId: {
-          cycleId: data.cycleId,
-          citizenId: data.citizenId,
-        },
-      },
-      update: {
-        [`${data.attribute}At`]: data.checked ? new Date() : null,
-        [`${data.attribute}ById`]: authentication.session.entity.id,
-      },
-      create: {
-        cycleId: data.cycleId,
-        citizenId: data.citizenId,
-        [`${data.attribute}At`]: data.checked ? new Date() : null,
-        [`${data.attribute}ById`]: authentication.session.entity.id,
-      },
-    });
+    await prisma.$transaction(
+      changes.map((change) =>
+        prisma.profitDistributionCycleParticipant.upsert({
+          where: {
+            cycleId_citizenId: {
+              cycleId: data.cycleId,
+              citizenId: change.citizenId,
+            },
+          },
+          update: {
+            [`${change.attribute}At`]: change.enabled ? new Date() : null,
+            [`${change.attribute}ById`]: authentication.session.entity!.id,
+          },
+          create: {
+            cycleId: data.cycleId,
+            citizenId: change.citizenId,
+            [`${change.attribute}At`]: change.enabled ? new Date() : null,
+            [`${change.attribute}ById`]: authentication.session.entity!.id,
+          },
+        }),
+      ),
+    );
 
     /**
      * Revalidate cache(s)
