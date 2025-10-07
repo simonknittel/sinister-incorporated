@@ -101,7 +101,9 @@ export const ProfitDistributionCycleExcerpt = ({
               <Badge
                 label="Endet am"
                 showLabel
-                value={formatDate(cycleData.cycle.collectionEndedAt) ?? "-"}
+                value={
+                  formatDate(cycleData.cycle.collectionEndedAt, "short") ?? "-"
+                }
               />
             </>
           )}
@@ -133,7 +135,9 @@ export const ProfitDistributionCycleExcerpt = ({
               <Badge
                 label="Endet am"
                 showLabel
-                value={formatDate(cycleData.cycle.payoutEndedAt) ?? "-"}
+                value={
+                  formatDate(cycleData.cycle.payoutEndedAt, "short") ?? "-"
+                }
               />
             </>
           )}
@@ -154,7 +158,9 @@ export const ProfitDistributionCycleExcerpt = ({
               <Badge
                 label="Endet am"
                 showLabel
-                value={formatDate(cycleData.cycle.payoutEndedAt) ?? "-"}
+                value={
+                  formatDate(cycleData.cycle.payoutEndedAt, "short") ?? "-"
+                }
               />
             </>
           )}
