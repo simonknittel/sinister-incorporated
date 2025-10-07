@@ -195,6 +195,7 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
           return (
             <div className="flex justify-center">
               <YesNoCheckbox
+                key={`ceded_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
                 name={`ceded_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
                 defaultChecked={Boolean(row.getValue())}
                 disabled={
@@ -217,6 +218,7 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
           return (
             <div className="flex justify-center">
               <YesNoCheckbox
+                key={`accepted_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
                 name={`accepted_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
                 defaultChecked={Boolean(row.getValue())}
                 disabled={cycleData.currentPhase !== CyclePhase.Payout}
@@ -234,6 +236,7 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
           return (
             <div className="flex justify-center">
               <YesNoCheckbox
+                key={`disbursed_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
                 name={`disbursed_${cycleData.cycle.id}_${row.row.original.citizen.id}`}
                 defaultChecked={Boolean(row.getValue())}
                 disabled={cycleData.currentPhase !== CyclePhase.Payout}
