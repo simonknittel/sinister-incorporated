@@ -188,9 +188,9 @@ export const List = () => {
 
           {profitDistributionCycleRead && (
             <LinkItem
-              label="Gewinnverteilung"
+              label="SINcome"
               icon={<FaPiggyBank />}
-              href="/app/profit-distribution"
+              href="/app/sincome"
               setOpen={setOpen}
               setSearch={setSearch}
             />

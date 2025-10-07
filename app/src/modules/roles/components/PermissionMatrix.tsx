@@ -367,12 +367,12 @@ export const STATIC_PERMISSIONS = [
   },
   {
     section: "SILC",
-    title: "Gewinnverteilung lesen",
+    title: "SINcome lesen",
     string: "profitDistributionCycle;read",
   },
   {
     section: "SILC",
-    title: "Gewinnverteilung verwalten",
+    title: "SINcome verwalten",
     string: "profitDistributionCycle;manage",
   },
   {

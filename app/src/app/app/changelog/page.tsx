@@ -21,6 +21,7 @@ import image20250609Collapsed from "@/modules/changelog/assets/2025-06-09-collap
 import image20250609Uncollapsed from "@/modules/changelog/assets/2025-06-09-uncollapsed.png";
 import image20250614CmdK from "@/modules/changelog/assets/2025-06-14-cmdk.png";
 import image20250906NewLayout from "@/modules/changelog/assets/2025-09-06-new-layout.png";
+import image20251007sincome from "@/modules/changelog/assets/2025-10-07-sincome.png";
 import { Link } from "@/modules/common/components/Link";
 import { SmallBadge } from "@/modules/common/components/SmallBadge";
 import { random } from "lodash";
@@ -45,6 +46,43 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col gap-4 max-w-prose mx-auto">
+      <Day heading="7. Oktober 2025">
+        <DayItem heading="SINcome" badges={["Neu"]}>
+          <p>Die neue SINcome-App ist nun live.</p>
+
+          <p>
+            Mit SINcome machst du deine SILC zu Geld. Verdiene über den jeweils
+            aktiven SINcome-Zeitraum SILC und lasse sie dir im Anschluss als
+            aUEC auszahlen.
+          </p>
+
+          <p>
+            <strong>Hinweis:</strong> Für jeden Zeitraum musst du während der
+            Auszahlungsphase einmal händisch bestätigen, dass du die Auszahlung
+            empfangen kannst. Nähere Details hierzu findest du in der App.
+          </p>
+
+          <p>
+            Die App ist zu finden unter{" "}
+            <Link
+              href="/app/sincome"
+              className="text-interaction-500 hover:text-interaction-300 focus-visible:text-interaction-300"
+            >
+              Apps &gt; SINcome
+            </Link>
+          </p>
+
+          <Link href={image20251007sincome.src}>
+            <Image
+              quality={100}
+              src={image20251007sincome}
+              alt=""
+              loading="lazy"
+            />
+          </Link>
+        </DayItem>
+      </Day>
+
       <Day heading="2. Oktober 2025">
         <DayItem heading="Mithilfe" badges={["Ankündigung"]}>
           <p>

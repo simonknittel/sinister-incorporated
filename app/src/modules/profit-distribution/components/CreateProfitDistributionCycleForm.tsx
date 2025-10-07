@@ -46,7 +46,7 @@ export const CreateProfitDistributionCycleForm = ({
       {showInstructions && (
         <RichText className="mt-2 p-2 background-tertiary rounded-secondary text-sm">
           <p>
-            <strong>Gewinnverteilungszeitraum:</strong> Besteht aus zwei Phasen:
+            <strong>SINcome-Zeitraum:</strong> Besteht aus zwei Phasen:
             Sammelphase und Auszahlungsphase.
           </p>
           <p>
@@ -62,9 +62,9 @@ export const CreateProfitDistributionCycleForm = ({
           <ol>
             <li>
               Die Sammelphase beginnt automatisch mit dem Ende der Sammelphase
-              vom letzten Gewinnverteilungszeitraum. Member können sich
-              freiwillig markieren um sämtliche SILC für diesen
-              Gewinnverteilungszeitraum abzutreten.
+              vom letzten SINcome-Zeitraum. Member können sich freiwillig
+              markieren um sämtliche SILC für diesen SINcome-Zeitraum
+              abzutreten.
             </li>
 
             <li>

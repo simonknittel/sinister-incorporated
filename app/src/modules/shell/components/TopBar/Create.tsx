@@ -134,7 +134,7 @@ const PopoverChildren = ({
     items.push({ label: "Citizen", type: "button", modalId: "citizen" });
   if (showCreateDistributionCycle)
     items.push({
-      label: "Gewinnverteilungszeitraum",
+      label: "SINcome-Zeitraum",
       type: "button",
       modalId: "profitDistributionCycle",
     });

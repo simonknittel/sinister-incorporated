@@ -21,10 +21,10 @@ export default async function Layout({ children }: Props) {
 
   return (
     <DefaultLayout
-      title="Gewinnverteilung"
+      title="SINcome"
       pages={pages}
       cta={showCta ? <CreateProfitDistributionCycleButton /> : undefined}
-      slug="profit-distribution"
+      slug="sincome"
     >
       <MaxWidthContent>{children}</MaxWidthContent>
     </DefaultLayout>

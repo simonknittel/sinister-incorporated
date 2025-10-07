@@ -25,20 +25,16 @@ export const generateMetadata = generateMetadataWithTryCatch(
     if (!cycleData) notFound();
 
     return {
-      title: `${cycleData.cycle.title} - Gewinnverteilung - SILC | S.A.M. - Sinister Incorporated`,
+      title: `${cycleData.cycle.title} - SINcome - SILC | S.A.M. - Sinister Incorporated`,
     };
   },
 );
 
-export default async function Page({
-  params,
-}: PageProps<"/app/profit-distribution/[id]">) {
+export default async function Page({ params }: PageProps<"/app/sincome/[id]">) {
   if (!(await getUnleashFlag(UNLEASH_FLAG.EnableProfitDistribution)))
     notFound();
 
-  const authentication = await requireAuthenticationPage(
-    "/app/profit-distribution/[id]",
-  );
+  const authentication = await requireAuthenticationPage("/app/sincome/[id]");
   await authentication.authorizePage("profitDistributionCycle", "manage");
 
   const cycleData = await getProfitDistributionCycleById((await params).id);
@@ -56,7 +52,7 @@ export default async function Page({
 
         <Button2
           as={Link}
-          href={`/app/profit-distribution/${cycleData.cycle.id}`}
+          href={`/app/sincome/${cycleData.cycle.id}`}
           variant="secondary"
           className="w-9 flex-initial"
           title="Zurück"

@@ -61,7 +61,7 @@ export const EndPayoutButton = ({ className, cycleData }: Props) => {
               </strong>{" "}
               beenden?
               <br />
-              Dieser Gewinnverteilungszeitraum wird hiermit geschlossen.
+              Dieser SINcome-Zeitraum wird hiermit geschlossen.
               {openAcceptances > 0 && (
                 <>
                   <br />

@@ -21,7 +21,7 @@ export const getNavigationItems = async () => {
   if (EnableProfitDistribution && (permissions[0] || permissions[1])) {
     pages.push({
       title: "Alle Zeiträume",
-      url: "/app/profit-distribution",
+      url: "/app/sincome",
     });
   }
 

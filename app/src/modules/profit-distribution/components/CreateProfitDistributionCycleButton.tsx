@@ -16,10 +16,10 @@ export const CreateProfitDistributionCycleButton = ({ className }: Props) => {
     <Button2
       onClick={() => openCreateModal("profitDistributionCycle")}
       className={clsx(className)}
-      title="Neuer Gewinnverteilungszeitraum"
+      title="Neuer SINcome-Zeitraum"
     >
       <FaPlus />
-      <span className="hidden sm:inline">Neuer Gewinnverteilungszeitraum</span>
+      <span className="hidden sm:inline">Neuer SINcome-Zeitraum</span>
     </Button2>
   );
 };

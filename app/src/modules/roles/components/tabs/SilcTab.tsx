@@ -41,10 +41,9 @@ export const SilcTab = ({ enableProfitDistribution }: Props) => {
         <>
           <div className="py-2 flex justify-between items-center gap-2 mt-2">
             <div>
-              <h4 className="font-bold">Gewinnverteilung einsehen</h4>
+              <h4 className="font-bold">SINcome einsehen</h4>
               <p className="text-sm">
-                Citizen mit dieser Berechtigung können die Gewinnverteilung
-                einsehen.
+                Citizen mit dieser Berechtigung können die SINcome einsehen.
               </p>
             </div>
 
@@ -53,10 +52,9 @@ export const SilcTab = ({ enableProfitDistribution }: Props) => {
 
           <div className="py-2 flex justify-between items-center gap-2 mt-2">
             <div>
-              <h4 className="font-bold">Gewinnverteilung verwalten</h4>
+              <h4 className="font-bold">SINcome verwalten</h4>
               <p className="text-sm">
-                Citizen mit dieser Berechtigung können die Gewinnverteilung
-                verwalten.
+                Citizen mit dieser Berechtigung können die SINcome verwalten.
               </p>
             </div>
 
