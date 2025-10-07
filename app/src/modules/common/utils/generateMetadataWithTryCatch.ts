@@ -11,9 +11,16 @@ export const generateMetadataWithTryCatch = <T>(
       return await fn(props);
     } catch (error) {
       unstable_rethrow(error);
-      void log.error("Error while generating metadata", {
-        error: serializeError(error),
-      });
+
+      if (error instanceof Error && error.message === "Unauthorized") {
+        void log.info("Unauthorized while generating metadata", {
+          error: serializeError(error),
+        });
+      } else {
+        void log.error("Error while generating metadata", {
+          error: serializeError(error),
+        });
+      }
 
       return {
         title: `Error | S.A.M. - Sinister Incorporated`,
