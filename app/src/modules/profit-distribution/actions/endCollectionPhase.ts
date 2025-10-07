@@ -93,7 +93,7 @@ export const endCollectionPhase = createAuthenticatedAction(
         data: allSilcBalances.map((citizen) => ({
           receiverId: citizen.id,
           value: -citizen.silcBalance,
-          description: `Gewinnverteilung: ${cycle.title}`,
+          description: `SINcome: ${cycle.title}`,
           createdById: authentication.session.entity!.id,
         })),
       }),
@@ -106,9 +106,9 @@ export const endCollectionPhase = createAuthenticatedAction(
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/profit-distribution/${data.id}/management`);
-    revalidatePath(`/app/profit-distribution/${data.id}`);
-    revalidatePath("/app/profit-distribution");
+    revalidatePath(`/app/sincome/${data.id}/management`);
+    revalidatePath(`/app/sincome/${data.id}`);
+    revalidatePath("/app/sincome");
 
     return {
       success: t("Common.successfullySaved"),

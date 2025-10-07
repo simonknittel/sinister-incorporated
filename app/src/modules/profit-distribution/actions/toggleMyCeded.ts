@@ -76,9 +76,9 @@ export const toggleMyCeded = createAuthenticatedAction(
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/profit-distribution/${data.id}/management`);
-    revalidatePath(`/app/profit-distribution/${data.id}`);
-    revalidatePath("/app/profit-distribution");
+    revalidatePath(`/app/sincome/${data.id}/management`);
+    revalidatePath(`/app/sincome/${data.id}`);
+    revalidatePath("/app/sincome");
 
     return {
       success: t("Common.successfullySaved"),

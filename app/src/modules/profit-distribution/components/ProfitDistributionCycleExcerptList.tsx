@@ -31,7 +31,7 @@ export const ProfitDistributionCycleExcerptList = async ({
         ))
       ) : (
         <div className="rounded-primary background-secondary p-4 text-center">
-          <p>Keine Gewinnverteilungszeiträume gefunden</p>
+          <p>Keine SINcome-Zeiträume gefunden</p>
         </div>
       )}
     </div>

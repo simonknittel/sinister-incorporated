@@ -80,7 +80,7 @@ export const ProfitDistributionCycleExcerpt = ({
 
   return (
     <Link
-      href={`/app/profit-distribution/${cycleData.cycle.id}`}
+      href={`/app/sincome/${cycleData.cycle.id}`}
       className={clsx(
         "background-secondary hover:bg-neutral-800 active:bg-neutral-900 rounded-secondary flex",
         className,

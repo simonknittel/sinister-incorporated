@@ -61,8 +61,7 @@ export const EndCollectionPhaseButton = ({ className, cycleData }: Props) => {
               <br />
               Es wird ein Abbild der aktuellen SILC-Konten von allen Membern
               erstellt. Im Anschluss werden die Konten auf 0 zurückgesetzt,
-              womit die Sammelphase des nächsten Gewinnverteilungszeitraums
-              startet.
+              womit die Sammelphase des nächsten SINcome-Zeitraums startet.
             </AlertDialogDescription>
           </AlertDialogHeader>
 

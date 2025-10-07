@@ -78,10 +78,10 @@ export const INTEGRATED_APPS: IntegratedApp[] = [
     permissionStrings: ["ship;manage", "orgFleet;read"],
   },
   {
-    name: "Gewinnverteilung",
-    href: "/app/profit-distribution",
+    name: "SINcome",
+    href: "/app/sincome",
     imageSrc: profitDistributionScreenshot,
-    description: "Übersicht und Verwaltung der SILC-Gewinnverteilung",
+    description: "Mit SINcome machst du deine SILC zu Geld",
     tags: ["featured", "economics"],
     permissionStrings: ["profitDistributionCycle;read"],
   },

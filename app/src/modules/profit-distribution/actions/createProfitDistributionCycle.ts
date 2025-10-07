@@ -61,7 +61,7 @@ export const createProfitDistributionCycle = createAuthenticatedAction(
     /**
      * Revalidate cache(s)
      */
-    revalidatePath("/app/profit-distribution");
-    redirect(`/app/profit-distribution/${created.id}`);
+    revalidatePath("/app/sincome");
+    redirect(`/app/sincome/${created.id}`);
   },
 );

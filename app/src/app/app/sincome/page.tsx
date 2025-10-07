@@ -9,23 +9,21 @@ import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Gewinnverteilung - SILC | S.A.M. - Sinister Incorporated",
+  title: "SINcome - SILC | S.A.M. - Sinister Incorporated",
 };
 
 export default async function Page({
   searchParams,
-}: PageProps<"/app/profit-distribution">) {
+}: PageProps<"/app/sincome">) {
   if (!(await getUnleashFlag(UNLEASH_FLAG.EnableProfitDistribution)))
     notFound();
 
-  const authentication = await requireAuthenticationPage(
-    "/app/profit-distribution",
-  );
+  const authentication = await requireAuthenticationPage("/app/sincome");
   await authentication.authorizePage("profitDistributionCycle", "read");
 
   return (
     <SidebarLayout sidebar={<ProfitDistributionCycleSidebar />}>
-      <h1 className="sr-only">Gewinnverteilung</h1>
+      <h1 className="sr-only">SINcome</h1>
 
       <SuspenseWithErrorBoundaryTile>
         <ProfitDistributionCycleExcerptList searchParams={searchParams} />

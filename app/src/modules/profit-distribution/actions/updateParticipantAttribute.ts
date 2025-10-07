@@ -146,9 +146,9 @@ export const updateParticipantAttribute = createAuthenticatedAction(
     /**
      * Revalidate cache(s)
      */
-    revalidatePath(`/app/profit-distribution/${cycle.id}/management`);
-    revalidatePath(`/app/profit-distribution/${cycle.id}`);
-    revalidatePath("/app/profit-distribution");
+    revalidatePath(`/app/sincome/${cycle.id}/management`);
+    revalidatePath(`/app/sincome/${cycle.id}`);
+    revalidatePath("/app/sincome");
 
     return {
       success: t("Common.successfullySaved"),

@@ -57,7 +57,7 @@ export const createForms = {
   },
   profitDistributionCycle: {
     formComponent: CreateProfitDistributionCycleForm,
-    modalHeading: "Neuer Gewinnverteilungszeitraum",
+    modalHeading: "Neuer SINcome-Zeitraum",
     modalWidth: "w-[480px]",
   },
   organization: {
