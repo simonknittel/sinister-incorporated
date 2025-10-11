@@ -4,11 +4,21 @@ import type { ReactNode } from "react";
 interface Props {
   readonly className?: string;
   readonly children: ReactNode;
+  readonly maxWidth?: "screen-3xl" | "prose";
 }
 
-export const MaxWidthContent = ({ className, children }: Props) => {
+export const MaxWidthContent = ({
+  className,
+  children,
+  maxWidth = "screen-3xl",
+}: Props) => {
   return (
-    <div className={clsx("max-w-screen-3xl mx-auto p-4", className)}>
+    <div
+      className={clsx("mx-auto p-4", className, {
+        "max-w-screen-3xl": maxWidth === "screen-3xl",
+        "max-w-prose": maxWidth === "prose",
+      })}
+    >
       {children}
     </div>
   );

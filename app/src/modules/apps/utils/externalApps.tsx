@@ -1,7 +1,6 @@
 import siloAnfrageScreenshot from "@/assets/silo-anfrage-screenshot.png";
 import type { ExternalApp } from "./types";
 
-// TODO: Move to database
 export const externalApps: ExternalApp[] = [
   {
     id: "cmfavc1fu0000eo9v2ff6bfh2",
@@ -32,6 +31,11 @@ export const externalApps: ExternalApp[] = [
       {
         title: "SILO-Anfrage",
         slug: "",
+      },
+    ],
+    team: [
+      {
+        handle: "Waffelkeks",
       },
     ],
   },

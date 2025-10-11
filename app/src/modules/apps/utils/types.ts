@@ -31,10 +31,18 @@ export interface ExternalApp extends App {
         title: string;
         externalUrl: string;
       }
+    | {
+        title: string;
+        slug: string;
+      }
   )[];
   createLinks?: {
     title: string;
     slug: string;
+  }[];
+
+  team: {
+    handle: string;
   }[];
 }
 
