@@ -1,6 +1,6 @@
 <h1 align="center">Sinister Administration Module (S.A.M.)</h1>
 
-<p align="center">Monorepo for the ERP/CRM of my Star Citizen organization.</p>
+<p align="center">Monorepo of the ERP/CRM for my Star Citizen organization</p>
 
 <p align="center">
   <a href="https://github.com/simonknittel/sinister-incorporated/blob/develop/docs/screenshot-dashboard.png" style="display: block;">
@@ -22,7 +22,7 @@
 - Log Analyzer: Star Citizen game log analysis. Kill feed with overlay
 - Documents: Access important org documents based on the member's roles
 - Tasks: Org-internal quest system
-- S.I.L.C.: Org-internal reward system for participating in events, tasks and monthly salary based on the members's roles
+- Org-internal reward system for participating in events, tasks and monthly salary based on the members's roles
 - Social login via Discord integration
 - Dogfight Trainer: Asteroids-like mini game
 - Cornerstone Image Browser: Simple way to compare Star Citizen item skins based on Cornerstone's database
