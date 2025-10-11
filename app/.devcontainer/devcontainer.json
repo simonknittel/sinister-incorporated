@@ -3,7 +3,7 @@
 // - https://code.visualstudio.com/docs/devcontainers/containers
 // - https://code.visualstudio.com/docs/editor/variables-reference
 {
-  "name": "app / Sinister Incorporated",
+  "name": "app / S.A.M.",
 
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
