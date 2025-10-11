@@ -1,4 +1,4 @@
-import { requireAuthentication } from "@/modules/auth/server";
+import { useAuthentication } from "@/modules/auth/hooks/useAuthentication";
 import Avatar from "@/modules/common/components/Avatar";
 import { Button2 } from "@/modules/common/components/Button2";
 import { Link } from "@/modules/common/components/Link";
@@ -6,8 +6,9 @@ import clsx from "clsx";
 import { FaUser } from "react-icons/fa";
 import { LogoutButton } from "../LogoutButton";
 
-export const Account = async () => {
-  const authentication = await requireAuthentication();
+export const Account = () => {
+  const authentication = useAuthentication();
+  if (!authentication) return null;
 
   const name =
     authentication.session.user.name || authentication.session.discordId;

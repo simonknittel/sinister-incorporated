@@ -3,7 +3,8 @@
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { AiFillAppstore } from "react-icons/ai";
+import { FaTimes } from "react-icons/fa";
 
 interface Props {
   readonly children?: ReactNode;
@@ -24,7 +25,8 @@ export const MobileActionBarFlyout = ({ children }: Props) => {
         type="button"
         className="flex flex-col items-center justify-center px-4 h-full active:bg-neutral-700 rounded-secondary"
       >
-        {isVisible ? <FaTimes /> : <FaBars />}
+        {isVisible ? <FaTimes /> : <AiFillAppstore />}
+        <span className="text-xs">Apps</span>
       </button>
 
       <div

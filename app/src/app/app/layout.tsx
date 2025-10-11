@@ -12,7 +12,7 @@ import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import { BeamsProvider } from "@/modules/pusher/components/BeamsContext";
 import { ChannelsProvider } from "@/modules/pusher/components/ChannelsContext";
 import { CmdKProvider } from "@/modules/shell/components/CmdK/CmdKContext";
-import { MobileActionBarContainer } from "@/modules/shell/components/Sidebar/MobileActionBarContainer";
+import { MobileActionBarLoader } from "@/modules/shell/components/Sidebar/MobileActionBarLoader";
 import { TopBar } from "@/modules/shell/components/TopBar";
 import { TRPCReactProvider } from "@/trpc/react";
 import { NextIntlClientProvider } from "next-intl";
@@ -52,7 +52,7 @@ export default async function AppLayout({ children }: Readonly<Props>) {
                       <CreateContextProvider>
                         <CmdKProvider disableAlgolia={disableAlgolia}>
                           <TopBar />
-                          <MobileActionBarContainer />
+                          <MobileActionBarLoader />
                         </CmdKProvider>
 
                         <div className="pt-12 lg:pt-[104px] pb-[64px] lg:pb-0 min-h-dvh">
