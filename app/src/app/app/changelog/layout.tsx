@@ -9,7 +9,7 @@ interface Props {
 export default function Layout({ children }: Props) {
   return (
     <DefaultLayout title="Changelog" slug="changelog">
-      <MaxWidthContent>{children}</MaxWidthContent>
+      <MaxWidthContent maxWidth="prose">{children}</MaxWidthContent>
     </DefaultLayout>
   );
 }

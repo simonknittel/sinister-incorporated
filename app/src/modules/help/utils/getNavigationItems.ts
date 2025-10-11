@@ -14,5 +14,10 @@ export const getNavigationItems = async () => {
     url: "/app/help/contributing",
   });
 
+  pages.push({
+    title: "Support",
+    url: "/app/help/support",
+  });
+
   return pages;
 };

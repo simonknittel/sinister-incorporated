@@ -45,7 +45,7 @@ export default async function Page() {
   ]);
 
   return (
-    <div className="flex flex-col gap-4 max-w-prose mx-auto">
+    <div className="flex flex-col gap-4">
       <Day heading="7. Oktober 2025">
         <DayItem heading="SINcome" badges={["Neu"]}>
           <p>Die neue SINcome-App ist nun live.</p>
