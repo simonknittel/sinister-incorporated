@@ -5,8 +5,8 @@ import { createAuthenticatedAction } from "@/modules/actions/utils/createAction"
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import { triggerNotificationsAfterSave } from "@/modules/notifications/utils/triggerNotification";
 import { refresh } from "next/cache";
-import { redirect } from "next/navigation";
 import * as z from "zod";
 import { getTaskById } from "../queries/getTaskById";
 import {
@@ -44,21 +44,21 @@ export const deleteTask = createAuthenticatedAction(
       };
 
     /**
-     * Delete position
+     * Delete the task. The condition on `deletedAt` lets only one of two
+     * parallel requests delete the task. The other request stops here, thus
+     * it writes no audit event and sends nothing.
      */
-    await prisma.task.update({
+    const { count } = await prisma.task.updateMany({
       where: {
-        id: data.id,
+        id: task.id,
+        deletedAt: null,
       },
       data: {
         deletedAt: new Date(),
-        deletedBy: {
-          connect: {
-            id: authentication.session.entity.id,
-          },
-        },
+        deletedById: authentication.session.entity.id,
       },
     });
+    if (count === 0) return rejectConflict(TASK_NOT_FOUND_ERROR, formData);
 
     refresh();
 
@@ -73,13 +73,26 @@ export const deleteTask = createAuthenticatedAction(
       },
     ]);
 
-    redirect("/app/tasks");
+    /**
+     * Trigger notifications
+     */
+    const areNotificationsSent = await triggerNotificationsAfterSave([
+      {
+        type: "TaskDeleted",
+        payload: {
+          taskId: task.id,
+        },
+      },
+    ]);
 
     /**
      * Respond with the result
      */
     return {
       success: t("Common.successfullyDeleted"),
+      ...(areNotificationsSent
+        ? {}
+        : { warning: t("Common.notificationsFailed") }),
     };
   },
 );

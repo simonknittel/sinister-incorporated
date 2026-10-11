@@ -2,6 +2,7 @@
 
 import { ConfirmActionButton } from "@/modules/common/components/ConfirmActionButton";
 import { type Task } from "@sam-monorepo/database/browser";
+import { useRouter } from "next/navigation";
 import { FaTrash } from "react-icons/fa";
 import { deleteTask } from "../actions/deleteTask";
 
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export const DeleteTask = ({ className, task }: Props) => {
+  const router = useRouter();
+
   return (
     <ConfirmActionButton
       className={className}
@@ -34,6 +37,7 @@ export const DeleteTask = ({ className, task }: Props) => {
         </>
       }
       confirmLabel="Löschen"
+      onSuccess={() => router.push("/app/tasks")}
     />
   );
 };
