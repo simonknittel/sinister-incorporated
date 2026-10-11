@@ -149,9 +149,21 @@ export const NOTIFICATIONS_APPS: NotificationApp[] = [
     appTitle: "Tasks",
     notificationTypes: [
       {
-        id: "task_assignment_updated",
+        id: "task_created",
         title: "Neuer Task",
+        description: "Wenn ein neuer Task erstellt wird, den ich annehmen kann",
+        category: "Tasks",
+      },
+      {
+        id: "task_assignment_updated",
+        title: "Zuweisung",
         description: "Wenn mir ein Task zugewiesen wird",
+        category: "Tasks",
+      },
+      {
+        id: "task_deleted",
+        title: "Löschung",
+        description: "Nur bei eigener Zuweisung",
         category: "Tasks",
       },
     ],

@@ -179,11 +179,29 @@ export const renderOnSiteNotification = (
         decoration: null,
       };
 
+    case "task_created":
+      return {
+        title: "Neuer Task",
+        body: parsed.payload.taskTitle,
+        url: `/app/tasks/${parsed.payload.taskId}`,
+        appTitle,
+        decoration: null,
+      };
+
     case "task_assignment_updated":
       return {
         title: "Neuer Task",
         body: `Dir wurde ein Task zugewiesen: ${parsed.payload.taskTitle}`,
         url: `/app/tasks/${parsed.payload.taskId}`,
+        appTitle,
+        decoration: null,
+      };
+
+    case "task_deleted":
+      return {
+        title: "Task gelöscht",
+        body: parsed.payload.taskTitle,
+        url: null,
         appTitle,
         decoration: null,
       };
