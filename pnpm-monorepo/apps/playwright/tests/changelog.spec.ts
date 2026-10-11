@@ -16,15 +16,11 @@ const READ_ON_VIEW_TIMEOUT = 15_000;
 const BEFORE_THE_FIRST_ENTRY = new Date("2020-01-01T00:00:00.000Z");
 
 /**
- * `/app/changelog` redirects to the page of the newest quarter while the page
- * streams. A `goto` that waits for the load fails when this redirect
- * interrupts it, thus it waits only for the response and then for the URL of
- * the quarter.
+ * A past quarter with many tracked entries. The newest quarter can hold only
+ * untracked entries, which never carry an indicator, thus the cases below do
+ * not use the redirect of `/app/changelog` to the newest quarter.
  */
-const openChangelog = async (page: Page) => {
-  await page.goto("/app/changelog", { waitUntil: "commit" });
-  await page.waitForURL(/\/app\/changelog\/\d{4}-q[1-4]$/);
-};
+const openChangelog = (page: Page) => page.goto("/app/changelog/2026-q3");
 
 test("entries are marked as seen in view and keep their indicator", async ({
   page,
