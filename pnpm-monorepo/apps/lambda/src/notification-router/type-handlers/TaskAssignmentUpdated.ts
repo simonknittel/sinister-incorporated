@@ -1,5 +1,7 @@
 import { prisma, type Task } from "@sam-monorepo/database";
+import { findCitizenIdsWithPermissions } from "../../common/effectivePermissions";
 import { publishNotifications } from "../publish";
+import { TASK_RECEIVER_PERMISSION_SETS } from "../taskReceiverPermissionSets";
 
 interface Payload {
   taskId: Task["id"];
@@ -7,7 +9,6 @@ interface Payload {
 
 export const TaskAssignmentUpdatedHandler = async (payload: Payload) => {
   // TODO: Only notify newly assigned citizens
-  // TODO: Only send notifications to citizens which have the `login;manage` and `task;read` permission
 
   const task = await prisma.task.findUnique({
     where: { id: payload.taskId },
@@ -23,12 +24,21 @@ export const TaskAssignmentUpdatedHandler = async (payload: Payload) => {
   });
   if (!task || task.assignments.length <= 0) return;
 
+  const recipientIds = await findCitizenIdsWithPermissions(
+    {
+      id: {
+        in: task.assignments.map((assignment) => assignment.citizenId),
+      },
+    },
+    TASK_RECEIVER_PERMISSION_SETS,
+  );
+
   /**
    * Publish notifications
    */
   await publishNotifications(
-    task.assignments.map((assignment) => ({
-      receiverId: assignment.citizenId,
+    Array.from(recipientIds, (recipientId) => ({
+      receiverId: recipientId,
       notificationType: "task_assignment_updated" as const,
       payload: { taskId: task.id, taskTitle: task.title },
       title: "Neuer Task",
