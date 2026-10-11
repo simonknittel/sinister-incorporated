@@ -60,6 +60,7 @@ export const EventParticipationButton = ({
             hasCancelled={hasCancelled}
             comment={comment}
             participationOpen={true}
+            autoFocusComment
           />
         </Modal>
       )}
