@@ -1,8 +1,9 @@
 import { prisma } from "@sam-monorepo/database";
 
 /**
- * Test fixtures for the two parts of the effective-role rule (see
- * `loadEffectivePermissions()`): the inherited roles and the level gate.
+ * Test fixtures for citizens with permissions, also for the two parts of the
+ * effective-role rule (see `loadEffectivePermissions()`): the inherited roles
+ * and the level gate.
  */
 
 /** Each value above 1 is possible. It keeps level 1 below the maximum. */
@@ -11,6 +12,36 @@ export const MAXIMUM_LEVEL = 2;
 const createPermissionStrings = (permissionStrings: readonly string[]) => ({
   create: permissionStrings.map((permissionString) => ({ permissionString })),
 });
+
+/**
+ * The citizen has one role that grants the permission strings directly, and
+ * in addition the given roles.
+ */
+export const createCitizenWithPermissions = async (
+  handle: string,
+  permissionStrings: readonly string[],
+  additionalRoleIds: readonly string[] = [],
+) =>
+  prisma.citizen.create({
+    data: {
+      handle,
+      roleAssignments: {
+        create: [
+          {
+            role: {
+              create: {
+                name: `${handle} role`,
+                permissionStrings: createPermissionStrings(permissionStrings),
+              },
+            },
+          },
+          ...additionalRoleIds.map((roleId) => ({
+            role: { connect: { id: roleId } },
+          })),
+        ],
+      },
+    },
+  });
 
 /**
  * The citizen has one role without permissions. This role inherits a second
