@@ -83,7 +83,7 @@ export const MobileActionBarFlyout = ({ children }: Props) => {
         inert={!isVisible}
         onKeyDown={handleKeyDown}
         className={clsx(
-          "fixed top-0 bottom-0 left-0 z-50 flex w-96 max-w-[90dvw] flex-col overflow-auto bg-neutral-800/90 shadow-sm backdrop-blur-sm transition-transform",
+          "fixed top-0 bottom-0 left-0 z-50 flex w-96 max-w-[90dvw] flex-col overflow-auto bg-neutral-800 shadow-sm transition-transform",
           {
             "-translate-x-full": isVisible === false,
             "translate-x-0": isVisible === true,
