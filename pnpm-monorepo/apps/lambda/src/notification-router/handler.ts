@@ -17,6 +17,7 @@ import { RoleAddedHandler } from "./type-handlers/RoleAdded";
 import { SilcTransactionsCreatedHandler } from "./type-handlers/SilcTransactionsCreated";
 import { TaskAssignmentUpdatedHandler } from "./type-handlers/TaskAssignmentUpdated";
 import { TaskCreatedHandler } from "./type-handlers/TaskCreated";
+import { TaskDeletedHandler } from "./type-handlers/TaskDeleted";
 import { WebPushSubscribedHandler } from "./type-handlers/WebPushSubscribed";
 import { WikiCitizenMentionedHandler } from "./type-handlers/WikiCitizenMentioned";
 import { WikiPageReportedHandler } from "./type-handlers/WikiPageReported";
@@ -58,6 +59,9 @@ export const notificationRouterHandler = async (
       break;
     case "TaskAssignmentUpdated":
       await TaskAssignmentUpdatedHandler(body.payload);
+      break;
+    case "TaskDeleted":
+      await TaskDeletedHandler(body.payload);
       break;
     case "ProfitDistributionPayoutStarted":
       await ProfitDistributionPayoutStartedHandler(body.payload);
@@ -185,6 +189,14 @@ export const bodySchema = z.discriminatedUnion("type", [
 
   z.object({
     type: z.literal("TaskAssignmentUpdated"),
+    payload: z.object({
+      taskId: z.cuid(),
+    }),
+    requestId: z.cuid2(),
+  }),
+
+  z.object({
+    type: z.literal("TaskDeleted"),
     payload: z.object({
       taskId: z.cuid(),
     }),
