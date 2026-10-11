@@ -16,9 +16,7 @@ export const OnboardingPopoverContent = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-sm text-neutral-500">
-        Lerne das SAM kennen
-      </p>
+      <p className="text-sm text-neutral-500">Lerne das SAM kennen</p>
 
       <ul
         className={clsx(
