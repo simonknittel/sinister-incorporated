@@ -7,21 +7,17 @@ interface Payload {
   taskId: Task["id"];
 }
 
-/**
- * The app sends this event only for a task that was open when it was
- * deleted.
- */
 export const TaskDeletedHandler = async (payload: Payload) => {
-  /**
-   * Calculate recipients: the assignees, except the citizen who deleted the
-   * task
-   */
   const task = await prisma.task.findUnique({
     where: {
       id: payload.taskId,
     },
     select: {
       title: true,
+      completedAt: true,
+      cancelledAt: true,
+      expiresAt: true,
+      deletedAt: true,
       deletedById: true,
       assignments: {
         select: {
@@ -30,7 +26,23 @@ export const TaskDeletedHandler = async (payload: Payload) => {
       },
     },
   });
-  if (!task) return;
+  if (!task?.deletedAt) return;
+
+  /**
+   * The deletion of a closed task only cleans up, thus it notifies nobody.
+   * The rule of `isTaskUpdatable()` of the app, at the time of the deletion.
+   */
+  if (
+    task.completedAt ||
+    task.cancelledAt ||
+    (task.expiresAt && task.expiresAt < task.deletedAt)
+  )
+    return;
+
+  /**
+   * Calculate recipients: the assignees, except the citizen who deleted the
+   * task
+   */
 
   const assigneeIds = task.assignments
     .map((assignment) => assignment.citizenId)

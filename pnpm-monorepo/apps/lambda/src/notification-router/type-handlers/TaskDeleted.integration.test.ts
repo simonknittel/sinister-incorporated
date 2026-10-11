@@ -1,4 +1,9 @@
-import { prisma, TaskRewardType, TaskVisibility } from "@sam-monorepo/database";
+import {
+  prisma,
+  TaskRewardType,
+  TaskVisibility,
+  type Prisma,
+} from "@sam-monorepo/database";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { truncateAllTables } from "../../../test/database";
 import { createCitizenWithPermissions } from "../../common/effectivePermissions.fixtures";
@@ -8,6 +13,26 @@ import { TaskDeletedHandler } from "./TaskDeleted";
 vi.mock("../publish", () => ({ publishNotifications: vi.fn() }));
 
 const RECEIVER_PERMISSION_STRINGS = ["login;manage", "task;read"];
+
+const ONE_HOUR_IN_MILLISECONDS = 60 * 60 * 1_000;
+
+const createDeletedTask = (
+  assigneeIds: readonly string[],
+  data: Partial<Prisma.TaskUncheckedCreateInput> = {},
+) =>
+  prisma.task.create({
+    data: {
+      title: "Frachter eskortieren",
+      visibility: TaskVisibility.GROUP,
+      rewardType: TaskRewardType.TEXT,
+      rewardTypeTextValue: "Ruhm und Ehre",
+      deletedAt: new Date(),
+      assignments: {
+        create: assigneeIds.map((citizenId) => ({ citizenId })),
+      },
+      ...data,
+    },
+  });
 
 beforeEach(async () => {
   await truncateAllTables();
@@ -28,21 +53,10 @@ describe("TaskDeletedHandler", () => {
       ["task;read"],
     );
     await createCitizenWithPermissions("reader", RECEIVER_PERMISSION_STRINGS);
-    const task = await prisma.task.create({
-      data: {
-        title: "Frachter eskortieren",
-        visibility: TaskVisibility.GROUP,
-        rewardType: TaskRewardType.TEXT,
-        rewardTypeTextValue: "Ruhm und Ehre",
-        deletedAt: new Date(),
-        deletedById: deleter.id,
-        assignments: {
-          create: [deleter, assignee, assigneeWithoutLogin].map((citizen) => ({
-            citizenId: citizen.id,
-          })),
-        },
-      },
-    });
+    const task = await createDeletedTask(
+      [deleter.id, assignee.id, assigneeWithoutLogin.id],
+      { deletedById: deleter.id },
+    );
 
     await TaskDeletedHandler({ taskId: task.id });
 
@@ -56,4 +70,29 @@ describe("TaskDeletedHandler", () => {
       },
     ]);
   });
+
+  test.each<{
+    state: string;
+    data: Partial<Prisma.TaskUncheckedCreateInput>;
+  }>([
+    { state: "completed", data: { completedAt: new Date() } },
+    { state: "cancelled", data: { cancelledAt: new Date() } },
+    {
+      state: "expired",
+      data: { expiresAt: new Date(Date.now() - ONE_HOUR_IN_MILLISECONDS) },
+    },
+  ])(
+    "notifies nobody for a task that was $state before the deletion",
+    async ({ data }) => {
+      const assignee = await createCitizenWithPermissions(
+        "assignee",
+        RECEIVER_PERMISSION_STRINGS,
+      );
+      const task = await createDeletedTask([assignee.id], data);
+
+      await TaskDeletedHandler({ taskId: task.id });
+
+      expect(publishNotifications).not.toHaveBeenCalled();
+    },
+  );
 });
