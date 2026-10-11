@@ -46,22 +46,30 @@ export const loadEffectivePermissions = async (
 };
 
 /**
- * The ids of the citizens that match `where`, are not deleted and have each
- * of the required permission sets through their effective roles.
+ * The effective permissions of the citizens that match `where`, are not
+ * deleted and have each of the required permission sets through their
+ * effective roles.
  */
-export const findCitizenIdsWithPermissions = async (
+export const findCitizensWithPermissions = async (
   where: Prisma.CitizenWhereInput,
   requiredPermissionSets: readonly PermissionSet[],
 ) => {
   const permissionsByCitizenId = await loadEffectivePermissions(where);
 
-  return new Set(
-    Array.from(permissionsByCitizenId)
-      .filter(([, { permissionSets }]) =>
-        requiredPermissionSets.every((requiredPermissionSet) =>
-          comparePermissionSets(requiredPermissionSet, permissionSets),
-        ),
-      )
-      .map(([citizenId]) => citizenId),
+  return new Map(
+    Array.from(permissionsByCitizenId).filter(([, { permissionSets }]) =>
+      requiredPermissionSets.every((requiredPermissionSet) =>
+        comparePermissionSets(requiredPermissionSet, permissionSets),
+      ),
+    ),
   );
 };
+
+/** The ids of the citizens of `findCitizensWithPermissions()` */
+export const findCitizenIdsWithPermissions = async (
+  where: Prisma.CitizenWhereInput,
+  requiredPermissionSets: readonly PermissionSet[],
+) =>
+  new Set(
+    (await findCitizensWithPermissions(where, requiredPermissionSets)).keys(),
+  );
