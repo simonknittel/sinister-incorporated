@@ -157,7 +157,7 @@ const OpenAlertDialog = ({
        * The dialog inherits the text styles of the location of the form, for
        * example a table cell. Thus it sets all text styles itself.
        */
-      className="m-auto w-full max-w-lg cursor-auto gap-4 rounded-primary bg-neutral-800 p-4 text-left font-sans text-base font-normal tracking-normal whitespace-normal text-neutral-50 normal-case not-italic transition duration-200 backdrop:bg-neutral-800/50 backdrop:backdrop-blur-sm open:grid starting:scale-90 starting:opacity-0"
+      className="m-auto w-full max-w-lg cursor-auto gap-4 rounded-primary bg-neutral-800 p-4 text-left font-sans text-base font-normal tracking-normal whitespace-normal text-neutral-50 normal-case not-italic transition duration-200 backdrop:bg-neutral-900/70 open:grid starting:scale-90 starting:opacity-0"
     >
       <div className="flex flex-col gap-2 text-center sm:text-left">
         <h2 id={titleId} className="text-lg font-semibold">

@@ -73,7 +73,14 @@ export default function Modal({
       onOpenChangeComplete={closePopover}
     >
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-30 bg-neutral-800/50 backdrop-blur-sm" />
+        {/*
+         * No blur behind a modal or another overlay that covers the page:
+         * while something on the page moves (for example a seasonal
+         * decoration or an animated avatar), the browser blurs the full
+         * viewport again in each frame, and on a slow device the frame rate
+         * falls a lot.
+         */}
+        <Dialog.Backdrop className="fixed inset-0 z-30 bg-neutral-900/70" />
 
         <div className="fixed inset-0 z-30 flex cursor-pointer items-start justify-center px-4 pt-4 pb-20 lg:items-center lg:pb-4">
           <Dialog.Popup

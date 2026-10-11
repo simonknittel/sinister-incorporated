@@ -2,8 +2,7 @@
   position: fixed;
   inset: 0;
   z-index: 40;
-  background-color: rgb(38 38 38 / 0.5);
-  backdrop-filter: blur(8px);
+  background-color: rgb(23 23 23 / 0.7);
 }
 
 .cmdk[cmdk-dialog] {

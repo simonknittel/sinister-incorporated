@@ -153,7 +153,7 @@ const TourDialog = ({ label, onClose, children }: TourDialogProps) => {
 /** Dims the page while a navigation or the target lookup is in flight */
 const TourWaitingOverlay = () => {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-neutral-800/50 backdrop-blur-sm">
+    <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/70">
       <AsciiSpinner />
     </div>
   );
@@ -267,7 +267,7 @@ const OnboardingStepCard = ({
           }}
         />
       ) : (
-        <div className="absolute inset-0 bg-neutral-800/50 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-neutral-900/70" />
       )}
 
       <div
