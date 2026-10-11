@@ -82,8 +82,17 @@ export const penaltyEntryCreatedPayloadSchema = z.object({
   reason: z.nullable(z.string()),
 });
 
+export const taskCreatedPayloadSchema = z.object({
+  taskId: z.string(),
+  taskTitle: z.string(),
+});
+
 export const taskAssignmentUpdatedPayloadSchema = z.object({
   taskId: z.string(),
+  taskTitle: z.string(),
+});
+
+export const taskDeletedPayloadSchema = z.object({
   taskTitle: z.string(),
 });
 
@@ -164,7 +173,9 @@ export const onSiteNotificationPayloadSchemas = {
   sincome_payout_started: sincomePayoutStartedPayloadSchema,
   sincome_payout_disbursed: sincomePayoutDisbursedPayloadSchema,
   penalty_entry_created: penaltyEntryCreatedPayloadSchema,
+  task_created: taskCreatedPayloadSchema,
   task_assignment_updated: taskAssignmentUpdatedPayloadSchema,
+  task_deleted: taskDeletedPayloadSchema,
   wiki_page_reported: wikiPageReportedPayloadSchema,
   wiki_citizen_mentioned: wikiCitizenMentionedPayloadSchema,
   birthday: birthdayPayloadSchema,
@@ -194,7 +205,9 @@ export const ON_SITE_NOTIFICATION_PAYLOAD_VERSIONS: Record<
   sincome_payout_started: 1,
   sincome_payout_disbursed: 1,
   penalty_entry_created: 1,
+  task_created: 1,
   task_assignment_updated: 1,
+  task_deleted: 1,
   wiki_page_reported: 1,
   wiki_citizen_mentioned: 1,
   birthday: 1,
