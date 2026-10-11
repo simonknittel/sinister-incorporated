@@ -49,6 +49,38 @@ import { FaCopy } from "react-icons/fa";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    key: "2026-10-11-task-benachrichtigungen",
+    date: "2026-10-11",
+    title: "Tasks: Benachrichtigungen bei neuen und gelöschten Tasks",
+    tags: ["Neu", "Tasks", "Benachrichtigungen"],
+    body: () => (
+      <>
+        <p>
+          Wird ein neuer öffentlicher Task erstellt, den du annehmen kannst,
+          bekommst du jetzt eine Benachrichtigung. Erfordert der Task bestimmte
+          Rollen, werden nur Citizens mit einer dieser Rollen benachrichtigt.
+        </p>
+
+        <p>
+          Wird ein offener Task gelöscht, der dir zugewiesen ist, bekommst du
+          ebenfalls eine Benachrichtigung.
+        </p>
+
+        <p>
+          Browser-Benachrichtigungen dafür lassen sich in den{" "}
+          <Link
+            href="/app/account/notifications"
+            className="text-interaction-500 hover:underline focus-visible:underline"
+          >
+            Einstellungen
+          </Link>{" "}
+          deaktivieren.
+        </p>
+      </>
+    ),
+  },
+
+  {
     key: "2026-09-27-neue-tasks-und-events",
     date: "2026-09-27",
     title: "Tasks und Events: Neu-Markierung",
