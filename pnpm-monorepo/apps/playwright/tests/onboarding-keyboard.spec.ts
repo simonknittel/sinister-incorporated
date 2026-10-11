@@ -53,7 +53,7 @@ test("the tour keeps the keyboard focus, closes on Escape and returns the focus 
   const popover = page.getByRole("dialog", { name: "Erste Schritte" });
   await clickUntilVisible(
     onboardingButton(page),
-    popover.getByText("Lerne das SAM mit kurzen Touren kennen."),
+    popover.getByText("Lerne das SAM kennen"),
   );
   await popover
     .getByRole("listitem")

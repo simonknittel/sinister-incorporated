@@ -21,7 +21,7 @@ const popover = (page: Page) =>
 const openOnboardingPopover = (page: Page) =>
   clickUntilVisible(
     onboardingButton(page),
-    popover(page).getByText("Lerne das SAM mit kurzen Touren kennen."),
+    popover(page).getByText("Lerne das SAM kennen"),
   );
 
 const taskItem = (page: Page, title: string) =>
