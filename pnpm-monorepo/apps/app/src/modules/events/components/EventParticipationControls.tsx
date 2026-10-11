@@ -20,6 +20,11 @@ interface Props {
   readonly hasCancelled: boolean;
   readonly comment: string | null;
   readonly participationOpen: boolean;
+  /**
+   * Only the sign-up dialog sets this. On the event page, the focus would
+   * scroll the page and open the keyboard of a phone.
+   */
+  readonly autoFocusComment?: boolean;
 }
 
 export const EventParticipationControls = ({
@@ -29,6 +34,7 @@ export const EventParticipationControls = ({
   hasCancelled,
   comment,
   participationOpen,
+  autoFocusComment,
 }: Props) => {
   /**
    * The errors show as toasts, not in the forms: an error such as "already
@@ -125,6 +131,7 @@ export const EventParticipationControls = ({
               setSignUpComment(changeEvent.target.value)
             }
             classNameTextarea="h-20"
+            autoFocus={autoFocusComment}
           />
 
           <SubmitButton icon={<FaSignInAlt />} className="mt-2 ml-auto">
