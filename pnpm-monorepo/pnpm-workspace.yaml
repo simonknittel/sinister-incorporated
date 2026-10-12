@@ -18,10 +18,14 @@ overrides:
   bn.js@<4.12.3: ">=4.12.3"
   fast-xml-parser@>=5.0.0 <5.3.8: ">=5.3.8"
   jws@=4.0.0: ">=4.0.1"
-  # The email preview (@react-email/ui, also its latest version 6.11.0) pins
-  # next@16.3.3, which has a critical remote code execution advisory
-  # (GHSA-vcvr-r3jv-pc5j). Use the patched version of apps/app. Remove this
-  # override when @react-email/ui depends on a patched version.
+  # The email preview (@react-email/ui) pins next@16.3.3, which has a critical
+  # remote code execution advisory (GHSA-vcvr-r3jv-pc5j). Use the latest patch
+  # release of the same minor version. Do not follow apps/app to a new minor
+  # version: the package has a prebuilt `.next` directory, and a Next.js server
+  # of a different minor version cannot read it (16.4 requires
+  # `.next/server/preview-props.json`). A rule in renovate.json keeps Renovate
+  # on the same minor version. Remove this override when @react-email/ui
+  # depends on a patched version.
   "@react-email/ui>next": 16.3.8
   # Migrated from apps/app's former npm `overrides`.
   "@auth/core": 0.41.3
@@ -29,13 +33,13 @@ overrides:
   "@types/react-dom": 19.3.0
   tar: 7.5.22
   zod-validation-error: 5.0.0
-  # eslint-config-next depends on `typescript-eslint: ^8.46.0`, which resolves
+  # eslint-config-next depends on `typescript-eslint: ^8.56.0`, which resolves
   # to a second copy of the package next to the exact version that apps/app
   # depends on. ESLint then refuses the app config, because the Next.js preset
   # and apps/app/eslint.config.mjs register two different plugin objects under
   # the name `@typescript-eslint`. Keep this in sync with the version in
   # apps/app/package.json.
-  typescript-eslint: 8.70.1
+  typescript-eslint: 8.71.0
 
 preferFrozenLockfile: true
 saveExact: true
@@ -71,24 +75,22 @@ allowBuilds:
   # pure-JS fallbacks are fine for the test stack.
   cpu-features: false
   ssh2: false
-auditLevel: critical
-# Versions that `pnpm install` was allowed to resolve before they reached
-# `minimumReleaseAge`. pnpm appends to this list on its own. Next.js 16.3.3 is
-# here on request: it fixes two critical remote-code-execution advisories, so
-# it must not wait out the 7-day cooldown.
+audit:
+  level: critical
+# Versions that `pnpm install` can resolve before they reach
+# `minimumReleaseAge`. pnpm appends to this list on its own. Next.js 16.4.0 is
+# here on request: we upgraded before this version was 7 days old. Remove
+# these entries after 2026-10-13.
 minimumReleaseAgeExclude:
-  - "@next/env@16.3.3"
-  - "@next/eslint-plugin-next@16.3.3"
-  - "@next/swc-darwin-arm64@16.3.3"
-  - "@next/swc-darwin-x64@16.3.3"
-  - "@next/swc-linux-arm64-gnu@16.3.3"
-  - "@next/swc-linux-arm64-musl@16.3.3"
-  - "@next/swc-linux-x64-gnu@16.3.3"
-  - "@next/swc-linux-x64-musl@16.3.3"
-  - "@next/swc-win32-arm64-msvc@16.3.3"
-  - "@next/swc-win32-x64-msvc@16.3.3"
-  - eslint-config-next@16.3.3
-  # Renovate security update: next@16.3.8
-  - next@16.3.3 || 16.3.8
-  # Renovate security update: sharp@0.35.5
-  - sharp@0.35.5
+  - next@16.4.0
+  - "@next/env@16.4.0"
+  - "@next/eslint-plugin-next@16.4.0"
+  - eslint-config-next@16.4.0
+  - "@next/swc-darwin-arm64@16.4.0"
+  - "@next/swc-darwin-x64@16.4.0"
+  - "@next/swc-linux-arm64-gnu@16.4.0"
+  - "@next/swc-linux-arm64-musl@16.4.0"
+  - "@next/swc-linux-x64-gnu@16.4.0"
+  - "@next/swc-linux-x64-musl@16.4.0"
+  - "@next/swc-win32-arm64-msvc@16.4.0"
+  - "@next/swc-win32-x64-msvc@16.4.0"
