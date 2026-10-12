@@ -65,7 +65,16 @@ interface CreateCitizenOptions {
    * content as not new to a citizen (the changelog) read this.
    */
   readonly emailVerified?: Date;
+  /**
+   * When the citizen first opened the app. A past date by default, so that
+   * the dashboard shows no welcome banner. Pass `null` for a citizen who is
+   * about to open the app for the first time.
+   */
+  readonly welcomedAt?: Date | null;
 }
+
+/** Long before every test, so that the welcome day of the citizen is over */
+const WELCOMED_LONG_AGO = new Date("2020-01-01T00:00:00Z");
 
 /**
  * A fully sign-in-able user: the session callback resolves the Citizen via
@@ -78,6 +87,7 @@ export const createCitizen = async (
     permissionStrings = [],
     admin = false,
     emailVerified = new Date(),
+    welcomedAt = WELCOMED_LONG_AGO,
   }: CreateCitizenOptions,
 ): Promise<TestCitizen> => {
   const suffix = randomUUID().slice(0, 8);
@@ -104,6 +114,7 @@ export const createCitizen = async (
       discordId,
       handle,
       userId: user.id,
+      welcomedAt,
     },
   });
 
