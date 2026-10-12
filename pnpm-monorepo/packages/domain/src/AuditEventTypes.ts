@@ -237,6 +237,7 @@ export enum AuditEventType {
   ASSUME_USER_STARTED = "ASSUME_USER_STARTED",
   ASSUME_USER_ENDED = "ASSUME_USER_ENDED",
   READ_MARKER_CREATED = "READ_MARKER_CREATED",
+  CITIZEN_WELCOMED = "CITIZEN_WELCOMED",
 }
 
 /**
@@ -1615,6 +1616,11 @@ export interface AuditEventDataByType {
     citizenId: string;
     subject: ReadMarkerSubject;
     subjectId: string;
+  };
+
+  /** The first visit of a citizen who can open the app, see `Citizen.welcomedAt` */
+  [AuditEventType.CITIZEN_WELCOMED]: {
+    citizenId: string;
   };
 }
 

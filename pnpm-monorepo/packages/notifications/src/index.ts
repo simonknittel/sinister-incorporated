@@ -151,6 +151,31 @@ export const newYearPayloadSchema = z.object({
   body: z.string().check(z.maxLength(NEW_YEAR_BODY_MAX_LENGTH)),
 });
 
+/** Room for a wording well above the length of the drafted ones */
+const WELCOME_TITLE_MAX_LENGTH = 100;
+const WELCOME_BODY_MAX_LENGTH = 200;
+
+/**
+ * The welcome of a citizen on the first day they can open the app. It
+ * carries the wording which the greeting picked for this citizen, so that
+ * the on-site row shows the same text as the web push notification. Its
+ * target is the "Erste Schritte" popover, see `ONBOARDING_POPOVER_SEARCH_PARAM`.
+ */
+export const welcomePayloadSchema = z.object({
+  title: z.string().check(z.maxLength(WELCOME_TITLE_MAX_LENGTH)),
+  body: z.string().check(z.maxLength(WELCOME_BODY_MAX_LENGTH)),
+});
+
+/**
+ * The query parameter of the dashboard which opens the "Erste Schritte"
+ * popover. The welcome notification links to it, thus the Lambda (web push
+ * URL) and the app (on-site row, opener) share the name here.
+ */
+export const ONBOARDING_POPOVER_SEARCH_PARAM = "erste-schritte";
+
+/** The path of the dashboard with the parameter which opens the popover */
+export const ONBOARDING_POPOVER_PATH = `/app/dashboard?${ONBOARDING_POPOVER_SEARCH_PARAM}=1`;
+
 export const wikiCitizenMentionedPayloadSchema = z.object({
   pageId: z.string(),
   pageTitle: z.string(),
@@ -180,6 +205,7 @@ export const onSiteNotificationPayloadSchemas = {
   wiki_citizen_mentioned: wikiCitizenMentionedPayloadSchema,
   birthday: birthdayPayloadSchema,
   new_year: newYearPayloadSchema,
+  welcome: welcomePayloadSchema,
 } as const;
 
 export type OnSiteNotificationType =
@@ -212,6 +238,7 @@ export const ON_SITE_NOTIFICATION_PAYLOAD_VERSIONS: Record<
   wiki_citizen_mentioned: 1,
   birthday: 1,
   new_year: 1,
+  welcome: 1,
 };
 
 export type ParsedOnSiteNotificationPayload = {

@@ -2340,4 +2340,13 @@ export const AuditEventDefinitions: {
     },
     message: (data) => `Marked ${data.subject} as read (${data.subjectId})`,
   },
+
+  [AuditEventType.CITIZEN_WELCOMED]: {
+    type: AuditEventType.CITIZEN_WELCOMED,
+    data: {
+      citizenId: "string",
+    },
+    message: (data) =>
+      `Welcomed citizen ${data.citizenId} on their first visit with access to the app`,
+  },
 };

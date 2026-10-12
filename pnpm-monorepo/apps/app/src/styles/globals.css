@@ -564,6 +564,16 @@
   --cloud-4: hsl(40 90% 50% / 0.22);
 }
 
+/* The welcome of a new member: the teal and blue of a clear sky at launch,
+with a warm accent */
+@utility background-welcome {
+  @apply cloud-surface;
+  --cloud-1: hsl(175 75% 42% / 0.3);
+  --cloud-2: hsl(210 85% 55% / 0.26);
+  --cloud-3: hsl(150 65% 45% / 0.22);
+  --cloud-4: hsl(35 90% 55% / 0.2);
+}
+
 /** The surface of a New Year greeting, in gold, orange and yellow only */
 @utility background-new-year {
   @apply cloud-surface;

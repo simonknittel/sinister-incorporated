@@ -33,6 +33,14 @@ interface OnboardingContext {
   readonly exitTour: () => void;
   readonly markTaskAsDone: (taskKey: OnboardingTaskKey) => void;
   readonly markAllTasksAsDone: () => void;
+  /**
+   * Whether something asked for the "Erste Schritte" popover, for example
+   * the CTA of the welcome banner or the welcome notification. The popover
+   * surface of the current viewport opens and settles the request.
+   */
+  readonly isPopoverOpenRequested: boolean;
+  readonly requestPopoverOpen: () => void;
+  readonly settlePopoverOpenRequest: () => void;
 }
 
 const OnboardingContext = createContext<OnboardingContext | undefined>(
@@ -198,7 +206,20 @@ export const OnboardingProvider = ({ initialState, children }: Props) => {
     (task) => !completedTaskKeys.has(task.key),
   ).length;
 
+  const [isPopoverOpenRequested, setIsPopoverOpenRequested] = useState(false);
+
+  const requestPopoverOpen = () => {
+    setIsPopoverOpenRequested(true);
+  };
+
+  const settlePopoverOpenRequest = () => {
+    setIsPopoverOpenRequested(false);
+  };
+
   const value = {
+    isPopoverOpenRequested,
+    requestPopoverOpen,
+    settlePopoverOpenRequest,
     eligibleTasks,
     completedTaskKeys,
     completedStepProgressKeys,
