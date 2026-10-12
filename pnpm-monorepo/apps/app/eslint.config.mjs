@@ -23,7 +23,7 @@ const eslintConfig = defineConfig([
     "postcss.config.cjs",
     "prettier.config.mjs",
     "tailwind.config.ts",
-    "vitest.config.ts",
+    "vitest.config.mts",
     "**/service-worker.js",
   ]),
 
