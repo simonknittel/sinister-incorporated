@@ -35,10 +35,15 @@ interface OnboardingContext {
   readonly markAllTasksAsDone: () => void;
   /**
    * Whether something asked for the "Erste Schritte" popover, for example
-   * the CTA of the welcome banner or the welcome notification. The popover
-   * surface of the current viewport opens and settles the request.
+   * the CTA of the welcome banner or the welcome notification. The request
+   * stays pending until the popover surface of the current viewport opens
+   * its popover, see `useOnboardingPopoverOpenState()`.
    */
   readonly isPopoverOpenRequested: boolean;
+  /**
+   * When there are no eligible tasks, this function does nothing. No surface
+   * shows the popover then, and a request must not stay pending.
+   */
   readonly requestPopoverOpen: () => void;
   readonly settlePopoverOpenRequest: () => void;
 }
@@ -209,6 +214,8 @@ export const OnboardingProvider = ({ initialState, children }: Props) => {
   const [isPopoverOpenRequested, setIsPopoverOpenRequested] = useState(false);
 
   const requestPopoverOpen = () => {
+    if (eligibleTasks.length === 0) return;
+
     setIsPopoverOpenRequested(true);
   };
 

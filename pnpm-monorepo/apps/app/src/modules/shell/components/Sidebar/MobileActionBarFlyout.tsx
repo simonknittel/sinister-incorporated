@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import {
   createContext,
   useContext,
+  useEffect,
   useId,
   useRef,
   useState,
@@ -16,15 +17,40 @@ import {
 import { AiFillAppstore } from "react-icons/ai";
 import { FaTimes } from "react-icons/fa";
 
+interface MobileActionBarFlyoutContext {
+  /**
+   * The flyout stays mounted while it is translated off-screen. Thus content
+   * which must react to the close of the flyout (for example a popover which
+   * closes with it) reads this.
+   */
+  readonly isVisible: boolean;
+  /**
+   * True when the flyout is visible and its slide-in transition has ended.
+   * Base UI calculates the position of a popup from its trigger, and the
+   * trigger moves during the transition. Thus a popover which opens without
+   * a press on its trigger waits for this.
+   */
+  readonly isSlideInComplete: boolean;
+  readonly show: () => void;
+}
+
+const MobileActionBarFlyoutContext = createContext<
+  MobileActionBarFlyoutContext | undefined
+>(undefined);
+
 /**
- * The flyout stays mounted while it is translated off-screen, so content
- * which must react to the flyout closing (e.g. the notification popover
- * dismissing itself) reads this.
+ * Check for undefined since the defaultValue of the context is undefined. If
+ * it's still undefined, the provider component is missing.
  */
-const MobileActionBarFlyoutVisibilityContext = createContext(false);
+export function useMobileActionBarFlyout() {
+  const context = useContext(MobileActionBarFlyoutContext);
+  if (!context)
+    throw new Error("[MobileActionBarFlyoutContext] Provider is missing!");
+  return context;
+}
 
 export function useMobileActionBarFlyoutVisibility() {
-  return useContext(MobileActionBarFlyoutVisibilityContext);
+  return useMobileActionBarFlyout().isVisible;
 }
 
 interface Props {
@@ -34,15 +60,43 @@ interface Props {
 export const MobileActionBarFlyout = ({ children }: Props) => {
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
+  const [isSlideInComplete, setIsSlideInComplete] = useState(false);
   const { unreadCount } = useOnSiteNotifications();
   const flyoutId = useId();
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const flyoutRef = useRef<HTMLDivElement>(null);
 
   const [previousPathname, setPreviousPathname] = useState(pathname);
   if (pathname !== previousPathname) {
     setPreviousPathname(pathname);
     setIsVisible(false);
   }
+
+  if (!isVisible && isSlideInComplete) setIsSlideInComplete(false);
+
+  /**
+   * The same method as Base UI. `getAnimations()` applies the new classes
+   * first, thus it gives the transition that they start. When the viewer
+   * prefers reduced motion, the duration is 0 s: there is no transition and
+   * no `transitionend` event, and the list is empty. A close during the
+   * slide-in cancels the wait.
+   */
+  useEffect(() => {
+    const flyout = flyoutRef.current;
+    if (!isVisible || !flyout) return;
+
+    let isCancelled = false;
+
+    void Promise.allSettled(
+      flyout.getAnimations().map((animation) => animation.finished),
+    ).then(() => {
+      if (!isCancelled) setIsSlideInComplete(true);
+    });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isVisible]);
 
   /**
    * A popover inside the flyout renders in a portal. Its Escape key also
@@ -54,6 +108,12 @@ export const MobileActionBarFlyout = ({ children }: Props) => {
 
     setIsVisible(false);
     toggleRef.current?.focus();
+  };
+
+  const contextValue = {
+    isVisible,
+    isSlideInComplete,
+    show: () => setIsVisible(true),
   };
 
   return (
@@ -77,6 +137,7 @@ export const MobileActionBarFlyout = ({ children }: Props) => {
       </button>
 
       <div
+        ref={flyoutRef}
         id={flyoutId}
         // The closed flyout only moves off-screen. Thus it must also leave
         // the focus order and the accessibility tree.
@@ -90,9 +151,9 @@ export const MobileActionBarFlyout = ({ children }: Props) => {
           },
         )}
       >
-        <MobileActionBarFlyoutVisibilityContext value={isVisible}>
+        <MobileActionBarFlyoutContext value={contextValue}>
           {children}
-        </MobileActionBarFlyoutVisibilityContext>
+        </MobileActionBarFlyoutContext>
       </div>
 
       {isVisible && (

@@ -122,6 +122,15 @@ interface PopoverBaseUIContextProviderProps {
   readonly triggerTitle?: string;
   readonly children: ReactNode;
   readonly childrenClassName?: string;
+  /**
+   * When set, the owner holds the open state and the popover shows this
+   * value. The popover then does not change its state itself: it reports
+   * each change through `onOpenChange`, and the owner sets the new value.
+   * The rules for hover and `keepOpen` stay the same. When the owner opens
+   * the popover, it stays open when the pointer leaves the trigger, as after
+   * an open through a press. When not set, the popover holds its own state.
+   */
+  readonly open?: boolean;
   /** Reports each open and close, also a close through `closePopover` */
   readonly onOpenChange?: (open: boolean) => void;
   /**
@@ -151,6 +160,7 @@ export const PopoverBaseUI = ({
   triggerTitle,
   children,
   childrenClassName,
+  open,
   onOpenChange,
   hoverOnly = false,
   openOnHover = true,
@@ -159,7 +169,24 @@ export const PopoverBaseUI = ({
   align = "center",
   positionerClassName,
 }: PopoverBaseUIContextProviderProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(false);
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : uncontrolledIsOpen;
+
+  /**
+   * When the owner opens the popover through `open`, Base UI knows no open
+   * event. Thus it closes the popover when the pointer leaves the trigger,
+   * as after an open through hover. See `open` for the correct behaviour.
+   */
+  const [isOpenReported, setIsOpenReported] = useState(false);
+  if (!isOpen && isOpenReported) setIsOpenReported(false);
+  const isOpenedByOwner = isOpen && !isOpenReported;
+
+  const changeOpen = (nextOpen: boolean) => {
+    if (!isControlled) setUncontrolledIsOpen(nextOpen);
+    setIsOpenReported(nextOpen);
+    onOpenChange?.(nextOpen);
+  };
 
   /**
    * Moving the pointer onto a hover-opening trigger already opens the popup,
@@ -172,18 +199,22 @@ export const PopoverBaseUI = ({
   const { keepOpen, isKeptOpen } = useKeepOpen();
 
   const handleOpenChange = (
-    open: boolean,
+    nextOpen: boolean,
     eventDetails: PopoverRoot.ChangeEventDetails,
   ) => {
-    if (!open && isKeptOpen()) {
+    if (!nextOpen && isKeptOpen()) {
       eventDetails.cancel();
       return;
     }
 
-    if (hoverOnly && open && eventDetails.reason !== "trigger-hover") return;
+    if (hoverOnly && nextOpen && eventDetails.reason !== "trigger-hover")
+      return;
+
+    if (!nextOpen && isOpenedByOwner && eventDetails.reason === "trigger-hover")
+      return;
 
     if (
-      !open &&
+      !nextOpen &&
       wasOpenedByHoverRef.current &&
       eventDetails.reason === "trigger-press"
     ) {
@@ -192,16 +223,14 @@ export const PopoverBaseUI = ({
     }
 
     wasOpenedByHoverRef.current =
-      open && eventDetails.reason === "trigger-hover";
+      nextOpen && eventDetails.reason === "trigger-hover";
 
-    setIsOpen(open);
-    onOpenChange?.(open);
+    changeOpen(nextOpen);
   };
 
   const closePopover = () => {
     wasOpenedByHoverRef.current = false;
-    setIsOpen(false);
-    onOpenChange?.(false);
+    changeOpen(false);
   };
 
   const value = {

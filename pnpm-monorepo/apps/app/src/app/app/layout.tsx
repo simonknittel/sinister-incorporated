@@ -15,6 +15,7 @@ import { CreateContextProvider } from "@/modules/common/components/CreateContext
 import { NewReleaseToast } from "@/modules/common/components/NewReleaseToast";
 import { OnSiteNotificationsProvider } from "@/modules/notifications/components/OnSiteNotificationsProvider";
 import { getUnreadOnSiteNotificationCount } from "@/modules/notifications/utils/queries/getUnreadOnSiteNotificationCount";
+import { OnboardingPopoverOpener } from "@/modules/onboarding/components/OnboardingPopoverOpener";
 import { OnboardingProvider } from "@/modules/onboarding/components/OnboardingProvider";
 import { OnboardingTour } from "@/modules/onboarding/components/OnboardingTour";
 import { getOnboardingState } from "@/modules/onboarding/utils/queries/getOnboardingState";
@@ -33,6 +34,7 @@ import { getOpenWikiReportCount } from "@/modules/wiki/queries/getOpenWikiReport
 import { TRPCReactProvider } from "@/trpc/react";
 import { NextIntlClientProvider } from "next-intl";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Suspense } from "react";
 
 export default async function AppLayout({ children }: LayoutProps<"/app">) {
   const [
@@ -112,6 +114,10 @@ export default async function AppLayout({ children }: LayoutProps<"/app">) {
                             <SeasonalViewportLayer />
 
                             <OnboardingTour />
+
+                            <Suspense>
+                              <OnboardingPopoverOpener />
+                            </Suspense>
                           </CreateContextProvider>
                         </OnboardingProvider>
                       </OnSiteNotificationsProvider>
