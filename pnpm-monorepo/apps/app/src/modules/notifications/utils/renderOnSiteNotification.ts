@@ -1,5 +1,6 @@
 import {
   BIRTHDAY_FALLBACK_WORDING,
+  ONBOARDING_POPOVER_PATH,
   parseOnSiteNotificationPayload,
 } from "@sam-monorepo/notifications";
 import { NOTIFICATIONS_APPS } from "./NotificationTypes";
@@ -13,6 +14,7 @@ import type { OnSiteNotificationRow } from "./types";
 export enum NotificationDecoration {
   Birthday = "birthday",
   NewYear = "new_year",
+  Welcome = "welcome",
 }
 
 interface OnSiteNotificationRendering {
@@ -253,6 +255,20 @@ export const renderOnSiteNotification = (
         /** A personal message without an app, see the birthday greeting */
         appTitle: null,
         decoration: NotificationDecoration.NewYear,
+      };
+
+    case "welcome":
+      return {
+        title: parsed.payload.title,
+        body: parsed.payload.body,
+        url: ONBOARDING_POPOVER_PATH,
+        /**
+         * A personal message without an app, see the birthday greeting. The
+         * type is not in `NotificationTypes`: the welcome arrives only once,
+         * thus a citizen cannot switch it off before it arrives.
+         */
+        appTitle: null,
+        decoration: NotificationDecoration.Welcome,
       };
 
     default:
