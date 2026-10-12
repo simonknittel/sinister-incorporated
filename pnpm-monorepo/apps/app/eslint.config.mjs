@@ -1,4 +1,3 @@
-import { fixupPluginRules } from "@eslint/compat";
 import tanstackQuery from "@tanstack/eslint-plugin-query";
 import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
 import prettier from "eslint-config-prettier/flat";
@@ -6,32 +5,8 @@ import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need
 import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
-// The Next.js preset bundles eslint-plugin-react, eslint-plugin-jsx-a11y and
-// eslint-plugin-import, which don't support ESLint 10 yet (they still call
-// rule-context APIs removed in v10). fixupPluginRules bridges exactly these
-// three until upstream catches up. The preset's other plugins (including
-// @typescript-eslint, which the typescript-eslint presets below also register)
-// must stay unwrapped, or ESLint rejects the config as a plugin redefinition.
-// Both sides must also resolve to the same copy of @typescript-eslint, which
-// the `typescript-eslint` override in pnpm-workspace.yaml takes care of.
-const pluginsWithoutEslint10Support = ["react", "jsx-a11y", "import"];
-const nextCoreWebVitalsFixedUp = nextCoreWebVitals.map((configEntry) => {
-  if (!configEntry.plugins) return configEntry;
-  return {
-    ...configEntry,
-    plugins: Object.fromEntries(
-      Object.entries(configEntry.plugins).map(([pluginName, plugin]) => [
-        pluginName,
-        pluginsWithoutEslint10Support.includes(pluginName)
-          ? fixupPluginRules(plugin)
-          : plugin,
-      ]),
-    ),
-  };
-});
-
 const eslintConfig = defineConfig([
-  ...nextCoreWebVitalsFixedUp,
+  ...nextCoreWebVitals,
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   ...tanstackQuery.configs["flat/recommended"],
