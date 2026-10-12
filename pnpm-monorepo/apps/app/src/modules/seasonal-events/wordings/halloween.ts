@@ -1,11 +1,11 @@
-import type { SeasonalWordingFactory } from "../utils/types";
+import type { GreetingWordingFactory } from "@/modules/dashboard/utils/greetingWordings";
 
 /**
  * The greetings of the banner on the Day of the Vara, the Halloween of the
  * Star Citizen universe. The banner picks one of them per citizen and day,
  * thus two citizens of the same day usually read a different one.
  */
-export const HALLOWEEN_WORDINGS: readonly SeasonalWordingFactory[] = [
+export const HALLOWEEN_WORDINGS: readonly GreetingWordingFactory[] = [
   () => ({
     title: "Tag der Vara!",
     body: "Setz die Maske auf, Citizen. Heute gehört das Verse den Verkleideten.",

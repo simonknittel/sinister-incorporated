@@ -12,25 +12,22 @@ const STRIP_CLASS_NAMES = [
 ];
 
 interface Props {
-  /** The utility of the event which paints the colour clouds */
+  /** The utility of the occasion which paints the colour clouds */
   readonly surfaceClassName: string;
   /** Places the clouds in the stacking order of the caller */
   readonly className?: string;
 }
 
 /**
- * The colour clouds of the greeting banner, which swirl slowly. The caller
+ * The colour clouds of a greeting banner, which swirl slowly. The caller
  * clips them at its round corners.
  *
  * Only the strips move, and the browser moves them without painting the
  * clouds again. Without motion, both strips rest with their first copy over
  * the banner, and the two pairs of clouds together show the still surface of
- * the event.
+ * the occasion.
  */
-export const SeasonalBannerClouds = ({
-  surfaceClassName,
-  className,
-}: Props) => (
+export const BannerClouds = ({ surfaceClassName, className }: Props) => (
   <div className={clsx("absolute inset-0", className)}>
     {STRIP_CLASS_NAMES.map((stripClassName) => (
       <CloudStrip

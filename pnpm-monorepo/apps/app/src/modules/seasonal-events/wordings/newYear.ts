@@ -1,4 +1,4 @@
-import type { SeasonalWordingFactory } from "../utils/types";
+import type { GreetingWordingFactory } from "@/modules/dashboard/utils/greetingWordings";
 
 /**
  * The greetings of the banner on the first day of the year. Every wording
@@ -8,7 +8,7 @@ import type { SeasonalWordingFactory } from "../utils/types";
  * the Lambda: a citizen can receive that notification and open the dashboard
  * on the same day, and two identical greetings would read like a mistake.
  */
-export const NEW_YEAR_WORDINGS: readonly SeasonalWordingFactory[] = [
+export const NEW_YEAR_WORDINGS: readonly GreetingWordingFactory[] = [
   ({ inGameYear }) => ({
     title: `${inGameYear} ist da!`,
     body: "Die ganze Org hat den Sprung geschafft. Auf ein gutes Jahr im Verse.",

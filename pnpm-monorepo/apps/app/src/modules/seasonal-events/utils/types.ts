@@ -1,3 +1,4 @@
+import type { GreetingWordingFactory } from "@/modules/dashboard/utils/greetingWordings";
 import type { LocalDate, SeasonalEventKey } from "@sam-monorepo/domain";
 import type { ReactNode } from "react";
 
@@ -8,25 +9,6 @@ export interface SeasonalFont {
   /** Name of the CSS variable which the class defines */
   readonly cssVariableName: string;
 }
-
-/** What a wording can name besides the event itself */
-export interface SeasonalWordingContext {
-  /** The year of the Star Citizen universe, for example 2955 */
-  readonly inGameYear: number;
-}
-
-export interface SeasonalWording {
-  readonly title: string;
-  readonly body: string;
-}
-
-/**
- * One wording of the greeting banner. A wording is a function, because a
- * wording may name a value of the moment, for example the in-game year.
- */
-export type SeasonalWordingFactory = (
-  context: SeasonalWordingContext,
-) => SeasonalWording;
 
 export interface SeasonalDecorationProps {
   readonly className?: string;
@@ -47,7 +29,7 @@ export interface SeasonalTheme {
   readonly title: string;
   readonly font: SeasonalFont;
   /** The pool the greeting banner picks a wording from on every render */
-  readonly wordings: readonly SeasonalWordingFactory[];
+  readonly wordings: readonly GreetingWordingFactory[];
   /** Utility class of the surface of the greeting banner */
   readonly bannerSurfaceClassName: string;
   /**

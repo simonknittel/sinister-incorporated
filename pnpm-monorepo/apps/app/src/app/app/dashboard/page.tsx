@@ -2,9 +2,9 @@ import { requireAuthenticationPage } from "@/modules/auth/server";
 import { ProfileTile } from "@/modules/citizen/components/ProfileTile";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
 import { DashboardFooter } from "@/modules/dashboard/components/DashboardFooter";
+import { DashboardGreetingBanner } from "@/modules/dashboard/components/DashboardGreetingBanner";
 import { TileSkeleton } from "@/modules/dashboard/components/TileSkeleton";
 import { CalendarTile } from "@/modules/events/components/CalendarTile";
-import { SeasonalGreetingBanner } from "@/modules/seasonal-events/components/SeasonalGreetingBanner";
 import { SeasonalSpynetSearchTileSlot } from "@/modules/seasonal-events/components/SeasonalSpynetSearchTileSlot";
 import { SpynetSearchTile } from "@/modules/spynet/components/SpynetSearchTile/SpynetSearchTile";
 import { TasksDashboardTile } from "@/modules/tasks/components/DashboardTile";
@@ -28,7 +28,7 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col gap-6">
-      <SeasonalGreetingBanner />
+      <DashboardGreetingBanner />
 
       {/* The tiles keep their own container, thus the banner above them
       cannot change their layout. */}

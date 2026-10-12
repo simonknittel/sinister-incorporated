@@ -4,11 +4,10 @@ import { getActiveSeasonalTheme } from "../queries/getActiveSeasonalTheme";
 
 /**
  * The surface which carries the confetti. Its size decides how far a
- * particle has to fly, thus every surface brings its own shots.
+ * particle has to fly, thus every surface brings its own shots. The greeting
+ * banner of the dashboard brings its own confetti, see `GreetingBanner`.
  */
 export enum SeasonalConfettiPlacement {
-  /** The wide but flat surface of the greeting banner */
-  Banner = "banner",
   /** The login page, which is as tall as the viewport */
   LoginPage = "login-page",
 }
@@ -17,30 +16,10 @@ export enum SeasonalConfettiPlacement {
 const CONFETTI_INTERVAL = 1600;
 
 /**
- * The banner is a wide but flat box. The particles are therefore slow and
- * fall back fast, so that they stay inside the banner instead of leaving it
- * through its upper edge after a few frames.
- */
-const BANNER_SHOT = {
-  particleCount: 10,
-  spread: 70,
-  startVelocity: 18,
-  gravity: 0.8,
-  decay: 0.92,
-  scalar: 0.7,
-  ticks: 150,
-};
-
-/** One shot from each lower corner, both towards the middle of the banner */
-const BANNER_SHOTS = [
-  { ...BANNER_SHOT, angle: 60, origin: { x: 0, y: 1 } },
-  { ...BANNER_SHOT, angle: 120, origin: { x: 1, y: 1 } },
-];
-
-/**
  * The login page is as tall as the viewport, thus the particles start much
- * faster, fall more slowly and live longer than the ones of the banner: they
- * reach the middle of the page, where the hero and the login button are.
+ * faster, fall more slowly and live longer than the ones of the greeting
+ * banner: they reach the middle of the page, where the hero and the login
+ * button are.
  */
 const LOGIN_PAGE_SHOT = {
   particleCount: 14,
@@ -59,7 +38,6 @@ const LOGIN_PAGE_SHOTS = [
 ];
 
 const PLACEMENT_SHOTS: Record<SeasonalConfettiPlacement, readonly Options[]> = {
-  [SeasonalConfettiPlacement.Banner]: BANNER_SHOTS,
   [SeasonalConfettiPlacement.LoginPage]: LOGIN_PAGE_SHOTS,
 };
 

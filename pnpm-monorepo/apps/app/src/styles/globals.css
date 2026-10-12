@@ -511,7 +511,7 @@
  * edge, and `--seasonal-lower-clouds` the strength of the two clouds at the
  * lower edge: 1 (the default) shows a pair in full, 0 removes it. The
  * greeting banner draws each pair on a strip of its own and moves the two
- * strips against each other, see `SeasonalBannerClouds`. Every other surface
+ * strips against each other, see `BannerClouds`. Every other surface
  * keeps all four clouds. The mix with `transparent` multiplies the opacity
  * of a colour by its strength.
  */
