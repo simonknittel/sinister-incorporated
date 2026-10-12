@@ -22,7 +22,10 @@ import {
   getLocalDateKey,
   ORGANIZATION_TIMEZONE,
 } from "@sam-monorepo/domain";
-import { type PermissionSet } from "@sam-monorepo/permissions";
+import {
+  comparePermissionSets,
+  type PermissionSet,
+} from "@sam-monorepo/permissions";
 import {
   getServerSession,
   type DefaultSession,
@@ -143,6 +146,44 @@ const getAssumedUser = async (
 };
 
 /**
+ * Welcomes a citizen on their first request with access to the app. The
+ * welcome is a notification and, on the same local day, the welcome banner
+ * of the dashboard.
+ *
+ * Each citizen gets one welcome. Only the request that sets `welcomedAt`
+ * continues, thus parallel requests of the same first visit send one
+ * welcome. The marker is set before the notification goes out: if a crash
+ * occurs between the two steps, the citizen gets no notification. This is
+ * better than two welcomes.
+ */
+const welcomeCitizen = async (
+  citizenId: Citizen["id"],
+  userId: DatabaseUser["id"],
+) => {
+  try {
+    const { count } = await prisma.citizen.updateMany({
+      where: { id: citizenId, welcomedAt: null },
+      data: { welcomedAt: new Date() },
+    });
+    if (count !== 1) return;
+
+    await createAuditEvents([
+      {
+        type: AuditEventType.CITIZEN_WELCOMED,
+        data: { citizenId },
+        createdById: userId,
+      },
+    ]);
+
+    await triggerNotifications([
+      { type: "WelcomeGreeting", payload: { citizenId } },
+    ]);
+  } catch (error) {
+    log.error("Failed to welcome the citizen", { citizenId, userId, error });
+  }
+};
+
+/**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
  * @see https://next-auth.js.org/configuration/options
@@ -170,6 +211,7 @@ export const authOptions: NextAuthOptions = {
               timezone: true,
               birthdayDay: true,
               birthdayMonth: true,
+              welcomedAt: true,
             },
           },
         },
@@ -225,6 +267,23 @@ export const authOptions: NextAuthOptions = {
           });
         }
       }
+
+      // The welcome follows the roles of the citizen and not the admin mode,
+      // because the notification goes only to citizens with `login;manage`
+      // through their roles. An assumed session must not use up the welcome
+      // of the assumed user. The dashboard requires a confirmed email (see
+      // `requireConfirmedEmailForPage()`), thus the welcome waits for it.
+      if (
+        citizen &&
+        !citizen.welcomedAt &&
+        !assumedUser &&
+        user.emailVerified &&
+        comparePermissionSets(
+          { resource: "login", operation: "manage" },
+          givenPermissionSets,
+        )
+      )
+        await welcomeCitizen(citizen.id, user.id);
 
       return {
         ...session,

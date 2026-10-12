@@ -19,6 +19,7 @@ import { TaskAssignmentUpdatedHandler } from "./type-handlers/TaskAssignmentUpda
 import { TaskCreatedHandler } from "./type-handlers/TaskCreated";
 import { TaskDeletedHandler } from "./type-handlers/TaskDeleted";
 import { WebPushSubscribedHandler } from "./type-handlers/WebPushSubscribed";
+import { WelcomeGreetingHandler } from "./type-handlers/WelcomeGreeting";
 import { WikiCitizenMentionedHandler } from "./type-handlers/WikiCitizenMentioned";
 import { WikiPageReportedHandler } from "./type-handlers/WikiPageReported";
 
@@ -93,6 +94,11 @@ export const notificationRouterHandler = async (
     case "NewYearGreeting":
       await NewYearGreetingHandler(body.payload);
       break;
+    case "WelcomeGreeting":
+      await WelcomeGreetingHandler(body.payload);
+      break;
+    default:
+      throw new Error(`Unknown notification type: ${body satisfies never}`);
   }
 };
 
@@ -295,6 +301,14 @@ export const bodySchema = z.discriminatedUnion("type", [
        * against — see their unit test.
        */
       year: z.int().positive().max(9999),
+    }),
+    requestId: z.cuid2(),
+  }),
+
+  z.object({
+    type: z.literal("WelcomeGreeting"),
+    payload: z.object({
+      citizenId: z.cuid(),
     }),
     requestId: z.cuid2(),
   }),
