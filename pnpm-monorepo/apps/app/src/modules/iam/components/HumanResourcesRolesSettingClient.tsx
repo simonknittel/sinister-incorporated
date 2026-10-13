@@ -10,14 +10,10 @@ import { updateHumanResourcesRoles } from "../actions/updateHumanResourcesRoles"
 import { MAX_HUMAN_RESOURCES_ROLES } from "../utils/humanResourcesRoles";
 
 interface Props {
-  readonly roles: readonly Pick<Role, "id" | "name">[];
   readonly defaultRoleIds: readonly Role["id"][];
 }
 
-export const HumanResourcesRolesSettingClient = ({
-  roles,
-  defaultRoleIds,
-}: Props) => {
+export const HumanResourcesRolesSettingClient = ({ defaultRoleIds }: Props) => {
   const { state, formAction } = useAction(updateHumanResourcesRoles, {
     errorToast: false,
   });
@@ -25,7 +21,6 @@ export const HumanResourcesRolesSettingClient = ({
   return (
     <form action={formAction}>
       <RolesPicker
-        roles={roles}
         name="roleId"
         label="Rollen"
         helpText={`Maximal ${MAX_HUMAN_RESOURCES_ROLES} Rollen sind möglich.`}
