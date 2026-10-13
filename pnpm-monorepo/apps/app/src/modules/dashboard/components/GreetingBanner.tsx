@@ -62,16 +62,13 @@ interface Props {
  * The ornament is larger than the banner is high at its top and rises above
  * its upper edge. The surface is thus a layer of its own below the ornament:
  * the surface clips the confetti and the colour clouds at its round corners,
- * and the ornament stays outside of that clip. The ornament keeps inside the
- * left edge, because on a small viewport the banner reaches the edge of the
- * viewport, and a drawing beyond it would let the page scroll sideways. The
- * text column starts to the right of the ornament, thus the call to action
- * cannot go below the ornament on a small viewport.
+ * and the ornament stays outside of that clip. The text column starts to the
+ * right of the ornament. On a small viewport the ornament would squeeze the
+ * text into a narrow column, thus the banner shows no ornament there and the
+ * text takes the full width.
  *
- * The ornament stays on every viewport size, because it moves nothing and is
- * the only decoration which small screens also show. It lets every pointer
- * through: a click or a drag of text over the drawing must reach what lies
- * beneath it.
+ * The ornament lets every pointer through: a click or a drag of text over
+ * the drawing must reach what lies beneath it.
  */
 export const GreetingBanner = ({
   marker,
@@ -104,12 +101,12 @@ export const GreetingBanner = ({
 
     <div
       aria-hidden
-      className="pointer-events-none absolute -top-3 left-3 size-28"
+      className="pointer-events-none absolute -top-3 left-3 hidden size-28 sm:block"
     >
       {ornament}
     </div>
 
-    <div className="relative flex flex-col gap-1 py-6 pr-6 pl-36">
+    <div className="relative flex flex-col gap-1 p-6 sm:pl-36">
       <h2
         id={TITLE_ELEMENT_ID}
         className="font-mono text-2xl font-thin uppercase"
