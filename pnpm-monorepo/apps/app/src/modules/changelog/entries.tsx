@@ -49,6 +49,23 @@ import { FaCopy } from "react-icons/fa";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    key: "2026-10-13-human-resources-einstellung",
+    date: "2026-10-13",
+    title: "IAM: Human-Resources-Rollen festlegen",
+    tags: ["Neu", "IAM"],
+    isTracked: false,
+    requiresAuth: { resource: "role", action: "manage" },
+    body: () => (
+      <p>
+        Unter &bdquo;IAM &rarr; Einstellungen&ldquo; legst du jetzt fest, welche
+        Rollen zu Human Resources gehören. Neue Mitglieder sehen nach der
+        Anmeldung auf der Freigabe-Seite ein Popover mit den Handles dieser
+        Mitglieder, damit sie wissen, an wen sie sich wenden können.
+      </p>
+    ),
+  },
+
+  {
     key: "2026-10-12-willkommen-und-geburtstag",
     date: "2026-10-12",
     title: "Dashboard: Willkommensgruß und Geburtstagsbanner",
