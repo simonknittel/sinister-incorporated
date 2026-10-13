@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { createCitizen } from "../fixtures/factories";
-import { clickUntilVisible } from "../fixtures/interactions";
+import { clickUntilVisible, hoverUntilVisible } from "../fixtures/interactions";
 import { expect, test } from "../fixtures/test";
 
 const onboardingButton = (page: Page) =>
@@ -30,6 +30,24 @@ const taskItem = (page: Page, title: string) =>
 /** Every tour step is a dialog named after the step's title */
 const stepDialog = (page: Page, title: string) =>
   page.getByRole("dialog", { name: title });
+
+/**
+ * The dashboard with the query parameter which opens the popover, the link
+ * of the welcome notification (`ONBOARDING_POPOVER_PATH` of the
+ * notifications package)
+ */
+const POPOVER_OPENER_PATH = "/app/dashboard?erste-schritte=1";
+
+/**
+ * Proves that the page has hydrated, without a press: a press outside of an
+ * open popover closes it, and then hides a popover which opened by mistake.
+ * The notification center also opens on hover.
+ */
+const waitForHydrationWithoutPress = (page: Page) =>
+  hoverUntilVisible(
+    page.getByRole("button", { name: "Benachrichtigungen" }),
+    page.getByRole("dialog", { name: "Benachrichtigungen" }),
+  );
 
 test("the popover lists only the permitted tasks with their step counts", async ({
   page,
@@ -293,8 +311,80 @@ test("a replay updates the stored timestamps and the completion method", async (
     .toEqual({ completionMethod: "TOUR", movedForward: true });
 });
 
+test("the query parameter opens the popover once and leaves the URL", async ({
+  page,
+  prisma,
+  signIn,
+}) => {
+  const citizen = await createCitizen(prisma, { handle: "link-folger" });
+  await signIn(citizen.user);
+
+  await page.goto(POPOVER_OPENER_PATH);
+
+  await expect(popover(page).getByText("Lerne das SAM kennen")).toBeVisible();
+  await expect(popover(page)).toHaveCount(1);
+  await expect(page).toHaveURL("/app/dashboard");
+
+  await page.reload();
+  await waitForHydrationWithoutPress(page);
+  await expect(popover(page)).toHaveCount(0);
+});
+
+test("the call to action of the welcome banner opens the popover", async ({
+  page,
+  prisma,
+  signIn,
+}) => {
+  const citizen = await createCitizen(prisma, {
+    handle: "neuling",
+    welcomedAt: null,
+  });
+  await signIn(citizen.user);
+
+  await page.goto("/app/dashboard");
+
+  await clickUntilVisible(
+    page
+      .locator("[data-welcome-banner]")
+      .getByRole("button", { name: "Lerne das SAM kennen" }),
+    popover(page).getByText("Lerne das SAM kennen"),
+  );
+
+  await page.keyboard.press("Escape");
+  await expect(popover(page)).toHaveCount(0);
+});
+
 test.describe("mobile", () => {
   test.use({ viewport: { width: 390, height: 844 } });
+
+  test("the query parameter opens the flyout and then its popover", async ({
+    page,
+    prisma,
+    signIn,
+  }) => {
+    const citizen = await createCitizen(prisma, {
+      handle: "mobil-link-folger",
+    });
+    await signIn(citizen.user);
+
+    await page.goto(POPOVER_OPENER_PATH);
+
+    const flyoutToggle = page
+      .locator("nav")
+      .getByRole("button", { name: "Apps" });
+    await expect(flyoutToggle).toHaveAttribute("aria-expanded", "true");
+    const flyoutId = await flyoutToggle.getAttribute("aria-controls");
+    const flyout = page.locator(`[id="${flyoutId}"]`);
+    await expect(flyout).not.toHaveAttribute("inert");
+
+    await expect(popover(page).getByText("Lerne das SAM kennen")).toBeVisible();
+    /** Only the popover of the flyout opens, not also the one of the top bar */
+    await expect(popover(page)).toHaveCount(1);
+    await expect(
+      flyout.getByRole("button", { name: "Erste Schritte", expanded: true }),
+    ).toBeVisible();
+    await expect(page).toHaveURL("/app/dashboard");
+  });
 
   test("the mobile flyout offers the same onboarding entry", async ({
     page,

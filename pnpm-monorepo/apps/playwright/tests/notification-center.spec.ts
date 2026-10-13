@@ -39,6 +39,10 @@ const unreadRowDots = (page: Page) =>
 /** Dwell time + flush debounce + server action, with headroom. */
 const READ_ON_VIEW_TIMEOUT = 15_000;
 
+/** The "Erste Schritte" popover, which the welcome greeting opens */
+const onboardingPopover = (page: Page) =>
+  page.getByRole("dialog", { name: "Erste Schritte" });
+
 test("the popover lists notifications with their content", async ({
   page,
   prisma,
@@ -140,6 +144,41 @@ test("a New Year greeting reads its wording", async ({
       "Ein neues Jahr, ein neues Verse. Auf viele gemeinsame Flüge.",
     ),
   ).toBeVisible();
+});
+
+test("a welcome greeting reads its wording and opens the onboarding popover", async ({
+  page,
+  prisma,
+  signIn,
+}) => {
+  const citizen = await createCitizen(prisma, { handle: "neuankoemmling" });
+  await createOnSiteNotification(prisma, {
+    citizenId: citizen.entity.id,
+    notificationType: "welcome",
+    payload: {
+      title: "Willkommen an Bord!",
+      body: "Schön, dass du da bist. Deine ersten Schritte warten auf dich.",
+    },
+  });
+  await signIn(citizen.user);
+
+  /** Not the dashboard, thus the link must navigate to it */
+  await page.goto("/app/apps");
+  await openNotificationCenter(page);
+
+  await expect(
+    popover(page).getByText(
+      "Schön, dass du da bist. Deine ersten Schritte warten auf dich.",
+    ),
+  ).toBeVisible();
+  await popover(page)
+    .getByRole("link", { name: "Willkommen an Bord!" })
+    .click();
+
+  await expect(
+    onboardingPopover(page).getByText("Lerne das SAM kennen"),
+  ).toBeVisible();
+  await expect(page).toHaveURL("/app/dashboard");
 });
 
 test("unknown notification types render a generic fallback", async ({
