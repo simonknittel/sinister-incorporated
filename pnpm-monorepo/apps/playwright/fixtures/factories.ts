@@ -58,6 +58,12 @@ interface CreateCitizenOptions {
   readonly handle: string;
   /** Additional permission strings on top of the login permission. */
   readonly permissionStrings?: readonly string[];
+  /**
+   * Whether the role of the citizen grants the login permission. Pass
+   * `false` for a new member who waits for the clearance: such a citizen
+   * sees only the clearance page.
+   */
+  readonly canLogIn?: boolean;
   /** Grants the all-permissions override once enableAdminMode() is used. */
   readonly admin?: boolean;
   /**
@@ -85,6 +91,7 @@ export const createCitizen = async (
   {
     handle,
     permissionStrings = [],
+    canLogIn = true,
     admin = false,
     emailVerified = new Date(),
     welcomedAt = WELCOMED_LONG_AGO,
@@ -120,7 +127,10 @@ export const createCitizen = async (
 
   const role = await createRole(prisma, {
     name: `${handle}-role-${suffix}`,
-    permissionStrings: [LOGIN_PERMISSION, ...permissionStrings],
+    permissionStrings: [
+      ...(canLogIn ? [LOGIN_PERMISSION] : []),
+      ...permissionStrings,
+    ],
   });
   await assignRole(prisma, entity, role);
 
