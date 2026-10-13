@@ -49,6 +49,30 @@ import { FaCopy } from "react-icons/fa";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    key: "2026-10-12-willkommen-und-geburtstag",
+    date: "2026-10-12",
+    title: "Dashboard: Willkommensgruß und Geburtstagsbanner",
+    tags: ["Neu", "Dashboard", "Benachrichtigungen"],
+    body: () => (
+      <>
+        <p>
+          Neue Mitglieder sehen am Tag ihres ersten Besuchs einen
+          Willkommensgruß auf dem Dashboard und bekommen eine Benachrichtigung.
+          Beide führen zu &bdquo;Erste Schritte&ldquo;, den kurzen Touren durch
+          das SAM.
+        </p>
+
+        <p>
+          An deinem Geburtstag zeigt das Dashboard jetzt außerdem ein eigenes
+          Banner mit Glückwünschen. Treffen mehrere Anlässe auf einen Tag, zeigt
+          das Dashboard nur einen: Willkommen vor Geburtstag vor saisonalem
+          Gruß.
+        </p>
+      </>
+    ),
+  },
+
+  {
     key: "2026-10-11-task-benachrichtigungen",
     date: "2026-10-11",
     title: "Tasks: Benachrichtigungen bei neuen und gelöschten Tasks",
