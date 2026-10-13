@@ -27,6 +27,7 @@ model Citizen {
   updatedSilcTransactions                      SilcTransaction[]                    @relation("updatedBy")
   deletedSilcTransactions                      SilcTransaction[]                    @relation("deletedBy")
   updatedSilcSettings                          SilcSetting[]                        @relation("updatedBy")
+  updatedIamSettings                           IamSetting[]                         @relation("updatedBy")
   eventManagers                                Event[]                              @relation("eventManagers")
   createdEvents                                Event[]                              @relation("createdEvents")
   deletedEvents                                Event[]                              @relation("deletedEvents")

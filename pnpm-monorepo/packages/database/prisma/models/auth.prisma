@@ -126,3 +126,18 @@ model PermissionString {
 
   @@unique([roleId, permissionString])
 }
+
+/// App-wide IAM settings. The value of `HUMAN_RESOURCES_ROLE_IDS` is a JSON
+/// array of role IDs. The clearance page lists the holders of these roles as
+/// Human Resources.
+model IamSetting {
+  key         IamSettingKey @id
+  value       Json
+  updatedAt   DateTime      @updatedAt @db.Timestamptz(3)
+  updatedById String?
+  updatedBy   Citizen?      @relation("updatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+}
+
+enum IamSettingKey {
+  HUMAN_RESOURCES_ROLE_IDS
+}
