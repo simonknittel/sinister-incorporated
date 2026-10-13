@@ -37,6 +37,7 @@ import DiscordProvider, {
   type DiscordProfile,
 } from "next-auth/providers/discord";
 import { cookies, headers } from "next/headers";
+import { after } from "next/server";
 import { ASSUME_USER_COOKIE } from "../utils/adminCookies";
 import { getEffectiveRoles, type EffectiveRoles } from "./getEffectiveRoles";
 
@@ -152,9 +153,10 @@ const getAssumedUser = async (
  *
  * Each citizen gets one welcome. Only the request that sets `welcomedAt`
  * continues, thus parallel requests of the same first visit send one
- * welcome. The marker is set before the notification goes out: if a crash
- * occurs between the two steps, the citizen gets no notification. This is
- * better than two welcomes.
+ * welcome. The marker comes first, because the banner of the same request
+ * reads it. The notification and the audit event follow after the response.
+ * If a failure occurs after the marker is set, the citizen gets no
+ * notification. This is better than two welcomes.
  */
 const welcomeCitizen = async (
   citizenId: Citizen["id"],
@@ -167,17 +169,35 @@ const welcomeCitizen = async (
     });
     if (count !== 1) return;
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.CITIZEN_WELCOMED,
-        data: { citizenId },
-        createdById: userId,
-      },
-    ]);
+    after(async () => {
+      try {
+        await triggerNotifications([
+          { type: "WelcomeGreeting", payload: { citizenId } },
+        ]);
+      } catch (error) {
+        log.error("Failed to send the welcome notification", {
+          citizenId,
+          userId,
+          error,
+        });
+      }
 
-    await triggerNotifications([
-      { type: "WelcomeGreeting", payload: { citizenId } },
-    ]);
+      try {
+        await createAuditEvents([
+          {
+            type: AuditEventType.CITIZEN_WELCOMED,
+            data: { citizenId },
+            createdById: userId,
+          },
+        ]);
+      } catch (error) {
+        log.error("Failed to log the welcome of the citizen", {
+          citizenId,
+          userId,
+          error,
+        });
+      }
+    });
   } catch (error) {
     log.error("Failed to welcome the citizen", { citizenId, userId, error });
   }
