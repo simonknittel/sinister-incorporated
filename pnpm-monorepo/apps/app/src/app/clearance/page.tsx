@@ -31,7 +31,13 @@ export default async function Page() {
 
   if (await authentication.authorize("login", "manage")) redirect("/app");
 
-  const humanResourcesContacts = await getHumanResourcesContacts();
+  const humanResourcesHandles = await getHumanResourcesContacts();
+  const humanResources =
+    humanResourcesHandles.length > 0 ? (
+      <HumanResourcesPopover handles={humanResourcesHandles} />
+    ) : (
+      "Human Resources"
+    );
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center background-primary py-8">
@@ -43,13 +49,8 @@ export default async function Page() {
 
         <div className="mx-4 flex flex-col gap-2 corners-secondary bg-neutral-800/50 p-4">
           <p>
-            Bitte melde dich bei{" "}
-            {humanResourcesContacts.length > 0 ? (
-              <HumanResourcesPopover contacts={humanResourcesContacts} />
-            ) : (
-              "Human Resources"
-            )}{" "}
-            oder der Leitung um deinen Account freischalten zu lassen.
+            Bitte melde dich bei {humanResources} oder der Leitung, um deinen
+            Account freischalten zu lassen.
           </p>
         </div>
 

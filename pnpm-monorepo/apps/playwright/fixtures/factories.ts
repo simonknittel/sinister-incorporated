@@ -56,7 +56,7 @@ export interface TestCitizen {
 
 interface CreateCitizenOptions {
   readonly handle: string;
-  /** Additional permission strings on top of the login permission. */
+  /** Permission strings for the role of the citizen. */
   readonly permissionStrings?: readonly string[];
   /**
    * Whether the role of the citizen grants the login permission. Pass
@@ -172,15 +172,17 @@ export const createUserWithoutCitizen = (
 interface CreateRoleOptions {
   readonly name?: string;
   readonly permissionStrings?: readonly string[];
+  readonly maxLevel?: number;
 }
 
 export const createRole = async (
   prisma: PrismaClient,
-  { name, permissionStrings = [] }: CreateRoleOptions = {},
+  { name, permissionStrings = [], maxLevel }: CreateRoleOptions = {},
 ) =>
   prisma.role.create({
     data: {
       name: name ?? `role-${randomUUID().slice(0, 8)}`,
+      maxLevel,
       permissionStrings: {
         create: permissionStrings.map((permissionString) => ({
           permissionString,
@@ -189,15 +191,21 @@ export const createRole = async (
     },
   });
 
+interface AssignRoleOptions {
+  readonly currentLevel?: number;
+}
+
 export const assignRole = (
   prisma: PrismaClient,
   entity: Pick<Citizen, "id">,
   role: Pick<Role, "id">,
+  { currentLevel }: AssignRoleOptions = {},
 ) =>
   prisma.roleAssignment.create({
     data: {
       citizenId: entity.id,
       roleId: role.id,
+      currentLevel,
     },
   });
 

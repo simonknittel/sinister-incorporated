@@ -57,10 +57,17 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     requiresAuth: { resource: "role", action: "manage" },
     body: () => (
       <p>
-        Unter &bdquo;IAM &rarr; Einstellungen&ldquo; legst du jetzt fest, welche
-        Rollen zu Human Resources gehören. Neue Mitglieder sehen nach der
-        Anmeldung auf der Freigabe-Seite ein Popover mit den Handles dieser
-        Mitglieder, damit sie wissen, an wen sie sich wenden können.
+        Unter{" "}
+        <Link
+          href="/app/iam/settings"
+          className="text-interaction-500 hover:text-interaction-300 focus-visible:text-interaction-300 active:text-interaction-700"
+        >
+          IAM &gt; Einstellungen
+        </Link>{" "}
+        legst du jetzt fest, welche Rollen zu Human Resources gehören. Auf der
+        Freigabe-Seite zeigt ein Klick auf &bdquo;Human Resources&ldquo; dann
+        die Handles der Mitglieder mit diesen Rollen, damit neue Mitglieder
+        wissen, an wen sie sich wenden können.
       </p>
     ),
   },

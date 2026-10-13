@@ -1,6 +1,5 @@
 import { prisma } from "@/db";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import type { Citizen } from "@sam-monorepo/database/client";
 import {
   ACTIVE_CITIZEN_WHERE,
   EFFECTIVE_ROLE_PERMISSIONS_SELECT,
@@ -13,71 +12,56 @@ import {
 import { cache } from "react";
 import { getHumanResourcesRoleIds } from "./getHumanResourcesRoleIds";
 
-export interface HumanResourcesContact {
-  readonly id: Citizen["id"];
-  readonly handle: string;
-}
-
 /**
- * The citizens that a new user can contact for the clearance, sorted by
- * handle. A citizen without a handle cannot be named, thus is not listed.
- * A citizen is a contact if the citizen is active, has one of the
- * Human Resources roles among the effective roles (the level gate applies,
- * inherited roles count) and can log in (`login;manage` without
- * `login;negate`). This is the same rule as the session callback.
- *
- * The where-fragment only makes the scan smaller and matches a superset,
- * because Prisma cannot compare `currentLevel` with `Role.maxLevel`. The
- * rule is applied in memory. No permission check: the clearance page calls
- * it for a user without permissions.
+ * The handles of the Human Resources contacts, sorted by handle. No permission
+ * check: the clearance page calls it for a user without permissions. The
+ * where-fragment matches a superset, because Prisma cannot compare
+ * `currentLevel` with `Role.maxLevel`. The rule of the session callback (level
+ * gate, inheritance, `login;negate`) applies in memory. Banned users cannot
+ * sign in, thus their citizens are not listed.
  */
 export const getHumanResourcesContacts = cache(
-  withTrace(
-    "getHumanResourcesContacts",
-    async (): Promise<HumanResourcesContact[]> => {
-      const roleIds = await getHumanResourcesRoleIds();
-      if (roleIds.length === 0) return [];
+  withTrace("getHumanResourcesContacts", async (): Promise<string[]> => {
+    const humanResourcesRoleIds = await getHumanResourcesRoleIds();
+    if (humanResourcesRoleIds.length === 0) return [];
 
-      const candidates = await prisma.citizen.findMany({
-        where: {
-          ...ACTIVE_CITIZEN_WHERE,
-          handle: { not: null },
-          roleAssignments: {
-            some: {
-              role: {
-                OR: [
-                  { id: { in: roleIds } },
-                  { inherits: { some: { id: { in: roleIds } } } },
-                ],
-              },
+    const candidates = await prisma.citizen.findMany({
+      where: {
+        ...ACTIVE_CITIZEN_WHERE,
+        handle: { not: null },
+        OR: [{ user: null }, { user: { bannedAt: null } }],
+        roleAssignments: {
+          some: {
+            role: {
+              OR: [
+                { id: { in: humanResourcesRoleIds } },
+                { inherits: { some: { id: { in: humanResourcesRoleIds } } } },
+              ],
             },
           },
         },
-        orderBy: { handle: "asc" },
-        select: {
-          id: true,
-          handle: true,
-          roleAssignments: { select: EFFECTIVE_ROLE_PERMISSIONS_SELECT },
-        },
-      });
+      },
+      orderBy: [{ handle: "asc" }, { id: "asc" }],
+      select: {
+        handle: true,
+        roleAssignments: { select: EFFECTIVE_ROLE_PERMISSIONS_SELECT },
+      },
+    });
 
-      const humanResourcesRoleIds = new Set(roleIds);
+    return candidates
+      .filter((candidate) => {
+        const effectiveRoles = resolveEffectiveRoles(candidate.roleAssignments);
 
-      return candidates
-        .filter((candidate) => {
-          const effectiveRoles = resolveEffectiveRoles(
-            candidate.roleAssignments,
-          );
-
-          return (
-            effectiveRoles.some((role) => humanResourcesRoleIds.has(role.id)) &&
-            comparePermissionSets(
-              { resource: "login", operation: "manage" },
-              getPermissionSetsByRoles(effectiveRoles),
-            )
-          );
-        })
-        .flatMap(({ id, handle }) => (handle ? [{ id, handle }] : []));
-    },
-  ),
+        return (
+          effectiveRoles.some((role) =>
+            humanResourcesRoleIds.includes(role.id),
+          ) &&
+          comparePermissionSets(
+            { resource: "login", operation: "manage" },
+            getPermissionSetsByRoles(effectiveRoles),
+          )
+        );
+      })
+      .flatMap(({ handle }) => (handle ? [handle] : []));
+  }),
 );

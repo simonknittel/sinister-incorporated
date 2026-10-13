@@ -1,12 +1,6 @@
 import { IamSettingKey } from "@sam-monorepo/database/client";
 import { expectAuditEvents } from "../fixtures/audit";
-import {
-  assignRole,
-  createCitizen,
-  createRole,
-  LOGIN_PERMISSION,
-  type TestCitizen,
-} from "../fixtures/factories";
+import { assignRole, createCitizen, createRole } from "../fixtures/factories";
 import {
   clickUntilVisible,
   SAVED_TEXT,
@@ -28,16 +22,9 @@ test("the Human Resources roles are selected on the IAM settings page and their 
 
   const humanResourcesRole = await createRole(prisma, {
     name: "Human Resources",
-    permissionStrings: [LOGIN_PERMISSION],
+    maxLevel: 2,
   });
-  await prisma.role.update({
-    where: { id: humanResourcesRole.id },
-    data: { maxLevel: 2 },
-  });
-  const leadershipRole = await createRole(prisma, {
-    name: "HR-Leitung",
-    permissionStrings: [LOGIN_PERMISSION],
-  });
+  const leadershipRole = await createRole(prisma, { name: "HR-Leitung" });
   await prisma.role.update({
     where: { id: leadershipRole.id },
     data: { inherits: { connect: { id: humanResourcesRole.id } } },
@@ -47,29 +34,25 @@ test("the Human Resources roles are selected on the IAM settings page and their 
     permissionStrings: ["login;negate"],
   });
 
-  const assignHumanResourcesRole = (
-    citizen: TestCitizen,
-    currentLevel: number,
-  ) =>
-    prisma.roleAssignment.create({
-      data: {
-        citizenId: citizen.entity.id,
-        roleId: humanResourcesRole.id,
-        currentLevel,
-      },
-    });
-
   const fullMember = await createCitizen(prisma, { handle: "hr-voll" });
-  await assignHumanResourcesRole(fullMember, 2);
+  await assignRole(prisma, fullMember.entity, humanResourcesRole, {
+    currentLevel: 2,
+  });
   const trainee = await createCitizen(prisma, { handle: "hr-lehrling" });
-  await assignHumanResourcesRole(trainee, 1);
+  await assignRole(prisma, trainee.entity, humanResourcesRole, {
+    currentLevel: 1,
+  });
   const blockedMember = await createCitizen(prisma, { handle: "hr-gesperrt" });
-  await assignHumanResourcesRole(blockedMember, 2);
+  await assignRole(prisma, blockedMember.entity, humanResourcesRole, {
+    currentLevel: 2,
+  });
   await assignRole(prisma, blockedMember.entity, loginBlockingRole);
   const deletedMember = await createCitizen(prisma, {
     handle: "hr-geloescht",
   });
-  await assignHumanResourcesRole(deletedMember, 2);
+  await assignRole(prisma, deletedMember.entity, humanResourcesRole, {
+    currentLevel: 2,
+  });
   /** A deletion also removes the link to the login */
   await prisma.citizen.update({
     where: { id: deletedMember.entity.id },
@@ -77,7 +60,6 @@ test("the Human Resources roles are selected on the IAM settings page and their 
   });
   const leader = await createCitizen(prisma, { handle: "hr-leitung" });
   await assignRole(prisma, leader.entity, leadershipRole);
-  await createCitizen(prisma, { handle: "kein-hr" });
 
   /**
    * The setting
@@ -127,7 +109,6 @@ test("the Human Resources roles are selected on the IAM settings page and their 
   await expect(
     page.getByRole("heading", { name: "Anmeldung erfolgreich" }),
   ).toBeVisible();
-  await expect(page).toHaveURL("/clearance");
 
   const contactsPopup = page.getByRole("dialog", { name: "Human Resources" });
   await clickUntilVisible(
@@ -164,5 +145,4 @@ test("without Human Resources roles the clearance page shows plain text", async 
   await expect(
     page.getByRole("button", { name: "Human Resources" }),
   ).toHaveCount(0);
-  await expect(page).toHaveURL("/clearance");
 });

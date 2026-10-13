@@ -1,17 +1,10 @@
-"use client";
-
 import { PopoverBaseUI } from "@/modules/common/components/PopoverBaseUI";
-import type { HumanResourcesContact } from "../queries/getHumanResourcesContacts";
 
 interface Props {
-  readonly contacts: readonly HumanResourcesContact[];
+  readonly handles: readonly string[];
 }
 
-/**
- * Shows on the clearance page, which renders outside of the app shell. Thus
- * it must not use the contexts of the app shell (roles, session, tRPC).
- */
-export const HumanResourcesPopover = ({ contacts }: Props) => {
+export const HumanResourcesPopover = ({ handles }: Props) => {
   return (
     <PopoverBaseUI
       title="Human Resources"
@@ -23,8 +16,8 @@ export const HumanResourcesPopover = ({ contacts }: Props) => {
       </p>
 
       <ul className="mt-2">
-        {contacts.map((contact) => (
-          <li key={contact.id}>{contact.handle}</li>
+        {handles.map((handle, index) => (
+          <li key={`${handle}-${index}`}>{handle}</li>
         ))}
       </ul>
     </PopoverBaseUI>
