@@ -28,6 +28,7 @@ const GATED_ROUTES = [
   "/app/iam/inheritance-matrix",
   "/app/iam/permission-matrix",
   "/app/iam/roles",
+  "/app/iam/settings",
   "/app/iam/users",
   "/app/leaderboards",
   "/app/penalty-points",

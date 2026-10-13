@@ -24,6 +24,10 @@ export const getNavigationItems = createNavigationItems(
           title: "Vererbungsmatrix",
           url: "/app/iam/inheritance-matrix",
         },
+        {
+          title: "Einstellungen",
+          url: "/app/iam/settings",
+        },
       );
     }
 

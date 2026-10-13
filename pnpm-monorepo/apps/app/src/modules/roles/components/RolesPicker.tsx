@@ -5,6 +5,7 @@ import { PopoverBaseUI } from "@/modules/common/components/PopoverBaseUI";
 import type { Role } from "@sam-monorepo/database/browser";
 import { useState, type ReactNode } from "react";
 import { FaTrash, FaUsers } from "react-icons/fa";
+import { useRolesContext } from "./RolesContext";
 import { SingleRoleBadge } from "./SingleRoleBadge";
 
 interface Props {
@@ -21,8 +22,9 @@ interface Props {
 }
 
 /**
- * Submits one hidden input for each selected role. A selected role that is
- * not in `roles` does not show and is not submitted.
+ * Submits one hidden input for each selected role. A selected role that the
+ * viewer cannot see shows as a placeholder and is still submitted, because a
+ * save without it would remove it from the record.
  */
 export const RolesPicker = ({
   className,
@@ -48,10 +50,6 @@ export const RolesPicker = ({
       previous.filter((selectedRoleId) => selectedRoleId !== roleId),
     );
   };
-
-  const shownSelectedRoleIds = selectedRoleIds.filter((roleId) =>
-    roles.some((role) => role.id === roleId),
-  );
 
   return (
     <div className={className}>
@@ -92,9 +90,9 @@ export const RolesPicker = ({
 
       {helpText && <p className="mt-1 text-xs text-gray-400">{helpText}</p>}
 
-      {shownSelectedRoleIds.length > 0 && (
+      {selectedRoleIds.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1">
-          {shownSelectedRoleIds.map((roleId) => (
+          {selectedRoleIds.map((roleId) => (
             <SelectedRole
               key={roleId}
               roleId={roleId}
@@ -140,6 +138,9 @@ const SelectedRole = ({
   disabled,
   onRemove,
 }: SelectedRoleProps) => {
+  const { roles } = useRolesContext();
+  const isVisible = roles.some((role) => role.id === roleId);
+
   return (
     <div>
       <button
@@ -149,12 +150,21 @@ const SelectedRole = ({
         title="Rolle entfernen"
         className="group flex items-center gap-1 rounded-secondary bg-neutral-700/50 pr-2 hover:bg-neutral-700/70 focus-visible:bg-neutral-700/70 active:bg-neutral-700/40 disabled:opacity-50"
       >
-        <SingleRoleBadge
-          className="bg-transparent"
-          roleId={roleId}
-          showPlaceholder
-          withPopover={false}
-        />
+        {isVisible ? (
+          <SingleRoleBadge
+            className="bg-transparent"
+            roleId={roleId}
+            showPlaceholder
+            withPopover={false}
+          />
+        ) : (
+          <span
+            className="inline-flex h-8 items-center px-2 text-neutral-500"
+            title="Diese Rolle ist ausgewählt, du darfst sie aber nicht sehen."
+          >
+            Verborgene Rolle
+          </span>
+        )}
         <FaTrash className="flex-none text-brand-red-500 group-hover:text-brand-red-300 group-focus-visible:text-brand-red-300 group-active:text-brand-red-700" />
       </button>
 
