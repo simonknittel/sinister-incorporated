@@ -14,8 +14,8 @@ const LARGE_VIEWPORT_QUERY = "(min-width: 64rem)";
  *
  * `noSsr` gives the real value also while React hydrates. Thus a streamed
  * part of the shell, for example the mobile action bar, does not decide with
- * the value of the server. Use the value only for decisions on the client,
- * never for the markup.
+ * the value of the server. Never use the value for markup which the server
+ * renders.
  */
 export const useIsLargeViewport = () =>
   useMediaQuery(LARGE_VIEWPORT_QUERY, { noSsr: true });

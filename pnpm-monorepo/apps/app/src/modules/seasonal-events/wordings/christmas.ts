@@ -1,4 +1,4 @@
-import type { GreetingWordingFactory } from "@/modules/dashboard/utils/greetingWordings";
+import type { SeasonalWordingFactory } from "../utils/types";
 
 /**
  * The greetings of the banner on the Luminalia days, the winter festival of
@@ -6,7 +6,7 @@ import type { GreetingWordingFactory } from "@/modules/dashboard/utils/greetingW
  * citizen and day, thus two citizens of the same day usually read a
  * different one.
  */
-export const CHRISTMAS_WORDINGS: readonly GreetingWordingFactory[] = [
+export const CHRISTMAS_WORDINGS: readonly SeasonalWordingFactory[] = [
   () => ({
     title: "Frohe Luminalia!",
     body: "Überall im Verse gehen heute die Lichter an. Bei uns auch.",

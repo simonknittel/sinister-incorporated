@@ -1,6 +1,6 @@
 import {
   getGreetingName,
-  type GreetingWordingFactory,
+  type ViewerWordingFactory,
 } from "@/modules/dashboard/utils/greetingWordings";
 
 /**
@@ -11,7 +11,7 @@ import {
  * the Lambda: a new member reads both on the same day, and two identical
  * greetings would read like a mistake.
  */
-export const WELCOME_WORDINGS: readonly GreetingWordingFactory[] = [
+export const WELCOME_WORDINGS: readonly ViewerWordingFactory[] = [
   (context) => ({
     title: `Herzlich willkommen, ${getGreetingName(context)}!`,
     body: "Wir freuen uns, dass du ab heute mit uns durchs Verse fliegst.",

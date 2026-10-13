@@ -23,13 +23,22 @@ export type SeasonalDecorationComponent = (
   props: SeasonalDecorationProps,
 ) => ReactNode;
 
+/** What a wording of a seasonal event can name */
+interface SeasonalWordingContext {
+  /** The year of the Star Citizen universe, for example 2955 */
+  readonly inGameYear: number;
+}
+
+export type SeasonalWordingFactory =
+  GreetingWordingFactory<SeasonalWordingContext>;
+
 /** Everything the app draws for one seasonal event */
 export interface SeasonalTheme {
   /** German name of the event, for example "Halloween" */
   readonly title: string;
   readonly font: SeasonalFont;
   /** The pool the greeting banner picks a wording from on every render */
-  readonly wordings: readonly GreetingWordingFactory[];
+  readonly wordings: readonly SeasonalWordingFactory[];
   /** Utility class of the surface of the greeting banner */
   readonly bannerSurfaceClassName: string;
   /**

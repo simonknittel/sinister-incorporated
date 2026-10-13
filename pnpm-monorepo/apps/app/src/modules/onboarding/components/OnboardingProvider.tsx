@@ -35,9 +35,9 @@ interface OnboardingContext {
   readonly markAllTasksAsDone: () => void;
   /**
    * Whether something asked for the "Erste Schritte" popover, for example
-   * the CTA of the welcome banner or the welcome notification. The request
-   * stays pending until the popover surface of the current viewport opens
-   * its popover, see `useOnboardingPopoverOpenState()`.
+   * the call to action of the welcome banner or the welcome notification.
+   * The request stays pending until the popover surface of the current
+   * viewport opens its popover, see `useOnboardingPopoverOpenState()`.
    */
   readonly isPopoverOpenRequested: boolean;
   /**

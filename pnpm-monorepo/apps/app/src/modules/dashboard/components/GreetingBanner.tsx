@@ -39,7 +39,7 @@ const CONFETTI_SHOTS = [
   { ...CONFETTI_SHOT, angle: 120, origin: { x: 1, y: 1 } },
 ];
 
-export interface GreetingBannerProps {
+interface Props {
   readonly marker: GreetingBannerMarker;
   /** The utility of the occasion which paints the colour clouds */
   readonly surfaceClassName: string;
@@ -81,7 +81,7 @@ export const GreetingBanner = ({
   title,
   body,
   callToAction,
-}: GreetingBannerProps) => (
+}: Props) => (
   <section
     {...{ [marker]: true }}
     aria-labelledby={TITLE_ELEMENT_ID}
@@ -89,8 +89,7 @@ export const GreetingBanner = ({
   >
     {/* The surface isolates itself, thus the colour clouds and the confetti
     stay behind the greeting. The clouds lie below the confetti, which paints
-    at `-z-10`. The confetti canvas renders nothing for a viewer who prefers
-    reduced motion. */}
+    at `-z-10`. */}
     <div className="absolute inset-0 isolate overflow-hidden rounded-primary bg-secondary">
       <BannerClouds surfaceClassName={surfaceClassName} className="-z-20" />
 

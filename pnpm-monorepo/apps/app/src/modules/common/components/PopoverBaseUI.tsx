@@ -123,12 +123,9 @@ interface PopoverBaseUIContextProviderProps {
   readonly children: ReactNode;
   readonly childrenClassName?: string;
   /**
-   * When set, the owner holds the open state and the popover shows this
-   * value. The popover then does not change its state itself: it reports
-   * each change through `onOpenChange`, and the owner sets the new value.
-   * The rules for hover and `keepOpen` stay the same. When the owner opens
-   * the popover, it stays open when the pointer leaves the trigger, as after
-   * an open through a press. When not set, the popover holds its own state.
+   * When set, the owner holds the open state and the popover reports each
+   * change through `onOpenChange`. A popover which the owner opens ignores
+   * the hover close, as after an open through a press.
    */
   readonly open?: boolean;
   /** Reports each open and close, also a close through `closePopover` */

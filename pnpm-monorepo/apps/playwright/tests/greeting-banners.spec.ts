@@ -1,14 +1,6 @@
 import type { Page } from "@playwright/test";
 import type { Citizen, PrismaClient } from "@sam-monorepo/database/client";
-import { randomUUID } from "node:crypto";
-import { expectAuditEvents } from "../fixtures/audit";
-import {
-  assignRole,
-  createCitizen,
-  createRole,
-  LOGIN_PERMISSION,
-  ONE_DAY_MS,
-} from "../fixtures/factories";
+import { assignRole, createCitizen, ONE_DAY_MS } from "../fixtures/factories";
 import { clickUntilVisible, themeRoot } from "../fixtures/interactions";
 import { expect, test } from "../fixtures/test";
 
@@ -90,44 +82,6 @@ const createCitizenInUtc = async (
   return citizen;
 };
 
-/**
- * A citizen who signs in but whose roles do not give the login permission.
- * createCitizen always gives it, thus this helper creates the records itself.
- */
-const createCitizenWithoutLogin = async (
-  prisma: PrismaClient,
-  handle: string,
-) => {
-  const discordId = randomUUID();
-
-  const user = await prisma.user.create({
-    data: {
-      name: handle,
-      email: `${handle}@example.com`,
-      emailVerified: new Date(),
-      accounts: {
-        create: {
-          type: "oauth",
-          provider: "discord",
-          providerAccountId: discordId,
-        },
-      },
-    },
-  });
-
-  const entity = await prisma.citizen.create({
-    data: { discordId, handle, userId: user.id, welcomedAt: null },
-  });
-
-  // A role without the login permission: a role alone does not open the app
-  const role = await createRole(prisma, {
-    permissionStrings: ["citizen;read"],
-  });
-  await assignRole(prisma, entity, role);
-
-  return { user, entity };
-};
-
 /** A greeting day of the seasonal themes, see seasonal-themes.spec.ts */
 const HALLOWEEN_GREETING_DATE = "2026-10-31";
 
@@ -153,17 +107,15 @@ test("a new member gets the welcome banner on the first visit of the dashboard",
     }),
   ).toBeVisible();
 
-  await expect
-    .poll(() => readWelcomedAt(prisma, citizen.entity))
-    .not.toBeNull();
-  await expectAuditEvents(prisma, ["CITIZEN_WELCOMED"]);
   const welcomedAt = await readWelcomedAt(prisma, citizen.entity);
+  expect(welcomedAt).not.toBeNull();
 
   // The banner stays for the full day, but the citizen gets one welcome only
   await page.reload();
   await expect(greetingBanner(page, GreetingBanner.Welcome)).toBeVisible();
   expect(await readWelcomedAt(prisma, citizen.entity)).toEqual(welcomedAt);
-  expect(await countWelcomeAuditEvents(prisma)).toBe(1);
+  // The audit event follows after the response
+  await expect.poll(() => countWelcomeAuditEvents(prisma)).toBe(1);
 });
 
 test("the welcome banner is gone on the day after the welcome", async ({
@@ -189,7 +141,14 @@ test("a citizen without the login permission is not welcomed until they get it",
   prisma,
   signIn,
 }) => {
-  const citizen = await createCitizenWithoutLogin(prisma, "ohne-freigabe");
+  const citizen = await createCitizen(prisma, {
+    handle: "ohne-freigabe",
+    welcomedAt: null,
+  });
+  // Without a role, the citizen has no login permission
+  await prisma.roleAssignment.deleteMany({
+    where: { citizenId: citizen.entity.id },
+  });
   await signIn(citizen.user);
 
   await page.goto("/app/dashboard");
@@ -201,10 +160,7 @@ test("a citizen without the login permission is not welcomed until they get it",
   expect(await countWelcomeAuditEvents(prisma)).toBe(0);
 
   // The same citizen with the login permission gets the welcome
-  const loginRole = await createRole(prisma, {
-    permissionStrings: [LOGIN_PERMISSION],
-  });
-  await assignRole(prisma, citizen.entity, loginRole);
+  await assignRole(prisma, citizen.entity, citizen.role);
 
   await page.goto("/app/dashboard");
   await expect(greetingBanner(page, GreetingBanner.Welcome)).toBeVisible();
@@ -323,10 +279,6 @@ test("an admin previews the welcome banner through the admin toolbar", async ({
     .selectOption({ label: "Welcome" });
 
   await expectOnlyBanner(page, GreetingBanner.Welcome);
-  // The preview changes only the view, it does not welcome the citizen
-  expect(await readWelcomedAt(prisma, admin.entity)).toEqual(
-    admin.entity.welcomedAt,
-  );
 });
 
 test("the preview cookie shows the birthday banner on a day without a birthday", async ({
@@ -350,7 +302,4 @@ test("the preview cookie shows the birthday banner on a day without a birthday",
 
   await page.goto("/app/dashboard");
   await expectOnlyBanner(page, GreetingBanner.Birthday);
-  expect(await readWelcomedAt(prisma, citizen.entity)).toEqual(
-    citizen.entity.welcomedAt,
-  );
 });

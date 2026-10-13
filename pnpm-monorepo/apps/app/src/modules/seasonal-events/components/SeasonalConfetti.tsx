@@ -1,18 +1,7 @@
 import { ConfettiCanvas } from "@/modules/common/components/ConfettiCanvas";
-import type { Options } from "canvas-confetti";
 import { getActiveSeasonalTheme } from "../queries/getActiveSeasonalTheme";
 
-/**
- * The surface which carries the confetti. Its size decides how far a
- * particle has to fly, thus every surface brings its own shots. The greeting
- * banner of the dashboard brings its own confetti, see `GreetingBanner`.
- */
-export enum SeasonalConfettiPlacement {
-  /** The login page, which is as tall as the viewport */
-  LoginPage = "login-page",
-}
-
-/** Milliseconds between two bursts while a surface is in view */
+/** Milliseconds between two bursts while the page is in view */
 const CONFETTI_INTERVAL = 1600;
 
 /**
@@ -37,30 +26,24 @@ const LOGIN_PAGE_SHOTS = [
   { ...LOGIN_PAGE_SHOT, angle: 120, origin: { x: 1, y: 1 } },
 ];
 
-const PLACEMENT_SHOTS: Record<SeasonalConfettiPlacement, readonly Options[]> = {
-  [SeasonalConfettiPlacement.LoginPage]: LOGIN_PAGE_SHOTS,
-};
-
-interface Props {
-  readonly placement: SeasonalConfettiPlacement;
-}
-
 /**
- * The confetti of the active seasonal event, for the events which celebrate
- * with it. It renders nothing outside the greeting days of the event and
- * nothing for an event which keeps a still surface.
+ * The confetti of the active seasonal event on the login page, for the
+ * events which celebrate with it. It renders nothing outside the greeting
+ * days of the event and nothing for an event which keeps a still surface.
+ * The greeting banner of the dashboard brings its own confetti, see
+ * `GreetingBanner`.
  *
  * The canvas covers the element which carries it and paints below the
  * content of that element, thus the element has to be positioned and
  * `isolate`.
  */
-export const SeasonalConfetti = async ({ placement }: Props) => {
+export const SeasonalConfetti = async () => {
   const resolution = await getActiveSeasonalTheme();
   if (!resolution?.isGreetingDay || !resolution.theme.hasConfetti) return null;
 
   return (
     <ConfettiCanvas
-      shots={PLACEMENT_SHOTS[placement]}
+      shots={LOGIN_PAGE_SHOTS}
       intervalMilliseconds={CONFETTI_INTERVAL}
       className="absolute inset-0 -z-10 size-full"
     />

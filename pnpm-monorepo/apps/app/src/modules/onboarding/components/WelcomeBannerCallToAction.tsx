@@ -14,8 +14,7 @@ export const WelcomeBannerCallToAction = () => {
   if (eligibleTasks.length === 0) return null;
 
   return (
-    <Button2 type="button" onClick={requestPopoverOpen} data-welcome-banner-cta>
-      {/* The icon of the popover trigger in the top bar */}
+    <Button2 type="button" onClick={requestPopoverOpen}>
       <FaShoePrints className="rotate-270" aria-hidden />
       Lerne das SAM kennen
     </Button2>

@@ -4,14 +4,14 @@ import {
 } from "@/modules/dashboard/components/GreetingBanner";
 import {
   pickRandomWording,
-  type GreetingWordingContext,
+  type ViewerWordingContext,
 } from "@/modules/dashboard/utils/greetingWordings";
 import { WELCOME_WORDINGS } from "../wordings/welcome";
 import { WelcomeBannerCallToAction } from "./WelcomeBannerCallToAction";
 import { WelcomeOrnament } from "./WelcomeOrnament";
 
 interface Props {
-  readonly context: GreetingWordingContext;
+  readonly context: ViewerWordingContext;
 }
 
 /**

@@ -2,7 +2,6 @@
 
 import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import { Button2, Button2Variant } from "@/modules/common/components/Button2";
-import { useMediaQuery } from "@base-ui/react/unstable-use-media-query";
 import {
   autoUpdate,
   flip,
@@ -14,6 +13,7 @@ import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { FaRegTimesCircle } from "react-icons/fa";
+import { useIsLargeViewport } from "../hooks/useIsLargeViewport";
 import { useOnboardingTarget } from "../hooks/useOnboardingTarget";
 import { useTargetRect } from "../hooks/useTargetRect";
 import { getOnboardingTaskByKey, type OnboardingStep } from "../utils/config";
@@ -173,9 +173,6 @@ const OVERSIZED_TARGET_VIEWPORT_SHARE = 0.6;
 /** Scroll offset which keeps an oversized target below the fixed top bar */
 const OVERSIZED_TARGET_SCROLL_OFFSET_PIXELS = 128;
 
-/** Tailwind's `lg` breakpoint */
-const LARGE_VIEWPORT_QUERY = "(min-width: 1024px)";
-
 interface OnboardingStepCardProps {
   readonly step: OnboardingStep;
   /** Null renders the centered variant instead of the anchored one */
@@ -196,9 +193,7 @@ const OnboardingStepCard = ({
   onExit,
   children,
 }: OnboardingStepCardProps) => {
-  const isLargeViewport = useMediaQuery(LARGE_VIEWPORT_QUERY, {
-    defaultMatches: false,
-  });
+  const isLargeViewport = useIsLargeViewport();
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   const targetRect = useTargetRect(targetElement);

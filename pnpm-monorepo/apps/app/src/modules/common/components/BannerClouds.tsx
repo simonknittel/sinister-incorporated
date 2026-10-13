@@ -7,8 +7,8 @@ import clsx from "clsx";
  * strengths of `cloud-surface` in `globals.css`.
  */
 const STRIP_CLASS_NAMES = [
-  "[--seasonal-lower-clouds:0]",
-  "[--seasonal-upper-clouds:0] [animation-direction:reverse]",
+  "[--banner-lower-clouds:0]",
+  "[--banner-upper-clouds:0] [animation-direction:reverse]",
 ];
 
 interface Props {
@@ -47,12 +47,12 @@ interface CloudStripProps {
 
 /**
  * The surface three times side by side, with the middle copy mirrored, see
- * `--animate-seasonal-swirl`.
+ * `--animate-banner-swirl`.
  */
 const CloudStrip = ({ surfaceClassName, className }: CloudStripProps) => (
   <div
     className={clsx(
-      "absolute inset-y-0 left-0 flex w-[300%] animate-seasonal-swirl",
+      "absolute inset-y-0 left-0 flex w-[300%] animate-banner-swirl",
       className,
     )}
   >

@@ -8,10 +8,7 @@ import { Hero } from "@/modules/common/components/Hero";
 import { LoginButtons } from "@/modules/common/components/LoginButtons";
 import Note from "@/modules/common/components/Note";
 import { UwuHero } from "@/modules/common/components/UwuHero";
-import {
-  SeasonalConfetti,
-  SeasonalConfettiPlacement,
-} from "@/modules/seasonal-events/components/SeasonalConfetti";
+import { SeasonalConfetti } from "@/modules/seasonal-events/components/SeasonalConfetti";
 import { SeasonalViewportLayer } from "@/modules/seasonal-events/components/SeasonalViewportLayer";
 import { getActiveSeasonalTheme } from "@/modules/seasonal-events/queries/getActiveSeasonalTheme";
 import { getSeasonalThemeRootProps } from "@/modules/seasonal-events/utils/getSeasonalThemeRootProps";
@@ -57,7 +54,7 @@ export default async function Page({ searchParams }: PageProps<"/">) {
 
   return (
     <div {...seasonalThemeRootProps}>
-      <SeasonalConfetti placement={SeasonalConfettiPlacement.LoginPage} />
+      <SeasonalConfetti />
 
       <DevelopmentLogin redirectTo={redirectTo} />
 

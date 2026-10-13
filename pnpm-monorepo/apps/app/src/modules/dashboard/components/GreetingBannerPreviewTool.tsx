@@ -18,8 +18,6 @@ interface Props {
 /**
  * Shows the welcome or the birthday banner on the dashboard of the admin,
  * also on a day without that occasion. "Auto" shows the banner of the day.
- * The preview changes only the view: it does not welcome the citizen and
- * sends no notification.
  */
 export const GreetingBannerPreviewTool = ({ preview }: Props) => {
   const [isPending, startTransition] = useTransition();

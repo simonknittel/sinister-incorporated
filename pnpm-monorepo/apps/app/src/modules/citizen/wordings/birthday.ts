@@ -1,6 +1,6 @@
 import {
   getGreetingName,
-  type GreetingWordingFactory,
+  type ViewerWordingFactory,
 } from "@/modules/dashboard/utils/greetingWordings";
 
 /**
@@ -12,7 +12,7 @@ import {
  * dashboard on the same day, and two identical greetings would read like a
  * mistake.
  */
-export const BIRTHDAY_WORDINGS: readonly GreetingWordingFactory[] = [
+export const BIRTHDAY_WORDINGS: readonly ViewerWordingFactory[] = [
   (context) => ({
     title: `Geburtstagsalarm für ${getGreetingName(context)}!`,
     body: "Die ganze Crew auf Station: Heute wirst du gefeiert.",

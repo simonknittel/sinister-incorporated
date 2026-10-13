@@ -19,7 +19,7 @@ export const useOnboardingPopoverOpenState = (canActOnRequest: boolean) => {
   if (isActingOnRequest && !isOpen) setIsOpen(true);
 
   useEffect(() => {
-    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- The request comes from a different component (for example the welcome banner), thus this surface has no event of its own. React does not let a render change the state of the provider, thus the effect settles the request after the render that opened the popover.
+    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- The request comes from a different component, and a render must not change the state of the provider.
     if (isActingOnRequest) settlePopoverOpenRequest();
   }, [isActingOnRequest, settlePopoverOpenRequest]);
 

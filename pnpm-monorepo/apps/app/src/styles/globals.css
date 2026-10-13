@@ -357,9 +357,9 @@
      to the right plays the motion in reverse. Two strips which flow in
      opposite directions let the colours swirl. The cycle of 48 s lets a
      cloud cross the surface in 24 s. */
-  --animate-seasonal-swirl: seasonal-swirl 48s linear infinite;
+  --animate-banner-swirl: banner-swirl 48s linear infinite;
 
-  @keyframes seasonal-swirl {
+  @keyframes banner-swirl {
     from {
       transform: translateX(0);
     }
@@ -442,7 +442,7 @@
     --animate-seasonal-drip: none;
     --animate-seasonal-flicker: none;
     --animate-seasonal-power-flicker: none;
-    --animate-seasonal-swirl: none;
+    --animate-banner-swirl: none;
     --animate-seasonal-flow: none;
   }
 
@@ -502,13 +502,13 @@
 /**
  * A surface of four wide colour clouds which overlap each other: two at the
  * lower edge (`--cloud-1` and `--cloud-3`) and two at the upper edge
- * (`--cloud-2` and `--cloud-4`). The utility of an event sets the four
+ * (`--cloud-2` and `--cloud-4`). The utility of an occasion sets the four
  * colours. Every colour stays far below full brightness, thus the surface
  * reads as a dark surface with a colour cast and the text above it keeps its
  * contrast.
  *
- * `--seasonal-upper-clouds` sets the strength of the two clouds at the upper
- * edge, and `--seasonal-lower-clouds` the strength of the two clouds at the
+ * `--banner-upper-clouds` sets the strength of the two clouds at the upper
+ * edge, and `--banner-lower-clouds` the strength of the two clouds at the
  * lower edge: 1 (the default) shows a pair in full, 0 removes it. The
  * greeting banner draws each pair on a strip of its own and moves the two
  * strips against each other, see `BannerClouds`. Every other surface
@@ -521,7 +521,7 @@
       ellipse 70% 140% at 8% 115%,
       color-mix(
         in srgb,
-        var(--cloud-1) calc(100% * var(--seasonal-lower-clouds, 1)),
+        var(--cloud-1) calc(100% * var(--banner-lower-clouds, 1)),
         transparent
       ),
       transparent 68%
@@ -530,7 +530,7 @@
       ellipse 60% 150% at 36% -25%,
       color-mix(
         in srgb,
-        var(--cloud-2) calc(100% * var(--seasonal-upper-clouds, 1)),
+        var(--cloud-2) calc(100% * var(--banner-upper-clouds, 1)),
         transparent
       ),
       transparent 68%
@@ -539,7 +539,7 @@
       ellipse 65% 145% at 66% 120%,
       color-mix(
         in srgb,
-        var(--cloud-3) calc(100% * var(--seasonal-lower-clouds, 1)),
+        var(--cloud-3) calc(100% * var(--banner-lower-clouds, 1)),
         transparent
       ),
       transparent 68%
@@ -548,7 +548,7 @@
       ellipse 55% 135% at 95% -15%,
       color-mix(
         in srgb,
-        var(--cloud-4) calc(100% * var(--seasonal-upper-clouds, 1)),
+        var(--cloud-4) calc(100% * var(--banner-upper-clouds, 1)),
         transparent
       ),
       transparent 68%
