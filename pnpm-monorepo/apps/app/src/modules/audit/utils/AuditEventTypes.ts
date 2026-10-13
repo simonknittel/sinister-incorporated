@@ -1847,6 +1847,15 @@ export const AuditEventDefinitions: {
       `Career flow role access updated to ${data.readRoleIds.length} reading and ${data.updateRoleIds.length} editing role(s) (${data.flowId})`,
   },
 
+  [AuditEventType.IAM_SETTING_UPDATED]: {
+    type: AuditEventType.IAM_SETTING_UPDATED,
+    data: {
+      key: "string",
+      value: "string",
+    },
+    message: (data) => `IAM setting updated: ${data.key}`,
+  },
+
   [AuditEventType.SILC_SETTING_UPDATED]: {
     type: AuditEventType.SILC_SETTING_UPDATED,
     data: {

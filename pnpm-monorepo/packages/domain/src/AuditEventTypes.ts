@@ -188,6 +188,7 @@ export enum AuditEventType {
   CAREER_FLOW_DELETED = "CAREER_FLOW_DELETED",
   CAREER_FLOW_RESTORED = "CAREER_FLOW_RESTORED",
   CAREER_FLOW_ROLE_ACCESS_UPDATED = "CAREER_FLOW_ROLE_ACCESS_UPDATED",
+  IAM_SETTING_UPDATED = "IAM_SETTING_UPDATED",
   SILC_SETTING_UPDATED = "SILC_SETTING_UPDATED",
   SILC_ALL_EXPIRED = "SILC_ALL_EXPIRED",
   SILC_BALANCES_REFRESHED = "SILC_BALANCES_REFRESHED",
@@ -1313,6 +1314,12 @@ export interface AuditEventDataByType {
     flowId: string;
     readRoleIds: string[];
     updateRoleIds: string[];
+  };
+
+  /** `value` is the new JSON value of the setting, as a string */
+  [AuditEventType.IAM_SETTING_UPDATED]: {
+    key: string;
+    value: string;
   };
 
   [AuditEventType.SILC_SETTING_UPDATED]: {
