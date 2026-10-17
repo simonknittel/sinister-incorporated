@@ -78,14 +78,24 @@ export const unleashBackendToken =
 export const unleashAdminToken = "*:*.playwright-insecure-admin-token";
 
 /**
+ * The name that the app of one worker gives to Unleash as `appName`. Thus a
+ * flag strategy can match the app of one worker only (see the scopes of
+ * fixtures/unleash.ts).
+ */
+export const unleashAppName = (workerIndex: number) =>
+  `sam-playwright-worker-${workerIndex}`;
+
+/**
  * Unleash environment of the app — runtime-read server variables like
  * s3Environment. All workers share one Unleash container, so tests must
- * only toggle flags no other test depends on.
+ * only toggle flags no other test depends on, or toggle them for one user
+ * or for the app of one worker.
  */
-export const unleashEnvironment = (unleashPort: number) =>
+export const unleashEnvironment = (unleashPort: number, appName: string) =>
   ({
     UNLEASH_SERVER_API_URL: `http://localhost:${unleashPort}/api`,
     UNLEASH_SERVER_API_TOKEN: unleashBackendToken,
+    UNLEASH_APP_NAME: appName,
     // Production caches the flag definitions for 30s; a toggle in a test
     // must not wait that out (see tests/unleash.spec.ts).
     UNLEASH_REVALIDATE_SECONDS: "1",
@@ -192,4 +202,10 @@ export const appDummyEnvironment = {
    */
   EMBED_JWT_PRIVATE_KEY:
     "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR0hBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJHMHdhd0lCQVFRZzhSVWJ1VHIwcjRJUmdNSi8KQ3FxRlRYMnJWQW41ZDBXbjBCbkpxTXFnMFZTaFJBTkNBQVNwTlpuekQxZXh5NkdDMWVBM2xmYWVSam4vRGNpVAptRkxyVnVWZjJTZ3hHZXdkWkRLS3FWMTVteVJoaWxmT1lXcmNRNEYvKzFaTDFDMU9uUDYrVm9ocAotLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tCg==",
+  /**
+   * The test client of the MCP tests serves its Client ID Metadata Document
+   * on the local machine with plain HTTP (see fixtures/cimd-server.ts and
+   * docs/mcp-server.md). The same key as above signs the access tokens.
+   */
+  OAUTH_ALLOW_INSECURE_LOOPBACK_CLIENT_IDS: "1",
 } as const;

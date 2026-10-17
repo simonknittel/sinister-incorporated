@@ -13,11 +13,14 @@ database for each test case.
   `apps/collab/Dockerfile` and runs `next build` for the app.
 - **Per worker** (`fixtures/test.ts`): each Playwright worker clones its own
   database from the template. It also starts its own collab container, its
-  own Discord mock and its own `next start` instance. Tests of different
-  workers can never interfere with each other — except through the shared
-  Unleash server and the shared RustFS container with its `uploads` bucket.
-  For the flags, the rule is: tests may only toggle flags (through
-  `fixtures/unleash.ts`) that no other test depends on.
+  own Discord mock, its own server for the client documents of the MCP test
+  client (`fixtures/cimd-server.ts`) and its own `next start` instance.
+  Tests of different workers can never interfere with each other — except
+  through the shared Unleash server and the shared RustFS container with its
+  `uploads` bucket. For the flags, the rule is: tests may only toggle flags
+  (through `fixtures/unleash.ts`) that no other test depends on, or toggle a
+  flag only for their own user or for the app of their worker (the scopes of
+  `setUnleashFlag()`).
 - **Per test**: an automatic fixture truncates all tables and resets the
   Discord mock. Thus each test starts from an empty database and seeds
   exactly what it needs through the factories in `fixtures/factories.ts`.
@@ -25,7 +28,10 @@ database for each test case.
   session cookie — no OAuth flow is involved. Users come from
   `createCitizen()`, which creates the User, the Discord account, the
   Citizen, the role and the permissions in the form that the session
-  callback expects.
+  callback expects. The MCP tests connect a client with the real OAuth flow
+  (`authorizeMcpClient()` and `connectMcpClient()`, see `fixtures/oauth.ts`).
+  Their assertions never print a token: compare the status and the error of
+  a token response, not the response.
 
 ## Run the tests
 

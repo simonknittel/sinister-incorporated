@@ -1,0 +1,373 @@
+import type { Page } from "@playwright/test";
+import { CIMD_CLIENT_NAME } from "../fixtures/cimd-server";
+import { createCitizen } from "../fixtures/factories";
+import {
+  LEGACY_INITIALIZE_REQUEST,
+  modernMcpRequest,
+  postMcpEndpoint,
+  UNSUPPORTED_PROTOCOL_VERSION_ERROR_CODE,
+} from "../fixtures/mcp-client";
+import {
+  buildAuthorizationUrl,
+  createPkcePair,
+  createState,
+  interceptAuthorizationResponse,
+  postTokenEndpoint,
+  readMcpServerMetadata,
+  waitForAuthorizationResponse,
+  type AuthorizationRequest,
+} from "../fixtures/oauth";
+import { expect, test } from "../fixtures/test";
+import {
+  expectFlagPropagation,
+  setUnleashFlag,
+  UNLEASH_FLAG,
+} from "../fixtures/unleash";
+
+/** 1 hour, the lifetime of an access token */
+const ACCESS_TOKEN_LIFETIME_IN_SECONDS = 60 * 60;
+
+const PROTECTED_RESOURCE_METADATA_PATH =
+  "/.well-known/oauth-protected-resource/api/mcp";
+
+/** Three polled flag states plus the consent page in each poll */
+const KILL_SWITCH_TEST_TIMEOUT = 150_000;
+
+const CONSENT_UNAVAILABLE_TEXT =
+  "Die Verbindung von Anwendungen über MCP ist zurzeit nicht verfügbar.";
+
+interface JsonRpcErrorResponse {
+  readonly error: { readonly code: number; readonly message: string };
+}
+
+enum ConsentPageState {
+  Consent = "consent",
+  Unavailable = "unavailable",
+  /** Neither the consent nor the message: the page did not render */
+  Unknown = "unknown",
+}
+
+const readConsentPageState = async (page: Page, consentUrl: string) => {
+  await page.goto(consentUrl);
+
+  const allowButton = page.getByRole("button", { name: "Erlauben" });
+  const unavailableMessage = page.getByText(CONSENT_UNAVAILABLE_TEXT);
+  try {
+    await allowButton
+      .or(unavailableMessage)
+      .first()
+      .waitFor({ state: "visible", timeout: 5_000 });
+  } catch {
+    return ConsentPageState.Unknown;
+  }
+
+  return (await unavailableMessage.isVisible())
+    ? ConsentPageState.Unavailable
+    : ConsentPageState.Consent;
+};
+
+test.describe("the OAuth server and the MCP endpoint", () => {
+  test("the metadata documents describe the server, and a request without a token gets the challenge", async ({
+    request,
+  }) => {
+    const resourceResponse = await request.get(
+      PROTECTED_RESOURCE_METADATA_PATH,
+    );
+    expect(resourceResponse.status()).toBe(200);
+    const resourceMetadata = (await resourceResponse.json()) as {
+      authorization_servers: string[];
+    };
+    const issuer = resourceMetadata.authorization_servers[0]!;
+
+    expect(resourceMetadata).toEqual({
+      resource: new URL("/api/mcp", issuer).href,
+      authorization_servers: [issuer],
+      scopes_supported: ["mcp"],
+      bearer_methods_supported: ["header"],
+    });
+
+    const serverResponse = await request.get(
+      "/.well-known/oauth-authorization-server",
+    );
+    expect(serverResponse.status()).toBe(200);
+    expect(await serverResponse.json()).toMatchObject({
+      issuer,
+      authorization_endpoint: new URL("/app/oauth/authorize", issuer).href,
+      token_endpoint: new URL("/api/oauth/token", issuer).href,
+      revocation_endpoint: new URL("/api/oauth/revoke", issuer).href,
+      scopes_supported: ["mcp"],
+      response_types_supported: ["code"],
+      grant_types_supported: ["authorization_code", "refresh_token"],
+      token_endpoint_auth_methods_supported: ["none"],
+      code_challenge_methods_supported: ["S256"],
+      client_id_metadata_document_supported: true,
+      authorization_response_iss_parameter_supported: true,
+    });
+
+    // The challenge tells a client where it finds the authorization server
+    const response = await postMcpEndpoint(
+      request,
+      modernMcpRequest("server/discover"),
+    );
+    expect(response.status()).toBe(401);
+    expect(response.headers()["www-authenticate"]).toContain(
+      `resource_metadata="${new URL(PROTECTED_RESOURCE_METADATA_PATH, issuer).href}"`,
+    );
+  });
+
+  test("a client connects through the consent page and calls a tool", async ({
+    prisma,
+    request,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const citizen = await createCitizen(prisma, { handle: "mcp-nutzer" });
+
+    const authorization = await authorizeMcpClient(citizen.user);
+    const { issuer } = authorization.metadata;
+
+    // RFC 9207: the authorization response names its server
+    expect(authorization.authorizationResponse.get("iss")).toBe(issuer);
+    expect(authorization.tokenResponse.tokenType).toBe("Bearer");
+    expect(authorization.tokenResponse.scope).toBe("mcp");
+    expect(authorization.tokenResponse.expiresIn).toBe(
+      ACCESS_TOKEN_LIFETIME_IN_SECONDS,
+    );
+
+    const client = await connectMcpClient(authorization.accessToken);
+
+    const discovery = await client.discover();
+    expect(discovery.instructions).toContain(
+      new URL("/app/account/mcp", issuer).href,
+    );
+    expect(await client.listToolNames()).toContain("get_current_user");
+
+    const result = await client.callTool("get_current_user");
+    expect(result.isError).toBeFalsy();
+    expect(result.structuredContent).toMatchObject({
+      user_id: citizen.user.id,
+      citizen: { id: citizen.entity.id, handle: "mcp-nutzer" },
+      role: "user",
+      admin_mode: false,
+    });
+
+    // The server serves only the 2026-07-28 revision
+    const legacyResponse = await postMcpEndpoint(
+      request,
+      LEGACY_INITIALIZE_REQUEST,
+      authorization.accessToken,
+    );
+    expect(legacyResponse.status()).toBe(400);
+    const legacyBody = (await legacyResponse.json()) as JsonRpcErrorResponse;
+    expect(legacyBody.error.code).toBe(UNSUPPORTED_PROTOCOL_VERSION_ERROR_CODE);
+  });
+
+  test("a refresh token works once, and its reuse disconnects the client", async ({
+    prisma,
+    request,
+    authorizeMcpClient,
+  }) => {
+    const citizen = await createCitizen(prisma, { handle: "mcp-erneuerer" });
+    const authorization = await authorizeMcpClient(citizen.user);
+
+    const rotation = await authorization.refresh(authorization.refreshToken);
+    expect(rotation.status).toBe(200);
+    const rotatedTokens = rotation.tokens;
+    if (!rotatedTokens) throw new Error("The refresh gave no tokens");
+    // A comparison of booleans, thus a failure does not print a token
+    expect(rotatedTokens.refreshToken === authorization.refreshToken).toBe(
+      false,
+    );
+
+    const rotatedCall = await postMcpEndpoint(
+      request,
+      modernMcpRequest("tools/list"),
+      rotatedTokens.accessToken,
+    );
+    expect(rotatedCall.status()).toBe(200);
+
+    // A used refresh token that comes again was possibly stolen
+    const reuse = await authorization.refresh(authorization.refreshToken);
+    expect(reuse.status).toBe(400);
+    expect(reuse.error).toBe("invalid_grant");
+
+    // The reuse revoked the grant, thus also its newest tokens
+    const successorRefresh = await authorization.refresh(
+      rotatedTokens.refreshToken,
+    );
+    expect(successorRefresh.status).toBe(400);
+    expect(successorRefresh.error).toBe("invalid_grant");
+
+    const callAfterReuse = await postMcpEndpoint(
+      request,
+      modernMcpRequest("tools/list"),
+      rotatedTokens.accessToken,
+    );
+    expect(callAfterReuse.status()).toBe(401);
+  });
+
+  test("the revocation of the refresh token disconnects the client", async ({
+    prisma,
+    request,
+    authorizeMcpClient,
+  }) => {
+    const citizen = await createCitizen(prisma, { handle: "mcp-trenner" });
+    const authorization = await authorizeMcpClient(citizen.user);
+
+    const callBefore = await postMcpEndpoint(
+      request,
+      modernMcpRequest("tools/list"),
+      authorization.accessToken,
+    );
+    expect(callBefore.status()).toBe(200);
+
+    expect(await authorization.revoke(authorization.refreshToken)).toBe(200);
+
+    const callAfter = await postMcpEndpoint(
+      request,
+      modernMcpRequest("tools/list"),
+      authorization.accessToken,
+    );
+    expect(callAfter.status()).toBe(401);
+
+    const refresh = await authorization.refresh(authorization.refreshToken);
+    expect(refresh.error).toBe("invalid_grant");
+  });
+
+  test("the consent page refuses an invalid client or redirect URI and sends other errors to the client", async ({
+    page,
+    prisma,
+    request,
+    signIn,
+    stack,
+    cimdServer,
+  }) => {
+    const citizen = await createCitizen(prisma, { handle: "mcp-pruefer" });
+    await signIn(citizen.user);
+    const { issuer, resource } = await readMcpServerMetadata(request);
+    const { challenge } = createPkcePair();
+    const state = createState();
+    const consentUrl = (parameters: Partial<AuthorizationRequest> = {}) =>
+      buildAuthorizationUrl(stack.baseURL, {
+        clientId: cimdServer.clientId,
+        codeChallenge: challenge,
+        state,
+        resource,
+        ...parameters,
+      });
+    const allowButton = page.getByRole("button", { name: "Erlauben" });
+
+    // The host of the client id is the trusted identity, the name is not
+    await page.goto(consentUrl());
+    await expect(
+      page.getByText(cimdServer.host, { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(`Name laut Anwendung: ${CIMD_CLIENT_NAME}`),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Die Anwendung läuft auf diesem Computer."),
+    ).toBeVisible();
+    await expect(allowButton).toBeVisible();
+
+    /**
+     * RFC 6749 section 4.1.2.1: without a valid client and redirect URI, the
+     * server must not redirect. The `.invalid` host never resolves.
+     */
+    const refusals = [
+      {
+        parameters: { clientId: cimdServer.mismatchingClientId },
+        message: "Die Beschreibung der Anwendung ist ungültig.",
+      },
+      {
+        parameters: { clientId: cimdServer.missingClientId },
+        message:
+          "Die Beschreibung der Anwendung konnte nicht geladen werden. Bitte versuche es später erneut.",
+      },
+      {
+        parameters: { redirectUri: "https://client.invalid/callback" },
+        message:
+          "Die Anwendung hat eine Weiterleitungsadresse gesendet, die sie nicht registriert hat.",
+      },
+    ];
+    for (const { parameters, message } of refusals) {
+      await page.goto(consentUrl(parameters));
+      await expect(page.getByText(message)).toBeVisible();
+      await expect(allowButton).toHaveCount(0);
+      await expect(page).toHaveURL(/\/app\/oauth\/authorize\?/);
+    }
+
+    // Only S256 protects the code: the client gets the error
+    await interceptAuthorizationResponse(page);
+    await page.goto(consentUrl({ codeChallengeMethod: "plain" }));
+    const response = await waitForAuthorizationResponse(page);
+    expect(response.get("error")).toBe("invalid_request");
+    expect(response.get("state")).toBe(state);
+    expect(response.get("iss")).toBe(issuer);
+    expect(response.get("code")).toBeNull();
+  });
+
+  test("the kill switch takes the MCP endpoint, the token endpoint and the consent page offline", async ({
+    page,
+    prisma,
+    request,
+    signIn,
+    stack,
+    cimdServer,
+    stackFlagScope,
+  }) => {
+    test.setTimeout(KILL_SWITCH_TEST_TIMEOUT);
+
+    const citizen = await createCitizen(prisma, { handle: "mcp-notaus" });
+    await signIn(citizen.user);
+    const { resource } = await readMcpServerMetadata(request);
+    const consentUrl = buildAuthorizationUrl(stack.baseURL, {
+      clientId: cimdServer.clientId,
+      codeChallenge: createPkcePair().challenge,
+      state: createState(),
+      resource,
+    });
+
+    const readAvailability = async () => {
+      const mcpResponse = await postMcpEndpoint(
+        request,
+        modernMcpRequest("server/discover"),
+      );
+      const tokenResult = await postTokenEndpoint(request, {
+        grant_type: "refresh_token",
+        refresh_token: "unknown-refresh-token",
+        client_id: cimdServer.clientId,
+      });
+
+      return {
+        mcpEndpoint: mcpResponse.status(),
+        tokenEndpoint: tokenResult.status,
+        consentPage: await readConsentPageState(page, consentUrl),
+      };
+    };
+    const available = {
+      mcpEndpoint: 401,
+      tokenEndpoint: 400,
+      consentPage: ConsentPageState.Consent,
+    };
+
+    await expectFlagPropagation.poll(readAvailability).toEqual(available);
+
+    try {
+      await setUnleashFlag(UNLEASH_FLAG.DisableMcpServer, true, stackFlagScope);
+      await expectFlagPropagation.poll(readAvailability).toEqual({
+        mcpEndpoint: 503,
+        tokenEndpoint: 503,
+        consentPage: ConsentPageState.Unavailable,
+      });
+    } finally {
+      await setUnleashFlag(
+        UNLEASH_FLAG.DisableMcpServer,
+        false,
+        stackFlagScope,
+      );
+      // The next test of this worker must not get the flag from a cache
+      await expectFlagPropagation.poll(readAvailability).toEqual(available);
+    }
+  });
+});

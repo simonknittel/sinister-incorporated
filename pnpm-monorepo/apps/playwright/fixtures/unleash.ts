@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import { readStackState, unleashAdminToken } from "../setup/stack";
 
 /**
@@ -10,7 +11,22 @@ export enum UNLEASH_FLAG {
   EnableCareBearShooter = "EnableCareBearShooter",
   CrashLogAnalyzer = "CrashLogAnalyzer",
   DisableLogAnalyzerSharing = "DisableLogAnalyzerSharing",
+  DisableMcpServer = "DisableMcpServer",
 }
+
+/**
+ * The stack runs the app with a one second flag cache
+ * (UNLEASH_REVALIDATE_SECONDS, see setup/stack.ts), so a toggle shows up
+ * after roughly one navigation. The headroom is for suite load. Assert both
+ * flag states: then a timeout means that the app did not pick up the change
+ * from the stack's Unleash container, not that the default kicked in.
+ */
+export const FLAG_PROPAGATION_TIMEOUT = 30_000;
+
+/** Polls an assertion until the app picked up a flag toggle */
+export const expectFlagPropagation = expect.configure({
+  timeout: FLAG_PROPAGATION_TIMEOUT,
+});
 
 /** The environment the backend token (see stack.ts) reads its flags from. */
 const FLAG_ENVIRONMENT = "development";
@@ -32,6 +48,38 @@ interface UserScope {
   /** The ID of the user, which the app gives to Unleash as `userId` */
   readonly userId: string;
 }
+
+/**
+ * The app of one worker (see unleashAppName in setup/stack.ts). For a flag
+ * that the app also reads without a session, for example in a route handler
+ * for API clients. The tests of one worker run one after the other, thus
+ * only the test that toggles the flag sees it.
+ */
+export interface StackScope {
+  /** The name that the app gives to Unleash as `appName` */
+  readonly appName: string;
+}
+
+type FlagScope = UserScope | StackScope;
+
+const describeScope = (scope: FlagScope) =>
+  "userId" in scope
+    ? {
+        title: `Playwright user ${scope.userId}`,
+        constraint: {
+          contextName: "userId",
+          operator: "IN",
+          values: [scope.userId],
+        },
+      }
+    : {
+        title: `Playwright stack ${scope.appName}`,
+        constraint: {
+          contextName: "appName",
+          operator: "IN",
+          values: [scope.appName],
+        },
+      };
 
 const unleashUrl = (path: string) =>
   new URL(path, `http://localhost:${readStackState().unleashPort}`);
@@ -98,17 +146,17 @@ const findStrategyId = async (flagName: UNLEASH_FLAG, title: string) => {
 };
 
 /**
- * Gives the user one strategy that matches only this user. To turn the flag
- * off, the strategy gets a rollout of 0 %. The strategy is not deleted:
+ * Gives the scope one strategy that matches only this scope. To turn the
+ * flag off, the strategy gets a rollout of 0 %. The strategy is not deleted:
  * Unleash turns off the environment when its last strategy is deleted, and
- * that can occur while a different test turns on the flag for its own user.
+ * that can occur while a different test turns on the flag for its own scope.
  */
-const setUserStrategy = async (
+const setScopeStrategy = async (
   flagName: UNLEASH_FLAG,
   enabled: boolean,
-  { userId }: UserScope,
+  scope: FlagScope,
 ) => {
-  const title = `Playwright user ${userId}`;
+  const { title, constraint } = describeScope(scope);
   const strategy = {
     name: "flexibleRollout",
     title,
@@ -117,7 +165,7 @@ const setUserStrategy = async (
       stickiness: "default",
       groupId: flagName,
     },
-    constraints: [{ contextName: "userId", operator: "IN", values: [userId] }],
+    constraints: [constraint],
   };
 
   const strategyId = await findStrategyId(flagName, title);
@@ -133,17 +181,18 @@ const setUserStrategy = async (
   );
   if (!response.ok)
     throw new Error(
-      `Setting the strategy of the flag ${flagName} for the user ${userId} failed: ${response.status}`,
+      `Setting the strategy "${title}" of the flag ${flagName} failed: ${response.status}`,
     );
 };
 
 /**
  * Creates the flag if it is missing and sets its state in the environment
  * the app reads. All workers share one Unleash server. Thus without a
- * `userScope`, a test may only toggle a flag that no other test depends on.
- * With a `userScope`, the flag changes only for the user of the test. Do not
- * toggle one flag in the two ways: a toggle for all users adds a strategy
- * for all users, which also turns on the flag for each scoped user.
+ * `scope`, a test may only toggle a flag that no other test depends on. With
+ * a scope, the flag changes only for the user of the test or for the app of
+ * its worker. Do not toggle one flag in the two ways: a toggle for all users
+ * adds a strategy for all users, which also turns on the flag for each
+ * scope.
  *
  * The app caches the flag definitions for up to 30 seconds (see the app's
  * getUnleashFlag) — callers have to poll for propagation.
@@ -151,20 +200,20 @@ const setUserStrategy = async (
 export const setUnleashFlag = async (
   flagName: UNLEASH_FLAG,
   enabled: boolean,
-  userScope?: UserScope,
+  scope?: FlagScope,
 ) => {
   await createFlag(flagName);
 
-  if (!userScope) {
+  if (!scope) {
     await setEnvironment(flagName, enabled);
     return;
   }
 
-  await setUserStrategy(flagName, enabled, userScope);
+  await setScopeStrategy(flagName, enabled, scope);
   /**
-   * The environment never goes off for one user, because the other users
+   * The environment never goes off for one scope, because the other scopes
    * keep their state. When Unleash turns on an environment without
-   * strategies, it adds a strategy for all users. The strategy of the user
+   * strategies, it adds a strategy for all users. The strategy of the scope
    * exists before this step, thus Unleash adds no strategy.
    */
   if (enabled) await setEnvironment(flagName, true);

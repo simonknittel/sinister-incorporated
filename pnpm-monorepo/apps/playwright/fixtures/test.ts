@@ -16,10 +16,15 @@ import {
   readStackState,
   s3Environment,
   templateDatabase,
+  unleashAppName,
   unleashEnvironment,
 } from "../setup/stack";
+import { startCimdServer, type CimdServer } from "./cimd-server";
 import { startDiscordMock, type DiscordMock } from "./discord-mock";
 import { ONE_DAY_MS } from "./factories";
+import { createMcpClient, type McpTestClient } from "./mcp-client";
+import { authorizeMcpClient, type McpAuthorization } from "./oauth";
+import type { StackScope } from "./unleash";
 
 interface WorkerStack {
   readonly baseURL: string;
@@ -27,6 +32,8 @@ interface WorkerStack {
   /** HTTP base of the worker's collab container (e.g. for /replace) */
   readonly collabHttpUrl: string;
   readonly discordMock: DiscordMock;
+  /** The name that the app of the worker gives to Unleash as `appName` */
+  readonly unleashAppName: string;
 }
 
 interface Fixtures {
@@ -59,11 +66,30 @@ interface Fixtures {
    * for, which lets a test walk a date range without waiting for it.
    */
   readonly setSeasonalDate: (date: string) => Promise<void>;
+  /**
+   * Limits a toggle of `setUnleashFlag()` to the app of this worker. For a
+   * flag that the app also reads without a session.
+   */
+  readonly stackFlagScope: StackScope;
+  /**
+   * Connects the MCP test client for the user through the consent page (see
+   * fixtures/oauth.ts). Signs the user in.
+   */
+  readonly authorizeMcpClient: (
+    user: Pick<User, "id">,
+  ) => Promise<McpAuthorization>;
+  /**
+   * Connects the MCP client SDK with an access token. The fixture closes the
+   * client after the test.
+   */
+  readonly connectMcpClient: (accessToken: string) => Promise<McpTestClient>;
   readonly databaseReset: undefined;
 }
 
 interface WorkerFixtures {
   readonly stack: WorkerStack;
+  /** Serves the Client ID Metadata Documents of the MCP test client */
+  readonly cimdServer: CimdServer;
 }
 
 /** next-auth v4 database sessions, unprefixed because the stack is HTTP. */
@@ -146,6 +172,7 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
       const workerDatabaseUrl = hostDatabaseUrl(state, databaseName);
       const collabHttpUrl = `http://localhost:${collabContainer.getMappedPort(collabPort)}`;
       const discordMock = await startDiscordMock();
+      const appName = unleashAppName(workerInfo.workerIndex);
 
       const appProcess = spawn(
         "pnpm",
@@ -158,7 +185,7 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
             ...s3Environment(state.s3Port),
             // Also overrides any UNLEASH_* variables of the dev shell — the
             // suite must never talk to a live flag provider
-            ...unleashEnvironment(state.unleashPort),
+            ...unleashEnvironment(state.unleashPort, appName),
             DATABASE_URL: workerDatabaseUrl,
             NEXTAUTH_URL: baseURL,
             COLLAB_URL: `ws://localhost:${collabContainer.getMappedPort(collabPort)}`,
@@ -174,7 +201,13 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
         await waitForHttpOk(baseURL, appProcess);
 
         const prisma = createPrismaClient(workerDatabaseUrl);
-        await use({ baseURL, prisma, collabHttpUrl, discordMock });
+        await use({
+          baseURL,
+          prisma,
+          collabHttpUrl,
+          discordMock,
+          unleashAppName: appName,
+        });
         await prisma.$disconnect();
       } finally {
         await stopProcess(appProcess);
@@ -183,6 +216,18 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
       }
     },
     { scope: "worker", timeout: 240_000 },
+  ],
+
+  cimdServer: [
+    async ({}, use) => {
+      const cimdServer = await startCimdServer();
+      try {
+        await use(cimdServer);
+      } finally {
+        await cimdServer.close();
+      }
+    },
+    { scope: "worker" },
   ],
 
   baseURL: async ({ stack }, use) => {
@@ -245,6 +290,41 @@ export const test = base.extend<Fixtures, WorkerFixtures>({
         { name: "enable_admin", value: "1", domain: "localhost", path: "/" },
       ]);
     });
+  },
+
+  stackFlagScope: async ({ stack }, use) => {
+    await use({ appName: stack.unleashAppName });
+  },
+
+  authorizeMcpClient: async (
+    { page, request, stack, signIn, cimdServer },
+    use,
+  ) => {
+    await use((user) =>
+      authorizeMcpClient({
+        page,
+        request,
+        baseUrl: stack.baseURL,
+        signIn,
+        cimdServer,
+        user,
+      }),
+    );
+  },
+
+  connectMcpClient: async ({ stack }, use) => {
+    const clients: McpTestClient[] = [];
+
+    await use(async (accessToken) => {
+      const client = await createMcpClient({
+        baseUrl: stack.baseURL,
+        accessToken,
+      });
+      clients.push(client);
+      return client;
+    });
+
+    await Promise.all(clients.map((client) => client.close()));
   },
 
   setSeasonalDate: async ({ context }, use) => {

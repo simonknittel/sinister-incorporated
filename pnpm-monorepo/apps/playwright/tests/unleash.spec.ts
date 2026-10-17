@@ -1,19 +1,13 @@
 import type { Locator, Page } from "@playwright/test";
 import { createCitizen } from "../fixtures/factories";
 import { expect, test } from "../fixtures/test";
-import { setUnleashFlag, UNLEASH_FLAG } from "../fixtures/unleash";
+import {
+  expectFlagPropagation,
+  FLAG_PROPAGATION_TIMEOUT,
+  setUnleashFlag,
+  UNLEASH_FLAG,
+} from "../fixtures/unleash";
 
-/**
- * The stack runs the app with a one second flag cache
- * (UNLEASH_REVALIDATE_SECONDS, see setup/stack.ts), so a toggle shows up
- * after roughly one navigation. The headroom is for suite load. Both flag
- * states are asserted, so a timeout here means the app did not pick up the
- * change from the stack's Unleash container — not that the default kicked in.
- */
-const FLAG_PROPAGATION_TIMEOUT = 30_000;
-const expectFlagPropagation = expect.configure({
-  timeout: FLAG_PROPAGATION_TIMEOUT,
-});
 /** Two polled flag states plus navigations per test */
 const FLAG_TEST_TIMEOUT = 120_000;
 
