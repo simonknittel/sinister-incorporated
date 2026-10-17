@@ -1,115 +1,40 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { triggerNotificationsAfterSave } from "@/modules/notifications/utils/triggerNotification";
-import { EventActivityType, EventSource } from "@sam-monorepo/database/client";
+import { getApplicationContext, toActor } from "@/modules/application";
+import { updateEvent, updateEventInputSchema } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { EVENT_MANAGE_GUARD_SELECT } from "../queries/eventManageGuardSelect";
-import { createEventActivity } from "../utils/eventActivity";
-import { isAllowedToManagePositions } from "../utils/isAllowedToManagePositions";
-import { isEventUpdatable } from "../utils/isEventUpdatable";
-
-const schema = z.object({
-  eventId: z.cuid(),
-  value: z.coerce.boolean(),
-});
+import { mapEventErrorToActionResponse } from "../utils/eventActionErrors";
 
 export const updateEventLineupEnabled = createAuthenticatedAction(
   "updateEventLineupEnabled",
-  schema,
+  updateEventInputSchema,
   async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    const event = await prisma.event.findUnique({
-      where: {
-        id: data.eventId,
-        deletedAt: null,
-      },
-      select: {
-        ...EVENT_MANAGE_GUARD_SELECT,
-        source: true,
-        lineupEnabled: true,
-      },
-    });
-    if (!event) return rejectConflict("Event nicht gefunden", formData);
-    if (!isEventUpdatable(event))
-      return rejectConflict("Das Event ist bereits vorbei.", formData);
-    if (!(await isAllowedToManagePositions(event)))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Create entry
-     */
-    await prisma.$transaction(async (transaction) => {
-      await transaction.event.update({
-        where: {
-          id: data.eventId,
-        },
-        data: {
-          lineupEnabled: data.value,
-        },
-      });
-
-      /**
-       * The activity feed only exists on app events; recorded in both
-       * directions, rendered as "published"/"withdrawn".
-       */
-      if (
-        event.source === EventSource.APP &&
-        event.lineupEnabled !== data.value
-      )
-        await createEventActivity(transaction, {
-          eventId: event.id,
-          citizenId: authentication.session.entity?.id ?? null,
-          type: EventActivityType.LINEUP_TOGGLED,
-          payload: { enabled: data.value },
-        });
-    });
+    let result;
+    try {
+      result = await updateEvent(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapEventErrorToActionResponse(error, formData, t);
+    }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.EVENT_LINEUP_STATUS_CHANGED,
-        data: {
-          eventId: event.id,
-          enabled: data.value,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Trigger notifications
-     */
-    const areNotificationsSent = data.value
-      ? await triggerNotificationsAfterSave([
-          {
-            type: "EventLineupEnabled",
-            payload: {
-              eventId: event.id,
-            },
-          },
-        ])
-      : true;
-
-    /**
-     * Respond with the result
-     */
     return {
       success: t("Common.successfullySaved"),
-      ...(areNotificationsSent
+      ...(result.notifications_sent
         ? {}
         : { warning: t("Common.notificationsFailed") }),
     };
+  },
+  {
+    parseFormData: (formData) => ({
+      event_id: formData.get("eventId"),
+      // The checkbox sends a value only while it is checked
+      lineup_enabled: Boolean(formData.get("value")),
+    }),
   },
 );

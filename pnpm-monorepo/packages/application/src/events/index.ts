@@ -1,12 +1,59 @@
 /** The use cases of the events, with the event rules that the app and the other groups share */
 export {
+  findAddableParticipantIds,
+  type AddableParticipantsEvent,
+} from "./addableParticipants.js";
+export {
+  addEventManagers,
+  addEventManagersInputSchema,
+  type AddEventManagersInput,
+} from "./addEventManagers.js";
+export {
+  addEventParticipants,
+  addEventParticipantsInputSchema,
+  type AddEventParticipantsInput,
+  type AddEventParticipantsOutput,
+} from "./addEventParticipants.js";
+export {
+  cancelEventParticipation,
+  cancelEventParticipationInputSchema,
+  type CancelEventParticipationInput,
+} from "./cancelEventParticipation.js";
+export {
+  createEvent,
+  createEventInputSchema,
+  type CreateEventInput,
+  type CreateEventOptions,
+  type CreateEventOutput,
+  type EventTemplateApplication,
+} from "./createEvent.js";
+export { createEventParticipation } from "./createEventParticipation.js";
+export {
+  deleteEvent,
+  deleteEventInputSchema,
+  type DeleteEventInput,
+  type DeleteEventOptions,
+  type DeleteEventOutput,
+} from "./deleteEvent.js";
+export {
+  EventConflict,
+  EventConflictError,
+  EventValidationError,
+  EventValidationProblem,
+} from "./eventErrors.js";
+export { EVENT_MANAGE_GUARD_SELECT } from "./eventManageGuard.js";
+export {
   isAllowedToManageEvent,
   isAllowedToManagePositions,
   isEventUpdatable,
   isLineupVisible,
   type EventManageInput,
 } from "./eventManageRules.js";
-export { EventSourceType, EventVisibilityType } from "./eventOutput.js";
+export {
+  EventSourceType,
+  EventVisibilityType,
+  toEventVisibilityType,
+} from "./eventOutput.js";
 export {
   EVENT_PAGE_RELATIONS_SELECT,
   type EventDetails,
@@ -40,4 +87,30 @@ export {
   type ListEventsOutput,
 } from "./listEvents.js";
 export { findNewEventIds, getOpenEventsWhere } from "./openEvents.js";
+export {
+  eventParticipationInputSchema,
+  type EventParticipationInput,
+} from "./ownParticipation.js";
 export { buildParticipantCitizenWhere } from "./participantCitizenWhere.js";
+export { findParticipatableAppEvent } from "./participatableAppEvent.js";
+export {
+  removeEventManager,
+  removeEventManagerInputSchema,
+  type RemoveEventManagerInput,
+} from "./removeEventManager.js";
+export {
+  removeEventParticipant,
+  removeEventParticipantInputSchema,
+  type RemoveEventParticipantInput,
+  type RemoveEventParticipantOutput,
+} from "./removeEventParticipant.js";
+export { signUpForEvent } from "./signUpForEvent.js";
+export {
+  EventChange,
+  updateEvent,
+  updateEventInputSchema,
+  type UpdateEventInput,
+  type UpdateEventOptions,
+  type UpdateEventOutput,
+} from "./updateEvent.js";
+export { updateEventParticipationComment } from "./updateEventParticipationComment.js";

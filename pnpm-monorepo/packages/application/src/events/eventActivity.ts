@@ -1,8 +1,8 @@
-import {
-  type Citizen,
-  type Event,
-  type EventActivityType,
-  type Prisma,
+import type {
+  Citizen,
+  Event,
+  EventActivityType,
+  Prisma,
 } from "@sam-monorepo/database/client";
 
 /**

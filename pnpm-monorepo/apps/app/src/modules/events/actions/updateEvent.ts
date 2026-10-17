@@ -2,254 +2,79 @@
 
 import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { wallTimeSchema } from "@/modules/common/utils/wallTimeSchema";
-import { DISCORD_EVENT_DESCRIPTION_MAX_LENGTH } from "@/modules/discord/utils/guildScheduledEventPayload";
-import { triggerNotificationsAfterSave } from "@/modules/notifications/utils/triggerNotification";
+import { getApplicationContext, toActor } from "@/modules/application";
 import {
-  EventActivityType,
-  EventSource,
-  EventVisibility,
-} from "@sam-monorepo/database/client";
-import type { AuditEventInput } from "@sam-monorepo/domain";
+  EventChange,
+  EventVisibilityType,
+  updateEventInputSchema,
+  updateEvent as updateEventUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { EVENT_MANAGE_GUARD_SELECT } from "../queries/eventManageGuardSelect";
 import { findDescriptionProblem } from "../utils/discordEventDescription";
 import {
   getDiscordSyncWarning,
   syncDiscordEventPublication,
 } from "../utils/discordPublishing";
-import { createEventActivity } from "../utils/eventActivity";
-import {
-  EVENT_MAX_VISIBILITY_ROLES,
-  EVENT_NAME_MAX_LENGTH,
-} from "../utils/eventConstraints";
-import { isAllowedToManageEvent } from "../utils/isAllowedToManageEvent";
-import { isEventUpdatable } from "../utils/isEventUpdatable";
+import { mapEventErrorToActionResponse } from "../utils/eventActionErrors";
+import { parseEventDetailsFormData } from "../utils/eventFormData";
 
-const schema = z.object({
-  eventId: z.cuid(),
-  name: z.string().trim().min(1).max(EVENT_NAME_MAX_LENGTH),
-  /**
-   * Bounded by what Discord accepts, not by the app's own smaller limit: a
-   * description stored before that limit existed must reach the action, so
-   * that it can name the field instead of refusing the whole request.
-   */
-  description: z
-    .string()
-    .trim()
-    .max(DISCORD_EVENT_DESCRIPTION_MAX_LENGTH)
-    .optional(),
-  startTime: wallTimeSchema,
-  endTime: wallTimeSchema,
-  visibility: z.enum(EventVisibility),
-  visibilityRoleIds: z
-    .array(z.cuid())
-    .max(EVENT_MAX_VISIBILITY_ROLES)
-    .optional(),
-});
+/** The changes that the Discord event shows */
+const DISCORD_CONTENT_CHANGES: ReadonlySet<EventChange> = new Set([
+  EventChange.Name,
+  EventChange.Description,
+  EventChange.Schedule,
+]);
+
+const isPublishedOnDiscord = async (eventId: string) =>
+  (
+    await prisma.event.findUnique({
+      where: { id: eventId },
+      select: { discordPublishedId: true },
+    })
+  )?.discordPublishedId != null;
 
 export const updateEvent = createAuthenticatedAction(
   "updateEvent",
-  schema,
+  updateEventInputSchema,
   async (formData, authentication, data, t) => {
     /**
-     * Authorize the request
+     * A description stored before the limit became smaller reaches the
+     * action untouched, thus the action names the field.
      */
-    const event = await prisma.event.findUnique({
-      where: {
-        id: data.eventId,
-        source: EventSource.APP,
-        deletedAt: null,
-      },
-      select: {
-        ...EVENT_MANAGE_GUARD_SELECT,
-        name: true,
-        description: true,
-        visibility: true,
-        discordPublishedId: true,
-        visibilityRoles: { select: { roleId: true } },
-      },
-    });
-    if (!event) return rejectConflict("Event nicht gefunden", formData);
-    if (!isEventUpdatable(event))
-      return rejectConflict("Das Event ist bereits vorbei.", formData);
-    if (!(await isAllowedToManageEvent(event)))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    const citizenId = authentication.session.entity?.id ?? null;
-
-    /**
-     * Validate the request
-     */
-    const { startTime, endTime } = data;
-    if (endTime <= startTime)
-      return {
-        error: "Das Ende muss nach dem Start liegen.",
-        requestPayload: formData,
-      };
-
-    const visibilityRoleIds =
-      data.visibility === EventVisibility.RESTRICTED
-        ? (data.visibilityRoleIds ?? [])
-        : [];
-    if (
-      data.visibility === EventVisibility.RESTRICTED &&
-      visibilityRoleIds.length === 0
-    )
-      return {
-        error: "Wähle mindestens eine Rolle aus.",
-        requestPayload: formData,
-      };
-
-    const descriptionProblem = findDescriptionProblem(data.description);
+    const descriptionProblem = findDescriptionProblem(
+      data.description ?? undefined,
+    );
     if (descriptionProblem)
       return { error: descriptionProblem, requestPayload: formData };
 
-    /**
-     * Diff the fields
-     */
-    const description = data.description || null;
-    const nameChanged = event.name !== data.name;
-    const descriptionChanged = event.description !== description;
-    const scheduleChanged =
-      event.startTime.getTime() !== startTime.getTime() ||
-      event.endTime?.getTime() !== endTime.getTime();
-
-    const previousRoleIds = event.visibilityRoles
-      .map((visibilityRole) => visibilityRole.roleId)
-      .toSorted();
-    const visibilityChanged =
-      event.visibility !== data.visibility ||
-      previousRoleIds.join(",") !== visibilityRoleIds.toSorted().join(",");
-
-    if (
-      !nameChanged &&
-      !descriptionChanged &&
-      !scheduleChanged &&
-      !visibilityChanged
-    ) {
-      /**
-       * Possibly a different tab or manager saved the same values before,
-       * and the page must show them.
-       */
-      refresh();
-      return { success: t("Common.successfullySaved") };
+    let result;
+    try {
+      result = await updateEventUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+        { syncsDiscordPublication: true },
+      );
+    } catch (error) {
+      return mapEventErrorToActionResponse(error, formData, t);
     }
 
     /**
-     * Update the event and record the activity entries atomically
+     * Also without changes: possibly a different tab or manager saved the
+     * same values before, and the page must show them.
      */
-    await prisma.$transaction(async (transaction) => {
-      await transaction.event.update({
-        where: {
-          id: event.id,
-        },
-        data: {
-          name: data.name,
-          description,
-          startTime,
-          endTime,
-          visibility: data.visibility,
-          visibilityRoles: {
-            deleteMany: {},
-            create: visibilityRoleIds.map((roleId) => ({ roleId })),
-          },
-        },
-      });
-
-      if (nameChanged)
-        await createEventActivity(transaction, {
-          eventId: event.id,
-          citizenId,
-          type: EventActivityType.TITLE_UPDATED,
-          payload: {
-            previousName: event.name,
-            newName: data.name,
-          },
-        });
-
-      if (descriptionChanged)
-        await createEventActivity(transaction, {
-          eventId: event.id,
-          citizenId,
-          type: EventActivityType.DESCRIPTION_UPDATED,
-          payload: null,
-        });
-
-      if (scheduleChanged)
-        await createEventActivity(transaction, {
-          eventId: event.id,
-          citizenId,
-          type: EventActivityType.SCHEDULE_UPDATED,
-          payload: {
-            previousStartTime: event.startTime.toISOString(),
-            newStartTime: startTime.toISOString(),
-            previousEndTime: event.endTime?.toISOString() ?? null,
-            newEndTime: endTime.toISOString(),
-          },
-        });
-    });
-
     refresh();
-
-    const auditEvents: AuditEventInput[] = [];
-    if (nameChanged || descriptionChanged || scheduleChanged) {
-      auditEvents.push({
-        type: AuditEventType.EVENT_UPDATED_IN_APP,
-        data: {
-          eventId: event.id,
-          changedFields: [
-            ...(nameChanged ? ["name"] : []),
-            ...(descriptionChanged ? ["description"] : []),
-            ...(scheduleChanged ? ["schedule"] : []),
-          ],
-        },
-        createdById: authentication.session.user.id,
-      });
-    }
-    if (visibilityChanged) {
-      auditEvents.push({
-        type: AuditEventType.EVENT_VISIBILITY_UPDATED,
-        data: {
-          eventId: event.id,
-          visibility: data.visibility,
-          roleIds: visibilityRoleIds,
-        },
-        createdById: authentication.session.user.id,
-      });
-    }
-    await createAuditEvents(auditEvents);
-
-    /**
-     * Trigger notifications
-     */
-    const areNotificationsSent =
-      nameChanged || descriptionChanged || scheduleChanged
-        ? await triggerNotificationsAfterSave([
-            {
-              type: "EventUpdated",
-              payload: {
-                eventId: event.id,
-              },
-            },
-          ])
-        : true;
 
     /**
      * Carry the change over to Discord if the event is published there. A
      * no-op otherwise, and never able to undo the save above — a Discord
      * problem only comes back as a warning next to the success message.
      */
-    const discordSyncWarning =
-      nameChanged || descriptionChanged || scheduleChanged
-        ? getDiscordSyncWarning(await syncDiscordEventPublication(event.id))
-        : null;
+    const discordSyncWarning = result.changes.some((change) =>
+      DISCORD_CONTENT_CHANGES.has(change),
+    )
+      ? getDiscordSyncWarning(await syncDiscordEventPublication(data.event_id))
+      : null;
 
     /**
      * Narrowing a published event's visibility does not narrow it on
@@ -257,16 +82,16 @@ export const updateEvent = createAuthenticatedAction(
      * silently unpublishing, which would be a surprise of its own.
      */
     const becameRestrictedWhilePublished =
-      event.discordPublishedId !== null &&
-      visibilityChanged &&
-      data.visibility === EventVisibility.RESTRICTED;
+      result.changes.includes(EventChange.Visibility) &&
+      result.event.visibility === EventVisibilityType.Restricted &&
+      (await isPublishedOnDiscord(data.event_id));
 
     const warnings = [
       discordSyncWarning ??
         (becameRestrictedWhilePublished
           ? "Das Event bleibt auf Discord für alle Mitglieder des Servers sichtbar. Entferne es dort, wenn das nicht gewollt ist."
           : null),
-      areNotificationsSent ? null : t("Common.notificationsFailed"),
+      result.notifications_sent ? null : t("Common.notificationsFailed"),
     ].filter((warning) => warning !== null);
 
     /**
@@ -279,13 +104,8 @@ export const updateEvent = createAuthenticatedAction(
   },
   {
     parseFormData: (formData) => ({
-      eventId: formData.get("eventId"),
-      name: formData.get("name"),
-      description: formData.get("description") || undefined,
-      startTime: formData.get("startTime"),
-      endTime: formData.get("endTime"),
-      visibility: formData.get("visibility"),
-      visibilityRoleIds: formData.getAll("visibilityRole[]"),
+      event_id: formData.get("eventId"),
+      ...parseEventDetailsFormData(formData),
     }),
   },
 );

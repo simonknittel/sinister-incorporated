@@ -31,6 +31,23 @@ export const toEventSourceType = (source: EventSource): EventSourceType => {
   }
 };
 
+export const toEventVisibility = (
+  visibility: EventVisibilityType,
+): EventVisibility => {
+  switch (visibility) {
+    case EventVisibilityType.Public:
+      return EventVisibility.PUBLIC;
+
+    case EventVisibilityType.Restricted:
+      return EventVisibility.RESTRICTED;
+
+    default:
+      throw new Error(
+        `Unknown event visibility: ${visibility satisfies never}`,
+      );
+  }
+};
+
 export const toEventVisibilityType = (
   visibility: EventVisibility,
 ): EventVisibilityType => {

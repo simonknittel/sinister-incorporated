@@ -11,6 +11,7 @@ interface Input {
   readonly citizenId: Citizen["id"];
   /** The citizen themselves on a self-cancel, the manager on a removal */
   readonly cancelledById: Citizen["id"] | null;
+  readonly cancelledAt: Date;
 }
 
 /**
@@ -26,7 +27,7 @@ interface Input {
  */
 export const cancelParticipation = async (
   transaction: Prisma.TransactionClient,
-  { participantId, eventId, citizenId, cancelledById }: Input,
+  { participantId, eventId, citizenId, cancelledById, cancelledAt }: Input,
 ) => {
   const { count } = await transaction.eventParticipant.updateMany({
     where: {
@@ -34,7 +35,7 @@ export const cancelParticipation = async (
       cancelledAt: null,
     },
     data: {
-      cancelledAt: new Date(),
+      cancelledAt,
       cancelledById,
     },
   });

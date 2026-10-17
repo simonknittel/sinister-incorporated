@@ -1,170 +1,49 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { triggerNotificationsAfterSave } from "@/modules/notifications/utils/triggerNotification";
-import { EventActivityType, EventSource } from "@sam-monorepo/database/client";
+import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  addEventParticipantsInputSchema,
+  addEventParticipants as addEventParticipantsUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { getAddableParticipantIds } from "../queries/getAddableParticipantIds";
-import { createEventActivity } from "../utils/eventActivity";
-import { getParticipatableAppEvent } from "../utils/getParticipatableAppEvent";
-import { isAllowedToManageEvent } from "../utils/isAllowedToManageEvent";
-import { isEventUpdatable } from "../utils/isEventUpdatable";
-
-const schema = z.object({
-  eventId: z.cuid(),
-  citizenIds: z.array(z.cuid()).max(50), // Arbitrary (untested) limit to prevent DDoS
-  comment: z.string().trim().max(500).optional(),
-});
+import { mapEventErrorToActionResponse } from "../utils/eventActionErrors";
 
 export const addEventParticipants = createAuthenticatedAction(
   "addEventParticipants",
-  schema,
+  addEventParticipantsInputSchema,
   async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    const event = await getParticipatableAppEvent(data.eventId);
-    if (!event) return rejectConflict("Event nicht gefunden", formData);
-    if (!isEventUpdatable(event))
-      return rejectConflict("Das Event ist bereits vorbei.", formData);
-    if (!(await isAllowedToManageEvent(event)))
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    const managerId = authentication.session.entity?.id ?? null;
-
-    /**
-     * Validate the citizens. The picker offers exactly this set, so anything
-     * outside it either raced with a sign-up or bypassed the UI: citizens who
-     * signed up in the meantime are skipped, the rest fails the whole batch.
-     */
-    const requestedCitizenIds = Array.from(new Set(data.citizenIds));
-    if (requestedCitizenIds.length <= 0)
-      return {
-        error: "Bitte wähle mindestens einen Citizen aus.",
-        requestPayload: formData,
-      };
-
-    const [addableCitizenIds, activeParticipants] = await Promise.all([
-      getAddableParticipantIds(event, requestedCitizenIds),
-      prisma.eventParticipant.findMany({
-        where: {
-          eventId: event.id,
-          cancelledAt: null,
-          citizenId: { in: requestedCitizenIds },
-        },
-        select: { citizenId: true },
-      }),
-    ]);
-
-    const addable = new Set(addableCitizenIds);
-    const alreadyActive = new Set(
-      activeParticipants.map((participant) => participant.citizenId!),
-    );
-
-    const unknownCitizenId = requestedCitizenIds.find(
-      (citizenId) => !addable.has(citizenId) && !alreadyActive.has(citizenId),
-    );
-    if (unknownCitizenId)
-      return {
-        error: "Mindestens ein Citizen kann das Event nicht sehen.",
-        requestPayload: formData,
-      };
-
-    const citizenIdsToAdd = requestedCitizenIds.filter(
-      (citizenId) => !alreadyActive.has(citizenId),
-    );
-    if (citizenIdsToAdd.length <= 0) {
-      /** The citizens signed up before, and the page must show it */
-      refresh();
-      return { success: "Alle ausgewählten Citizen sind bereits angemeldet." };
+    let result;
+    try {
+      result = await addEventParticipantsUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapEventErrorToActionResponse(error, formData, t);
     }
 
     /**
-     * Add the participants. One transaction, so a failure part-way through
-     * cannot leave participations behind that never reach the audit log or
-     * the affected citizens. `skipDuplicates` absorbs the one race the
-     * pre-check cannot close — a citizen signing themselves up in between —
-     * and the returned rows say who was actually added.
-     */
-    const comment = data.comment || null;
-
-    const addedCitizenIds = await prisma.$transaction(async (transaction) => {
-      const created = await transaction.eventParticipant.createManyAndReturn({
-        data: citizenIdsToAdd.map((citizenId) => ({
-          eventId: event.id,
-          source: EventSource.APP,
-          citizenId,
-          comment,
-        })),
-        skipDuplicates: true,
-        select: { citizenId: true },
-      });
-
-      const citizenIds = created.map((participant) => participant.citizenId!);
-
-      for (const citizenId of citizenIds)
-        await createEventActivity(transaction, {
-          eventId: event.id,
-          citizenId: managerId,
-          type: EventActivityType.PARTICIPATION_ADDED_BY_MANAGER,
-          payload: { citizenId, comment },
-        });
-
-      return citizenIds;
-    });
-
-    /**
-     * Also for the message below: then the citizens signed up in the
+     * Also when nobody was added: then the citizens signed up in the
      * meantime, and the page must show it.
      */
     refresh();
 
-    if (addedCitizenIds.length <= 0)
+    if (result.added_citizen_ids.length <= 0)
       return { success: "Alle ausgewählten Citizen sind bereits angemeldet." };
 
-    await createAuditEvents(
-      addedCitizenIds.map((citizenId) => ({
-        type: AuditEventType.EVENT_PARTICIPANT_ADDED_BY_MANAGER,
-        data: {
-          eventId: event.id,
-          citizenId,
-        },
-        createdById: authentication.session.user.id,
-      })),
-    );
-
-    /**
-     * Trigger notifications
-     */
-    const areNotificationsSent = await triggerNotificationsAfterSave(
-      addedCitizenIds.map((citizenId) => ({
-        type: "EventParticipationAdded",
-        payload: {
-          eventId: event.id,
-          citizenId,
-        },
-      })),
-    );
-
-    /**
-     * Respond with the result
-     */
     return {
-      success: `${addedCitizenIds.length} Teilnehmer hinzugefügt.`,
-      ...(areNotificationsSent
+      success: `${result.added_citizen_ids.length} Teilnehmer hinzugefügt.`,
+      ...(result.notifications_sent
         ? {}
         : { warning: t("Common.notificationsFailed") }),
     };
   },
   {
     parseFormData: (formData) => ({
-      eventId: formData.get("eventId"),
-      citizenIds: formData.getAll("citizenId[]"),
+      event_id: formData.get("eventId"),
+      citizen_ids: formData.getAll("citizenId[]"),
       comment: formData.get("comment") ?? undefined,
     }),
   },

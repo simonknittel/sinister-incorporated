@@ -19,7 +19,7 @@ import {
   type EventSourceType,
   type EventVisibilityType,
 } from "./eventOutput.js";
-import type { EventDetails } from "./eventSelects.js";
+import { EVENT_DETAILS_INCLUDE, type EventDetails } from "./eventSelects.js";
 import { findVisibleEvent } from "./findVisibleEvent.js";
 import { buildParticipantCitizenWhere } from "./participantCitizenWhere.js";
 
@@ -102,6 +102,70 @@ const getParticipantEntries = async (
 };
 
 /**
+ * Maps an event to the output of `getEvent()`. It checks nothing: the caller
+ * checked that the actor can see the event, or that the actor just changed
+ * it.
+ */
+const toEventOutput = async (
+  context: ApplicationContext,
+  actor: Actor,
+  event: EventDetails,
+): Promise<GetEventOutput> => {
+  const citizenId = actor.citizen?.id ?? null;
+  const { discordUserId } = actor;
+
+  const participants = await getParticipantEntries(context, event.participants);
+
+  const canManage = isAllowedToManageEvent(actor, event);
+
+  return {
+    id: event.id,
+    name: event.name,
+    description: event.description,
+    start_time: event.startTime.toISOString(),
+    end_time: event.endTime?.toISOString() ?? null,
+    location: event.location,
+    visibility: toEventVisibilityType(event.visibility),
+    visibility_role_ids: canManage
+      ? event.visibilityRoles.map((visibilityRole) => visibilityRole.roleId)
+      : [],
+    source: toEventSourceType(event.source),
+    lineup_enabled: event.lineupEnabled,
+    created_by: toCitizenReference(event.createdBy),
+    managers: toCitizenReferences(event.managers),
+    participants,
+    can_manage: canManage,
+    can_manage_positions: isAllowedToManagePositions(actor, event),
+    is_updatable: isEventUpdatable(event, context.now()),
+    is_participating: event.participants.some(
+      (participant) =>
+        (citizenId !== null && participant.citizenId === citizenId) ||
+        (discordUserId !== null && participant.discordUserId === discordUserId),
+    ),
+  };
+};
+
+/**
+ * The output of an event that a write use case changed. Without a visibility
+ * check: the use case checked its operation, and the operation can take the
+ * visibility away, for example from a manager who removes themselves from a
+ * restricted event.
+ */
+export const loadEventOutput = async (
+  context: ApplicationContext,
+  actor: Actor,
+  eventId: string,
+): Promise<GetEventOutput> =>
+  toEventOutput(
+    context,
+    actor,
+    await context.prisma.event.findUniqueOrThrow({
+      where: { id: eventId },
+      include: EVENT_DETAILS_INCLUDE,
+    }),
+  );
+
+/**
  * One event that the actor can see, with its participants and managers and
  * what the actor can do with it
  */
@@ -114,41 +178,11 @@ export const getEvent = (
     requirePermission(actor, "event", "read");
 
     // Like the participants page of the app, which requires a citizen
-    const citizenId = requireCitizen(actor).id;
-    const { discordUserId } = actor;
+    requireCitizen(actor);
 
-    const event = await findVisibleEvent(context, actor, input.event_id);
-    const participants = await getParticipantEntries(
+    return toEventOutput(
       context,
-      event.participants,
+      actor,
+      await findVisibleEvent(context, actor, input.event_id),
     );
-
-    const canManage = isAllowedToManageEvent(actor, event);
-
-    return {
-      id: event.id,
-      name: event.name,
-      description: event.description,
-      start_time: event.startTime.toISOString(),
-      end_time: event.endTime?.toISOString() ?? null,
-      location: event.location,
-      visibility: toEventVisibilityType(event.visibility),
-      visibility_role_ids: canManage
-        ? event.visibilityRoles.map((visibilityRole) => visibilityRole.roleId)
-        : [],
-      source: toEventSourceType(event.source),
-      lineup_enabled: event.lineupEnabled,
-      created_by: toCitizenReference(event.createdBy),
-      managers: toCitizenReferences(event.managers),
-      participants,
-      can_manage: canManage,
-      can_manage_positions: isAllowedToManagePositions(actor, event),
-      is_updatable: isEventUpdatable(event, context.now()),
-      is_participating: event.participants.some(
-        (participant) =>
-          participant.citizenId === citizenId ||
-          (discordUserId !== null &&
-            participant.discordUserId === discordUserId),
-      ),
-    };
   });

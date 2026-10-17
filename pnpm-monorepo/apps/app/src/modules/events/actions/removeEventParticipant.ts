@@ -1,126 +1,43 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { triggerNotificationsAfterSave } from "@/modules/notifications/utils/triggerNotification";
-import { EventActivityType } from "@sam-monorepo/database/client";
+import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  removeEventParticipantInputSchema,
+  removeEventParticipant as removeEventParticipantUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { cancelParticipation } from "../utils/cancelParticipation";
-import { createEventActivity } from "../utils/eventActivity";
-import { getParticipatableAppEvent } from "../utils/getParticipatableAppEvent";
-import { isAllowedToManageEvent } from "../utils/isAllowedToManageEvent";
-import { isEventUpdatable } from "../utils/isEventUpdatable";
-
-const schema = z.object({
-  eventId: z.cuid(),
-  citizenId: z.cuid(),
-  reason: z.string().trim().max(500).optional(),
-});
+import { mapEventErrorToActionResponse } from "../utils/eventActionErrors";
 
 export const removeEventParticipant = createAuthenticatedAction(
   "removeEventParticipant",
-  schema,
+  removeEventParticipantInputSchema,
   async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    const event = await getParticipatableAppEvent(data.eventId);
-    if (!event) return rejectConflict("Event nicht gefunden", formData);
-    if (!isEventUpdatable(event))
-      return rejectConflict("Das Event ist bereits vorbei.", formData);
-    if (!(await isAllowedToManageEvent(event)))
-      return { error: t("Common.forbidden"), requestPayload: formData };
+    let result;
+    try {
+      result = await removeEventParticipantUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapEventErrorToActionResponse(error, formData, t);
+    }
 
-    const managerId = authentication.session.entity?.id ?? null;
-
-    const participant = await prisma.eventParticipant.findFirst({
-      where: {
-        eventId: event.id,
-        citizenId: data.citizenId,
-        cancelledAt: null,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    /**
-     * The manager as the canceller is the only thing on the row telling a
-     * manager removal from a self-cancel.
-     */
-    const reason = data.reason || null;
-
-    const isCancelled =
-      participant !== null &&
-      (await prisma.$transaction(async (transaction) => {
-        if (
-          !(await cancelParticipation(transaction, {
-            participantId: participant.id,
-            eventId: event.id,
-            citizenId: data.citizenId,
-            cancelledById: managerId,
-          }))
-        )
-          return false;
-
-        await createEventActivity(transaction, {
-          eventId: event.id,
-          citizenId: managerId,
-          type: EventActivityType.PARTICIPATION_REMOVED_BY_MANAGER,
-          payload: { citizenId: data.citizenId, reason },
-        });
-        return true;
-      }));
-
-    /**
-     * Also for the error below: then the citizen or a different manager
-     * cancelled the participation before, and the page must show it.
-     */
     refresh();
 
-    if (!isCancelled)
-      return {
-        error: "Der Citizen ist nicht angemeldet.",
-        requestPayload: formData,
-      };
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.EVENT_PARTICIPANT_REMOVED_BY_MANAGER,
-        data: {
-          eventId: event.id,
-          citizenId: data.citizenId,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Trigger notifications
-     */
-    const areNotificationsSent = await triggerNotificationsAfterSave([
-      {
-        type: "EventParticipationRemoved",
-        payload: {
-          eventId: event.id,
-          citizenId: data.citizenId,
-          reason,
-        },
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
     return {
       success: "Teilnehmer entfernt.",
-      ...(areNotificationsSent
+      ...(result.notifications_sent
         ? {}
         : { warning: t("Common.notificationsFailed") }),
     };
+  },
+  {
+    parseFormData: (formData) => ({
+      event_id: formData.get("eventId"),
+      citizen_id: formData.get("citizenId"),
+      reason: formData.get("reason") ?? undefined,
+    }),
   },
 );
