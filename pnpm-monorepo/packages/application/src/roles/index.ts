@@ -1,2 +1,15 @@
 /** The use cases of the roles group. */
-export {};
+export {
+  getRole,
+  getRoleInputSchema,
+  type GetRoleInput,
+  type GetRoleOutput,
+} from "./getRole.js";
+export {
+  listRoles,
+  listRolesInputSchema,
+  type ListRolesInput,
+  type ListRolesOutput,
+} from "./listRoles.js";
+export type { RoleOutput } from "./roleOutput.js";
+export { canSeeAnyRole, isRoleVisible } from "./roleVisibility.js";

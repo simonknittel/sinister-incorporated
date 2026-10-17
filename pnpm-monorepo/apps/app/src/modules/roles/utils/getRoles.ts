@@ -1,37 +1,28 @@
 import { prisma } from "@/db";
+import { getRequestActor } from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { isRoleVisible } from "@sam-monorepo/application";
 import type { RoleAssignment } from "@sam-monorepo/database/client";
 import { forbidden } from "next/navigation";
 import { cache } from "react";
 import { getRoles } from "../queries/getRoles";
 
+/**
+ * The badge rows of the roles that the viewer can see, sorted by name. The
+ * MCP tool `list_roles` uses the same rule (`isRoleVisible()`), but its
+ * output does not have the upload rows that the badges render.
+ */
 export const getVisibleRoles = cache(
   withTrace("getVisibleRoles", async () => {
-    const authentication = await requireAuthentication();
+    const [actor, allRoles] = await Promise.all([
+      getRequestActor(),
+      getRoles(),
+    ]);
 
-    const allRoles = await getRoles();
-    // TODO: Filter `inherits` as well
-    const visibleRoles = (
-      await Promise.all(
-        allRoles.map(async (role) => {
-          return {
-            role,
-            include: await authentication.authorize("otherRole", "read", [
-              {
-                key: "roleId",
-                value: role.id,
-              },
-            ]),
-          };
-        }),
-      )
-    )
-      .filter(({ include }) => include)
-      .map(({ role }) => role)
-      .sort((a, b) => a.name.localeCompare(b.name));
-
-    return visibleRoles;
+    return allRoles
+      .filter((role) => isRoleVisible(actor, role.id))
+      .toSorted((first, second) => first.name.localeCompare(second.name));
   }),
 );
 
