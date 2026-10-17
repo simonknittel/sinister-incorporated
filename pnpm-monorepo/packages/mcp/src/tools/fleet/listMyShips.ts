@@ -1,12 +1,11 @@
 import { listMyShips, listMyShipsInputSchema } from "@sam-monorepo/application";
 import * as z from "zod";
-import { dateTimeOutputSchema } from "../../schemas.js";
 import {
   defineTool,
   READ_ONLY_TOOL_ANNOTATIONS,
 } from "../../toolDefinition.js";
 import { ToolGroup } from "../../toolGroup.js";
-import { shipVariantOutputSchema } from "./shipVariantOutputSchema.js";
+import { shipOutputSchema } from "./shipOutputSchema.js";
 
 export const listMyShipsTool = defineTool({
   name: "list_my_ships",
@@ -17,15 +16,7 @@ export const listMyShipsTool = defineTool({
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: listMyShipsInputSchema,
   outputSchema: z.strictObject({
-    ships: z.array(
-      z.strictObject({
-        id: z.string(),
-        name: z.string().nullable(),
-        variant: shipVariantOutputSchema,
-        created_at: dateTimeOutputSchema.nullable(),
-        deleted_at: dateTimeOutputSchema.nullable(),
-      }),
-    ),
+    ships: z.array(shipOutputSchema),
     total: z.number().int().min(0),
     next_cursor: z.string().nullable(),
   }),

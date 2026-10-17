@@ -3,18 +3,12 @@ import {
   listPenaltyEntriesInputSchema,
 } from "@sam-monorepo/application";
 import * as z from "zod";
-import { dateTimeOutputSchema } from "../../schemas.js";
 import {
   defineTool,
   READ_ONLY_TOOL_ANNOTATIONS,
 } from "../../toolDefinition.js";
 import { ToolGroup } from "../../toolGroup.js";
-
-const penaltyEntryCitizenSchema = z.strictObject({
-  id: z.string(),
-  handle: z.string().nullable().describe("Null for a deleted citizen."),
-  deleted_at: dateTimeOutputSchema.nullable(),
-});
+import { penaltyEntryOutputSchema } from "./penaltyEntryOutputSchema.js";
 
 export const listPenaltyEntriesTool = defineTool({
   name: "list_penalty_entries",
@@ -25,18 +19,7 @@ export const listPenaltyEntriesTool = defineTool({
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: listPenaltyEntriesInputSchema,
   outputSchema: z.strictObject({
-    entries: z.array(
-      z.strictObject({
-        id: z.string(),
-        citizen: penaltyEntryCitizenSchema,
-        points: z.number().int(),
-        reason: z.string().nullable(),
-        created_at: dateTimeOutputSchema,
-        created_by: penaltyEntryCitizenSchema.nullable(),
-        expires_at: dateTimeOutputSchema.nullable(),
-        deleted_at: dateTimeOutputSchema.nullable(),
-      }),
-    ),
+    entries: z.array(penaltyEntryOutputSchema),
     next_cursor: z.string().nullable(),
   }),
   isVisible: (actor) =>
