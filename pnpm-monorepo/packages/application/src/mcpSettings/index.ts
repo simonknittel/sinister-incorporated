@@ -1,2 +1,2 @@
-/** The use cases of the mcpSettings group. Phase 6 and Phase 5 of the plan fill this barrel. */
-export {};
+/** The use cases of the MCP settings of a user: the tool opt-outs and the connected clients. */
+export { getDisabledToolNames } from "./getDisabledToolNames.js";
