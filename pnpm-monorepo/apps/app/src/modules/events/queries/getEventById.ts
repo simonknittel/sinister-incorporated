@@ -1,41 +1,37 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  throwApplicationErrorForPage,
+  toActor,
+} from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
-import { canSeeEvent } from "@/modules/events/utils/eventVisibility";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { findVisibleEvent, NotFoundError } from "@sam-monorepo/application";
 import type { Event } from "@sam-monorepo/database/client";
-import { forbidden } from "next/navigation";
 import { cache } from "react";
-import { EVENT_PAGE_RELATIONS_SELECT } from "./eventRelationSelects";
 
 /**
  * One event with everything its layout and its subpages share. The position
  * tree is deliberately not part of it: only the lineup page renders it, and
  * this query sits behind the layout of all seven subpages — see
  * `getEventPositions()`.
+ *
+ * Not visible is indistinguishable from nonexistent: callers translate the
+ * null into a 404.
  */
 export const getEventById = cache(
   withTrace("getEventById", async (id: Event["id"]) => {
-    const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("event", "read"))) forbidden();
+    const { session } = await requireAuthentication();
 
-    const event = await prisma.event.findUnique({
-      where: {
+    try {
+      return await findVisibleEvent(
+        getApplicationContext(),
+        await toActor(session),
         id,
-      },
-      include: {
-        ...EVENT_PAGE_RELATIONS_SELECT,
-        visibilityRoles: { select: { roleId: true } },
-        createdBy: { select: { id: true, handle: true, deletedAt: true } },
-      },
-    });
-    if (!event) return null;
+      );
+    } catch (error) {
+      if (error instanceof NotFoundError) return null;
 
-    /**
-     * Not visible is indistinguishable from nonexistent: callers translate
-     * the null into a 404.
-     */
-    if (!(await canSeeEvent(event))) return null;
-
-    return event;
+      return throwApplicationErrorForPage(error);
+    }
   }),
 );

@@ -1,5 +1,9 @@
 import { RadioFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/RadioFilter";
-import { EventListStatus } from "../utils/EventListStatus";
+import {
+  EventListStatus,
+  EventParticipationFilter,
+  EventTypeFilter,
+} from "@sam-monorepo/application";
 
 export const EventFilters = () => {
   return (
@@ -19,8 +23,12 @@ export const EventFilters = () => {
         name="participating"
         label="Zugesagt von"
         items={[
-          { value: "all", label: "Alle", default: true },
-          { value: "me", label: "Mir" },
+          {
+            value: EventParticipationFilter.All,
+            label: "Alle",
+            default: true,
+          },
+          { value: EventParticipationFilter.Me, label: "Mir" },
         ]}
         resetCursorPagination
       />
@@ -29,9 +37,9 @@ export const EventFilters = () => {
         name="type"
         label="Typ"
         items={[
-          { value: "all", label: "Alle", default: true },
-          { value: "app", label: "App" },
-          { value: "discord", label: "Discord" },
+          { value: EventTypeFilter.All, label: "Alle", default: true },
+          { value: EventTypeFilter.App, label: "App" },
+          { value: EventTypeFilter.Discord, label: "Discord" },
         ]}
         resetCursorPagination
       />

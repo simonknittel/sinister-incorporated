@@ -1,21 +1,25 @@
 import { CursorPaginationControls } from "@/modules/common/CursorPagination/CursorPaginationControls";
 import { createCursorPaginationLoader } from "@/modules/common/CursorPagination/createCursorPaginationLoader";
-import clsx from "clsx";
 import {
-  parseAsStringEnum,
-  parseAsStringLiteral,
-  type SearchParams,
-} from "nuqs/server";
+  EventListStatus,
+  EventParticipationFilter,
+  EventTypeFilter,
+} from "@sam-monorepo/application";
+import clsx from "clsx";
+import { parseAsStringEnum, type SearchParams } from "nuqs/server";
 import { getEvents } from "../queries/getEvents";
-import { EventListStatus } from "../utils/EventListStatus";
 import { Event } from "./Event";
 
 const loadSearchParams = createCursorPaginationLoader({
   status: parseAsStringEnum(Object.values(EventListStatus)).withDefault(
     EventListStatus.Open,
   ),
-  participating: parseAsStringLiteral(["all", "me"]).withDefault("all"),
-  type: parseAsStringLiteral(["all", "app", "discord"]).withDefault("all"),
+  participating: parseAsStringEnum(
+    Object.values(EventParticipationFilter),
+  ).withDefault(EventParticipationFilter.All),
+  type: parseAsStringEnum(Object.values(EventTypeFilter)).withDefault(
+    EventTypeFilter.All,
+  ),
 });
 
 interface Props {

@@ -1,10 +1,10 @@
 import { prisma } from "@/db";
 import type { EventParticipantRow } from "@/modules/events/queries/eventRelationSelects";
 import { SHIP_VARIANT_SELECT } from "@/modules/fleet/queries/shipQuery";
+import { buildParticipantCitizenWhere } from "@sam-monorepo/application";
 import { VariantStatus, type Event } from "@sam-monorepo/database/client";
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { cache } from "react";
-import { buildParticipantCitizenWhere } from "./participantCitizenWhere";
 
 export const getEventFleet = cache(
   async (

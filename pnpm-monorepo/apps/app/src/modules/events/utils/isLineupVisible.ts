@@ -1,11 +1,20 @@
-import type { EventCitizenReference } from "@/modules/events/queries/eventRelationSelects";
+import { toActor } from "@/modules/application";
+import { requireAuthentication } from "@/modules/auth/server";
+import {
+  isLineupVisible as isLineupVisibleForActor,
+  type EventManageInput,
+} from "@sam-monorepo/application";
 import type { Event } from "@sam-monorepo/database/client";
-import { isAllowedToManagePositions } from "./isAllowedToManagePositions";
 
+/** See `isLineupVisible()` of the application package */
 export const isLineupVisible = async (
-  event: Pick<Event, "lineupEnabled" | "discordCreatorId" | "createdById"> & {
-    managers: EventCitizenReference[];
-  },
+  event: EventManageInput & Pick<Event, "lineupEnabled">,
 ) => {
-  return event.lineupEnabled || (await isAllowedToManagePositions(event));
+  const { session } = await requireAuthentication();
+
+  return isLineupVisibleForActor(
+    await toActor(session),
+    event,
+    session.discordId,
+  );
 };

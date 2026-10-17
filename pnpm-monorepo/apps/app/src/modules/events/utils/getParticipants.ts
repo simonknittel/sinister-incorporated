@@ -1,8 +1,8 @@
 import { prisma } from "@/db";
 import type { EventParticipantRow } from "@/modules/events/queries/eventRelationSelects";
+import { buildParticipantCitizenWhere } from "@sam-monorepo/application";
 import type { Event } from "@sam-monorepo/database/client";
 import { cache } from "react";
-import { buildParticipantCitizenWhere } from "./participantCitizenWhere";
 
 /**
  * Resolves the citizens behind an event's participation rows, see

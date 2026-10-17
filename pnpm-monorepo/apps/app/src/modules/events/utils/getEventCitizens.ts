@@ -1,9 +1,9 @@
 import { prisma } from "@/db";
+import { buildParticipantCitizenWhere } from "@sam-monorepo/application";
 import type { Event } from "@sam-monorepo/database/client";
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { cache } from "react";
 import { buildRequiredVariantShipWhere } from "../queries/eventRelationSelects";
-import { buildParticipantCitizenWhere } from "./participantCitizenWhere";
 
 /**
  * The event's active participants as citizens with their ships of the

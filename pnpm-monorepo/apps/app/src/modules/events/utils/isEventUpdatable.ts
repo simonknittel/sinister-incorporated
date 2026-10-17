@@ -1,5 +1,6 @@
+import { isEventUpdatable as isEventUpdatableAt } from "@sam-monorepo/application";
 import type { Event } from "@sam-monorepo/database/client";
-import { getEventEndTime } from "@sam-monorepo/domain";
 
+/** See `isEventUpdatable()` of the application package */
 export const isEventUpdatable = (event: Pick<Event, "startTime" | "endTime">) =>
-  getEventEndTime(event) > new Date();
+  isEventUpdatableAt(event, new Date());

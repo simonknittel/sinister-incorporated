@@ -1,11 +1,11 @@
-import { EventVisibility } from "@sam-monorepo/database/client";
+import { EventVisibility } from "@sam-monorepo/database/browser";
 import { resolveEffectiveRoles } from "@sam-monorepo/permissions";
 import { describe, expect, test } from "vitest";
 import {
   resolveEventVisibility,
   type EventViewer,
   type EventVisibilityInput,
-} from "./resolveEventVisibility";
+} from "./eventVisibility.js";
 
 const baseEvent: EventVisibilityInput = {
   visibility: EventVisibility.RESTRICTED,
@@ -22,7 +22,7 @@ const baseViewer: EventViewer = {
 };
 
 /**
- * Builds the viewer's role id set the same way `getEventViewer()` does, so
+ * Builds the role id set of the viewer the same way `loadEventViewer()` does, so
  * the level and inheritance cases test the actual composition with
  * `resolveEffectiveRoles()`.
  */

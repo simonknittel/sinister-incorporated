@@ -4,8 +4,8 @@ import {
   getOpenEventCount,
 } from "@/modules/events/queries/getEvents";
 import { OnboardingTargetId } from "@/modules/onboarding/utils/targets";
+import { EventListStatus } from "@sam-monorepo/application";
 import clsx from "clsx";
-import { EventListStatus } from "../utils/EventListStatus";
 import { Event } from "./Event";
 
 interface Props {

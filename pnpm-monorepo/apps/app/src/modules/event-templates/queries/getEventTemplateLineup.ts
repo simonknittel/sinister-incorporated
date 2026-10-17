@@ -1,6 +1,6 @@
 import { prisma } from "@/db";
-import { TEMPLATE_POSITION_TREE_INCLUDE } from "@/modules/events/queries/positionTreeInclude";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { TEMPLATE_POSITION_TREE_INCLUDE } from "@sam-monorepo/application";
 import { cache } from "react";
 
 /**

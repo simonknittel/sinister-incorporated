@@ -1,39 +1,17 @@
+import { toActor } from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
-import type { Citizen, Event } from "@sam-monorepo/database/client";
+import {
+  isAllowedToManagePositions as isActorAllowedToManagePositions,
+  type EventManageInput,
+} from "@sam-monorepo/application";
 
-export const isAllowedToManagePositions = async (
-  event: Pick<Event, "discordCreatorId" | "createdById"> & {
-    managers: Pick<Citizen, "id">[];
-  },
-) => {
-  const authentication = await requireAuthentication();
+/** See `isAllowedToManagePositions()` of the application package */
+export const isAllowedToManagePositions = async (event: EventManageInput) => {
+  const { session } = await requireAuthentication();
 
-  /**
-   * The Discord creator of a Discord event keeps manage rights even when no
-   * citizen is attached to their Discord id yet.
-   */
-  if (
-    event.discordCreatorId !== null &&
-    event.discordCreatorId === authentication.session.discordId
-  )
-    return true;
-
-  const citizenId = authentication.session.entity?.id ?? null;
-
-  if (citizenId !== null && event.createdById === citizenId) return true;
-
-  /**
-   * Managers are matched by citizen id, not Discord id, so a manager
-   * without a Discord id does not silently lose access.
-   */
-  if (
-    citizenId !== null &&
-    event.managers.some((manager) => manager.id === citizenId)
-  )
-    return true;
-
-  if (await authentication.authorize("othersEventPosition", "manage"))
-    return true;
-
-  return false;
+  return isActorAllowedToManagePositions(
+    await toActor(session),
+    event,
+    session.discordId,
+  );
 };

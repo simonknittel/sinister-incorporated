@@ -1,0 +1,370 @@
+import { EventSource } from "@sam-monorepo/database/browser";
+import type { Prisma } from "@sam-monorepo/database/client";
+import { CursorDirection, ReadMarkerSubject } from "@sam-monorepo/domain";
+import * as z from "zod";
+import { requirePermission, type Actor } from "../actor.js";
+import type { ApplicationContext } from "../context.js";
+import {
+  buildUnreadWhere,
+  type UnreadWhere,
+} from "../readMarkers/unreadWhere.js";
+import { withSpan } from "../withSpan.js";
+import { getDiscordUserIdOfActor } from "./eventManageRules.js";
+import {
+  toEventSourceType,
+  toEventVisibilityType,
+  type EventSourceType,
+  type EventVisibilityType,
+} from "./eventOutput.js";
+import { EVENT_PAGE_RELATIONS_SELECT } from "./eventSelects.js";
+import { buildVisibleEventsWhere, loadEventViewer } from "./eventVisibility.js";
+import { findNewEventIds, getOpenEventsWhere } from "./openEvents.js";
+
+/** The status filter of the events list */
+export enum EventListStatus {
+  /** Events which have not ended yet */
+  Open = "open",
+  /** The open events which are new for the viewer (see the read markers) */
+  New = "new",
+  /** Events which have started */
+  Closed = "closed",
+  All = "all",
+}
+
+export enum EventParticipationFilter {
+  All = "all",
+  /** Only the events with an active participation of the actor */
+  Me = "me",
+}
+
+export enum EventTypeFilter {
+  All = "all",
+  App = "app",
+  Discord = "discord",
+}
+
+/** The page size when the caller does not give one */
+const DEFAULT_EVENT_LIST_LIMIT = 25;
+
+/** One call never returns more events than this */
+const MAXIMUM_EVENT_LIST_LIMIT = 100;
+
+export const listEventsInputSchema = z.object({
+  status: z.enum(EventListStatus).default(EventListStatus.Open),
+  participating: z
+    .enum(EventParticipationFilter)
+    .default(EventParticipationFilter.All),
+  type: z.enum(EventTypeFilter).default(EventTypeFilter.All),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(MAXIMUM_EVENT_LIST_LIMIT)
+    .default(DEFAULT_EVENT_LIST_LIMIT),
+  /** The `next_cursor` of the previous page: the id of its last event */
+  cursor: z.cuid().optional(),
+});
+
+export type ListEventsInput = z.infer<typeof listEventsInputSchema>;
+
+export interface EventListEntry {
+  readonly id: string;
+  readonly name: string;
+  readonly start_time: string;
+  /** Null when the event has no explicit end */
+  readonly end_time: string | null;
+  readonly location: string | null;
+  readonly source: EventSourceType;
+  readonly visibility: EventVisibilityType;
+  /** The active participations */
+  readonly participant_count: number;
+  readonly is_participating: boolean;
+  /** Open and unread for the actor (see the read markers) */
+  readonly is_new: boolean;
+}
+
+export interface ListEventsOutput {
+  readonly events: EventListEntry[];
+  /** Null on the last page */
+  readonly next_cursor: string | null;
+}
+
+/**
+ * An event card shows how many citizens take part and whether the viewer is
+ * one of them. Thus the query counts the participants and loads only the
+ * participation rows of the viewer, not a row for each participant.
+ */
+const eventListSelect = (
+  viewerParticipationWhere: Prisma.EventParticipantWhereInput,
+) =>
+  ({
+    id: true,
+    name: true,
+    startTime: true,
+    endTime: true,
+    location: true,
+    visibility: true,
+    source: true,
+    discordId: true,
+    discordGuildId: true,
+    discordImage: true,
+    // For the lineup and briefing checks
+    lineupEnabled: true,
+    discordCreatorId: true,
+    createdById: true,
+    managers: EVENT_PAGE_RELATIONS_SELECT.managers,
+    coverImage: EVENT_PAGE_RELATIONS_SELECT.coverImage,
+    participants: {
+      where: viewerParticipationWhere,
+      select: EVENT_PAGE_RELATIONS_SELECT.participants.select,
+    },
+    _count: {
+      select: {
+        participants: {
+          where: EVENT_PAGE_RELATIONS_SELECT.participants.where,
+        },
+      },
+    },
+  }) satisfies Prisma.EventSelect;
+
+export type EventListRow = Prisma.EventGetPayload<{
+  select: ReturnType<typeof eventListSelect>;
+}>;
+
+export interface EventListPageOptions extends ListEventsInput {
+  readonly direction: CursorDirection;
+}
+
+export interface EventListPage {
+  /** The participations of each event are the active ones of the actor */
+  readonly events: EventListRow[];
+  /** The listed events with a cancelled participation of the actor */
+  readonly cancelledParticipationEventIds: string[];
+  readonly newEventIds: ReadonlySet<string>;
+  readonly nextCursor: string | null;
+  readonly prevCursor: string | null;
+}
+
+const EMPTY_EVENT_LIST_PAGE: EventListPage = {
+  events: [],
+  cancelledParticipationEventIds: [],
+  newEventIds: new Set(),
+  nextCursor: null,
+  prevCursor: null,
+};
+
+/**
+ * The where fragment of the status filter. `null` when no event can match,
+ * because nothing can be new for the actor.
+ */
+const getStatusWhere = (
+  status: EventListStatus,
+  now: Date,
+  unreadWhere: UnreadWhere | null,
+): Prisma.EventWhereInput | null => {
+  switch (status) {
+    case EventListStatus.Open:
+      return getOpenEventsWhere(now);
+
+    case EventListStatus.New:
+      if (!unreadWhere) return null;
+
+      return { AND: [getOpenEventsWhere(now), unreadWhere] };
+
+    case EventListStatus.Closed:
+      return { startTime: { lt: now } };
+
+    case EventListStatus.All:
+      return {};
+
+    default:
+      throw new Error(`Unknown event list status: ${status satisfies never}`);
+  }
+};
+
+const getSourceWhere = (type: EventTypeFilter): Prisma.EventWhereInput => {
+  switch (type) {
+    case EventTypeFilter.All:
+      return {};
+
+    case EventTypeFilter.App:
+      return { source: EventSource.APP };
+
+    case EventTypeFilter.Discord:
+      return { source: EventSource.DISCORD };
+
+    default:
+      throw new Error(`Unknown event type filter: ${type satisfies never}`);
+  }
+};
+
+/**
+ * Of the listed events, the ones the actor has cancelled their
+ * participation for. Batched into a single query on purpose: every event
+ * preview needs the flag, and asking per event would turn the lists into
+ * N+1 queries.
+ */
+const getCancelledParticipationEventIds = async (
+  context: ApplicationContext,
+  eventIds: string[],
+  citizenId: string | null,
+): Promise<string[]> => {
+  if (citizenId === null || eventIds.length <= 0) return [];
+
+  const rows = await context.prisma.eventParticipant.findMany({
+    where: {
+      eventId: { in: eventIds },
+      citizenId,
+      cancelledAt: { not: null },
+    },
+    select: { eventId: true },
+    distinct: ["eventId"],
+  });
+
+  return rows.map((row) => row.eventId);
+};
+
+/**
+ * One page of the events that the actor can see, with the rows that the
+ * event cards of the app render. The app pages in both directions, the
+ * `listEvents` use case only forward.
+ */
+export const findEventListPage = (
+  context: ApplicationContext,
+  actor: Actor,
+  options: EventListPageOptions,
+): Promise<EventListPage> =>
+  withSpan(context, "findEventListPage", async () => {
+    requirePermission(actor, "event", "read");
+
+    const now = context.now();
+    const unreadWhere = buildUnreadWhere(actor, ReadMarkerSubject.Event);
+
+    const statusWhere = getStatusWhere(options.status, now, unreadWhere);
+    if (!statusWhere) return EMPTY_EVENT_LIST_PAGE;
+
+    const [viewer, discordUserId] = await Promise.all([
+      loadEventViewer(context, actor),
+      getDiscordUserIdOfActor(context, actor),
+    ]);
+
+    const citizenId = actor.citizen?.id ?? null;
+    /**
+     * Without a Discord id, `{ discordUserId: null }` would match every app
+     * sign-up
+     */
+    const viewerParticipationWhere: Prisma.EventParticipantWhereInput = {
+      cancelledAt: null,
+      OR: [
+        ...(discordUserId ? [{ discordUserId }] : []),
+        ...(citizenId ? [{ citizenId }] : []),
+      ],
+    };
+
+    const orderDirection: Prisma.SortOrder =
+      options.status === EventListStatus.Open ||
+      options.status === EventListStatus.New
+        ? "asc"
+        : "desc";
+
+    // Fetch one extra to detect if there are more pages
+    const take =
+      options.direction === CursorDirection.Prev
+        ? -(options.limit + 1)
+        : options.limit + 1;
+
+    const rows = await context.prisma.event.findMany({
+      where: {
+        AND: [
+          statusWhere,
+          getSourceWhere(options.type),
+          options.participating === EventParticipationFilter.Me
+            ? { participants: { some: viewerParticipationWhere } }
+            : {},
+          buildVisibleEventsWhere(viewer),
+        ],
+      },
+      select: eventListSelect(viewerParticipationWhere),
+      orderBy: { startTime: orderDirection },
+      ...(options.cursor ? { cursor: { id: options.cursor }, skip: 1 } : {}),
+      take,
+    });
+
+    const hasMore = rows.length > options.limit;
+
+    let events = rows;
+    if (hasMore) {
+      events =
+        options.direction === CursorDirection.Prev
+          ? // The extra item is at the beginning
+            rows.slice(1)
+          : // The extra item is at the end
+            rows.slice(0, options.limit);
+    }
+
+    // A next page exists if we fetched forward and got an extra item, or we
+    // came from a backward navigation (there is a page ahead we already
+    // visited)
+    const hasNextPage =
+      options.direction === CursorDirection.Next
+        ? hasMore
+        : Boolean(options.cursor);
+    const hasPrevPage =
+      options.direction === CursorDirection.Prev
+        ? hasMore
+        : Boolean(options.cursor);
+
+    const eventIds = events.map((event) => event.id);
+    const getNewEventIds = async () => {
+      // The "new" status lists only new events
+      if (options.status === EventListStatus.New) return eventIds;
+      if (!unreadWhere) return [];
+
+      return findNewEventIds(context.prisma, eventIds, unreadWhere, now);
+    };
+
+    const [cancelledParticipationEventIds, newEventIds] = await Promise.all([
+      getCancelledParticipationEventIds(context, eventIds, citizenId),
+      getNewEventIds(),
+    ]);
+
+    return {
+      events,
+      cancelledParticipationEventIds,
+      newEventIds: new Set(newEventIds),
+      nextCursor: hasNextPage ? (events.at(-1)?.id ?? null) : null,
+      prevCursor: hasPrevPage ? (events.at(0)?.id ?? null) : null,
+    };
+  });
+
+/**
+ * The events that the actor can see, filtered like the events page of the
+ * app, in pages. Open and new events are sorted by the start ascending, the
+ * others descending.
+ */
+export const listEvents = async (
+  context: ApplicationContext,
+  actor: Actor,
+  input: ListEventsInput,
+): Promise<ListEventsOutput> => {
+  const page = await findEventListPage(context, actor, {
+    ...input,
+    direction: CursorDirection.Next,
+  });
+
+  return {
+    events: page.events.map((event) => ({
+      id: event.id,
+      name: event.name,
+      start_time: event.startTime.toISOString(),
+      end_time: event.endTime?.toISOString() ?? null,
+      location: event.location,
+      source: toEventSourceType(event.source),
+      visibility: toEventVisibilityType(event.visibility),
+      participant_count: event._count.participants,
+      is_participating: event.participants.length > 0,
+      is_new: page.newEventIds.has(event.id),
+    })),
+    next_cursor: page.nextCursor,
+  };
+};

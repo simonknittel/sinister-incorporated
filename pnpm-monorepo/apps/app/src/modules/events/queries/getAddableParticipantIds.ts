@@ -1,15 +1,15 @@
 import { prisma } from "@/db";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  resolveEventVisibility,
+  type EventVisibilityInput,
+} from "@sam-monorepo/application";
 import type { Citizen } from "@sam-monorepo/database/client";
 import {
   buildEventRecipientWhere,
   NOTIFIABLE_CITIZEN_WHERE,
 } from "@sam-monorepo/domain";
 import { resolveEffectiveRoles } from "@sam-monorepo/permissions";
-import {
-  resolveEventVisibility,
-  type EventVisibilityInput,
-} from "../utils/resolveEventVisibility";
 
 export type AddableParticipantsEvent = EventVisibilityInput & {
   readonly id: string;

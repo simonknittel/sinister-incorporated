@@ -1,8 +1,8 @@
-import { prisma } from "@/db";
+import { getApplicationContext } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { findEventPositionTree } from "@sam-monorepo/application";
 import type { Event } from "@sam-monorepo/database/client";
 import { cache } from "react";
-import { POSITION_TREE_INCLUDE } from "./positionTreeInclude";
 
 /**
  * The lineup of one event as a tree of root positions. Split out of
@@ -12,15 +12,6 @@ import { POSITION_TREE_INCLUDE } from "./positionTreeInclude";
  */
 export const getEventPositions = cache(
   withTrace("getEventPositions", async (eventId: Event["id"]) =>
-    prisma.eventPosition.findMany({
-      where: {
-        eventId,
-        parentPositionId: null,
-      },
-      orderBy: {
-        order: "asc",
-      },
-      include: POSITION_TREE_INCLUDE,
-    }),
+    findEventPositionTree(getApplicationContext(), eventId),
   ),
 );

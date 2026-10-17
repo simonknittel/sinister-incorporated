@@ -1,67 +1,45 @@
+import { toActor } from "@/modules/application";
 import {
   getEffectiveRoles,
   requireAuthentication,
 } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { EventVisibility, type Prisma } from "@sam-monorepo/database/client";
-import { cache } from "react";
 import {
+  buildVisibleEventsWhere,
   resolveEventVisibility,
+  toEventViewer,
   type EventViewer,
   type EventVisibilityInput,
-} from "./resolveEventVisibility";
+} from "@sam-monorepo/application";
+import type { Prisma } from "@sam-monorepo/database/client";
+import { cache } from "react";
 
+/**
+ * The viewer of the visibility rules for the session. The effective roles
+ * come from the cache of the request, thus the check makes no query of its
+ * own.
+ */
 export const getEventViewer = cache(
   withTrace("getEventViewer", async (): Promise<EventViewer> => {
     const authentication = await requireAuthentication();
     const citizenId = authentication.session.entity?.id ?? null;
 
-    const [hasEventManage, effectiveRoles] = await Promise.all([
-      authentication.authorize("event", "manage"),
+    const [actor, effectiveRoles] = await Promise.all([
+      toActor(authentication.session),
       citizenId ? getEffectiveRoles(citizenId) : null,
     ]);
 
-    return {
-      citizenId,
-      roleIds: effectiveRoles?.roleIds ?? new Set(),
-      hasEventManage,
-    };
+    return toEventViewer(actor, effectiveRoles?.roleIds ?? new Set());
   }),
 );
 
 /**
- * Prisma where fragment matching exactly the events
- * `resolveEventVisibility()` allows for the current viewer. Every event list
- * query must AND this in so no call site can forget the soft-delete or
- * visibility exclusion.
+ * Prisma where fragment matching exactly the events the current viewer may
+ * see, see `buildVisibleEventsWhere()`
  */
 export const getVisibleEventsWhere =
-  async (): Promise<Prisma.EventWhereInput> => {
-    const viewer = await getEventViewer();
-
-    if (viewer.hasEventManage) return { deletedAt: null };
-
-    const memberConditions: Prisma.EventWhereInput[] =
-      viewer.citizenId !== null
-        ? [
-            { createdById: viewer.citizenId },
-            { managers: { some: { id: viewer.citizenId } } },
-          ]
-        : [];
-
-    return {
-      deletedAt: null,
-      OR: [
-        { visibility: EventVisibility.PUBLIC },
-        {
-          visibilityRoles: {
-            some: { roleId: { in: Array.from(viewer.roleIds) } },
-          },
-        },
-        ...memberConditions,
-      ],
-    };
-  };
+  async (): Promise<Prisma.EventWhereInput> =>
+    buildVisibleEventsWhere(await getEventViewer());
 
 /**
  * Single-event visibility check for the current viewer. Callers treat a
