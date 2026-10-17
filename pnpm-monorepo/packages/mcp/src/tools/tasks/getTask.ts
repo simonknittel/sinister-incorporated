@@ -32,6 +32,7 @@ export const getTaskTool = defineTool({
     hidden_for_other_roles: z.boolean(),
     assignment_limit: z.number().int().nullable(),
   }),
-  isVisible: (actor) => actor.authorize("task", "read"),
+  isVisible: (actor) =>
+    actor.authorize("task", "read") && actor.citizen !== null,
   handler: (context, actor, input) => getTask(context, actor, input),
 });

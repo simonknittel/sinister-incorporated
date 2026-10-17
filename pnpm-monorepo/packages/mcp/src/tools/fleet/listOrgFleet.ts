@@ -30,7 +30,9 @@ export const listOrgFleetTool = defineTool({
     total_ships: z.number().int().min(0),
     next_cursor: z.string().nullable(),
   }),
-  isVisible: (actor) => actor.authorize("orgFleet", "read"),
+  isVisible: (actor) =>
+    actor.authorize("orgFleet", "read") &&
+    actor.authorize("organizationMembership", "read"),
   handler: async (context, actor, input) => {
     const { fleet, total_citizens, total_ships, next_cursor } =
       await listOrgFleet(context, actor, {

@@ -89,7 +89,8 @@ const buildStatusWhere = (
 
 /**
  * Without `penaltyEntry;read`, a citizen can read only the own entries that
- * are not deleted (`ownPenaltyEntry;read`).
+ * are not deleted (`ownPenaltyEntry;read`). The app shows them on the
+ * penalty points tab of the citizen, which also needs `citizen;read`.
  */
 const authorizeList = (
   actor: Actor,
@@ -103,7 +104,8 @@ const authorizeList = (
   if (
     !isOwnCitizen ||
     input.status === PenaltyEntryStatus.Deleted ||
-    !actor.authorize("ownPenaltyEntry", "read")
+    !actor.authorize("ownPenaltyEntry", "read") ||
+    !actor.authorize("citizen", "read")
   )
     throw new ForbiddenError("The permission penaltyEntry;read is missing");
 };

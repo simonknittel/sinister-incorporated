@@ -8,6 +8,7 @@ import {
   ToolGroup,
   type ToolCatalogEntry,
 } from "@sam-monorepo/mcp";
+import { forbidden } from "next/navigation";
 import { cache } from "react";
 
 export interface McpToolWithSetting extends ToolCatalogEntry {
@@ -27,6 +28,9 @@ export interface McpToolSettingsGroup {
 export const getMyMcpToolSettings = cache(
   withTrace("getMyMcpToolSettings", async () => {
     const authentication = await requireAuthentication();
+    // Only the user sees the own tool settings, not an admin who assumes the
+    // user
+    if (authentication.session.assumedByAdminId) forbidden();
 
     const disabledToolNames = new Set(
       await getDisabledToolNames(

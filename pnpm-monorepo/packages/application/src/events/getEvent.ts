@@ -29,13 +29,8 @@ export const getEventInputSchema = z.object({
 export type GetEventInput = z.infer<typeof getEventInputSchema>;
 
 export interface EventParticipantEntry {
-  /**
-   * Null when the citizen is deleted, or when no citizen has the Discord id
-   * of a Discord sign-up
-   */
+  /** Null when the citizen is deleted */
   readonly citizen: CitizenReference | null;
-  /** Null without the permission `discord-id;read` */
-  readonly discord_user_id: string | null;
   readonly comment: string | null;
   readonly created_at: string;
 }
@@ -49,13 +44,20 @@ export interface GetEventOutput {
   readonly end_time: string | null;
   readonly location: string | null;
   readonly visibility: EventVisibilityType;
-  /** The roles that see a restricted event */
+  /**
+   * The roles that see a restricted event. Empty when the actor cannot manage
+   * the event: only the settings page of the event shows them.
+   */
   readonly visibility_role_ids: string[];
   readonly source: EventSourceType;
   readonly lineup_enabled: boolean;
   readonly created_by: CitizenReference | null;
   readonly managers: CitizenReference[];
-  /** The active participations, in the order of the sign-up */
+  /**
+   * The active participations, in the order of the sign-up. Like the
+   * participants page, a Discord sign-up shows only after a citizen has its
+   * Discord id.
+   */
   readonly participants: EventParticipantEntry[];
   readonly can_manage: boolean;
   readonly can_manage_positions: boolean;
@@ -66,20 +68,18 @@ export interface GetEventOutput {
 
 const getParticipantEntries = async (
   context: ApplicationContext,
-  actor: Actor,
   participants: EventDetails["participants"],
 ): Promise<EventParticipantEntry[]> => {
   const citizens = await context.prisma.citizen.findMany({
     where: buildParticipantCitizenWhere(participants),
     select: { id: true, handle: true, deletedAt: true, discordId: true },
   });
-  const canReadDiscordIds = actor.authorize("discord-id", "read");
 
   return participants
     .toSorted(
       (first, second) => first.createdAt.getTime() - second.createdAt.getTime(),
     )
-    .map((participant) => {
+    .flatMap((participant) => {
       // A Discord id finds only citizens that are not deleted, like
       // `buildParticipantCitizenWhere()`
       const citizen = participant.citizenId
@@ -90,10 +90,10 @@ const getParticipantEntries = async (
               participant.discordUserId !== null &&
               citizen.discordId === participant.discordUserId,
           );
+      if (!citizen) return [];
 
       return {
-        citizen: toCitizenReference(citizen ?? null),
-        discord_user_id: canReadDiscordIds ? participant.discordUserId : null,
+        citizen: toCitizenReference(citizen),
         comment: participant.comment,
         created_at: participant.createdAt.toISOString(),
       };
@@ -119,11 +119,12 @@ export const getEvent = (
     const event = await findVisibleEvent(context, actor, input.event_id);
 
     const [participants, discordUserId] = await Promise.all([
-      getParticipantEntries(context, actor, event.participants),
+      getParticipantEntries(context, event.participants),
       getDiscordUserIdOfActor(context, actor),
     ]);
 
     const citizenId = actor.citizen.id;
+    const canManage = isAllowedToManageEvent(actor, event, discordUserId);
 
     return {
       id: event.id,
@@ -133,15 +134,15 @@ export const getEvent = (
       end_time: event.endTime?.toISOString() ?? null,
       location: event.location,
       visibility: toEventVisibilityType(event.visibility),
-      visibility_role_ids: event.visibilityRoles.map(
-        (visibilityRole) => visibilityRole.roleId,
-      ),
+      visibility_role_ids: canManage
+        ? event.visibilityRoles.map((visibilityRole) => visibilityRole.roleId)
+        : [],
       source: toEventSourceType(event.source),
       lineup_enabled: event.lineupEnabled,
       created_by: toCitizenReference(event.createdBy),
       managers: toCitizenReferences(event.managers),
       participants,
-      can_manage: isAllowedToManageEvent(actor, event, discordUserId),
+      can_manage: canManage,
       can_manage_positions: isAllowedToManagePositions(
         actor,
         event,

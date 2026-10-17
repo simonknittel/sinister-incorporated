@@ -295,7 +295,29 @@ describe("tools/call", () => {
     expect(log.error).toHaveBeenCalledWith("The MCP tool failed", {
       tool: "get_current_user",
       userId: "user",
-      error: expect.any(Error),
+      errorName: "ZodError",
+      stack: expect.any(String),
     });
+  });
+
+  test("the log record of a failed tool has the code of the error, but not its message", async () => {
+    const error = Object.assign(
+      new Error("Unique constraint failed: user@example.com"),
+      { code: "P2002" },
+    );
+    vi.spyOn(getCurrentUserTool, "handler").mockRejectedValueOnce(error);
+
+    await callGetCurrentUser();
+
+    expect(log.error).toHaveBeenCalledWith("The MCP tool failed", {
+      tool: "get_current_user",
+      userId: "user",
+      errorName: "Error",
+      errorCode: "P2002",
+      stack: expect.any(String),
+    });
+    expect(JSON.stringify(log.error.mock.calls)).not.toContain(
+      "user@example.com",
+    );
   });
 });

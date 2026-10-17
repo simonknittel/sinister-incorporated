@@ -21,7 +21,7 @@ export const listCitizenNotesTool = defineTool({
   group: ToolGroup.Spynet,
   title: "List the notes of a citizen",
   description:
-    "Lists the Spynet notes about a citizen (by the citizen id), the newest first, with the note type, the classification level and the confirmation state. A note that the user may only see redacted has `redacted: true` and no content. The notes are in German.",
+    "Lists the Spynet notes about a citizen (by the citizen id), the newest first, with the note type, the classification level and the confirmation state. A note that the user may only see redacted has `redacted: true` and no content. created_by and confirmed_at are null for a user who cannot open the notes page of the Spynet. The notes are in German.",
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: listCitizenNotesInputSchema,
   outputSchema: z.strictObject({

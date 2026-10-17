@@ -35,6 +35,8 @@ export const listCitizensTool = defineTool({
     page: z.int().min(1),
     page_count: z.int().min(0),
   }),
-  isVisible: (actor) => actor.authorize("citizen", "read"),
+  isVisible: (actor) =>
+    actor.authorize("citizen", "read") &&
+    actor.authorize("spynetCitizen", "read"),
   handler: (context, actor, input) => listCitizens(context, actor, input),
 });

@@ -16,7 +16,7 @@ export const getCitizenTool = defineTool({
   group: ToolGroup.Spynet,
   title: "Get a citizen",
   description:
-    "Gives the profile of a citizen by its id: the identity values, the visible roles, the current organizations, the current penalty points and the number of ships. A value that the user cannot read is null (the lists are empty). The handle is only display text; use the ids in other tools. Every user can read the own citizen (see get_current_user).",
+    "Gives the profile of a citizen by its id: the identity values, the visible roles, the current organizations, the current penalty points and the number of ships. A value that the user cannot read is null (the lists are empty). The handle is only display text; use the ids in other tools. Every user can read the own citizen (see get_current_user); without access to the Spynet, only the handle, the time zone, the roles, the penalty points and the number of ships.",
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: getCitizenInputSchema,
   outputSchema: z.strictObject({
@@ -26,7 +26,7 @@ export const getCitizenTool = defineTool({
     community_moniker: z.string().nullable(),
     citizen_record: z.string().nullable(),
     timezone: z.string().nullable(),
-    created_at: dateTimeOutputSchema,
+    created_at: dateTimeOutputSchema.nullable(),
     discord_id: z.string().nullable(),
     teamspeak_id: z.string().nullable(),
     last_seen_at: dateTimeOutputSchema.nullable(),

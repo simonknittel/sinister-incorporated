@@ -17,7 +17,7 @@ export const getEventTool = defineTool({
   group: ToolGroup.Events,
   title: "Get an event",
   description:
-    "Gives one event by its event id (from list_events): the details, the creator, the managers, the active participants, whether the lineup is enabled, and what the user can do: can_manage (the event, its participants and its managers), can_manage_positions (the lineup) and is_updatable (false after the end of the event, then nothing can change). A deleted citizen shows as null.",
+    "Gives one event by its event id (from list_events): the details, the creator, the managers, the active participants, whether the lineup is enabled, and what the user can do: can_manage (the event, its participants and its managers), can_manage_positions (the lineup) and is_updatable (false after the end of the event, then nothing can change). visibility_role_ids is empty when the user cannot manage the event. A deleted citizen shows as null.",
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: getEventInputSchema,
   outputSchema: z.strictObject({
@@ -37,8 +37,6 @@ export const getEventTool = defineTool({
     participants: z.array(
       z.strictObject({
         citizen: citizenReferenceSchema.nullable(),
-        /** Only with the permission to read Discord ids */
-        discord_user_id: z.string().nullable(),
         comment: z.string().nullable(),
         created_at: dateTimeOutputSchema,
       }),
@@ -48,6 +46,7 @@ export const getEventTool = defineTool({
     is_updatable: z.boolean(),
     is_participating: z.boolean(),
   }),
-  isVisible: (actor) => actor.authorize("event", "read"),
+  isVisible: (actor) =>
+    actor.authorize("event", "read") && actor.citizen !== null,
   handler: (context, actor, input) => getEvent(context, actor, input),
 });

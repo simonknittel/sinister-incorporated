@@ -18,6 +18,11 @@ export const updateMcpToolSetting = createAuthenticatedAction(
   "updateMcpToolSetting",
   setToolEnabledInputSchema,
   async (formData, authentication, data, t) => {
+    // Only the user changes the own tool settings, not an admin who assumes
+    // the user
+    if (authentication.session.assumedByAdminId)
+      return { error: t("Common.forbidden"), requestPayload: formData };
+
     // The catalog of the tools is in the MCP package, thus the use case
     // cannot check the name
     if (!listToolCatalog().some((tool) => tool.name === data.toolName))

@@ -43,7 +43,9 @@ export const listPenaltyEntriesTool = defineTool({
   }),
   isVisible: (actor) =>
     actor.authorize("penaltyEntry", "read") ||
-    actor.authorize("ownPenaltyEntry", "read"),
+    (actor.authorize("ownPenaltyEntry", "read") &&
+      actor.authorize("citizen", "read") &&
+      actor.citizen !== null),
   handler: async (context, actor, input) => {
     const { entries, next_cursor } = await listPenaltyEntries(context, actor, {
       ...input,

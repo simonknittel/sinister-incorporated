@@ -33,7 +33,7 @@ export const listMyShipsTool = defineTool({
     total: z.number().int().min(0),
     next_cursor: z.string().nullable(),
   }),
-  isVisible: (actor) => actor.authorize("ship", "read"),
+  isVisible: (actor) => actor.authorize("ship", "manage"),
   handler: async (context, actor, input) => {
     const { ships, total, next_cursor } = await listMyShips(context, actor, {
       ...input,

@@ -33,15 +33,23 @@ export default async function Page() {
         mcpUrl={getApplicationContext().urls.mcpResourceUrl.href}
       />
 
-      <SuspenseWithErrorBoundaryTile>
-        <ConnectedClientsTile
-          canManageAdminMode={session.user.role === UserRole.ADMIN}
-        />
-      </SuspenseWithErrorBoundaryTile>
+      {/* Only the user manages the own clients and tools, not an admin who
+          assumes the user */}
+      {session.assumedByAdminId ? (
+        <Note message="Du siehst SAM gerade als ein anderer Benutzer. Beende diese Ansicht, um die verbundenen Clients und die Werkzeuge deines Accounts zu verwalten." />
+      ) : (
+        <>
+          <SuspenseWithErrorBoundaryTile>
+            <ConnectedClientsTile
+              canManageAdminMode={session.user.role === UserRole.ADMIN}
+            />
+          </SuspenseWithErrorBoundaryTile>
 
-      <SuspenseWithErrorBoundaryTile>
-        <McpToolSettingsTile />
-      </SuspenseWithErrorBoundaryTile>
+          <SuspenseWithErrorBoundaryTile>
+            <McpToolSettingsTile />
+          </SuspenseWithErrorBoundaryTile>
+        </>
+      )}
     </div>
   );
 }

@@ -32,7 +32,10 @@ export interface LineupPosition {
   readonly required_variants: { readonly id: string; readonly name: string }[];
   /** Null when nobody is assigned or the assigned citizen is deleted */
   readonly assignee: CitizenReference | null;
-  /** The citizens who applied for the position */
+  /**
+   * The citizens who applied for the position. Empty when the actor cannot
+   * manage the positions: the lineup page shows the applicants only to them.
+   */
   readonly applications: CitizenReference[];
   readonly children: LineupPosition[];
 }
@@ -80,7 +83,10 @@ interface PositionTreeRow {
   readonly childPositions?: readonly PositionTreeRow[];
 }
 
-const toLineupPosition = (position: PositionTreeRow): LineupPosition => ({
+const toLineupPosition = (
+  position: PositionTreeRow,
+  canManagePositions: boolean,
+): LineupPosition => ({
   id: position.id,
   name: position.name,
   description: position.description,
@@ -89,18 +95,22 @@ const toLineupPosition = (position: PositionTreeRow): LineupPosition => ({
     name: variant.name,
   })),
   assignee: toCitizenReference(position.citizen),
-  applications: toCitizenReferences(
-    position.applications.map((application) => application.citizen),
+  applications: canManagePositions
+    ? toCitizenReferences(
+        position.applications.map((application) => application.citizen),
+      )
+    : [],
+  children: (position.childPositions ?? []).map((childPosition) =>
+    toLineupPosition(childPosition, canManagePositions),
   ),
-  children: (position.childPositions ?? []).map(toLineupPosition),
 });
 
 /**
  * The lineup of an event: the position tree with the required variants, the
- * assignees and the applications. The same checks as the lineup page of the
- * app: a citizen, `event;read`, `ship;read` (the page shows the own ships of
- * the required variants), the visibility of the event, and a lineup that is
- * enabled or that the actor can manage.
+ * assignees and, for a manager of the positions, the applications. The same
+ * checks as the lineup page of the app: a citizen, `event;read`, `ship;read`
+ * (the page shows the own ships of the required variants), the visibility of
+ * the event, and a lineup that is enabled or that the actor can manage.
  */
 export const getEventLineup = (
   context: ApplicationContext,
@@ -123,15 +133,18 @@ export const getEventLineup = (
       throw new ForbiddenError("The lineup of the event is not enabled");
 
     const positions = await findEventPositionTree(context, event.id);
+    const canManagePositions = isAllowedToManagePositions(
+      actor,
+      event,
+      discordUserId,
+    );
 
     return {
       event: { id: event.id, name: event.name },
-      can_manage_positions: isAllowedToManagePositions(
-        actor,
-        event,
-        discordUserId,
-      ),
+      can_manage_positions: canManagePositions,
       is_updatable: isEventUpdatable(event, context.now()),
-      positions: positions.map(toLineupPosition),
+      positions: positions.map((position) =>
+        toLineupPosition(position, canManagePositions),
+      ),
     };
   });

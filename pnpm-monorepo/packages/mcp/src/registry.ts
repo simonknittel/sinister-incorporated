@@ -103,10 +103,31 @@ const toErrorResult = (
   context.log.error("The MCP tool failed", {
     tool: tool.name,
     userId: actor.userId,
-    error,
+    ...toLoggableError(error),
   });
 
   return createErrorResult("The tool failed. The error is logged.");
+};
+
+/**
+ * The message of an error can contain personal data, for example the
+ * arguments of a Prisma query. Thus the log record gets only the name, the
+ * code (for example the Prisma error code `P2002`) and the frames of the stack.
+ * The first lines of a stack repeat the message, thus they are removed.
+ */
+const toLoggableError = (error: unknown) => {
+  if (!(error instanceof Error)) return { errorName: typeof error };
+
+  return {
+    errorName: error.name,
+    ...("code" in error && typeof error.code === "string"
+      ? { errorCode: error.code }
+      : {}),
+    stack: error.stack
+      ?.split("\n")
+      .filter((line) => line.trimStart().startsWith("at "))
+      .join("\n"),
+  };
 };
 
 const createErrorResult = (text: string): CallToolResult => ({

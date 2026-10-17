@@ -42,9 +42,13 @@ export interface ReadableCitizenNote {
   /** Null after the classification level was deleted */
   readonly classification_level: NamedReference | null;
   readonly confirmed: CitizenNoteConfirmation;
+  /** Null without `spynetNotes;read`, like the notes tab of a citizen */
   readonly confirmed_at: string | null;
   readonly created_at: string;
-  /** The citizen who wrote the note. Null when it is unknown or deleted. */
+  /**
+   * The citizen who wrote the note. Null when it is unknown or deleted, and
+   * without `spynetNotes;read`, like the notes tab of a citizen.
+   */
   readonly created_by: CitizenReference | null;
   readonly content: string | null;
 }
@@ -132,6 +136,15 @@ export const listCitizenNotes = async (
   requirePermission(actor, "citizen", "read");
 
   const afterCursorWhere = getAfterCursorWhere(input.cursor);
+  /**
+   * Only the notes page of Spynet shows the author and the confirmation time.
+   * The notes tab of a citizen needs only `citizen;read` and does not show
+   * them.
+   */
+  const canSeeAuthorAndConfirmationTime = actor.authorize(
+    "spynetNotes",
+    "read",
+  );
 
   return withSpan(context, "listCitizenNotes", async () => {
     const [citizen, classifications] = await Promise.all([
@@ -194,7 +207,9 @@ export const listCitizenNotes = async (
         if (!note.noteType) return [];
 
         if (canReadNote(actor, note)) {
-          const author = note.submittedBy?.citizen;
+          const author = canSeeAuthorAndConfirmationTime
+            ? note.submittedBy?.citizen
+            : undefined;
 
           return [
             {
@@ -203,7 +218,9 @@ export const listCitizenNotes = async (
               note_type: note.noteType,
               classification_level: note.classificationLevel,
               confirmed: toConfirmation(note.confirmed),
-              confirmed_at: note.confirmedAt?.toISOString() ?? null,
+              confirmed_at: canSeeAuthorAndConfirmationTime
+                ? (note.confirmedAt?.toISOString() ?? null)
+                : null,
               created_at: note.createdAt.toISOString(),
               created_by:
                 author && !author.deletedAt

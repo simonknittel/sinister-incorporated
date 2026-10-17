@@ -19,6 +19,7 @@ export const listTasksTool = defineTool({
     tasks: z.array(z.strictObject(taskListItemOutputShape)),
     next_cursor: z.string().nullable(),
   }),
-  isVisible: (actor) => actor.authorize("task", "read"),
+  isVisible: (actor) =>
+    actor.authorize("task", "read") && actor.citizen !== null,
   handler: (context, actor, input) => listTasks(context, actor, input),
 });
