@@ -15,6 +15,8 @@ import { expect, test } from "../fixtures/test";
  */
 const GATED_ROUTES = [
   "/app/account/analytics",
+  /** `mcp;use` */
+  "/app/account/mcp",
   /** No readable flow and no `career;manage` */
   "/app/career",
   "/app/career/settings",
@@ -64,11 +66,6 @@ const OPEN_ROUTES: readonly [route: string, marker: (page: Page) => Locator][] =
     [
       "/app/account/appearance",
       (page) => page.getByRole("heading", { name: "Saisonale Events" }),
-    ],
-    /** Every user manages their own MCP clients and tools */
-    [
-      "/app/account/mcp",
-      (page) => page.getByRole("heading", { name: "Verbinden" }),
     ],
     [
       "/app/uploads",

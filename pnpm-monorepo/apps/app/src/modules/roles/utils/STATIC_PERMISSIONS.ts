@@ -533,6 +533,11 @@ export const STATIC_PERMISSIONS = [
   },
   {
     section: "Sonstiges",
+    title: "MCP-Server nutzen",
+    string: "mcp;use",
+  },
+  {
+    section: "Sonstiges",
     title: "Globale Statistiken lesen",
     string: "globalStatistics;read",
   },

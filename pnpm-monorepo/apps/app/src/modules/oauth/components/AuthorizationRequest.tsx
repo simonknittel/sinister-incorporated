@@ -1,6 +1,7 @@
-import { getApplicationContext } from "@/modules/application";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import {
   AuthorizationRequestValidationKind,
+  canUseMcp,
   buildAuthorizationResponseUrl,
   validateAuthorizationRequest,
   type AuthorizationRequestParameters,
@@ -12,6 +13,7 @@ import {
   getClientErrorMessage,
   getConsentAvailability,
   getRedirectErrorMessage,
+  MCP_ACCESS_MESSAGE,
 } from "../utils/consent";
 import { AuthorizationConsent } from "./AuthorizationConsent";
 import { AuthorizationNotice } from "./AuthorizationNotice";
@@ -38,6 +40,9 @@ export const AuthorizationRequest = async ({
 
   if (isAssumedUser)
     return <AuthorizationNotice message={ASSUMED_USER_MESSAGE} />;
+
+  if (!canUseMcp(await getRequestActor()))
+    return <AuthorizationNotice message={MCP_ACCESS_MESSAGE} />;
 
   const context = getApplicationContext();
   const validation = await validateAuthorizationRequest(context, parameters);

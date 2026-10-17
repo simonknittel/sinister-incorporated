@@ -71,7 +71,8 @@ export interface PermissionSet {
     | "globalStatistics"
     | "systemLog"
     | "upload"
-    | "wiki";
+    | "wiki"
+    | "mcp";
   operation:
     | "create"
     | "read"
@@ -83,7 +84,8 @@ export interface PermissionSet {
     | "confirm"
     | "assign"
     | "dismiss"
-    | "negate";
+    | "negate"
+    | "use";
   attributes?: PermissionSetAttribute[];
 }
 

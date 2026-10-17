@@ -1,6 +1,7 @@
 import { createActor, type Actor } from "../actor.js";
 import { getEffectiveRolesOfCitizen } from "../auth/getEffectiveRolesOfCitizen.js";
 import type { ApplicationContext } from "../context.js";
+import { requireMcpAccess } from "../mcpAccess.js";
 import { withSpan } from "../withSpan.js";
 import type { VerifiedAccessToken } from "./accessToken.js";
 import { InvalidTokenError } from "./errors.js";
@@ -30,6 +31,7 @@ export interface Principal {
  *
  * @throws InvalidTokenError when the grant is revoked or the user is banned
  * @throws ForbiddenError when the user does not have the clearance of the app
+ * or the permission to use the MCP server
  */
 export const resolvePrincipal = (
   context: ApplicationContext,
@@ -92,6 +94,7 @@ export const resolvePrincipal = (
     });
 
     actor.requireClearance();
+    requireMcpAccess(actor);
 
     const now = context.now();
     const lastUsedAtThreshold = new Date(

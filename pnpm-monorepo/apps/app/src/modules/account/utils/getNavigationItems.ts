@@ -5,6 +5,7 @@ export const getNavigationItems = createNavigationItems(
   async (authentication) => {
     const permissions: boolean[] = await Promise.all([
       authentication.authorize("analytics", "manage"),
+      authentication.authorize("mcp", "use"),
     ]);
 
     const pages: Page[] = [];
@@ -33,10 +34,12 @@ export const getNavigationItems = createNavigationItems(
       url: "/app/account/sessions",
     });
 
-    pages.push({
-      title: "MCP",
-      url: "/app/account/mcp",
-    });
+    if (permissions[1]) {
+      pages.push({
+        title: "MCP",
+        url: "/app/account/mcp",
+      });
+    }
 
     if (permissions[0]) {
       pages.push({

@@ -18,7 +18,10 @@ export const metadata: Metadata = {
  * the settings
  */
 export default async function Page() {
-  const { session } = await requireAuthenticationPage("/app/account/mcp");
+  const { session, authorizePage } = await requireAuthenticationPage(
+    "/app/account/mcp",
+  );
+  await authorizePage("mcp", "use");
 
   return (
     <div className="flex flex-col gap-4">

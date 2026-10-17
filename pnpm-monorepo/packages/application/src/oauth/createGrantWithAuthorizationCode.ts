@@ -1,6 +1,7 @@
 import { AuditEventType } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { requireMcpAccess } from "../mcpAccess.js";
 import { withSpan } from "../withSpan.js";
 import { AUTHORIZATION_CODE_LIFETIME_IN_MILLISECONDS } from "./constants.js";
 import type { ClientMetadata } from "./resolveClientMetadata.js";
@@ -47,6 +48,7 @@ export const createGrantWithAuthorizationCode = (
 ): Promise<CreateGrantWithAuthorizationCodeOutput> =>
   withSpan(context, "createGrantWithAuthorizationCode", async () => {
     actor.requireClearance();
+    requireMcpAccess(actor);
 
     const code = createOpaqueToken();
     const now = context.now();

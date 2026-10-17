@@ -27,6 +27,9 @@ export const getConsentAvailability = async () => {
 export const CONSENT_UNAVAILABLE_MESSAGE =
   "Die Verbindung von Anwendungen über MCP ist zurzeit nicht verfügbar.";
 
+export const MCP_ACCESS_MESSAGE =
+  "Du hast keine Berechtigung, den MCP-Server zu nutzen. Frage einen Admin nach der Berechtigung „MCP-Server nutzen“.";
+
 export const ASSUMED_USER_MESSAGE =
   "Du siehst SAM gerade als ein anderer Benutzer. Beende diese Ansicht, um eine Anwendung mit deinem Account zu verbinden.";
 

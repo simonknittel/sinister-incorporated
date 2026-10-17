@@ -59,6 +59,18 @@ const OtherTab = ({ roles }: Readonly<Props>) => {
 
       <div className="flex items-center justify-between py-2">
         <div>
+          <h4 className="font-bold">MCP-Server nutzen</h4>
+          <p className="text-sm text-neutral-500">
+            KI-Clients wie Claude mit SAM verbinden. Die Clients arbeiten mit
+            den Berechtigungen des Benutzers.
+          </p>
+        </div>
+
+        <YesNoCheckbox {...register("mcp;use")} />
+      </div>
+
+      <div className="flex items-center justify-between py-2">
+        <div>
           <h4 className="font-bold">System Log lesen</h4>
           <p className="text-sm text-yellow-500">
             ⚠️ Benutzer mit dieser Berechtigung können vertrauliche

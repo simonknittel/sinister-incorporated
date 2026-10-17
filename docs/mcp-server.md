@@ -10,8 +10,10 @@ it has no sessions, no subscriptions, no resources and no prompts.
 
 ## Connect a client
 
-Each user finds the URL and the steps for the supported clients on
-`/app/account/mcp`. On the same page, the user disconnects clients and
+The permission `mcp;use` ("MCP-Server nutzen" in the role settings) gates
+the whole server: the consent page, the account page and each request with
+an access token. Each user with it finds the URL and the steps for the
+supported clients on `/app/account/mcp`. On the same page, the user disconnects clients and
 disables tools. A client opens the consent page `/app/oauth/authorize` of
 SAM; the user signs in to SAM if necessary and allows the access.
 

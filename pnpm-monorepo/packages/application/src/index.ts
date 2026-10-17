@@ -35,6 +35,7 @@ export {
 export * from "./events/index.js";
 export * from "./fleet/index.js";
 export * from "./lineup/index.js";
+export { canUseMcp, requireMcpAccess } from "./mcpAccess.js";
 export * from "./mcpSettings/index.js";
 export { triggerNotificationsAfterSave } from "./notifications.js";
 export * from "./oauth/index.js";
