@@ -164,6 +164,15 @@ export const env = createEnv({
      * `openssl ecparam -name prime256v1 -genkey -noout | openssl pkcs8 -topk8 -nocrypt | base64 -w0`
      */
     EMBED_JWT_PRIVATE_KEY: z.optional(z.string()),
+    /**
+     * Set to "1" to permit OAuth client ids (Client ID Metadata Document
+     * URLs) with plain HTTP on a loopback host, and the fetch of these
+     * documents from the loopback interface. Only the Playwright stack sets
+     * it, because its test client serves its document on the local machine.
+     * Never set it in a deployment: it weakens the SSRF protection of the
+     * document fetch.
+     */
+    OAUTH_ALLOW_INSECURE_LOOPBACK_CLIENT_IDS: z.optional(z.enum(["1"])),
   },
 
   /*

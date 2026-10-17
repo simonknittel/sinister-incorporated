@@ -45,10 +45,8 @@ const createApplicationContext = (): ApplicationContext => {
 
       return { ...signingKey, algorithm: EMBED_TOKEN_ALGORITHM };
     },
-    // Only the Playwright stack permits these client ids, through an optional
-    // environment variable of the OAuth server. Until it exists, keep them
-    // refused.
-    allowInsecureLoopbackClientIds: false,
+    allowInsecureLoopbackClientIds:
+      env.OAUTH_ALLOW_INSECURE_LOOPBACK_CLIENT_IDS === "1",
   };
 };
 
