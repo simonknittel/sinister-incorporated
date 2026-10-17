@@ -55,13 +55,25 @@ export interface ListShipsOutput {
   readonly previous_cursor: string | null;
 }
 
-const SHIP_SELECT = {
+/** The columns of a ship for `toShipOutput()` */
+export const SHIP_SELECT = {
   id: true,
   name: true,
   createdAt: true,
   deletedAt: true,
   variant: { select: SHIP_VARIANT_SELECT },
 } as const satisfies Prisma.ShipSelect;
+
+/** A ship in the outputs of the ship lists and of the ship writes */
+export const toShipOutput = (
+  ship: Prisma.ShipGetPayload<{ select: typeof SHIP_SELECT }>,
+): ShipOutput => ({
+  id: ship.id,
+  name: ship.name,
+  variant: toShipVariantOutput(ship.variant),
+  created_at: ship.createdAt?.toISOString() ?? null,
+  deleted_at: ship.deletedAt?.toISOString() ?? null,
+});
 
 const compareShips =
   (sort: ShipSort) => (first: ShipOutput, second: ShipOutput) => {
@@ -109,15 +121,7 @@ export const listOwnerShips = async (
     orderBy: { id: "asc" },
   });
 
-  const sortedShips = ships
-    .map((ship): ShipOutput => ({
-      id: ship.id,
-      name: ship.name,
-      variant: toShipVariantOutput(ship.variant),
-      created_at: ship.createdAt?.toISOString() ?? null,
-      deleted_at: ship.deletedAt?.toISOString() ?? null,
-    }))
-    .sort(compareShips(input.sort));
+  const sortedShips = ships.map(toShipOutput).sort(compareShips(input.sort));
 
   const page = paginateByCursor(sortedShips, {
     ...options,

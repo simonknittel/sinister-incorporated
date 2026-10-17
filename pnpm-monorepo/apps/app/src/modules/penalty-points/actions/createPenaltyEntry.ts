@@ -1,120 +1,57 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import { wallTimeSchema } from "@/modules/common/utils/wallTimeSchema";
-import { triggerNotificationsAfterSave } from "@/modules/notifications/utils/triggerNotification";
+import {
+  createPenaltyEntryInputSchema,
+  createPenaltyEntry as createPenaltyEntryUseCase,
+  type CreatePenaltyEntryOutput,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-
-const schema = z.object({
-  citizenId: z.cuid(),
-  points: z.coerce.number().int().min(1),
-  reason: z.string().trim().max(512).optional(),
-  expiresAt: wallTimeSchema.optional(),
-});
 
 export const createPenaltyEntry = createAuthenticatedAction(
   "createPenaltyEntry",
-  schema,
+  createPenaltyEntryInputSchema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("penaltyEntry", "create")))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    const citizen = await prisma.citizen.findUnique({
-      where: { id: data.citizenId },
-      select: { deletedAt: true },
-    });
-    if (!citizen)
-      return {
-        error: t("Common.notFound"),
-        requestPayload: formData,
-      };
-    if (citizen.deletedAt) {
-      /** A different user deleted the citizen, and the page must show it */
-      return rejectConflict("Der Citizen ist gelöscht.", formData);
+    let result: CreatePenaltyEntryOutput;
+    try {
+      result = await createPenaltyEntryUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        // The only conflict: a different user deleted the citizen
+        conflictMessage: () => "Der Citizen ist gelöscht.",
+      });
     }
-
-    /**
-     * Create entry
-     */
-    const createdEntry = await prisma.penaltyEntry.create({
-      data: {
-        createdBy: {
-          connect: {
-            id: authentication.session.entity.id,
-          },
-        },
-        citizen: {
-          connect: {
-            id: data.citizenId,
-          },
-        },
-        points: data.points,
-        reason: data.reason,
-        expiresAt: data.expiresAt,
-      },
-      select: {
-        id: true,
-        citizenId: true,
-      },
-    });
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.PENALTY_ENTRY_CREATED,
-        data: {
-          penaltyEntryId: createdEntry.id,
-          citizenId: createdEntry.citizenId,
-          points: data.points,
-          reason: data.reason || null,
-          expiresAt: data.expiresAt || null,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Trigger notifications
-     */
-    const isNotified = await triggerNotificationsAfterSave([
-      {
-        type: "PenaltyEntryCreated",
-        payload: {
-          penaltyEntryId: createdEntry.id,
-        },
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
     return {
       success: "Erfolgreich gespeichert.",
-      ...(isNotified ? {} : { warning: t("Common.notificationsFailed") }),
+      ...(result.notifications_sent
+        ? {}
+        : { warning: t("Common.notificationsFailed") }),
     };
   },
   {
     parseFormData: (formData) => ({
-      citizenId: formData.get("citizenId"),
-      points: formData.get("points"),
+      citizen_id: formData.get("citizenId"),
+      points: Number(formData.get("points")),
       reason: formData.has("reason") ? formData.get("reason") : undefined,
-      expiresAt:
+      // The form sends a wall time in the time zone of the organization
+      expires_at:
         formData.has("expiresAt") && formData.get("expiresAt") !== ""
-          ? formData.get("expiresAt")
+          ? wallTimeSchema.parse(formData.get("expiresAt")).toISOString()
           : undefined,
     }),
   },

@@ -1,9 +1,16 @@
 /** The use cases of the penalty points */
 export {
+  createPenaltyEntry,
+  createPenaltyEntryInputSchema,
+  type CreatePenaltyEntryOutput,
+} from "./createPenaltyEntry.js";
+export {
   PenaltyEntryStatus,
   listPenaltyEntries,
   listPenaltyEntriesInputSchema,
   type ListPenaltyEntriesOutput,
-  type PenaltyEntryCitizenOutput,
-  type PenaltyEntryOutput,
 } from "./listPenaltyEntries.js";
+export type {
+  PenaltyEntryCitizenOutput,
+  PenaltyEntryOutput,
+} from "./penaltyEntryOutput.js";

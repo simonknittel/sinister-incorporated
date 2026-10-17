@@ -1,4 +1,6 @@
 /** The use cases of the fleet group */
+export { createShip, createShipInputSchema } from "./createShip.js";
+export { deleteShip, deleteShipInputSchema } from "./deleteShip.js";
 export { listCitizenShips } from "./listCitizenShips.js";
 export { listMyShips, listMyShipsInputSchema } from "./listMyShips.js";
 export {
@@ -13,6 +15,7 @@ export {
   type ListShipsOutput,
   type ShipOutput,
 } from "./ownerShips.js";
+export { renameShip, renameShipInputSchema } from "./renameShip.js";
 export {
   canSearchShipVariants,
   searchShipVariants,
