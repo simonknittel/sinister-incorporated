@@ -1,0 +1,243 @@
+import { WikiPageNamespace } from "@sam-monorepo/database/client";
+import { expectAuditEvents } from "../fixtures/audit";
+import {
+  createAppEvent,
+  createCitizen,
+  createWikiPage,
+  futureEvent,
+  ONE_DAY_MS,
+  WikiPageVisibility,
+} from "../fixtures/factories";
+import {
+  structuredContentOf,
+  toolResultText,
+  UNKNOWN_TOOL_ERROR_CODE,
+  type McpTestClient,
+} from "../fixtures/mcp-client";
+import { expect, test } from "../fixtures/test";
+
+const CONFLICT_RESULT = /^ConflictError: /;
+const FORBIDDEN_RESULT = /^ForbiddenError: /;
+const NOT_FOUND_RESULT = /^NotFoundError: /;
+
+/** The structured content of a tool result that must not be an error */
+const callForContent = async (
+  client: McpTestClient,
+  name: string,
+  toolArguments?: Record<string, unknown>,
+) => {
+  const result = await client.callTool(name, toolArguments);
+  expect(result.isError, toolResultText(result)).toBeFalsy();
+
+  return structuredContentOf(result);
+};
+
+/** The message of a tool result that must be an error */
+const callForError = async (
+  client: McpTestClient,
+  name: string,
+  toolArguments?: Record<string, unknown>,
+) => {
+  const result = await client.callTool(name, toolArguments);
+  expect(result.isError).toBe(true);
+
+  return toolResultText(result);
+};
+
+test.describe("the wiki write tool of the MCP server", () => {
+  test("create_wiki_page creates a private top-level page with the Markdown content and the audit event of the form", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const author = await createCitizen(prisma, {
+      handle: "mcp-autorin",
+      permissionStrings: ["wiki;create"],
+    });
+    const client = await connectMcpClient(
+      (await authorizeMcpClient(author.user)).accessToken,
+    );
+
+    const createTool = (await client.listTools()).find(
+      (tool) => tool.name === "create_wiki_page",
+    );
+    expect(createTool?.annotations).toMatchObject({
+      readOnlyHint: false,
+      destructiveHint: false,
+    });
+
+    const created = await callForContent(client, "create_wiki_page", {
+      title: "Einsatzplan",
+      markdown:
+        "## Ablauf\n\nWir treffen uns am **Hangar**.\n\n- Schiffe prüfen\n- Funk testen",
+    });
+    const page = await prisma.wikiPage.findFirstOrThrow();
+    expect(created).toMatchObject({
+      id: page.id,
+      title: "Einsatzplan",
+      slug: "einsatzplan",
+      path: `/app/wiki/${page.id}/einsatzplan`,
+      parent_id: null,
+      event_id: null,
+    });
+    expect(created.markdown).toContain("## Ablauf");
+
+    // The content went through the collab server into the stored page
+    const readBack = await callForContent(client, "get_wiki_page", {
+      page_id: page.id,
+    });
+    expect(readBack.markdown).toContain("## Ablauf");
+    expect(readBack.markdown).toContain("Wir treffen uns am **Hangar**.");
+    expect(readBack.markdown).toContain("- Schiffe prüfen");
+
+    expect(
+      await prisma.wikiPage.findUniqueOrThrow({
+        where: { id: page.id },
+        select: {
+          namespace: true,
+          visibility: true,
+          ownerId: true,
+          createdById: true,
+        },
+      }),
+    ).toEqual({
+      namespace: WikiPageNamespace.WIKI,
+      visibility: WikiPageVisibility.RESTRICTED,
+      ownerId: author.entity.id,
+      createdById: author.entity.id,
+    });
+
+    await expectAuditEvents(prisma, ["WIKI_PAGE_CREATED"]);
+    expect(
+      await prisma.auditEvent.findFirstOrThrow({
+        where: { type: "WIKI_PAGE_CREATED" },
+        select: { createdById: true, data: true },
+      }),
+    ).toEqual({
+      createdById: author.user.id,
+      data: { pageId: page.id, title: "Einsatzplan", parentId: null },
+    });
+  });
+
+  test("create_wiki_page adds a page to the briefing of a managed event, but not after the event", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const organizer = await createCitizen(prisma, {
+      handle: "mcp-organisator",
+      permissionStrings: ["event;read"],
+    });
+    const event = await createAppEvent(prisma, {
+      name: "Konvoi nach Pyro",
+      createdById: organizer.entity.id,
+      ...futureEvent(),
+    });
+    const [rootPage] = event.wikiPages;
+    const pastEvent = await createAppEvent(prisma, {
+      name: "Vergangener Konvoi",
+      createdById: organizer.entity.id,
+      startTime: new Date(Date.now() - 2 * ONE_DAY_MS),
+      endTime: new Date(Date.now() - ONE_DAY_MS),
+    });
+    const client = await connectMcpClient(
+      (await authorizeMcpClient(organizer.user)).accessToken,
+    );
+
+    const created = await callForContent(client, "create_wiki_page", {
+      title: "Treffpunkt",
+      event_id: event.id,
+      markdown: "Wir starten am **Hangar 3**.",
+    });
+    const page = await prisma.wikiPage.findFirstOrThrow({
+      where: { title: "Treffpunkt" },
+    });
+    expect(created).toMatchObject({
+      id: page.id,
+      path: `/app/events/${event.id}/briefing/${page.id}/treffpunkt`,
+      parent_id: rootPage?.id,
+      event_id: event.id,
+    });
+    expect(created.markdown).toContain("Wir starten am **Hangar 3**.");
+    expect(page).toMatchObject({
+      namespace: WikiPageNamespace.EVENT,
+      eventId: event.id,
+      parentId: rootPage?.id,
+      ownerId: null,
+    });
+
+    // The briefing of an event that is over does not change
+    expect(
+      await callForError(client, "create_wiki_page", {
+        title: "Nachtrag",
+        event_id: pastEvent.id,
+      }),
+    ).toMatch(CONFLICT_RESULT);
+    expect(
+      await prisma.wikiPage.count({ where: { eventId: pastEvent.id } }),
+    ).toBe(1);
+
+    await expectAuditEvents(prisma, ["WIKI_PAGE_CREATED"]);
+    expect(
+      await prisma.auditEvent.findMany({
+        where: { type: "WIKI_PAGE_CREATED" },
+        select: { createdById: true, data: true },
+      }),
+    ).toEqual([
+      {
+        createdById: organizer.user.id,
+        data: {
+          pageId: page.id,
+          eventId: event.id,
+          title: "Treffpunkt",
+          parentId: rootPage?.id,
+        },
+      },
+    ]);
+  });
+
+  test("create_wiki_page is not available without a wiki or event permission and needs the management of the parent", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const outsider = await createCitizen(prisma, { handle: "mcp-ohne-rechte" });
+    const author = await createCitizen(prisma, {
+      handle: "mcp-autor",
+      permissionStrings: ["wiki;create"],
+    });
+    // Each user reads it, but nobody except wiki;manage manages it
+    const publicPage = await createWikiPage(prisma, {
+      title: "Regeln",
+      visibility: WikiPageVisibility.PUBLIC,
+    });
+
+    const outsiderClient = await connectMcpClient(
+      (await authorizeMcpClient(outsider.user)).accessToken,
+    );
+    expect(await outsiderClient.listToolNames()).not.toContain(
+      "create_wiki_page",
+    );
+    await expect(
+      outsiderClient.callTool("create_wiki_page", { title: "Spam" }),
+    ).rejects.toMatchObject({ code: UNKNOWN_TOOL_ERROR_CODE });
+
+    const authorClient = await connectMcpClient(
+      (await authorizeMcpClient(author.user)).accessToken,
+    );
+    expect(
+      await callForError(authorClient, "create_wiki_page", {
+        title: "Unterseite",
+        parent_id: publicPage.id,
+      }),
+    ).toMatch(FORBIDDEN_RESULT);
+    expect(
+      await callForError(authorClient, "create_wiki_page", {
+        title: "Unterseite",
+        parent_id: "unknownpage00000000000000",
+      }),
+    ).toMatch(NOT_FOUND_RESULT);
+
+    expect(await prisma.wikiPage.count()).toBe(1);
+  });
+});
