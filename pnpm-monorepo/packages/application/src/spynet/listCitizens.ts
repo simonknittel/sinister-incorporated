@@ -2,6 +2,7 @@ import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { pageLimitSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { getVisibleAssignedRoleIds } from "./visibleRoles.js";
 
@@ -27,19 +28,19 @@ const MAXIMUM_ROLE_ID_LENGTH = 64;
 const MAXIMUM_ROLE_FILTERS = 100;
 
 export const listCitizensInputSchema = z.object({
-  /** Only citizens with at least one of these roles */
   role_ids: z
     .array(z.string().max(MAXIMUM_ROLE_ID_LENGTH))
     .max(MAXIMUM_ROLE_FILTERS)
-    .default([]),
-  /** Only citizens without at least one of these values */
+    .default([])
+    .describe("Only the citizens with at least one of these roles."),
   unknown: z
     .array(z.enum(CitizenUnknownAttribute))
     .max(Object.values(CitizenUnknownAttribute).length)
-    .default([]),
+    .default([])
+    .describe("Only the citizens without at least one of these values."),
   sort: z.enum(CitizenListSort).default(CITIZEN_LIST_DEFAULT_SORT),
-  page: z.int().min(1).default(1),
-  limit: z.int().min(1).max(100).default(25),
+  page: z.int().min(1).default(1).describe("The page, from 1."),
+  limit: pageLimitSchema,
 });
 
 export interface CitizenListItem {

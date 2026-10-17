@@ -1,28 +1,18 @@
-/** The use cases of the events group, with the event rules that other groups share. */
+/** The use cases of the events, with the event rules that the app and the other groups share */
 export {
-  getDiscordUserIdOfActor,
   isAllowedToManageEvent,
   isAllowedToManagePositions,
   isEventUpdatable,
   isLineupVisible,
   type EventManageInput,
 } from "./eventManageRules.js";
+export { EventSourceType, EventVisibilityType } from "./eventOutput.js";
 export {
-  EventSourceType,
-  EventVisibilityType,
-  toCitizenReference,
-  toCitizenReferences,
-  type CitizenReference,
-} from "./eventOutput.js";
-export {
-  EVENT_DETAILS_INCLUDE,
   EVENT_PAGE_RELATIONS_SELECT,
   type EventDetails,
 } from "./eventSelects.js";
 export {
   buildVisibleEventsWhere,
-  canActorSeeEvent,
-  loadEventViewer,
   resolveEventVisibility,
   toEventViewer,
   type EventViewer,
@@ -45,7 +35,6 @@ export {
   listEventsInputSchema,
   type EventListEntry,
   type EventListPage,
-  type EventListPageOptions,
   type EventListRow,
   type ListEventsInput,
   type ListEventsOutput,

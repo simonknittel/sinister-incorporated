@@ -38,12 +38,7 @@ export class ConflictError extends Error {
 export class ValidationError extends Error {
   override readonly name = "ValidationError";
 
-  constructor(
-    message: string,
-    /** Data that tells which part of the input is not valid */
-    readonly details?: unknown,
-    options?: ErrorOptions,
-  ) {
+  constructor(message: string, options?: ErrorOptions) {
     super(message, options);
   }
 }

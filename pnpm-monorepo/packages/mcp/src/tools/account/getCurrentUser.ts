@@ -40,8 +40,9 @@ export const getCurrentUserTool = defineTool({
     user_id: z.string(),
     citizen: citizenReferenceSchema.nullable(),
     role: z.enum(CurrentUserRole),
-    /** Admin mode gives an admin all permissions */
-    admin_mode: z.boolean(),
+    admin_mode: z
+      .boolean()
+      .describe("Admin mode gives an admin all permissions."),
     permission_count: z.number().int().min(0),
     tool_groups: z.array(z.enum(ToolGroup)),
     account_page_url: z.url(),

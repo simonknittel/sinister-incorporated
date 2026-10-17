@@ -41,6 +41,5 @@ export const searchCitizensAndOrganizationsTool = defineTool({
   isVisible: (actor) =>
     actor.authorize("citizen", "read") ||
     actor.authorize("organization", "read"),
-  handler: (context, actor, input) =>
-    searchCitizensAndOrganizations(context, actor, input),
+  handler: searchCitizensAndOrganizations,
 });

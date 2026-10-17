@@ -10,7 +10,6 @@ import {
   type WikiPageViewer,
 } from "@sam-monorepo/permissions";
 import type { Actor } from "../actor.js";
-import { getEffectiveRolesOfCitizen } from "../auth/getEffectiveRolesOfCitizen.js";
 import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
 
@@ -68,19 +67,6 @@ export interface WikiContext {
 }
 
 /**
- * The effective roles of the citizen of the actor, empty for a user without
- * a citizen
- */
-export const loadActorRoleIds = async (
-  context: ApplicationContext,
-  actor: Actor,
-): Promise<ReadonlySet<string>> =>
-  actor.citizen
-    ? (await getEffectiveRolesOfCitizen(context.prisma, actor.citizen.id))
-        .roleIds
-    : new Set();
-
-/**
  * Loads all wiki pages and resolves the effective permissions of the actor.
  * Everything wiki-related (tree, breadcrumbs, page views, actions) derives
  * from this context.
@@ -90,37 +76,34 @@ export const buildWikiContext = (
   actor: Actor,
 ): Promise<WikiContext> =>
   withSpan(context, "buildWikiContext", async () => {
-    const [roleIds, allPages] = await Promise.all([
-      loadActorRoleIds(context, actor),
-      context.prisma.wikiPage.findMany({
-        where: { namespace: WikiPageNamespace.WIKI },
-        select: {
-          id: true,
-          parentId: true,
-          ownerId: true,
-          title: true,
-          slug: true,
-          iconId: true,
-          sortOrder: true,
-          sidebarMode: true,
-          visibility: true,
-          editability: true,
-          imageUploadability: true,
-          attachmentUploadability: true,
-          createdAt: true,
-          updatedAt: true,
-          deletedAt: true,
-          deletedById: true,
-          eventId: true,
-          templateId: true,
-          roleAccess: { select: { roleId: true, type: true } },
-        },
-      }),
-    ]);
+    const allPages = await context.prisma.wikiPage.findMany({
+      where: { namespace: WikiPageNamespace.WIKI },
+      select: {
+        id: true,
+        parentId: true,
+        ownerId: true,
+        title: true,
+        slug: true,
+        iconId: true,
+        sortOrder: true,
+        sidebarMode: true,
+        visibility: true,
+        editability: true,
+        imageUploadability: true,
+        attachmentUploadability: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+        deletedById: true,
+        eventId: true,
+        templateId: true,
+        roleAccess: { select: { roleId: true, type: true } },
+      },
+    });
 
     const viewer: WikiPageViewer = {
       citizenId: actor.citizen?.id ?? null,
-      roleIds,
+      roleIds: actor.roleIds,
       /**
        * Admin mode is part of `authorize()` and thus flows into
        * `hasWikiManage`, which grants all tiers on every page in the

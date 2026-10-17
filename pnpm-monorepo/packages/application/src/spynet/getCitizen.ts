@@ -3,6 +3,7 @@ import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
+import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { requireCitizenReadAccess } from "./citizenAccess.js";
 import {
@@ -16,7 +17,7 @@ import {
 import { getVisibleAssignedRoleIds } from "./visibleRoles.js";
 
 export const getCitizenInputSchema = z.object({
-  citizen_id: z.cuid(),
+  citizen_id: idSchema,
 });
 
 /**
@@ -139,7 +140,7 @@ export const getCitizen = async (
       handle: citizen.handle,
       timezone: citizen.timezone,
       ...spynetProfileValues,
-      roles,
+      roles: roles.map((role) => ({ id: role.id, name: role.name })),
       penalty_points: penaltyPoints,
       ship_count: shipCount,
     };

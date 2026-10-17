@@ -3,10 +3,11 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
 import { revokeGrant } from "../oauth/revokeGrant.js";
+import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 
 export const revokeOwnGrantInputSchema = z.object({
-  grantId: z.cuid2(),
+  grant_id: idSchema,
 });
 
 /**
@@ -24,7 +25,7 @@ export const revokeOwnGrant = (
 ): Promise<void> =>
   withSpan(context, "revokeOwnGrant", async () => {
     const grant = await context.prisma.oAuthGrant.findFirst({
-      where: { id: input.grantId, userId: actor.userId, revokedAt: null },
+      where: { id: input.grant_id, userId: actor.userId, revokedAt: null },
       select: { id: true, clientId: true },
     });
     if (!grant) throw new NotFoundError("The grant does not exist");

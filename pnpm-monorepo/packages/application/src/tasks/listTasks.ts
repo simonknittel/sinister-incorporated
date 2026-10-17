@@ -8,8 +8,13 @@ import {
   type MergedCursorSourceInput,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
-import { requirePermission, type Actor } from "../actor.js";
+import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import {
+  cursorSchema,
+  pageLimitSchema,
+  type PageOptions,
+} from "../pagination.js";
 import { buildUnreadWhere } from "../readMarkers/unreadWhere.js";
 import { withSpan } from "../withSpan.js";
 import { findNewTaskIds } from "./findNewTaskIds.js";
@@ -18,7 +23,7 @@ import {
   type TaskListItemRow,
 } from "./taskListSelect.js";
 import { toTaskListItem, type TaskListItem } from "./taskOutput.js";
-import { getOpenTasksWhere, loadVisibleTasksWhere } from "./taskWhere.js";
+import { getOpenTasksWhere, getVisibleTasksWhere } from "./taskWhere.js";
 
 /** The status filter of the tasks list */
 export enum TaskListStatus {
@@ -41,15 +46,6 @@ export enum TaskCreatorFilter {
   Me = "me",
 }
 
-/** The page size when the caller does not give one */
-const DEFAULT_TASK_LIST_LIMIT = 25;
-
-/** One call never returns more tasks than this */
-const MAXIMUM_TASK_LIST_LIMIT = 100;
-
-/** A cursor contains a date, a source key and an id (see `encodeCursor`) */
-const MAXIMUM_CURSOR_LENGTH = 256;
-
 export const listTasksInputSchema = z.object({
   status: z
     .enum(TaskListStatus)
@@ -65,18 +61,8 @@ export const listTasksInputSchema = z.object({
     .enum(TaskCreatorFilter)
     .default(TaskCreatorFilter.All)
     .describe("me: only the tasks that the user created."),
-  limit: z
-    .number()
-    .int()
-    .min(1)
-    .max(MAXIMUM_TASK_LIST_LIMIT)
-    .default(DEFAULT_TASK_LIST_LIMIT),
-  cursor: z
-    .string()
-    .min(1)
-    .max(MAXIMUM_CURSOR_LENGTH)
-    .optional()
-    .describe("The next_cursor of the previous page."),
+  limit: pageLimitSchema,
+  cursor: cursorSchema.optional(),
 });
 
 export type ListTasksInput = z.output<typeof listTasksInputSchema>;
@@ -86,8 +72,7 @@ export interface ListTasksOutput {
   readonly next_cursor: string | null;
 }
 
-export interface TaskListPageOptions {
-  readonly direction?: CursorDirection;
+export interface TaskListPageOptions extends PageOptions {
   /**
    * The task list of the app shows all open tasks on one page: they are a
    * short list. Then `limit` applies only to the closed tasks.
@@ -272,20 +257,16 @@ export const findTaskListPage = async (
     direction,
   };
 
-  const loadBaseWhere = async () => {
-    const { citizenId, visibleTasksWhere } = await loadVisibleTasksWhere(
-      context,
-      actor,
-    );
-
-    return [getFilterWhere(input, citizenId), visibleTasksWhere];
-  };
+  const getBaseWhere = () => [
+    getFilterWhere(input, requireCitizen(actor).id),
+    getVisibleTasksWhere(actor),
+  ];
 
   switch (input.status) {
     case TaskListStatus.Open: {
       const page = await findOpenTaskPage(
         context,
-        { AND: [getOpenTasksWhere(now), ...(await loadBaseWhere())] },
+        { AND: [getOpenTasksWhere(now), ...getBaseWhere()] },
         pageRequest,
         allOpenTasksOnOnePage,
       );
@@ -313,11 +294,7 @@ export const findTaskListPage = async (
       const page = await findOpenTaskPage(
         context,
         {
-          AND: [
-            getOpenTasksWhere(now),
-            ...(await loadBaseWhere()),
-            unreadWhere,
-          ],
+          AND: [getOpenTasksWhere(now), ...getBaseWhere(), unreadWhere],
         },
         pageRequest,
         allOpenTasksOnOnePage,
@@ -330,7 +307,7 @@ export const findTaskListPage = async (
     }
 
     case TaskListStatus.Closed: {
-      const baseWhere = await loadBaseWhere();
+      const baseWhere = getBaseWhere();
       const page = await findTaskPage(
         CLOSED_TASK_SOURCES.map((source) =>
           createTaskSource(context, source, {

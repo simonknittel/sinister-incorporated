@@ -5,7 +5,7 @@ import {
   toCitizenReference,
   toCitizenReferences,
   type CitizenReference,
-} from "../events/eventOutput.js";
+} from "../citizenReference.js";
 import { getTaskStatus, type TaskStatus } from "./taskRules.js";
 
 export enum TaskRewardKind {

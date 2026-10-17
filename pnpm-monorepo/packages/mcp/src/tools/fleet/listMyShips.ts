@@ -1,8 +1,4 @@
-import {
-  listMyShips,
-  listMyShipsInputSchema,
-  PageDirection,
-} from "@sam-monorepo/application";
+import { listMyShips, listMyShipsInputSchema } from "@sam-monorepo/application";
 import * as z from "zod";
 import { dateTimeOutputSchema } from "../../schemas.js";
 import {
@@ -19,7 +15,7 @@ export const listMyShipsTool = defineTool({
   description:
     "Gives the ships of the citizen of the signed-in user with their variants, sorted by the variant name; the list is empty for a user without a citizen. Filter like list_org_fleet; deleted: true gives only the deleted ships.",
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
-  inputSchema: listMyShipsInputSchema.omit({ direction: true }),
+  inputSchema: listMyShipsInputSchema,
   outputSchema: z.strictObject({
     ships: z.array(
       z.strictObject({
@@ -35,10 +31,11 @@ export const listMyShipsTool = defineTool({
   }),
   isVisible: (actor) => actor.authorize("ship", "manage"),
   handler: async (context, actor, input) => {
-    const { ships, total, next_cursor } = await listMyShips(context, actor, {
-      ...input,
-      direction: PageDirection.Next,
-    });
+    const { ships, total, next_cursor } = await listMyShips(
+      context,
+      actor,
+      input,
+    );
 
     return { ships, total, next_cursor };
   },

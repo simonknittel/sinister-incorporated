@@ -21,7 +21,7 @@ export const findVisibleEvent = async (
     include: EVENT_DETAILS_INCLUDE,
   });
 
-  if (!event || !(await canActorSeeEvent(context, actor, event)))
+  if (!event || !canActorSeeEvent(actor, event))
     throw new NotFoundError("The event does not exist");
 
   return event;

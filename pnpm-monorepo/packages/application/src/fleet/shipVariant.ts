@@ -1,6 +1,7 @@
 import { VariantStatus } from "@sam-monorepo/database/browser";
 import type { Prisma } from "@sam-monorepo/database/client";
 import * as z from "zod";
+import { idSchema } from "../pagination.js";
 
 /** The filter of the fleet lists by the status of the variant */
 export enum FlightReadyFilter {
@@ -17,7 +18,7 @@ const MAXIMUM_FILTER_IDS = 100;
 /** Variant, series and manufacturer names are much shorter */
 const MAXIMUM_QUERY_LENGTH = 100;
 
-export const filterIdsSchema = z.array(z.cuid()).max(MAXIMUM_FILTER_IDS);
+const filterIdsSchema = z.array(idSchema).max(MAXIMUM_FILTER_IDS);
 
 /** A part of a name, without regard to the case */
 export const nameQuerySchema = z
@@ -28,11 +29,21 @@ export const nameQuerySchema = z
 
 /** The variant filter fields of the input schema of a fleet list */
 export const variantFilterInputShape = {
-  flight_ready: z.enum(FlightReadyFilter).default(FlightReadyFilter.All),
-  manufacturer_ids: filterIdsSchema.default([]),
-  variant_tag_ids: filterIdsSchema.default([]),
-  /** A part of the variant name */
-  query: nameQuerySchema.optional(),
+  flight_ready: z
+    .enum(FlightReadyFilter)
+    .default(FlightReadyFilter.All)
+    .describe(
+      "yes: only the flight ready variants. no: only the variants that are marked as not flight ready.",
+    ),
+  manufacturer_ids: filterIdsSchema
+    .default([])
+    .describe("Only the variants of these manufacturers."),
+  variant_tag_ids: filterIdsSchema
+    .default([])
+    .describe("Only the variants with at least one of these tags."),
+  query: nameQuerySchema
+    .optional()
+    .describe("A part of the variant name, without regard to the case."),
 };
 
 interface VariantFilter {
@@ -122,6 +133,25 @@ type ShipVariantRow = Prisma.VariantGetPayload<{
   select: typeof SHIP_VARIANT_SELECT;
 }>;
 
+/** The status of a variant in the catalog */
+export enum ShipVariantStatus {
+  FlightReady = "flight_ready",
+  NotFlightReady = "not_flight_ready",
+}
+
+const toShipVariantStatus = (status: VariantStatus): ShipVariantStatus => {
+  switch (status) {
+    case VariantStatus.FLIGHT_READY:
+      return ShipVariantStatus.FlightReady;
+
+    case VariantStatus.NOT_FLIGHT_READY:
+      return ShipVariantStatus.NotFlightReady;
+
+    default:
+      throw new Error(`Unknown variant status: ${status satisfies never}`);
+  }
+};
+
 export interface VariantTagOutput {
   readonly id: string;
   readonly key: string;
@@ -132,7 +162,7 @@ export interface ShipVariantOutput {
   readonly id: string;
   readonly name: string;
   /** Null when nobody set the status of the variant */
-  readonly status: VariantStatus | null;
+  readonly status: ShipVariantStatus | null;
   readonly series: {
     readonly id: string;
     readonly name: string;
@@ -157,7 +187,7 @@ export const toShipVariantOutput = (
   return {
     id: variant.id,
     name: variant.name,
-    status: variant.status,
+    status: variant.status && toShipVariantStatus(variant.status),
     series: { id: variant.series.id, name: variant.series.name },
     manufacturer: {
       id: manufacturer.id,

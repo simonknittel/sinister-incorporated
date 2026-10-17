@@ -1,20 +1,15 @@
 import { OrganizationMembershipVisibility } from "@sam-monorepo/database/browser";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
+import {
+  ACTIVE_CITIZEN_WHERE,
+  getOrganizationLogoUrl,
+} from "@sam-monorepo/domain";
 import { requirePermission, type Actor } from "../actor.js";
+import type { CitizenReference } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
-
-/** The organization logos are hotlinked from the website they are scraped from */
-const ORGANIZATION_LOGO_BASE_URL = "https://robertsspaceindustries.com";
 
 export enum MembershipVisibility {
   Public = "public",
   Redacted = "redacted",
-}
-
-export interface CitizenReference {
-  readonly id: string;
-  /** Display text. It can change and it does not identify the citizen. */
-  readonly handle: string | null;
 }
 
 export interface OrganizationReference {
@@ -32,10 +27,6 @@ export interface CitizenMembershipOutput {
   readonly organization: OrganizationReference;
   readonly visibility: MembershipVisibility;
 }
-
-/** The logo is a path on the website of Star Citizen, for example `/media/…` */
-export const getOrganizationLogoUrl = (logo: string | null) =>
-  logo ? new URL(logo, ORGANIZATION_LOGO_BASE_URL).href : null;
 
 const toMembershipVisibility = (
   visibility: OrganizationMembershipVisibility,

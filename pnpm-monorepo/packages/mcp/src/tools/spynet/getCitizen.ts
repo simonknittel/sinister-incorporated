@@ -46,5 +46,5 @@ export const getCitizenTool = defineTool({
   }),
   isVisible: (actor) =>
     actor.authorize("citizen", "read") || actor.citizen !== null,
-  handler: (context, actor, input) => getCitizen(context, actor, input),
+  handler: getCitizen,
 });

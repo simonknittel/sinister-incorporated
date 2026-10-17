@@ -20,6 +20,13 @@ export interface Actor {
   readonly emailConfirmedAt: Date | null;
   /** Null for a user without a citizen */
   readonly citizen: ActorCitizen | null;
+  /**
+   * The effective roles of the citizen (see `getEffectiveRolesOfCitizen()`).
+   * Empty for a user without a citizen.
+   */
+  readonly roleIds: ReadonlySet<string>;
+  /** The id of the Discord account of the user, or null without one */
+  readonly discordUserId: string | null;
   readonly permissionSets: PermissionSet[];
   /** True only for an admin who enabled admin mode */
   readonly adminMode: boolean;
@@ -80,4 +87,14 @@ export const requirePermission = (
     throw new ForbiddenError(
       `The permission ${resource};${operation} is missing`,
     );
+};
+
+/**
+ * Throws a `ForbiddenError` when the user has no citizen. The features that
+ * show the own participations, assignments or applications need one.
+ */
+export const requireCitizen = (actor: Actor): ActorCitizen => {
+  if (!actor.citizen) throw new ForbiddenError("The user has no citizen");
+
+  return actor.citizen;
 };

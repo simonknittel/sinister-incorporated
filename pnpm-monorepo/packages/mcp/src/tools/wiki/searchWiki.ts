@@ -28,5 +28,5 @@ export const searchWikiTool = defineTool({
   }),
   // Each signed-in user can read the public pages. The use case checks each page.
   isVisible: () => true,
-  handler: (context, actor, input) => searchWiki(context, actor, input),
+  handler: searchWiki,
 });

@@ -38,5 +38,5 @@ export const listCitizensTool = defineTool({
   isVisible: (actor) =>
     actor.authorize("citizen", "read") &&
     actor.authorize("spynetCitizen", "read"),
-  handler: (context, actor, input) => listCitizens(context, actor, input),
+  handler: listCitizens,
 });

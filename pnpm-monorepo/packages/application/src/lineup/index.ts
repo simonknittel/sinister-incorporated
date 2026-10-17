@@ -1,4 +1,4 @@
-/** The use cases of the lineup group. */
+/** The use cases of the lineup of an event */
 export {
   findEventPositionTree,
   getEventLineup,
@@ -8,7 +8,4 @@ export {
   type GetEventLineupOutput,
   type LineupPosition,
 } from "./getEventLineup.js";
-export {
-  POSITION_TREE_INCLUDE,
-  TEMPLATE_POSITION_TREE_INCLUDE,
-} from "./positionTreeInclude.js";
+export { TEMPLATE_POSITION_TREE_INCLUDE } from "./positionTreeInclude.js";

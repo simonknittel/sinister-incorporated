@@ -26,7 +26,7 @@ export class ClientMetadataError extends ValidationError {
     message: string,
     options?: ErrorOptions,
   ) {
-    super(message, undefined, options);
+    super(message, options);
   }
 }
 

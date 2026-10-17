@@ -1,4 +1,4 @@
-/** The use cases of the changelog group. */
+/** The use cases of the changelog, with the quarter helpers that the app shares */
 export {
   getChangelogEntry,
   getChangelogEntryInputSchema,
@@ -12,9 +12,4 @@ export {
   type ListChangelogEntriesInput,
   type ListChangelogEntriesOutput,
 } from "./listChangelogEntries.js";
-export {
-  CHANGELOG_QUARTER_SLUG_PATTERN,
-  Quarter,
-  getQuarterOfDate,
-  type ChangelogQuarter,
-} from "./quarter.js";
+export { Quarter, getQuarterOfDate, type ChangelogQuarter } from "./quarter.js";

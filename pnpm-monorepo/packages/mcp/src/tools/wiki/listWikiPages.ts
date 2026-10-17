@@ -34,5 +34,5 @@ export const listWikiPagesTool = defineTool({
   }),
   // Each signed-in user can read the public pages. The use case checks each page.
   isVisible: () => true,
-  handler: (context, actor, input) => listWikiPages(context, actor, input),
+  handler: listWikiPages,
 });

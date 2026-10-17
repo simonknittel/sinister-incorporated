@@ -1,26 +1,32 @@
 import { ConfirmationStatus } from "@sam-monorepo/database/browser";
-import type { Prisma } from "@sam-monorepo/database/client";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
+import {
+  ACTIVE_CITIZEN_WHERE,
+  buildCursorConditions,
+  CursorDirection,
+  cursorOrderBy,
+  decodeCursor,
+  encodeCursor,
+} from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
+import {
+  toCitizenReference,
+  type CitizenReference,
+} from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError, ValidationError } from "../errors.js";
+import { cursorSchema, idSchema, pageLimitSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { canReadNote, canReadNoteRedacted } from "./notePermissions.js";
-import type { CitizenReference } from "./organizationMemberships.js";
 import {
   getNoteClassificationConditions,
   loadNoteClassifications,
 } from "./readableCitizenLogWhere.js";
 
-/** A cursor is short: an ISO timestamp, a separator and a cuid */
-const MAXIMUM_CURSOR_LENGTH = 256;
-
 export const listCitizenNotesInputSchema = z.object({
-  citizen_id: z.cuid(),
-  limit: z.int().min(1).max(100).default(25),
-  /** The `next_cursor` of the previous page */
-  cursor: z.string().min(1).max(MAXIMUM_CURSOR_LENGTH).optional(),
+  citizen_id: idSchema,
+  limit: pageLimitSchema,
+  cursor: cursorSchema.optional(),
 });
 
 export enum CitizenNoteConfirmation {
@@ -71,39 +77,8 @@ export interface ListCitizenNotesOutput {
   readonly next_cursor: string | null;
 }
 
-const CURSOR_SEPARATOR = "|";
-
-interface CursorPosition {
-  readonly createdAt: Date;
-  readonly id: string;
-}
-
-const encodeCursor = (note: CursorPosition) =>
-  [note.createdAt.toISOString(), note.id].join(CURSOR_SEPARATOR);
-
-const decodeCursor = (cursor: string): CursorPosition => {
-  const separatorIndex = cursor.indexOf(CURSOR_SEPARATOR);
-  const createdAt = new Date(cursor.slice(0, separatorIndex));
-  const id = cursor.slice(separatorIndex + 1);
-
-  if (separatorIndex < 0 || Number.isNaN(createdAt.getTime()) || !id)
-    throw new ValidationError("The cursor is not valid");
-
-  return { createdAt, id };
-};
-
-/** The notes are sorted from the newest to the oldest, like on the notes page */
-const getAfterCursorWhere = (
-  cursor: string | undefined,
-): Prisma.CitizenLogWhereInput => {
-  if (!cursor) return {};
-
-  const { createdAt, id } = decodeCursor(cursor);
-
-  return {
-    OR: [{ createdAt: { lt: createdAt } }, { createdAt, id: { lt: id } }],
-  };
-};
+/** The notes are the only source of the merged cursor of the list */
+const NOTE_CURSOR_SOURCE_KEY = "note";
 
 const toConfirmation = (confirmed: ConfirmationStatus | null) => {
   switch (confirmed) {
@@ -122,11 +97,14 @@ const toConfirmation = (confirmed: ConfirmationStatus | null) => {
 };
 
 /**
- * The notes of a citizen that the actor can read or see redacted. A note
- * needs the permission for its note type and its classification level, and
- * `alsoUnconfirmed` when it is not confirmed. Notes of a deleted note type or
- * classification level do not show. A deleted citizen has no notes page,
- * thus it gives a `NotFoundError`.
+ * The notes of a citizen that the actor can read or see redacted, from the
+ * newest to the oldest, like on the notes page. A note needs the permission
+ * for its note type and its classification level, and `alsoUnconfirmed` when
+ * it is not confirmed. Notes of a deleted note type or classification level
+ * do not show. A deleted citizen has no notes page, thus it gives a
+ * `NotFoundError`.
+ *
+ * @throws ValidationError when the cursor is not a cursor of this list
  */
 export const listCitizenNotes = async (
   context: ApplicationContext,
@@ -135,7 +113,13 @@ export const listCitizenNotes = async (
 ): Promise<ListCitizenNotesOutput> => {
   requirePermission(actor, "citizen", "read");
 
-  const afterCursorWhere = getAfterCursorWhere(input.cursor);
+  const position = decodeCursor(input.cursor);
+  if (
+    input.cursor &&
+    (!position || position.sourceKey !== NOTE_CURSOR_SOURCE_KEY)
+  )
+    throw new ValidationError("Unknown cursor");
+
   /**
    * Only the notes page of Spynet shows the author and the confirmation time.
    * The notes tab of a citizen needs only `citizen;read` and does not show
@@ -174,10 +158,15 @@ export const listCitizenNotes = async (
             /** An empty OR matches no note */
             OR: visibleClassifications,
           },
-          afterCursorWhere,
+          ...buildCursorConditions(
+            position,
+            NOTE_CURSOR_SOURCE_KEY,
+            CursorDirection.Next,
+            "createdAt",
+          ),
         ],
       },
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      orderBy: cursorOrderBy(CursorDirection.Next, "createdAt"),
       // One more note than the page tells whether a next page exists
       take: input.limit + 1,
       select: {
@@ -206,38 +195,43 @@ export const listCitizenNotes = async (
         // The condition of the query makes sure that the note type exists
         if (!note.noteType) return [];
 
-        if (canReadNote(actor, note)) {
-          const author = canSeeAuthorAndConfirmationTime
-            ? note.submittedBy?.citizen
-            : undefined;
+        const noteType = { id: note.noteType.id, name: note.noteType.name };
 
+        if (canReadNote(actor, note))
           return [
             {
               redacted: false,
               id: note.id,
-              note_type: note.noteType,
-              classification_level: note.classificationLevel,
+              note_type: noteType,
+              classification_level: note.classificationLevel && {
+                id: note.classificationLevel.id,
+                name: note.classificationLevel.name,
+              },
               confirmed: toConfirmation(note.confirmed),
               confirmed_at: canSeeAuthorAndConfirmationTime
                 ? (note.confirmedAt?.toISOString() ?? null)
                 : null,
               created_at: note.createdAt.toISOString(),
-              created_by:
-                author && !author.deletedAt
-                  ? { id: author.id, handle: author.handle }
-                  : null,
+              created_by: canSeeAuthorAndConfirmationTime
+                ? toCitizenReference(note.submittedBy?.citizen ?? null)
+                : null,
               content: note.content,
             },
           ];
-        }
 
         if (canReadNoteRedacted(actor, note))
-          return [{ redacted: true, id: note.id, note_type: note.noteType }];
+          return [{ redacted: true, id: note.id, note_type: noteType }];
 
         return [];
       }),
       next_cursor:
-        notes.length > input.limit && lastNote ? encodeCursor(lastNote) : null,
+        notes.length > input.limit && lastNote
+          ? encodeCursor({
+              date: lastNote.createdAt,
+              sourceKey: NOTE_CURSOR_SOURCE_KEY,
+              id: lastNote.id,
+            })
+          : null,
     };
   });
 };

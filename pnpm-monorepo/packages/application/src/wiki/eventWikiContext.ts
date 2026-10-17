@@ -12,7 +12,6 @@ import {
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import {
-  getDiscordUserIdOfActor,
   isAllowedToManageEvent,
   isEventUpdatable,
 } from "../events/eventManageRules.js";
@@ -138,8 +137,9 @@ export const pickEventWikiRootPage = <
 ) =>
   pages
     .filter((page) => page.parentId === null)
-    .toSorted((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0] ??
-  null;
+    .toSorted(
+      (first, second) => first.createdAt.getTime() - second.createdAt.getTime(),
+    )[0] ?? null;
 
 export interface BuildEventWikiContextInput {
   readonly event_id: string;
@@ -160,8 +160,9 @@ export const buildEventWikiContext = (
     if (!actor.authorize("event", "read")) return null;
 
     const citizenId = actor.citizen?.id ?? null;
+    const { discordUserId } = actor;
 
-    const [event, allPages, discordUserId] = await Promise.all([
+    const [event, allPages] = await Promise.all([
       context.prisma.event.findUnique({
         where: { id: eventId },
         select: {
@@ -187,7 +188,6 @@ export const buildEventWikiContext = (
         },
         select: EVENT_WIKI_PAGE_SELECT,
       }),
-      getDiscordUserIdOfActor(context, actor),
     ]);
     if (!event) return null;
 
@@ -195,7 +195,7 @@ export const buildEventWikiContext = (
      * Restricted or soft-deleted events must not leak through their wiki: no
      * context means every caller behaves as if the event did not exist.
      */
-    if (!(await canActorSeeEvent(context, actor, event))) return null;
+    if (!canActorSeeEvent(actor, event)) return null;
 
     const participant =
       discordUserId || citizenId
@@ -214,7 +214,7 @@ export const buildEventWikiContext = (
 
     const viewer: EventWikiViewer = {
       isParticipant: participant !== null,
-      isEventManager: isAllowedToManageEvent(actor, event, discordUserId),
+      isEventManager: isAllowedToManageEvent(actor, event),
       positionScopeIds: collectPositionScopeIdsForCitizen(
         event.positions,
         citizenId,

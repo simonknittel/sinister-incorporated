@@ -1,7 +1,6 @@
 import {
   listOrgFleet,
   listOrgFleetInputSchema,
-  PageDirection,
 } from "@sam-monorepo/application";
 import * as z from "zod";
 import {
@@ -18,7 +17,7 @@ export const listOrgFleetTool = defineTool({
   description:
     "Gives the ship variants with the number of ships that the members of the organization own (also the variants with 0 ships), and the totals of ships and of citizens with ships. Filter by flight readiness, by manufacturer ids (from search_ship_variants), by variant tag ids (from the tags in earlier results) and by a part of the variant name.",
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
-  inputSchema: listOrgFleetInputSchema.omit({ direction: true }),
+  inputSchema: listOrgFleetInputSchema,
   outputSchema: z.strictObject({
     fleet: z.array(
       z.strictObject({
@@ -35,10 +34,7 @@ export const listOrgFleetTool = defineTool({
     actor.authorize("organizationMembership", "read"),
   handler: async (context, actor, input) => {
     const { fleet, total_citizens, total_ships, next_cursor } =
-      await listOrgFleet(context, actor, {
-        ...input,
-        direction: PageDirection.Next,
-      });
+      await listOrgFleet(context, actor, input);
 
     return { fleet, total_citizens, total_ships, next_cursor };
   },

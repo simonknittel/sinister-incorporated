@@ -6,9 +6,10 @@
  * drop position shown in the sidebar.
  */
 export const compareWikiPagesByOrder = (
-  a: { readonly sortOrder: number; readonly title: string },
-  b: { readonly sortOrder: number; readonly title: string },
-) => a.sortOrder - b.sortOrder || a.title.localeCompare(b.title);
+  first: { readonly sortOrder: number; readonly title: string },
+  second: { readonly sortOrder: number; readonly title: string },
+) =>
+  first.sortOrder - second.sortOrder || first.title.localeCompare(second.title);
 
 interface WikiTreePageInput {
   readonly id: string;

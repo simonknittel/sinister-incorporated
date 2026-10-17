@@ -3,7 +3,9 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
 import { isChangelogEntryReadable } from "./isChangelogEntryReadable.js";
-import { MAXIMUM_CHANGELOG_KEY_LENGTH } from "./listChangelogEntries.js";
+
+/** The keys of the entries are short slugs */
+const MAXIMUM_CHANGELOG_KEY_LENGTH = 200;
 
 export const getChangelogEntryInputSchema = z.object({
   key: z

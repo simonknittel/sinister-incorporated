@@ -30,6 +30,7 @@ export {
 } from "./events/eventRecipients.js";
 export { isAllowedWebPushEndpointUrl } from "./isAllowedWebPushEndpointUrl.js";
 export { ORG_ID } from "./ORG_ID.js";
+export { getOrganizationLogoUrl } from "./organization/organizationLogoUrl.js";
 export { CursorDirection } from "./pagination/CursorDirection.js";
 export {
   buildCursorConditions,

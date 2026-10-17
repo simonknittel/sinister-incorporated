@@ -13,7 +13,10 @@ export {
   type EventWikiContextPage,
   type EventWikiContextPosition,
 } from "./eventWikiContext.js";
-export { getAccessibleWikiPage } from "./getAccessibleWikiPage.js";
+export {
+  WikiPageAccessTier,
+  getAccessibleWikiPage,
+} from "./getAccessibleWikiPage.js";
 export {
   getWikiPage,
   getWikiPageInputSchema,

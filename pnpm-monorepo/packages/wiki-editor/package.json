@@ -5,7 +5,8 @@
   "sideEffects": false,
   "exports": {
     ".": "./dist/index.js",
-    "./helpers": "./dist/helpers.js"
+    "./helpers": "./dist/helpers.js",
+    "./markdown": "./dist/markdown.js"
   },
   "scripts": {
     "postinstall": "tsc -p tsconfig.build.json",
@@ -28,7 +29,6 @@
     "@tiptap/extension-table": "3.31.4",
     "@tiptap/extension-text-align": "3.31.4",
     "@tiptap/extensions": "3.31.4",
-    "@tiptap/markdown": "3.31.4",
     "@tiptap/pm": "3.31.4",
     "@tiptap/starter-kit": "3.31.4",
     "@tiptap/static-renderer": "3.31.4",

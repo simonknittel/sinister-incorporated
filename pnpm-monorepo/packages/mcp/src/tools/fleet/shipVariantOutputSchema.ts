@@ -1,12 +1,14 @@
-import { VariantStatus } from "@sam-monorepo/database/browser";
+import { ShipVariantStatus } from "@sam-monorepo/application";
 import * as z from "zod";
 
 /** A variant of the ship catalog as the fleet tools give it */
 export const shipVariantOutputSchema = z.strictObject({
   id: z.string(),
   name: z.string(),
-  /** Null when nobody set the status of the variant */
-  status: z.enum(VariantStatus).nullable(),
+  status: z
+    .enum(ShipVariantStatus)
+    .nullable()
+    .describe("Null when nobody set the status of the variant."),
   series: z.strictObject({ id: z.string(), name: z.string() }),
   manufacturer: z.strictObject({
     id: z.string(),

@@ -10,8 +10,7 @@ import { citizenReferenceSchema, dateTimeOutputSchema } from "../../schemas.js";
 export const taskListItemOutputShape = {
   id: z.string(),
   title: z.string(),
-  /** Markdown */
-  description: z.string().nullable(),
+  description: z.string().nullable().describe("Markdown."),
   status: z.enum(TaskStatus),
   created_at: dateTimeOutputSchema,
   expires_at: dateTimeOutputSchema.nullable(),
@@ -19,8 +18,12 @@ export const taskListItemOutputShape = {
   assignees: z.array(citizenReferenceSchema),
   reward: z.strictObject({
     type: z.enum(TaskRewardKind),
-    /** The SILC for each completionist, or the Markdown text of a text reward */
-    value: z.union([z.number().int(), z.string()]).nullable(),
+    value: z
+      .union([z.number().int(), z.string()])
+      .nullable()
+      .describe(
+        "The SILC for each completionist, or the Markdown text of a text reward.",
+      ),
   }),
   visibility: z.enum(TaskVisibilityKind),
   is_assigned_to_me: z.boolean(),

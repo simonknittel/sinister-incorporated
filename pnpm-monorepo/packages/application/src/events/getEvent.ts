@@ -1,20 +1,21 @@
 import * as z from "zod";
-import { requirePermission, type Actor } from "../actor.js";
+import { requireCitizen, requirePermission, type Actor } from "../actor.js";
+import {
+  toCitizenReference,
+  toCitizenReferences,
+  type CitizenReference,
+} from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
-import { ForbiddenError } from "../errors.js";
+import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import {
-  getDiscordUserIdOfActor,
   isAllowedToManageEvent,
   isAllowedToManagePositions,
   isEventUpdatable,
 } from "./eventManageRules.js";
 import {
-  toCitizenReference,
-  toCitizenReferences,
   toEventSourceType,
   toEventVisibilityType,
-  type CitizenReference,
   type EventSourceType,
   type EventVisibilityType,
 } from "./eventOutput.js";
@@ -23,7 +24,7 @@ import { findVisibleEvent } from "./findVisibleEvent.js";
 import { buildParticipantCitizenWhere } from "./participantCitizenWhere.js";
 
 export const getEventInputSchema = z.object({
-  event_id: z.cuid(),
+  event_id: idSchema,
 });
 
 export type GetEventInput = z.infer<typeof getEventInputSchema>;
@@ -113,18 +114,16 @@ export const getEvent = (
     requirePermission(actor, "event", "read");
 
     // Like the participants page of the app, which requires a citizen
-    if (!actor.citizen)
-      throw new ForbiddenError("The user does not have a citizen");
+    const citizenId = requireCitizen(actor).id;
+    const { discordUserId } = actor;
 
     const event = await findVisibleEvent(context, actor, input.event_id);
+    const participants = await getParticipantEntries(
+      context,
+      event.participants,
+    );
 
-    const [participants, discordUserId] = await Promise.all([
-      getParticipantEntries(context, event.participants),
-      getDiscordUserIdOfActor(context, actor),
-    ]);
-
-    const citizenId = actor.citizen.id;
-    const canManage = isAllowedToManageEvent(actor, event, discordUserId);
+    const canManage = isAllowedToManageEvent(actor, event);
 
     return {
       id: event.id,
@@ -143,11 +142,7 @@ export const getEvent = (
       managers: toCitizenReferences(event.managers),
       participants,
       can_manage: canManage,
-      can_manage_positions: isAllowedToManagePositions(
-        actor,
-        event,
-        discordUserId,
-      ),
+      can_manage_positions: isAllowedToManagePositions(actor, event),
       is_updatable: isEventUpdatable(event, context.now()),
       is_participating: event.participants.some(
         (participant) =>

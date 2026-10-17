@@ -1,7 +1,12 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import * as z from "zod";
 import type { ApplicationContext } from "../context.js";
-import { pageInputShape, paginateByCursor } from "./pagination.js";
+import {
+  cursorSchema,
+  pageLimitSchema,
+  paginateByCursor,
+  type PageOptions,
+} from "../pagination.js";
 import {
   buildVariantFilterWhere,
   SHIP_VARIANT_SELECT,
@@ -19,10 +24,15 @@ export enum ShipSort {
 /** The input fields of the ship list of one citizen */
 export const ownerShipsInputShape = {
   ...variantFilterInputShape,
-  /** True gives only the deleted ships, false only the ships that are not deleted */
-  deleted: z.boolean().default(false),
+  deleted: z
+    .boolean()
+    .default(false)
+    .describe(
+      "true gives only the deleted ships, false only the ships that are not deleted.",
+    ),
   sort: z.enum(ShipSort).default(ShipSort.NameAscending),
-  ...pageInputShape,
+  limit: pageLimitSchema,
+  cursor: cursorSchema.optional(),
 };
 
 const ownerShipsInputSchema = z.object(ownerShipsInputShape);
@@ -72,11 +82,15 @@ const compareShips =
  * citizen show the same list; only the permission is different. Thus the
  * use cases check the permission and share this list. The cursor is the id
  * of a ship.
+ *
+ * @throws ValidationError when no ship has the cursor (see
+ * `PageOptions.unknownCursor`)
  */
 export const listOwnerShips = async (
   context: ApplicationContext,
   ownerId: string,
   input: z.infer<typeof ownerShipsInputSchema>,
+  options: PageOptions,
 ): Promise<ListShipsOutput> => {
   const ships = await context.prisma.ship.findMany({
     where: {
@@ -106,8 +120,8 @@ export const listOwnerShips = async (
     .sort(compareShips(input.sort));
 
   const page = paginateByCursor(sortedShips, {
+    ...options,
     cursor: input.cursor,
-    direction: input.direction,
     pageSize: input.limit,
     getCursor: (ship) => ship.id,
   });

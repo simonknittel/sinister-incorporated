@@ -53,6 +53,12 @@ export const resolvePrincipal = (
             emailVerified: true,
             bannedAt: true,
             citizen: { select: { id: true, handle: true } },
+            // The same account as the `discordId` of the session of the app
+            accounts: {
+              where: { provider: "discord" },
+              select: { providerAccountId: true },
+              take: 1,
+            },
           },
         },
       },
@@ -69,17 +75,18 @@ export const resolvePrincipal = (
     const { user } = grant;
     if (user.bannedAt) throw new InvalidTokenError("The user is banned");
 
-    const permissionSets = user.citizen
-      ? (await getEffectiveRolesOfCitizen(context.prisma, user.citizen.id))
-          .permissionSets
-      : [];
+    const effectiveRoles = user.citizen
+      ? await getEffectiveRolesOfCitizen(context.prisma, user.citizen.id)
+      : null;
 
     const actor = createActor({
       userId: grant.userId,
       userRole: user.role,
       emailConfirmedAt: user.emailVerified,
       citizen: user.citizen,
-      permissionSets,
+      roleIds: effectiveRoles?.roleIds ?? new Set(),
+      discordUserId: user.accounts[0]?.providerAccountId ?? null,
+      permissionSets: effectiveRoles?.permissionSets ?? [],
       // `createActor()` applies admin mode only to an admin
       adminMode: grant.adminModeEnabledAt !== null,
     });

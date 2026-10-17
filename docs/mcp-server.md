@@ -90,14 +90,6 @@ code with `fetch` and call the MCP endpoint with the MCP client SDK.
 
 ## Code layout
 
-| Location                                                                  | Content                                                                                           |
-| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| [`packages/application`](../pnpm-monorepo/packages/application/README.md) | The use cases, also the OAuth server logic (`src/oauth`) and the MCP settings (`src/mcpSettings`) |
-| `packages/mcp`                                                            | The tool catalog, the tools, the instructions text and the handler factory                        |
-| `apps/app/src/modules/oauth`                                              | The Next.js adapters of the OAuth server: the consent page, the token and revocation endpoints    |
-| `apps/app/src/modules/mcp`                                                | The Next.js adapter of the MCP endpoint                                                           |
-| `apps/app/src/modules/mcp-settings`                                       | The account page `/app/account/mcp`                                                               |
-
-The packages do not depend on Next.js. A separate MCP service can use them
-later. Read the conventions of the use cases in the
-[README of the application package](../pnpm-monorepo/packages/application/README.md).
+The code of the MCP server and of the OAuth server is in the packages
+`application` and `mcp` and in the adapter modules of the Next.js app. See
+[Architecture](./architecture.md).

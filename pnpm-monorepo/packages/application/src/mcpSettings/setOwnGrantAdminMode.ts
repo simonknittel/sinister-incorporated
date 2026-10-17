@@ -4,10 +4,11 @@ import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ForbiddenError, NotFoundError } from "../errors.js";
+import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 
 export const setOwnGrantAdminModeInputSchema = z.object({
-  grantId: z.cuid2(),
+  grant_id: idSchema,
   enabled: z.boolean(),
 });
 
@@ -34,7 +35,7 @@ export const setOwnGrantAdminMode = (
       );
 
     const grant = await context.prisma.oAuthGrant.findFirst({
-      where: { id: input.grantId, userId: actor.userId, revokedAt: null },
+      where: { id: input.grant_id, userId: actor.userId, revokedAt: null },
       select: { id: true, clientId: true, adminModeEnabledAt: true },
     });
     if (!grant) throw new NotFoundError("The grant does not exist");

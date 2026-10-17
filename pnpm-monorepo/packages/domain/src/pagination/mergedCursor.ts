@@ -70,16 +70,17 @@ export const decodeCursor = (cursor?: string | null): CursorPosition | null => {
  * exactly this comparison, so the two must stay in sync.
  */
 export const compareMergedCursorEntries = (
-  a: MergedCursorEntry,
-  b: MergedCursorEntry,
+  first: MergedCursorEntry,
+  second: MergedCursorEntry,
 ) => {
-  if (a.date.getTime() !== b.date.getTime())
-    return b.date.getTime() - a.date.getTime();
+  if (first.date.getTime() !== second.date.getTime())
+    return second.date.getTime() - first.date.getTime();
 
-  if (a.sourceKey !== b.sourceKey) return a.sourceKey < b.sourceKey ? -1 : 1;
+  if (first.sourceKey !== second.sourceKey)
+    return first.sourceKey < second.sourceKey ? -1 : 1;
 
-  if (a.id === b.id) return 0;
-  return a.id < b.id ? 1 : -1;
+  if (first.id === second.id) return 0;
+  return first.id < second.id ? 1 : -1;
 };
 
 /** Whether the entry sits beyond the position in the direction being walked. */

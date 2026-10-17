@@ -3,7 +3,7 @@ import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ForbiddenError } from "../errors.js";
-import { pageInputShape } from "./pagination.js";
+import { idSchema, pageLimitSchema } from "../pagination.js";
 import {
   nameQuerySchema,
   SHIP_VARIANT_SELECT,
@@ -12,10 +12,15 @@ import {
 } from "./shipVariant.js";
 
 export const searchShipVariantsInputSchema = z.object({
-  /** A part of the name of the variant, of its series or of its manufacturer */
-  query: nameQuerySchema.optional(),
-  manufacturer_id: z.cuid().optional(),
-  limit: pageInputShape.limit,
+  query: nameQuerySchema
+    .optional()
+    .describe(
+      "A part of the name of the variant, of its series or of its manufacturer.",
+    ),
+  manufacturer_id: idSchema
+    .optional()
+    .describe("Only the variants of this manufacturer."),
+  limit: pageLimitSchema,
 });
 
 export interface SearchShipVariantsOutput {

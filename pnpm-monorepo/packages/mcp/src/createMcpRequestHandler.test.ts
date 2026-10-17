@@ -45,6 +45,7 @@ const createGrantRow = () => ({
     emailVerified: new Date("2026-01-01T00:00:00Z"),
     bannedAt: null,
     citizen: { id: "citizen", handle: "Handle" },
+    accounts: [],
   },
 });
 

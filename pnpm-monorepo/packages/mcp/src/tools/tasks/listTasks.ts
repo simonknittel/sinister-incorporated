@@ -21,5 +21,5 @@ export const listTasksTool = defineTool({
   }),
   isVisible: (actor) =>
     actor.authorize("task", "read") && actor.citizen !== null,
-  handler: (context, actor, input) => listTasks(context, actor, input),
+  handler: listTasks,
 });

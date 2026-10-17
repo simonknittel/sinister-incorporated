@@ -20,8 +20,11 @@ const positionFields = {
       name: z.string(),
     }),
   ),
-  /** Null when nobody is assigned or the assigned citizen is deleted */
-  assignee: citizenReferenceSchema.nullable(),
+  assignee: citizenReferenceSchema
+    .nullable()
+    .describe(
+      "Null when nobody is assigned or the assigned citizen is deleted.",
+    ),
   applications: z.array(citizenReferenceSchema),
 };
 
@@ -53,13 +56,16 @@ export const getEventLineupTool = defineTool({
   outputSchema: z.strictObject({
     event: eventReferenceSchema,
     can_manage_positions: z.boolean(),
-    /** False after the end of the event: then the lineup cannot change */
-    is_updatable: z.boolean(),
+    is_updatable: z
+      .boolean()
+      .describe(
+        "False after the end of the event: then the lineup cannot change.",
+      ),
     positions: z.array(positionSchema),
   }),
   isVisible: (actor) =>
     actor.authorize("event", "read") &&
     actor.authorize("ship", "read") &&
     actor.citizen !== null,
-  handler: (context, actor, input) => getEventLineup(context, actor, input),
+  handler: getEventLineup,
 });

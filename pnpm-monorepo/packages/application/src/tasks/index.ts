@@ -1,4 +1,4 @@
-/** The use cases of the tasks group, with the task rules that the app shares. */
+/** The use cases of the tasks, with the task rules that the app shares */
 export { findNewTaskIds } from "./findNewTaskIds.js";
 export {
   findVisibleTask,

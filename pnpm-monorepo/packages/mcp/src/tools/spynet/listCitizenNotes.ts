@@ -53,5 +53,5 @@ export const listCitizenNotesTool = defineTool({
    * them. Thus the tool shows with the permission that the notes page needs.
    */
   isVisible: (actor) => actor.authorize("citizen", "read"),
-  handler: (context, actor, input) => listCitizenNotes(context, actor, input),
+  handler: listCitizenNotes,
 });

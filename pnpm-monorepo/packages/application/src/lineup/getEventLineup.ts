@@ -1,25 +1,25 @@
 import type { Citizen, Prisma, Variant } from "@sam-monorepo/database/client";
 import * as z from "zod";
-import { requirePermission, type Actor } from "../actor.js";
-import type { ApplicationContext } from "../context.js";
-import { ForbiddenError } from "../errors.js";
-import {
-  getDiscordUserIdOfActor,
-  isAllowedToManagePositions,
-  isEventUpdatable,
-  isLineupVisible,
-} from "../events/eventManageRules.js";
+import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import {
   toCitizenReference,
   toCitizenReferences,
   type CitizenReference,
-} from "../events/eventOutput.js";
+} from "../citizenReference.js";
+import type { ApplicationContext } from "../context.js";
+import { ForbiddenError } from "../errors.js";
+import {
+  isAllowedToManagePositions,
+  isEventUpdatable,
+  isLineupVisible,
+} from "../events/eventManageRules.js";
 import { findVisibleEvent } from "../events/findVisibleEvent.js";
+import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { POSITION_TREE_INCLUDE } from "./positionTreeInclude.js";
 
 export const getEventLineupInputSchema = z.object({
-  event_id: z.cuid(),
+  event_id: idSchema,
 });
 
 export type GetEventLineupInput = z.infer<typeof getEventLineupInputSchema>;
@@ -120,24 +120,15 @@ export const getEventLineup = (
   withSpan(context, "getEventLineup", async () => {
     requirePermission(actor, "event", "read");
     requirePermission(actor, "ship", "read");
+    requireCitizen(actor);
 
-    if (!actor.citizen)
-      throw new ForbiddenError("The user does not have a citizen");
+    const event = await findVisibleEvent(context, actor, input.event_id);
 
-    const [event, discordUserId] = await Promise.all([
-      findVisibleEvent(context, actor, input.event_id),
-      getDiscordUserIdOfActor(context, actor),
-    ]);
-
-    if (!isLineupVisible(actor, event, discordUserId))
+    if (!isLineupVisible(actor, event))
       throw new ForbiddenError("The lineup of the event is not enabled");
 
     const positions = await findEventPositionTree(context, event.id);
-    const canManagePositions = isAllowedToManagePositions(
-      actor,
-      event,
-      discordUserId,
-    );
+    const canManagePositions = isAllowedToManagePositions(actor, event);
 
     return {
       event: { id: event.id, name: event.name },

@@ -1,9 +1,15 @@
 import type { Prisma } from "@sam-monorepo/database/client";
+import { CursorDirection } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ForbiddenError } from "../errors.js";
-import { PageDirection, pageInputShape } from "../fleet/pagination.js";
+import {
+  cursorSchema,
+  idSchema,
+  pageLimitSchema,
+  type PageOptions,
+} from "../pagination.js";
 import { buildActivePenaltyEntryWhere } from "./activePenaltyEntryWhere.js";
 
 export enum PenaltyEntryStatus {
@@ -17,10 +23,15 @@ export enum PenaltyEntryStatus {
 }
 
 export const listPenaltyEntriesInputSchema = z.object({
-  status: z.enum(PenaltyEntryStatus).default(PenaltyEntryStatus.Active),
-  /** Only the entries of this citizen */
-  citizen_id: z.cuid().optional(),
-  ...pageInputShape,
+  status: z
+    .enum(PenaltyEntryStatus)
+    .default(PenaltyEntryStatus.Active)
+    .describe(
+      "active: not expired and not deleted. inactive: expired and not deleted. not_deleted: active and inactive. deleted: only the deleted entries.",
+    ),
+  citizen_id: idSchema.optional().describe("Only the entries of this citizen."),
+  limit: pageLimitSchema,
+  cursor: cursorSchema.optional(),
 });
 
 export interface PenaltyEntryCitizenOutput {
@@ -117,15 +128,14 @@ export const listPenaltyEntries = async (
   context: ApplicationContext,
   actor: Actor,
   input: z.infer<typeof listPenaltyEntriesInputSchema>,
+  { direction = CursorDirection.Next }: PageOptions = {},
 ): Promise<ListPenaltyEntriesOutput> => {
   authorizeList(actor, input);
 
   // One more entry than the page size tells if there is a further page. A
   // negative `take` reads the entries before the cursor.
   const take =
-    input.direction === PageDirection.Previous
-      ? -(input.limit + 1)
-      : input.limit + 1;
+    direction === CursorDirection.Prev ? -(input.limit + 1) : input.limit + 1;
 
   const rows = await context.prisma.penaltyEntry.findMany({
     where: {
@@ -152,16 +162,14 @@ export const listPenaltyEntries = async (
   let pageRows = rows;
   if (hasMore)
     pageRows =
-      input.direction === PageDirection.Previous
+      direction === CursorDirection.Prev
         ? rows.slice(1)
         : rows.slice(0, input.limit);
 
   const hasNextPage =
-    input.direction === PageDirection.Next ? hasMore : Boolean(input.cursor);
+    direction === CursorDirection.Next ? hasMore : Boolean(input.cursor);
   const hasPreviousPage =
-    input.direction === PageDirection.Previous
-      ? hasMore
-      : Boolean(input.cursor);
+    direction === CursorDirection.Prev ? hasMore : Boolean(input.cursor);
   const firstRow = pageRows.at(0);
   const lastRow = pageRows.at(-1);
 

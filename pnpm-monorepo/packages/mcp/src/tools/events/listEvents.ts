@@ -5,7 +5,7 @@ import {
   listEventsInputSchema,
 } from "@sam-monorepo/application";
 import * as z from "zod";
-import { dateTimeOutputSchema, MAXIMUM_LIMIT } from "../../schemas.js";
+import { dateTimeOutputSchema } from "../../schemas.js";
 import {
   defineTool,
   READ_ONLY_TOOL_ANNOTATIONS,
@@ -21,25 +21,24 @@ export const listEventsTool = defineTool({
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: listEventsInputSchema,
   outputSchema: z.strictObject({
-    events: z
-      .array(
-        z.strictObject({
-          id: z.string(),
-          name: z.string(),
-          start_time: dateTimeOutputSchema,
-          /** Null when the event has no explicit end */
-          end_time: dateTimeOutputSchema.nullable(),
-          location: z.string().nullable(),
-          source: z.enum(EventSourceType),
-          visibility: z.enum(EventVisibilityType),
-          participant_count: z.number().int().min(0),
-          is_participating: z.boolean(),
-          is_new: z.boolean(),
-        }),
-      )
-      .max(MAXIMUM_LIMIT),
+    events: z.array(
+      z.strictObject({
+        id: z.string(),
+        name: z.string(),
+        start_time: dateTimeOutputSchema,
+        end_time: dateTimeOutputSchema
+          .nullable()
+          .describe("Null when the event has no explicit end."),
+        location: z.string().nullable(),
+        source: z.enum(EventSourceType),
+        visibility: z.enum(EventVisibilityType),
+        participant_count: z.number().int().min(0),
+        is_participating: z.boolean(),
+        is_new: z.boolean(),
+      }),
+    ),
     next_cursor: z.string().nullable(),
   }),
   isVisible: (actor) => actor.authorize("event", "read"),
-  handler: (context, actor, input) => listEvents(context, actor, input),
+  handler: listEvents,
 });

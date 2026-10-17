@@ -2,6 +2,7 @@ import { buildWikiPageHref } from "@sam-monorepo/wiki-editor/helpers";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { idSchema, pageLimitSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import {
   loadReadableWikiScope,
@@ -27,10 +28,10 @@ const SNIPPET_MARKERS = { start: "\u0001", end: "\u0002" } as const;
 
 export const searchWikiInputSchema = z.object({
   query: z.string().trim().min(2).max(200),
-  /** The briefing of this event instead of the global wiki */
-  // A cuid has 25 characters
-  event_id: z.cuid().max(32).optional(),
-  limit: z.number().int().min(1).max(100).default(25),
+  event_id: idSchema
+    .optional()
+    .describe("The briefing of this event instead of the global wiki."),
+  limit: pageLimitSchema,
 });
 
 export type SearchWikiInput = z.output<typeof searchWikiInputSchema>;

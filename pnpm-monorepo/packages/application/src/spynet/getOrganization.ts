@@ -1,16 +1,17 @@
+import { getOrganizationLogoUrl } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
+import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import {
-  getOrganizationLogoUrl,
   listActiveOrganizationMemberships,
   type OrganizationMemberOutput,
 } from "./organizationMemberships.js";
 
 export const getOrganizationInputSchema = z.object({
-  organization_id: z.cuid(),
+  organization_id: idSchema,
 });
 
 export interface GetOrganizationOutput {

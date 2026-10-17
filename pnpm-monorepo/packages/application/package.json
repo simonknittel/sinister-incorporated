@@ -18,7 +18,6 @@
     "@opentelemetry/api": "1.9.1",
     "@sam-monorepo/database": "workspace:*",
     "@sam-monorepo/domain": "workspace:*",
-    "@sam-monorepo/notifications": "workspace:*",
     "@sam-monorepo/permissions": "workspace:*",
     "@sam-monorepo/wiki-editor": "workspace:*",
     "jose": "6.2.12",

@@ -23,5 +23,5 @@ export const searchShipVariantsTool = defineTool({
     variants: z.array(shipVariantOutputSchema),
   }),
   isVisible: canSearchShipVariants,
-  handler: (context, actor, input) => searchShipVariants(context, actor, input),
+  handler: searchShipVariants,
 });

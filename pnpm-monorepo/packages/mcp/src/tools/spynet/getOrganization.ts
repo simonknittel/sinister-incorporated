@@ -32,5 +32,5 @@ export const getOrganizationTool = defineTool({
     ),
   }),
   isVisible: (actor) => actor.authorize("organization", "read"),
-  handler: (context, actor, input) => getOrganization(context, actor, input),
+  handler: getOrganization,
 });

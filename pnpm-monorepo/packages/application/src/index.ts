@@ -5,6 +5,7 @@
  */
 export {
   createActor,
+  requireCitizen,
   requirePermission,
   type Actor,
   type ActorCitizen,
@@ -15,6 +16,7 @@ export {
   type EffectiveRoles,
 } from "./auth/getEffectiveRolesOfCitizen.js";
 export * from "./changelog/index.js";
+export type { CitizenReference } from "./citizenReference.js";
 export type {
   ApplicationContext,
   ChangelogEntrySource,
@@ -34,59 +36,15 @@ export * from "./events/index.js";
 export * from "./fleet/index.js";
 export * from "./lineup/index.js";
 export * from "./mcpSettings/index.js";
+export * from "./oauth/index.js";
 export {
-  issueAccessToken,
-  verifyAccessToken,
-  type VerifiedAccessToken,
-} from "./oauth/accessToken.js";
-export {
-  createGrantWithAuthorizationCode,
-  type CreateGrantWithAuthorizationCodeInput,
-  type CreateGrantWithAuthorizationCodeOutput,
-} from "./oauth/createGrantWithAuthorizationCode.js";
-export {
-  InvalidTokenError,
-  OAuthTokenError,
-  OAuthTokenErrorCode,
-  SigningKeyUnavailableError,
-} from "./oauth/errors.js";
-export { matchRedirectUri } from "./oauth/matchRedirectUri.js";
-export {
-  getAuthorizationServerMetadata,
-  getProtectedResourceMetadata,
-} from "./oauth/metadata.js";
-export {
-  redeemAuthorizationCode,
-  redeemAuthorizationCodeInputSchema,
-} from "./oauth/redeemAuthorizationCode.js";
-export {
-  refreshAccessToken,
-  refreshAccessTokenInputSchema,
-} from "./oauth/refreshAccessToken.js";
-export {
-  ClientMetadataError,
-  ClientMetadataErrorReason,
-  resolveClientMetadata,
-  resolveClientMetadataInputSchema,
-  type ClientMetadata,
-} from "./oauth/resolveClientMetadata.js";
-export {
-  resolvePrincipal,
-  type Principal,
-  type PrincipalGrant,
-} from "./oauth/resolvePrincipal.js";
-export { revokeToken, revokeTokenInputSchema } from "./oauth/revokeToken.js";
-export type { TokenResponse } from "./oauth/tokenResponse.js";
-export {
-  AuthorizationClientErrorReason,
-  AuthorizationErrorCode,
-  AuthorizationRequestValidationKind,
-  authorizationRequestSchema,
-  buildAuthorizationResponseUrl,
-  validateAuthorizationRequest,
-  type AuthorizationRequestParameters,
-  type AuthorizationRequestValidation,
-} from "./oauth/validateAuthorizationRequest.js";
+  DEFAULT_PAGE_LIMIT,
+  MAXIMUM_PAGE_LIMIT,
+  UnknownCursorBehavior,
+  paginateByCursor,
+  type CursorPage,
+  type PageOptions,
+} from "./pagination.js";
 export * from "./penaltyPoints/index.js";
 export * from "./readMarkers/index.js";
 export * from "./spynet/index.js";

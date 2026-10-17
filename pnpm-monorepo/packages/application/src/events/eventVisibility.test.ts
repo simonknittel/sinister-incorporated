@@ -22,9 +22,9 @@ const baseViewer: EventViewer = {
 };
 
 /**
- * Builds the role id set of the viewer the same way `loadEventViewer()` does, so
- * the level and inheritance cases test the actual composition with
- * `resolveEffectiveRoles()`.
+ * Builds the role id set of the viewer the same way
+ * `getEffectiveRolesOfCitizen()` does, so the level and inheritance cases
+ * test the actual composition with `resolveEffectiveRoles()`.
  */
 const roleIdsFromAssignments = (
   roleAssignments: readonly {

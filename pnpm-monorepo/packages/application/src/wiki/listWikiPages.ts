@@ -6,24 +6,23 @@ import {
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError, ValidationError } from "../errors.js";
+import { NotFoundError } from "../errors.js";
+import {
+  cursorSchema,
+  idSchema,
+  pageLimitSchema,
+  paginateByCursor,
+} from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { loadReadableWikiScope } from "./readableWikiScope.js";
 
-/**
- * The maximum length of an id: a cuid has 25 characters, a cuid2 at most 32.
- * The id of a page is also the cursor.
- */
-const MAXIMUM_ID_LENGTH = 32;
-
 export const listWikiPagesInputSchema = z.object({
-  /** The briefing of this event instead of the global wiki */
-  event_id: z.cuid().max(MAXIMUM_ID_LENGTH).optional(),
-  /** Only the pages below this page */
-  parent_id: z.cuid2().max(MAXIMUM_ID_LENGTH).optional(),
-  limit: z.number().int().min(1).max(100).default(25),
-  /** The `next_cursor` of the previous call */
-  cursor: z.cuid2().max(MAXIMUM_ID_LENGTH).optional(),
+  event_id: idSchema
+    .optional()
+    .describe("The briefing of this event instead of the global wiki."),
+  parent_id: idSchema.optional().describe("Only the pages below this page."),
+  limit: pageLimitSchema,
+  cursor: cursorSchema.optional(),
 });
 
 export type ListWikiPagesInput = z.output<typeof listWikiPagesInputSchema>;
@@ -82,7 +81,10 @@ const findWikiTreeNode = (
 
 /**
  * The pages that the actor can read in the global wiki or in the briefing of
- * an event, in the order and the hierarchy of the sidebar
+ * an event, in the order and the hierarchy of the sidebar. The cursor is the
+ * id of a page.
+ *
+ * @throws ValidationError when no page of the list has the cursor
  */
 export const listWikiPages = (
   context: ApplicationContext,
@@ -103,25 +105,17 @@ export const listWikiPages = (
       topNodes = parent.children;
     }
 
-    const flatNodes = flattenWikiTree(topNodes, input.parent_id ?? null, 0);
-
-    let start = 0;
-    if (input.cursor !== undefined) {
-      const cursorIndex = flatNodes.findIndex(
-        ({ node }) => node.id === input.cursor,
-      );
-      if (cursorIndex === -1)
-        throw new ValidationError("The cursor is not valid", {
-          field: "cursor",
-        });
-      start = cursorIndex + 1;
-    }
-
-    const items = flatNodes.slice(start, start + input.limit);
-    const hasMore = start + items.length < flatNodes.length;
+    const page = paginateByCursor(
+      flattenWikiTree(topNodes, input.parent_id ?? null, 0),
+      {
+        cursor: input.cursor,
+        pageSize: input.limit,
+        getCursor: ({ node }) => node.id,
+      },
+    );
 
     return {
-      pages: items.map(({ node, parentId, depth }) => ({
+      pages: page.items.map(({ node, parentId, depth }) => ({
         id: node.id,
         title: node.title,
         slug: node.slug,
@@ -131,6 +125,6 @@ export const listWikiPages = (
         depth,
         child_count: node.children.length,
       })),
-      next_cursor: hasMore ? (items.at(-1)?.node.id ?? null) : null,
+      next_cursor: page.nextCursor,
     };
   });

@@ -1,24 +1,25 @@
 import { ReadMarkerSubject } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
-import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
 import {
   toCitizenReferences,
   type CitizenReference,
-} from "../events/eventOutput.js";
+} from "../citizenReference.js";
+import type { ApplicationContext } from "../context.js";
+import { NotFoundError } from "../errors.js";
+import { idSchema } from "../pagination.js";
 import { buildUnreadWhere } from "../readMarkers/unreadWhere.js";
 import { withSpan } from "../withSpan.js";
 import { findNewTaskIds } from "./findNewTaskIds.js";
 import { TASK_DETAILS_INCLUDE, type TaskDetailsRow } from "./taskListSelect.js";
 import { toTaskListItem, type TaskListItem } from "./taskOutput.js";
 import { isAllowedToManageTask, isTaskUpdatable } from "./taskRules.js";
-import { loadVisibleTasksWhere } from "./taskWhere.js";
+import { getVisibleTasksWhere } from "./taskWhere.js";
 
 export const getTaskInputSchema = z.object({
-  task_id: z
-    .union([z.cuid(), z.cuid2()])
-    .describe("The id of the task, for example from list_tasks."),
+  task_id: idSchema.describe(
+    "The id of the task, for example from list_tasks.",
+  ),
 });
 
 export type GetTaskInput = z.output<typeof getTaskInputSchema>;
@@ -53,7 +54,7 @@ export interface GetTaskOutput extends TaskListItem {
 export type VisibleTask = TaskDetailsRow & {
   /**
    * The role rule of the self-assignment, with the effective roles of the
-   * citizen (see `getVisibleTasksWhere`)
+   * citizen of the actor
    */
   readonly hasCurrentUserRequiredRole: boolean;
 };
@@ -74,14 +75,9 @@ export const findVisibleTask = async (
 ): Promise<VisibleTask | null> => {
   requirePermission(actor, "task", "read");
 
-  const { roleIds, visibleTasksWhere } = await loadVisibleTasksWhere(
-    context,
-    actor,
-  );
-
   const task = await context.prisma.task.findFirst({
     where: {
-      AND: [{ id: taskId, deletedAt: null }, visibleTasksWhere],
+      AND: [{ id: taskId, deletedAt: null }, getVisibleTasksWhere(actor)],
     },
     include: TASK_DETAILS_INCLUDE,
   });
@@ -91,7 +87,7 @@ export const findVisibleTask = async (
     ...task,
     hasCurrentUserRequiredRole:
       task.requiredRoles.length === 0 ||
-      task.requiredRoles.some((role) => roleIds.has(role.id)),
+      task.requiredRoles.some((role) => actor.roleIds.has(role.id)),
   };
 };
 

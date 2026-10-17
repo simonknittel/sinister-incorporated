@@ -2,9 +2,14 @@ import { ORG_ID } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import {
+  cursorSchema,
+  pageLimitSchema,
+  paginateByCursor,
+  type PageOptions,
+} from "../pagination.js";
+import { listActiveOrganizationMemberships } from "../spynet/organizationMemberships.js";
 import { withSpan } from "../withSpan.js";
-import { getVisibleMemberCitizenIds } from "./organizationMembers.js";
-import { pageInputShape, paginateByCursor } from "./pagination.js";
 import {
   buildVariantFilterWhere,
   SHIP_VARIANT_SELECT,
@@ -23,7 +28,8 @@ export enum OrgFleetSort {
 export const listOrgFleetInputSchema = z.object({
   ...variantFilterInputShape,
   sort: z.enum(OrgFleetSort).default(OrgFleetSort.CountDescending),
-  ...pageInputShape,
+  limit: pageLimitSchema,
+  cursor: cursorSchema.optional(),
 });
 
 export interface OrgFleetEntryOutput {
@@ -66,17 +72,25 @@ const compareFleetEntries =
 /**
  * The ships of the members of the organization, counted per variant. The
  * list has all variants that agree with the filters, also the variants
- * without ships (count 0). The cursor is the id of a variant.
+ * without ships (count 0). The members are the members that the member list
+ * of the organization page shows to the actor. The cursor is the id of a
+ * variant.
+ *
+ * @throws ValidationError when no variant has the cursor (see
+ * `PageOptions.unknownCursor`)
  */
 export const listOrgFleet = (
   context: ApplicationContext,
   actor: Actor,
   input: z.infer<typeof listOrgFleetInputSchema>,
+  options: PageOptions = {},
 ): Promise<ListOrgFleetOutput> =>
   withSpan(context, "listOrgFleet", async () => {
     requirePermission(actor, "orgFleet", "read");
 
-    const citizenIds = await getVisibleMemberCitizenIds(context, actor, ORG_ID);
+    const citizenIds = (
+      await listActiveOrganizationMemberships(context, actor, ORG_ID)
+    ).map((membership) => membership.citizen.id);
     if (citizenIds.length === 0)
       return {
         fleet: [],
@@ -122,8 +136,8 @@ export const listOrgFleet = (
       .sort(compareFleetEntries(input.sort));
 
     const page = paginateByCursor(sortedFleet, {
+      ...options,
       cursor: input.cursor,
-      direction: input.direction,
       pageSize: input.limit,
       getCursor: (entry) => entry.variant.id,
     });

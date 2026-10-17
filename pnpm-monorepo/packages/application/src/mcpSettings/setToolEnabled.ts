@@ -8,7 +8,7 @@ import { withSpan } from "../withSpan.js";
 const MAXIMUM_TOOL_NAME_LENGTH = 64;
 
 export const setToolEnabledInputSchema = z.object({
-  toolName: z
+  tool_name: z
     .string()
     .max(MAXIMUM_TOOL_NAME_LENGTH)
     .regex(/^[a-z][a-z0-9_]*$/),
@@ -28,13 +28,13 @@ export const setToolEnabled = (
   withSpan(context, "setToolEnabled", async () => {
     const { count } = input.enabled
       ? await context.prisma.mcpToolSetting.deleteMany({
-          where: { userId: actor.userId, toolName: input.toolName },
+          where: { userId: actor.userId, toolName: input.tool_name },
         })
       : await context.prisma.mcpToolSetting.createMany({
           data: [
             {
               userId: actor.userId,
-              toolName: input.toolName,
+              toolName: input.tool_name,
               disabledAt: context.now(),
             },
           ],
@@ -47,7 +47,7 @@ export const setToolEnabled = (
     await context.audit.create([
       {
         type: AuditEventType.MCP_TOOL_SETTING_UPDATED,
-        data: { toolName: input.toolName, enabled: input.enabled },
+        data: { toolName: input.tool_name, enabled: input.enabled },
         createdById: actor.userId,
       },
     ]);

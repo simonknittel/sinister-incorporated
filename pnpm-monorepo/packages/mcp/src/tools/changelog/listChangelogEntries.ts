@@ -24,13 +24,15 @@ export const listChangelogEntriesTool = defineTool({
         date: z.iso.date(),
         title: z.string(),
         tags: z.array(z.string()),
-        /** Whether the app shows the entry as unseen until the user saw it */
-        is_tracked: z.boolean(),
+        is_tracked: z
+          .boolean()
+          .describe(
+            "Whether the app shows the entry as unseen until the user saw it.",
+          ),
       }),
     ),
     next_cursor: z.string().nullable(),
   }),
   isVisible: () => true,
-  handler: (context, actor, input) =>
-    listChangelogEntries(context, actor, input),
+  handler: listChangelogEntries,
 });

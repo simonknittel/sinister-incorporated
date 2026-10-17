@@ -6,8 +6,6 @@ import type {
   Prisma,
 } from "@sam-monorepo/database/client";
 import type { Actor } from "../actor.js";
-import { getEffectiveRolesOfCitizen } from "../auth/getEffectiveRolesOfCitizen.js";
-import type { ApplicationContext } from "../context.js";
 
 export interface EventViewer {
   readonly citizenId: string | null;
@@ -86,58 +84,18 @@ export const buildVisibleEventsWhere = (
   };
 };
 
-/**
- * The viewer of the visibility rules. `roleIds` are the effective roles of
- * the citizen of the actor (see `getEffectiveRolesOfCitizen()`).
- */
-export const toEventViewer = (
-  actor: Actor,
-  roleIds: ReadonlySet<string>,
-): EventViewer => ({
+/** The viewer of the visibility rules */
+export const toEventViewer = (actor: Actor): EventViewer => ({
   citizenId: actor.citizen?.id ?? null,
-  roleIds,
+  roleIds: actor.roleIds,
   hasEventManage: actor.authorize("event", "manage"),
 });
 
 /**
- * Loads the effective roles of the citizen of the actor, but only when the
- * visibility rules need them: `event;manage` sees every event.
+ * Single-event visibility check for the actor. Callers treat a `false` as
+ * "does not exist" so restricted events stay fully invisible.
  */
-export const loadEventViewer = async (
-  context: ApplicationContext,
-  actor: Actor,
-): Promise<EventViewer> => {
-  const viewer = toEventViewer(actor, new Set());
-  if (viewer.hasEventManage || !actor.citizen) return viewer;
-
-  const { roleIds } = await getEffectiveRolesOfCitizen(
-    context.prisma,
-    actor.citizen.id,
-  );
-
-  return { ...viewer, roleIds };
-};
-
-/**
- * Single-event visibility check for the actor. The roles only add
- * visibility, thus the check loads them only when the event is not visible
- * without them. Callers treat a `false` as "does not exist" so restricted
- * events stay fully invisible.
- */
-export const canActorSeeEvent = async (
-  context: ApplicationContext,
+export const canActorSeeEvent = (
   actor: Actor,
   event: EventVisibilityInput,
-): Promise<boolean> => {
-  const viewerWithoutRoles = toEventViewer(actor, new Set());
-  if (resolveEventVisibility(event, viewerWithoutRoles)) return true;
-
-  if (
-    event.deletedAt !== null ||
-    !actor.citizen ||
-    event.visibilityRoles.length <= 0
-  )
-    return false;
-
-  return resolveEventVisibility(event, await loadEventViewer(context, actor));
-};
+): boolean => resolveEventVisibility(event, toEventViewer(actor));

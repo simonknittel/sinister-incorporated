@@ -34,5 +34,5 @@ export const getTaskTool = defineTool({
   }),
   isVisible: (actor) =>
     actor.authorize("task", "read") && actor.citizen !== null,
-  handler: (context, actor, input) => getTask(context, actor, input),
+  handler: getTask,
 });

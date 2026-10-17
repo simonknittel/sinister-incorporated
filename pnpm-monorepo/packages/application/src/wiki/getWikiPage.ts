@@ -1,23 +1,25 @@
 import { WikiPageNamespace } from "@sam-monorepo/database/client";
-import {
-  collectWikiPageLinkIds,
-  renderWikiContentToMarkdown,
-  type WikiPageLinkedPage,
-} from "@sam-monorepo/wiki-editor";
+import { collectWikiPageLinkIds } from "@sam-monorepo/wiki-editor";
 import {
   buildWikiPageHref,
   type WikiPageHrefBase,
+  type WikiPageLinkedPage,
 } from "@sam-monorepo/wiki-editor/helpers";
+import { renderWikiContentToMarkdown } from "@sam-monorepo/wiki-editor/markdown";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
+import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import {
   buildEventWikiContext,
   hasReadableEventWikiRoot,
 } from "./eventWikiContext.js";
-import { getAccessibleWikiPage } from "./getAccessibleWikiPage.js";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "./getAccessibleWikiPage.js";
 import {
   loadWikiIframeAllowlist,
   loadWikiLinkedVariants,
@@ -34,8 +36,7 @@ import {
 } from "./wikiPagePath.js";
 
 export const getWikiPageInputSchema = z.object({
-  // A cuid2 has at most 32 characters
-  page_id: z.cuid2().max(32),
+  page_id: idSchema,
 });
 
 export type GetWikiPageInput = z.output<typeof getWikiPageInputSchema>;
@@ -130,7 +131,11 @@ const findReadablePage = (
   pageId: string,
 ): { page: WikiSharedContextPage; path: string } | null => {
   for (const scope of scopes) {
-    const page = getAccessibleWikiPage(scope.context, pageId, "read");
+    const page = getAccessibleWikiPage(
+      scope.context,
+      pageId,
+      WikiPageAccessTier.Read,
+    );
     if (page) return { page, path: buildWikiPageHref(scope.hrefBase, page) };
   }
 
@@ -152,7 +157,11 @@ export const getWikiPage = (
     const [ownScope] = scopes;
     const page =
       ownScope &&
-      getAccessibleWikiPage(ownScope.context, input.page_id, "read");
+      getAccessibleWikiPage(
+        ownScope.context,
+        input.page_id,
+        WikiPageAccessTier.Read,
+      );
     if (!ownScope || !page)
       throw new NotFoundError("The wiki page does not exist");
 
@@ -203,7 +212,7 @@ export const getWikiPage = (
     const parent = getAccessibleWikiPage(
       ownScope.context,
       page.parentId,
-      "read",
+      WikiPageAccessTier.Read,
     );
 
     return {

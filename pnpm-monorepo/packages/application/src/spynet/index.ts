@@ -24,7 +24,6 @@ export {
   type RedactedCitizenNote,
 } from "./listCitizenNotes.js";
 export {
-  CITIZEN_LIST_DEFAULT_SORT,
   CitizenListSort,
   CitizenUnknownAttribute,
   listCitizens,
@@ -50,9 +49,6 @@ export {
   type CitizenLogTableType,
 } from "./readableCitizenLogWhere.js";
 export {
-  SPYNET_SEARCH_DEFAULT_LIMIT,
-  SPYNET_SEARCH_MAXIMUM_LIMIT,
-  SpynetSearchInclude,
   searchCitizensAndOrganizations,
   searchCitizensAndOrganizationsInputSchema,
   type CitizenSearchHit,

@@ -25,8 +25,9 @@ export const getEventTool = defineTool({
     name: z.string(),
     description: z.string().nullable(),
     start_time: dateTimeOutputSchema,
-    /** Null when the event has no explicit end */
-    end_time: dateTimeOutputSchema.nullable(),
+    end_time: dateTimeOutputSchema
+      .nullable()
+      .describe("Null when the event has no explicit end."),
     location: z.string().nullable(),
     visibility: z.enum(EventVisibilityType),
     visibility_role_ids: z.array(z.string()),
@@ -48,5 +49,5 @@ export const getEventTool = defineTool({
   }),
   isVisible: (actor) =>
     actor.authorize("event", "read") && actor.citizen !== null,
-  handler: (context, actor, input) => getEvent(context, actor, input),
+  handler: getEvent,
 });

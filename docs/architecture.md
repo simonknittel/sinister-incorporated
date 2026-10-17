@@ -28,18 +28,19 @@ A host is a deployable program. It owns its runtime, its configuration and its e
 | `notifications` | domain | The notification channel vocabulary | — |
 | `emails` | domain | The email templates | — |
 | `wiki-editor` | domain | The Tiptap schema of the wiki content, text extraction, the Markdown renderer | — |
-| `application` | use cases | The use cases: one read or one write of a feature, with the permission checks, the audit events and the notifications inside. The actor, the application context and the typed errors. The OAuth use cases. See the [package README](../pnpm-monorepo/packages/application/README.md). | `database`, `domain`, `permissions`, `notifications`, `wiki-editor` |
+| `application` | use cases | The use cases: one read or one write of a feature, with the permission checks, the audit events and the notifications inside. The actor, the application context and the typed errors. The OAuth use cases. See the [package README](../pnpm-monorepo/packages/application/README.md). | `database`, `domain`, `permissions`, `wiki-editor` |
 | `mcp` | interface adapter | The MCP server: the tool registry, the tools, the request handler with the bearer verification. See [mcp-server.md](./mcp-server.md). | `application`, `domain`, `database` |
 
 ### Inside the Next.js app
 
 `apps/app/src/modules/<feature>/` holds the code of a feature: `queries/` (reads), `actions/` (server actions, the writes), `components/`, `utils/`. `apps/app/src/app/` holds the routes and the pages, which compose the modules.
 
-Three modules are adapters of the packages, not features:
+Four modules are adapters of the packages, not features:
 
-- `modules/application`: the composition root. `getApplicationContext()` builds the one context of the app from the existing modules (Prisma, audit, notifications, logging, tracing, changelog, collab, URLs, signing key). `toActor(session)` maps the next-auth session to the actor of the use cases. Two helpers map the typed errors to action responses and to `forbidden()` / `notFound()`.
+- `modules/application`: the composition root. `getApplicationContext()` builds the one context of the app from the existing modules (Prisma, audit, notifications, logging, tracing, changelog, collab, URLs, signing key). `toActor(session)` maps the next-auth session to the actor of the use cases, and `getRequestActor()` gives the actor of the current request to the pages and queries. Two helpers map the typed errors to action responses and to `forbidden()` / `notFound()`.
 - `modules/oauth`: the consent page, the token and revocation endpoints and the metadata documents.
 - `modules/mcp`: the `/api/mcp` route.
+- `modules/mcp-settings`: the account page `/app/account/mcp` (the connected clients and the tool settings).
 
 Where a feature already has use cases, the module keeps a thin wrapper per query or action: it builds the actor from the session, calls the use case, and keeps the app-specific parts (React `cache()`, `FormData` parsing, translations, `refresh()`, `forbidden()`).
 
@@ -94,7 +95,7 @@ Dependencies point downwards only. A package never imports a host. `application`
 ### The layers
 
 - **Domain** (`domain`, `permissions`, `notifications`, `emails`, `wiki-editor`): pure code. No Prisma client calls, no I/O. Prisma types and selects are permitted.
-- **Use cases** (`application`): `(context, actor, input) => output`. The context gives the services through ports (`prisma`, `audit`, `notifications`, `log`, `tracer`, `now`, `changelog`, `collab`, `urls`, `signingKey`). The use cases call Prisma directly; there are no repository ports. This is the one intentional break of the dependency rule, decided for pragmatism.
+- **Use cases** (`application`): `(context, actor, input) => output`, with the context and its ports as the [package README](../pnpm-monorepo/packages/application/README.md) describes them. The use cases call Prisma directly; there are no repository ports. This is the one intentional break of the dependency rule, decided for pragmatism.
 - **Adapters**: the server actions and tRPC procedures of the Next.js app, the MCP tools and request handler, the Lambda handlers. They parse the transport-specific input, call the use cases and map the typed errors.
 - **Hosts**: the deployables. Each host has one composition root that builds its context.
 

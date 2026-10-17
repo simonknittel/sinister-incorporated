@@ -25,5 +25,5 @@ export const getChangelogEntryTool = defineTool({
     markdown: z.string(),
   }),
   isVisible: () => true,
-  handler: (context, actor, input) => getChangelogEntry(context, actor, input),
+  handler: getChangelogEntry,
 });

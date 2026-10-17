@@ -5,11 +5,15 @@ import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import {
+  cursorSchema,
+  pageLimitSchema,
+  type PageOptions,
+} from "../pagination.js";
+import {
   buildUnreadWhere,
   type UnreadWhere,
 } from "../readMarkers/unreadWhere.js";
 import { withSpan } from "../withSpan.js";
-import { getDiscordUserIdOfActor } from "./eventManageRules.js";
 import {
   toEventSourceType,
   toEventVisibilityType,
@@ -17,7 +21,7 @@ import {
   type EventVisibilityType,
 } from "./eventOutput.js";
 import { EVENT_PAGE_RELATIONS_SELECT } from "./eventSelects.js";
-import { buildVisibleEventsWhere, loadEventViewer } from "./eventVisibility.js";
+import { buildVisibleEventsWhere, toEventViewer } from "./eventVisibility.js";
 import { findNewEventIds, getOpenEventsWhere } from "./openEvents.js";
 
 /** The status filter of the events list */
@@ -43,26 +47,23 @@ export enum EventTypeFilter {
   Discord = "discord",
 }
 
-/** The page size when the caller does not give one */
-const DEFAULT_EVENT_LIST_LIMIT = 25;
-
-/** One call never returns more events than this */
-const MAXIMUM_EVENT_LIST_LIMIT = 100;
-
 export const listEventsInputSchema = z.object({
-  status: z.enum(EventListStatus).default(EventListStatus.Open),
+  status: z
+    .enum(EventListStatus)
+    .default(EventListStatus.Open)
+    .describe(
+      "open: not ended yet. new: open and not read by the user yet. closed: already started. Open and new are sorted by the start ascending, closed and all descending.",
+    ),
   participating: z
     .enum(EventParticipationFilter)
-    .default(EventParticipationFilter.All),
-  type: z.enum(EventTypeFilter).default(EventTypeFilter.All),
-  limit: z
-    .number()
-    .int()
-    .min(1)
-    .max(MAXIMUM_EVENT_LIST_LIMIT)
-    .default(DEFAULT_EVENT_LIST_LIMIT),
-  /** The `next_cursor` of the previous page: the id of its last event */
-  cursor: z.cuid().optional(),
+    .default(EventParticipationFilter.All)
+    .describe("me: only the events with an active sign-up of the user."),
+  type: z
+    .enum(EventTypeFilter)
+    .default(EventTypeFilter.All)
+    .describe("app or discord: only the events of this source."),
+  limit: pageLimitSchema,
+  cursor: cursorSchema.optional(),
 });
 
 export type ListEventsInput = z.infer<typeof listEventsInputSchema>;
@@ -130,10 +131,6 @@ const eventListSelect = (
 export type EventListRow = Prisma.EventGetPayload<{
   select: ReturnType<typeof eventListSelect>;
 }>;
-
-export interface EventListPageOptions extends ListEventsInput {
-  readonly direction: CursorDirection;
-}
 
 export interface EventListPage {
   /** The participations of each event are the active ones of the actor */
@@ -232,7 +229,8 @@ const getCancelledParticipationEventIds = async (
 export const findEventListPage = (
   context: ApplicationContext,
   actor: Actor,
-  options: EventListPageOptions,
+  input: ListEventsInput,
+  { direction = CursorDirection.Next }: PageOptions = {},
 ): Promise<EventListPage> =>
   withSpan(context, "findEventListPage", async () => {
     requirePermission(actor, "event", "read");
@@ -240,14 +238,10 @@ export const findEventListPage = (
     const now = context.now();
     const unreadWhere = buildUnreadWhere(actor, ReadMarkerSubject.Event);
 
-    const statusWhere = getStatusWhere(options.status, now, unreadWhere);
+    const statusWhere = getStatusWhere(input.status, now, unreadWhere);
     if (!statusWhere) return EMPTY_EVENT_LIST_PAGE;
 
-    const [viewer, discordUserId] = await Promise.all([
-      loadEventViewer(context, actor),
-      getDiscordUserIdOfActor(context, actor),
-    ]);
-
+    const { discordUserId } = actor;
     const citizenId = actor.citizen?.id ?? null;
     /**
      * Without a Discord id, `{ discordUserId: null }` would match every app
@@ -262,62 +256,56 @@ export const findEventListPage = (
     };
 
     const orderDirection: Prisma.SortOrder =
-      options.status === EventListStatus.Open ||
-      options.status === EventListStatus.New
+      input.status === EventListStatus.Open ||
+      input.status === EventListStatus.New
         ? "asc"
         : "desc";
 
     // Fetch one extra to detect if there are more pages
     const take =
-      options.direction === CursorDirection.Prev
-        ? -(options.limit + 1)
-        : options.limit + 1;
+      direction === CursorDirection.Prev ? -(input.limit + 1) : input.limit + 1;
 
     const rows = await context.prisma.event.findMany({
       where: {
         AND: [
           statusWhere,
-          getSourceWhere(options.type),
-          options.participating === EventParticipationFilter.Me
+          getSourceWhere(input.type),
+          input.participating === EventParticipationFilter.Me
             ? { participants: { some: viewerParticipationWhere } }
             : {},
-          buildVisibleEventsWhere(viewer),
+          buildVisibleEventsWhere(toEventViewer(actor)),
         ],
       },
       select: eventListSelect(viewerParticipationWhere),
       orderBy: { startTime: orderDirection },
-      ...(options.cursor ? { cursor: { id: options.cursor }, skip: 1 } : {}),
+      ...(input.cursor ? { cursor: { id: input.cursor }, skip: 1 } : {}),
       take,
     });
 
-    const hasMore = rows.length > options.limit;
+    const hasMore = rows.length > input.limit;
 
     let events = rows;
     if (hasMore) {
       events =
-        options.direction === CursorDirection.Prev
+        direction === CursorDirection.Prev
           ? // The extra item is at the beginning
             rows.slice(1)
           : // The extra item is at the end
-            rows.slice(0, options.limit);
+            rows.slice(0, input.limit);
     }
 
     // A next page exists if we fetched forward and got an extra item, or we
     // came from a backward navigation (there is a page ahead we already
     // visited)
     const hasNextPage =
-      options.direction === CursorDirection.Next
-        ? hasMore
-        : Boolean(options.cursor);
+      direction === CursorDirection.Next ? hasMore : Boolean(input.cursor);
     const hasPrevPage =
-      options.direction === CursorDirection.Prev
-        ? hasMore
-        : Boolean(options.cursor);
+      direction === CursorDirection.Prev ? hasMore : Boolean(input.cursor);
 
     const eventIds = events.map((event) => event.id);
     const getNewEventIds = async () => {
       // The "new" status lists only new events
-      if (options.status === EventListStatus.New) return eventIds;
+      if (input.status === EventListStatus.New) return eventIds;
       if (!unreadWhere) return [];
 
       return findNewEventIds(context.prisma, eventIds, unreadWhere, now);
@@ -347,10 +335,7 @@ export const listEvents = async (
   actor: Actor,
   input: ListEventsInput,
 ): Promise<ListEventsOutput> => {
-  const page = await findEventListPage(context, actor, {
-    ...input,
-    direction: CursorDirection.Next,
-  });
+  const page = await findEventListPage(context, actor, input);
 
   return {
     events: page.events.map((event) => ({
