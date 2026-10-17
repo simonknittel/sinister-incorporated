@@ -49,6 +49,36 @@ import { FaCopy } from "react-icons/fa";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    key: "2026-10-17-mcp-server",
+    date: "2026-10-17",
+    title: "MCP-Server für KI-Clients",
+    tags: ["Neu", "MCP"],
+    isTracked: true,
+    body: () => (
+      <>
+        <p>
+          SAM hat jetzt einen MCP-Server. Damit verbindest du KI-Clients wie
+          Claude.ai, Claude Desktop oder Claude Code mit SAM und kannst sie zum
+          Beispiel nach Events, Tasks oder Wiki-Seiten fragen.
+        </p>
+
+        <p>
+          Die Werkzeuge arbeiten mit deinen eigenen Rollen: Ein Client sieht
+          nur, was du in SAM selbst sehen darfst. Unter{" "}
+          <Link
+            href="/app/account/mcp"
+            className="text-interaction-500 hover:text-interaction-300 focus-visible:text-interaction-300 active:text-interaction-700"
+          >
+            Account &rarr; MCP
+          </Link>{" "}
+          findest du die Anleitung zum Verbinden, trennst verbundene Clients und
+          deaktivierst einzelne Werkzeuge.
+        </p>
+      </>
+    ),
+  },
+
+  {
     key: "2026-10-13-human-resources-einstellung",
     date: "2026-10-13",
     title: "IAM: Human-Resources-Rollen festlegen",

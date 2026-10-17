@@ -12,7 +12,9 @@ key of SAM.
 > [!IMPORTANT]
 > This is an interim solution. A full OAuth 2.0 / OIDC flow will replace it
 > later. The claim names below were selected so that most of your
-> verification code survives that migration without changes.
+> verification code survives that migration without changes. The OAuth 2.1
+> server of the [MCP server](./mcp-server.md) is that successor flow, and it
+> signs its access tokens with the same key.
 
 ## Overview
 

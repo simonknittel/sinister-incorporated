@@ -1,0 +1,94 @@
+# MCP Server
+
+SAM has a remote [Model Context Protocol](https://modelcontextprotocol.io)
+(MCP) server at `<base URL>/api/mcp`. MCP clients such as Claude.ai, Claude
+Desktop and Claude Code connect with OAuth 2.1. The tools use the
+permissions of the user who connects the client.
+
+The server supports only the protocol revision 2026-07-28. It is stateless:
+it has no sessions, no subscriptions, no resources and no prompts.
+
+## Connect a client
+
+Each user finds the URL and the steps on `/app/account/mcp`. On the same
+page, the user disconnects clients and disables tools.
+
+| Client         | Steps                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------ |
+| Claude.ai      | "Settings" → "Connectors" → "Add custom connector" with the URL, then "Connect"                        |
+| Claude Desktop | Uses the connectors of the Claude account. Add the connector in Claude.ai or with the same steps here. |
+| Claude Code    | `claude mcp add --transport http sam <base URL>/api/mcp`, then `/mcp` in Claude Code to sign in        |
+
+The client opens the consent page `/app/oauth/authorize` of SAM. The user
+signs in to SAM if necessary and allows the access.
+
+## OAuth design
+
+SAM is its own authorization server. `next-auth` stays the login of the
+app.
+
+- **Clients:** only Client ID Metadata Documents (CIMD). The client id is
+  an HTTPS URL. SAM gets the document from this URL and keeps it in the
+  cache. There is no Dynamic Client Registration and there are no
+  pre-registered clients.
+- **Grant:** the authorization code grant with PKCE (`S256` only). Each
+  consent makes a new grant (a "connected client" on the account page).
+- **Access tokens:** ES256 JSON Web Tokens with a lifetime of 1 hour. The
+  embed signing key signs them (see
+  [Embedded App Authentication](./embedded-app-authentication.md)). The
+  audience is the MCP URL. The `jti` claim is the id of the grant: the MCP
+  endpoint loads the grant on each request, thus a revoked grant stops its
+  tokens at once.
+- **Refresh tokens:** opaque values. The database keeps only their SHA-256
+  hashes. Each use replaces the token, and the new token is valid for 31
+  days. The reuse of an old token revokes the grant.
+- **Scope:** one scope, `mcp`. `offline_access` has no effect.
+- **Permissions:** the own roles of the user. Admin mode is off. An admin
+  can enable admin mode for one client on the account page.
+
+Endpoints:
+
+| Endpoint                                  | Purpose                                         |
+| ----------------------------------------- | ----------------------------------------------- |
+| `/.well-known/oauth-authorization-server` | Authorization server metadata (RFC 8414)        |
+| `/.well-known/oauth-protected-resource`   | Protected resource metadata (RFC 9728)          |
+| `/.well-known/jwks.json`                  | The public key of the tokens                    |
+| `/app/oauth/authorize`                    | The consent page                                |
+| `/api/oauth/token`                        | Token endpoint (authorization code and refresh) |
+| `/api/oauth/revoke`                       | Token revocation (RFC 7009)                     |
+| `/api/mcp`                                | The MCP endpoint (`POST` only)                  |
+
+## Configuration
+
+| Variable                                   | Effect                                                                                                                                                                                                |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `EMBED_JWT_PRIVATE_KEY`                    | Necessary for the tokens. Without it, the consent page refuses the access and the token endpoint answers `503`. See [Set up the local machine](./setup-local-machine.md#embedded-app-authentication). |
+| `NEXT_PUBLIC_BASE_URL`                     | The issuer of the tokens. The MCP URL (the resource and the audience) is this URL with the path `/api/mcp`. Each environment is its own issuer.                                                       |
+| `OAUTH_ALLOW_INSECURE_LOOPBACK_CLIENT_IDS` | `1` permits client ids with plain HTTP on a loopback host. Only the Playwright stack sets it. Never set it in a deployment: it weakens the SSRF protection of the document fetch.                     |
+
+The Unleash flag `DisableMcpServer` is the kill switch. While it is on, the
+MCP endpoint, the OAuth endpoints and the consent page answer `503`. The
+account page stays available.
+
+## Tests
+
+A real client id is an HTTPS URL on the internet. The Playwright stack
+cannot use such a URL. Thus the stack sets
+`OAUTH_ALLOW_INSECURE_LOOPBACK_CLIENT_IDS=1`, and a local HTTP server of the
+test worker serves the CIMD document of the test client, with loopback
+redirect URIs. The tests then do the consent in the browser, exchange the
+code with `fetch` and call the MCP endpoint with the MCP client SDK.
+
+## Code layout
+
+| Location                                                                  | Content                                                                                           |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [`packages/application`](../pnpm-monorepo/packages/application/README.md) | The use cases, also the OAuth server logic (`src/oauth`) and the MCP settings (`src/mcpSettings`) |
+| `packages/mcp`                                                            | The tool catalog, the tools, the instructions text and the handler factory                        |
+| `apps/app/src/modules/oauth`                                              | The Next.js adapters of the OAuth server: the consent page, the token and revocation endpoints    |
+| `apps/app/src/modules/mcp`                                                | The Next.js adapter of the MCP endpoint                                                           |
+| `apps/app/src/modules/mcp-settings`                                       | The account page `/app/account/mcp`                                                               |
+
+The packages do not depend on Next.js. A separate MCP service can use them
+later. Read the conventions of the use cases in the
+[README of the application package](../pnpm-monorepo/packages/application/README.md).

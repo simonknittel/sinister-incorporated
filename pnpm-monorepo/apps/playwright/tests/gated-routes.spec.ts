@@ -65,6 +65,11 @@ const OPEN_ROUTES: readonly [route: string, marker: (page: Page) => Locator][] =
       "/app/account/appearance",
       (page) => page.getByRole("heading", { name: "Saisonale Events" }),
     ],
+    /** Every user manages their own MCP clients and tools */
+    [
+      "/app/account/mcp",
+      (page) => page.getByRole("heading", { name: "Verbinden" }),
+    ],
     [
       "/app/uploads",
       (page) => page.getByText("Du hast bisher keine Dateien hochgeladen."),

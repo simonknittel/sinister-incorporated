@@ -33,6 +33,11 @@ export const getNavigationItems = createNavigationItems(
       url: "/app/account/sessions",
     });
 
+    pages.push({
+      title: "MCP",
+      url: "/app/account/mcp",
+    });
+
     if (permissions[0]) {
       pages.push({
         title: "Analytics",
