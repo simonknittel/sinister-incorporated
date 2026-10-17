@@ -36,6 +36,7 @@ export * from "./events/index.js";
 export * from "./fleet/index.js";
 export * from "./lineup/index.js";
 export * from "./mcpSettings/index.js";
+export { triggerNotificationsAfterSave } from "./notifications.js";
 export * from "./oauth/index.js";
 export {
   DEFAULT_PAGE_LIMIT,
