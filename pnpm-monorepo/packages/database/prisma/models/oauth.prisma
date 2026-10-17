@@ -1,0 +1,99 @@
+/// A cached Client ID Metadata Document of an OAuth client. The app fetches
+/// the document again after `expiresAt`.
+model OAuthClientMetadata {
+  id           String   @id @default(cuid(2))
+  /// The URL of the document. This URL is also the ID of the client.
+  clientId     String   @unique
+  /// The document after the validation.
+  document     Json
+  clientName   String
+  redirectUris String[]
+  fetchedAt    DateTime @db.Timestamptz(3)
+  expiresAt    DateTime @db.Timestamptz(3)
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+}
+
+/// An authorization code of the OAuth authorization code grant. The table
+/// keeps only the SHA-256 hash of the code. The code is valid for one use
+/// until `expiresAt`.
+model OAuthAuthorizationCode {
+  id            String     @id @default(cuid(2))
+  codeHash      String     @unique
+  clientId      String
+  redirectUri   String
+  /// The PKCE code challenge (method S256).
+  codeChallenge String
+  scope         String
+  /// The resource indicator (RFC 8707): the canonical URL of the MCP server.
+  resource      String
+  userId        String
+  user          User       @relation("oauthAuthorizationCodes", fields: [userId], references: [id], onDelete: Cascade)
+  grantId       String
+  grant         OAuthGrant @relation(fields: [grantId], references: [id], onDelete: Cascade)
+  createdAt     DateTime   @default(now()) @db.Timestamptz(3)
+  expiresAt     DateTime   @db.Timestamptz(3)
+  usedAt        DateTime?  @db.Timestamptz(3)
+
+  @@index([userId])
+  @@index([grantId])
+  @@index([expiresAt])
+}
+
+/// A connected OAuth client of a user: the consent of the user for one
+/// client. The access tokens contain the ID of the grant. When the grant is
+/// revoked, all its tokens become invalid.
+model OAuthGrant {
+  id                   String                   @id @default(cuid(2))
+  userId               String
+  user                 User                     @relation("oauthGrants", fields: [userId], references: [id], onDelete: Cascade)
+  /// The URL of the Client ID Metadata Document.
+  clientId             String
+  /// The name of the client at the time of the consent. The client gives
+  /// this name itself, thus the name is not trusted.
+  clientName           String
+  /// The host of the redirect URI at the time of the consent.
+  redirectHost         String
+  scope                String
+  resource             String
+  createdAt            DateTime                 @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime                 @updatedAt @db.Timestamptz(3)
+  /// The app updates this value at most one time in each hour.
+  lastUsedAt           DateTime?                @db.Timestamptz(3)
+  revokedAt            DateTime?                @db.Timestamptz(3)
+  /// NULL when the app revoked the grant automatically, for example after
+  /// the reuse of a refresh token.
+  revokedById          String?
+  revokedBy            User?                    @relation("revokedOAuthGrants", fields: [revokedById], references: [id], onDelete: SetNull)
+  /// Admin mode applies to the requests of this client only when this value
+  /// is set and the user is an admin.
+  adminModeEnabledAt   DateTime?                @db.Timestamptz(3)
+  adminModeEnabledById String?
+  adminModeEnabledBy   User?                    @relation("adminModeEnabledOAuthGrants", fields: [adminModeEnabledById], references: [id], onDelete: SetNull)
+  authorizationCodes   OAuthAuthorizationCode[]
+  refreshTokens        OAuthRefreshToken[]
+
+  /// The user ID comes first, thus the same index also serves the list of
+  /// the grants of a user.
+  @@index([userId, clientId])
+}
+
+/// A refresh token of a grant. The table keeps only the SHA-256 hash of the
+/// token. Each use replaces the token with a new token. The reuse of a used
+/// token revokes the grant.
+model OAuthRefreshToken {
+  id           String             @id @default(cuid(2))
+  grantId      String
+  grant        OAuthGrant         @relation(fields: [grantId], references: [id], onDelete: Cascade)
+  tokenHash    String             @unique
+  createdAt    DateTime           @default(now()) @db.Timestamptz(3)
+  expiresAt    DateTime           @db.Timestamptz(3)
+  usedAt       DateTime?          @db.Timestamptz(3)
+  /// The token that replaced this token.
+  replacedById String?            @unique
+  replacedBy   OAuthRefreshToken? @relation("replacement", fields: [replacedById], references: [id], onDelete: SetNull)
+  replaces     OAuthRefreshToken? @relation("replacement")
+
+  @@index([grantId])
+  @@index([expiresAt])
+}

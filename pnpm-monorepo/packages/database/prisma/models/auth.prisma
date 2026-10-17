@@ -57,6 +57,12 @@ model User {
   bannedById              String?
   bannedBy                Citizen?                 @relation("bannedBy", fields: [bannedById], references: [id])
   citizen                 Citizen?                 @relation("citizen")
+  oauthGrants             OAuthGrant[]             @relation("oauthGrants")
+  revokedOAuthGrants      OAuthGrant[]             @relation("revokedOAuthGrants")
+  /// The grants on which this user enabled admin mode.
+  adminModeOAuthGrants    OAuthGrant[]             @relation("adminModeEnabledOAuthGrants")
+  oauthAuthorizationCodes OAuthAuthorizationCode[] @relation("oauthAuthorizationCodes")
+  mcpToolSettings         McpToolSetting[]         @relation("mcpToolSettings")
 }
 
 /// NULL for every user without a special role

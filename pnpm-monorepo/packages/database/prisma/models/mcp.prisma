@@ -1,0 +1,11 @@
+/// Opt-out model: a row disables the MCP tool for the user. Without a row,
+/// the tool is enabled. Thus new tools are enabled for all users.
+model McpToolSetting {
+  id         String   @id @default(cuid(2))
+  userId     String
+  user       User     @relation("mcpToolSettings", fields: [userId], references: [id], onDelete: Cascade)
+  toolName   String
+  disabledAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([userId, toolName])
+}
