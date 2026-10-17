@@ -1,11 +1,12 @@
 import { prisma } from "@/db";
 import { authenticate } from "@/modules/auth/server";
-import { getPublicUploadUrl } from "@/modules/common/utils/getPublicUploadUrl";
-import { getCitizenDisplayName } from "@sam-monorepo/domain";
+import { getPublicUploadBaseUrl } from "@/modules/common/utils/getPublicUploadUrl";
 import {
-  collectWikiMentionedCitizenIds,
+  loadWikiLinkedVariants,
+  loadWikiMentionedCitizens,
+} from "@sam-monorepo/application";
+import {
   collectWikiRoleCitizensRoleIds,
-  collectWikiVariantLinkIds,
   type WikiLinkedVariant,
   type WikiMentionedCitizen,
 } from "@sam-monorepo/wiki-editor";
@@ -18,90 +19,26 @@ import { resolveWikiRoleCitizens } from "../utils/resolveWikiRoleCitizens";
  * global and the event wiki's static content queries.
  */
 
-/**
- * Current handles of the citizens mentioned in the content, so mentions
- * follow handle changes. Mentions inserted after this render fall back to
- * the handle stored in the document. Viewers without the citizen read
- * permission get these insertion-time handles instead of live ones. A
- * deleted citizen shows the deleted label for each viewer, also instead of
- * the stored handle.
- */
+/** See `loadWikiMentionedCitizens()` */
 export const getWikiMentionedCitizens = async (
   content: unknown,
 ): Promise<Record<string, WikiMentionedCitizen>> => {
-  const mentionedCitizenIds = collectWikiMentionedCitizenIds(content);
-  if (mentionedCitizenIds.length === 0) return {};
-
   const authentication = await authenticate();
   const canReadCitizens = Boolean(
     authentication && (await authentication.authorize("citizen", "read")),
   );
 
-  const citizens = await prisma.citizen.findMany({
-    where: { id: { in: mentionedCitizenIds } },
-    select: { id: true, deletedAt: true, handle: canReadCitizens },
-  });
-
-  return Object.fromEntries(
-    citizens.map((citizen) => [
-      citizen.id,
-      {
-        handle:
-          citizen.deletedAt || canReadCitizens
-            ? getCitizenDisplayName(citizen)
-            : null,
-        deleted: citizen.deletedAt !== null,
-      },
-    ]),
-  );
+  return loadWikiMentionedCitizens(prisma, canReadCitizens, content);
 };
 
 /**
- * Current names and manufacturer logos of the variants linked in the
- * content, so links follow renames. Links inserted after this render
- * resolve themselves client-side (see WikiVariantLinkNodeView).
- * Deliberately not permission-filtered: the wiki shows every reader which
- * ship is meant — only the variant page itself stays gated.
+ * See `loadWikiLinkedVariants()`. Links inserted after this render resolve
+ * themselves client-side (see WikiVariantLinkNodeView).
  */
-export const getWikiLinkedVariants = async (
+export const getWikiLinkedVariants = (
   content: unknown,
-): Promise<Record<string, WikiLinkedVariant>> => {
-  const linkedVariantIds = collectWikiVariantLinkIds(content);
-  return Object.fromEntries(
-    (linkedVariantIds.length > 0
-      ? await prisma.variant.findMany({
-          where: { id: { in: linkedVariantIds } },
-          select: {
-            id: true,
-            name: true,
-            series: {
-              select: {
-                manufacturer: {
-                  select: {
-                    name: true,
-                    image: { select: { id: true, mimeType: true } },
-                  },
-                },
-              },
-            },
-          },
-        })
-      : []
-    ).map((variant) => [
-      variant.id,
-      {
-        name: variant.name,
-        manufacturerName: variant.series.manufacturer.name,
-        logo: variant.series.manufacturer.image
-          ? {
-              src: getPublicUploadUrl(variant.series.manufacturer.image.id),
-              mimeType: variant.series.manufacturer.image.mimeType,
-            }
-          : undefined,
-      },
-    ]),
-  );
-};
+): Promise<Record<string, WikiLinkedVariant>> =>
+  loadWikiLinkedVariants(prisma, content, getPublicUploadBaseUrl());
 
 /**
  * Members of the role-member nodes on this page, resolved for this viewer —

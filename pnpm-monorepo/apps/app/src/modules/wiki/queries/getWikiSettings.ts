@@ -1,6 +1,7 @@
 import { prisma } from "@/db";
 import { authenticate } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { loadWikiIframeAllowlist } from "@sam-monorepo/application";
 import { cache } from "react";
 import * as z from "zod";
 import { MAX_WIKI_FEATURED_PAGES } from "../utils/wikiFeaturedPages";
@@ -9,27 +10,14 @@ import {
   type WikiPageLinkKey,
 } from "../utils/wikiPageLinks";
 
-export const WIKI_SETTING_IFRAME_ALLOWLIST = "iframeAllowlist";
+export {
+  MAX_WIKI_IFRAME_ALLOWLIST_ENTRIES,
+  WIKI_SETTING_IFRAME_ALLOWLIST,
+} from "@sam-monorepo/application";
 
-export const MAX_WIKI_IFRAME_ALLOWLIST_ENTRIES = 100;
-
-const iframeAllowlistSchema = z
-  .array(z.string())
-  .max(MAX_WIKI_IFRAME_ALLOWLIST_ENTRIES);
-
-/**
- * Hostnames generic iframes may embed. Used by the insertion-time
- * validation and passed to the editor/static renderer for the render-time
- * re-check.
- */
+/** See `loadWikiIframeAllowlist()` */
 export const getWikiIframeAllowlist = cache(
-  withTrace("getWikiIframeAllowlist", async (): Promise<string[]> => {
-    const setting = await prisma.wikiSetting.findUnique({
-      where: { key: WIKI_SETTING_IFRAME_ALLOWLIST },
-    });
-    const parsed = iframeAllowlistSchema.safeParse(setting?.value);
-    return parsed.success ? parsed.data : [];
-  }),
+  withTrace("getWikiIframeAllowlist", () => loadWikiIframeAllowlist(prisma)),
 );
 
 export const WIKI_SETTING_FEATURED_PAGES = "featuredPages";

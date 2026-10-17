@@ -85,13 +85,8 @@ export const createVariantWikiHrefMode = (
   rootHref: getVariantWikiRootPath(variantId),
 });
 
-export const buildWikiPageHref = (
-  mode: WikiPageHrefMode,
-  page: { readonly id: string; readonly slug: string },
-) =>
-  page.id === mode.rootPageId
-    ? (mode.rootHref ?? mode.basePath)
-    : `${mode.basePath}/${page.id}/${page.slug}`;
+/** Takes a `WikiPageHrefMode`; the MCP server shares the rule */
+export { buildWikiPageHref } from "@sam-monorepo/wiki-editor/helpers";
 
 /**
  * Page id a pathname points at, e.g. for highlighting the active tree row.

@@ -1,8 +1,8 @@
 /**
- * The pure content helpers of the wiki, without Tiptap, ProseMirror or
- * lowlight code: client components that only render content (the static
- * read view) import this entry, so the browser does not load the editor
- * for them. helpers.test.ts makes sure that no editor code gets in.
+ * The pure content and page tree helpers of the wiki, without Tiptap,
+ * ProseMirror or lowlight code: client components that only render content
+ * (the static read view) import this entry, so the browser does not load the
+ * editor for them. helpers.test.ts makes sure that no editor code gets in.
  */
 export { formatWikiAttachmentSize } from "./formatWikiAttachmentSize.js";
 export { parseHttpUrl } from "./parseHttpUrl.js";
@@ -24,3 +24,10 @@ export {
   type WikiLinkedVariant,
   type WikiVariantLogo,
 } from "./resolveWikiVariantLink.js";
+export {
+  buildVisibleWikiTree,
+  buildWikiPageHref,
+  compareWikiPagesByOrder,
+  type WikiPageHrefBase,
+  type WikiTreeNode,
+} from "./wikiPageTree.js";

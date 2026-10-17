@@ -1,2 +1,59 @@
-/** The use cases of the wiki group. Phase 6 and Phase 5 of the plan fill this barrel. */
-export {};
+/**
+ * The use cases of the wiki group, and the wiki contexts and helpers that
+ * the app shares with them.
+ */
+export {
+  EVENT_WIKI_PAGE_SELECT,
+  EVENT_WIKI_POSITION_SELECT,
+  buildEventWikiContext,
+  hasReadableEventWikiRoot,
+  pickEventWikiRootPage,
+  type BuildEventWikiContextInput,
+  type EventWikiContext,
+  type EventWikiContextPage,
+  type EventWikiContextPosition,
+} from "./eventWikiContext.js";
+export { getAccessibleWikiPage } from "./getAccessibleWikiPage.js";
+export {
+  getWikiPage,
+  getWikiPageInputSchema,
+  type GetWikiPageInput,
+  type GetWikiPageOutput,
+  type WikiPageReference,
+} from "./getWikiPage.js";
+export {
+  listWikiPages,
+  listWikiPagesInputSchema,
+  type ListWikiPagesInput,
+  type ListWikiPagesOutput,
+  type WikiPageListItem,
+} from "./listWikiPages.js";
+export {
+  searchWiki,
+  searchWikiInputSchema,
+  type SearchWikiInput,
+  type SearchWikiOutput,
+} from "./searchWiki.js";
+export {
+  MAX_WIKI_IFRAME_ALLOWLIST_ENTRIES,
+  WIKI_SETTING_IFRAME_ALLOWLIST,
+  loadWikiIframeAllowlist,
+  loadWikiLinkedVariants,
+  loadWikiMentionedCitizens,
+} from "./wikiContentReferences.js";
+export {
+  buildWikiContext,
+  type WikiContext,
+  type WikiContextPage,
+  type WikiSharedContext,
+  type WikiSharedContextPage,
+} from "./wikiContext.js";
+export {
+  GLOBAL_WIKI_SEARCH_FILTERS,
+  WikiSearchContainerColumn,
+  buildContainerWikiSearchFilters,
+  queryWikiSearch,
+  type WikiSearchQueryOptions,
+  type WikiSearchQueryResult,
+  type WikiSearchScopeFilters,
+} from "./wikiSearchQuery.js";
