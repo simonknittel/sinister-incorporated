@@ -1,7 +1,7 @@
 import { prisma } from "@/db";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { buildActivePenaltyEntryWhere } from "@sam-monorepo/application";
 import { type Citizen } from "@sam-monorepo/database/client";
-import { buildActivePenaltyEntryWhere } from "../utils/penaltyEntryFilters";
 
 /**
  * The penalty points a citizen currently holds. The caller does the
@@ -14,7 +14,7 @@ export const sumPenaltyPointsOfCitizen = withTrace(
     const aggregation = await prisma.penaltyEntry.aggregate({
       where: {
         citizenId,
-        ...buildActivePenaltyEntryWhere(),
+        ...buildActivePenaltyEntryWhere(new Date()),
       },
       _sum: {
         points: true,

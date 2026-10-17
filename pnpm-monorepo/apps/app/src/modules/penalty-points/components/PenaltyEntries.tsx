@@ -2,16 +2,19 @@ import { requireAuthentication } from "@/modules/auth/server";
 import { Tile } from "@/modules/common/components/Tile";
 import { createCursorPaginationLoader } from "@/modules/common/CursorPagination/createCursorPaginationLoader";
 import { CursorPaginationControls } from "@/modules/common/CursorPagination/CursorPaginationControls";
+import { PenaltyEntryStatus } from "@sam-monorepo/application";
 import clsx from "clsx";
-import { parseAsStringLiteral, type SearchParams } from "nuqs/server";
+import { parseAsStringEnum, type SearchParams } from "nuqs/server";
 import { getPenaltyEntriesPaginated } from "../queries/getPenaltyEntriesPaginated";
 import { CreatePenaltyEntryButton } from "./CreatePenaltyEntry/CreatePenaltyEntryButton";
 import { PenaltyEntriesTable } from "./PenaltyEntriesTable";
 
 const loadSearchParams = createCursorPaginationLoader({
-  status: parseAsStringLiteral(["active", "inactive", "deleted"]).withDefault(
-    "active",
-  ),
+  status: parseAsStringEnum([
+    PenaltyEntryStatus.Active,
+    PenaltyEntryStatus.Inactive,
+    PenaltyEntryStatus.Deleted,
+  ]).withDefault(PenaltyEntryStatus.Active),
 });
 
 interface Props {

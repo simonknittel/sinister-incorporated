@@ -1,19 +1,25 @@
 import { prisma } from "@/db";
 import { requireAuthentication } from "@/modules/auth/server";
+import { CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
 import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "@/modules/common/utils/sorting";
 import { getActiveOrganizationMemberships } from "@/modules/organizations/queries/getActiveOrganizationMemberships";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  buildVariantFilterWhere,
+  paginateByCursor,
+} from "@sam-monorepo/application";
 import { ORG_ID } from "@sam-monorepo/domain";
 import { forbidden } from "next/navigation";
 import { cache } from "react";
 import {
-  buildVariantFilterWhere,
-  FLEET_PAGE_SIZE,
-  paginateByCursor,
-} from "./shipQuery";
+  toFlightReadyFilter,
+  toPageDirection,
+  type FlightReadyParameter,
+} from "../utils/fleetListMapping";
+import { FLEET_PAGE_SIZE } from "./shipQuery";
 
 type CitizenFleetSort = "name-asc" | "name-desc";
 
@@ -27,13 +33,13 @@ export const getVariantShips = cache(
         variantTagIds = [],
         sort = "name-asc",
         cursor,
-        direction = "next",
+        direction = CursorDirection.Next,
       }: {
-        flightReady?: "all" | "flight_ready";
+        flightReady?: FlightReadyParameter;
         variantTagIds?: string[];
         sort?: CitizenFleetSort;
         cursor?: string | null;
-        direction?: "next" | "prev";
+        direction?: CursorDirection;
       } = {},
     ) => {
       const authentication = await requireAuthentication();
@@ -52,7 +58,10 @@ export const getVariantShips = cache(
       const matchingVariant = await prisma.variant.findFirst({
         where: {
           id: variantId,
-          ...buildVariantFilterWhere({ flightReady, variantTagIds }),
+          ...buildVariantFilterWhere({
+            flightReady: toFlightReadyFilter(flightReady),
+            variantTagIds,
+          }),
         },
         select: { name: true },
       });
@@ -98,10 +107,10 @@ export const getVariantShips = cache(
       const {
         items: ships,
         nextCursor,
-        prevCursor,
+        previousCursor,
       } = paginateByCursor(sortedShips, {
         cursor,
-        direction,
+        direction: toPageDirection(direction),
         pageSize: FLEET_PAGE_SIZE,
         getCursor: (ship) => ship.id,
       });
@@ -110,7 +119,7 @@ export const getVariantShips = cache(
         ships,
         total: sortedShips.length,
         nextCursor,
-        prevCursor,
+        prevCursor: previousCursor,
         variantName: matchingVariant.name,
       };
     },

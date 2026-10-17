@@ -1,22 +1,53 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
 import {
-  sortAscWithAndNullLast,
-  sortDescAndNullLast,
-} from "@/modules/common/utils/sorting";
-import { getActiveOrganizationMemberships } from "@/modules/organizations/queries/getActiveOrganizationMemberships";
+  getApplicationContext,
+  throwApplicationErrorForPage,
+  toActor,
+} from "@/modules/application";
+import { requireAuthentication } from "@/modules/auth/server";
+import { CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { ORG_ID } from "@sam-monorepo/domain";
-import { forbidden } from "next/navigation";
+import { listOrgFleet, OrgFleetSort } from "@sam-monorepo/application";
 import { cache } from "react";
 import {
-  buildVariantFilterWhere,
-  FLEET_PAGE_SIZE,
-  paginateByCursor,
-  SHIP_VARIANT_SELECT,
-} from "./shipQuery";
+  toFlightReadyFilter,
+  toPageDirection,
+  toShipVariant,
+  type FlightReadyParameter,
+} from "../utils/fleetListMapping";
+import { FLEET_PAGE_SIZE } from "./shipQuery";
 
-type OrgFleetSort = "name-asc" | "name-desc" | "count-asc" | "count-desc";
+/** The values of the `sort` search parameter of the organization fleet */
+type OrgFleetSortParameter =
+  "name-asc" | "name-desc" | "count-asc" | "count-desc";
+
+const toOrgFleetSort = (sort: OrgFleetSortParameter) => {
+  switch (sort) {
+    case "name-asc":
+      return OrgFleetSort.NameAscending;
+
+    case "name-desc":
+      return OrgFleetSort.NameDescending;
+
+    case "count-asc":
+      return OrgFleetSort.CountAscending;
+
+    case "count-desc":
+      return OrgFleetSort.CountDescending;
+
+    default:
+      throw new Error(`Unknown sort: ${sort satisfies never}`);
+  }
+};
+
+interface OrgFleetOptions {
+  readonly flightReady?: FlightReadyParameter;
+  readonly variantTagIds?: string[];
+  readonly manufacturerIds?: string[];
+  readonly sort?: OrgFleetSortParameter;
+  readonly searchQuery?: string | null;
+  readonly cursor?: string | null;
+  readonly direction?: CursorDirection;
+}
 
 export const getOrgFleet = cache(
   withTrace(
@@ -28,106 +59,39 @@ export const getOrgFleet = cache(
       sort = "count-desc",
       searchQuery,
       cursor,
-      direction = "next",
-    }: {
-      flightReady?: "all" | "flight_ready";
-      variantTagIds?: string[];
-      manufacturerIds?: string[];
-      sort?: OrgFleetSort;
-      searchQuery?: string | null;
-      cursor?: string | null;
-      direction?: "next" | "prev";
-    }) => {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("orgFleet", "read"))) forbidden();
+      direction = CursorDirection.Next,
+    }: OrgFleetOptions) => {
+      const { session } = await requireAuthentication();
 
-      const memberships = await getActiveOrganizationMemberships(ORG_ID);
-      const citizenIds = memberships.map((membership) => membership.citizen.id);
-      if (citizenIds.length === 0)
+      try {
+        const output = await listOrgFleet(
+          getApplicationContext(),
+          await toActor(session),
+          {
+            flight_ready: toFlightReadyFilter(flightReady),
+            variant_tag_ids: variantTagIds,
+            manufacturer_ids: manufacturerIds,
+            query: searchQuery || undefined,
+            sort: toOrgFleetSort(sort),
+            limit: FLEET_PAGE_SIZE,
+            cursor: cursor ?? undefined,
+            direction: toPageDirection(direction),
+          },
+        );
+
         return {
-          fleet: [],
-          totalCitizens: 0,
-          totalShips: 0,
-          nextCursor: null,
-          prevCursor: null,
+          fleet: output.fleet.map((entry) => ({
+            variant: toShipVariant(entry.variant),
+            count: entry.count,
+          })),
+          totalCitizens: output.total_citizens,
+          totalShips: output.total_ships,
+          nextCursor: output.next_cursor,
+          prevCursor: output.previous_cursor,
         };
-
-      // Shared by the ship filter and the all-variants query below
-      const variantWhere = buildVariantFilterWhere({
-        flightReady,
-        variantTagIds,
-        manufacturerIds,
-        searchQuery,
-      });
-
-      // The variant payload comes from the query below, thus the ships
-      // themselves are only counted and attributed
-      const allShips = await prisma.ship.findMany({
-        where: {
-          ownerId: { in: citizenIds },
-          deletedAt: null,
-          variant: variantWhere,
-        },
-        select: {
-          ownerId: true,
-          variantId: true,
-        },
-      });
-
-      const shipsByVariantId = Map.groupBy(allShips, (ship) => ship.variantId);
-
-      // ALL variants matching the same filters, so unowned ones show a zero
-      const allVariants = await prisma.variant.findMany({
-        where: variantWhere,
-        select: SHIP_VARIANT_SELECT,
-      });
-
-      const countedFleet = allVariants.map((variant) => ({
-        variant,
-        count: shipsByVariantId.get(variant.id)?.length ?? 0,
-      }));
-
-      // Apply sorting
-      const [sortField, sortDirection] = sort.split("-") as [
-        "name" | "count",
-        "asc" | "desc",
-      ];
-
-      const sortedFleet = countedFleet.toSorted((a, b) => {
-        const sortFn =
-          sortDirection === "asc"
-            ? sortAscWithAndNullLast
-            : sortDescAndNullLast;
-
-        if (sortField === "name") {
-          return sortFn(a.variant.name, b.variant.name);
-        }
-
-        return sortFn(a.count, b.count);
-      });
-
-      // Apply cursor-based pagination (cursor = variant id)
-      const {
-        items: fleet,
-        nextCursor,
-        prevCursor,
-      } = paginateByCursor(sortedFleet, {
-        cursor,
-        direction,
-        pageSize: FLEET_PAGE_SIZE,
-        getCursor: (item) => item.variant.id,
-      });
-
-      const totalCitizens = new Set(allShips.map((ship) => ship.ownerId)).size;
-      const totalShips = allShips.length;
-
-      return {
-        fleet,
-        totalCitizens,
-        totalShips,
-        nextCursor,
-        prevCursor,
-      };
+      } catch (error) {
+        return throwApplicationErrorForPage(error);
+      }
     },
   ),
 );

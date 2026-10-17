@@ -1,15 +1,9 @@
 import { CitizenCellLink } from "@/modules/common/components/CitizenCellLink";
 import { Table, TBody, THead, TRow } from "@/modules/common/components/Table";
 import { formatDate } from "@/modules/common/utils/formatDate";
-import type { Citizen, PenaltyEntry } from "@sam-monorepo/database/client";
 import clsx from "clsx";
+import type { PenaltyEntryRow } from "../utils/toPenaltyEntryRow";
 import { DeletePenaltyEntry } from "./DeletePenaltyEntry";
-
-type Row = PenaltyEntry & {
-  citizen: Pick<Citizen, "id" | "handle" | "deletedAt">;
-  /** NULL when the author was deleted */
-  createdBy: Pick<Citizen, "id" | "handle" | "deletedAt"> | null;
-};
 
 const COLUMNS_WITH_CITIZEN =
   "140px 64px 140px 140px 140px minmax(300px,1fr) 32px";
@@ -17,7 +11,7 @@ const COLUMNS_WITHOUT_CITIZEN = "64px 140px 140px 140px minmax(300px,1fr) 32px";
 
 interface Props {
   readonly className?: string;
-  readonly rows: Row[];
+  readonly rows: PenaltyEntryRow[];
   readonly showDelete?: boolean;
   readonly hideCitizenColumn?: boolean;
 }

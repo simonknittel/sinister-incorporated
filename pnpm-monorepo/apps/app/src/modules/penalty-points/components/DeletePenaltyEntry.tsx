@@ -8,7 +8,7 @@ import { deletePenaltyEntry } from "../actions/deletePenaltyEntry";
 
 interface Props {
   readonly className?: string;
-  readonly entry: PenaltyEntry;
+  readonly entry: Pick<PenaltyEntry, "id">;
 }
 
 export const DeletePenaltyEntry = ({ className, entry }: Props) => {

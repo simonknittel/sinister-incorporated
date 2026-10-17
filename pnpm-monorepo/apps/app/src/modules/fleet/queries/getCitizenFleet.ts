@@ -1,20 +1,36 @@
+import {
+  getApplicationContext,
+  throwApplicationErrorForPage,
+  toActor,
+} from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { listCitizenShips } from "@sam-monorepo/application";
 import type { Citizen } from "@sam-monorepo/database/client";
-import { forbidden } from "next/navigation";
 import { cache } from "react";
-import { getOwnerFleet } from "./ownerFleet";
-
-type CitizenFleetOptions = Parameters<typeof getOwnerFleet>[1];
+import {
+  toOwnerShipsInput,
+  toShipsPage,
+  type OwnerFleetOptions,
+} from "../utils/fleetListMapping";
 
 export const getCitizenFleet = cache(
   withTrace(
     "getCitizenFleet",
-    async (citizenId: Citizen["id"], options: CitizenFleetOptions = {}) => {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("otherShips", "read"))) forbidden();
+    async (citizenId: Citizen["id"], options: OwnerFleetOptions = {}) => {
+      const { session } = await requireAuthentication();
 
-      return getOwnerFleet(citizenId, options);
+      try {
+        return toShipsPage(
+          await listCitizenShips(
+            getApplicationContext(),
+            await toActor(session),
+            { citizen_id: citizenId, ...toOwnerShipsInput(options) },
+          ),
+        );
+      } catch (error) {
+        return throwApplicationErrorForPage(error);
+      }
     },
   ),
 );

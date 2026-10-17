@@ -1,84 +1,54 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  throwApplicationErrorForPage,
+  toActor,
+} from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
+import { CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { forbidden } from "next/navigation";
+import {
+  listPenaltyEntries,
+  PageDirection,
+  PenaltyEntryStatus,
+} from "@sam-monorepo/application";
 import { cache } from "react";
-import { buildActivePenaltyEntryWhere } from "../utils/penaltyEntryFilters";
+import { toPenaltyEntryRow } from "../utils/toPenaltyEntryRow";
 
 const PENALTY_ENTRIES_PAGE_SIZE = 50;
-
-const buildStatusWhereClause = (status: "active" | "inactive" | "deleted") => {
-  if (status === "deleted") {
-    return { deletedAt: { not: null } };
-  }
-  if (status === "active") {
-    return buildActivePenaltyEntryWhere();
-  }
-  return {
-    deletedAt: null,
-    expiresAt: { lt: new Date() },
-  };
-};
 
 export const getPenaltyEntriesPaginated = cache(
   withTrace(
     "getPenaltyEntriesPaginated",
     async (
-      status: "active" | "inactive" | "deleted" = "active",
+      status: PenaltyEntryStatus = PenaltyEntryStatus.Active,
       cursor: string | null = null,
-      direction: "next" | "prev" = "next",
+      direction: CursorDirection = CursorDirection.Next,
     ) => {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("penaltyEntry", "read")))
-        forbidden();
+      const { session } = await requireAuthentication();
 
-      const take =
-        direction === "prev"
-          ? -(PENALTY_ENTRIES_PAGE_SIZE + 1)
-          : PENALTY_ENTRIES_PAGE_SIZE + 1;
+      try {
+        const page = await listPenaltyEntries(
+          getApplicationContext(),
+          await toActor(session),
+          {
+            status,
+            limit: PENALTY_ENTRIES_PAGE_SIZE,
+            cursor: cursor ?? undefined,
+            direction:
+              direction === CursorDirection.Prev
+                ? PageDirection.Previous
+                : PageDirection.Next,
+          },
+        );
 
-      const rows = await prisma.penaltyEntry.findMany({
-        where: buildStatusWhereClause(status),
-        orderBy: {
-          createdAt: "desc",
-        },
-        include: {
-          citizen: { select: { id: true, handle: true, deletedAt: true } },
-          createdBy: { select: { id: true, handle: true, deletedAt: true } },
-        },
-        ...(cursor
-          ? {
-              cursor: {
-                id: cursor,
-              },
-              skip: 1,
-            }
-          : {}),
-        take,
-      });
-
-      const hasMore = rows.length > PENALTY_ENTRIES_PAGE_SIZE;
-
-      let entries;
-      if (hasMore) {
-        if (direction === "prev") {
-          entries = rows.slice(1);
-        } else {
-          entries = rows.slice(0, PENALTY_ENTRIES_PAGE_SIZE);
-        }
-      } else {
-        entries = rows;
+        return {
+          entries: page.entries.map(toPenaltyEntryRow),
+          nextCursor: page.next_cursor,
+          prevCursor: page.previous_cursor,
+        };
+      } catch (error) {
+        return throwApplicationErrorForPage(error);
       }
-
-      const hasNextPage = direction === "next" ? hasMore : !!cursor;
-      const hasPrevPage = direction === "prev" ? hasMore : !!cursor;
-
-      return {
-        entries,
-        nextCursor:
-          hasNextPage && entries.length > 0 ? entries.at(-1)!.id : null,
-        prevCursor: hasPrevPage && entries.length > 0 ? entries[0].id : null,
-      };
     },
   ),
 );
