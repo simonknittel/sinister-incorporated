@@ -22,16 +22,15 @@ export const AuthorizationNotice = ({ message, errorResponseUrl }: Props) => (
 
     {errorResponseUrl ? (
       <>
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-          <dt className="text-neutral-500">Weiterleitung an</dt>
-          <dd className="break-all">{getRedirectTarget(errorResponseUrl)}</dd>
-        </dl>
-
         <div className="flex justify-end">
           <Button2 as="a" href={errorResponseUrl}>
             Zurück zur Anwendung
           </Button2>
         </div>
+
+        <p className="text-right text-sm break-all text-neutral-500">
+          Du wirst weitergeleitet zu {getRedirectTarget(errorResponseUrl)}
+        </p>
       </>
     ) : (
       <p className="text-sm text-neutral-500">

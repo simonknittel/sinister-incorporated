@@ -15,19 +15,22 @@ export const McpConnectionTile = ({ className, mcpUrl }: Props) => {
       heading="Verbinden"
       childrenClassName="flex flex-col gap-6"
     >
-      <p className="max-w-prose">
-        Über den MCP-Server greifen KI-Clients wie Claude auf SAM zu. Die
-        Werkzeuge nutzen deine eigenen Rollen: Ein Client sieht und ändert nur,
-        was du in SAM selbst sehen und ändern darfst.
-      </p>
-
       <div>
-        <p className="text-sm text-neutral-500">URL des MCP-Servers</p>
+        <p>Das SAM stellt einen remote (HTTP Transport) MCP-Server zur Verfügung.</p>
+        <p className="text-sm text-neutral-500 mt-2">URL</p>
         <CopyableCode value={mcpUrl} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <ClientSteps title="Claude.ai">
+      <details className="group">
+        <summary className="cursor-pointer list-none rounded-secondary px-2 py-1 font-bold hover:bg-neutral-800 focus-visible:bg-neutral-800 focus-visible:outline-none active:bg-neutral-700">
+          <span className="mr-2 inline-block transition-transform group-open:rotate-90 motion-reduce:transition-none">
+            &rsaquo;
+          </span>
+          Anleitung
+        </summary>
+
+        <div className="mt-4 grid gap-6 lg:grid-cols-2">
+        <ClientSteps title="Claude.ai und Claude Desktop">
           <li>
             Öffne in Claude.ai &bdquo;Settings&ldquo; &rarr;
             &bdquo;Connectors&ldquo;.
@@ -35,18 +38,6 @@ export const McpConnectionTile = ({ className, mcpUrl }: Props) => {
           <li>
             Wähle &bdquo;Add custom connector&ldquo; und gib einen Namen (zum
             Beispiel &bdquo;SAM&ldquo;) und die URL ein.
-          </li>
-          <li>Wähle &bdquo;Connect&ldquo; und erlaube den Zugriff in SAM.</li>
-        </ClientSteps>
-
-        <ClientSteps title="Claude Desktop">
-          <li>
-            Claude Desktop nutzt die Connectors deines Claude-Kontos. Einen
-            Connector aus Claude.ai musst du nicht erneut hinzufügen.
-          </li>
-          <li>
-            Sonst füge ihn unter &bdquo;Settings&ldquo; &rarr;
-            &bdquo;Connectors&ldquo; wie in Claude.ai hinzu.
           </li>
           <li>Wähle &bdquo;Connect&ldquo; und erlaube den Zugriff in SAM.</li>
         </ClientSteps>
@@ -64,7 +55,34 @@ export const McpConnectionTile = ({ className, mcpUrl }: Props) => {
           </li>
           <li>Erlaube den Zugriff in SAM.</li>
         </ClientSteps>
-      </div>
+
+        <ClientSteps title="ChatGPT">
+          <li>
+            Öffne in ChatGPT &bdquo;Settings&ldquo; &rarr;
+            &bdquo;Connectors&ldquo; und schalte unter &bdquo;Advanced&ldquo;
+            den &bdquo;Developer mode&ldquo; ein.
+          </li>
+          <li>
+            Wähle &bdquo;Create&ldquo;, gib einen Namen (zum Beispiel
+            &bdquo;SAM&ldquo;) und die URL ein und wähle als Authentifizierung
+            &bdquo;OAuth&ldquo;.
+          </li>
+          <li>Wähle &bdquo;Create&ldquo; und erlaube den Zugriff in SAM.</li>
+        </ClientSteps>
+
+        <ClientSteps title="Codex">
+          <li>
+            Führe diesen Befehl aus:
+            <CopyableCode value={`codex mcp add sam --url ${mcpUrl}`} />
+          </li>
+          <li>
+            Melde dich mit diesem Befehl an:
+            <CopyableCode value="codex mcp login sam" />
+          </li>
+          <li>Erlaube den Zugriff in SAM.</li>
+        </ClientSteps>
+        </div>
+      </details>
     </Tile>
   );
 };

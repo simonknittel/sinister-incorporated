@@ -20,8 +20,6 @@ interface Props {
   readonly parameters: AuthorizationRequestParameters;
   /** The grant must belong to the user who gives the consent */
   readonly isAssumedUser: boolean;
-  /** The handle or the name of the signed-in user */
-  readonly userLabel: string;
 }
 
 /**
@@ -34,7 +32,6 @@ interface Props {
 export const AuthorizationRequest = async ({
   parameters,
   isAssumedUser,
-  userLabel,
 }: Props) => {
   if ((await getConsentAvailability()) !== ConsentAvailability.Available)
     return <AuthorizationNotice message={CONSENT_UNAVAILABLE_MESSAGE} />;
@@ -47,9 +44,7 @@ export const AuthorizationRequest = async ({
 
   switch (validation.kind) {
     case AuthorizationRequestValidationKind.Valid:
-      return (
-        <AuthorizationConsent validation={validation} userLabel={userLabel} />
-      );
+      return <AuthorizationConsent validation={validation} />;
 
     case AuthorizationRequestValidationKind.ClientError:
       return (

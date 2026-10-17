@@ -1,10 +1,6 @@
 "use client";
 
 import { useAction } from "@/modules/actions/utils/useAction";
-import {
-  AlertDialog,
-  useSubmitConfirmation,
-} from "@/modules/common/components/AlertDialog";
 import YesNoCheckbox from "@/modules/common/components/form/YesNoCheckbox";
 import clsx from "clsx";
 import { useRef } from "react";
@@ -25,8 +21,6 @@ export const OAuthGrantAdminModeSwitch = ({
 }: Props) => {
   const formRef = useRef<HTMLFormElement>(null);
   const { formAction, isPending } = useAction(updateOAuthGrantAdminMode);
-  // Only the enabling gives the client more permissions
-  const confirmation = useSubmitConfirmation(!isEnabled);
 
   return (
     /**
@@ -39,23 +33,9 @@ export const OAuthGrantAdminModeSwitch = ({
        * The checkbox is not in the form: React resets a form after its
        * action, and the checkbox must show the state of the server
        */}
-      <form ref={formRef} action={formAction} onSubmit={confirmation.onSubmit}>
+      <form ref={formRef} action={formAction}>
         <input type="hidden" name="grantId" value={grantId} />
         <input type="hidden" name="enabled" value={String(!isEnabled)} />
-
-        <AlertDialog
-          isOpen={confirmation.isOpen}
-          onClose={confirmation.close}
-          title="Admin-Modus aktivieren?"
-          description={
-            <>
-              <span className="font-bold break-all">{clientHost}</span> bekommt
-              alle Berechtigungen in SAM, wie mit dem Admin-Modus in der
-              Toolbar. Aktiviere ihn nur für einen Client, dem du vertraust.
-            </>
-          }
-          confirmLabel="Aktivieren"
-        />
       </form>
 
       <YesNoCheckbox

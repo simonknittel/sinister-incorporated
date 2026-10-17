@@ -4,10 +4,7 @@ import {
   throwApplicationErrorForPage,
 } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import {
-  listMyShips,
-  UnknownCursorBehavior,
-} from "@sam-monorepo/application";
+import { listMyShips, UnknownCursorBehavior } from "@sam-monorepo/application";
 import { cache } from "react";
 import {
   toOwnerShipsInput,

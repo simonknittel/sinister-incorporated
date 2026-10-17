@@ -39,7 +39,6 @@ const TOOLS_WITHOUT_PERMISSION = [
   "get_wiki_page",
   "list_wiki_pages",
   "search_wiki",
-  "get_changelog_entry",
   "list_changelog_entries",
 ];
 
@@ -531,15 +530,14 @@ test.describe("the read tools of the MCP server", () => {
     );
     const key = "2026-10-17-mcp-server";
 
-    const list = await callForContent(client, "list_changelog_entries");
-    expect(list.entries).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ key, is_tracked: true }),
-      ]),
-    );
-
-    const entry = await callForContent(client, "get_changelog_entry", { key });
-    expect(entry.title).toBe("MCP-Server für KI-Clients");
-    expect(entry.markdown).toContain("/app/account/mcp");
+    const list = (await callForContent(client, "list_changelog_entries")) as {
+      entries: { key: string; title: string; markdown: string }[];
+    };
+    const entry = list.entries.find((candidate) => candidate.key === key);
+    expect(entry).toMatchObject({
+      is_tracked: true,
+      title: "MCP-Server für KI-Clients",
+    });
+    expect(entry?.markdown).toContain("/app/account/mcp");
   });
 });

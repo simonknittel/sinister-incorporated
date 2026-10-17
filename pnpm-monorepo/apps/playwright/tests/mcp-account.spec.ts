@@ -109,12 +109,13 @@ test.describe("the MCP account page", () => {
     await expectAuditEvents(prisma, ["MCP_TOOL_SETTING_UPDATED"]);
   });
 
-  test("only an admin can enable admin mode for a client, and it gives the client all permissions", async ({
+  test("only an admin in admin mode can enable admin mode for a client, and it gives the client all permissions", async ({
     page,
     prisma,
     cimdServer,
     authorizeMcpClient,
     connectMcpClient,
+    enableAdminMode,
   }) => {
     const member = await createCitizen(prisma, { handle: "mcp-mitglied" });
     const admin = await createCitizen(prisma, {
@@ -140,16 +141,18 @@ test.describe("the MCP account page", () => {
       (await client.callTool("get_current_user")).structuredContent,
     ).toMatchObject({ role: "admin", admin_mode: false });
 
+    // The switch shows only while the admin mode of the toolbar is active
+    await page.goto(MCP_ACCOUNT_PAGE);
+    await expect(clientRow).toBeVisible();
+    await expect(adminModeSwitch).toHaveCount(0);
+
+    await enableAdminMode();
     await page.goto(MCP_ACCOUNT_PAGE);
     await expect(clientRow).toBeVisible();
     await waitForAppShellHydration(page);
     await expect(adminModeSwitch).not.toBeChecked();
 
-    const dialog = page.getByRole("alertdialog", {
-      name: "Admin-Modus aktivieren?",
-    });
     await toggleLabel(page, adminModeSwitch).click();
-    await dialog.getByRole("button", { name: "Aktivieren" }).click();
     await expect(adminModeSwitch).toBeChecked();
 
     await expect
@@ -163,7 +166,7 @@ test.describe("the MCP account page", () => {
     await expectAuditEvents(prisma, ["OAUTH_GRANT_ADMIN_MODE_UPDATED"]);
   });
 
-  test("an admin who assumes a user sees a note instead of the clients and the tools of that user", async ({
+  test("an admin who assumes a user manages the clients and the tools of that user, but not their admin mode", async ({
     page,
     context,
     prisma,
@@ -187,18 +190,11 @@ test.describe("the MCP account page", () => {
     await page.goto(MCP_ACCOUNT_PAGE);
     await expect(page.getByText("Assuming mcp-vertretener")).toBeVisible();
     await expect(
-      page.getByText(
-        "Du siehst SAM gerade als ein anderer Benutzer. Beende diese Ansicht, um die verbundenen Clients und die Werkzeuge deines Accounts zu verwalten.",
-      ),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Verbinden" }),
-    ).toBeVisible();
-    await expect(
       page.getByRole("heading", { name: "Verbundene Clients" }),
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Tools" })).toBeVisible();
+    await expect(
+      page.getByRole("columnheader", { name: "Admin-Modus" }),
     ).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "Werkzeuge" })).toHaveCount(
-      0,
-    );
   });
 });

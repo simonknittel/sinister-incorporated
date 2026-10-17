@@ -264,10 +264,7 @@ test.describe("the OAuth server and the MCP endpoint", () => {
       page.getByText(cimdServer.host, { exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByText(`Name laut Anwendung: ${CIMD_CLIENT_NAME}`),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Die Anwendung läuft auf diesem Computer."),
+      page.getByText(CIMD_CLIENT_NAME, { exact: true }),
     ).toBeVisible();
     await expect(allowButton).toBeVisible();
 
@@ -310,9 +307,10 @@ test.describe("the OAuth server and the MCP endpoint", () => {
         "Die Anfrage der Anwendung ist ungültig: The code_challenge_method parameter is missing or not valid",
       ),
     ).toBeVisible();
-    await expect(page.getByText("Weiterleitung an")).toBeVisible();
     await expect(
-      page.getByText(new URL(MCP_CALLBACK_URL).host, { exact: true }),
+      page.getByText(
+        `Du wirst weitergeleitet zu ${new URL(MCP_CALLBACK_URL).host}`,
+      ),
     ).toBeVisible();
     await expect(allowButton).toHaveCount(0);
     await expect(page).toHaveURL(/\/app\/oauth\/authorize\?/);

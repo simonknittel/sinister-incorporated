@@ -2,7 +2,7 @@
 
 SAM has a remote [Model Context Protocol](https://modelcontextprotocol.io)
 (MCP) server at `<base URL>/api/mcp`. MCP clients such as Claude.ai, Claude
-Desktop and Claude Code connect with OAuth 2.1. The tools use the
+Desktop, Claude Code, ChatGPT and Codex connect with OAuth 2.1. The tools use the
 permissions of the user who connects the client.
 
 The server supports only the protocol revision 2026-07-28. It is stateless:
@@ -10,17 +10,10 @@ it has no sessions, no subscriptions, no resources and no prompts.
 
 ## Connect a client
 
-Each user finds the URL and the steps on `/app/account/mcp`. On the same
-page, the user disconnects clients and disables tools.
-
-| Client         | Steps                                                                                                  |
-| -------------- | ------------------------------------------------------------------------------------------------------ |
-| Claude.ai      | "Settings" → "Connectors" → "Add custom connector" with the URL, then "Connect"                        |
-| Claude Desktop | Uses the connectors of the Claude account. Add the connector in Claude.ai or with the same steps here. |
-| Claude Code    | `claude mcp add --transport http sam <base URL>/api/mcp`, then `/mcp` in Claude Code to sign in        |
-
-The client opens the consent page `/app/oauth/authorize` of SAM. The user
-signs in to SAM if necessary and allows the access.
+Each user finds the URL and the steps for the supported clients on
+`/app/account/mcp`. On the same page, the user disconnects clients and
+disables tools. A client opens the consent page `/app/oauth/authorize` of
+SAM; the user signs in to SAM if necessary and allows the access.
 
 ## OAuth design
 

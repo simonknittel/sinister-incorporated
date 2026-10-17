@@ -1,17 +1,10 @@
-import { SmallBadge } from "@/modules/common/components/SmallBadge";
 import { Tile } from "@/modules/common/components/Tile";
-import { ToolKind } from "@sam-monorepo/mcp";
 import {
   getMyMcpToolSettings,
   type McpToolSettingsGroup,
   type McpToolWithSetting,
 } from "../queries/getMyMcpToolSettings";
 import { McpToolSwitch } from "./McpToolSwitch";
-
-const TOOL_KIND_LABELS: Readonly<Record<ToolKind, string>> = {
-  [ToolKind.Read]: "Liest",
-  [ToolKind.Write]: "Schreibt",
-};
 
 interface Props {
   readonly className?: string;
@@ -23,8 +16,7 @@ export const McpToolSettingsTile = async ({ className }: Props) => {
   return (
     <Tile
       className={className}
-      heading="Werkzeuge"
-      subheading="Alle Werkzeuge sind aktiviert, bis du sie deaktivierst. Ein deaktiviertes Werkzeug verschwindet für alle verbundenen Clients. Ein Client sieht außerdem nur die Werkzeuge, für die du Berechtigungen hast. Die Clients bekommen die Namen und Beschreibungen auf Englisch."
+      heading="Tools"
       childrenClassName="flex flex-col gap-6"
     >
       {groups.map((group) => (
@@ -64,7 +56,6 @@ const ToolSettingRow = ({ tool }: ToolSettingRowProps) => {
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <h4 className="font-bold">{tool.title}</h4>
-          <SmallBadge value={TOOL_KIND_LABELS[tool.kind]} />
           <code className="font-mono text-xs break-all text-neutral-500">
             {tool.name}
           </code>

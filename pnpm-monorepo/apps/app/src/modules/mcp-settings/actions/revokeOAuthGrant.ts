@@ -16,10 +16,6 @@ export const revokeOAuthGrant = createAuthenticatedAction(
   "revokeOAuthGrant",
   revokeOwnGrantInputSchema,
   async (formData, authentication, data, t) => {
-    // Only the user manages the own clients, not an admin who assumes the user
-    if (authentication.session.assumedByAdminId)
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
     try {
       await revokeOwnGrant(
         getApplicationContext(),

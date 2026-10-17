@@ -6,6 +6,7 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
+import { isAdminModeActive } from "@/modules/auth/utils/isAdminModeActive";
 import {
   setOwnGrantAdminMode,
   setOwnGrantAdminModeInputSchema,
@@ -18,8 +19,9 @@ export const updateOAuthGrantAdminMode = createAuthenticatedAction(
   "updateOAuthGrantAdminMode",
   setOwnGrantAdminModeInputSchema,
   async (formData, authentication, data, t) => {
-    // Only the user manages the own clients, not an admin who assumes the user
-    if (authentication.session.assumedByAdminId)
+    // Like the switch on the page: only while the admin mode of the toolbar
+    // is active, which is never the case while an admin assumes a user
+    if (!(await isAdminModeActive(authentication.session)))
       return { error: t("Common.forbidden"), requestPayload: formData };
 
     try {

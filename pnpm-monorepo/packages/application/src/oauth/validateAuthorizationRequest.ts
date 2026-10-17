@@ -1,7 +1,6 @@
 import * as z from "zod";
 import type { ApplicationContext } from "../context.js";
 import {
-  isLoopbackHostname,
   MAX_URL_LENGTH,
   MCP_SCOPE,
   PKCE_VALUE,
@@ -77,7 +76,6 @@ export type AuthorizationRequestValidation =
       readonly client: ClientMetadata;
       /** The redirect URI of the request, with its port for a loopback URI */
       readonly redirectUri: string;
-      readonly isLoopbackRedirectUri: boolean;
       readonly codeChallenge: string;
       readonly state: string | undefined;
       /** The scope that the consent gives */
@@ -232,7 +230,6 @@ export const validateAuthorizationRequest = async (
     kind: AuthorizationRequestValidationKind.Valid,
     client,
     redirectUri,
-    isLoopbackRedirectUri: isLoopbackHostname(new URL(redirectUri).hostname),
     codeChallenge: request.data.code_challenge,
     state: state.data,
     scope: GRANTED_SCOPE,

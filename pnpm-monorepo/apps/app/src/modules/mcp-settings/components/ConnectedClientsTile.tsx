@@ -12,22 +12,16 @@ import { RevokeOAuthGrantButton } from "./RevokeOAuthGrantButton";
 
 const BASE_COLUMNS: TableColumn[] = [
   {
-    key: "clientHost",
-    label: "Client",
-    track: "minmax(160px,1fr)",
-    minWidth: 160,
-  },
-  {
     key: "clientName",
     label: "Name",
     track: "minmax(140px,1fr)",
     minWidth: 140,
   },
   {
-    key: "redirectHost",
-    label: "Weiterleitung",
-    track: "minmax(120px,1fr)",
-    minWidth: 120,
+    key: "clientHost",
+    label: "Client",
+    track: "minmax(160px,1fr)",
+    minWidth: 160,
   },
   { key: "createdAt", label: "Verbunden am", track: "150px", minWidth: 150 },
   {
@@ -55,7 +49,7 @@ const ACTIONS_COLUMN: TableColumn = {
 
 interface Props {
   readonly className?: string;
-  /** True for an admin: only an admin can enable admin mode for a client */
+  /** True while the admin mode of the admin toolbar is active */
   readonly canManageAdminMode: boolean;
 }
 
@@ -77,15 +71,6 @@ export const ConnectedClientsTile = async ({
       isEmpty={grants.length === 0}
       emptyMessage="Du hast noch keinen Client verbunden."
       bodyClassName="text-sm"
-      footer={
-        <p className="text-center text-sm text-neutral-500">
-          Den Namen gibt der Client selbst an. Prüfe deshalb die Adresse in der
-          Spalte &bdquo;Client&ldquo;. &bdquo;Zuletzt verwendet&ldquo; ändert
-          sich höchstens einmal pro Stunde.
-          {canManageAdminMode &&
-            " Der Admin-Modus gibt einem Client alle Berechtigungen, solange du Admin bist."}
-        </p>
-      }
     >
       {grants.map((grant) => (
         <ConnectedClientRow
@@ -109,16 +94,12 @@ const ConnectedClientRow = ({
 }: ConnectedClientRowProps) => {
   return (
     <TRow className="min-h-10">
-      <td className="truncate font-bold" title={grant.clientId}>
-        {grant.clientHost}
-      </td>
-
-      <td className="truncate" title={grant.clientName}>
+      <td className="truncate font-bold" title={grant.clientName}>
         {grant.clientName}
       </td>
 
-      <td className="truncate" title={grant.redirectHost}>
-        {grant.redirectHost}
+      <td className="truncate" title={grant.clientId}>
+        {grant.clientHost}
       </td>
 
       <td>{formatDate(grant.createdAt)}</td>

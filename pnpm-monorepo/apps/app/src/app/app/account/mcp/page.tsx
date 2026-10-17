@@ -1,12 +1,12 @@
 import { getApplicationContext } from "@/modules/application";
 import { requireAuthenticationPage } from "@/modules/auth/server";
+import { isAdminModeActive } from "@/modules/auth/utils/isAdminModeActive";
 import Note from "@/modules/common/components/Note";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
 import { ConnectedClientsTile } from "@/modules/mcp-settings/components/ConnectedClientsTile";
 import { McpConnectionTile } from "@/modules/mcp-settings/components/McpConnectionTile";
 import { McpToolSettingsTile } from "@/modules/mcp-settings/components/McpToolSettingsTile";
 import { isMcpServerDisabled } from "@/modules/oauth/utils/isMcpServerDisabled";
-import { UserRole } from "@sam-monorepo/database/browser";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -33,23 +33,18 @@ export default async function Page() {
         mcpUrl={getApplicationContext().urls.mcpResourceUrl.href}
       />
 
-      {/* Only the user manages the own clients and tools, not an admin who
-          assumes the user */}
-      {session.assumedByAdminId ? (
-        <Note message="Du siehst SAM gerade als ein anderer Benutzer. Beende diese Ansicht, um die verbundenen Clients und die Werkzeuge deines Accounts zu verwalten." />
-      ) : (
-        <>
-          <SuspenseWithErrorBoundaryTile>
-            <ConnectedClientsTile
-              canManageAdminMode={session.user.role === UserRole.ADMIN}
-            />
-          </SuspenseWithErrorBoundaryTile>
+      <SuspenseWithErrorBoundaryTile>
+        {/* The admin mode of a client is only managed while the admin mode
+            of the toolbar is active, which is never the case while an admin
+            assumes a user */}
+        <ConnectedClientsTile
+          canManageAdminMode={await isAdminModeActive(session)}
+        />
+      </SuspenseWithErrorBoundaryTile>
 
-          <SuspenseWithErrorBoundaryTile>
-            <McpToolSettingsTile />
-          </SuspenseWithErrorBoundaryTile>
-        </>
-      )}
+      <SuspenseWithErrorBoundaryTile>
+        <McpToolSettingsTile />
+      </SuspenseWithErrorBoundaryTile>
     </div>
   );
 }

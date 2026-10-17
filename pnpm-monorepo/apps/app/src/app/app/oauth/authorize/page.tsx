@@ -23,9 +23,6 @@ export default async function Page({
         <AuthorizationRequest
           parameters={await searchParams}
           isAssumedUser={!!session.assumedByAdminId}
-          userLabel={
-            session.entity?.handle ?? session.user.name ?? session.user.id
-          }
         />
       </MaxWidthContent>
     </MainContent>
