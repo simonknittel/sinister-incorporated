@@ -1,4 +1,4 @@
-import { calculateJwkThumbprint, exportJWK } from "jose";
+import { calculateJwkThumbprint, decodeJwt, exportJWK } from "jose";
 import { generateKeyPairSync } from "node:crypto";
 import { describe, expect, test } from "vitest";
 import type { ApplicationContext, SigningKey } from "../context.js";
@@ -60,6 +60,17 @@ describe("access tokens", () => {
     });
     expect(verifiedToken.resource.href).toBe("https://sam.example.com/api/mcp");
     expect(verifiedToken.expiresAt).toBeGreaterThan(Date.now() / 1000);
+  });
+
+  test("gives each token of a grant its own jti", async () => {
+    const context = createContext(await createSigningKey());
+
+    const firstPayload = decodeJwt(await issueAccessToken(context, GRANT));
+    const secondPayload = decodeJwt(await issueAccessToken(context, GRANT));
+
+    expect(firstPayload.grant_id).toBe(GRANT.id);
+    expect(secondPayload.grant_id).toBe(GRANT.id);
+    expect(firstPayload.jti).not.toBe(secondPayload.jti);
   });
 
   test("refuses a token of a different audience or issuer", async () => {

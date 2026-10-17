@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   createClientMetadataDocumentSchema,
+  getCacheLifetimeInSeconds,
   parseClientId,
 } from "./clientMetadataDocument.js";
 
@@ -78,5 +79,22 @@ describe("parseClientId", () => {
       parseClientId("http://127.0.0.1:1234/metadata", true),
     ).not.toBeNull();
     expect(parseClientId("http://example.com/metadata", true)).toBeNull();
+  });
+});
+
+describe("getCacheLifetimeInSeconds", () => {
+  test("keeps a document within the limits of the cache", () => {
+    for (const [cacheControl, expectedLifetime] of [
+      [undefined, 60 * 60],
+      ["public, max-age=600", 600],
+      ["max-age=0", 60],
+      ["max-age=31536000", 24 * 60 * 60],
+      ["no-store", 60],
+      ["public, no-cache, max-age=600", 60],
+      ['no-cache="Set-Cookie", max-age=600', 60],
+    ] as const)
+      expect(getCacheLifetimeInSeconds(cacheControl), cacheControl).toBe(
+        expectedLifetime,
+      );
   });
 });

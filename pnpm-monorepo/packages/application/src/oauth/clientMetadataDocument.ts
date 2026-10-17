@@ -74,10 +74,20 @@ const MAX_CACHE_LIFETIME_IN_SECONDS = 24 * 60 * 60;
 const DEFAULT_CACHE_LIFETIME_IN_SECONDS = 60 * 60;
 
 /**
- * How long the server keeps a document: `max-age` of the `Cache-Control`
- * header within the limits, or the default without `max-age`
+ * The directives that do not permit a reuse without a new request (RFC 9111
+ * section 5.2.2). A field name after `no-cache` does not change the result.
+ */
+const NO_REUSE_DIRECTIVE = /(?:^|,)\s*(?:no-store|no-cache)\s*(?:[=,]|$)/i;
+
+/**
+ * How long the server keeps a document: the minimum for `no-store` and
+ * `no-cache`, else `max-age` of the `Cache-Control` header within the limits,
+ * or the default without `max-age`
  */
 export const getCacheLifetimeInSeconds = (cacheControl: string | undefined) => {
+  if (NO_REUSE_DIRECTIVE.test(cacheControl ?? ""))
+    return MIN_CACHE_LIFETIME_IN_SECONDS;
+
   const maxAge = /(?:^|,)\s*max-age\s*=\s*"?(\d+)"?\s*(?:,|$)/i.exec(
     cacheControl ?? "",
   )?.[1];

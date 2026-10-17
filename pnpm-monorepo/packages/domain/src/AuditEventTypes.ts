@@ -243,6 +243,7 @@ export enum AuditEventType {
   OAUTH_GRANT_REVOKED = "OAUTH_GRANT_REVOKED",
   OAUTH_GRANT_ADMIN_MODE_UPDATED = "OAUTH_GRANT_ADMIN_MODE_UPDATED",
   MCP_TOOL_SETTING_UPDATED = "MCP_TOOL_SETTING_UPDATED",
+  OAUTH_RECORDS_PURGED = "OAUTH_RECORDS_PURGED",
 }
 
 /**
@@ -1658,6 +1659,13 @@ export interface AuditEventDataByType {
   [AuditEventType.MCP_TOOL_SETTING_UPDATED]: {
     toolName: string;
     enabled: boolean;
+  };
+
+  [AuditEventType.OAUTH_RECORDS_PURGED]: {
+    authorizationCodeCount: number;
+    refreshTokenCount: number;
+    grantCount: number;
+    clientMetadataCount: number;
   };
 }
 

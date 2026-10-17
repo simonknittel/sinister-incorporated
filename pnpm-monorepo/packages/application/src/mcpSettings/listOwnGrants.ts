@@ -26,13 +26,23 @@ export interface OwnGrant {
   readonly adminModeEnabledAt: Date | null;
 }
 
-/** The grants of the actor that are not revoked, the newest grant first */
+/**
+ * The grants of the actor that are not revoked, the newest grant first. A
+ * grant has a refresh token from the redemption of its authorization code
+ * until its revocation or the expiry of its tokens. Thus the list does not
+ * show a grant whose code the client did not redeem, for example after an
+ * abandoned authorization.
+ */
 export const listOwnGrants = async (
   context: ApplicationContext,
   actor: Actor,
 ): Promise<OwnGrant[]> => {
   const grants = await context.prisma.oAuthGrant.findMany({
-    where: { userId: actor.userId, revokedAt: null },
+    where: {
+      userId: actor.userId,
+      revokedAt: null,
+      refreshTokens: { some: {} },
+    },
     orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     take: MAXIMUM_GRANTS,
     select: {

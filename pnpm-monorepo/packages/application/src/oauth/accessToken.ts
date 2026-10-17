@@ -1,5 +1,5 @@
 import { errors, jwtVerify, SignJWT } from "jose";
-import { createPublicKey } from "node:crypto";
+import { createPublicKey, randomBytes } from "node:crypto";
 import * as z from "zod";
 import type { ApplicationContext } from "../context.js";
 import { ACCESS_TOKEN_LIFETIME_IN_SECONDS } from "./constants.js";
@@ -9,6 +9,9 @@ import { InvalidTokenError, SigningKeyUnavailableError } from "./errors.js";
 const ACCESS_TOKEN_TYPE = "at+jwt";
 
 const ALGORITHM = "ES256";
+
+/** 128 random bits make each `jti` unique (RFC 7519 section 4.1.7) */
+const TOKEN_ID_BYTES = 16;
 
 export const requireSigningKey = async (
   context: Pick<ApplicationContext, "signingKey">,
@@ -20,7 +23,7 @@ export const requireSigningKey = async (
 };
 
 export interface AccessTokenGrant {
-  /** The `jti` claim: the MCP endpoint loads the grant with it */
+  /** The private claim `grant_id`: the MCP endpoint loads the grant with it */
   readonly id: string;
   readonly userId: string;
   readonly clientId: string;
@@ -39,7 +42,11 @@ export const issueAccessToken = async (
   const signingKey = await requireSigningKey(context);
   const issuedAt = Math.floor(context.now().getTime() / 1000);
 
-  return new SignJWT({ client_id: grant.clientId, scope: grant.scope })
+  return new SignJWT({
+    client_id: grant.clientId,
+    scope: grant.scope,
+    grant_id: grant.id,
+  })
     .setProtectedHeader({
       alg: ALGORITHM,
       kid: signingKey.keyId,
@@ -48,7 +55,7 @@ export const issueAccessToken = async (
     .setIssuer(context.urls.issuer)
     .setAudience(context.urls.mcpResourceUrl.href)
     .setSubject(grant.userId)
-    .setJti(grant.id)
+    .setJti(randomBytes(TOKEN_ID_BYTES).toString("base64url"))
     .setIssuedAt(issuedAt)
     .setExpirationTime(issuedAt + ACCESS_TOKEN_LIFETIME_IN_SECONDS)
     .sign(signingKey.privateKey);
@@ -57,7 +64,7 @@ export const issueAccessToken = async (
 /** The claims that the app sets; `jwtVerify()` checks the other claims */
 const accessTokenClaimsSchema = z.object({
   sub: z.string().min(1),
-  jti: z.string().min(1),
+  grant_id: z.string().min(1),
   client_id: z.string().min(1),
   scope: z.string(),
   exp: z.number(),
@@ -115,7 +122,7 @@ export const verifyAccessToken = async (
 
   return {
     userId: claims.data.sub,
-    grantId: claims.data.jti,
+    grantId: claims.data.grant_id,
     clientId: claims.data.client_id,
     scopes: claims.data.scope.split(" ").filter(Boolean),
     expiresAt: claims.data.exp,

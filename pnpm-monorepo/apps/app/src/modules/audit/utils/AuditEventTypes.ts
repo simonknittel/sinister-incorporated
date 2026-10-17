@@ -2400,4 +2400,16 @@ export const AuditEventDefinitions: {
     message: (data) =>
       `MCP tool ${data.toolName} ${data.enabled ? "enabled" : "disabled"}`,
   },
+
+  [AuditEventType.OAUTH_RECORDS_PURGED]: {
+    type: AuditEventType.OAUTH_RECORDS_PURGED,
+    data: {
+      authorizationCodeCount: 0,
+      refreshTokenCount: 0,
+      grantCount: 0,
+      clientMetadataCount: 0,
+    },
+    message: (data) =>
+      `Deleted ${data.authorizationCodeCount} expired OAuth authorization code(s), ${data.refreshTokenCount} expired OAuth refresh token(s), ${data.grantCount} OAuth grant(s) without a token and ${data.clientMetadataCount} expired OAuth client metadata document(s)`,
+  },
 };
