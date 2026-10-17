@@ -1,9 +1,14 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
+import { getApplicationContext, toActor } from "@/modules/application";
+import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  createEventPosition as createEventPositionUseCase,
+  insertLineupPosition,
+  newPositionFieldsSchema,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import { authorizeEventContainer } from "../utils/authorizeEventContainer";
@@ -12,132 +17,91 @@ import {
   EVENT_CONTAINER_KIND_FIELD,
   eventContainerColumns,
   EventContainerKind,
-  type EventContainer,
+  toTemplateContainer,
 } from "../utils/eventContainer";
-import { buildPositionCreatedAuditEvent } from "../utils/lineupAuditEvents";
-import { positionColorSchema } from "../utils/positionColorSchema";
+import { mapLineupErrorToActionResponse } from "../utils/lineupErrorResponse";
 
-const schema = z.object({
-  containerKind: z.enum(EventContainerKind),
-  containerId: z.string().min(1).max(64),
-  name: z.string().trim().max(256),
-  description: z.string().trim().max(512).optional(),
-  variantIds: z.array(z.cuid()).max(250), // Arbitrary (untested) limit to prevent DDoS
-  parentPositionId: z.cuid().optional(),
-  fontSize: z.enum(["", "large"]).optional().nullish(),
-  backgroundColor: positionColorSchema.optional().nullish(),
-  textColor: positionColorSchema.optional().nullish(),
+/** The lineup editor also adds the positions of an event template */
+const schema = newPositionFieldsSchema.extend({
+  container_kind: z.enum(EventContainerKind),
+  container_id: z.string().min(1).max(64),
 });
 
 export const createEventPosition = createAuthenticatedAction(
   "createEventPosition",
   schema,
-  async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    const container: EventContainer = {
-      kind: data.containerKind,
-      id: data.containerId,
-    };
-    const authorization = await authorizeEventContainer(container, t);
-    if (!authorization.allowed)
-      return { error: authorization.error, requestPayload: formData };
+  async (
+    formData,
+    authentication,
+    { container_kind: containerKind, container_id: containerId, ...fields },
+    t,
+  ) => {
+    const context = getApplicationContext();
 
-    /**
-     * A parent must live in the same container, or the position would leak
-     * into another lineup — the tree is walked by parentPositionId alone. A
-     * missing parent is usually a parent that a different tab deleted.
-     */
-    if (data.parentPositionId) {
-      const parentPosition = await prisma.eventPosition.findFirst({
-        where: {
-          id: data.parentPositionId,
-          ...eventContainerColumns(container),
-        },
-        select: { id: true },
-      });
-      if (!parentPosition)
-        return rejectConflict("Posten nicht gefunden", formData);
+    try {
+      switch (containerKind) {
+        case EventContainerKind.Event:
+          await createEventPositionUseCase(
+            context,
+            await toActor(authentication.session),
+            { event_id: containerId, ...fields },
+          );
+          break;
+
+        case EventContainerKind.Template: {
+          const container = toTemplateContainer(containerId);
+          const authorization = await authorizeEventContainer(container, t);
+          if (!authorization.allowed)
+            return { error: authorization.error, requestPayload: formData };
+
+          const createdPosition = await insertLineupPosition(
+            context,
+            eventContainerColumns(container),
+            fields,
+          );
+
+          await createAuditEvents([
+            {
+              type: AuditEventType.EVENT_TEMPLATE_POSITION_CREATED,
+              data: { templateId: containerId, ...createdPosition },
+              createdById: authentication.session.user.id,
+            },
+          ]);
+          break;
+        }
+
+        default:
+          throw new Error(
+            `Unknown lineup container kind: ${containerKind satisfies never}`,
+          );
+      }
+    } catch (error) {
+      return mapLineupErrorToActionResponse(error, formData, t);
     }
-
-    /**
-     * The database allows each variant one time for each position. Thus
-     * remove the variants that the form sends more than one time.
-     */
-    const variantIds = Array.from(new Set(data.variantIds));
-
-    /**
-     * Create entry. The order value the lineup always used is the container's
-     * total position count, which is at least as large as any sibling's order.
-     */
-    const positionCount = await prisma.eventPosition.count({
-      where: eventContainerColumns(container),
-    });
-
-    const createdPosition = await prisma.eventPosition.create({
-      data: {
-        ...eventContainerColumns(container),
-        name: data.name,
-        description: data.description,
-        fontSize: data.fontSize,
-        backgroundColor: data.backgroundColor,
-        textColor: data.textColor,
-        order: positionCount,
-        requiredVariants: {
-          createMany: {
-            data: variantIds.map((variantId, index) => ({
-              variantId,
-              order: index,
-            })),
-          },
-        },
-        parentPositionId: data.parentPositionId ?? null,
-      },
-      select: {
-        id: true,
-      },
-    });
 
     refresh();
 
-    await createAuditEvents([
-      buildPositionCreatedAuditEvent(
-        container,
-        {
-          positionId: createdPosition.id,
-          name: data.name,
-          variantIds,
-          parentPositionId: data.parentPositionId,
-        },
-        authentication.session.user.id,
-      ),
-    ]);
-
-    /**
-     * Respond with the result
-     */
     return {
       success: t("Common.successfullySaved"),
     };
   },
   {
     parseFormData: (formData) => ({
-      containerKind: formData.get(EVENT_CONTAINER_KIND_FIELD),
-      containerId: formData.get(EVENT_CONTAINER_ID_FIELD),
+      container_kind: formData.get(EVENT_CONTAINER_KIND_FIELD),
+      container_id: formData.get(EVENT_CONTAINER_ID_FIELD),
       name: formData.get("name"),
       description: formData.has("description")
         ? formData.get("description")
         : undefined,
-      variantIds: formData.getAll("variantId[]") || [],
-      parentPositionId: formData.has("parentPositionId")
+      required_variant_ids: formData.getAll("variantId[]"),
+      parent_position_id: formData.has("parentPositionId")
         ? formData.get("parentPositionId")
         : undefined,
-      fontSize: formData.has("fontSize") ? formData.get("fontSize") : null,
-      backgroundColor: formData.has("backgroundColor")
+      font_size: formData.has("fontSize") ? formData.get("fontSize") : null,
+      background_color: formData.has("backgroundColor")
         ? formData.get("backgroundColor")
         : null,
-      textColor: formData.has("textColor") ? formData.get("textColor") : null,
+      text_color: formData.has("textColor") ? formData.get("textColor") : null,
     }),
   },
 );

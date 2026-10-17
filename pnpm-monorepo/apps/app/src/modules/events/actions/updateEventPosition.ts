@@ -1,116 +1,83 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
+import { getApplicationContext, toActor } from "@/modules/application";
+import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  findLineupPositionContainer,
+  updateEventPositionInputSchema,
+  updateEventPosition as updateEventPositionUseCase,
+  updateLineupPosition,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { buildPositionUpdatedAuditEvent } from "../utils/lineupAuditEvents";
-import { positionColorSchema } from "../utils/positionColorSchema";
+import { mapLineupErrorToActionResponse } from "../utils/lineupErrorResponse";
 import { requireManageablePosition } from "../utils/requireManageablePosition";
-
-const schema = z.object({
-  positionId: z.cuid(),
-  name: z.string().trim().max(256),
-  description: z.string().trim().max(512).optional(),
-  variantIds: z.array(z.cuid()).max(250), // Arbitrary (untested) limit to prevent DDoS
-  fontSize: z.enum(["", "large"]).optional().nullable(),
-  backgroundColor: positionColorSchema.optional().nullable(),
-  textColor: positionColorSchema.optional().nullable(),
-});
 
 export const updateEventPosition = createAuthenticatedAction(
   "updateEventPosition",
-  schema,
+  updateEventPositionInputSchema,
   async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    const { position, container, failure } = await requireManageablePosition(
-      data.positionId,
-      formData,
-      t,
-    );
-    if (failure) return failure;
+    const context = getApplicationContext();
 
-    /**
-     * The database allows each variant one time for each position. Thus
-     * remove the variants that the form sends more than one time.
-     */
-    const variantIds = Array.from(new Set(data.variantIds));
+    try {
+      const container = await findLineupPositionContainer(
+        context,
+        data.position_id,
+      );
 
-    /**
-     * Update position
-     */
-    await prisma.$transaction([
-      prisma.eventPositionRequiredVariant.deleteMany({
-        where: {
-          positionId: position.id,
-        },
-      }),
+      if (container.eventId !== null) {
+        await updateEventPositionUseCase(
+          context,
+          await toActor(authentication.session),
+          data,
+        );
+      } else {
+        /** The lineup editor also changes the positions of an event template */
+        const { position, failure } = await requireManageablePosition(
+          data.position_id,
+          formData,
+          t,
+        );
+        if (failure) return failure;
 
-      prisma.eventPosition.update({
-        where: {
-          id: data.positionId,
-        },
-        data: {
-          name: data.name,
-          description: data.description,
-          fontSize: data.fontSize,
-          backgroundColor: data.backgroundColor,
-          textColor: data.textColor,
-          requiredVariants: {
-            createMany: {
-              data: variantIds.map((variantId, index) => ({
-                variantId,
-                order: index,
-              })),
-            },
+        const updatedPosition = await updateLineupPosition(
+          context,
+          position,
+          data,
+        );
+
+        await createAuditEvents([
+          {
+            type: AuditEventType.EVENT_TEMPLATE_POSITION_UPDATED,
+            data: { templateId: container.templateId, ...updatedPosition },
+            createdById: authentication.session.user.id,
           },
-        },
-      }),
-    ]);
+        ]);
+      }
+    } catch (error) {
+      return mapLineupErrorToActionResponse(error, formData, t);
+    }
 
     refresh();
 
-    await createAuditEvents([
-      buildPositionUpdatedAuditEvent(
-        container,
-        {
-          positionId: position.id,
-          previousName: position.name,
-          newName: data.name,
-          previousFontSize: position.fontSize || null,
-          newFontSize: data.fontSize || null,
-          previousBackgroundColor: position.backgroundColor || null,
-          newBackgroundColor: data.backgroundColor || null,
-          previousTextColor: position.textColor || null,
-          newTextColor: data.textColor || null,
-        },
-        authentication.session.user.id,
-      ),
-    ]);
-
-    /**
-     * Respond with the result
-     */
     return {
       success: "Erfolgreich gespeichert.",
     };
   },
   {
     parseFormData: (formData) => ({
-      positionId: formData.get("positionId"),
+      position_id: formData.get("positionId"),
       name: formData.get("name"),
       description: formData.has("description")
         ? formData.get("description")
         : undefined,
-      variantIds: formData.getAll("variantId[]") || [],
-      fontSize: formData.has("fontSize") ? formData.get("fontSize") : null,
-      backgroundColor: formData.has("backgroundColor")
+      required_variant_ids: formData.getAll("variantId[]"),
+      font_size: formData.has("fontSize") ? formData.get("fontSize") : null,
+      background_color: formData.has("backgroundColor")
         ? formData.get("backgroundColor")
         : null,
-      textColor: formData.has("textColor") ? formData.get("textColor") : null,
+      text_color: formData.has("textColor") ? formData.get("textColor") : null,
     }),
   },
 );

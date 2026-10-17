@@ -4,8 +4,6 @@ import type { EventPosition, Prisma } from "@sam-monorepo/database/client";
 import type { getTranslations } from "next-intl/server";
 import { authorizeEventContainer } from "./authorizeEventContainer";
 import { getPositionContainer, type EventContainer } from "./eventContainer";
-import { isAllowedToManagePositions } from "./isAllowedToManagePositions";
-import { isEventUpdatable } from "./isEventUpdatable";
 
 const POSITION_SELECT = {
   id: true,
@@ -38,8 +36,9 @@ type RequireManageablePositionResult =
   | { position?: never; container?: never; failure: Failure };
 
 /**
- * The shared guard of the lineup mutations: the position must exist and the
- * current user must be allowed to edit the container it belongs to (see
+ * The shared guard of the lineup mutations of the app that also change the
+ * lineup of a template: the position must exist and the current user must be
+ * allowed to edit the container it belongs to (see
  * `authorizeEventContainer`). Returns the position with its container, or
  * the error response the action should return as-is. A position that is gone
  * refreshes the page, thus call it only in a server action.
@@ -65,56 +64,4 @@ export const requireManageablePosition = async (
     };
 
   return { position, container };
-};
-
-type RequireManageableEventPositionResult =
-  | {
-      position: ManageablePosition;
-      eventId: string;
-      failure?: never;
-    }
-  | { position?: never; eventId?: never; failure: Failure };
-
-/**
- * The guard of the mutations that only make sense on a real event: assigning
- * and unassigning a citizen. Template blueprints are never staffed, so their
- * positions are rejected as not found — the same answer an unknown id gets.
- * A position that is gone or over refreshes the page, thus call it only in a
- * server action.
- */
-export const requireManageableEventPosition = async (
-  positionId: EventPosition["id"],
-  formData: FormData,
-  t: Awaited<ReturnType<typeof getTranslations>>,
-): Promise<RequireManageableEventPositionResult> => {
-  const position = await prisma.eventPosition.findUnique({
-    where: { id: positionId, event: { deletedAt: null } },
-    select: {
-      ...POSITION_SELECT,
-      event: {
-        select: {
-          startTime: true,
-          endTime: true,
-          discordCreatorId: true,
-          createdById: true,
-          managers: { select: { id: true } },
-        },
-      },
-    },
-  });
-
-  if (!position?.eventId || !position.event)
-    return { failure: rejectConflict("Posten nicht gefunden", formData) };
-
-  if (!isEventUpdatable(position.event))
-    return {
-      failure: rejectConflict("Das Event ist bereits vorbei.", formData),
-    };
-
-  if (!(await isAllowedToManagePositions(position.event)))
-    return {
-      failure: { error: t("Common.forbidden"), requestPayload: formData },
-    };
-
-  return { position, eventId: position.eventId };
 };

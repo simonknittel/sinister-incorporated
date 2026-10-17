@@ -1,75 +1,43 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
+import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  assignEventPosition,
+  assignEventPositionInputSchema,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { requireManageableEventPosition } from "../utils/requireManageablePosition";
+import { mapLineupErrorToActionResponse } from "../utils/lineupErrorResponse";
 
-const schema = z.object({
-  positionId: z.cuid(),
-  citizenId: z.cuid(),
+/** `resetEventPositionCitizenId` removes the citizen */
+const schema = assignEventPositionInputSchema.extend({
+  citizen_id: assignEventPositionInputSchema.shape.citizen_id.unwrap(),
 });
 
 export const updateEventPositionCitizenId = createAuthenticatedAction(
   "updateEventPositionCitizenId",
   schema,
   async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    const { position, eventId, failure } = await requireManageableEventPosition(
-      data.positionId,
-      formData,
-      t,
-    );
-    if (failure) return failure;
-
-    const citizen = await prisma.citizen.findFirst({
-      where: { id: data.citizenId, ...ACTIVE_CITIZEN_WHERE },
-      select: { id: true },
-    });
-    if (!citizen)
-      return { error: "Citizen nicht gefunden", requestPayload: formData };
-
-    /**
-     * Update position
-     */
-    await prisma.eventPosition.update({
-      where: {
-        id: data.positionId,
-      },
-      data: {
-        citizen: {
-          connect: {
-            id: data.citizenId,
-          },
-        },
-      },
-    });
+    try {
+      await assignEventPosition(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapLineupErrorToActionResponse(error, formData, t);
+    }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.EVENT_POSITION_CITIZEN_ASSIGNED,
-        data: {
-          eventId,
-          positionId: position.id,
-          citizenId: data.citizenId,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
     return {
       success: t("Common.successfullySaved"),
     };
+  },
+  {
+    parseFormData: (formData) => ({
+      position_id: formData.get("positionId"),
+      citizen_id: formData.get("citizenId"),
+    }),
   },
 );

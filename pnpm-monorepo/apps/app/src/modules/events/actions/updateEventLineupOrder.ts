@@ -1,9 +1,15 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
+import { getApplicationContext, toActor } from "@/modules/application";
+import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  lineupOrderSchema,
+  reorderEventLineup,
+  writeLineupOrder,
+  type LineupOrderNode,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import { authorizeEventContainer } from "../utils/authorizeEventContainer";
@@ -12,156 +18,100 @@ import {
   EVENT_CONTAINER_KIND_FIELD,
   eventContainerColumns,
   EventContainerKind,
-  type EventContainer,
+  toTemplateContainer,
 } from "../utils/eventContainer";
-import { buildLineupOrderChangedAuditEvent } from "../utils/lineupAuditEvents";
+import { mapLineupErrorToActionResponse } from "../utils/lineupErrorResponse";
 
-// TODO: Simplify recursion
+/** The lineup editor also reorders the lineup of an event template */
 const schema = z.object({
-  containerKind: z.enum(EventContainerKind),
-  containerId: z.string().min(1).max(64),
-  order: z
-    .array(
-      z.object({
-        id: z.cuid(),
-        order: z.number().int().min(0),
-        childPositions: z
-          .array(
-            z.object({
-              id: z.cuid(),
-              order: z.number().int().min(0),
-              childPositions: z
-                .array(
-                  z.object({
-                    id: z.cuid(),
-                    order: z.number().int().min(0),
-                    childPositions: z
-                      .array(
-                        z.object({
-                          id: z.cuid(),
-                          order: z.number().int().min(0),
-                        }),
-                      )
-                      .max(50) // Arbitrary (untested) limit to prevent DDoS
-                      .optional(),
-                  }),
-                )
-                .max(50) // Arbitrary (untested) limit to prevent DDoS
-                .optional(),
-            }),
-          )
-          .max(50) // Arbitrary (untested) limit to prevent DDoS
-          .optional(),
-      }),
-    )
-    .max(50), // Arbitrary (untested) limit to prevent DDoS
+  container_kind: z.enum(EventContainerKind),
+  container_id: z.string().min(1).max(64),
+  positions: lineupOrderSchema,
 });
 
+/** The tree that the lineup editor sends */
 export interface MappedPosition {
   id: string;
   order: number;
   childPositions?: MappedPosition[];
 }
 
+const toLineupOrder = (positions: MappedPosition[]): LineupOrderNode[] =>
+  positions.map((position) => ({
+    id: position.id,
+    order: position.order,
+    children: position.childPositions && toLineupOrder(position.childPositions),
+  }));
+
 export const updateEventLineupOrder = createAuthenticatedAction(
   "updateEventLineupOrder",
   schema,
-  async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    const container: EventContainer = {
-      kind: data.containerKind,
-      id: data.containerId,
-    };
-    const authorization = await authorizeEventContainer(container, t);
-    if (!authorization.allowed)
-      return { error: authorization.error, requestPayload: formData };
+  async (
+    formData,
+    authentication,
+    { container_kind: containerKind, container_id: containerId, positions },
+    t,
+  ) => {
+    const context = getApplicationContext();
 
-    /**
-     * Make sure every submitted position belongs to the authorized container.
-     * Parent assignments are derived from the submitted tree, so this also
-     * keeps every new parentPositionId inside the container. An unknown
-     * position is usually a position that a different tab deleted.
-     */
-    const containerPositions = await prisma.eventPosition.findMany({
-      where: eventContainerColumns(container),
-      select: {
-        id: true,
-      },
-    });
-    const containerPositionIds = new Set(
-      containerPositions.map((position) => position.id),
-    );
-    const flattenPositionIds = (positions: MappedPosition[]): string[] =>
-      positions.flatMap((position) => [
-        position.id,
-        ...(position.childPositions
-          ? flattenPositionIds(position.childPositions)
-          : []),
-      ]);
-    if (
-      flattenPositionIds(data.order).some(
-        (positionId) => !containerPositionIds.has(positionId),
-      )
-    )
-      return rejectConflict(
-        "Die Aufstellung wurde in der Zwischenzeit geändert.",
-        formData,
-      );
+    try {
+      switch (containerKind) {
+        case EventContainerKind.Event:
+          await reorderEventLineup(
+            context,
+            await toActor(authentication.session),
+            { event_id: containerId, positions },
+          );
+          break;
 
-    /**
-     * Update lineup order
-     */
-    const transactions: ReturnType<typeof prisma.eventPosition.update>[] = [];
-    const loop = (
-      positions: MappedPosition[],
-      parentPosition?: MappedPosition,
-    ) => {
-      for (const position of positions) {
-        transactions.push(
-          prisma.eventPosition.update({
-            where: {
-              id: position.id,
+        case EventContainerKind.Template: {
+          const container = toTemplateContainer(containerId);
+          const authorization = await authorizeEventContainer(container, t);
+          if (!authorization.allowed)
+            return { error: authorization.error, requestPayload: formData };
+
+          await writeLineupOrder(
+            context,
+            eventContainerColumns(container),
+            positions,
+          );
+
+          await createAuditEvents([
+            {
+              type: AuditEventType.EVENT_TEMPLATE_LINEUP_ORDER_CHANGED,
+              data: { templateId: containerId },
+              createdById: authentication.session.user.id,
             },
-            data: {
-              order: position.order,
-              parentPositionId: {
-                set: parentPosition ? parentPosition.id : null,
-              },
-            },
-          }),
-        );
-
-        if (position.childPositions) {
-          loop(position.childPositions, position);
+          ]);
+          break;
         }
+
+        default:
+          throw new Error(
+            `Unknown lineup container kind: ${containerKind satisfies never}`,
+          );
       }
-    };
-    loop(data.order);
-    await prisma.$transaction(transactions);
+    } catch (error) {
+      return mapLineupErrorToActionResponse(error, formData, t);
+    }
 
     refresh();
 
-    await createAuditEvents([
-      buildLineupOrderChangedAuditEvent(
-        container,
-        authentication.session.user.id,
-      ),
-    ]);
-
-    /**
-     * Respond with the result
-     */
     return {
       success: "Erfolgreich gespeichert.",
     };
   },
   {
+    /**
+     * An order that is not valid JSON or that has a different shape throws
+     * here, and the action answers with a bad request
+     */
     parseFormData: (formData) => ({
-      containerKind: formData.get(EVENT_CONTAINER_KIND_FIELD),
-      containerId: formData.get(EVENT_CONTAINER_ID_FIELD),
-      order: JSON.parse(formData.get("order") as string) as unknown,
+      container_kind: formData.get(EVENT_CONTAINER_KIND_FIELD),
+      container_id: formData.get(EVENT_CONTAINER_ID_FIELD),
+      positions: toLineupOrder(
+        JSON.parse(formData.get("order") as string) as MappedPosition[],
+      ),
     }),
   },
 );

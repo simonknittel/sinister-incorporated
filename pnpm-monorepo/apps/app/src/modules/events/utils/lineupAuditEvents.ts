@@ -7,58 +7,10 @@ type AuditEventInput = Parameters<typeof createAuditEvents>[0][number];
 /**
  * The system log is immutable, so a lineup mutation on an event keeps writing
  * the exact entry it always wrote and a mutation on a template writes one of
- * the template-scoped types instead. These builders are the only place that
- * mapping lives.
+ * the template-scoped types instead. These builders hold that mapping for the
+ * actions that are not use cases yet; the use cases of the application
+ * package write the event types themselves.
  */
-
-export const buildPositionCreatedAuditEvent = (
-  container: EventContainer,
-  payload: {
-    positionId: string;
-    name: string;
-    variantIds: string[];
-    parentPositionId?: string;
-  },
-  createdById: string,
-): AuditEventInput =>
-  container.kind === EventContainerKind.Event
-    ? {
-        type: AuditEventType.EVENT_POSITION_CREATED,
-        data: { eventId: container.id, ...payload },
-        createdById,
-      }
-    : {
-        type: AuditEventType.EVENT_TEMPLATE_POSITION_CREATED,
-        data: { templateId: container.id, ...payload },
-        createdById,
-      };
-
-export const buildPositionUpdatedAuditEvent = (
-  container: EventContainer,
-  payload: {
-    positionId: string;
-    previousName: string;
-    newName: string;
-    previousFontSize: string | null;
-    newFontSize: string | null;
-    previousBackgroundColor: string | null;
-    newBackgroundColor: string | null;
-    previousTextColor: string | null;
-    newTextColor: string | null;
-  },
-  createdById: string,
-): AuditEventInput =>
-  container.kind === EventContainerKind.Event
-    ? {
-        type: AuditEventType.EVENT_POSITION_UPDATED_V2,
-        data: { eventId: container.id, ...payload },
-        createdById,
-      }
-    : {
-        type: AuditEventType.EVENT_TEMPLATE_POSITION_UPDATED,
-        data: { templateId: container.id, ...payload },
-        createdById,
-      };
 
 export const buildPositionNameUpdatedAuditEvent = (
   container: EventContainer,
@@ -74,39 +26,6 @@ export const buildPositionNameUpdatedAuditEvent = (
     : {
         type: AuditEventType.EVENT_TEMPLATE_POSITION_NAME_UPDATED,
         data: { templateId: container.id, ...payload },
-        createdById,
-      };
-
-export const buildPositionDeletedAuditEvent = (
-  container: EventContainer,
-  payload: { positionId: string; name: string },
-  createdById: string,
-): AuditEventInput =>
-  container.kind === EventContainerKind.Event
-    ? {
-        type: AuditEventType.EVENT_POSITION_DELETED,
-        data: { eventId: container.id, ...payload },
-        createdById,
-      }
-    : {
-        type: AuditEventType.EVENT_TEMPLATE_POSITION_DELETED,
-        data: { templateId: container.id, ...payload },
-        createdById,
-      };
-
-export const buildLineupOrderChangedAuditEvent = (
-  container: EventContainer,
-  createdById: string,
-): AuditEventInput =>
-  container.kind === EventContainerKind.Event
-    ? {
-        type: AuditEventType.EVENT_LINEUP_ORDER_CHANGED,
-        data: { eventId: container.id },
-        createdById,
-      }
-    : {
-        type: AuditEventType.EVENT_TEMPLATE_LINEUP_ORDER_CHANGED,
-        data: { templateId: container.id },
         createdById,
       };
 

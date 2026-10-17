@@ -1,66 +1,38 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  assignEventPosition,
+  assignEventPositionInputSchema,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { requireManageableEventPosition } from "../utils/requireManageablePosition";
-
-const schema = z.object({
-  positionId: z.cuid(),
-});
+import { mapLineupErrorToActionResponse } from "../utils/lineupErrorResponse";
 
 export const resetEventPositionCitizenId = createAuthenticatedAction(
   "resetEventPositionCitizenId",
-  schema,
+  assignEventPositionInputSchema,
   async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    const { position, eventId, failure } = await requireManageableEventPosition(
-      data.positionId,
-      formData,
-      t,
-    );
-    if (failure) return failure;
-
-    /**
-     * Update position
-     */
-    await prisma.eventPosition.update({
-      where: {
-        id: position.id,
-      },
-      data: {
-        citizen: {
-          disconnect: true,
-        },
-      },
-    });
+    try {
+      await assignEventPosition(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapLineupErrorToActionResponse(error, formData, t);
+    }
 
     refresh();
 
-    if (position.citizenId) {
-      await createAuditEvents([
-        {
-          type: AuditEventType.EVENT_POSITION_CITIZEN_REMOVED,
-          data: {
-            eventId,
-            positionId: position.id,
-            previousCitizenId: position.citizenId,
-          },
-          createdById: authentication.session.user.id,
-        },
-      ]);
-    }
-
-    /**
-     * Respond with the result
-     */
     return {
       success: t("Common.successfullySaved"),
     };
+  },
+  {
+    parseFormData: (formData) => ({
+      position_id: formData.get("positionId"),
+      citizen_id: null,
+    }),
   },
 );

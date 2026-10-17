@@ -1,23 +1,20 @@
-import { prisma } from "@/db";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { getEventTemplateById } from "@/modules/event-templates/queries/getEventTemplateById";
+import {
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+  requireManageableEventLineup,
+  type ManageableEventLineupOptions,
+} from "@sam-monorepo/application";
 import type { getTranslations } from "next-intl/server";
 import { refresh } from "next/cache";
 import { EventContainerKind, type EventContainer } from "./eventContainer";
-import { isAllowedToManagePositions } from "./isAllowedToManagePositions";
-import { isEventUpdatable } from "./isEventUpdatable";
+import { toLineupErrorText } from "./lineupErrorResponse";
 
 export type EventContainerAuthorization =
   | { readonly allowed: true; readonly error?: never }
   | { readonly allowed: false; readonly error: string };
-
-interface Options {
-  /**
-   * Skips the "the event is over" check. Set when the container is only read
-   * from — copying a position out of an event that already happened is the
-   * whole point of pasting it into the next one.
-   */
-  readonly ignoreFreeze?: boolean;
-}
 
 /**
  * The failure of a container that is gone or over, for example because a
@@ -32,38 +29,35 @@ const rejectContainerConflict = (
 };
 
 /**
- * The single authorization seam of every lineup mutation. Events keep the
- * guards they always had — the event must exist, must not be deleted or
- * over, and the user must be allowed to manage its positions. Templates use
- * their own ACL instead: edit access on a template that is not soft-deleted.
- * Templates never freeze, because they have no schedule to be over. Call it
- * only in a server action (see `rejectContainerConflict`).
+ * The single authorization seam of the lineup mutations of the app. Events
+ * use the guard of the application package (`requireManageableEventLineup`).
+ * Templates use their own ACL instead: edit access on a template that is not
+ * soft-deleted. Templates never freeze, because they have no schedule to be
+ * over. Call it only in a server action (see `rejectContainerConflict`).
  */
 export const authorizeEventContainer = async (
   container: EventContainer,
   t: Awaited<ReturnType<typeof getTranslations>>,
-  options: Options = {},
+  options: ManageableEventLineupOptions = {},
 ): Promise<EventContainerAuthorization> => {
   switch (container.kind) {
-    case EventContainerKind.Event: {
-      const event = await prisma.event.findUnique({
-        where: { id: container.id, deletedAt: null },
-        select: {
-          startTime: true,
-          endTime: true,
-          discordCreatorId: true,
-          createdById: true,
-          managers: { select: { id: true } },
-        },
-      });
-      if (!event) return rejectContainerConflict("Event nicht gefunden");
-      if (!options.ignoreFreeze && !isEventUpdatable(event))
-        return rejectContainerConflict("Das Event ist bereits vorbei.");
-      if (!(await isAllowedToManagePositions(event)))
-        return { allowed: false, error: t("Common.forbidden") };
+    case EventContainerKind.Event:
+      try {
+        await requireManageableEventLineup(
+          getApplicationContext(),
+          await getRequestActor(),
+          container.id,
+          options,
+        );
+      } catch (error) {
+        if (error instanceof ForbiddenError)
+          return { allowed: false, error: t("Common.forbidden") };
+        if (error instanceof NotFoundError || error instanceof ConflictError)
+          return rejectContainerConflict(toLineupErrorText(error));
+        throw error;
+      }
 
       return { allowed: true };
-    }
 
     case EventContainerKind.Template: {
       const context = await getEventTemplateById(container.id);
