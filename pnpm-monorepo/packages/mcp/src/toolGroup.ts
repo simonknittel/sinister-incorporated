@@ -5,6 +5,7 @@
 export enum ToolGroup {
   Account = "account",
   Spynet = "spynet",
+  Roles = "roles",
   PenaltyPoints = "penalty_points",
   Fleet = "fleet",
   Wiki = "wiki",
@@ -17,6 +18,7 @@ export enum ToolGroup {
 export const TOOL_GROUP_TITLES: Readonly<Record<ToolGroup, string>> = {
   [ToolGroup.Account]: "Account",
   [ToolGroup.Spynet]: "Spynet",
+  [ToolGroup.Roles]: "Roles",
   [ToolGroup.PenaltyPoints]: "Penalty points",
   [ToolGroup.Fleet]: "Fleet",
   [ToolGroup.Wiki]: "Wiki",

@@ -10,6 +10,7 @@ import { eventsTools } from "./tools/events/index.js";
 import { fleetTools } from "./tools/fleet/index.js";
 import { lineupTools } from "./tools/lineup/index.js";
 import { penaltyPointsTools } from "./tools/penaltyPoints/index.js";
+import { rolesTools } from "./tools/roles/index.js";
 import { spynetTools } from "./tools/spynet/index.js";
 import { tasksTools } from "./tools/tasks/index.js";
 import { wikiTools } from "./tools/wiki/index.js";
@@ -23,6 +24,7 @@ const compareTools = (first: CatalogTool, second: CatalogTool) =>
 export const TOOL_CATALOG: readonly CatalogTool[] = [
   getCurrentUserTool,
   ...spynetTools,
+  ...rolesTools,
   ...penaltyPointsTools,
   ...fleetTools,
   ...wikiTools,
