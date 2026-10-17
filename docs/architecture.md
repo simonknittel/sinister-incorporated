@@ -47,16 +47,46 @@ Where a feature already has use cases, the module keeps a thin wrapper per query
 
 The direction is a pragmatic reading of Clean Architecture. The rules of the organization and the use cases of the system are independent of the hosts. A host is a thin adapter: it authenticates, builds the actor and the context, calls a use case, and shapes the response for its transport.
 
-```
-hosts            apps/app (Next.js)   apps/lambda   MCP service (later)   backend (later)
-                       │                   │               │                   │
-adapters         server actions, tRPC, route handlers     packages/mcp        HTTP controllers
-                       │                   │               │                   │
-use cases        ───────────────── packages/application ──────────────────────────
-                       │
-domain           packages/domain, permissions, notifications, emails, wiki-editor
-                       │
-infrastructure   packages/database (Prisma)
+```mermaid
+flowchart TB
+  subgraph hosts [Hosts]
+    app["apps/app (Next.js)"]
+    lambda["apps/lambda"]
+    mcpService["MCP service (later)"]
+    backend["Backend (later)"]
+  end
+
+  subgraph adapters [Adapters]
+    nextAdapters["Server actions, tRPC, route handlers"]
+    lambdaHandlers["Lambda handlers"]
+    mcp["packages/mcp"]
+    controllers["HTTP controllers"]
+  end
+
+  subgraph useCases [Use cases]
+    application["packages/application"]
+  end
+
+  subgraph domain [Domain]
+    domainPackages["packages/domain, permissions, notifications, emails, wiki-editor"]
+  end
+
+  subgraph infrastructure [Infrastructure]
+    database["packages/database (Prisma)"]
+  end
+
+  app --> nextAdapters
+  app --> mcp
+  lambda --> lambdaHandlers
+  mcpService --> mcp
+  backend --> controllers
+  nextAdapters --> application
+  lambdaHandlers --> application
+  mcp --> application
+  controllers --> application
+  application --> domainPackages
+  application --> database
+  domainPackages --> database
 ```
 
 Dependencies point downwards only. A package never imports a host. `application` never imports `mcp` or `next`. `domain` never imports `application`.
