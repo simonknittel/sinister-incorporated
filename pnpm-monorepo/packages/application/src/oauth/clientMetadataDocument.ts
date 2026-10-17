@@ -5,6 +5,9 @@ import { isLoopbackHostname, MAX_URL_LENGTH } from "./constants.js";
 const MAX_REDIRECT_URIS = 10;
 const MAX_TYPES = 10;
 
+/** The only token endpoint authentication method of the server */
+const PUBLIC_CLIENT_AUTH_METHOD = "none";
+
 /**
  * The Client ID Metadata Document of an OAuth client
  * (draft-ietf-oauth-client-id-metadata-document). Unknown fields are
@@ -12,21 +15,41 @@ const MAX_TYPES = 10;
  * character.
  */
 export const createClientMetadataDocumentSchema = (clientId: string) =>
-  z.object({
-    client_id: z.literal(clientId),
-    client_name: z.string().trim().min(1).max(100),
-    redirect_uris: z
-      .array(z.url().max(MAX_URL_LENGTH))
-      .min(1)
-      .max(MAX_REDIRECT_URIS),
-    /** A client with a secret cannot use a public document */
-    token_endpoint_auth_method: z.literal("none").optional(),
-    client_uri: z.url().max(MAX_URL_LENGTH).optional(),
-    logo_uri: z.url().max(MAX_URL_LENGTH).optional(),
-    scope: z.string().max(1000).optional(),
-    grant_types: z.array(z.string().max(100)).max(MAX_TYPES).optional(),
-    response_types: z.array(z.string().max(100)).max(MAX_TYPES).optional(),
-  });
+  z
+    .object({
+      client_id: z.literal(clientId),
+      client_name: z.string().trim().min(1).max(100),
+      redirect_uris: z
+        .array(z.url().max(MAX_URL_LENGTH))
+        .min(1)
+        .max(MAX_REDIRECT_URIS),
+      token_endpoint_auth_method: z.string().max(100).optional(),
+      token_endpoint_auth_methods_supported: z
+        .array(z.string().max(100))
+        .max(MAX_TYPES)
+        .optional(),
+      client_uri: z.url().max(MAX_URL_LENGTH).optional(),
+      logo_uri: z.url().max(MAX_URL_LENGTH).optional(),
+      scope: z.string().max(1000).optional(),
+      grant_types: z.array(z.string().max(100)).max(MAX_TYPES).optional(),
+      response_types: z.array(z.string().max(100)).max(MAX_TYPES).optional(),
+    })
+    /**
+     * The token endpoint supports only public clients (`none`). A client
+     * gives its methods either as one `token_endpoint_auth_method` or as a
+     * list (ChatGPT gives `private_key_jwt` as its default and `none` in the
+     * list); the client selects from the intersection with the methods of
+     * the server.
+     */
+    .refine(
+      (document) =>
+        document.token_endpoint_auth_methods_supported?.includes(
+          PUBLIC_CLIENT_AUTH_METHOD,
+        ) ||
+        (document.token_endpoint_auth_method ?? PUBLIC_CLIENT_AUTH_METHOD) ===
+          PUBLIC_CLIENT_AUTH_METHOD,
+      { message: "The client does not support the public client method" },
+    );
 
 export type ClientMetadataDocument = z.infer<
   ReturnType<typeof createClientMetadataDocumentSchema>

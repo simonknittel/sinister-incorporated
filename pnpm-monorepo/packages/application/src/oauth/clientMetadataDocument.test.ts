@@ -54,6 +54,16 @@ describe("the client metadata document", () => {
       }).success,
     ).toBe(false);
   });
+
+  test("accepts a client that lists the public method next to another default (ChatGPT)", () => {
+    expect(
+      schema.safeParse({
+        ...DOCUMENT,
+        token_endpoint_auth_method: "private_key_jwt",
+        token_endpoint_auth_methods_supported: ["none", "private_key_jwt"],
+      }).success,
+    ).toBe(true);
+  });
 });
 
 describe("parseClientId", () => {
