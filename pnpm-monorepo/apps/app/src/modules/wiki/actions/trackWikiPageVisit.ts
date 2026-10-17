@@ -5,10 +5,13 @@ import { createAuthenticatedAction } from "@/modules/actions/utils/createAction"
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import * as z from "zod";
 import type { WikiSharedContextPage } from "../queries/getWikiContext";
 import { getWikiPageScopedContext } from "../queries/getWikiPageScopedContext";
-import { getAccessibleWikiPage } from "../utils/getAccessibleWikiPage";
 
 const THROTTLE_MS = 60 * 60 * 1000;
 
@@ -49,7 +52,7 @@ export const trackWikiPageVisit = createAuthenticatedAction(
       ? getAccessibleWikiPage<WikiSharedContextPage>(
           scoped.context,
           data.pageId,
-          "read",
+          WikiPageAccessTier.Read,
         )
       : null;
     if (!page) {

@@ -2,17 +2,17 @@ import { prisma } from "@/db";
 import type { ActivitySource } from "@/modules/activity/utils/activityEntry";
 import type { ActivityFilters } from "@/modules/activity/utils/activityFilterParams";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
-import {
-  buildCursorConditions,
-  cursorOrderBy,
-  type MergedCursorSourceInput,
-} from "@/modules/common/CursorPagination/mergedCursor";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
   RoleAssignmentChangeType,
   RoleAssignmentLevelChangeType,
   type Citizen,
 } from "@sam-monorepo/database/client";
+import {
+  buildCursorConditions,
+  cursorOrderBy,
+  type MergedCursorSourceInput,
+} from "@sam-monorepo/domain";
 import { SingleRoleBadge } from "../components/SingleRoleBadge";
 import { getVisibleRoles } from "../utils/getRoles";
 import { RoleActivitySourceKey } from "./roleActivityTypes";

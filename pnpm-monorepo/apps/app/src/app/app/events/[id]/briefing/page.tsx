@@ -3,7 +3,10 @@ import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/Suspe
 import { toEventContainer } from "@/modules/events/utils/eventContainer";
 import { EventWikiPageContent } from "@/modules/wiki/components/EventWikiPageContent";
 import { getEventWikiContext } from "@/modules/wiki/queries/getEventWikiContext";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -24,7 +27,11 @@ export default async function Page({
   const context = await getEventWikiContext(toEventContainer(id));
   if (!context) notFound();
 
-  const page = getAccessibleWikiPage(context, context.rootPage?.id, "read");
+  const page = getAccessibleWikiPage(
+    context,
+    context.rootPage?.id,
+    WikiPageAccessTier.Read,
+  );
   if (!page) notFound();
   const permissions = context.permissions.get(page.id);
   if (!permissions) notFound();

@@ -1,8 +1,4 @@
-import { toActor } from "@/modules/application";
-import {
-  getEffectiveRoles,
-  requireAuthentication,
-} from "@/modules/auth/server";
+import { getRequestActor } from "@/modules/application";
 import { getVisibleTasksWhere as getVisibleTasksWhereOfActor } from "@sam-monorepo/application";
 import type { Prisma } from "@sam-monorepo/database/client";
 import { forbidden } from "next/navigation";
@@ -13,10 +9,8 @@ import { forbidden } from "next/navigation";
  */
 export const getVisibleTasksWhere =
   async (): Promise<Prisma.TaskWhereInput> => {
-    const { session } = await requireAuthentication();
-    if (!session.entity) forbidden();
+    const actor = await getRequestActor();
+    if (!actor.citizen) forbidden();
 
-    const { roleIds } = await getEffectiveRoles(session.entity.id);
-
-    return getVisibleTasksWhereOfActor(await toActor(session), roleIds);
+    return getVisibleTasksWhereOfActor(actor);
   };

@@ -5,8 +5,8 @@ import {
 } from "@/modules/activity/utils/activityEntry";
 import { requireAuthentication } from "@/modules/auth/server";
 import { createCursorPaginationLoader } from "@/modules/common/CursorPagination/createCursorPaginationLoader";
-import { paginateMergedSources } from "@/modules/common/CursorPagination/mergedCursor";
 import type { Organization } from "@sam-monorepo/database/client";
+import { paginateMergedSources } from "@sam-monorepo/domain";
 import { forbidden } from "next/navigation";
 import type { SearchParams } from "nuqs/server";
 import {

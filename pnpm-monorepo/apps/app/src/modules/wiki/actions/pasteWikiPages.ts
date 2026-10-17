@@ -11,6 +11,10 @@ import {
   wikiContainerColumns,
 } from "@/modules/events/utils/eventContainer";
 import { log } from "@/modules/logging";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect, unstable_rethrow } from "next/navigation";
@@ -31,7 +35,6 @@ import {
 } from "../utils/copyWikiPageSubtree";
 import { createWikiPageSafetySnapshot } from "../utils/createWikiPageSafetySnapshot";
 import { findOrCreateWikiTags } from "../utils/findOrCreateWikiTags";
-import { getAccessibleWikiPage } from "../utils/getAccessibleWikiPage";
 import { replaceWikiPageContent } from "../utils/replaceWikiPageContent";
 import { resolveVariantWikiRedirectHref } from "../utils/resolveVariantWikiRedirectHref";
 import {
@@ -102,7 +105,7 @@ export const pasteWikiPages = createAuthenticatedAction(
       ? getAccessibleWikiPage<WikiSharedContextPage>(
           sourceScoped.context,
           data.sourcePageId,
-          "read",
+          WikiPageAccessTier.Read,
         )
       : null;
     if (!sourceScoped || !sourcePage) {

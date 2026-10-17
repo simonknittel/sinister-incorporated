@@ -3,7 +3,10 @@ import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/Suspe
 import { VariantWikiBacklinks } from "@/modules/fleet/components/VariantWikiBacklinks";
 import { WikiPageContent } from "@/modules/wiki/components/WikiPageContent";
 import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
@@ -14,7 +17,7 @@ const getVisiblePage = async (params: Params) => {
   const context = await getWikiContext();
   if (!context) return null;
 
-  const page = getAccessibleWikiPage(context, pageId, "read");
+  const page = getAccessibleWikiPage(context, pageId, WikiPageAccessTier.Read);
   if (!page) return null;
   const permissions = context.permissions.get(page.id);
   if (!permissions) return null;

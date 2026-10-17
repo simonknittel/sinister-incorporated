@@ -1,32 +1,44 @@
-import { CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
+import type { CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
 import {
   FlightReadyFilter,
-  PageDirection,
   ShipSort,
+  ShipVariantStatus,
   type listMyShips,
   type ListShipsOutput,
   type ShipVariantOutput,
 } from "@sam-monorepo/application";
+import { VariantStatus } from "@sam-monorepo/database/browser";
 import { FLEET_PAGE_SIZE, type ShipVariant } from "../queries/shipQuery";
-
-/** The values of the `flight_ready` search parameter of the fleet filters */
-export type FlightReadyParameter = "all" | "flight_ready";
+import {
+  FleetSortParameter,
+  FlightReadyParameter,
+  ShowDeletedParameter,
+  type ShipSortParameter,
+} from "./fleetSearchParameters";
 
 export const toFlightReadyFilter = (flightReady: FlightReadyParameter) =>
-  flightReady === "flight_ready"
+  flightReady === FlightReadyParameter.FlightReady
     ? FlightReadyFilter.Yes
     : FlightReadyFilter.All;
 
-export const toPageDirection = (direction: CursorDirection) =>
-  direction === CursorDirection.Prev
-    ? PageDirection.Previous
-    : PageDirection.Next;
+const toVariantStatus = (status: ShipVariantStatus): VariantStatus => {
+  switch (status) {
+    case ShipVariantStatus.FlightReady:
+      return VariantStatus.FLIGHT_READY;
+
+    case ShipVariantStatus.NotFlightReady:
+      return VariantStatus.NOT_FLIGHT_READY;
+
+    default:
+      throw new Error(`Unknown variant status: ${status satisfies never}`);
+  }
+};
 
 /** Gives the variant of a use case the form that the fleet tables use */
 export const toShipVariant = (variant: ShipVariantOutput): ShipVariant => ({
   id: variant.id,
   name: variant.name,
-  status: variant.status,
+  status: variant.status && toVariantStatus(variant.status),
   series: {
     id: variant.series.id,
     name: variant.series.name,
@@ -47,33 +59,34 @@ export interface OwnerFleetOptions {
   readonly flightReady?: FlightReadyParameter;
   readonly variantTagIds?: string[];
   readonly manufacturerIds?: string[];
-  readonly sort?: "name-asc" | "name-desc";
-  readonly showDeleted?: "all" | "deleted";
+  readonly sort?: ShipSortParameter;
+  readonly showDeleted?: ShowDeletedParameter;
   readonly searchQuery?: string | null;
   readonly cursor?: string | null;
   readonly direction?: CursorDirection;
 }
 
 export const toOwnerShipsInput = ({
-  flightReady = "all",
+  flightReady = FlightReadyParameter.All,
   variantTagIds = [],
   manufacturerIds = [],
-  sort = "name-asc",
-  showDeleted = "all",
+  sort = FleetSortParameter.NameAscending,
+  showDeleted = ShowDeletedParameter.All,
   searchQuery,
   cursor,
-  direction = CursorDirection.Next,
 }: OwnerFleetOptions): Parameters<typeof listMyShips>[2] => ({
   flight_ready: toFlightReadyFilter(flightReady),
   variant_tag_ids: variantTagIds,
   manufacturer_ids: manufacturerIds,
   query: searchQuery || undefined,
   // "all" of the filter means all ships that are not deleted
-  deleted: showDeleted === "deleted",
-  sort: sort === "name-desc" ? ShipSort.NameDescending : ShipSort.NameAscending,
+  deleted: showDeleted === ShowDeletedParameter.Deleted,
+  sort:
+    sort === FleetSortParameter.NameDescending
+      ? ShipSort.NameDescending
+      : ShipSort.NameAscending,
   limit: FLEET_PAGE_SIZE,
   cursor: cursor ?? undefined,
-  direction: toPageDirection(direction),
 });
 
 /** Gives a ship list of a use case the form that the ships table uses */

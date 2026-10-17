@@ -6,6 +6,10 @@ import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
+import {
   WikiPageEditability,
   WikiPageNamespace,
   WikiPageUploadability,
@@ -25,7 +29,6 @@ import {
   type WikiPageScopedContext,
 } from "../queries/getWikiPageScopedContext";
 import { copyWikiPageSubtree } from "../utils/copyWikiPageSubtree";
-import { getAccessibleWikiPage } from "../utils/getAccessibleWikiPage";
 import { resolveVariantWikiRedirectHref } from "../utils/resolveVariantWikiRedirectHref";
 import {
   resolveWikiPagePlacement,
@@ -109,7 +112,7 @@ export const createWikiPage = createAuthenticatedAction(
         ? getAccessibleWikiPage<WikiSharedContextPage>(
             sourceScoped.context,
             data.copyFromPageId,
-            "read",
+            WikiPageAccessTier.Read,
           )
         : null;
       if (!sourceScoped || !sourcePage) {

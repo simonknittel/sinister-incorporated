@@ -1,5 +1,5 @@
+import type { WikiTreeNode } from "@sam-monorepo/wiki-editor/helpers";
 import { describe, expect, test } from "vitest";
-import type { WikiTreeNode } from "./buildVisibleWikiTree";
 import { collectWikiPagesToExpand } from "./collectWikiPagesToExpand";
 
 const node = (id: string, children: WikiTreeNode[] = []): WikiTreeNode => ({

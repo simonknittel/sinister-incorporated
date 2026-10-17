@@ -14,12 +14,12 @@ import {
   toConfirmationStatus,
 } from "@/modules/citizen/utils/citizenLogConfirmation";
 import { lockCitizen } from "@/modules/citizen/utils/lockCitizen";
-import { getNotePermissionAttributes } from "@/modules/citizen/utils/notePermissionAttributes";
 import { syncCitizenIdentityAfterLogChange } from "@/modules/citizen/utils/syncCitizenIdentityAfterLogChange";
 import {
   isPrismaError,
   PrismaErrorCode,
 } from "@/modules/common/utils/isPrismaError";
+import { getNotePermissionAttributes } from "@sam-monorepo/application";
 import { ConfirmationStatus, type Prisma } from "@sam-monorepo/database/client";
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";

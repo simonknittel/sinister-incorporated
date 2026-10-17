@@ -5,8 +5,8 @@ import {
   WikiPageVisibility,
   type Prisma,
 } from "@sam-monorepo/database/client";
+import { compareWikiPagesByOrder } from "@sam-monorepo/wiki-editor/helpers";
 import type { EventWikiContextPage } from "../queries/getEventWikiContext";
-import { compareWikiPagesByOrder } from "./compareWikiPagesByOrder";
 import {
   copyWikiPagesIntoContainer,
   type WikiPageCopyEntry,

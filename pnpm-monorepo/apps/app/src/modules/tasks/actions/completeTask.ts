@@ -14,6 +14,7 @@ import {
   createSilcTransactionsInTransaction,
   type NewSilcTransaction,
 } from "@/modules/silc/utils/createSilcTransactions";
+import { getOpenTasksWhere } from "@sam-monorepo/application";
 import {
   TaskRewardType,
   TaskVisibility,
@@ -23,7 +24,6 @@ import {
 import { lockSilcLedger } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
-import { getOpenTasksWhere } from "../queries/getOpenTasksWhere";
 import { isAllowedToManageTask } from "../utils/isAllowedToTask";
 import { CLOSED_TASK_ERROR, requireOpenTask } from "../utils/requireOpenTask";
 

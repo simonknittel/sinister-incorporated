@@ -1,7 +1,10 @@
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  getQuarterOfDate,
+  type ChangelogQuarter,
+} from "@sam-monorepo/application";
 import { cache } from "react";
 import { CHANGELOG_ENTRIES } from "../entries";
-import { getQuarterOfDate, type ChangelogQuarter } from "../utils/quarter";
 
 export const getChangelogQuarters = cache(
   withTrace("getChangelogQuarters", () => {

@@ -1,8 +1,11 @@
 import { CitizenCellLink } from "@/modules/common/components/CitizenCellLink";
 import { Table, TBody, THead, TRow } from "@/modules/common/components/Table";
 import { formatDate } from "@/modules/common/utils/formatDate";
+import type {
+  PenaltyEntryCitizenOutput,
+  PenaltyEntryOutput,
+} from "@sam-monorepo/application";
 import clsx from "clsx";
-import type { PenaltyEntryRow } from "../utils/toPenaltyEntryRow";
 import { DeletePenaltyEntry } from "./DeletePenaltyEntry";
 
 const COLUMNS_WITH_CITIZEN =
@@ -11,10 +14,21 @@ const COLUMNS_WITHOUT_CITIZEN = "64px 140px 140px 140px minmax(300px,1fr) 32px";
 
 interface Props {
   readonly className?: string;
-  readonly rows: PenaltyEntryRow[];
+  readonly rows: readonly PenaltyEntryOutput[];
   readonly showDelete?: boolean;
   readonly hideCitizenColumn?: boolean;
 }
+
+const toDate = (value: string | null) =>
+  value === null ? null : new Date(value);
+
+/** The citizen in the form that `CitizenCellLink` uses */
+const toCellCitizen = (citizen: PenaltyEntryCitizenOutput | null) =>
+  citizen && {
+    id: citizen.id,
+    handle: citizen.handle,
+    deletedAt: toDate(citizen.deleted_at),
+  };
 
 export const PenaltyEntriesTable = ({
   className,
@@ -47,7 +61,7 @@ export const PenaltyEntriesTable = ({
               <td className="overflow-hidden">
                 <CitizenCellLink
                   className="h-8"
-                  citizen={entry.citizen}
+                  citizen={toCellCitizen(entry.citizen)}
                   page="/penalty-points"
                 />
               </td>
@@ -55,18 +69,21 @@ export const PenaltyEntriesTable = ({
 
             <td className="font-bold">{entry.points}</td>
 
-            <td>{formatDate(entry.createdAt)}</td>
+            <td>{formatDate(new Date(entry.created_at))}</td>
 
             <td className="overflow-hidden">
-              <CitizenCellLink className="h-8" citizen={entry.createdBy} />
+              <CitizenCellLink
+                className="h-8"
+                citizen={toCellCitizen(entry.created_by)}
+              />
             </td>
 
             <td
               className={clsx({
-                "text-neutral-500 italic": !entry.expiresAt,
+                "text-neutral-500 italic": !entry.expires_at,
               })}
             >
-              {entry.expiresAt ? formatDate(entry.expiresAt) : "-"}
+              {entry.expires_at ? formatDate(new Date(entry.expires_at)) : "-"}
             </td>
 
             <td
@@ -79,7 +96,7 @@ export const PenaltyEntriesTable = ({
             </td>
 
             <td className="flex items-center">
-              {showDelete && !entry.deletedAt && (
+              {showDelete && !entry.deleted_at && (
                 <DeletePenaltyEntry entry={entry} />
               )}
             </td>

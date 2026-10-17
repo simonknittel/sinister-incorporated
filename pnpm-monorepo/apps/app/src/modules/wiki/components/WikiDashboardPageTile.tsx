@@ -1,11 +1,14 @@
 import { Link } from "@/modules/common/components/Link";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import { isWikiPageContentEmpty } from "@sam-monorepo/wiki-editor";
 import clsx from "clsx";
 import { FaChevronDown } from "react-icons/fa";
 import { getWikiContext } from "../queries/getWikiContext";
 import { getWikiPageStaticContent } from "../queries/getWikiPageStaticContent";
 import { getWikiDashboardPageId } from "../queries/getWikiSettings";
-import { getAccessibleWikiPage } from "../utils/getAccessibleWikiPage";
 import "./wikiDashboardPageTile.css";
 import { WikiPageStaticContent } from "./WikiPageStaticContent";
 
@@ -35,7 +38,7 @@ export const WikiDashboardPageTile = async () => {
   const context = await getWikiContext();
   if (!context) return null;
 
-  const page = getAccessibleWikiPage(context, pageId, "read");
+  const page = getAccessibleWikiPage(context, pageId, WikiPageAccessTier.Read);
   if (!page) return null;
 
   const staticContent = await getWikiPageStaticContent(context, page.id);

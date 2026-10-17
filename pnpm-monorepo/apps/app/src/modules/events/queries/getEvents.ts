@@ -1,8 +1,8 @@
 import { prisma } from "@/db";
 import {
   getApplicationContext,
+  getRequestActor,
   throwApplicationErrorForPage,
-  toActor,
 } from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
 import { getVisibleEventsWhere } from "@/modules/events/utils/eventVisibility";
@@ -50,20 +50,18 @@ export const getEvents = cache(
       cursor?: string | null,
       direction: CursorDirection = CursorDirection.Next,
     ) => {
-      const { session } = await requireAuthentication();
-
       try {
         return await findEventListPage(
           getApplicationContext(),
-          await toActor(session),
+          await getRequestActor(),
           {
             status,
             participating,
             type,
             limit: EVENTS_PAGE_SIZE,
             cursor: cursor ?? undefined,
-            direction,
           },
+          { direction },
         );
       } catch (error) {
         return throwApplicationErrorForPage(error);

@@ -1,11 +1,11 @@
 import { requireAuthentication } from "@/modules/auth/server";
 import type { CitizenLogTableRow } from "@/modules/citizen/queries/citizenLogTableSelect";
 import { CitizenLogTableSort } from "@/modules/citizen/utils/citizenLogTableSearchParams";
-import { getNotePermissionAttributes } from "@/modules/citizen/utils/notePermissionAttributes";
 import { Actions } from "@/modules/common/components/Actions";
 import { CitizenCellLink } from "@/modules/common/components/CitizenCellLink";
 import { SortDirection } from "@/modules/common/components/SortableColumnHeader";
 import { formatDate } from "@/modules/common/utils/formatDate";
+import { getNotePermissionAttributes } from "@sam-monorepo/application";
 import { CitizenLogTableSortableColumnHeader } from "./CitizenLogTableLinks";
 import { ConfirmationState } from "./ConfirmationState";
 import { DeleteLog } from "./DeleteLog";

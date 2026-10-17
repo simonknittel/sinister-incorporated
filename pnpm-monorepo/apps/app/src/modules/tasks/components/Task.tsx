@@ -8,7 +8,7 @@ import { UnreadEdge } from "@/modules/common/components/UnreadEdge";
 import { formatDate } from "@/modules/common/utils/formatDate";
 import { NewMarkerButton } from "@/modules/read-markers/components/NewMarkerButton";
 import { useMarkAsRead } from "@/modules/read-markers/hooks/useMarkAsRead";
-import type { TaskListRow } from "@/modules/tasks/queries/taskListSelect";
+import type { TaskListRow } from "@sam-monorepo/application";
 import { getCitizenDisplayName, ReadMarkerSubject } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useNow } from "next-intl";

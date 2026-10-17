@@ -1,4 +1,4 @@
-import { getApplicationContext, toActor } from "@/modules/application";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import { getDisabledToolNames } from "@sam-monorepo/application";
@@ -35,7 +35,7 @@ export const getMyMcpToolSettings = cache(
     const disabledToolNames = new Set(
       await getDisabledToolNames(
         getApplicationContext(),
-        await toActor(authentication.session),
+        await getRequestActor(),
       ),
     );
     const catalog = listToolCatalog();

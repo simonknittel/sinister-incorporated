@@ -1,10 +1,10 @@
 "use client";
 
 import { Link } from "@/modules/common/components/Link";
+import type { WikiTreeNode } from "@sam-monorepo/wiki-editor/helpers";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { FaChevronDown, FaChevronRight, FaPlus } from "react-icons/fa";
-import type { WikiTreeNode } from "../utils/buildVisibleWikiTree";
 import { buildWikiPageHref, getActiveWikiPageId } from "../utils/wikiPageHref";
 import { useCreateWikiPage } from "./CreateWikiPageProvider";
 import { useWikiPageHrefMode } from "./WikiPageHrefModeProvider";

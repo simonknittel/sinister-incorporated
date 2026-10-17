@@ -34,4 +34,7 @@ export const revokeOAuthGrant = createAuthenticatedAction(
 
     return { success: t("Common.successfullyDeleted") };
   },
+  {
+    parseFormData: (formData) => ({ grant_id: formData.get("grantId") }),
+  },
 );

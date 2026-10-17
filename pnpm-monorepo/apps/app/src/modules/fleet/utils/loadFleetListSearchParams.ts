@@ -1,18 +1,24 @@
 import { createCursorPaginationLoader } from "@/modules/common/CursorPagination/createCursorPaginationLoader";
+import { parseAsArrayOf, parseAsString, parseAsStringEnum } from "nuqs/server";
 import {
-  parseAsArrayOf,
-  parseAsString,
-  parseAsStringLiteral,
-} from "nuqs/server";
+  FleetSortParameter,
+  FlightReadyParameter,
+  SHIP_SORT_PARAMETERS,
+  ShowDeletedParameter,
+} from "./fleetSearchParameters";
 
 /** The URL filter contract shared by the my-ships and citizen fleet lists */
 export const loadFleetListSearchParams = createCursorPaginationLoader({
-  flight_ready: parseAsStringLiteral(["all", "flight_ready"]).withDefault(
-    "all",
+  flight_ready: parseAsStringEnum(
+    Object.values(FlightReadyParameter),
+  ).withDefault(FlightReadyParameter.All),
+  sort: parseAsStringEnum([...SHIP_SORT_PARAMETERS]).withDefault(
+    FleetSortParameter.NameAscending,
   ),
-  sort: parseAsStringLiteral(["name-asc", "name-desc"]).withDefault("name-asc"),
   variantTags: parseAsArrayOf(parseAsString),
   manufacturerIds: parseAsArrayOf(parseAsString),
-  showDeleted: parseAsStringLiteral(["all", "deleted"]).withDefault("all"),
+  showDeleted: parseAsStringEnum(
+    Object.values(ShowDeletedParameter),
+  ).withDefault(ShowDeletedParameter.All),
   q: parseAsString,
 });

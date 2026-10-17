@@ -1,11 +1,13 @@
 import {
   getApplicationContext,
+  getRequestActor,
   throwApplicationErrorForPage,
-  toActor,
 } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { listMyShips } from "@sam-monorepo/application";
+import {
+  listMyShips,
+  UnknownCursorBehavior,
+} from "@sam-monorepo/application";
 import { cache } from "react";
 import {
   toOwnerShipsInput,
@@ -15,14 +17,16 @@ import {
 
 export const getMyFleet = cache(
   withTrace("getMyFleet", async (options: OwnerFleetOptions = {}) => {
-    const { session } = await requireAuthentication();
-
     try {
       return toShipsPage(
         await listMyShips(
           getApplicationContext(),
-          await toActor(session),
+          await getRequestActor(),
           toOwnerShipsInput(options),
+          {
+            direction: options.direction,
+            unknownCursor: UnknownCursorBehavior.FirstPage,
+          },
         ),
       );
     } catch (error) {

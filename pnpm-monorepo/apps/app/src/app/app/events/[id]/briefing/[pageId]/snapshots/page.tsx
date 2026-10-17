@@ -3,11 +3,14 @@ import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/Suspe
 import { toEventContainer } from "@/modules/events/utils/eventContainer";
 import { WikiSnapshotsTable } from "@/modules/wiki/components/WikiSnapshotsTable";
 import { getEventWikiContext } from "@/modules/wiki/queries/getEventWikiContext";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
 import {
   buildWikiPageHref,
   createEventWikiHrefMode,
 } from "@/modules/wiki/utils/wikiPageHref";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -19,7 +22,7 @@ const getAdministrablePage = async (params: Params) => {
   const context = await getEventWikiContext(toEventContainer(id));
   if (!context) return null;
 
-  const page = getAccessibleWikiPage(context, pageId, "admin");
+  const page = getAccessibleWikiPage(context, pageId, WikiPageAccessTier.Admin);
   if (!page) return null;
 
   return { context, page };

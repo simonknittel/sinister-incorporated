@@ -6,7 +6,10 @@ import {
 } from "@/modules/events/utils/eventContainer";
 import { EventWikiPageContent } from "@/modules/wiki/components/EventWikiPageContent";
 import { getEventWikiContext } from "@/modules/wiki/queries/getEventWikiContext";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
@@ -18,7 +21,7 @@ const getVisiblePage = async (params: Params) => {
   const context = await getEventWikiContext(toEventContainer(id));
   if (!context) return null;
 
-  const page = getAccessibleWikiPage(context, pageId, "read");
+  const page = getAccessibleWikiPage(context, pageId, WikiPageAccessTier.Read);
   if (!page) return null;
   const permissions = context.permissions.get(page.id);
   if (!permissions) return null;

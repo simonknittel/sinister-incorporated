@@ -6,7 +6,10 @@ import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import { VariantStatus } from "@sam-monorepo/database/client";
 import { refresh } from "next/cache";
 import * as z from "zod";
@@ -76,7 +79,7 @@ export const createVariant = createAuthenticatedAction(
       const wikiContext = await getWikiContext();
       if (
         !wikiContext ||
-        !getAccessibleWikiPage(wikiContext, wikiPageId, "read")
+        !getAccessibleWikiPage(wikiContext, wikiPageId, WikiPageAccessTier.Read)
       )
         return {
           error: t("Common.badRequest"),

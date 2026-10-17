@@ -8,7 +8,10 @@ import {
   ConfirmationStatus,
   type Organization,
 } from "@sam-monorepo/database/client";
-import { DELETED_CITIZEN_LABEL } from "@sam-monorepo/domain";
+import {
+  DELETED_CITIZEN_LABEL,
+  getOrganizationLogoUrl,
+} from "@sam-monorepo/domain";
 import clsx from "clsx";
 import Image from "next/image";
 import { Suspense, type ReactNode } from "react";
@@ -123,16 +126,18 @@ export const SingleNote = async ({ note }: Props) => {
           );
           if (!organization) return part;
 
+          const logoUrl = getOrganizationLogoUrl(organization.logo);
+
           return (
             <Link
               href={`/app/spynet/organization/${organization.id}`}
               className="text-brand-red-500 hover:text-brand-red-300"
               key={index}
             >
-              {organization.logo && (
+              {logoUrl && (
                 <span className="mr-1 inline-block rounded-secondary bg-black align-bottom">
                   <Image
-                    src={`https://robertsspaceindustries.com${organization.logo}`}
+                    src={logoUrl}
                     alt=""
                     width={24}
                     height={24}

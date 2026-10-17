@@ -5,9 +5,12 @@ import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
 import { createS3Client } from "@/modules/common/utils/createS3Client";
 import type { WikiSharedContextPage } from "@/modules/wiki/queries/getWikiContext";
 import { getWikiPageScopedContext } from "@/modules/wiki/queries/getWikiPageScopedContext";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import { NextResponse } from "next/server";
 import * as z from "zod";
 
@@ -65,7 +68,7 @@ export async function GET(
         getAccessibleWikiPage<WikiSharedContextPage>(
           scoped.context,
           pageId,
-          "read",
+          WikiPageAccessTier.Read,
         ) !== null
       ) {
         allowed = true;

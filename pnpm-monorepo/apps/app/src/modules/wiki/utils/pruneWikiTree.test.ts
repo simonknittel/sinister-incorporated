@@ -1,6 +1,6 @@
 import { WikiPageSidebarMode } from "@sam-monorepo/database/client";
+import { buildVisibleWikiTree } from "@sam-monorepo/wiki-editor/helpers";
 import { describe, expect, test } from "vitest";
-import { buildVisibleWikiTree } from "./buildVisibleWikiTree";
 import { filterWikiPagesBySidebarMode } from "./filterWikiPagesBySidebarMode";
 import { pruneWikiTree } from "./pruneWikiTree";
 

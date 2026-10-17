@@ -5,8 +5,11 @@ import { getVariantDetail } from "@/modules/fleet/queries/variantDetail";
 import { canViewVariantPages } from "@/modules/fleet/utils/canViewVariantPages";
 import { WikiSnapshotsTable } from "@/modules/wiki/components/WikiSnapshotsTable";
 import { getVariantWikiContext } from "@/modules/wiki/queries/getVariantWikiContext";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
 import { buildWikiPageHref } from "@/modules/wiki/utils/wikiPageHref";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -18,7 +21,7 @@ const getAdministrablePage = async (params: Params) => {
   const context = await getVariantWikiContext(variantId);
   if (!context) return null;
 
-  const page = getAccessibleWikiPage(context, pageId, "admin");
+  const page = getAccessibleWikiPage(context, pageId, WikiPageAccessTier.Admin);
   if (!page) return null;
 
   return { context, page };

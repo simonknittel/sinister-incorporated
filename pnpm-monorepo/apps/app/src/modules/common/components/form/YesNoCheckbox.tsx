@@ -32,7 +32,7 @@ export const YesNoCheckbox = (props: Props) => {
   return (
     <label
       className={clsx(
-        "group inline-flex items-center justify-center gap-2 align-middle",
+        "group relative inline-flex items-center justify-center gap-2 align-middle",
         {
           "pointer-events-none opacity-50": props.disabled,
           "cursor-pointer": !props.disabled,

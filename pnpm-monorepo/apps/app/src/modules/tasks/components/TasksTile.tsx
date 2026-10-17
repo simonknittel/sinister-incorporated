@@ -1,5 +1,6 @@
 import { CursorPaginationControls } from "@/modules/common/CursorPagination/CursorPaginationControls";
 import { createCursorPaginationLoader } from "@/modules/common/CursorPagination/createCursorPaginationLoader";
+import { TaskListStatus } from "@sam-monorepo/application";
 import clsx from "clsx";
 import {
   parseAsStringEnum,
@@ -7,7 +8,6 @@ import {
   type SearchParams,
 } from "nuqs/server";
 import { getTasks } from "../queries/getTasks";
-import { TaskListStatus } from "../utils/TaskListStatus";
 import { Task } from "./Task";
 
 const loadSearchParams = createCursorPaginationLoader({

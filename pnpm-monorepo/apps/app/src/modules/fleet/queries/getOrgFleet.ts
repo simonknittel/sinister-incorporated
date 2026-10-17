@@ -1,37 +1,35 @@
 import {
   getApplicationContext,
+  getRequestActor,
   throwApplicationErrorForPage,
-  toActor,
 } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
 import { CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { listOrgFleet, OrgFleetSort } from "@sam-monorepo/application";
-import { cache } from "react";
 import {
-  toFlightReadyFilter,
-  toPageDirection,
-  toShipVariant,
-  type FlightReadyParameter,
-} from "../utils/fleetListMapping";
+  listOrgFleet,
+  OrgFleetSort,
+  UnknownCursorBehavior,
+} from "@sam-monorepo/application";
+import { cache } from "react";
+import { toFlightReadyFilter, toShipVariant } from "../utils/fleetListMapping";
+import {
+  FleetSortParameter,
+  FlightReadyParameter,
+} from "../utils/fleetSearchParameters";
 import { FLEET_PAGE_SIZE } from "./shipQuery";
 
-/** The values of the `sort` search parameter of the organization fleet */
-type OrgFleetSortParameter =
-  "name-asc" | "name-desc" | "count-asc" | "count-desc";
-
-const toOrgFleetSort = (sort: OrgFleetSortParameter) => {
+const toOrgFleetSort = (sort: FleetSortParameter) => {
   switch (sort) {
-    case "name-asc":
+    case FleetSortParameter.NameAscending:
       return OrgFleetSort.NameAscending;
 
-    case "name-desc":
+    case FleetSortParameter.NameDescending:
       return OrgFleetSort.NameDescending;
 
-    case "count-asc":
+    case FleetSortParameter.CountAscending:
       return OrgFleetSort.CountAscending;
 
-    case "count-desc":
+    case FleetSortParameter.CountDescending:
       return OrgFleetSort.CountDescending;
 
     default:
@@ -43,7 +41,7 @@ interface OrgFleetOptions {
   readonly flightReady?: FlightReadyParameter;
   readonly variantTagIds?: string[];
   readonly manufacturerIds?: string[];
-  readonly sort?: OrgFleetSortParameter;
+  readonly sort?: FleetSortParameter;
   readonly searchQuery?: string | null;
   readonly cursor?: string | null;
   readonly direction?: CursorDirection;
@@ -53,20 +51,18 @@ export const getOrgFleet = cache(
   withTrace(
     "getOrgFleet",
     async ({
-      flightReady = "all",
+      flightReady = FlightReadyParameter.All,
       variantTagIds = [],
       manufacturerIds = [],
-      sort = "count-desc",
+      sort = FleetSortParameter.CountDescending,
       searchQuery,
       cursor,
       direction = CursorDirection.Next,
     }: OrgFleetOptions) => {
-      const { session } = await requireAuthentication();
-
       try {
         const output = await listOrgFleet(
           getApplicationContext(),
-          await toActor(session),
+          await getRequestActor(),
           {
             flight_ready: toFlightReadyFilter(flightReady),
             variant_tag_ids: variantTagIds,
@@ -75,8 +71,8 @@ export const getOrgFleet = cache(
             sort: toOrgFleetSort(sort),
             limit: FLEET_PAGE_SIZE,
             cursor: cursor ?? undefined,
-            direction: toPageDirection(direction),
           },
+          { direction, unknownCursor: UnknownCursorBehavior.FirstPage },
         );
 
         return {

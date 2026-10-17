@@ -11,8 +11,11 @@ import {
 } from "@/modules/wiki/queries/getWikiContext";
 import { getWikiRecentVisitPageIds } from "@/modules/wiki/queries/getWikiFavorites";
 import { getWikiFeaturedPageIds } from "@/modules/wiki/queries/getWikiSettings";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
 import { resolveWikiFeaturedPages } from "@/modules/wiki/utils/wikiFeaturedPages";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import { forbidden } from "next/navigation";
 
 const RECENT_LIMIT = 20;
@@ -36,7 +39,7 @@ const Landing = async () => {
   if (!context) forbidden();
 
   const visiblePage = (pageId: string) =>
-    getAccessibleWikiPage(context, pageId, "read");
+    getAccessibleWikiPage(context, pageId, WikiPageAccessTier.Read);
 
   const featuredPages = resolveWikiFeaturedPages(
     featuredPageIds,

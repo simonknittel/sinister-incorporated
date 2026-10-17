@@ -10,8 +10,8 @@ import {
   hasActiveActivityFilters,
 } from "@/modules/activity/utils/activityFilterParams";
 import { createCursorPaginationLoader } from "@/modules/common/CursorPagination/createCursorPaginationLoader";
-import { paginateMergedSources } from "@/modules/common/CursorPagination/mergedCursor";
 import { EventActivityType, type Event } from "@sam-monorepo/database/client";
+import { paginateMergedSources } from "@sam-monorepo/domain";
 import type { SearchParams } from "nuqs/server";
 import {
   createEventActivitySource,

@@ -25,7 +25,7 @@ export const updateMcpToolSetting = createAuthenticatedAction(
 
     // The catalog of the tools is in the MCP package, thus the use case
     // cannot check the name
-    if (!listToolCatalog().some((tool) => tool.name === data.toolName))
+    if (!listToolCatalog().some((tool) => tool.name === data.tool_name))
       return { error: t("Common.badRequest"), requestPayload: formData };
 
     try {
@@ -44,7 +44,7 @@ export const updateMcpToolSetting = createAuthenticatedAction(
   },
   {
     parseFormData: (formData) => ({
-      toolName: formData.get("toolName"),
+      tool_name: formData.get("toolName"),
       enabled: z.stringbool().parse(formData.get("enabled")),
     }),
   },

@@ -1,6 +1,5 @@
 import { prisma } from "@/db";
-import { toActor } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
+import { getRequestActor } from "@/modules/application";
 import {
   CITIZEN_NOTE_SELECT,
   type CitizenNote,
@@ -25,8 +24,7 @@ interface Props {
 type VisibleNote = CitizenNote | { id: CitizenLog["id"]; redacted: true };
 
 export const Notes = async ({ className, entity }: Props) => {
-  const authentication = await requireAuthentication();
-  const actor = await toActor(authentication.session);
+  const actor = await getRequestActor();
 
   /**
    * Each note shows in the tab of its note type, thus a note of a deleted

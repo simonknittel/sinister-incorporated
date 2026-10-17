@@ -1,4 +1,4 @@
-import type { WikiTreeNode } from "./buildVisibleWikiTree";
+import type { WikiTreeNode } from "@sam-monorepo/wiki-editor/helpers";
 
 /**
  * The tree without the given pages and their whole subtrees. The sidebar

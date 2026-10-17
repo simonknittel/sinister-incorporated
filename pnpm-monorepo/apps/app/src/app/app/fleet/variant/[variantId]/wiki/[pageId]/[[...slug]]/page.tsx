@@ -5,11 +5,14 @@ import { getVariantDetail } from "@/modules/fleet/queries/variantDetail";
 import { canViewVariantPages } from "@/modules/fleet/utils/canViewVariantPages";
 import { VariantWikiPageContent } from "@/modules/wiki/components/VariantWikiPageContent";
 import { getVariantWikiContext } from "@/modules/wiki/queries/getVariantWikiContext";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
 import {
   getVariantWikiBasePath,
   getVariantWikiRootPath,
 } from "@/modules/wiki/utils/wikiPageHref";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
@@ -22,7 +25,7 @@ const getVisiblePage = async (params: Params) => {
   if (!context) return null;
 
   /** Out-of-subtree ids miss the sliced context — 404 like unknown ids */
-  const page = getAccessibleWikiPage(context, pageId, "read");
+  const page = getAccessibleWikiPage(context, pageId, WikiPageAccessTier.Read);
   if (!page) return null;
 
   return { context, page };

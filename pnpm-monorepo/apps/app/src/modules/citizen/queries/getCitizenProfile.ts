@@ -1,6 +1,5 @@
 import { prisma } from "@/db";
-import { getApplicationContext, toActor } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { getAssignableRoles } from "@/modules/roles/utils/getRoles";
 import { getMonthlySalaryOfRoles } from "@/modules/silc/queries/getMonthlySalaryOfRoles";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
@@ -31,8 +30,7 @@ import { hasBirthdayToday } from "../utils/hasBirthdayToday";
  */
 export const getCitizenProfile = cache(
   withTrace("getCitizenProfile", async (id: Citizen["id"]) => {
-    const authentication = await requireAuthentication();
-    const actor = await toActor(authentication.session);
+    const actor = await getRequestActor();
     requireCitizenReadAccess(actor, id);
 
     const isCurrentCitizen = actor.citizen?.id === id;

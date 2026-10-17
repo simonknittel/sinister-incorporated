@@ -8,11 +8,14 @@ import {
   hasReadableEventWikiRoot,
 } from "@/modules/wiki/queries/getEventWikiContext";
 import { buildVisibleWikiBreadcrumb } from "@/modules/wiki/utils/buildVisibleWikiBreadcrumb";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
 import {
   buildWikiPageHref,
   createEventWikiHrefMode,
 } from "@/modules/wiki/utils/wikiPageHref";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -79,7 +82,11 @@ const TagPageList = async ({ params }: TagPageListProps) => {
 
   const pages = tag.pages
     .map((assignment) =>
-      getAccessibleWikiPage(context, assignment.pageId, "read"),
+      getAccessibleWikiPage(
+        context,
+        assignment.pageId,
+        WikiPageAccessTier.Read,
+      ),
     )
     .filter((page) => page !== null)
     .toSorted((a, b) => a.title.localeCompare(b.title))

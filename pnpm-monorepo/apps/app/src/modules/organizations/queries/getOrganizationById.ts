@@ -1,9 +1,8 @@
 import {
   getApplicationContext,
+  getRequestActor,
   throwApplicationErrorForPage,
-  toActor,
 } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
   getOrganization,
@@ -16,8 +15,6 @@ import { cache } from "react";
 /** The organization with its members, or the not-found page */
 export const getOrganizationById = cache(
   withTrace("getOrganizationById", async (id: Organization["id"]) => {
-    const { session } = await requireAuthentication();
-
     // The id comes from the URL: an id that is not valid names no organization
     const input = getOrganizationInputSchema.safeParse({ organization_id: id });
     if (!input.success) notFound();
@@ -25,7 +22,7 @@ export const getOrganizationById = cache(
     try {
       return await getOrganization(
         getApplicationContext(),
-        await toActor(session),
+        await getRequestActor(),
         input.data,
       );
     } catch (error) {

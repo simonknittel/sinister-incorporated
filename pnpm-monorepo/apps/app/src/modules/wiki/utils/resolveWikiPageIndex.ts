@@ -1,14 +1,17 @@
 import { prisma } from "@/db";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import type { WikiPageIndexConfig } from "@sam-monorepo/wiki-editor";
-import type { WikiPageIndexEntry } from "../components/WikiPageIndexList";
-import type { WikiSharedContext } from "../queries/getWikiContext";
 import {
   buildVisibleWikiTree,
   type WikiTreeNode,
-} from "./buildVisibleWikiTree";
+} from "@sam-monorepo/wiki-editor/helpers";
+import type { WikiPageIndexEntry } from "../components/WikiPageIndexList";
+import type { WikiSharedContext } from "../queries/getWikiContext";
 import { collectWikiPageDescendants } from "./collectWikiPageDescendants";
-import { getAccessibleWikiPage } from "./getAccessibleWikiPage";
 import {
   buildWikiPageHref,
   GLOBAL_WIKI_HREF_MODE,
@@ -103,7 +106,9 @@ export const resolveWikiPageIndex = withTrace(
               config.matchMode === "any" ||
               tagIds.size === requestedTagIds.size,
           )
-          .map(([pageId]) => getAccessibleWikiPage(context, pageId, "read"))
+          .map(([pageId]) =>
+            getAccessibleWikiPage(context, pageId, WikiPageAccessTier.Read),
+          )
           .filter((page) => page !== null)
           .toSorted((a, b) => a.title.localeCompare(b.title))
           .map((page) => ({

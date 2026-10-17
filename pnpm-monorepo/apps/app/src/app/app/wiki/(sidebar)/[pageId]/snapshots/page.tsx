@@ -2,7 +2,10 @@ import { requireAuthenticationPage } from "@/modules/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
 import { WikiSnapshotsTable } from "@/modules/wiki/components/WikiSnapshotsTable";
 import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -13,7 +16,7 @@ const getAdministrablePage = async (params: Params) => {
   const context = await getWikiContext();
   if (!context) return null;
 
-  return getAccessibleWikiPage(context, pageId, "admin");
+  return getAccessibleWikiPage(context, pageId, WikiPageAccessTier.Admin);
 };
 
 export const generateMetadata = async (

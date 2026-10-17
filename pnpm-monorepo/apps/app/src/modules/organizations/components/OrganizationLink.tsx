@@ -1,10 +1,8 @@
 import { Link } from "@/modules/common/components/Link";
 import type { Organization } from "@sam-monorepo/database/client";
+import { getOrganizationLogoUrl } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import Image from "next/image";
-
-/** Organization logos are hotlinked from where the orgs are scraped from. */
-const LOGO_BASE_URL = "https://robertsspaceindustries.com";
 
 interface Props {
   readonly className?: string;
@@ -12,6 +10,8 @@ interface Props {
 }
 
 export const OrganizationLink = ({ className, organization }: Props) => {
+  const logoUrl = getOrganizationLogoUrl(organization.logo);
+
   return (
     <Link
       href={`/app/spynet/organization/${organization.id}`}
@@ -21,14 +21,9 @@ export const OrganizationLink = ({ className, organization }: Props) => {
       )}
       prefetch={false}
     >
-      {organization.logo && (
+      {logoUrl && (
         <span className="inline-block rounded-secondary bg-black">
-          <Image
-            src={`${LOGO_BASE_URL}${organization.logo}`}
-            alt=""
-            width={24}
-            height={24}
-          />
+          <Image src={logoUrl} alt="" width={24} height={24} />
         </span>
       )}
 

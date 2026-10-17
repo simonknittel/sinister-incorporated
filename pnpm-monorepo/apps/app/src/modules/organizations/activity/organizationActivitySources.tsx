@@ -3,11 +3,6 @@ import type { ActivitySource } from "@/modules/activity/utils/activityEntry";
 import type { ActivityFilters } from "@/modules/activity/utils/activityFilterParams";
 import { requireAuthentication } from "@/modules/auth/server";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
-import {
-  buildCursorConditions,
-  cursorOrderBy,
-  type MergedCursorSourceInput,
-} from "@/modules/common/CursorPagination/mergedCursor";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
   ConfirmationStatus,
@@ -16,6 +11,11 @@ import {
   type Citizen,
   type Organization,
 } from "@sam-monorepo/database/client";
+import {
+  buildCursorConditions,
+  cursorOrderBy,
+  type MergedCursorSourceInput,
+} from "@sam-monorepo/domain";
 import { ConfirmMembership } from "../components/ConfirmMembership";
 import { OrganizationLink } from "../components/OrganizationLink";
 import { OrganizationActivitySourceKey } from "./organizationActivityTypes";

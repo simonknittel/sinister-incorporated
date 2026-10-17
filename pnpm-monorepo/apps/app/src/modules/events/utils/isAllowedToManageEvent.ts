@@ -1,17 +1,9 @@
-import { toActor } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
+import { getRequestActor } from "@/modules/application";
 import {
   isAllowedToManageEvent as isActorAllowedToManageEvent,
   type EventManageInput,
 } from "@sam-monorepo/application";
 
 /** See `isAllowedToManageEvent()` of the application package */
-export const isAllowedToManageEvent = async (event: EventManageInput) => {
-  const { session } = await requireAuthentication();
-
-  return isActorAllowedToManageEvent(
-    await toActor(session),
-    event,
-    session.discordId,
-  );
-};
+export const isAllowedToManageEvent = async (event: EventManageInput) =>
+  isActorAllowedToManageEvent(await getRequestActor(), event);

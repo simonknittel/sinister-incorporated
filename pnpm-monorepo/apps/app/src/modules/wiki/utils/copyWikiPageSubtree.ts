@@ -11,10 +11,10 @@ import {
   WikiPageVisibility,
   type Prisma,
 } from "@sam-monorepo/database/client";
+import { compareWikiPagesByOrder } from "@sam-monorepo/wiki-editor/helpers";
 import type { WikiSharedContextPage } from "../queries/getWikiContext";
 import type { WikiPageScopedContext } from "../queries/getWikiPageScopedContext";
 import { collectVisibleWikiSubtree } from "./collectVisibleWikiSubtree";
-import { compareWikiPagesByOrder } from "./compareWikiPagesByOrder";
 import { findOrCreateWikiTags } from "./findOrCreateWikiTags";
 import { slugifyWikiPageTitle } from "./slugifyWikiPageTitle";
 import { WikiScope } from "./wikiPageHref";

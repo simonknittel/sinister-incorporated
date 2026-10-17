@@ -1,5 +1,6 @@
 "use client";
 
+import type { WikiTreeNode } from "@sam-monorepo/wiki-editor/helpers";
 import { usePathname } from "next/navigation";
 import {
   createContext,
@@ -8,7 +9,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { WikiTreeNode } from "../utils/buildVisibleWikiTree";
 import { collectExpandableWikiPages } from "../utils/collectExpandableWikiPages";
 import { collectWikiPagesToExpand } from "../utils/collectWikiPagesToExpand";
 import {

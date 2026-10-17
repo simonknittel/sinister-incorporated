@@ -1,9 +1,8 @@
 import {
   getApplicationContext,
+  getRequestActor,
   throwApplicationErrorForPage,
-  toActor,
 } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import { listActiveOrganizationMemberships } from "@sam-monorepo/application";
 import type { Organization } from "@sam-monorepo/database/client";
@@ -12,12 +11,10 @@ import type { Organization } from "@sam-monorepo/database/client";
 export const getActiveOrganizationMemberships = withTrace(
   "getActiveOrganizationMemberships",
   async (id: Organization["id"]) => {
-    const { session } = await requireAuthentication();
-
     try {
       return await listActiveOrganizationMemberships(
         getApplicationContext(),
-        await toActor(session),
+        await getRequestActor(),
         id,
       );
     } catch (error) {

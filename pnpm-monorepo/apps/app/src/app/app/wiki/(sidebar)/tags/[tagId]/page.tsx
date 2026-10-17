@@ -4,11 +4,14 @@ import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/Suspe
 import { WikiTagPageContent } from "@/modules/wiki/components/WikiTagPageContent";
 import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
 import { buildVisibleWikiBreadcrumb } from "@/modules/wiki/utils/buildVisibleWikiBreadcrumb";
-import { getAccessibleWikiPage } from "@/modules/wiki/utils/getAccessibleWikiPage";
 import {
   buildWikiPageHref,
   GLOBAL_WIKI_HREF_MODE,
 } from "@/modules/wiki/utils/wikiPageHref";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import type { Metadata } from "next";
 import { forbidden, notFound } from "next/navigation";
 
@@ -57,7 +60,11 @@ const TagPageList = async ({ params }: TagPageListProps) => {
    */
   const pages = tag.pages
     .map((assignment) =>
-      getAccessibleWikiPage(context, assignment.pageId, "read"),
+      getAccessibleWikiPage(
+        context,
+        assignment.pageId,
+        WikiPageAccessTier.Read,
+      ),
     )
     .filter((page) => page !== null)
     .toSorted((a, b) => a.title.localeCompare(b.title))

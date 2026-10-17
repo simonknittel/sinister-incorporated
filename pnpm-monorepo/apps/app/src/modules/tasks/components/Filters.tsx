@@ -1,5 +1,5 @@
 import { RadioFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/RadioFilter";
-import { TaskListStatus } from "../utils/TaskListStatus";
+import { TaskListStatus } from "@sam-monorepo/application";
 
 export const Filters = () => {
   return (

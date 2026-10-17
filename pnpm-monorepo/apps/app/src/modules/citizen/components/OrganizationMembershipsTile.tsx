@@ -1,9 +1,8 @@
 import {
   getApplicationContext,
+  getRequestActor,
   throwApplicationErrorForPage,
-  toActor,
 } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
 import { Link } from "@/modules/common/components/Link";
 import { Tile } from "@/modules/common/components/Tile";
 import { CreateMembership } from "@/modules/organizations/components/CreateMembership";
@@ -19,8 +18,7 @@ interface Props {
 }
 
 export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
-  const authentication = await requireAuthentication();
-  const actor = await toActor(authentication.session);
+  const actor = await getRequestActor();
 
   const activeOrganizationMemberships =
     await listOrganizationMembershipsOfCitizen(

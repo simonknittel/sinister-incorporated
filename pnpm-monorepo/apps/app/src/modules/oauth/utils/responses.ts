@@ -10,7 +10,7 @@ const METADATA_CACHE_MAX_AGE_IN_SECONDS = 5 * 60;
  * example the MCP Inspector or the hosted callback of Claude.ai) call them
  * from a different origin
  */
-const CORS_HEADERS = { "Access-Control-Allow-Origin": "*" };
+export const CORS_HEADERS = { "Access-Control-Allow-Origin": "*" };
 
 /** A metadata document (RFC 8414, RFC 9728) for the CDN and the clients */
 export const metadataResponse = (document: object) =>

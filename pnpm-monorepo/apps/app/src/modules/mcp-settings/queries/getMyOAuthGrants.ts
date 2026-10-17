@@ -1,4 +1,4 @@
-import { getApplicationContext, toActor } from "@/modules/application";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import { listOwnGrants } from "@sam-monorepo/application";
@@ -11,9 +11,6 @@ export const getMyOAuthGrants = cache(
     // Only the user sees the own clients, not an admin who assumes the user
     if (authentication.session.assumedByAdminId) forbidden();
 
-    return listOwnGrants(
-      getApplicationContext(),
-      await toActor(authentication.session),
-    );
+    return listOwnGrants(getApplicationContext(), await getRequestActor());
   }),
 );

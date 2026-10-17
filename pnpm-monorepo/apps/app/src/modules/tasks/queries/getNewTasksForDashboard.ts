@@ -2,12 +2,11 @@ import { prisma } from "@/db";
 import { requireAuthentication } from "@/modules/auth/server";
 import { getUnreadWhere } from "@/modules/read-markers/queries/getUnreadWhere";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { getOpenTasksWhere, TASK_LIST_SELECT } from "@sam-monorepo/application";
 import { ReadMarkerSubject } from "@sam-monorepo/domain";
 import { forbidden } from "next/navigation";
 import { cache } from "react";
-import { getOpenTasksWhere } from "./getOpenTasksWhere";
 import { getVisibleTasksWhere } from "./getVisibleTasksWhere";
-import { TASK_LIST_SELECT } from "./taskListSelect";
 
 /** Keeps the tile short; the tasks list shows all new tasks */
 const MAX_TASKS = 5;

@@ -1,9 +1,8 @@
 import {
   getApplicationContext,
+  getRequestActor,
   throwApplicationErrorForPage,
-  toActor,
 } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
 import { type CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
@@ -69,12 +68,10 @@ export const getTasks = cache(
       cursor: string | null,
       direction: CursorDirection,
     ): Promise<TasksPage> => {
-      const { session } = await requireAuthentication();
-
       try {
         const page = await findTaskListPage(
           getApplicationContext(),
-          await toActor(session),
+          await getRequestActor(),
           {
             status,
             accepted:

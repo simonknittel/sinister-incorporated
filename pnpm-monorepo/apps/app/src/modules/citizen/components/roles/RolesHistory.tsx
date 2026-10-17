@@ -4,13 +4,13 @@ import {
   ActivityColumn,
 } from "@/modules/activity/utils/activityEntry";
 import { createCursorPaginationLoader } from "@/modules/common/CursorPagination/createCursorPaginationLoader";
-import { paginateMergedSources } from "@/modules/common/CursorPagination/mergedCursor";
 import {
   createRoleAssignmentLevelSource,
   createRoleAssignmentSource,
 } from "@/modules/roles/activity/roleActivitySources";
 import { getVisibleRoles } from "@/modules/roles/utils/getRoles";
 import { type Citizen } from "@sam-monorepo/database/client";
+import { paginateMergedSources } from "@sam-monorepo/domain";
 import type { SearchParams } from "nuqs/server";
 
 const loadSearchParams = createCursorPaginationLoader({});

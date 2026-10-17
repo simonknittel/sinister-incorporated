@@ -11,7 +11,6 @@ import {
   type ActivityFilters,
 } from "@/modules/activity/utils/activityFilterParams";
 import { createCursorPaginationLoader } from "@/modules/common/CursorPagination/createCursorPaginationLoader";
-import { paginateMergedSources } from "@/modules/common/CursorPagination/mergedCursor";
 import {
   createOrganizationCreatedSource,
   createOrganizationMembershipSource,
@@ -23,6 +22,7 @@ import {
   createRoleAssignmentSource,
 } from "@/modules/roles/activity/roleActivitySources";
 import { RoleActivitySourceKey } from "@/modules/roles/activity/roleActivityTypes";
+import { paginateMergedSources } from "@sam-monorepo/domain";
 import type { SearchParams } from "nuqs/server";
 
 const loadSearchParams = createCursorPaginationLoader(activityFilterParsers);

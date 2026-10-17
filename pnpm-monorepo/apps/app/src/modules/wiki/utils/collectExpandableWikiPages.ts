@@ -1,4 +1,4 @@
-import type { WikiTreeNode } from "./buildVisibleWikiTree";
+import type { WikiTreeNode } from "@sam-monorepo/wiki-editor/helpers";
 
 /**
  * Ids of every page with subpages, i.e. the ones "Alle ausklappen" expands.

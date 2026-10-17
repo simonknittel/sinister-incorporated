@@ -1,9 +1,8 @@
 import {
   getApplicationContext,
+  getRequestActor,
   throwApplicationErrorForPage,
-  toActor,
 } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import { findVisibleTask } from "@sam-monorepo/application";
 import type { Task } from "@sam-monorepo/database/client";
@@ -15,12 +14,10 @@ import { cache } from "react";
  */
 export const getTaskById = cache(
   withTrace("getTaskById", async (id: Task["id"]) => {
-    const { session } = await requireAuthentication();
-
     try {
       return await findVisibleTask(
         getApplicationContext(),
-        await toActor(session),
+        await getRequestActor(),
         id,
       );
     } catch (error) {

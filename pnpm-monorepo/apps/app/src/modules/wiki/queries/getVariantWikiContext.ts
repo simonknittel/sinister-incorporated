@@ -2,6 +2,10 @@ import { prisma } from "@/db";
 import { authenticate } from "@/modules/auth/server";
 import { canViewVariantPages } from "@/modules/fleet/utils/canViewVariantPages";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  getAccessibleWikiPage,
+  WikiPageAccessTier,
+} from "@sam-monorepo/application";
 import type { Variant } from "@sam-monorepo/database/client";
 import type {
   ResolvedWikiPagePermissions,
@@ -9,7 +13,6 @@ import type {
 } from "@sam-monorepo/permissions";
 import { cache } from "react";
 import { collectWikiPageDescendants } from "../utils/collectWikiPageDescendants";
-import { getAccessibleWikiPage } from "../utils/getAccessibleWikiPage";
 import {
   createVariantWikiHrefMode,
   type WikiPageHrefMode,
@@ -75,7 +78,7 @@ export const getVariantWikiContext = cache(
       const rootPage = getAccessibleWikiPage(
         globalContext,
         variant.wikiPageId,
-        "read",
+        WikiPageAccessTier.Read,
       );
       if (!rootPage) return null;
 

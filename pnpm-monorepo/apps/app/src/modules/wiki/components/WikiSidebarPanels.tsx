@@ -1,9 +1,9 @@
 import type { WikiPageTierPermissions } from "@sam-monorepo/permissions";
+import { buildVisibleWikiTree } from "@sam-monorepo/wiki-editor/helpers";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import type { WikiSharedContextPage } from "../queries/getWikiContext";
 import { getWikiFavoritePageIds } from "../queries/getWikiFavorites";
-import { buildVisibleWikiTree } from "../utils/buildVisibleWikiTree";
 import { filterWikiPagesBySidebarMode } from "../utils/filterWikiPagesBySidebarMode";
 import { getWikiExpandedPagesCookieName } from "../utils/wikiExpandedPagesCookie";
 import {

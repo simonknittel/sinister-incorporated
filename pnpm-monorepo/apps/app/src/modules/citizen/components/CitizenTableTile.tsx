@@ -1,9 +1,8 @@
 import {
   getApplicationContext,
+  getRequestActor,
   throwApplicationErrorForPage,
-  toActor,
 } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
 import {
   CitizenTableSort,
   loadCitizenTableSearchParams,
@@ -54,8 +53,7 @@ interface Props {
 }
 
 export const CitizenTableTile = async ({ className, searchParams }: Props) => {
-  const authentication = await requireAuthentication();
-  const actor = await toActor(authentication.session);
+  const actor = await getRequestActor();
 
   const { filters, sort, page } =
     await loadCitizenTableSearchParams(searchParams);

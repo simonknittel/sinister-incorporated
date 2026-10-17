@@ -1,6 +1,8 @@
 import { prisma } from "@/db";
-import { throwApplicationErrorForPage, toActor } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
+import {
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import { requireCitizenReadAccess } from "@sam-monorepo/application";
 import type { Citizen } from "@sam-monorepo/database/client";
@@ -14,9 +16,8 @@ import { cache } from "react";
  */
 export const getCitizenById = cache(
   withTrace("getCitizenById", async (id: Citizen["id"]) => {
-    const { session } = await requireAuthentication();
     try {
-      requireCitizenReadAccess(await toActor(session), id);
+      requireCitizenReadAccess(await getRequestActor(), id);
     } catch (error) {
       throwApplicationErrorForPage(error);
     }

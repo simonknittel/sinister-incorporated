@@ -1,9 +1,8 @@
 import {
   getApplicationContext,
+  getRequestActor,
   throwApplicationErrorForPage,
-  toActor,
 } from "@/modules/application";
-import { requireAuthentication } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import { findVisibleEvent, NotFoundError } from "@sam-monorepo/application";
 import type { Event } from "@sam-monorepo/database/client";
@@ -20,12 +19,10 @@ import { cache } from "react";
  */
 export const getEventById = cache(
   withTrace("getEventById", async (id: Event["id"]) => {
-    const { session } = await requireAuthentication();
-
     try {
       return await findVisibleEvent(
         getApplicationContext(),
-        await toActor(session),
+        await getRequestActor(),
         id,
       );
     } catch (error) {

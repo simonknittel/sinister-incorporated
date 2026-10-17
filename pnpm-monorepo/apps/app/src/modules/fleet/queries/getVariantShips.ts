@@ -10,18 +10,18 @@ import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
   buildVariantFilterWhere,
   paginateByCursor,
+  UnknownCursorBehavior,
 } from "@sam-monorepo/application";
 import { ORG_ID } from "@sam-monorepo/domain";
 import { forbidden } from "next/navigation";
 import { cache } from "react";
+import { toFlightReadyFilter } from "../utils/fleetListMapping";
 import {
-  toFlightReadyFilter,
-  toPageDirection,
-  type FlightReadyParameter,
-} from "../utils/fleetListMapping";
+  FleetSortParameter,
+  FlightReadyParameter,
+  type ShipSortParameter,
+} from "../utils/fleetSearchParameters";
 import { FLEET_PAGE_SIZE } from "./shipQuery";
-
-type CitizenFleetSort = "name-asc" | "name-desc";
 
 export const getVariantShips = cache(
   withTrace(
@@ -29,15 +29,15 @@ export const getVariantShips = cache(
     async (
       variantId: string,
       {
-        flightReady = "all",
+        flightReady = FlightReadyParameter.All,
         variantTagIds = [],
-        sort = "name-asc",
+        sort = FleetSortParameter.NameAscending,
         cursor,
         direction = CursorDirection.Next,
       }: {
         flightReady?: FlightReadyParameter;
         variantTagIds?: string[];
-        sort?: CitizenFleetSort;
+        sort?: ShipSortParameter;
         cursor?: string | null;
         direction?: CursorDirection;
       } = {},
@@ -91,16 +91,15 @@ export const getVariantShips = cache(
         },
       });
 
-      const [, sortDirection] = sort.split("-") as [string, "asc" | "desc"];
-      const sortedShips = allShips.toSorted((a, b) =>
-        sortDirection === "asc"
+      const sortedShips = allShips.toSorted((first, second) =>
+        sort === FleetSortParameter.NameAscending
           ? sortAscWithAndNullLast(
-              a.owner.handle || a.ownerId,
-              b.owner.handle || b.ownerId,
+              first.owner.handle || first.ownerId,
+              second.owner.handle || second.ownerId,
             )
           : sortDescAndNullLast(
-              a.owner.handle || a.ownerId,
-              b.owner.handle || b.ownerId,
+              first.owner.handle || first.ownerId,
+              second.owner.handle || second.ownerId,
             ),
       );
 
@@ -110,7 +109,8 @@ export const getVariantShips = cache(
         previousCursor,
       } = paginateByCursor(sortedShips, {
         cursor,
-        direction: toPageDirection(direction),
+        direction,
+        unknownCursor: UnknownCursorBehavior.FirstPage,
         pageSize: FLEET_PAGE_SIZE,
         getCursor: (ship) => ship.id,
       });

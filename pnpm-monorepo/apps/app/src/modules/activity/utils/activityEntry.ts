@@ -1,11 +1,11 @@
 import type {
-  MergedCursorEntry,
-  MergedCursorSource,
-} from "@/modules/common/CursorPagination/mergedCursor";
-import type {
   Citizen,
   ConfirmationStatus,
 } from "@sam-monorepo/database/client";
+import type {
+  MergedCursorEntry,
+  MergedCursorSource,
+} from "@sam-monorepo/domain";
 import type { ReactNode } from "react";
 
 /** How many entries every activity surface shows per page. */

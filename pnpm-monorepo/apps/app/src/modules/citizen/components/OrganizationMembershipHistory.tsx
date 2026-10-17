@@ -4,9 +4,9 @@ import {
   ActivityColumn,
 } from "@/modules/activity/utils/activityEntry";
 import { createCursorPaginationLoader } from "@/modules/common/CursorPagination/createCursorPaginationLoader";
-import { paginateMergedSources } from "@/modules/common/CursorPagination/mergedCursor";
 import { createOrganizationMembershipSource } from "@/modules/organizations/activity/organizationActivitySources";
 import type { Citizen } from "@sam-monorepo/database/client";
+import { paginateMergedSources } from "@sam-monorepo/domain";
 import type { SearchParams } from "nuqs/server";
 
 const loadSearchParams = createCursorPaginationLoader({});

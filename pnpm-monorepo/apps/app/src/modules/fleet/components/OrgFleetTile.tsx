@@ -6,22 +6,23 @@ import { OnboardingTargetId } from "@/modules/onboarding/utils/targets";
 import {
   parseAsArrayOf,
   parseAsString,
-  parseAsStringLiteral,
+  parseAsStringEnum,
   type SearchParams,
 } from "nuqs/server";
 import { getOrgFleet } from "../queries/getOrgFleet";
+import {
+  FleetSortParameter,
+  FlightReadyParameter,
+} from "../utils/fleetSearchParameters";
 import { FleetTable } from "./FleetTable";
 
 const loadSearchParams = createCursorPaginationLoader({
-  flight_ready: parseAsStringLiteral(["all", "flight_ready"]).withDefault(
-    "all",
+  flight_ready: parseAsStringEnum(
+    Object.values(FlightReadyParameter),
+  ).withDefault(FlightReadyParameter.All),
+  sort: parseAsStringEnum(Object.values(FleetSortParameter)).withDefault(
+    FleetSortParameter.CountDescending,
   ),
-  sort: parseAsStringLiteral([
-    "name-asc",
-    "name-desc",
-    "count-asc",
-    "count-desc",
-  ]).withDefault("count-desc"),
   variantTags: parseAsArrayOf(parseAsString),
   manufacturerIds: parseAsArrayOf(parseAsString),
   q: parseAsString,

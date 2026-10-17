@@ -1,4 +1,4 @@
-import type { WikiTreeNode } from "./buildVisibleWikiTree";
+import type { WikiTreeNode } from "@sam-monorepo/wiki-editor/helpers";
 
 /**
  * Ids the sidebar has to expand so that `pageId` and its direct subpages are

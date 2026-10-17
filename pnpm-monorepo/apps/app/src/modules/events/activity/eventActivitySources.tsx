@@ -5,13 +5,6 @@ import type {
 } from "@/modules/activity/utils/activityEntry";
 import type { ActivityFilters } from "@/modules/activity/utils/activityFilterParams";
 import { CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
-import {
-  buildCursorConditions,
-  compareMergedCursorEntries,
-  cursorOrderBy,
-  isBeyondCursorPosition,
-  type MergedCursorSourceInput,
-} from "@/modules/common/CursorPagination/mergedCursor";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import { formatDate } from "@/modules/common/utils/formatDate";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
@@ -21,6 +14,13 @@ import {
   type Event,
   type Prisma,
 } from "@sam-monorepo/database/client";
+import {
+  buildCursorConditions,
+  compareMergedCursorEntries,
+  cursorOrderBy,
+  isBeyondCursorPosition,
+  type MergedCursorSourceInput,
+} from "@sam-monorepo/domain";
 import * as z from "zod";
 import {
   EventActivitySourceKey,

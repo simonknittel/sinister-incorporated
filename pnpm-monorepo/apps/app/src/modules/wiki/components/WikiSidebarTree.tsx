@@ -1,5 +1,6 @@
 "use client";
 
+import type { WikiTreeNode } from "@sam-monorepo/wiki-editor/helpers";
 import clsx from "clsx";
 import { useState } from "react";
 import {
@@ -8,7 +9,6 @@ import {
   FaRegEye,
   FaRegEyeSlash,
 } from "react-icons/fa";
-import type { WikiTreeNode } from "../utils/buildVisibleWikiTree";
 import { pruneWikiTree } from "../utils/pruneWikiTree";
 import { serializeWikiShowHiddenPagesCookie } from "../utils/wikiShowHiddenPagesCookie";
 import { useWikiPageHrefMode } from "./WikiPageHrefModeProvider";

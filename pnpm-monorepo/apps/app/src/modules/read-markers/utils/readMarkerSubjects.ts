@@ -1,10 +1,11 @@
 import { prisma } from "@/db";
 import { getVisibleEventsWhere } from "@/modules/events/utils/eventVisibility";
-import { getOpenTasksWhere } from "@/modules/tasks/queries/getOpenTasksWhere";
 import { getVisibleTasksWhere } from "@/modules/tasks/queries/getVisibleTasksWhere";
 import {
   findNewEventIds,
+  findNewTaskIds,
   getOpenEventsWhere,
+  getOpenTasksWhere,
   type UnreadWhere,
 } from "@sam-monorepo/application";
 import type { Prisma } from "@sam-monorepo/database/client";
@@ -70,19 +71,8 @@ export const READ_MARKER_SUBJECTS: Record<
           deletedAt: null,
         },
       })) > 0,
-    findNewIds: async (subjectIds, unreadWhere) => {
-      const tasks = await prisma.task.findMany({
-        where: {
-          AND: [
-            { id: { in: subjectIds } },
-            getOpenTasksWhere(new Date()),
-            unreadWhere,
-          ],
-        },
-        select: { id: true },
-      });
-      return tasks.map((task) => task.id);
-    },
+    findNewIds: (subjectIds, unreadWhere) =>
+      findNewTaskIds(prisma, subjectIds, unreadWhere, new Date()),
     countNew: async (unreadWhere) =>
       prisma.task.count({
         where: {

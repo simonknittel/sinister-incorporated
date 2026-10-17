@@ -38,7 +38,7 @@ export const updateOAuthGrantAdminMode = createAuthenticatedAction(
   },
   {
     parseFormData: (formData) => ({
-      grantId: formData.get("grantId"),
+      grant_id: formData.get("grantId"),
       enabled: z.stringbool().parse(formData.get("enabled")),
     }),
   },
