@@ -73,6 +73,7 @@ allowBuilds:
   "@sam-monorepo/mcp@file:packages/mcp": false
   "@sam-monorepo/notifications@file:packages/notifications": false
   "@sam-monorepo/permissions@file:packages/permissions": false
+  "@sam-monorepo/wiki-editor@file:packages/wiki-editor": false
   # Optional native accelerators of testcontainers' ssh2 dependency — the
   # pure-JS fallbacks are fine for the test stack.
   cpu-features: false

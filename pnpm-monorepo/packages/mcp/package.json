@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.3.1",
-    "@sam-monorepo/application": "workspace:*"
+    "@sam-monorepo/application": "workspace:*",
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@types/node": "24.19.1",
