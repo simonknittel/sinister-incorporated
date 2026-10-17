@@ -108,6 +108,10 @@ Dependencies point downwards only. A package never imports a host. `application`
 | Lambda automations that use Prisma and the app's rules | Use cases in `application`, called from thin Lambda handlers | One implementation of each rule |
 | The MCP endpoint in `apps/app` | A service of its own that imports `mcp` and `application` and builds its own context | Independent scaling and deployment |
 | The Next.js app with all business logic | A dedicated backend with Next.js as a backend-for-frontend (open decision) | Only when a second frontend or a scaling need makes it necessary |
+| `packages/permissions` | Folded into `domain` | It is domain code (the permission model and the resolvers) with the same dependencies as `domain`; one package has less to maintain. Until then it stays a domain-level package next to `domain`. |
+| `packages/notifications` | Folded into `domain` | It is only the channel vocabulary. Same reason as `permissions`. |
+| `packages/wiki-editor` | Stays a separate domain-level package | It is domain code (the content format of the wiki), but it depends on Tiptap and has a browser entry (`helpers`). A merge into `domain` would pull Tiptap into the Lambdas and the collab server. |
+| `packages/emails` | Stays separate as an adapter | Email templates are presentation, not rules. A use case asks the context to send a notification; the template renders it. |
 
 ### How to move a piece of logic
 
