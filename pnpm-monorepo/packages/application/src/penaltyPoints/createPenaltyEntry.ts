@@ -3,6 +3,7 @@ import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ConflictError, NotFoundError } from "../errors.js";
+import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import {
@@ -85,25 +86,10 @@ export const createPenaltyEntry = (
       },
     ]);
 
-    // A failure must not make the result an error: the entry is saved, and
-    // the caller would create it again
-    const notificationsSent = await context.notifications
-      .trigger([
-        { type: "PenaltyEntryCreated", payload: { penaltyEntryId: entry.id } },
-      ])
-      .then(
-        () => true,
-        (error: unknown) => {
-          context.log.error("Failed to trigger notifications after a save", {
-            types: ["PenaltyEntryCreated"],
-            error,
-          });
-          return false;
-        },
-      );
-
     return {
       entry: toPenaltyEntryOutput(entry),
-      notifications_sent: notificationsSent,
+      notifications_sent: await triggerNotificationsAfterSave(context, [
+        { type: "PenaltyEntryCreated", payload: { penaltyEntryId: entry.id } },
+      ]),
     };
   });
