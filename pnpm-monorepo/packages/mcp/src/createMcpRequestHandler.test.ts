@@ -50,7 +50,7 @@ const createGrantRow = () => ({
 });
 
 let grantRow = createGrantRow();
-let permissionStrings = ["login;manage"];
+let permissionStrings = ["login;manage", "mcp;use"];
 
 const log = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
 
@@ -149,7 +149,7 @@ const callWithToken = async () =>
 
 beforeEach(() => {
   grantRow = createGrantRow();
-  permissionStrings = ["login;manage"];
+  permissionStrings = ["login;manage", "mcp;use"];
 });
 
 describe("authentication", () => {
@@ -198,6 +198,15 @@ describe("authentication", () => {
       error: "forbidden",
       error_description: "The user has no access to the app",
     });
+  });
+
+  test("a user without the permission to use the MCP server gets 403 without a challenge", async () => {
+    permissionStrings = ["login;manage"];
+
+    const response = await callWithToken();
+
+    expect(response.status).toBe(403);
+    expect(response.headers.get("www-authenticate")).toBeNull();
   });
 
   test("a request with the host of a different site is refused before the token check", async () => {
