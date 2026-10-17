@@ -1,0 +1,83 @@
+import { UserRole } from "@sam-monorepo/database/browser";
+import {
+  comparePermissionSets,
+  type PermissionSet,
+} from "@sam-monorepo/permissions";
+import { ForbiddenError } from "./errors.js";
+
+export interface ActorCitizen {
+  readonly id: string;
+  readonly handle: string | null;
+}
+
+/**
+ * The user for whom a use case runs. The Next.js app builds the actor from
+ * the session, the MCP server from the access token.
+ */
+export interface Actor {
+  readonly userId: string;
+  readonly userRole: UserRole | null;
+  readonly emailConfirmedAt: Date | null;
+  /** Null for a user without a citizen */
+  readonly citizen: ActorCitizen | null;
+  readonly permissionSets: PermissionSet[];
+  /** True only for an admin who enabled admin mode */
+  readonly adminMode: boolean;
+  readonly authorize: (
+    resource: PermissionSet["resource"],
+    operation: PermissionSet["operation"],
+    attributes?: PermissionSet["attributes"],
+  ) => boolean;
+  /**
+   * Throws a `ForbiddenError` when the user cannot use the app: the same gate
+   * as the pages, the API routes and the server actions
+   */
+  readonly requireClearance: () => void;
+}
+
+export type ActorFields = Omit<Actor, "authorize" | "requireClearance">;
+
+/**
+ * Builds the actor. `adminMode` applies only to an admin. The caller resolves
+ * the admin mode before (for example from the cookie of the admin toolbar),
+ * thus `authorize()` is synchronous.
+ */
+export const createActor = (fields: ActorFields): Actor => {
+  const adminMode = fields.adminMode && fields.userRole === UserRole.ADMIN;
+
+  const authorize: Actor["authorize"] = (resource, operation, attributes) => {
+    if (adminMode) return operation !== "negate";
+
+    return comparePermissionSets(
+      { resource, operation, attributes },
+      fields.permissionSets,
+    );
+  };
+
+  return {
+    ...fields,
+    adminMode,
+    authorize,
+    requireClearance: () => {
+      // Admin mode skips the email confirmation, like the gate of the app
+      if (!adminMode && !fields.emailConfirmedAt)
+        throw new ForbiddenError("The email address is not confirmed");
+
+      if (!authorize("login", "manage"))
+        throw new ForbiddenError("The user has no clearance");
+    },
+  };
+};
+
+/** Throws a `ForbiddenError` when the actor does not have the permission */
+export const requirePermission = (
+  actor: Actor,
+  resource: PermissionSet["resource"],
+  operation: PermissionSet["operation"],
+  attributes?: PermissionSet["attributes"],
+) => {
+  if (!actor.authorize(resource, operation, attributes))
+    throw new ForbiddenError(
+      `The permission ${resource};${operation} is missing`,
+    );
+};
