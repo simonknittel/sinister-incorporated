@@ -190,6 +190,7 @@ configs:
         "DisableRoleNameSuggestions",
         "CrashLogAnalyzer",
         "DisableLogAnalyzerSharing",
+        "DisableMcpServer",
       ];
 
       const FLAG_ALREADY_EXISTS_STATUS = 409;
