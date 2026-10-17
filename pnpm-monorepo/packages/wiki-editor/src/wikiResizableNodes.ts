@@ -193,6 +193,9 @@ export const withWikiBlockLayout = <Options, Storage>(
     },
   });
 
+/** The attributes of the block layout, which apply only at the top level */
+export const WIKI_BLOCK_LAYOUT_ATTRIBUTES = ["widthPx", "align"] as const;
+
 /**
  * A transaction clearing `widthPx`/`align` on every block that is not a
  * direct child of the document, appended to `transaction` (or NULL when
@@ -212,7 +215,7 @@ export const stripWikiNestedBlockLayout = (
       !(WIKI_RESIZABLE_NODE_TYPES as readonly string[]).includes(node.type.name)
     )
       return true;
-    for (const attribute of ["widthPx", "align"]) {
+    for (const attribute of WIKI_BLOCK_LAYOUT_ATTRIBUTES) {
       if (node.attrs[attribute] == null) continue;
       transaction ??= state.tr;
       transaction.setNodeAttribute(position, attribute, null);

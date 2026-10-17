@@ -12,6 +12,7 @@
 export { extractWikiPageText } from "./extractWikiPageText.js";
 export * from "./helpers.js";
 export { isWikiPageContentEmpty } from "./isWikiPageContentEmpty.js";
+export { slugifyWikiPageTitle } from "./slugifyWikiPageTitle.js";
 export { WikiAttachment } from "./wikiAttachmentNode.js";
 export {
   WIKI_CALLOUT_COLORS,

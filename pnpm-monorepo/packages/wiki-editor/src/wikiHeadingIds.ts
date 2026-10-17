@@ -5,7 +5,7 @@ import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import slug from "slug";
 
 /**
- * Same slug rules as the app's page slugs (slugifyWikiPageTitle), so heading
+ * Same slug rules as the page slugs (slugifyWikiPageTitle), so heading
  * anchors look consistent with page URLs.
  */
 const slugifyWikiHeading = (text: string): string => {
