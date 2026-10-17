@@ -35,6 +35,8 @@ A selection of the features:
 
 Next.js, PostgreSQL, Vercel, Tailwind CSS, TypeScript, React, AWS
 
+See [docs/architecture.md](./docs/architecture.md) for the layout of the monorepo and the target architecture.
+
 ## License
 
 AGPL-3.0 (see [LICENSE](./LICENSE))
