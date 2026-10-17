@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   resolveWikiPagePlacement,
   WikiPagePlacement,
-} from "./resolveWikiPagePlacement";
+} from "./wikiPagePlacement.js";
 
 interface Page {
   readonly id: string;

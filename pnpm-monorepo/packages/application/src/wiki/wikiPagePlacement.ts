@@ -1,0 +1,114 @@
+import { requirePermission, type Actor } from "../actor.js";
+import { ConflictError, ForbiddenError, NotFoundError } from "../errors.js";
+
+export enum WikiPagePlacement {
+  Allowed = "allowed",
+  /** No such page, or it is in the trash */
+  Missing = "missing",
+  /** The page exists, but the viewer does not manage it */
+  Forbidden = "forbidden",
+}
+
+interface WikiPagePlacementContext {
+  readonly pagesById: ReadonlyMap<string, { readonly deletedAt: Date | null }>;
+  readonly permissions: ReadonlyMap<string, { readonly canAdmin: boolean }>;
+}
+
+/**
+ * Whether the viewer may hang a page — a new, a copied or a moved one —
+ * underneath the given page. This takes managing the target, not editing it:
+ * editing means changing that page's own content, while adding pages below it
+ * decides what the subtree contains and who reaches it. Were edit access
+ * enough, whoever may edit a single page could pull every page they can read
+ * underneath it, where it would then take on that page's permissions.
+ *
+ * Placing at the top level has no target page and is gated by the global
+ * `wiki;create` permission instead; callers handle that case, and the error
+ * message per result, themselves.
+ */
+export const resolveWikiPagePlacement = (
+  context: WikiPagePlacementContext,
+  parentId: string,
+): WikiPagePlacement => {
+  const parent = context.pagesById.get(parentId);
+  if (!parent || parent.deletedAt) return WikiPagePlacement.Missing;
+  if (!context.permissions.get(parentId)?.canAdmin)
+    return WikiPagePlacement.Forbidden;
+  return WikiPagePlacement.Allowed;
+};
+
+/** A page of the scope as the creation of a page below it needs it */
+export interface WikiPlacementPage {
+  readonly id: string;
+  readonly parentId: string | null;
+  readonly sortOrder: number;
+  readonly eventId: string | null;
+  readonly templateId: string | null;
+  readonly deletedAt: Date | null;
+}
+
+/**
+ * The wiki of a new page: the global wiki, the briefing of an event or the
+ * briefing of an event template, with the permissions of the actor. The
+ * global and the event wiki contexts of this package agree with it, and so
+ * do the scoped contexts of the app.
+ */
+export interface WikiPlacementScope {
+  readonly context: {
+    /** Pages that are not in the trash */
+    readonly pages: readonly WikiPlacementPage[];
+    /** All pages, also the pages in the trash */
+    readonly pagesById: ReadonlyMap<string, WikiPlacementPage>;
+    readonly permissions: ReadonlyMap<string, { readonly canAdmin: boolean }>;
+    /** True for the briefing of an event that is over: it refuses all changes */
+    readonly frozen?: boolean;
+  };
+}
+
+/**
+ * Checks that the actor can add a page below the parent, or at the top of
+ * the global wiki without a parent. Gives the scope back, thus the caller
+ * knows that it exists.
+ *
+ * @param scope The scope of the parent, or the global wiki without a parent.
+ * Null when the actor cannot hold it.
+ * @throws NotFoundError when the scope or the parent does not exist for the
+ * actor, or when the parent is in the trash
+ * @throws ForbiddenError when the actor does not manage the parent, or when
+ * the actor cannot create a page at the top (`wiki;create`)
+ * @throws ConflictError when the event of the briefing is over
+ */
+export const requireWikiPagePlacement = <Scope extends WikiPlacementScope>(
+  actor: Actor,
+  scope: Scope | null,
+  parentId: string | undefined,
+): Scope => {
+  if (!scope) throw new NotFoundError("The parent page does not exist");
+
+  if (parentId === undefined) {
+    requirePermission(actor, "wiki", "create");
+    return scope;
+  }
+
+  const placement = resolveWikiPagePlacement(scope.context, parentId);
+  switch (placement) {
+    case WikiPagePlacement.Missing:
+      throw new NotFoundError("The parent page does not exist");
+
+    case WikiPagePlacement.Forbidden:
+      throw new ForbiddenError("The user does not manage the parent page");
+
+    case WikiPagePlacement.Allowed:
+      break;
+
+    default:
+      throw new Error(
+        `Unknown wiki page placement: ${placement satisfies never}`,
+      );
+  }
+
+  if (scope.context.frozen)
+    throw new ConflictError("The event of the briefing is over");
+
+  return scope;
+};

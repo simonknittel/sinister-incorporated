@@ -1,20 +1,25 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import {
+  ConflictError,
+  createWikiPageInputSchema,
+  createWikiPageInScope,
   getAccessibleWikiPage,
+  requireCitizen,
+  requireWikiPagePlacement,
   WikiPageAccessTier,
+  type ActorCitizen,
+  type CreatedWikiPage,
 } from "@sam-monorepo/application";
-import {
-  WikiPageEditability,
-  WikiPageNamespace,
-  WikiPageUploadability,
-  WikiPageVisibility,
-} from "@sam-monorepo/database/client";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import * as z from "zod";
@@ -24,45 +29,33 @@ import {
 } from "../queries/getWikiContext";
 import {
   getWikiPageScopedContext,
-  isWikiScopeFrozen,
   rejectFrozenWikiScope,
   type WikiPageScopedContext,
 } from "../queries/getWikiPageScopedContext";
 import { copyWikiPageSubtree } from "../utils/copyWikiPageSubtree";
 import { resolveVariantWikiRedirectHref } from "../utils/resolveVariantWikiRedirectHref";
-import {
-  resolveWikiPagePlacement,
-  WikiPagePlacement,
-} from "../utils/resolveWikiPagePlacement";
-import { slugifyWikiPageTitle } from "../utils/slugifyWikiPageTitle";
 import { getWikiPageRouteHref, WikiScope } from "../utils/wikiPageHref";
 
-const schema = z.object({
-  title: z.string().trim().min(1).max(128),
-  /** Set when creating from inside a variant embed, for the redirect */
-  variantId: z.cuid().optional(),
-  /** Empty string or absent creates a top-level page */
-  parentId: z
-    .union([z.cuid2(), z.literal("")])
-    .optional()
-    .transform((value) => (value === "" ? undefined : value)),
-  /** Readable page whose content the new page starts with */
-  copyFromPageId: z
-    .union([z.cuid2(), z.literal("")])
-    .optional()
-    .transform((value) => (value === "" ? undefined : value)),
-  copyChildren: z
-    .literal("1")
-    .optional()
-    .transform((value) => value === "1"),
-});
+const schema = createWikiPageInputSchema
+  .pick({ title: true, parent_id: true })
+  .extend({
+    /** Set when creating from inside a variant embed, for the redirect */
+    variant_id: z.cuid().optional(),
+    /** Readable page whose content the new page starts with */
+    copy_from_page_id: z.cuid2().optional(),
+    copy_children: z.boolean(),
+  });
 
 export const createWikiPage = createAuthenticatedAction(
   "createWikiPage",
   schema,
   async (formData, authentication, data, t) => {
-    if (!authentication.session.entity)
-      return { error: t("Common.forbidden"), requestPayload: formData };
+    const actor = await toActor(authentication.session);
+    const toErrorResponse = (error: unknown) =>
+      // The only conflict of the action: the event of the briefing is over
+      error instanceof ConflictError
+        ? rejectFrozenWikiScope(formData)
+        : mapApplicationErrorToActionResponse(error, { formData, t });
 
     /**
      * The parent decides the scope: an event page's children live in the
@@ -70,35 +63,26 @@ export const createWikiPage = createAuthenticatedAction(
      * event wikis' single top-level page is the seeded root — so the
      * no-parent case wraps the global context into the same scoped shape.
      */
-    const scoped: WikiPageScopedContext | null = data.parentId
-      ? await getWikiPageScopedContext(data.parentId)
+    const scoped: WikiPageScopedContext | null = data.parent_id
+      ? await getWikiPageScopedContext(data.parent_id)
       : await getWikiContext().then((context) =>
           context ? { scope: WikiScope.Wiki, context } : null,
         );
-    const placement =
-      scoped && data.parentId
-        ? resolveWikiPagePlacement(scoped.context, data.parentId)
-        : null;
-    if (!scoped || placement === WikiPagePlacement.Missing) {
-      /**
-       * A different user or tab deleted the parent before, and the page must
-       * show it. A context that the viewer cannot hold gets the same answer
-       * (see getWikiPageScopedContext).
-       */
-      return rejectConflict(t("Common.notFound"), formData);
-    }
-    const context = scoped.context;
 
-    if (data.parentId) {
-      if (placement === WikiPagePlacement.Forbidden)
-        return { error: t("Common.forbidden"), requestPayload: formData };
-      if (isWikiScopeFrozen(scoped)) return rejectFrozenWikiScope(formData);
-    } else {
-      if (!(await authentication.authorize("wiki", "create")))
-        return { error: t("Common.forbidden"), requestPayload: formData };
+    /**
+     * The copy path below stays in the app, thus the action checks the
+     * placement itself before it; the use case checks it again. A different
+     * user or tab can have deleted the parent before, and a context that the
+     * viewer cannot hold gets the same answer (see getWikiPageScopedContext).
+     */
+    let citizen: ActorCitizen;
+    let targetScoped: WikiPageScopedContext;
+    try {
+      citizen = requireCitizen(actor);
+      targetScoped = requireWikiPagePlacement(actor, scoped, data.parent_id);
+    } catch (error) {
+      return toErrorResponse(error);
     }
-
-    const parent = data.parentId ? context.pagesById.get(data.parentId) : null;
 
     /**
      * With a "copy from" source the new page is a copy of that page —
@@ -106,12 +90,17 @@ export const createWikiPage = createAuthenticatedAction(
      * source only takes read access and is resolved in its own scope; see
      * copyWikiPageSubtree for the copy semantics.
      */
-    if (data.copyFromPageId) {
-      const sourceScoped = await getWikiPageScopedContext(data.copyFromPageId);
+    if (data.copy_from_page_id) {
+      const parent = data.parent_id
+        ? targetScoped.context.pagesById.get(data.parent_id)
+        : null;
+      const sourceScoped = await getWikiPageScopedContext(
+        data.copy_from_page_id,
+      );
       const sourcePage = sourceScoped
         ? getAccessibleWikiPage<WikiSharedContextPage>(
             sourceScoped.context,
-            data.copyFromPageId,
+            data.copy_from_page_id,
             WikiPageAccessTier.Read,
           )
         : null;
@@ -126,14 +115,14 @@ export const createWikiPage = createAuthenticatedAction(
       const { root, copiedPages } = await copyWikiPageSubtree({
         sourceScoped,
         sourcePage,
-        includeChildren: data.copyChildren,
-        targetScoped: scoped,
+        includeChildren: data.copy_children,
+        targetScoped,
         destination: {
           kind: "newPage",
-          parentId: data.parentId,
+          parentId: data.parent_id,
           rootTitle: data.title,
         },
-        createdByEntityId: authentication.session.entity.id,
+        createdByEntityId: citizen.id,
       });
 
       refresh();
@@ -154,10 +143,10 @@ export const createWikiPage = createAuthenticatedAction(
       );
 
       const copyVariantHref = await resolveVariantWikiRedirectHref(
-        scoped,
-        data.variantId,
+        targetScoped,
+        data.variant_id,
         root,
-        data.parentId ?? null,
+        data.parent_id ?? null,
       );
       /** A copied page is never an event root page */
       redirect(
@@ -171,83 +160,38 @@ export const createWikiPage = createAuthenticatedAction(
       );
     }
 
-    const siblings = context.pages.filter(
-      (page) => page.parentId === (data.parentId ?? null),
-    );
-    const sortOrder =
-      siblings.length > 0
-        ? Math.max(...siblings.map((page) => page.sortOrder)) + 1
-        : 0;
-
-    /**
-     * Defaults: top-level pages are "private" (RESTRICTED without roles) and
-     * owned by their creator; child pages inherit everything including the
-     * owner. Briefing pages inherit their scopes (the column defaults) and
-     * use no owner — the fixed manage tier replaces it.
-     */
-    const page = await prisma.wikiPage.create({
-      data: {
-        title: data.title,
-        slug: slugifyWikiPageTitle(data.title),
-        parentId: data.parentId ?? null,
-        namespace:
-          parent?.eventId || parent?.templateId
-            ? WikiPageNamespace.EVENT
-            : WikiPageNamespace.WIKI,
-        eventId: parent?.eventId ?? null,
-        templateId: parent?.templateId ?? null,
-        sortOrder,
-        visibility: data.parentId
-          ? WikiPageVisibility.INHERIT
-          : WikiPageVisibility.RESTRICTED,
-        editability: data.parentId
-          ? WikiPageEditability.INHERIT
-          : WikiPageEditability.RESTRICTED,
-        imageUploadability: data.parentId
-          ? WikiPageUploadability.INHERIT
-          : WikiPageUploadability.RESTRICTED,
-        attachmentUploadability: data.parentId
-          ? WikiPageUploadability.INHERIT
-          : WikiPageUploadability.RESTRICTED,
-        ownerId:
-          data.parentId || parent?.eventId || parent?.templateId
-            ? null
-            : authentication.session.entity.id,
-        createdById: authentication.session.entity.id,
-      },
-      select: { id: true, slug: true },
-    });
+    let page: CreatedWikiPage;
+    try {
+      page = await createWikiPageInScope(
+        getApplicationContext(),
+        actor,
+        { title: data.title, parent_id: data.parent_id },
+        targetScoped,
+      );
+    } catch (error) {
+      return toErrorResponse(error);
+    }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.WIKI_PAGE_CREATED,
-        data: {
-          pageId: page.id,
-          eventId: parent?.eventId ?? undefined,
-          title: data.title,
-          parentId: data.parentId ?? null,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
     const variantHref = await resolveVariantWikiRedirectHref(
-      scoped,
-      data.variantId,
+      targetScoped,
+      data.variant_id,
       page,
-      data.parentId ?? null,
+      data.parent_id ?? null,
     );
     /** A newly created page is never an event root page */
-    redirect(
-      variantHref ??
-        getWikiPageRouteHref({
-          id: page.id,
-          slug: page.slug,
-          eventId: parent?.eventId ?? null,
-          templateId: parent?.templateId ?? null,
-        }),
-    );
+    redirect(variantHref ?? getWikiPageRouteHref(page));
+  },
+  {
+    parseFormData: (formData) => ({
+      title: formData.get("title"),
+      // An empty value creates a top-level page
+      parent_id: formData.get("parentId") || undefined,
+      variant_id: formData.get("variantId") || undefined,
+      // An empty value creates an empty page
+      copy_from_page_id: formData.get("copyFromPageId") || undefined,
+      copy_children: formData.get("copyChildren") === "1",
+    }),
   },
 );

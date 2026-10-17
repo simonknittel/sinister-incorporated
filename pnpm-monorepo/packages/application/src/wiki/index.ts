@@ -3,6 +3,13 @@
  * the app shares with them.
  */
 export {
+  createWikiPage,
+  createWikiPageInScope,
+  createWikiPageInputSchema,
+  type CreateWikiPageInput,
+  type CreatedWikiPage,
+} from "./createWikiPage.js";
+export {
   EVENT_WIKI_PAGE_SELECT,
   EVENT_WIKI_POSITION_SELECT,
   buildEventWikiContext,
@@ -51,6 +58,13 @@ export {
   type WikiSharedContext,
   type WikiSharedContextPage,
 } from "./wikiContext.js";
+export {
+  WikiPagePlacement,
+  requireWikiPagePlacement,
+  resolveWikiPagePlacement,
+  type WikiPlacementPage,
+  type WikiPlacementScope,
+} from "./wikiPagePlacement.js";
 export {
   GLOBAL_WIKI_SEARCH_FILTERS,
   WikiSearchContainerColumn,
