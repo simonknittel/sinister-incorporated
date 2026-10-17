@@ -5,13 +5,13 @@ import {
   validateAuthorizationRequest,
   type AuthorizationRequestParameters,
 } from "@sam-monorepo/application";
-import { redirect } from "next/navigation";
 import {
   ASSUMED_USER_MESSAGE,
   CONSENT_UNAVAILABLE_MESSAGE,
   ConsentAvailability,
   getClientErrorMessage,
   getConsentAvailability,
+  getRedirectErrorMessage,
 } from "../utils/consent";
 import { AuthorizationConsent } from "./AuthorizationConsent";
 import { AuthorizationNotice } from "./AuthorizationNotice";
@@ -27,7 +27,9 @@ interface Props {
 /**
  * Validates the authorization request and asks for the consent. A request
  * with a valid client and redirect URI, but with other invalid parameters,
- * goes back to the client with the error (RFC 6749 section 4.1.2.1).
+ * gets a link back to the client with the error (RFC 6749 section
+ * 4.1.2.1). An automatic redirect would make the page an open redirector,
+ * because each Client ID Metadata Document is a valid client.
  */
 export const AuthorizationRequest = async ({
   parameters,
@@ -57,12 +59,19 @@ export const AuthorizationRequest = async ({
       );
 
     case AuthorizationRequestValidationKind.RedirectError:
-      return redirect(
-        buildAuthorizationResponseUrl(context, validation.redirectUri, {
-          error: validation.error,
-          error_description: validation.description,
-          state: validation.state,
-        }),
+      return (
+        <AuthorizationNotice
+          message={getRedirectErrorMessage(validation.description)}
+          errorResponseUrl={buildAuthorizationResponseUrl(
+            context,
+            validation.redirectUri,
+            {
+              error: validation.error,
+              error_description: validation.description,
+              state: validation.state,
+            },
+          )}
+        />
       );
 
     default:

@@ -36,13 +36,17 @@ app.
 - **Access tokens:** ES256 JSON Web Tokens with a lifetime of 1 hour. The
   embed signing key signs them (see
   [Embedded App Authentication](./embedded-app-authentication.md)). The
-  audience is the MCP URL. The `jti` claim is the id of the grant: the MCP
-  endpoint loads the grant on each request, thus a revoked grant stops its
-  tokens at once.
+  audience is the MCP URL. Each token has a random `jti`. The private claim
+  `grant_id` is the id of the grant: the MCP endpoint loads the grant on each
+  request, thus a revoked grant stops its tokens at once.
 - **Refresh tokens:** opaque values. The database keeps only their SHA-256
   hashes. Each use replaces the token, and the new token is valid for 31
   days. The reuse of an old token revokes the grant.
 - **Scope:** one scope, `mcp`. `offline_access` has no effect.
+- **Cleanup:** each night, the midnight automations Lambda deletes expired
+  codes, expired refresh tokens, grants without a token (for example after
+  an abandoned authorization) and cached client metadata documents that
+  expired more than 24 hours ago.
 - **Permissions:** the own roles of the user. Admin mode is off. An admin
   can enable admin mode for one client on the account page.
 
@@ -67,8 +71,13 @@ Endpoints:
 | `OAUTH_ALLOW_INSECURE_LOOPBACK_CLIENT_IDS` | `1` permits client ids with plain HTTP on a loopback host. Only the Playwright stack sets it. Never set it in a deployment: it weakens the SSRF protection of the document fetch.                     |
 
 The Unleash flag `DisableMcpServer` is the kill switch. While it is on, the
-MCP endpoint, the OAuth endpoints and the consent page answer `503`. The
-account page stays available.
+MCP endpoint and the OAuth endpoints answer `503`, and the consent page
+shows a notice. The account page stays available.
+
+Use the standard strategy for all users on this flag. The MCP endpoint and
+the OAuth endpoints have no session, thus a strategy for some users does not
+apply to them. When Unleash is not available, the flag is off, like all
+flags of the app: the kill switch does not work during an Unleash outage.
 
 ## Tests
 

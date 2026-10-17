@@ -8,7 +8,7 @@ import type {
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { approveAuthorization } from "../actions/approveAuthorization";
 import { denyAuthorization } from "../actions/denyAuthorization";
-import { toConsentFormParameters } from "../utils/consent";
+import { getRedirectTarget, toConsentFormParameters } from "../utils/consent";
 import { ConsentDecisionForm } from "./ConsentDecisionForm";
 
 interface Props {
@@ -19,13 +19,6 @@ interface Props {
   /** The handle or the name of the signed-in user */
   readonly userLabel: string;
 }
-
-/** The host, or the scheme of a native app without a host */
-const getRedirectTarget = (redirectUri: string) => {
-  const url = new URL(redirectUri);
-
-  return url.host || url.protocol;
-};
 
 /**
  * Asks the user to connect a client. The host of the client id is the only

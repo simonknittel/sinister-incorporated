@@ -48,6 +48,21 @@ export const getClientErrorMessage = (
 };
 
 /**
+ * The request of the client has an error, but its client and its redirect
+ * URI are valid. The description is a short English text without internal
+ * data.
+ */
+export const getRedirectErrorMessage = (description: string) =>
+  `Die Anfrage der Anwendung ist ungültig: ${description}`;
+
+/** The host, or the scheme of a native app without a host */
+export const getRedirectTarget = (redirectUri: string) => {
+  const url = new URL(redirectUri);
+
+  return url.host || url.protocol;
+};
+
+/**
  * The hidden fields of the approve and deny forms: the validated parameters
  * of the authorization request. The actions validate them again.
  */
@@ -68,11 +83,26 @@ export const toConsentFormParameters = (
 });
 
 /**
- * The fields of the approve and deny forms. A field can be missing or not
- * valid: the use case validates them. The limits keep large values out of
- * the use case.
+ * The longest valid value of a form field is a URL (see `MAX_URL_LENGTH` of
+ * the application package)
  */
-export const consentFormSchema = z.record(
-  z.string().max(100),
-  z.string().max(4096),
-);
+const MAX_FORM_FIELD_LENGTH = 2048;
+
+const consentFormFieldSchema = z.string().max(MAX_FORM_FIELD_LENGTH).optional();
+
+/**
+ * The fields of the approve and deny forms (see `toConsentFormParameters()`).
+ * A field can be missing or not valid: the use case validates them. The
+ * schema removes other fields, and the limit keeps large values out of the
+ * use case.
+ */
+export const consentFormSchema = z.object({
+  response_type: consentFormFieldSchema,
+  client_id: consentFormFieldSchema,
+  redirect_uri: consentFormFieldSchema,
+  code_challenge: consentFormFieldSchema,
+  code_challenge_method: consentFormFieldSchema,
+  scope: consentFormFieldSchema,
+  resource: consentFormFieldSchema,
+  state: consentFormFieldSchema,
+});

@@ -9,7 +9,13 @@ import {
   validateAuthorizationRequest,
 } from "@sam-monorepo/application";
 import { redirect } from "next/navigation";
-import { consentFormSchema, getClientErrorMessage } from "../utils/consent";
+import {
+  CONSENT_UNAVAILABLE_MESSAGE,
+  ConsentAvailability,
+  consentFormSchema,
+  getClientErrorMessage,
+  getConsentAvailability,
+} from "../utils/consent";
 
 /**
  * Sends the browser back to the client with `access_denied`. The action
@@ -20,6 +26,9 @@ export const denyAuthorization = createAuthenticatedAction(
   "denyAuthorization",
   consentFormSchema,
   async (formData, _authentication, data) => {
+    if ((await getConsentAvailability()) !== ConsentAvailability.Available)
+      return { error: CONSENT_UNAVAILABLE_MESSAGE, requestPayload: formData };
+
     const context = getApplicationContext();
     const validation = await validateAuthorizationRequest(context, data);
 

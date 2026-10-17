@@ -3,6 +3,11 @@ import {
   requireConfirmedEmailForApi,
   requireConfirmedEmailForPage,
 } from "@/modules/auth/utils/emailConfirmation";
+import {
+  getLoginPath,
+  REQUEST_PATH_HEADER,
+  validateRedirectTo,
+} from "@/modules/auth/utils/redirectTo";
 import { log } from "@/modules/logging";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
@@ -10,6 +15,7 @@ import {
   type PermissionSet,
 } from "@sam-monorepo/permissions";
 import { getServerSession, type Session } from "next-auth";
+import { headers } from "next/headers";
 import { forbidden, redirect } from "next/navigation";
 import { cache } from "react";
 import { isAdminModeActive } from "./utils/isAdminModeActive";
@@ -39,7 +45,11 @@ export async function requireAuthenticationPage(requestPath?: string) {
       reason: "No session",
     });
 
-    redirect("/");
+    redirect(
+      getLoginPath(
+        validateRedirectTo((await headers()).get(REQUEST_PATH_HEADER)),
+      ),
+    );
   }
 
   await requireConfirmedEmailForPage(authentication.session);
