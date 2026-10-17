@@ -12,6 +12,7 @@ import {
   createPkcePair,
   createState,
   interceptAuthorizationResponse,
+  MCP_CALLBACK_URL,
   postTokenEndpoint,
   readMcpServerMetadata,
   waitForAuthorizationResponse,
@@ -234,7 +235,7 @@ test.describe("the OAuth server and the MCP endpoint", () => {
     expect(refresh.error).toBe("invalid_grant");
   });
 
-  test("the consent page refuses an invalid client or redirect URI and sends other errors to the client", async ({
+  test("the consent page refuses an invalid client or redirect URI and links other errors back to the client", async ({
     page,
     prisma,
     request,
@@ -297,9 +298,26 @@ test.describe("the OAuth server and the MCP endpoint", () => {
       await expect(page).toHaveURL(/\/app\/oauth\/authorize\?/);
     }
 
-    // Only S256 protects the code: the client gets the error
+    /**
+     * Only S256 protects the code: the client gets the error. The page does
+     * not redirect by itself, because each client document is a valid
+     * client: the user follows the link.
+     */
     await interceptAuthorizationResponse(page);
     await page.goto(consentUrl({ codeChallengeMethod: "plain" }));
+    await expect(
+      page.getByText(
+        "Die Anfrage der Anwendung ist ungültig: The code_challenge_method parameter is missing or not valid",
+      ),
+    ).toBeVisible();
+    await expect(page.getByText("Weiterleitung an")).toBeVisible();
+    await expect(
+      page.getByText(new URL(MCP_CALLBACK_URL).host, { exact: true }),
+    ).toBeVisible();
+    await expect(allowButton).toHaveCount(0);
+    await expect(page).toHaveURL(/\/app\/oauth\/authorize\?/);
+
+    await page.getByRole("link", { name: "Zurück zur Anwendung" }).click();
     const response = await waitForAuthorizationResponse(page);
     expect(response.get("error")).toBe("invalid_request");
     expect(response.get("state")).toBe(state);

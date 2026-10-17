@@ -225,6 +225,11 @@ test.describe("the read tools of the MCP server", () => {
   }) => {
     const penalized = await createCitizen(prisma, {
       handle: "mcp-verwarnter",
+      // The app shows the own entries on the profile of the citizen
+      permissionStrings: ["ownPenaltyEntry;read", "citizen;read"],
+    });
+    const withoutProfile = await createCitizen(prisma, {
+      handle: "mcp-ohne-profil",
       permissionStrings: ["ownPenaltyEntry;read"],
     });
     const other = await createCitizen(prisma, { handle: "mcp-anderer" });
@@ -256,6 +261,18 @@ test.describe("the read tools of the MCP server", () => {
     expect(await callForError(client, "list_penalty_entries")).toMatch(
       FORBIDDEN_RESULT,
     );
+
+    const clientWithoutProfile = await connectMcpClient(
+      (await authorizeMcpClient(withoutProfile.user)).accessToken,
+    );
+    expect(await clientWithoutProfile.listToolNames()).not.toContain(
+      "list_penalty_entries",
+    );
+    await expect(
+      clientWithoutProfile.callTool("list_penalty_entries", {
+        citizen_id: withoutProfile.entity.id,
+      }),
+    ).rejects.toMatchObject({ code: UNKNOWN_TOOL_ERROR_CODE });
   });
 
   test("fleet: the own ships, the variant search and the fleet of the organization", async ({
@@ -266,12 +283,16 @@ test.describe("the read tools of the MCP server", () => {
     const owner = await createCitizen(prisma, {
       handle: "mcp-pilotin",
       permissionStrings: [
-        "ship;read",
+        // The page of the own ships needs it
+        "ship;manage",
         "orgFleet;read",
         "organizationMembership;read",
       ],
     });
-    const neighbour = await createCitizen(prisma, { handle: "mcp-nachbar" });
+    const neighbour = await createCitizen(prisma, {
+      handle: "mcp-nachbar",
+      permissionStrings: ["ship;read"],
+    });
     await addCitizenToOrganization(prisma, owner);
     const { variant } = await createVariant(prisma, {
       manufacturerName: "Roberts Space Industries",
@@ -323,6 +344,16 @@ test.describe("the read tools of the MCP server", () => {
         }),
       ]),
     );
+
+    const readerClient = await connectMcpClient(
+      (await authorizeMcpClient(neighbour.user)).accessToken,
+    );
+    expect(await readerClient.listToolNames()).toContain(
+      "search_ship_variants",
+    );
+    await expect(readerClient.callTool("list_my_ships")).rejects.toMatchObject({
+      code: UNKNOWN_TOOL_ERROR_CODE,
+    });
   });
 
   test("wiki: the list, the search and the Markdown of the readable pages", async ({

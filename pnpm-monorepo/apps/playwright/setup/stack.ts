@@ -188,6 +188,13 @@ export const appDummyEnvironment = {
   AWS_SECRET_ACCESS_KEY: "",
   AWS_EVENT_BUS_ARN: "",
   RSI_BASE_URL: "http://localhost:9",
+  /**
+   * The issuer and the resource of the OAuth server come from this URL, and
+   * the build inlines it. Without this value, the build takes the value of
+   * the developer `.env`. The workers listen on other ports, but the host
+   * check of the MCP endpoint ignores the port.
+   */
+  NEXT_PUBLIC_BASE_URL: "http://localhost:3000",
   DISCORD_CLIENT_ID: "playwright-dummy",
   DISCORD_CLIENT_SECRET: "playwright-dummy",
   DISCORD_GUILD_ID: "playwright-dummy",

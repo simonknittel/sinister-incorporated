@@ -73,10 +73,10 @@ test("banning a user revokes their sessions, unbanning lets them back in", async
   await page.goto("/app/dashboard");
   /**
    * The cookie is still there, so the proxy waves it through and the page
-   * itself sends them to the login — which is why the deep link is not
-   * preserved here.
+   * itself sends them to the login, with the deep link (see
+   * tests/deep-link-redirect.spec.ts)
    */
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/?redirect-to=%2Fapp%2Fdashboard");
   await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
 
   /**

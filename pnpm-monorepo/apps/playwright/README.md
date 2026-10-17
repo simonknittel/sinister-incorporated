@@ -10,7 +10,9 @@ database for each test case.
   (through testcontainers) and applies the Prisma migrations to a template
   database. It also starts one RustFS (S3) container and one Unleash
   (feature flags) container, builds the collab image from
-  `apps/collab/Dockerfile` and runs `next build` for the app.
+  `apps/collab/Dockerfile` and runs `next build` for the app. The values of
+  `appDummyEnvironment` (`setup/stack.ts`) win over the developer `.env`, for
+  example the pinned `NEXT_PUBLIC_BASE_URL`.
 - **Per worker** (`fixtures/test.ts`): each Playwright worker clones its own
   database from the template. It also starts its own collab container, its
   own Discord mock, its own server for the client documents of the MCP test

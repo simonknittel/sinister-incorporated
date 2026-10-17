@@ -162,4 +162,43 @@ test.describe("the MCP account page", () => {
 
     await expectAuditEvents(prisma, ["OAUTH_GRANT_ADMIN_MODE_UPDATED"]);
   });
+
+  test("an admin who assumes a user sees a note instead of the clients and the tools of that user", async ({
+    page,
+    context,
+    prisma,
+    signIn,
+  }) => {
+    const admin = await createCitizen(prisma, {
+      handle: "mcp-vertreter",
+      admin: true,
+    });
+    const target = await createCitizen(prisma, { handle: "mcp-vertretener" });
+    await signIn(admin.user);
+    await context.addCookies([
+      {
+        name: "assume_user",
+        value: target.user.id,
+        domain: "localhost",
+        path: "/",
+      },
+    ]);
+
+    await page.goto(MCP_ACCOUNT_PAGE);
+    await expect(page.getByText("Assuming mcp-vertretener")).toBeVisible();
+    await expect(
+      page.getByText(
+        "Du siehst SAM gerade als ein anderer Benutzer. Beende diese Ansicht, um die verbundenen Clients und die Werkzeuge deines Accounts zu verwalten.",
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Verbinden" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Verbundene Clients" }),
+    ).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Werkzeuge" })).toHaveCount(
+      0,
+    );
+  });
 });

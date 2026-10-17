@@ -12,6 +12,23 @@ test("an unauthenticated deep link visit lands on the login page with the target
   await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
 });
 
+test("a deep link visit with a stale session cookie lands on the login page with the target preserved", async ({
+  page,
+  prisma,
+  signIn,
+}) => {
+  const citizen = await createCitizen(prisma, { handle: "stale-cookie" });
+  await signIn(citizen.user);
+  // The cookie stays in the browser, but the session is gone (for example
+  // after a sign-out on a different device)
+  await prisma.session.deleteMany({ where: { userId: citizen.user.id } });
+
+  await page.goto("/app/account/mcp?x=1");
+
+  await expect(page).toHaveURL("/?redirect-to=%2Fapp%2Faccount%2Fmcp%3Fx%3D1");
+  await expect(page.getByRole("button", { name: "Login" })).toBeVisible();
+});
+
 test("the login page sends an authenticated user to the preserved deep link", async ({
   page,
   prisma,
