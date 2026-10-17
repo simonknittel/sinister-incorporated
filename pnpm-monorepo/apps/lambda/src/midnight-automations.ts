@@ -12,6 +12,7 @@ import { disburseRoleSalaries } from "./midnight-automations/disburseRoleSalarie
 import { endCollectionPhases } from "./midnight-automations/endCollectionPhases";
 import { endPayoutPhases } from "./midnight-automations/endPayoutPhases";
 import { purgeExpiredAuthenticationRecords } from "./midnight-automations/purgeExpiredAuthenticationRecords";
+import { purgeExpiredOAuthRecords } from "./midnight-automations/purgeExpiredOAuthRecords";
 import { purgeOrphanedWikiTags } from "./midnight-automations/purgeOrphanedWikiTags";
 import { purgeTrashedWikiPages } from "./midnight-automations/purgeTrashedWikiPages";
 import { removeExpiredRoles } from "./midnight-automations/removeExpiredRoles";
@@ -31,4 +32,5 @@ export const handler: ScheduledHandler = async () =>
     archiveIrrelevantOnSiteNotifications,
     deleteUnusedUploads,
     purgeExpiredAuthenticationRecords,
+    purgeExpiredOAuthRecords,
   });
