@@ -16,8 +16,8 @@ export const McpConnectionTile = ({ className, mcpUrl }: Props) => {
       childrenClassName="flex flex-col gap-6"
     >
       <div>
-        <p>Das SAM stellt einen remote (HTTP Transport) MCP-Server zur Verfügung.</p>
-        <p className="text-sm text-neutral-500 mt-2">URL</p>
+        <p>Das SAM stellt einen remote MCP Server zur Verfügung.</p>
+        <p className="text-sm text-neutral-500 mt-4">URL</p>
         <CopyableCode value={mcpUrl} />
       </div>
 
