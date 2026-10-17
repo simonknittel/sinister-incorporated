@@ -1,0 +1,424 @@
+import { expectAuditEvents } from "../fixtures/audit";
+import {
+  createAppEvent,
+  createCitizen,
+  createEventTemplate,
+  createParticipant,
+  createVariant,
+  futureEvent,
+  ONE_DAY_MS,
+  ONE_HOUR_MS,
+} from "../fixtures/factories";
+import {
+  structuredContentOf,
+  toolResultText,
+  type McpTestClient,
+} from "../fixtures/mcp-client";
+import { expect, test } from "../fixtures/test";
+
+const CONFLICT_RESULT = /^ConflictError: /;
+const FORBIDDEN_RESULT = /^ForbiddenError: /;
+const NOT_FOUND_RESULT = /^NotFoundError: /;
+
+/** The tools of the lineup see only events, thus `event;read` is enough */
+const EVENT_READ_PERMISSION = "event;read";
+
+/** The structured content of a tool result that must not be an error */
+const callForContent = async (
+  client: McpTestClient,
+  name: string,
+  toolArguments?: Record<string, unknown>,
+) => {
+  const result = await client.callTool(name, toolArguments);
+  expect(result.isError, toolResultText(result)).toBeFalsy();
+
+  return structuredContentOf(result);
+};
+
+/** The message of a tool result that must be an error */
+const callForError = async (
+  client: McpTestClient,
+  name: string,
+  toolArguments?: Record<string, unknown>,
+) => {
+  const result = await client.callTool(name, toolArguments);
+  expect(result.isError).toBe(true);
+
+  return toolResultText(result);
+};
+
+test.describe("the lineup write tools of the MCP server", () => {
+  test("an organizer creates, updates and reorders positions with the audit events of the web app", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const organizer = await createCitizen(prisma, {
+      handle: "mcp-staffelfuehrer",
+      permissionStrings: [EVENT_READ_PERMISSION],
+    });
+    const { variant } = await createVariant(prisma, {
+      manufacturerName: "Anvil Aerospace",
+      seriesName: "Carrack",
+      variantName: "Carrack",
+    });
+    const event = await createAppEvent(prisma, {
+      name: "Expedition nach Nyx",
+      createdById: organizer.entity.id,
+      ...futureEvent(),
+    });
+    const client = await connectMcpClient(
+      (await authorizeMcpClient(organizer.user)).accessToken,
+    );
+
+    const pilot = await callForContent(client, "create_event_position", {
+      event_id: event.id,
+      name: "Pilot",
+      required_variant_ids: [variant.id],
+      background_color: "#204060",
+    });
+    expect(pilot).toMatchObject({
+      name: "Pilot",
+      required_variants: [{ id: variant.id, name: "Carrack" }],
+      assignee: null,
+      children: [],
+    });
+    const pilotId = String(pilot.id);
+    const copilot = await callForContent(client, "create_event_position", {
+      event_id: event.id,
+      parent_position_id: pilotId,
+      name: "Copilot",
+    });
+    const copilotId = String(copilot.id);
+    const escort = await callForContent(client, "create_event_position", {
+      event_id: event.id,
+      name: "Begleitschutz",
+    });
+    const escortId = String(escort.id);
+
+    // A field that the update does not give keeps its value
+    expect(
+      await callForContent(client, "update_event_position", {
+        position_id: pilotId,
+        name: "Kapitän",
+      }),
+    ).toMatchObject({
+      name: "Kapitän",
+      required_variants: [{ id: variant.id, name: "Carrack" }],
+      children: [expect.objectContaining({ id: copilotId })],
+    });
+    expect(
+      await prisma.eventPosition.findUniqueOrThrow({
+        where: { id: pilotId },
+        select: { backgroundColor: true },
+      }),
+    ).toEqual({ backgroundColor: "#204060" });
+
+    const lineup = await callForContent(client, "reorder_event_lineup", {
+      event_id: event.id,
+      positions: [
+        { id: escortId },
+        { id: pilotId, children: [{ id: copilotId }] },
+      ],
+    });
+    expect(lineup).toMatchObject({
+      event: { id: event.id, name: "Expedition nach Nyx" },
+      can_manage_positions: true,
+      positions: [
+        { id: escortId, name: "Begleitschutz", children: [] },
+        {
+          id: pilotId,
+          name: "Kapitän",
+          children: [{ id: copilotId, name: "Copilot" }],
+        },
+      ],
+    });
+
+    await expectAuditEvents(prisma, [
+      "EVENT_POSITION_CREATED",
+      "EVENT_POSITION_UPDATED_V2",
+      "EVENT_LINEUP_ORDER_CHANGED",
+    ]);
+    expect(
+      await prisma.auditEvent.findFirstOrThrow({
+        where: {
+          type: "EVENT_POSITION_CREATED",
+          data: { path: ["positionId"], equals: copilotId },
+        },
+        select: { createdById: true, data: true },
+      }),
+    ).toEqual({
+      createdById: organizer.user.id,
+      data: {
+        eventId: event.id,
+        positionId: copilotId,
+        name: "Copilot",
+        variantIds: [],
+        parentPositionId: pilotId,
+      },
+    });
+  });
+
+  test("a participant applies and withdraws, and the organizer assigns and clears the position", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const organizer = await createCitizen(prisma, {
+      handle: "mcp-einsatzleiter",
+      permissionStrings: [EVENT_READ_PERMISSION],
+    });
+    const participant = await createCitizen(prisma, {
+      handle: "mcp-bewerberin",
+      permissionStrings: [EVENT_READ_PERMISSION],
+    });
+    const event = await createAppEvent(prisma, {
+      name: "Konvoi nach Pyro",
+      createdById: organizer.entity.id,
+      ...futureEvent(),
+      lineupEnabled: true,
+    });
+    await createParticipant(prisma, {
+      eventId: event.id,
+      citizen: participant,
+    });
+    const position = await prisma.eventPosition.create({
+      data: { eventId: event.id, name: "Navigator" },
+    });
+    const participantClient = await connectMcpClient(
+      (await authorizeMcpClient(participant.user)).accessToken,
+    );
+    const organizerClient = await connectMcpClient(
+      (await authorizeMcpClient(organizer.user)).accessToken,
+    );
+
+    // The applicants are visible only for the managers of the positions
+    expect(
+      await callForContent(participantClient, "apply_for_event_position", {
+        position_id: position.id,
+      }),
+    ).toMatchObject({ id: position.id, applications: [] });
+    expect(
+      await callForError(participantClient, "apply_for_event_position", {
+        position_id: position.id,
+      }),
+    ).toMatch(CONFLICT_RESULT);
+
+    expect(
+      await callForContent(organizerClient, "assign_event_position", {
+        position_id: position.id,
+        citizen_id: participant.entity.id,
+      }),
+    ).toMatchObject({
+      assignee: { id: participant.entity.id, handle: "mcp-bewerberin" },
+      applications: [{ id: participant.entity.id, handle: "mcp-bewerberin" }],
+    });
+    expect(
+      await callForContent(organizerClient, "assign_event_position", {
+        position_id: position.id,
+        citizen_id: null,
+      }),
+    ).toMatchObject({ assignee: null });
+
+    await callForContent(
+      participantClient,
+      "withdraw_event_position_application",
+      { position_id: position.id },
+    );
+    expect(
+      await callForError(
+        participantClient,
+        "withdraw_event_position_application",
+        { position_id: position.id },
+      ),
+    ).toMatch(CONFLICT_RESULT);
+    expect(await prisma.eventPositionApplication.count()).toBe(0);
+
+    await expectAuditEvents(prisma, [
+      "EVENT_POSITION_APPLICATION_CREATED",
+      "EVENT_POSITION_CITIZEN_ASSIGNED",
+      "EVENT_POSITION_CITIZEN_REMOVED",
+      "EVENT_POSITION_APPLICATION_DELETED",
+    ]);
+    expect(
+      await prisma.auditEvent.findFirstOrThrow({
+        where: { type: "EVENT_POSITION_CITIZEN_REMOVED" },
+        select: { createdById: true, data: true },
+      }),
+    ).toEqual({
+      createdById: organizer.user.id,
+      data: {
+        eventId: event.id,
+        positionId: position.id,
+        previousCitizenId: participant.entity.id,
+      },
+    });
+  });
+
+  test("delete_event_position is destructive and deletes the position with its children", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const organizer = await createCitizen(prisma, {
+      handle: "mcp-aufraeumer",
+      permissionStrings: [EVENT_READ_PERMISSION],
+    });
+    const event = await createAppEvent(prisma, {
+      name: "Bergungseinsatz",
+      createdById: organizer.entity.id,
+      ...futureEvent(),
+    });
+    const parent = await prisma.eventPosition.create({
+      data: { eventId: event.id, name: "Bergungsschiff" },
+    });
+    await prisma.eventPosition.create({
+      data: {
+        eventId: event.id,
+        name: "Traktorstrahl",
+        parentPositionId: parent.id,
+      },
+    });
+    const client = await connectMcpClient(
+      (await authorizeMcpClient(organizer.user)).accessToken,
+    );
+
+    const deleteTool = (await client.listTools()).find(
+      (tool) => tool.name === "delete_event_position",
+    );
+    expect(deleteTool?.annotations).toMatchObject({
+      readOnlyHint: false,
+      destructiveHint: true,
+    });
+
+    expect(
+      await callForContent(client, "delete_event_position", {
+        position_id: parent.id,
+      }),
+    ).toMatchObject({
+      id: parent.id,
+      name: "Bergungsschiff",
+      children: [expect.objectContaining({ name: "Traktorstrahl" })],
+    });
+    expect(
+      await prisma.eventPosition.count({ where: { eventId: event.id } }),
+    ).toBe(0);
+    expect(
+      await callForError(client, "delete_event_position", {
+        position_id: parent.id,
+      }),
+    ).toMatch(NOT_FOUND_RESULT);
+
+    await expectAuditEvents(prisma, ["EVENT_POSITION_DELETED"]);
+    expect(
+      await prisma.auditEvent.findFirstOrThrow({
+        where: { type: "EVENT_POSITION_DELETED" },
+        select: { createdById: true, data: true },
+      }),
+    ).toEqual({
+      createdById: organizer.user.id,
+      data: {
+        eventId: event.id,
+        positionId: parent.id,
+        name: "Bergungsschiff",
+      },
+    });
+  });
+
+  test("the tools refuse a user who does not manage the positions, an event that ended and a template position", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const organizer = await createCitizen(prisma, {
+      handle: "mcp-veranstalter",
+      permissionStrings: [EVENT_READ_PERMISSION],
+    });
+    const reader = await createCitizen(prisma, {
+      handle: "mcp-zuschauer",
+      permissionStrings: [EVENT_READ_PERMISSION],
+    });
+    const outsider = await createCitizen(prisma, { handle: "mcp-aussen" });
+    const event = await createAppEvent(prisma, {
+      name: "Patrouille",
+      createdById: organizer.entity.id,
+      ...futureEvent(),
+      lineupEnabled: true,
+    });
+    const position = await prisma.eventPosition.create({
+      data: { eventId: event.id, name: "Späher" },
+    });
+    const endedEvent = await createAppEvent(prisma, {
+      name: "Vergangene Patrouille",
+      createdById: organizer.entity.id,
+      startTime: new Date(Date.now() - ONE_DAY_MS),
+      endTime: new Date(Date.now() - ONE_DAY_MS + ONE_HOUR_MS),
+    });
+    const {
+      positions: [templatePosition],
+    } = await createEventTemplate(prisma, {
+      name: "Patrouillenvorlage",
+      ownedById: organizer.entity.id,
+      positionNames: ["Vorlagenposten"],
+    });
+
+    const readerClient = await connectMcpClient(
+      (await authorizeMcpClient(reader.user)).accessToken,
+    );
+    expect(
+      await callForError(readerClient, "create_event_position", {
+        event_id: event.id,
+        name: "Eindringling",
+      }),
+    ).toMatch(FORBIDDEN_RESULT);
+    expect(
+      await callForError(readerClient, "assign_event_position", {
+        position_id: position.id,
+        citizen_id: reader.entity.id,
+      }),
+    ).toMatch(FORBIDDEN_RESULT);
+    // Without a participation, an application is a conflict
+    expect(
+      await callForError(readerClient, "apply_for_event_position", {
+        position_id: position.id,
+      }),
+    ).toMatch(CONFLICT_RESULT);
+
+    const organizerClient = await connectMcpClient(
+      (await authorizeMcpClient(organizer.user)).accessToken,
+    );
+    expect(
+      await callForError(organizerClient, "create_event_position", {
+        event_id: endedEvent.id,
+        name: "Zu spät",
+      }),
+    ).toMatch(CONFLICT_RESULT);
+    // The tools change only the lineups of events, not of templates
+    expect(
+      await callForError(organizerClient, "update_event_position", {
+        position_id: templatePosition!.id,
+        name: "Umbenannt",
+      }),
+    ).toMatch(NOT_FOUND_RESULT);
+
+    const outsiderClient = await connectMcpClient(
+      (await authorizeMcpClient(outsider.user)).accessToken,
+    );
+    expect(await outsiderClient.listToolNames()).not.toContain(
+      "create_event_position",
+    );
+
+    expect(
+      await prisma.eventPosition.findMany({
+        where: { OR: [{ eventId: event.id }, { eventId: endedEvent.id }] },
+        select: { name: true, citizenId: true },
+      }),
+    ).toEqual([{ name: "Späher", citizenId: null }]);
+    expect(
+      await prisma.eventPosition.findUniqueOrThrow({
+        where: { id: templatePosition!.id },
+        select: { name: true },
+      }),
+    ).toEqual({ name: "Vorlagenposten" });
+  });
+});
