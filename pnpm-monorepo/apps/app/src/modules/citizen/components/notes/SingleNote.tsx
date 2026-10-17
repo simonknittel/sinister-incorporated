@@ -1,9 +1,9 @@
 import { prisma } from "@/db";
 import { requireAuthentication } from "@/modules/auth/server";
 import type { CitizenNote } from "@/modules/citizen/queries/citizenLogTableSelect";
-import { getNotePermissionAttributes } from "@/modules/citizen/utils/notePermissionAttributes";
 import { Link } from "@/modules/common/components/Link";
 import { formatDate } from "@/modules/common/utils/formatDate";
+import { getNotePermissionAttributes } from "@sam-monorepo/application";
 import {
   ConfirmationStatus,
   type Organization,

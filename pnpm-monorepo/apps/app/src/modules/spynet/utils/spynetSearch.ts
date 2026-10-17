@@ -1,31 +1,20 @@
-import type { Citizen, Organization } from "@sam-monorepo/database/browser";
+import type { SpynetSearchHit } from "@sam-monorepo/application";
+import { SpynetSearchHitType } from "@sam-monorepo/domain";
 
-export const SPYNET_SEARCH_QUERY_MINIMUM_LENGTH = 2;
-
-/** The longest stored name has 53 characters (an organization) */
-export const SPYNET_SEARCH_QUERY_MAXIMUM_LENGTH = 60;
-
-export const SPYNET_SEARCH_DEFAULT_LIMIT = 10;
-
-export const SPYNET_SEARCH_MAXIMUM_LIMIT = 20;
-
-export enum SpynetSearchHitType {
-  Citizen = "citizen",
-  Organization = "organization",
-}
-
-export type CitizenSearchHit = Readonly<
-  Pick<
-    Citizen,
-    "id" | "handle" | "communityMoniker" | "citizenRecord" | "spectrumId"
-  >
-> & { readonly type: SpynetSearchHitType.Citizen };
-
-export type OrganizationSearchHit = Readonly<
-  Pick<Organization, "id" | "name" | "spectrumId">
-> & { readonly type: SpynetSearchHitType.Organization };
-
-export type SpynetSearchHit = CitizenSearchHit | OrganizationSearchHit;
+/**
+ * The client components import only the types of the application package:
+ * its values need the server
+ */
+export type {
+  CitizenSearchHit,
+  OrganizationSearchHit,
+  SpynetSearchHit,
+} from "@sam-monorepo/application";
+export {
+  SPYNET_SEARCH_QUERY_MAXIMUM_LENGTH,
+  SPYNET_SEARCH_QUERY_MINIMUM_LENGTH,
+  SpynetSearchHitType,
+} from "@sam-monorepo/domain";
 
 export const getSpynetSearchHitHref = (hit: SpynetSearchHit) => {
   switch (hit.type) {

@@ -1,25 +1,35 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  throwApplicationErrorForPage,
+  toActor,
+} from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  getOrganization,
+  getOrganizationInputSchema,
+} from "@sam-monorepo/application";
 import type { Organization } from "@sam-monorepo/database/client";
-import { forbidden } from "next/navigation";
+import { notFound } from "next/navigation";
 import { cache } from "react";
 
+/** The organization with its members, or the not-found page */
 export const getOrganizationById = cache(
   withTrace("getOrganizationById", async (id: Organization["id"]) => {
-    const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("organization", "read"))) forbidden();
+    const { session } = await requireAuthentication();
 
-    return prisma.organization.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        id: true,
-        spectrumId: true,
-        name: true,
-        logo: true,
-      },
-    });
+    // The id comes from the URL: an id that is not valid names no organization
+    const input = getOrganizationInputSchema.safeParse({ organization_id: id });
+    if (!input.success) notFound();
+
+    try {
+      return await getOrganization(
+        getApplicationContext(),
+        await toActor(session),
+        input.data,
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
   }),
 );

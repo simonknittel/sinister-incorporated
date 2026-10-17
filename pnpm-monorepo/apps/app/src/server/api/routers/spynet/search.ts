@@ -1,12 +1,9 @@
-import { authorize } from "@/modules/auth/server";
-import { searchSpynet } from "@/modules/spynet/queries/searchSpynet";
+import { getApplicationContext, toActor } from "@/modules/application";
 import {
-  SPYNET_SEARCH_DEFAULT_LIMIT,
-  SPYNET_SEARCH_MAXIMUM_LIMIT,
-  SPYNET_SEARCH_QUERY_MAXIMUM_LENGTH,
-  SPYNET_SEARCH_QUERY_MINIMUM_LENGTH,
-} from "@/modules/spynet/utils/spynetSearch";
-import * as z from "zod";
+  ForbiddenError,
+  searchCitizensAndOrganizations,
+  searchCitizensAndOrganizationsInputSchema,
+} from "@sam-monorepo/application";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
 /**
@@ -15,36 +12,19 @@ import { protectedProcedure, toTrpcError } from "../../trpc";
  * permission, thus a viewer without both permissions gets no results.
  */
 export const search = protectedProcedure
-  .input(
-    z.object({
-      query: z
-        .string()
-        .trim()
-        .min(SPYNET_SEARCH_QUERY_MINIMUM_LENGTH)
-        .max(SPYNET_SEARCH_QUERY_MAXIMUM_LENGTH)
-        // PostgreSQL refuses a NUL character in a text parameter
-        .refine((query) => !query.includes("\0")),
-      limit: z
-        .int()
-        .min(1)
-        .max(SPYNET_SEARCH_MAXIMUM_LIMIT)
-        .default(SPYNET_SEARCH_DEFAULT_LIMIT),
-    }),
-  )
+  .input(searchCitizensAndOrganizationsInputSchema)
   .query(async ({ ctx, input }) => {
     try {
-      const [includeCitizens, includeOrganizations] = await Promise.all([
-        authorize(ctx.session, "citizen", "read"),
-        authorize(ctx.session, "organization", "read"),
-      ]);
+      const { hits } = await searchCitizensAndOrganizations(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        input,
+      );
 
-      return await searchSpynet({
-        term: input.query,
-        limit: input.limit,
-        includeCitizens,
-        includeOrganizations,
-      });
+      return hits;
     } catch (error) {
+      if (error instanceof ForbiddenError) return [];
+
       throw toTrpcError(error, "Failed to search Spynet");
     }
   });

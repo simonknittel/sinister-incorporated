@@ -1,4 +1,3 @@
-import { prisma } from "@/db";
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { MaxWidthContent } from "@/modules/common/components/layouts/MaxWidthContent";
 import { Link } from "@/modules/common/components/Link";
@@ -7,24 +6,11 @@ import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMet
 import { ActivityTile } from "@/modules/organizations/components/ActivityTile";
 import { MembershipsTile } from "@/modules/organizations/components/MembershipsTile";
 import { OverviewTile } from "@/modules/organizations/components/OverviewTile";
-import { notFound } from "next/navigation";
-import { cache } from "react";
-
-const getOrganization = cache(async (id: string) => {
-  return prisma.organization.findUnique({
-    where: {
-      id,
-    },
-    select: {
-      name: true,
-    },
-  });
-});
+import { getOrganizationById } from "@/modules/organizations/queries/getOrganizationById";
 
 export const generateMetadata = generateMetadataWithTryCatch(
   async (props: PageProps<"/app/spynet/organization/[id]">) => {
-    const organization = await getOrganization((await props.params).id);
-    if (!organization) return {};
+    const organization = await getOrganizationById((await props.params).id);
 
     return {
       title: `${organization.name}`,
@@ -42,8 +28,7 @@ export default async function Page(
 
   const params = await props.params;
 
-  const organization = await getOrganization(params.id);
-  if (!organization) notFound();
+  const organization = await getOrganizationById(params.id);
 
   return (
     <MaxWidthContent>

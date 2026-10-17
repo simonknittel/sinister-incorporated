@@ -10,18 +10,12 @@ interface Props {
 
 export const OverviewTile = async ({ className, id }: Props) => {
   const organization = await getOrganizationById(id);
-  if (!organization) throw new Error("Organization not found");
 
   return (
     <section className={clsx(className, "overflow-hidden rounded-primary")}>
-      {organization.logo && (
+      {organization.logo_url && (
         <div className="flex items-center justify-center bg-black p-2">
-          <Image
-            src={`https://robertsspaceindustries.com${organization.logo}`}
-            alt=""
-            width={128}
-            height={128}
-          />
+          <Image src={organization.logo_url} alt="" width={128} height={128} />
         </div>
       )}
 
@@ -33,7 +27,7 @@ export const OverviewTile = async ({ className, id }: Props) => {
           <dd>{organization.name}</dd>
 
           <dt className="mt-4 text-neutral-500">Spectrum ID</dt>
-          <dd>{organization.spectrumId}</dd>
+          <dd>{organization.spectrum_id}</dd>
 
           <dt className="mt-4 text-neutral-500">Internal ID</dt>
           <dd>{organization.id}</dd>
@@ -41,7 +35,7 @@ export const OverviewTile = async ({ className, id }: Props) => {
 
         <RSIButton
           className="mt-4"
-          href={`https://robertsspaceindustries.com/orgs/${organization.spectrumId}`}
+          href={`https://robertsspaceindustries.com/orgs/${organization.spectrum_id}`}
         />
       </div>
     </section>

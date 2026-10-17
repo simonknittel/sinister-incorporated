@@ -1,0 +1,61 @@
+import * as z from "zod";
+import { requirePermission, type Actor } from "../actor.js";
+import type { ApplicationContext } from "../context.js";
+import { NotFoundError } from "../errors.js";
+import { withSpan } from "../withSpan.js";
+import {
+  getOrganizationLogoUrl,
+  listActiveOrganizationMemberships,
+  type OrganizationMemberOutput,
+} from "./organizationMemberships.js";
+
+export const getOrganizationInputSchema = z.object({
+  organization_id: z.cuid(),
+});
+
+export interface GetOrganizationOutput {
+  readonly id: string;
+  readonly name: string;
+  readonly spectrum_id: string;
+  readonly logo_url: string | null;
+  /**
+   * The current members that the actor can see, sorted by their handle.
+   * Empty without `organizationMembership;read`.
+   */
+  readonly memberships: OrganizationMemberOutput[];
+}
+
+/** An organization with its current members */
+export const getOrganization = async (
+  context: ApplicationContext,
+  actor: Actor,
+  input: z.output<typeof getOrganizationInputSchema>,
+): Promise<GetOrganizationOutput> => {
+  requirePermission(actor, "organization", "read");
+
+  return withSpan(context, "getOrganization", async () => {
+    const [organization, memberships] = await Promise.all([
+      context.prisma.organization.findUnique({
+        where: { id: input.organization_id },
+        select: { id: true, name: true, spectrumId: true, logo: true },
+      }),
+      actor.authorize("organizationMembership", "read")
+        ? listActiveOrganizationMemberships(
+            context,
+            actor,
+            input.organization_id,
+          )
+        : [],
+    ]);
+    if (!organization)
+      throw new NotFoundError("The organization does not exist");
+
+    return {
+      id: organization.id,
+      name: organization.name,
+      spectrum_id: organization.spectrumId,
+      logo_url: getOrganizationLogoUrl(organization.logo),
+      memberships,
+    };
+  });
+};

@@ -1,0 +1,226 @@
+import { ConfirmationStatus } from "@sam-monorepo/database/browser";
+import type { Prisma } from "@sam-monorepo/database/client";
+import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
+import * as z from "zod";
+import { requirePermission, type Actor } from "../actor.js";
+import type { ApplicationContext } from "../context.js";
+import { NotFoundError, ValidationError } from "../errors.js";
+import { withSpan } from "../withSpan.js";
+import { canReadNote, canReadNoteRedacted } from "./notePermissions.js";
+import type { CitizenReference } from "./organizationMemberships.js";
+import {
+  getNoteClassificationConditions,
+  loadNoteClassifications,
+} from "./readableCitizenLogWhere.js";
+
+/** A cursor is short: an ISO timestamp, a separator and a cuid */
+const MAXIMUM_CURSOR_LENGTH = 256;
+
+export const listCitizenNotesInputSchema = z.object({
+  citizen_id: z.cuid(),
+  limit: z.int().min(1).max(100).default(25),
+  /** The `next_cursor` of the previous page */
+  cursor: z.string().min(1).max(MAXIMUM_CURSOR_LENGTH).optional(),
+});
+
+export enum CitizenNoteConfirmation {
+  Confirmed = "confirmed",
+  FalseReport = "false_report",
+  /** Nobody decided about the note yet */
+  Pending = "pending",
+}
+
+export interface NamedReference {
+  readonly id: string;
+  readonly name: string;
+}
+
+export interface ReadableCitizenNote {
+  readonly redacted: false;
+  readonly id: string;
+  readonly note_type: NamedReference;
+  /** Null after the classification level was deleted */
+  readonly classification_level: NamedReference | null;
+  readonly confirmed: CitizenNoteConfirmation;
+  readonly confirmed_at: string | null;
+  readonly created_at: string;
+  /** The citizen who wrote the note. Null when it is unknown or deleted. */
+  readonly created_by: CitizenReference | null;
+  readonly content: string | null;
+}
+
+/**
+ * The actor can see that the note exists, but not its content. The notes
+ * page shows only the note type of such a note.
+ */
+export interface RedactedCitizenNote {
+  readonly redacted: true;
+  readonly id: string;
+  readonly note_type: NamedReference;
+}
+
+export type CitizenNoteOutput = ReadableCitizenNote | RedactedCitizenNote;
+
+export interface ListCitizenNotesOutput {
+  readonly notes: CitizenNoteOutput[];
+  /** Null on the last page */
+  readonly next_cursor: string | null;
+}
+
+const CURSOR_SEPARATOR = "|";
+
+interface CursorPosition {
+  readonly createdAt: Date;
+  readonly id: string;
+}
+
+const encodeCursor = (note: CursorPosition) =>
+  [note.createdAt.toISOString(), note.id].join(CURSOR_SEPARATOR);
+
+const decodeCursor = (cursor: string): CursorPosition => {
+  const separatorIndex = cursor.indexOf(CURSOR_SEPARATOR);
+  const createdAt = new Date(cursor.slice(0, separatorIndex));
+  const id = cursor.slice(separatorIndex + 1);
+
+  if (separatorIndex < 0 || Number.isNaN(createdAt.getTime()) || !id)
+    throw new ValidationError("The cursor is not valid");
+
+  return { createdAt, id };
+};
+
+/** The notes are sorted from the newest to the oldest, like on the notes page */
+const getAfterCursorWhere = (
+  cursor: string | undefined,
+): Prisma.CitizenLogWhereInput => {
+  if (!cursor) return {};
+
+  const { createdAt, id } = decodeCursor(cursor);
+
+  return {
+    OR: [{ createdAt: { lt: createdAt } }, { createdAt, id: { lt: id } }],
+  };
+};
+
+const toConfirmation = (confirmed: ConfirmationStatus | null) => {
+  switch (confirmed) {
+    case ConfirmationStatus.CONFIRMED:
+      return CitizenNoteConfirmation.Confirmed;
+
+    case ConfirmationStatus.FALSE_REPORT:
+      return CitizenNoteConfirmation.FalseReport;
+
+    case null:
+      return CitizenNoteConfirmation.Pending;
+
+    default:
+      throw new Error(`Unknown confirmation: ${confirmed satisfies never}`);
+  }
+};
+
+/**
+ * The notes of a citizen that the actor can read or see redacted. A note
+ * needs the permission for its note type and its classification level, and
+ * `alsoUnconfirmed` when it is not confirmed. Notes of a deleted note type or
+ * classification level do not show. A deleted citizen has no notes page,
+ * thus it gives a `NotFoundError`.
+ */
+export const listCitizenNotes = async (
+  context: ApplicationContext,
+  actor: Actor,
+  input: z.output<typeof listCitizenNotesInputSchema>,
+): Promise<ListCitizenNotesOutput> => {
+  requirePermission(actor, "citizen", "read");
+
+  const afterCursorWhere = getAfterCursorWhere(input.cursor);
+
+  return withSpan(context, "listCitizenNotes", async () => {
+    const [citizen, classifications] = await Promise.all([
+      context.prisma.citizen.findFirst({
+        where: { id: input.citizen_id, ...ACTIVE_CITIZEN_WHERE },
+        select: { id: true },
+      }),
+      loadNoteClassifications(context),
+    ]);
+    if (!citizen) throw new NotFoundError("The citizen does not exist");
+
+    const visibleClassifications = [
+      ...getNoteClassificationConditions(actor, "read", classifications),
+      ...getNoteClassificationConditions(
+        actor,
+        "readRedacted",
+        classifications,
+      ),
+    ];
+
+    const notes = await context.prisma.citizenLog.findMany({
+      where: {
+        AND: [
+          {
+            citizenId: input.citizen_id,
+            type: "note",
+            /** An empty OR matches no note */
+            OR: visibleClassifications,
+          },
+          afterCursorWhere,
+        ],
+      },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      // One more note than the page tells whether a next page exists
+      take: input.limit + 1,
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        confirmed: true,
+        confirmedAt: true,
+        noteTypeId: true,
+        classificationLevelId: true,
+        noteType: { select: { id: true, name: true } },
+        classificationLevel: { select: { id: true, name: true } },
+        submittedBy: {
+          select: {
+            citizen: { select: { id: true, handle: true, deletedAt: true } },
+          },
+        },
+      },
+    });
+
+    const pageNotes = notes.slice(0, input.limit);
+    const lastNote = pageNotes.at(-1);
+
+    return {
+      notes: pageNotes.flatMap((note): CitizenNoteOutput[] => {
+        // The condition of the query makes sure that the note type exists
+        if (!note.noteType) return [];
+
+        if (canReadNote(actor, note)) {
+          const author = note.submittedBy?.citizen;
+
+          return [
+            {
+              redacted: false,
+              id: note.id,
+              note_type: note.noteType,
+              classification_level: note.classificationLevel,
+              confirmed: toConfirmation(note.confirmed),
+              confirmed_at: note.confirmedAt?.toISOString() ?? null,
+              created_at: note.createdAt.toISOString(),
+              created_by:
+                author && !author.deletedAt
+                  ? { id: author.id, handle: author.handle }
+                  : null,
+              content: note.content,
+            },
+          ];
+        }
+
+        if (canReadNoteRedacted(actor, note))
+          return [{ redacted: true, id: note.id, note_type: note.noteType }];
+
+        return [];
+      }),
+      next_cursor:
+        notes.length > input.limit && lastNote ? encodeCursor(lastNote) : null,
+    };
+  });
+};

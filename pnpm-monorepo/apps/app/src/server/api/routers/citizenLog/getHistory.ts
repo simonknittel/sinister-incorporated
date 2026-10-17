@@ -1,6 +1,6 @@
-import { authorize } from "@/modules/auth/server";
-import { getReadableCitizenLogWhere } from "@/modules/citizen/queries/getCitizenLogTablePage";
+import { getApplicationContext, toActor } from "@/modules/application";
 import type { GenericCitizenLogType } from "@/types";
+import { getReadableCitizenLogWhere } from "@sam-monorepo/application";
 import * as z from "zod";
 import { protectedProcedure } from "../../trpc";
 
@@ -19,10 +19,11 @@ export const getHistory = protectedProcedure
   )
   .query(async ({ ctx, input }) => {
     /** The same rule as the Spynet log tables */
-    const readableWhere = await getReadableCitizenLogWhere([input.type], {
-      authorize: (resource, operation, attributes) =>
-        authorize(ctx.session, resource, operation, attributes),
-    });
+    const readableWhere = await getReadableCitizenLogWhere(
+      getApplicationContext(),
+      await toActor(ctx.session),
+      [input.type],
+    );
 
     return ctx.prisma.citizenLog.findMany({
       where: {

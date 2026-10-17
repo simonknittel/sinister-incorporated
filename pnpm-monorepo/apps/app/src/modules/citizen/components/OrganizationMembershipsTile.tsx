@@ -1,10 +1,14 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  throwApplicationErrorForPage,
+  toActor,
+} from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
 import { Link } from "@/modules/common/components/Link";
 import { Tile } from "@/modules/common/components/Tile";
 import { CreateMembership } from "@/modules/organizations/components/CreateMembership";
 import { DeleteOrganizationMembership } from "@/modules/spynet/components/DeleteOrganizationMembership";
-import { OrganizationMembershipVisibility } from "@sam-monorepo/database/client";
+import { listOrganizationMembershipsOfCitizen } from "@sam-monorepo/application";
 import clsx from "clsx";
 import Image from "next/image";
 import { FaExternalLinkAlt } from "react-icons/fa";
@@ -16,49 +20,18 @@ interface Props {
 
 export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
   const authentication = await requireAuthentication();
-
-  const alsoVisibilityRedacted = await authentication.authorize(
-    "organizationMembership",
-    "read",
-    [
-      {
-        key: "alsoVisibilityRedacted",
-        value: true,
-      },
-    ],
-  );
+  const actor = await toActor(authentication.session);
 
   const activeOrganizationMemberships =
-    await prisma.activeOrganizationMembership.findMany({
-      where: {
-        citizenId: id,
-        visibility: {
-          in: alsoVisibilityRedacted
-            ? [
-                OrganizationMembershipVisibility.PUBLIC,
-                OrganizationMembershipVisibility.REDACTED,
-              ]
-            : [OrganizationMembershipVisibility.PUBLIC],
-        },
-      },
-      include: {
-        organization: {
-          select: { id: true, name: true, logo: true },
-        },
-      },
-    });
+    await listOrganizationMembershipsOfCitizen(
+      getApplicationContext(),
+      actor,
+      id,
+    ).catch(throwApplicationErrorForPage);
 
-  const showDeleteButton = await authentication.authorize(
-    "organizationMembership",
-    "delete",
-  );
-
-  const showCreateButton = await authentication.authorize(
-    "organizationMembership",
-    "create",
-  );
-
-  const showConfirmButton = await authentication.authorize(
+  const showDeleteButton = actor.authorize("organizationMembership", "delete");
+  const showCreateButton = actor.authorize("organizationMembership", "create");
+  const showConfirmButton = actor.authorize(
     "organizationMembership",
     "confirm",
   );
@@ -78,48 +51,44 @@ export const OrganizationMembershipsTile = async ({ className, id }: Props) => {
     >
       {activeOrganizationMemberships.length > 0 ? (
         <ul className="flex flex-wrap gap-2">
-          {activeOrganizationMemberships
-            .sort((a, b) =>
-              a.organization.name.localeCompare(b.organization.name),
-            )
-            .map((membership) => (
-              <li
-                key={membership.organization.id}
-                className="flex overflow-hidden rounded-secondary bg-neutral-700/50"
+          {activeOrganizationMemberships.map((membership) => (
+            <li
+              key={membership.organization.id}
+              className="flex overflow-hidden rounded-secondary bg-neutral-700/50"
+            >
+              <Link
+                href={`/app/spynet/organization/${membership.organization.id}`}
+                className="inline-flex"
               >
-                <Link
-                  href={`/app/spynet/organization/${membership.organization.id}`}
-                  className="inline-flex"
-                >
-                  {membership.organization.logo && (
-                    <span className="flex w-8 items-center justify-center bg-black align-bottom">
-                      <Image
-                        src={`https://robertsspaceindustries.com${membership.organization.logo}`}
-                        alt=""
-                        width={24}
-                        height={24}
-                        loading="lazy"
-                      />
-                    </span>
-                  )}
-
-                  <span className="inline-flex items-center gap-2 px-2 py-1">
-                    {membership.organization.name}
-                    <FaExternalLinkAlt className="text-xs text-brand-red-500 hover:text-brand-red-300" />
-                  </span>
-                </Link>
-
-                {showDeleteButton && (
-                  <div className="flex items-center border-l border-neutral-700">
-                    <DeleteOrganizationMembership
-                      className="p-2"
-                      organizationId={membership.organization.id}
-                      citizenId={id}
+                {membership.organization.logo_url && (
+                  <span className="flex w-8 items-center justify-center bg-black align-bottom">
+                    <Image
+                      src={membership.organization.logo_url}
+                      alt=""
+                      width={24}
+                      height={24}
+                      loading="lazy"
                     />
-                  </div>
+                  </span>
                 )}
-              </li>
-            ))}
+
+                <span className="inline-flex items-center gap-2 px-2 py-1">
+                  {membership.organization.name}
+                  <FaExternalLinkAlt className="text-xs text-brand-red-500 hover:text-brand-red-300" />
+                </span>
+              </Link>
+
+              {showDeleteButton && (
+                <div className="flex items-center border-l border-neutral-700">
+                  <DeleteOrganizationMembership
+                    className="p-2"
+                    organizationId={membership.organization.id}
+                    citizenId={id}
+                  />
+                </div>
+              )}
+            </li>
+          ))}
         </ul>
       ) : (
         <p className="text-neutral-500">Keine Organisationen</p>

@@ -5,7 +5,7 @@ import { DeleteOrganizationMembership } from "@/modules/spynet/components/Delete
 import clsx from "clsx";
 import { forbidden } from "next/navigation";
 import { FaExternalLinkAlt, FaUsers } from "react-icons/fa";
-import { getActiveOrganizationMemberships } from "../queries/getActiveOrganizationMemberships";
+import { getOrganizationById } from "../queries/getOrganizationById";
 import { CreateMembership } from "./CreateMembership";
 
 interface Props {
@@ -18,8 +18,8 @@ export const MembershipsTile = async ({ className, id }: Props) => {
   if (!(await authentication.authorize("organizationMembership", "read")))
     forbidden();
 
-  const activeOrganizationMemberships =
-    await getActiveOrganizationMemberships(id);
+  const { memberships: activeOrganizationMemberships } =
+    await getOrganizationById(id);
 
   const showDeleteButton = await authentication.authorize(
     "organizationMembership",
@@ -42,38 +42,32 @@ export const MembershipsTile = async ({ className, id }: Props) => {
 
       {activeOrganizationMemberships.length > 0 ? (
         <ul className="mt-4 flex flex-wrap gap-2">
-          {activeOrganizationMemberships
-            .sort((a, b) =>
-              (a.citizen.handle || a.citizen.id).localeCompare(
-                b.citizen.handle || b.citizen.id,
-              ),
-            )
-            .map((membership) => (
-              <li
-                key={membership.citizen.id}
-                className="flex rounded-secondary bg-neutral-700/50"
-              >
-                <CitizenPopover citizenId={membership.citizen.id}>
-                  <Link
-                    href={`/app/spynet/citizen/${membership.citizen.id}`}
-                    className="inline-flex items-center gap-2 px-2 py-1"
-                  >
-                    {membership.citizen.handle || membership.citizen.id}
-                    <FaExternalLinkAlt className="text-xs text-brand-red-500 hover:text-brand-red-300" />
-                  </Link>
-                </CitizenPopover>
+          {activeOrganizationMemberships.map((membership) => (
+            <li
+              key={membership.citizen.id}
+              className="flex rounded-secondary bg-neutral-700/50"
+            >
+              <CitizenPopover citizenId={membership.citizen.id}>
+                <Link
+                  href={`/app/spynet/citizen/${membership.citizen.id}`}
+                  className="inline-flex items-center gap-2 px-2 py-1"
+                >
+                  {membership.citizen.handle || membership.citizen.id}
+                  <FaExternalLinkAlt className="text-xs text-brand-red-500 hover:text-brand-red-300" />
+                </Link>
+              </CitizenPopover>
 
-                {showDeleteButton && (
-                  <div className="flex items-center border-l border-neutral-700">
-                    <DeleteOrganizationMembership
-                      className="p-2"
-                      organizationId={id}
-                      citizenId={membership.citizen.id}
-                    />
-                  </div>
-                )}
-              </li>
-            ))}
+              {showDeleteButton && (
+                <div className="flex items-center border-l border-neutral-700">
+                  <DeleteOrganizationMembership
+                    className="p-2"
+                    organizationId={id}
+                    citizenId={membership.citizen.id}
+                  />
+                </div>
+              )}
+            </li>
+          ))}
         </ul>
       ) : (
         <p className="mt-4 text-neutral-500">Keine Mitglieder</p>

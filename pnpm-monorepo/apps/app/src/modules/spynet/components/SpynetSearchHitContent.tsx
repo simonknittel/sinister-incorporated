@@ -42,14 +42,14 @@ const CitizenHitContent = ({ hit }: CitizenHitContentProps) => {
       )}
 
       <span className="text-sm text-neutral-500">
-        {hit.communityMoniker && (
-          <HitDetail label="Community Moniker" value={hit.communityMoniker} />
+        {hit.community_moniker && (
+          <HitDetail label="Community Moniker" value={hit.community_moniker} />
         )}
-        {hit.spectrumId && (
-          <HitDetail label="Spectrum ID" value={hit.spectrumId} />
+        {hit.spectrum_id && (
+          <HitDetail label="Spectrum ID" value={hit.spectrum_id} />
         )}
-        {hit.citizenRecord && (
-          <HitDetail label="Citizen ID" value={hit.citizenRecord} />
+        {hit.citizen_record && (
+          <HitDetail label="Citizen ID" value={hit.citizen_record} />
         )}
         <HitDetail label="Internal ID" value={hit.id} />
       </span>
@@ -69,7 +69,7 @@ const OrganizationHitContent = ({ hit }: OrganizationHitContentProps) => {
       </span>
 
       <span className="text-sm text-neutral-500">
-        <HitDetail label="Spectrum ID" value={hit.spectrumId} />
+        <HitDetail label="Spectrum ID" value={hit.spectrum_id} />
         <HitDetail label="Internal ID" value={hit.id} />
       </span>
     </span>

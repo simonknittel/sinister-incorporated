@@ -1,4 +1,5 @@
 import { prisma } from "@/db";
+import { toActor } from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
 import {
   CITIZEN_NOTE_SELECT,
@@ -7,6 +8,7 @@ import {
 import Tab from "@/modules/common/components/tabs/Tab";
 import TabList from "@/modules/common/components/tabs/TabList";
 import { TabsProvider } from "@/modules/common/components/tabs/TabsContext";
+import { canReadNote, canReadNoteRedacted } from "@sam-monorepo/application";
 import {
   type Citizen,
   type CitizenLog,
@@ -14,8 +16,6 @@ import {
 } from "@sam-monorepo/database/client";
 import clsx from "clsx";
 import { NoteTypePanel } from "./NoteTypePanel";
-import isAllowedToRead from "./lib/isAllowedToRead";
-import isAllowedToReadRedacted from "./lib/isAllowedToReadRedacted";
 
 interface Props {
   readonly className?: string;
@@ -26,6 +26,7 @@ type VisibleNote = CitizenNote | { id: CitizenLog["id"]; redacted: true };
 
 export const Notes = async ({ className, entity }: Props) => {
   const authentication = await requireAuthentication();
+  const actor = await toActor(authentication.session);
 
   /**
    * Each note shows in the tab of its note type, thus a note of a deleted
@@ -52,44 +53,23 @@ export const Notes = async ({ className, entity }: Props) => {
     const notes: VisibleNote[] = [];
 
     for (const note of noteType.citizenLogs) {
-      if (await isAllowedToRead(note, authentication)) notes.push(note);
-      else if (await isAllowedToReadRedacted(note, authentication))
+      if (canReadNote(actor, note)) notes.push(note);
+      else if (canReadNoteRedacted(actor, note))
         notes.push({ id: note.id, redacted: true });
     }
 
     tabs[noteType.id] = notes;
   }
 
-  const filteredNoteTypes = (
-    await Promise.all(
-      allNoteTypes.map(async (noteType) => {
-        return {
-          noteType,
-          include:
-            (await authentication.authorize("note", "read", [
-              {
-                key: "noteTypeId",
-                value: noteType.id,
-              },
-            ])) ||
-            (await authentication.authorize("note", "readRedacted", [
-              {
-                key: "noteTypeId",
-                value: noteType.id,
-              },
-            ])) ||
-            (await authentication.authorize("note", "create", [
-              {
-                key: "noteTypeId",
-                value: noteType.id,
-              },
-            ])),
-        };
-      }),
-    )
-  )
-    .filter(({ include }) => include)
-    .map(({ noteType }) => noteType);
+  const filteredNoteTypes = allNoteTypes.filter((noteType) => {
+    const attributes = [{ key: "noteTypeId" as const, value: noteType.id }];
+
+    return (
+      actor.authorize("note", "read", attributes) ||
+      actor.authorize("note", "readRedacted", attributes) ||
+      actor.authorize("note", "create", attributes)
+    );
+  });
 
   if (filteredNoteTypes.length <= 0) return null;
 

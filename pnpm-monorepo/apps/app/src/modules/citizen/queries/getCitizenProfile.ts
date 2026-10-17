@@ -1,10 +1,14 @@
 import { prisma } from "@/db";
+import { getApplicationContext, toActor } from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
-import { countOwnerShips } from "@/modules/fleet/queries/ownerFleet";
-import { sumPenaltyPointsOfCitizen } from "@/modules/penalty-points/queries/sumPenaltyPointsOfCitizen";
 import { getAssignableRoles } from "@/modules/roles/utils/getRoles";
 import { getMonthlySalaryOfRoles } from "@/modules/silc/queries/getMonthlySalaryOfRoles";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  getVisiblePenaltyPointSum,
+  getVisibleShipCount,
+  requireCitizenReadAccess,
+} from "@sam-monorepo/application";
 import type { Citizen } from "@sam-monorepo/database/client";
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { cache } from "react";
@@ -28,10 +32,11 @@ import { hasBirthdayToday } from "../utils/hasBirthdayToday";
 export const getCitizenProfile = cache(
   withTrace("getCitizenProfile", async (id: Citizen["id"]) => {
     const authentication = await requireAuthentication();
+    const actor = await toActor(authentication.session);
+    requireCitizenReadAccess(actor, id);
 
-    const isCurrentCitizen = authentication.session.entity?.id === id;
-    const canOpenSpynet = await authentication.authorize("citizen", "read");
-    if (!isCurrentCitizen && !canOpenSpynet) throw new Error("Forbidden");
+    const isCurrentCitizen = actor.citizen?.id === id;
+    const canOpenSpynet = actor.authorize("citizen", "read");
 
     const citizen = await prisma.citizen.findFirst({
       where: {
@@ -66,46 +71,31 @@ export const getCitizenProfile = cache(
 
     if (!citizen) return null;
 
-    const [
-      canReadSilcBalance,
-      canReadPenaltyPoints,
-      canReadShips,
-      canOpenSilcPage,
-      canOpenFleetPage,
-      assignableRoles,
-    ] = await Promise.all([
-      authentication.authorize(
-        isCurrentCitizen
-          ? "silcBalanceOfCurrentCitizen"
-          : "silcBalanceOfOtherCitizen",
-        "read",
-      ),
-      authentication.authorize(
-        isCurrentCitizen ? "ownPenaltyEntry" : "penaltyEntry",
-        "read",
-      ),
-      authentication.authorize(
-        isCurrentCitizen ? "ship" : "otherShips",
-        "read",
-      ),
-      authentication.authorize(
-        isCurrentCitizen
-          ? "silcTransactionOfCurrentCitizen"
-          : "silcTransactionOfOtherCitizen",
-        "read",
-      ),
-      /** The fleet page asks for `otherShips;read`, also for the own fleet */
-      authentication.authorize("otherShips", "read"),
-      getAssignableRoles(),
-    ]);
+    const canReadSilcBalance = actor.authorize(
+      isCurrentCitizen
+        ? "silcBalanceOfCurrentCitizen"
+        : "silcBalanceOfOtherCitizen",
+      "read",
+    );
+    const canOpenSilcPage = actor.authorize(
+      isCurrentCitizen
+        ? "silcTransactionOfCurrentCitizen"
+        : "silcTransactionOfOtherCitizen",
+      "read",
+    );
+    /** The fleet page asks for `otherShips;read`, also for the own fleet */
+    const canOpenFleetPage = actor.authorize("otherShips", "read");
 
-    const [monthlySalary, penaltyPoints, fleetCount] = await Promise.all([
-      canReadSilcBalance
-        ? getMonthlySalaryOfRoles(citizen.roleAssignments)
-        : null,
-      canReadPenaltyPoints ? sumPenaltyPointsOfCitizen(citizen.id) : null,
-      canReadShips ? countOwnerShips(citizen.id) : null,
-    ]);
+    const context = getApplicationContext();
+    const [assignableRoles, monthlySalary, penaltyPoints, fleetCount] =
+      await Promise.all([
+        getAssignableRoles(),
+        canReadSilcBalance
+          ? getMonthlySalaryOfRoles(citizen.roleAssignments)
+          : null,
+        getVisiblePenaltyPointSum(context, actor, citizen.id),
+        getVisibleShipCount(context, actor, citizen.id),
+      ]);
 
     const spynetHref = `/app/spynet/citizen/${citizen.id}`;
     const buildMetricHref = (canOpenPage: boolean, subPage: string) =>
@@ -136,7 +126,11 @@ export const getCitizenProfile = cache(
             ? null
             : {
                 value: penaltyPoints,
-                href: buildMetricHref(canReadPenaltyPoints, "penalty-points"),
+                /**
+                 * The penalty points page asks for the same permission as
+                 * the metric
+                 */
+                href: buildMetricHref(true, "penalty-points"),
               },
         fleet:
           fleetCount === null

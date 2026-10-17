@@ -4,13 +4,16 @@ import {
   transformPermissionStringToPermissionSet,
 } from "@sam-monorepo/permissions";
 import { describe, expect, test } from "vitest";
-import { getNotePermissionAttributes } from "./notePermissionAttributes";
+import {
+  getNotePermissionAttributes,
+  type NotePermissionSubject,
+} from "./notePermissions.js";
 
 const NOTE_TYPE_ID = "cm0notetype00000000000001";
 const CLASSIFICATION_LEVEL_ID = "cm0classification00000001";
 
 const canRead = (
-  note: Parameters<typeof getNotePermissionAttributes>[0],
+  note: NotePermissionSubject,
   permissionStrings: readonly string[],
 ) =>
   comparePermissionSets(

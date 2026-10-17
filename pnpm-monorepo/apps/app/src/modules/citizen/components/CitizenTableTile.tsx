@@ -1,22 +1,52 @@
-import { requireAuthentication } from "@/modules/auth/server";
-import { getCitizensForTable } from "@/modules/citizen/queries/getCitizens";
 import {
-  citizenTableParsers,
+  getApplicationContext,
+  throwApplicationErrorForPage,
+  toActor,
+} from "@/modules/application";
+import { requireAuthentication } from "@/modules/auth/server";
+import {
   CitizenTableSort,
   loadCitizenTableSearchParams,
 } from "@/modules/citizen/utils/citizenTableSearchParams";
 import { getFilterValues } from "@/modules/common/utils/filterCheckboxListParsers";
-import { limitRows, PER_PAGE } from "@/modules/common/utils/pagination";
+import { PER_PAGE } from "@/modules/common/utils/pagination";
 import {
-  sortAscWithAndNullLast,
-  sortDescAndNullLast,
-} from "@/modules/common/utils/sorting";
-import { getAssignedRoles } from "@/modules/roles/utils/getRoles";
+  CitizenListSort,
+  CitizenUnknownAttribute,
+  listCitizens,
+  listCitizensInputSchema,
+} from "@sam-monorepo/application";
 import clsx from "clsx";
 import type { SearchParams } from "nuqs/server";
 import { CitizenTable } from "./CitizenTable";
 import { CitizenTableFilters } from "./CitizenTableFilters";
 import { CitizenTablePagination } from "./CitizenTableLinks";
+
+const toCitizenListSort = (sort: CitizenTableSort) => {
+  switch (sort) {
+    case CitizenTableSort.HandleAscending:
+      return CitizenListSort.HandleAscending;
+    case CitizenTableSort.HandleDescending:
+      return CitizenListSort.HandleDescending;
+    case CitizenTableSort.CreatedAtAscending:
+      return CitizenListSort.CreatedAscending;
+    case CitizenTableSort.CreatedAtDescending:
+      return CitizenListSort.CreatedDescending;
+    case CitizenTableSort.LastSeenAtAscending:
+      return CitizenListSort.LastSeenAscending;
+    case CitizenTableSort.LastSeenAtDescending:
+      return CitizenListSort.LastSeenDescending;
+    default:
+      throw new Error(`Unknown sort: ${sort satisfies never}`);
+  }
+};
+
+/** The items of the "Unbekannt" filter. Other values select nothing. */
+const UNKNOWN_FILTER_ATTRIBUTES = new Map([
+  ["handle", CitizenUnknownAttribute.Handle],
+  ["discord-id", CitizenUnknownAttribute.DiscordId],
+  ["teamspeak-id", CitizenUnknownAttribute.TeamspeakId],
+]);
 
 interface Props {
   readonly className?: string;
@@ -25,105 +55,41 @@ interface Props {
 
 export const CitizenTableTile = async ({ className, searchParams }: Props) => {
   const authentication = await requireAuthentication();
+  const actor = await toActor(authentication.session);
 
-  const {
-    filters,
-    sort: requestedSort,
-    page,
-  } = await loadCitizenTableSearchParams(searchParams);
+  const { filters, sort, page } =
+    await loadCitizenTableSearchParams(searchParams);
 
-  const [
-    showLastSeenAtColumn,
-    showTeamspeakIdColumn,
-    showDiscordIdColumn,
-    showDeleteEntityButton,
-  ] = await Promise.all([
-    authentication.authorize("lastSeen", "read"),
-    authentication.authorize("teamspeak-id", "read"),
-    authentication.authorize("discord-id", "read"),
-    authentication.authorize("citizen", "delete"),
-  ]);
+  const showLastSeenAtColumn = actor.authorize("lastSeen", "read");
+  const showTeamspeakIdColumn = actor.authorize("teamspeak-id", "read");
+  const showDiscordIdColumn = actor.authorize("discord-id", "read");
+  const showDeleteEntityButton = actor.authorize("citizen", "delete");
 
-  /**
-   * The filters show these options only with the read permission. A filter
-   * by a value that the viewer may not read would show which citizens have
-   * one, thus the table ignores it.
-   */
-  const unknownAttributes = getFilterValues(filters, "unknown").filter(
-    (attribute) =>
-      (attribute !== "discord-id" || showDiscordIdColumn) &&
-      (attribute !== "teamspeak-id" || showTeamspeakIdColumn),
-  );
-  const roleIds = getFilterValues(filters, "role");
+  const result = await listCitizens(
+    getApplicationContext(),
+    actor,
+    listCitizensInputSchema.parse({
+      role_ids: getFilterValues(filters, "role"),
+      unknown: getFilterValues(filters, "unknown").flatMap(
+        (value) => UNKNOWN_FILTER_ATTRIBUTES.get(value) ?? [],
+      ),
+      sort: toCitizenListSort(sort),
+      page,
+      limit: PER_PAGE,
+    }),
+  ).catch(throwApplicationErrorForPage);
 
-  /**
-   * The table shows the column only with the read permission, thus a sort by
-   * it is no option without the permission
-   */
-  const sort =
-    !showLastSeenAtColumn &&
-    (requestedSort === CitizenTableSort.LastSeenAtAscending ||
-      requestedSort === CitizenTableSort.LastSeenAtDescending)
-      ? citizenTableParsers.sort.defaultValue
-      : requestedSort;
-
-  const citizens = await getCitizensForTable();
-
-  const rows = await Promise.all(
-    citizens.map(async ({ entity, lastSeenAt }) => ({
-      lastSeenAt,
-      roles: roleIds.length > 0 ? await getAssignedRoles(entity) : [],
-      entity,
-    })),
-  );
-
-  const filteredRows = rows.filter((row) => {
-    const hasUnknownAttribute =
-      unknownAttributes.length === 0 ||
-      (unknownAttributes.includes("handle") && !row.entity.handle) ||
-      (unknownAttributes.includes("discord-id") && !row.entity.discordId) ||
-      (unknownAttributes.includes("teamspeak-id") && !row.entity.teamspeakId);
-    const hasRole =
-      roleIds.length === 0 ||
-      row.roles.some((role) => roleIds.includes(role.id));
-
-    return hasUnknownAttribute && hasRole;
-  });
-
-  const sortedRows = filteredRows.toSorted((a, b) => {
-    switch (sort) {
-      case CitizenTableSort.HandleAscending:
-        return sortAscWithAndNullLast(a.entity.handle, b.entity.handle);
-      case CitizenTableSort.HandleDescending:
-        return sortDescAndNullLast(a.entity.handle, b.entity.handle);
-
-      case CitizenTableSort.LastSeenAtAscending:
-        return sortAscWithAndNullLast(
-          a.lastSeenAt?.getTime(),
-          b.lastSeenAt?.getTime(),
-        );
-      case CitizenTableSort.LastSeenAtDescending:
-        return sortDescAndNullLast(
-          a.lastSeenAt?.getTime(),
-          b.lastSeenAt?.getTime(),
-        );
-
-      case CitizenTableSort.CreatedAtAscending:
-        return sortAscWithAndNullLast(
-          a.entity.createdAt.getTime(),
-          b.entity.createdAt.getTime(),
-        );
-      case CitizenTableSort.CreatedAtDescending:
-        return sortDescAndNullLast(
-          a.entity.createdAt.getTime(),
-          b.entity.createdAt.getTime(),
-        );
-
-      default:
-        throw new Error(`Unknown sort: ${sort satisfies never}`);
-    }
-  });
-  const limitedRows = limitRows(sortedRows, page);
+  const rows = result.citizens.map((citizen) => ({
+    entity: {
+      id: citizen.id,
+      handle: citizen.handle,
+      spectrumId: citizen.spectrum_id,
+      discordId: citizen.discord_id,
+      teamspeakId: citizen.teamspeak_id,
+      createdAt: new Date(citizen.created_at),
+    },
+    lastSeenAt: citizen.last_seen_at ? new Date(citizen.last_seen_at) : null,
+  }));
 
   return (
     <section
@@ -135,7 +101,7 @@ export const CitizenTableTile = async ({ className, searchParams }: Props) => {
       <CitizenTableFilters className="mb-6" />
 
       <CitizenTable
-        rows={limitedRows}
+        rows={rows}
         showDiscordIdColumn={showDiscordIdColumn}
         showTeamspeakIdColumn={showTeamspeakIdColumn}
         showLastSeenAtColumn={showLastSeenAtColumn}
@@ -143,9 +109,7 @@ export const CitizenTableTile = async ({ className, searchParams }: Props) => {
       />
 
       <div className="mt-6 flex justify-center">
-        <CitizenTablePagination
-          totalPages={Math.ceil(sortedRows.length / PER_PAGE)}
-        />
+        <CitizenTablePagination totalPages={result.page_count} />
       </div>
     </section>
   );
