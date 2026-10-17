@@ -1,68 +1,31 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  cancelTaskInputSchema,
+  cancelTask as cancelTaskUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { requireManageableTask } from "../utils/requireManageableTask";
-
-const schema = z.object({
-  id: z.union([z.cuid(), z.cuid2()]),
-});
+import { mapTaskErrorToActionResponse } from "../utils/mapTaskErrorToActionResponse";
 
 export const cancelTask = createAuthenticatedAction(
   "cancelTask",
-  schema,
+  cancelTaskInputSchema,
   async (formData, authentication, data, t) => {
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Authorize the request
-     */
-    const { task, failure } = await requireManageableTask(data.id, formData, t);
-    if (failure) return failure;
-
-    /**
-     * Delete position
-     */
-    await prisma.task.update({
-      where: {
-        id: data.id,
-      },
-      data: {
-        cancelledAt: new Date(),
-        cancelledBy: {
-          connect: {
-            id: authentication.session.entity.id,
-          },
-        },
-      },
-    });
+    try {
+      await cancelTaskUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapTaskErrorToActionResponse(error, { formData, t });
+    }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.TASK_CANCELLED,
-        data: {
-          taskId: task.id,
-          title: task.title,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
-    return {
-      success: "Erfolgreich abgebrochen",
-    };
+    return { success: "Erfolgreich abgebrochen" };
   },
+  { parseFormData: (formData) => ({ task_id: formData.get("id") }) },
 );

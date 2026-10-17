@@ -77,27 +77,37 @@ export type TaskListItemSource = Pick<
   }[];
 };
 
-const toTaskReward = (
-  task: Pick<Task, "rewardType" | "rewardSilcValue" | "rewardTypeTextValue">,
-): TaskReward => {
-  switch (task.rewardType) {
+export const toTaskRewardKind = (
+  rewardType: TaskRewardType,
+): TaskRewardKind => {
+  switch (rewardType) {
     case TaskRewardType.SILC:
-      return { type: TaskRewardKind.Silc, value: task.rewardSilcValue };
+      return TaskRewardKind.Silc;
 
     case TaskRewardType.NEW_SILC:
-      return { type: TaskRewardKind.NewSilc, value: task.rewardSilcValue };
+      return TaskRewardKind.NewSilc;
 
     case TaskRewardType.TEXT:
-      return { type: TaskRewardKind.Text, value: task.rewardTypeTextValue };
+      return TaskRewardKind.Text;
 
     default:
       throw new Error(
-        `Unknown task reward type: ${task.rewardType satisfies never}`,
+        `Unknown task reward type: ${rewardType satisfies never}`,
       );
   }
 };
 
-const toTaskVisibilityKind = (
+const toTaskReward = (
+  task: Pick<Task, "rewardType" | "rewardSilcValue" | "rewardTypeTextValue">,
+): TaskReward => ({
+  type: toTaskRewardKind(task.rewardType),
+  value:
+    task.rewardType === TaskRewardType.TEXT
+      ? task.rewardTypeTextValue
+      : task.rewardSilcValue,
+});
+
+export const toTaskVisibilityKind = (
   visibility: TaskVisibility,
 ): TaskVisibilityKind => {
   switch (visibility) {

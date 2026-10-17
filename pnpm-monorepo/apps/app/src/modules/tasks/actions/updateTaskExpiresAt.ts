@@ -1,34 +1,14 @@
 "use server";
 
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { wallTimeSchema } from "@/modules/common/utils/wallTimeSchema";
-import * as z from "zod";
-import { createTaskFieldUpdateAction } from "../utils/createTaskFieldUpdateAction";
+import { createTaskUpdateAction } from "../utils/createTaskUpdateAction";
+import { parseWallTimeField } from "../utils/parseWallTimeField";
 
-const schema = z.object({
-  id: z.union([z.cuid(), z.cuid2()]),
-  expiresAt: wallTimeSchema.nullable(),
-});
-
-export const updateTaskExpiresAt = createTaskFieldUpdateAction(
+export const updateTaskExpiresAt = createTaskUpdateAction(
   "updateTaskExpiresAt",
-  schema,
   {
-    update: (data) => ({ expiresAt: data.expiresAt }),
-    auditEvent: (task, data) => ({
-      type: AuditEventType.TASK_EXPIRES_AT_UPDATED,
-      data: {
-        taskId: task.id,
-        previousExpiresAt: task.expiresAt,
-        newExpiresAt: data.expiresAt,
-      },
-    }),
     parseFormData: (formData) => ({
-      id: formData.get("id"),
-      expiresAt:
-        formData.get("expiresAt") && formData.get("expiresAt") !== ""
-          ? formData.get("expiresAt")
-          : null,
+      task_id: formData.get("id"),
+      expires_at: parseWallTimeField(formData, "expiresAt"),
     }),
   },
 );

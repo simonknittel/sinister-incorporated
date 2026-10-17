@@ -1,254 +1,76 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { wallTimeSchema } from "@/modules/common/utils/wallTimeSchema";
-import { triggerNotificationsAfterSave } from "@/modules/notifications/utils/triggerNotification";
-import { MAX_SILC_VALUE } from "@/modules/silc/utils/silcValueLimit";
+import { getApplicationContext, toActor } from "@/modules/application";
 import {
-  TaskRewardType,
-  TaskVisibility,
-  type Prisma,
-  type Task,
-} from "@sam-monorepo/database/client";
+  createTaskInputSchema,
+  createTask as createTaskUseCase,
+  toTaskRewardKind,
+  toTaskVisibilityKind,
+  type CreateTaskOutput,
+} from "@sam-monorepo/application";
+import { TaskRewardType, TaskVisibility } from "@sam-monorepo/database/client";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { TASK_DESCRIPTION_MAX_LENGTH } from "../utils/taskConstraints";
+import { mapTaskErrorToActionResponse } from "../utils/mapTaskErrorToActionResponse";
+import { parseWallTimeField } from "../utils/parseWallTimeField";
 
-const baseSchema = z.object({
-  visibility: z.enum(TaskVisibility),
-  assignmentLimit: z.coerce.number().int().min(1).nullable(),
-  assignedToIds: z.array(z.cuid()).max(250), // Arbitrary (untested) limit to prevent DDoS
-  title: z.string().trim().max(64),
-  description: z.string().trim().max(TASK_DESCRIPTION_MAX_LENGTH).optional(),
-  expiresAt: wallTimeSchema.optional(),
-  repeatable: z.coerce.number().int().min(1),
-  requiredRoles: z.array(z.cuid()).max(50), // Arbitrary (untested) limit to prevent DDoS
-  hiddenForOtherRoles: z.boolean(),
-  canSelfComplete: z.boolean(),
-});
+/**
+ * The form sends the values of the Prisma enums, the use case takes the
+ * kinds of the MCP tools
+ */
+const parseCreateTaskForm = (formData: FormData) => {
+  const visibility = Object.values(TaskVisibility).find(
+    (value) => value === formData.get("visibility"),
+  );
+  const rewardType = Object.values(TaskRewardType).find(
+    (value) => value === formData.get("rewardType"),
+  );
+  const assignmentLimit = formData.get("assignmentLimit");
 
-const schema = z.discriminatedUnion("rewardType", [
-  baseSchema.extend({
-    rewardType: z.literal(TaskRewardType.TEXT),
-    rewardTypeTextValue: z.string().trim().max(2048),
-  }),
-  baseSchema.extend({
-    rewardType: z.literal([TaskRewardType.SILC, TaskRewardType.NEW_SILC]),
-    rewardSilcValue: z.coerce.number().int().min(1).max(MAX_SILC_VALUE),
-  }),
-]);
-
-/** Only the value column of the reward type is set (see the reward CHECK) */
-const getRewardColumns = (data: z.output<typeof schema>) =>
-  data.rewardType === TaskRewardType.TEXT
-    ? {
-        rewardType: data.rewardType,
-        rewardTypeTextValue: data.rewardTypeTextValue,
-        rewardSilcValue: null,
-      }
-    : {
-        rewardType: data.rewardType,
-        rewardTypeTextValue: null,
-        rewardSilcValue: data.rewardSilcValue,
-      };
+  return {
+    title: formData.get("title"),
+    description: formData.get("description") ?? undefined,
+    visibility: visibility && toTaskVisibilityKind(visibility),
+    reward: {
+      type: rewardType && toTaskRewardKind(rewardType),
+      value:
+        rewardType === TaskRewardType.TEXT
+          ? formData.get("rewardTypeTextValue")
+          : Number(formData.get("rewardSilcValue")),
+    },
+    expires_at: parseWallTimeField(formData, "expiresAt") ?? undefined,
+    repeatable: Number(formData.get("repeatable")),
+    assignment_limit: assignmentLimit ? Number(assignmentLimit) : null,
+    required_role_ids: formData.getAll("requiredRole[]"),
+    hidden_for_other_roles: formData.has("hiddenForOtherRoles"),
+    assignee_ids: formData.getAll("assignedToId[]"),
+    can_self_complete: formData.has("canSelfComplete"),
+  };
+};
 
 export const createTask = createAuthenticatedAction(
   "createTask",
-  schema,
+  createTaskInputSchema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("task", "create")))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Authorize the request
-     */
-    if (
-      (data.visibility === TaskVisibility.PERSONALIZED ||
-        data.visibility === TaskVisibility.GROUP) &&
-      !(await authentication.authorize("task", "create", [
-        {
-          key: "taskVisibility",
-          value: TaskVisibility.PERSONALIZED,
-        },
-      ]))
-    )
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    if (
-      data.rewardType === TaskRewardType.NEW_SILC &&
-      !(await authentication.authorize("task", "create", [
-        {
-          key: "taskRewardType",
-          value: TaskRewardType.NEW_SILC,
-        },
-      ]))
-    )
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Create task
-     */
-    const createdById = authentication.session.entity.id;
-    const columns = {
-      visibility: data.visibility,
-      assignmentLimit: data.assignmentLimit,
-      title: data.title,
-      description: data.description,
-      createdById,
-      expiresAt: data.expiresAt,
-      ...getRewardColumns(data),
-      repeatable: data.repeatable,
-    } satisfies Prisma.TaskUncheckedCreateInput;
-
-    const createdTasks: Pick<Task, "id">[] = [];
-    switch (data.visibility) {
-      case TaskVisibility.PUBLIC:
-        createdTasks.push(
-          await prisma.task.create({
-            data: {
-              ...columns,
-              requiredRoles: {
-                connect: data.requiredRoles.map((roleId) => ({
-                  id: roleId,
-                })),
-              },
-              hiddenForOtherRoles: data.hiddenForOtherRoles,
-            },
-            select: {
-              id: true,
-            },
-          }),
-        );
-        break;
-
-      case TaskVisibility.GROUP:
-        createdTasks.push(
-          await prisma.task.create({
-            data: {
-              ...columns,
-              assignments: {
-                createMany: {
-                  data: data.assignedToIds.map((assignedToId) => ({
-                    citizenId: assignedToId,
-                    createdById,
-                  })),
-                },
-              },
-              canSelfComplete: data.canSelfComplete,
-            },
-            select: {
-              id: true,
-            },
-          }),
-        );
-        break;
-
-      case TaskVisibility.PERSONALIZED:
-        createdTasks.push(
-          ...(await prisma.$transaction(
-            data.assignedToIds.map((assignedToId) =>
-              prisma.task.create({
-                data: {
-                  ...columns,
-                  assignments: {
-                    create: {
-                      citizenId: assignedToId,
-                      createdById,
-                    },
-                  },
-                  canSelfComplete: data.canSelfComplete,
-                },
-                select: {
-                  id: true,
-                },
-              }),
-            ),
-          )),
-        );
-        break;
-
-      default:
-        throw new Error(
-          `Unknown task visibility: ${data.visibility satisfies never}`,
-        );
+    let result: CreateTaskOutput;
+    try {
+      result = await createTaskUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapTaskErrorToActionResponse(error, { formData, t });
     }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.TASK_CREATED,
-        data: {
-          taskIds: createdTasks.map((task) => task.id),
-          visibility: data.visibility,
-          rewardType: data.rewardType,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Trigger notifications
-     */
-    const areNotificationsSent = await triggerNotificationsAfterSave([
-      {
-        type: "TaskCreated",
-        payload: {
-          taskIds: createdTasks.map((task) => task.id),
-        },
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
     return {
       success: "Erfolgreich gespeichert.",
-      ...(areNotificationsSent
+      ...(result.notifications_sent
         ? {}
         : { warning: t("Common.notificationsFailed") }),
     };
   },
-  {
-    parseFormData: (formData) => ({
-      visibility: formData.get("visibility"),
-      assignmentLimit:
-        formData.has("assignmentLimit") &&
-        formData.get("assignmentLimit") !== ""
-          ? formData.get("assignmentLimit")
-          : null,
-      assignedToIds: formData.getAll("assignedToId[]"),
-      title: formData.get("title"),
-      description: formData.has("description")
-        ? formData.get("description")
-        : undefined,
-      expiresAt:
-        formData.get("expiresAt") && formData.get("expiresAt") !== ""
-          ? formData.get("expiresAt")
-          : undefined,
-      rewardType: formData.get("rewardType"),
-      rewardTypeTextValue: formData.get("rewardTypeTextValue") ?? undefined,
-      rewardSilcValue: formData.get("rewardSilcValue") ?? undefined,
-      repeatable: formData.get("repeatable"),
-      requiredRoles: formData.getAll("requiredRole[]"),
-      hiddenForOtherRoles: formData.has("hiddenForOtherRoles"),
-      canSelfComplete: formData.has("canSelfComplete"),
-    }),
-  },
+  { parseFormData: parseCreateTaskForm },
 );

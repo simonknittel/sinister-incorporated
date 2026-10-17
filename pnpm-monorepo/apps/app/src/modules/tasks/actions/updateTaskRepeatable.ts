@@ -1,26 +1,13 @@
 "use server";
 
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import * as z from "zod";
-import { createTaskFieldUpdateAction } from "../utils/createTaskFieldUpdateAction";
+import { createTaskUpdateAction } from "../utils/createTaskUpdateAction";
 
-const schema = z.object({
-  id: z.union([z.cuid(), z.cuid2()]),
-  repeatable: z.coerce.number().int().min(1),
-});
-
-export const updateTaskRepeatable = createTaskFieldUpdateAction(
+export const updateTaskRepeatable = createTaskUpdateAction(
   "updateTaskRepeatable",
-  schema,
   {
-    update: (data) => ({ repeatable: data.repeatable }),
-    auditEvent: (task, data) => ({
-      type: AuditEventType.TASK_REPEATABLE_UPDATED,
-      data: {
-        taskId: task.id,
-        previousRepeatable: task.repeatable,
-        newRepeatable: data.repeatable,
-      },
+    parseFormData: (formData) => ({
+      task_id: formData.get("id"),
+      repeatable: Number(formData.get("repeatable")),
     }),
   },
 );

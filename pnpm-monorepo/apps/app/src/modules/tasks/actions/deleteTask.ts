@@ -13,7 +13,7 @@ import {
   isAllowedToDeleteTask,
   isAllowedToManageTask,
 } from "../utils/isAllowedToTask";
-import { TASK_NOT_FOUND_ERROR } from "../utils/requireOpenTask";
+import { TASK_NOT_FOUND_ERROR } from "../utils/mapTaskErrorToActionResponse";
 
 const schema = z.object({
   id: z.union([z.cuid(), z.cuid2()]),
