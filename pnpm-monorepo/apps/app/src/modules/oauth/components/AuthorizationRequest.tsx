@@ -1,8 +1,8 @@
 import { getApplicationContext, getRequestActor } from "@/modules/application";
 import {
   AuthorizationRequestValidationKind,
-  canUseMcp,
   buildAuthorizationResponseUrl,
+  canUseMcp,
   validateAuthorizationRequest,
   type AuthorizationRequestParameters,
 } from "@sam-monorepo/application";
