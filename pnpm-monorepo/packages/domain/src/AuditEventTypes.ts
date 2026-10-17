@@ -239,6 +239,10 @@ export enum AuditEventType {
   ASSUME_USER_ENDED = "ASSUME_USER_ENDED",
   READ_MARKER_CREATED = "READ_MARKER_CREATED",
   CITIZEN_WELCOMED = "CITIZEN_WELCOMED",
+  OAUTH_GRANT_CREATED = "OAUTH_GRANT_CREATED",
+  OAUTH_GRANT_REVOKED = "OAUTH_GRANT_REVOKED",
+  OAUTH_GRANT_ADMIN_MODE_UPDATED = "OAUTH_GRANT_ADMIN_MODE_UPDATED",
+  MCP_TOOL_SETTING_UPDATED = "MCP_TOOL_SETTING_UPDATED",
 }
 
 /**
@@ -1628,6 +1632,32 @@ export interface AuditEventDataByType {
   /** The first visit of a citizen who can open the app, see `Citizen.welcomedAt` */
   [AuditEventType.CITIZEN_WELCOMED]: {
     citizenId: string;
+  };
+
+  /**
+   * `clientId` is the URL of the Client ID Metadata Document. The client
+   * gives its name itself, thus the name is not trusted.
+   */
+  [AuditEventType.OAUTH_GRANT_CREATED]: {
+    grantId: string;
+    clientId: string;
+    clientName: string;
+  };
+
+  [AuditEventType.OAUTH_GRANT_REVOKED]: {
+    grantId: string;
+    clientId: string;
+  };
+
+  [AuditEventType.OAUTH_GRANT_ADMIN_MODE_UPDATED]: {
+    grantId: string;
+    clientId: string;
+    enabled: boolean;
+  };
+
+  [AuditEventType.MCP_TOOL_SETTING_UPDATED]: {
+    toolName: string;
+    enabled: boolean;
   };
 }
 

@@ -2358,4 +2358,46 @@ export const AuditEventDefinitions: {
     message: (data) =>
       `Welcomed citizen ${data.citizenId} on their first visit with access to the app`,
   },
+
+  [AuditEventType.OAUTH_GRANT_CREATED]: {
+    type: AuditEventType.OAUTH_GRANT_CREATED,
+    data: {
+      grantId: "string",
+      clientId: "string",
+      clientName: "string",
+    },
+    message: (data) =>
+      `OAuth client ${data.clientName} connected (${data.clientId}, grant ${data.grantId})`,
+  },
+
+  [AuditEventType.OAUTH_GRANT_REVOKED]: {
+    type: AuditEventType.OAUTH_GRANT_REVOKED,
+    data: {
+      grantId: "string",
+      clientId: "string",
+    },
+    message: (data) =>
+      `OAuth client disconnected (${data.clientId}, grant ${data.grantId})`,
+  },
+
+  [AuditEventType.OAUTH_GRANT_ADMIN_MODE_UPDATED]: {
+    type: AuditEventType.OAUTH_GRANT_ADMIN_MODE_UPDATED,
+    data: {
+      grantId: "string",
+      clientId: "string",
+      enabled: true,
+    },
+    message: (data) =>
+      `Admin mode ${data.enabled ? "enabled" : "disabled"} for OAuth client ${data.clientId} (grant ${data.grantId})`,
+  },
+
+  [AuditEventType.MCP_TOOL_SETTING_UPDATED]: {
+    type: AuditEventType.MCP_TOOL_SETTING_UPDATED,
+    data: {
+      toolName: "string",
+      enabled: true,
+    },
+    message: (data) =>
+      `MCP tool ${data.toolName} ${data.enabled ? "enabled" : "disabled"}`,
+  },
 };
