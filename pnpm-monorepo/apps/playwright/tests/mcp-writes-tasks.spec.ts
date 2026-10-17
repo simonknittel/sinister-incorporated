@@ -1,0 +1,372 @@
+import { TaskRewardType, TaskVisibility } from "@sam-monorepo/database/client";
+import { expectAuditEvents } from "../fixtures/audit";
+import { createCitizen } from "../fixtures/factories";
+import {
+  structuredContentOf,
+  toolResultText,
+  UNKNOWN_TOOL_ERROR_CODE,
+  type McpTestClient,
+} from "../fixtures/mcp-client";
+import { expect, test } from "../fixtures/test";
+
+const CONFLICT_RESULT = /^ConflictError: /;
+const FORBIDDEN_RESULT = /^ForbiddenError: /;
+const VALIDATION_RESULT = /^ValidationError: /;
+
+/** The structured content of a tool result that must not be an error */
+const callForContent = async (
+  client: McpTestClient,
+  name: string,
+  toolArguments?: Record<string, unknown>,
+) => {
+  const result = await client.callTool(name, toolArguments);
+  expect(result.isError, toolResultText(result)).toBeFalsy();
+
+  return structuredContentOf(result);
+};
+
+/** The message of a tool result that must be an error */
+const callForError = async (
+  client: McpTestClient,
+  name: string,
+  toolArguments?: Record<string, unknown>,
+) => {
+  const result = await client.callTool(name, toolArguments);
+  expect(result.isError).toBe(true);
+
+  return toolResultText(result);
+};
+
+test.describe("the task write tools of the MCP server", () => {
+  test("create_task creates a public task with a SILC reward like the form, with the audit event", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const creator = await createCitizen(prisma, {
+      handle: "mcp-auftraggeber",
+      permissionStrings: ["task;read", "task;create"],
+    });
+    const client = await connectMcpClient(
+      (await authorizeMcpClient(creator.user)).accessToken,
+    );
+
+    const result = await callForContent(client, "create_task", {
+      title: "Frachter eskortieren",
+      description: "Von Lorville nach Area18.",
+      visibility: "public",
+      reward: { type: "silc", value: 50 },
+      // Summer time: Berlin is two hours ahead of UTC
+      expires_at: "2099-07-15T20:00:00+02:00",
+      assignment_limit: 2,
+    });
+    expect(result).toMatchObject({
+      tasks: [
+        {
+          title: "Frachter eskortieren",
+          description: "Von Lorville nach Area18.",
+          status: "open",
+          visibility: "public",
+          reward: { type: "silc", value: 50 },
+          expires_at: "2099-07-15T18:00:00.000Z",
+          created_by: { id: creator.entity.id, handle: "mcp-auftraggeber" },
+          assignees: [],
+          can_manage: true,
+          repeatable: 1,
+          assignment_limit: 2,
+        },
+      ],
+      notifications_sent: true,
+    });
+
+    const task = await prisma.task.findFirstOrThrow();
+    expect(task).toMatchObject({
+      visibility: TaskVisibility.PUBLIC,
+      rewardType: TaskRewardType.SILC,
+      rewardSilcValue: 50,
+      rewardTypeTextValue: null,
+      createdById: creator.entity.id,
+    });
+
+    await expectAuditEvents(prisma, ["TASK_CREATED"]);
+    expect(
+      await prisma.auditEvent.findFirstOrThrow({
+        where: { type: "TASK_CREATED" },
+        select: { createdById: true, data: true },
+      }),
+    ).toEqual({
+      createdById: creator.user.id,
+      data: { taskIds: [task.id], visibility: "PUBLIC", rewardType: "SILC" },
+    });
+  });
+
+  test("create_task makes one task for each assignee of a personalized task, only with the permission of the visibility", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const planner = await createCitizen(prisma, {
+      handle: "mcp-planer",
+      permissionStrings: ["task;read", "task;create"],
+    });
+    const dispatcher = await createCitizen(prisma, {
+      handle: "mcp-disponent",
+      permissionStrings: [
+        "task;read",
+        "task;create",
+        "task;create;taskVisibility=PERSONALIZED",
+      ],
+    });
+    const pilot = await createCitizen(prisma, { handle: "mcp-pilotin" });
+    const gunner = await createCitizen(prisma, { handle: "mcp-schuetze" });
+    const personalizedTask = {
+      title: "Training absolvieren",
+      visibility: "personalized",
+      reward: { type: "text", value: "Ein Abzeichen" },
+      assignee_ids: [pilot.entity.id, gunner.entity.id],
+    };
+
+    const plannerClient = await connectMcpClient(
+      (await authorizeMcpClient(planner.user)).accessToken,
+    );
+    expect(
+      await callForError(plannerClient, "create_task", personalizedTask),
+    ).toMatch(FORBIDDEN_RESULT);
+    expect(await prisma.task.count()).toBe(0);
+
+    const dispatcherClient = await connectMcpClient(
+      (await authorizeMcpClient(dispatcher.user)).accessToken,
+    );
+    const result = await callForContent(
+      dispatcherClient,
+      "create_task",
+      personalizedTask,
+    );
+    expect(result.tasks).toEqual([
+      expect.objectContaining({
+        visibility: "personalized",
+        assignees: [{ id: pilot.entity.id, handle: "mcp-pilotin" }],
+      }),
+      expect.objectContaining({
+        visibility: "personalized",
+        assignees: [{ id: gunner.entity.id, handle: "mcp-schuetze" }],
+      }),
+    ]);
+    expect(await prisma.task.count()).toBe(2);
+  });
+
+  test("update_task changes only the given fields, and a citizen drops and accepts the task, with the audit events of the forms", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const creator = await createCitizen(prisma, {
+      handle: "mcp-auftraggeber",
+      permissionStrings: ["task;read"],
+    });
+    const worker = await createCitizen(prisma, {
+      handle: "mcp-auftragnehmer",
+      permissionStrings: ["task;read"],
+    });
+    const task = await prisma.task.create({
+      data: {
+        title: "Frachter eskortieren",
+        description: "Von Lorville nach Area18.",
+        visibility: TaskVisibility.PUBLIC,
+        rewardType: TaskRewardType.TEXT,
+        rewardTypeTextValue: "Ruhm",
+        createdById: creator.entity.id,
+      },
+    });
+
+    const creatorClient = await connectMcpClient(
+      (await authorizeMcpClient(creator.user)).accessToken,
+    );
+    expect(
+      await callForContent(creatorClient, "update_task", {
+        task_id: task.id,
+        title: "Konvoi eskortieren",
+        reward_text: "Ruhm und Ehre",
+        assignee_ids: [worker.entity.id],
+      }),
+    ).toMatchObject({
+      task: {
+        title: "Konvoi eskortieren",
+        // A field that is not given stays
+        description: "Von Lorville nach Area18.",
+        reward: { type: "text", value: "Ruhm und Ehre" },
+        assignees: [{ id: worker.entity.id, handle: "mcp-auftragnehmer" }],
+      },
+      notifications_sent: true,
+    });
+    // The reward of a text task has no SILC value
+    expect(
+      await callForError(creatorClient, "update_task", {
+        task_id: task.id,
+        reward_silc_value: 10,
+      }),
+    ).toMatch(VALIDATION_RESULT);
+
+    const workerClient = await connectMcpClient(
+      (await authorizeMcpClient(worker.user)).accessToken,
+    );
+    expect(
+      await callForContent(workerClient, "drop_task", { task_id: task.id }),
+    ).toMatchObject({ task: { assignees: [], is_assigned_to_me: false } });
+    expect(
+      await callForError(workerClient, "drop_task", { task_id: task.id }),
+    ).toMatch(CONFLICT_RESULT);
+    expect(
+      await callForContent(workerClient, "accept_task", { task_id: task.id }),
+    ).toMatchObject({ task: { is_assigned_to_me: true } });
+
+    await expectAuditEvents(prisma, [
+      "TASK_TITLE_UPDATED",
+      "TASK_REWARD_TEXT_UPDATED",
+      "TASK_ASSIGNMENTS_UPDATED",
+      "TASK_SELF_ASSIGNMENT_DELETED",
+      "TASK_SELF_ASSIGNMENT_CREATED",
+    ]);
+    // Only the given field groups write an audit event
+    expect(
+      await prisma.auditEvent.count({
+        where: { type: "TASK_DESCRIPTION_UPDATED" },
+      }),
+    ).toBe(0);
+  });
+
+  test("complete_task pays the SILC reward of the creator and creates the next repetition", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const creator = await createCitizen(prisma, {
+      handle: "mcp-auftraggeber",
+      permissionStrings: ["task;read"],
+    });
+    const worker = await createCitizen(prisma, { handle: "mcp-arbeiter" });
+    const task = await prisma.task.create({
+      data: {
+        title: "Station verteidigen",
+        visibility: TaskVisibility.PUBLIC,
+        rewardType: TaskRewardType.SILC,
+        rewardSilcValue: 50,
+        repeatable: 2,
+        createdById: creator.entity.id,
+        assignments: {
+          create: {
+            citizenId: worker.entity.id,
+            createdById: creator.entity.id,
+          },
+        },
+      },
+    });
+    const client = await connectMcpClient(
+      (await authorizeMcpClient(creator.user)).accessToken,
+    );
+
+    expect(
+      await callForContent(client, "complete_task", {
+        task_id: task.id,
+        completionist_ids: [worker.entity.id],
+      }),
+    ).toMatchObject({
+      task: {
+        status: "completed",
+        completionists: [{ id: worker.entity.id, handle: "mcp-arbeiter" }],
+        is_updatable: false,
+      },
+      notifications_sent: true,
+    });
+    // A completed task cannot be completed again
+    expect(
+      await callForError(client, "complete_task", {
+        task_id: task.id,
+        completionist_ids: [worker.entity.id],
+      }),
+    ).toMatch(CONFLICT_RESULT);
+
+    const [workerEntity, creatorEntity] = await Promise.all([
+      prisma.citizen.findUniqueOrThrow({ where: { id: worker.entity.id } }),
+      prisma.citizen.findUniqueOrThrow({ where: { id: creator.entity.id } }),
+    ]);
+    expect(workerEntity.silcBalance).toBe(50);
+    expect(creatorEntity.silcBalance).toBe(-50);
+    expect(
+      await prisma.task.findFirstOrThrow({
+        where: { title: "Station verteidigen", completedAt: null },
+        select: { repeatable: true },
+      }),
+    ).toEqual({ repeatable: 1 });
+
+    await expectAuditEvents(prisma, ["TASK_COMPLETED"]);
+  });
+
+  test("cancel_task cancels an open task, and only its creator or a task manager can change it", async ({
+    prisma,
+    authorizeMcpClient,
+    connectMcpClient,
+  }) => {
+    const creator = await createCitizen(prisma, {
+      handle: "mcp-auftraggeber",
+      permissionStrings: ["task;read"],
+    });
+    const bystander = await createCitizen(prisma, {
+      handle: "mcp-beobachter",
+      permissionStrings: ["task;read"],
+    });
+    const task = await prisma.task.create({
+      data: {
+        title: "Fracht ausliefern",
+        visibility: TaskVisibility.PUBLIC,
+        rewardType: TaskRewardType.TEXT,
+        rewardTypeTextValue: "Ruhm",
+        createdById: creator.entity.id,
+      },
+    });
+
+    const bystanderClient = await connectMcpClient(
+      (await authorizeMcpClient(bystander.user)).accessToken,
+    );
+    expect(await bystanderClient.listToolNames()).not.toContain("create_task");
+    await expect(
+      bystanderClient.callTool("create_task", {
+        title: "Eigener Task",
+        visibility: "public",
+        reward: { type: "text", value: "Ruhm" },
+      }),
+    ).rejects.toMatchObject({ code: UNKNOWN_TOOL_ERROR_CODE });
+    expect(
+      await callForError(bystanderClient, "update_task", {
+        task_id: task.id,
+        title: "Übernommen",
+      }),
+    ).toMatch(FORBIDDEN_RESULT);
+    expect(
+      await callForError(bystanderClient, "cancel_task", { task_id: task.id }),
+    ).toMatch(FORBIDDEN_RESULT);
+
+    const creatorClient = await connectMcpClient(
+      (await authorizeMcpClient(creator.user)).accessToken,
+    );
+    expect(
+      await callForContent(creatorClient, "cancel_task", { task_id: task.id }),
+    ).toMatchObject({
+      task: { title: "Fracht ausliefern", status: "cancelled" },
+    });
+    expect(
+      await callForError(creatorClient, "cancel_task", { task_id: task.id }),
+    ).toMatch(CONFLICT_RESULT);
+
+    expect(
+      await prisma.task.findUniqueOrThrow({ where: { id: task.id } }),
+    ).toMatchObject({
+      cancelledAt: expect.any(Date),
+      cancelledById: creator.entity.id,
+    });
+    await expectAuditEvents(prisma, ["TASK_CANCELLED"]);
+    expect(
+      await prisma.auditEvent.count({ where: { type: "TASK_CANCELLED" } }),
+    ).toBe(1);
+  });
+});

@@ -29,3 +29,38 @@ export const taskListItemOutputShape = {
   is_assigned_to_me: z.boolean(),
   is_new: z.boolean(),
 };
+
+/** One task with its details: the output of `get_task` and of the writes */
+export const taskOutputSchema = z.strictObject({
+  ...taskListItemOutputShape,
+  completionists: z.array(citizenReferenceSchema),
+  required_roles: z.array(
+    z.strictObject({
+      id: z.string(),
+      name: z.string(),
+    }),
+  ),
+  has_required_role: z.boolean(),
+  can_manage: z.boolean(),
+  is_updatable: z.boolean(),
+  repeatable: z.number().int(),
+  hidden_for_other_roles: z.boolean(),
+  assignment_limit: z.number().int().nullable(),
+});
+
+export const notificationsSentOutputSchema = z
+  .boolean()
+  .describe(
+    "False when the change is saved, but the notifications failed: do not send the change again.",
+  );
+
+/** The output of the writes of one task */
+export const taskWriteOutputSchema = z.strictObject({
+  task: taskOutputSchema,
+});
+
+/** The output of the writes of one task that notify other members */
+export const notifyingTaskWriteOutputSchema = z.strictObject({
+  task: taskOutputSchema,
+  notifications_sent: notificationsSentOutputSchema,
+});
