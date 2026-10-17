@@ -1,16 +1,14 @@
+import { toActor } from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
+import { isAllowedToManageTask as isActorAllowedToManageTask } from "@sam-monorepo/application";
 import type { Task } from "@sam-monorepo/database/client";
 
 export const isAllowedToManageTask = async (
   task: Pick<Task, "createdById">,
 ) => {
-  const authentication = await requireAuthentication();
+  const { session } = await requireAuthentication();
 
-  if (task.createdById === authentication.session.entity?.id) return true;
-
-  if (await authentication.authorize("task", "manage")) return true;
-
-  return false;
+  return isActorAllowedToManageTask(await toActor(session), task);
 };
 
 export const isAllowedToDeleteTask = async () => {

@@ -1,10 +1,7 @@
+import { CursorDirection } from "@sam-monorepo/domain";
 import { parseAsString, parseAsStringEnum } from "nuqs/server";
 
-/** Which way a page move walks the (descending) result order. */
-export enum CursorDirection {
-  Next = "next",
-  Prev = "prev",
-}
+export { CursorDirection };
 
 export const cursorPaginationParsers = {
   cursor: parseAsString,

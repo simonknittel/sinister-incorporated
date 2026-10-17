@@ -1,156 +1,51 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  throwApplicationErrorForPage,
+  toActor,
+} from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
 import { type CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
-import {
-  buildCursorConditions,
-  cursorOrderBy,
-  paginateMergedSources,
-  type MergedCursorSourceInput,
-} from "@/modules/common/CursorPagination/mergedCursor";
-import { getNewIds } from "@/modules/read-markers/queries/getNewIds";
-import { getUnreadWhere } from "@/modules/read-markers/queries/getUnreadWhere";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import type { Prisma } from "@sam-monorepo/database/client";
-import { ReadMarkerSubject } from "@sam-monorepo/domain";
-import { forbidden } from "next/navigation";
+import {
+  findTaskListPage,
+  TaskAcceptedFilter,
+  TaskCreatorFilter,
+  type TaskListItemRow,
+  type TaskListRow,
+  type TaskListStatus,
+} from "@sam-monorepo/application";
 import { cache } from "react";
-import { TaskListStatus } from "../utils/TaskListStatus";
-import { getOpenTasksWhere } from "./getOpenTasksWhere";
-import { getVisibleTasksWhere } from "./getVisibleTasksWhere";
-import { TASK_LIST_SELECT, type TaskListRow } from "./taskListSelect";
 
 /** The closed tasks increase each day, thus the list shows them in pages */
 const CLOSED_TASKS_PAGE_SIZE = 20;
 
-enum ClosedTaskSourceKey {
-  Cancelled = "cancelled",
-  Completed = "completed",
-  Expired = "expired",
-}
-
-type ClosedDateField = "completedAt" | "cancelledAt" | "expiresAt";
-
 /**
- * The closed tasks, the most recently closed first: by the completion date,
- * else the cancellation date, else the expiry date. The database cannot sort
- * by the first of these dates that is set. Thus each case is a separate
- * source, and `paginateMergedSources()` merges the sources by date.
+ * Only the fields of `TASK_LIST_SELECT` go to the client component: the
+ * description and the reward stay on the server
  */
-interface ClosedTaskSource {
-  readonly sourceKey: ClosedTaskSourceKey;
-  readonly dateField: ClosedDateField;
-  readonly where: (now: Date) => Prisma.TaskWhereInput;
-}
-
-const CLOSED_TASK_SOURCES: readonly ClosedTaskSource[] = [
-  {
-    sourceKey: ClosedTaskSourceKey.Completed,
-    dateField: "completedAt",
-    where: () => ({ completedAt: { not: null } }),
-  },
-  {
-    sourceKey: ClosedTaskSourceKey.Cancelled,
-    dateField: "cancelledAt",
-    where: () => ({ completedAt: null, cancelledAt: { not: null } }),
-  },
-  {
-    sourceKey: ClosedTaskSourceKey.Expired,
-    dateField: "expiresAt",
-    where: (now) => ({
-      completedAt: null,
-      cancelledAt: null,
-      expiresAt: { lt: now },
-    }),
-  },
-];
-
-const createClosedTaskSource =
-  ({ sourceKey, dateField }: ClosedTaskSource, where: Prisma.TaskWhereInput) =>
-  async ({ position, direction, take }: MergedCursorSourceInput) => {
-    const tasks = await prisma.task.findMany({
-      where: {
-        AND: [
-          where,
-          ...buildCursorConditions(position, sourceKey, direction, dateField),
-        ],
-      },
-      select: TASK_LIST_SELECT,
-      orderBy: cursorOrderBy(direction, dateField),
-      take,
-    });
-
-    return tasks.map((task) => ({
-      sourceKey,
-      id: task.id,
-      // The where of the source makes sure that the date is set
-      date: task[dateField]!,
-      task,
-    }));
-  };
-
-const getFilterWhere = (
-  accepted: string,
-  createdBy: string,
-  citizenId: string | undefined,
-): Prisma.TaskWhereInput => ({
-  ...(accepted === "yes" && {
-    assignments: {
-      some: {
-        citizenId,
-      },
-    },
-  }),
-  ...(createdBy === "me" && {
-    createdById: citizenId,
-  }),
+const toTaskListRow = ({
+  id,
+  title,
+  createdAt,
+  completedAt,
+  expiresAt,
+  repeatable,
+  cancelledAt,
+  deletedAt,
+  assignments,
+  completionists,
+}: TaskListItemRow): TaskListRow => ({
+  id,
+  title,
+  createdAt,
+  completedAt,
+  expiresAt,
+  repeatable,
+  cancelledAt,
+  deletedAt,
+  assignments,
+  completionists,
 });
-
-const getOpenTasks = async (where: Prisma.TaskWhereInput[]) => {
-  return prisma.task.findMany({
-    where: {
-      AND: [
-        getOpenTasksWhere(new Date()),
-        ...where,
-        await getVisibleTasksWhere(),
-      ],
-    },
-    select: TASK_LIST_SELECT,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-};
-
-const getClosedTasks = async (
-  filterWhere: Prisma.TaskWhereInput,
-  cursor: string | null,
-  direction: CursorDirection,
-) => {
-  const now = new Date();
-  const visibleTasksWhere = await getVisibleTasksWhere();
-
-  const page = await paginateMergedSources({
-    sources: CLOSED_TASK_SOURCES.map((source) =>
-      createClosedTaskSource(source, {
-        AND: [
-          { deletedAt: null },
-          filterWhere,
-          visibleTasksWhere,
-          source.where(now),
-        ],
-      }),
-    ),
-    pageSize: CLOSED_TASKS_PAGE_SIZE,
-    cursor,
-    direction,
-  });
-
-  return {
-    tasks: page.entries.map((entry) => entry.task),
-    nextCursor: page.nextCursor,
-    prevCursor: page.prevCursor,
-  };
-};
 
 interface TasksPage {
   readonly tasks: TaskListRow[];
@@ -160,6 +55,10 @@ interface TasksPage {
   readonly prevCursor: string | null;
 }
 
+/**
+ * The tasks list of the app: all open tasks on one page, the closed tasks
+ * in pages (see `findTaskListPage`)
+ */
 export const getTasks = cache(
   withTrace(
     "getTasks",
@@ -170,60 +69,34 @@ export const getTasks = cache(
       cursor: string | null,
       direction: CursorDirection,
     ): Promise<TasksPage> => {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("task", "read"))) forbidden();
+      const { session } = await requireAuthentication();
 
-      const filterWhere = getFilterWhere(
-        accepted,
-        createdBy,
-        authentication.session.entity?.id,
-      );
+      try {
+        const page = await findTaskListPage(
+          getApplicationContext(),
+          await toActor(session),
+          {
+            status,
+            accepted:
+              accepted === "yes"
+                ? TaskAcceptedFilter.Yes
+                : TaskAcceptedFilter.All,
+            created_by:
+              createdBy === "me" ? TaskCreatorFilter.Me : TaskCreatorFilter.All,
+            limit: CLOSED_TASKS_PAGE_SIZE,
+            cursor: cursor ?? undefined,
+          },
+          { direction, allOpenTasksOnOnePage: true },
+        );
 
-      /**
-       * The open tasks are only the tasks which are open now, thus a small
-       * list without pages. The same applies to the new tasks, which are a
-       * part of them.
-       */
-      switch (status) {
-        case TaskListStatus.Open: {
-          const tasks = await getOpenTasks([filterWhere]);
-
-          return {
-            tasks,
-            newTaskIds: await getNewIds(
-              ReadMarkerSubject.Task,
-              tasks.map((task) => task.id),
-            ),
-            nextCursor: null,
-            prevCursor: null,
-          };
-        }
-
-        case TaskListStatus.New: {
-          const unreadWhere = await getUnreadWhere(ReadMarkerSubject.Task);
-          const tasks = unreadWhere
-            ? await getOpenTasks([filterWhere, unreadWhere])
-            : [];
-
-          return {
-            tasks,
-            newTaskIds: new Set(tasks.map((task) => task.id)),
-            nextCursor: null,
-            prevCursor: null,
-          };
-        }
-
-        case TaskListStatus.Closed:
-          return {
-            ...(await getClosedTasks(filterWhere, cursor, direction)),
-            // Only open tasks can be new
-            newTaskIds: new Set(),
-          };
-
-        default:
-          throw new Error(
-            `Unknown task list status: ${status satisfies never}`,
-          );
+        return {
+          tasks: page.rows.map(toTaskListRow),
+          newTaskIds: page.newTaskIds,
+          nextCursor: page.nextCursor,
+          prevCursor: page.prevCursor,
+        };
+      } catch (error) {
+        return throwApplicationErrorForPage(error);
       }
     },
   ),

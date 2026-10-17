@@ -1,9 +1,7 @@
+import { isTaskUpdatable as isTaskUpdatableAt } from "@sam-monorepo/application";
 import type { Task } from "@sam-monorepo/database/client";
 
-export const isTaskUpdatable = (task: Task) => {
-  if (task.completedAt) return false;
-  if (task.deletedAt || task.cancelledAt) return false;
-  if (task.expiresAt && task.expiresAt < new Date()) return false;
-
-  return true;
-};
+/** Whether the task is still open now (see the rule of the application package) */
+export const isTaskUpdatable = (
+  task: Pick<Task, "completedAt" | "deletedAt" | "cancelledAt" | "expiresAt">,
+) => isTaskUpdatableAt(task, new Date());

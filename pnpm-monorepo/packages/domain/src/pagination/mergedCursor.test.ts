@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { CursorDirection } from "./cursorPaginationParsers";
+import { CursorDirection } from "./CursorDirection.js";
 import {
   buildCursorConditions,
   compareMergedCursorEntries,
@@ -10,7 +10,7 @@ import {
   paginateMergedSources,
   type MergedCursorEntry,
   type MergedCursorSource,
-} from "./mergedCursor";
+} from "./mergedCursor.js";
 
 const entry = (sourceKey: string, id: string, date: string) => ({
   sourceKey,

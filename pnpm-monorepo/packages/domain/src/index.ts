@@ -30,6 +30,21 @@ export {
 } from "./events/eventRecipients.js";
 export { isAllowedWebPushEndpointUrl } from "./isAllowedWebPushEndpointUrl.js";
 export { ORG_ID } from "./ORG_ID.js";
+export { CursorDirection } from "./pagination/CursorDirection.js";
+export {
+  buildCursorConditions,
+  compareMergedCursorEntries,
+  cursorOrderBy,
+  decodeCursor,
+  encodeCursor,
+  isBeyondCursorPosition,
+  paginateMergedSources,
+  type CursorCondition,
+  type CursorPosition,
+  type MergedCursorEntry,
+  type MergedCursorSource,
+  type MergedCursorSourceInput,
+} from "./pagination/mergedCursor.js";
 export { EFFECTIVE_ROLE_PERMISSIONS_SELECT } from "./permissions/roleAssignmentSelects.js";
 export {
   CYCLE_PHASE_WHERE,
@@ -53,6 +68,11 @@ export { getAuecPerSilc } from "./silc/getAuecPerSilc.js";
 export { getTotalSilc } from "./silc/getTotalSilc.js";
 export { lockSilcLedger } from "./silc/lockSilcLedger.js";
 export { updateSilcBalances } from "./silc/updateSilcBalances.js";
+export {
+  SPYNET_SEARCH_QUERY_MAXIMUM_LENGTH,
+  SPYNET_SEARCH_QUERY_MINIMUM_LENGTH,
+  SpynetSearchHitType,
+} from "./spynet/spynetSearch.js";
 export {
   ORGANIZATION_TIMEZONE,
   getLocalDate,
