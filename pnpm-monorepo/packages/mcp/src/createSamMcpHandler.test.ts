@@ -12,6 +12,7 @@ import {
   type ApplicationContext,
 } from "@sam-monorepo/application";
 import { afterEach, describe, expect, test, vi } from "vitest";
+import { listToolCatalog } from "./catalog.js";
 import {
   createSamMcpHandler,
   toAuthInfoExtra,
@@ -58,6 +59,15 @@ const actor = createActor({
   adminMode: false,
 });
 
+/**
+ * The tests look only at `get_current_user`. The other tools of the catalog
+ * are disabled, thus a new tool that every user sees does not change the
+ * expectations.
+ */
+const OTHER_TOOL_NAMES = listToolCatalog()
+  .map((tool) => tool.name)
+  .filter((name) => name !== "get_current_user");
+
 const handler = createSamMcpHandler({
   serverVersion: "1.0.0",
   onerror: () => undefined,
@@ -92,7 +102,7 @@ const send = async <Result>(
         extra: toAuthInfoExtra({
           context,
           actor,
-          disabledToolNames: [],
+          disabledToolNames: OTHER_TOOL_NAMES,
           ...principal,
         }),
       },
@@ -224,7 +234,9 @@ describe("tools/call", () => {
   });
 
   test("a disabled tool is not in the list and cannot be called", async () => {
-    const principal = { disabledToolNames: ["get_current_user"] };
+    const principal = {
+      disabledToolNames: [...OTHER_TOOL_NAMES, "get_current_user"],
+    };
 
     const list = await sendModernRequest<ListToolsResult>(
       "tools/list",
