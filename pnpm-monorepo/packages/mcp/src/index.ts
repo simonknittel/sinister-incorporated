@@ -1,9 +1,15 @@
 /**
- * The MCP server of SAM: the tools and the handler factory. The package does
- * not depend on a host. A host (for example a Next.js route) authenticates
- * the request, adapts it and calls the handler.
+ * The MCP server of SAM: the tools, the handler factory and the request
+ * handler that verifies the bearer token and builds the principal. The
+ * package does not depend on a host. A host (for example a Next.js route)
+ * applies its kill switch, builds the application context and calls the
+ * request handler.
  */
 export { listToolCatalog } from "./catalog.js";
+export {
+  createMcpRequestHandler,
+  type McpRequestHandler,
+} from "./createMcpRequestHandler.js";
 export {
   SERVER_NAME,
   createSamMcpHandler,
