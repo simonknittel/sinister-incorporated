@@ -172,7 +172,7 @@ jobs:
         working-directory: pnpm-monorepo
 
       - name: Install dependencies
-        run: pnpm install --filter @sam-monorepo/app... --filter @sam-monorepo/lambda... --filter @sam-monorepo/scripts...
+        run: pnpm install --filter @sam-monorepo/app... --filter @sam-monorepo/lambda... --filter @sam-monorepo/scripts... --filter @sam-monorepo/mcp...
         working-directory: pnpm-monorepo
         env:
           # See the lint job's install step
@@ -183,7 +183,7 @@ jobs:
         working-directory: pnpm-monorepo
 
       - name: Typecheck packages
-        run: pnpm --filter @sam-monorepo/domain --filter @sam-monorepo/permissions --filter @sam-monorepo/wiki-editor run typecheck
+        run: pnpm --filter @sam-monorepo/domain --filter @sam-monorepo/permissions --filter @sam-monorepo/wiki-editor --filter @sam-monorepo/application --filter @sam-monorepo/mcp run typecheck
         working-directory: pnpm-monorepo
 
       - name: Typecheck scripts

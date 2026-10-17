@@ -1,0 +1,11 @@
+/* IDE/typecheck config covering sources and tests; the emitting build
+   lives in tsconfig.build.json and excludes tests. */
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    /* The code of this package runs only on the server (Node.js). Thus it
+       uses the "lib" and the Node.js "types" of the base config. */
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"]
+}
