@@ -33,7 +33,7 @@ export const getCurrentUserTool = defineTool({
   group: ToolGroup.Account,
   title: "Get the current user",
   description:
-    "Gives the signed-in user of S.A.M.: the user id, the citizen (id and handle, or null for a user without a citizen), the user role, whether admin mode is on, the number of permissions, the tool groups that this client can use, and the URL of the page where the user selects the tools.",
+    "Gives the signed-in user of SAM: the user id, the citizen (id and handle, or null for a user without a citizen), the user role, whether admin mode is on, the number of permissions, the tool groups that this client can use, and the URL of the page where the user selects the tools.",
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: z.strictObject({}),
   outputSchema: z.strictObject({

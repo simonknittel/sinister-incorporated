@@ -33,6 +33,7 @@ export interface ChangelogEntrySummary {
   readonly tags: string[];
   /** Whether the app shows the entry as unseen until the user saw it */
   readonly is_tracked: boolean;
+  readonly markdown: string;
 }
 
 export interface ListChangelogEntriesOutput {
@@ -82,6 +83,7 @@ export const listChangelogEntries = async (
       title: entry.title,
       tags: [...entry.tags],
       is_tracked: entry.isTracked,
+      markdown: entry.markdown,
     })),
     next_cursor: page.nextCursor,
   };

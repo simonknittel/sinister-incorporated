@@ -14,7 +14,7 @@ export const listChangelogEntriesTool = defineTool({
   group: ToolGroup.Changelog,
   title: "List the changelog entries",
   description:
-    "Gives the entries of the changelog of S.A.M. (the release notes), the newest first: the key, the date, the title and the tags, without the text. Give a quarter (for example 2026-q4) for the entries of this quarter. Give a key to get_changelog_entry for the text.",
+    "Gives the entries of the changelog of SAM (the release notes), the newest first: the key, the date, the title, the tags and the text as Markdown. Give a quarter (for example 2026-q4) for the entries of this quarter.",
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: listChangelogEntriesInputSchema,
   outputSchema: z.strictObject({
@@ -29,6 +29,7 @@ export const listChangelogEntriesTool = defineTool({
           .describe(
             "Whether the app shows the entry as unseen until the user saw it.",
           ),
+        markdown: z.string(),
       }),
     ),
     next_cursor: z.string().nullable(),

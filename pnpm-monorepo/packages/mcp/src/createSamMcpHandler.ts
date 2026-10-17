@@ -11,7 +11,7 @@ import { registerTools } from "./registry.js";
 /** The `name` of `serverInfo` */
 export const SERVER_NAME = "sam";
 
-const SERVER_TITLE = "S.A.M.";
+const SERVER_TITLE = "SAM";
 
 /**
  * The principal of a request. The host authenticates the request and gives
