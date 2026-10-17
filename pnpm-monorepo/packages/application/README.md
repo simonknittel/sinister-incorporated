@@ -12,6 +12,8 @@ Each use case has this signature:
 
 - `context` gives the services of the app that runs the use case: the Prisma client, the audit events, the notifications, the logger, the tracer, the clock, the changelog, the collab server, the URLs and the signing key (`src/context.ts`).
 - `actor` is the user for whom the use case runs (`src/actor.ts`). The Next.js app builds it from the session, the MCP server from the access token.
+- A use case without a user, for example the public token endpoint of the OAuth server, takes `(context, input)`.
+- The use cases of a feature live in `src/<feature>/` with a barrel `index.ts` that the package index re-exports.
 
 Obey these rules:
 
