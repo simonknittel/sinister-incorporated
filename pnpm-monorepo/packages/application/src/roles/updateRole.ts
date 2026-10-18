@@ -1,4 +1,7 @@
-import { AuditEventType } from "@sam-monorepo/domain";
+import {
+  AuditEventType,
+  ROLE_DESCRIPTION_MAX_LENGTH,
+} from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
@@ -6,10 +9,7 @@ import { NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { RoleErrorMessage } from "./roleErrors.js";
-import {
-  ROLE_DESCRIPTION_MAX_LENGTH,
-  ROLE_NAME_MAX_LENGTH,
-} from "./roleInputSchemas.js";
+import { ROLE_NAME_MAX_LENGTH } from "./roleInputSchemas.js";
 
 /** About 27 years: far above a real period of inactivity */
 const MAXIMUM_INACTIVITY_DAYS = 10_000;

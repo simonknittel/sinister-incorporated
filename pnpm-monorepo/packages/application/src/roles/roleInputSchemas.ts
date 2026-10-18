@@ -10,9 +10,6 @@ export const ROLE_NAME_MAX_LENGTH = 255;
  */
 export const MAXIMUM_ROLE_RELATIONS = 250;
 
-/** The same limit as the description field of the role page */
-export const ROLE_DESCRIPTION_MAX_LENGTH = 2048;
-
 export const permissionStringSchema = z
   .string()
   .trim()

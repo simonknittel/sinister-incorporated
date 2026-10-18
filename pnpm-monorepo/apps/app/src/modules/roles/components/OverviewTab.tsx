@@ -8,6 +8,7 @@ import { ImageUpload } from "@/modules/common/components/ImageUpload";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { Tile } from "@/modules/common/components/Tile";
 import type { ManagedRole } from "@sam-monorepo/application";
+import { ROLE_DESCRIPTION_MAX_LENGTH } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { FaSave } from "react-icons/fa";
 import { updateRole } from "../actions/updateRole";
@@ -44,7 +45,7 @@ export const OverviewTab = ({ className, role }: Props) => {
             label="Beschreibung"
             name="description"
             defaultValue={role.description ?? undefined}
-            maxLength={2048}
+            maxLength={ROLE_DESCRIPTION_MAX_LENGTH}
             hint="(Optional) Markdown wird unterstützt"
             className="mt-4"
           />

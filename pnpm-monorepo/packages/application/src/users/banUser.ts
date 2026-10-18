@@ -1,5 +1,5 @@
 import { UserRole } from "@sam-monorepo/database/browser";
-import { AuditEventType } from "@sam-monorepo/domain";
+import { AuditEventType, BAN_REASON_MAX_LENGTH } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
@@ -8,15 +8,12 @@ import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { UserErrorMessage } from "./userErrors.js";
 
-/** The length of the text field of the form */
-const MAXIMUM_BAN_REASON_LENGTH = 500;
-
 export const banUserInputSchema = z.object({
   user_id: idSchema.describe("The user to ban."),
   reason: z
     .string()
     .trim()
-    .max(MAXIMUM_BAN_REASON_LENGTH)
+    .max(BAN_REASON_MAX_LENGTH)
     .optional()
     .describe("Why the user gets banned."),
 });

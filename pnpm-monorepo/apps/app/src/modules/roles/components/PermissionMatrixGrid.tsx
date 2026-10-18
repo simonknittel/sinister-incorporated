@@ -1,17 +1,12 @@
 "use client";
 
 import { runAction } from "@/modules/actions/utils/runAction";
-import type { Role, Upload } from "@sam-monorepo/database/browser";
+import type { PermissionMatrixRole } from "@sam-monorepo/application";
 import type { ChangeEventHandler, CSSProperties } from "react";
 import { updateSingleRolePermission } from "../actions/updateSingleRolePermission";
 import { STATIC_PERMISSIONS } from "../utils/STATIC_PERMISSIONS";
 import { MatrixCell } from "./MatrixCell";
 import { MatrixRoleCell } from "./MatrixRoleCell";
-
-interface MatrixRole extends Readonly<Pick<Role, "id" | "name">> {
-  readonly icon: Pick<Upload, "id" | "mimeType"> | null;
-  readonly permissionStrings: readonly string[];
-}
 
 /**
  * Sorted once at module scope, so the columns and every row agree on the
@@ -28,7 +23,7 @@ const tableStyle = {
 } satisfies CSSProperties;
 
 interface Props {
-  readonly roles: readonly MatrixRole[];
+  readonly roles: readonly PermissionMatrixRole[];
 }
 
 /**
@@ -95,7 +90,7 @@ export const PermissionMatrixGrid = ({ roles }: Props) => {
 };
 
 interface MatrixRowProps {
-  readonly role: MatrixRole;
+  readonly role: PermissionMatrixRole;
 }
 
 const MatrixRow = ({ role }: MatrixRowProps) => {

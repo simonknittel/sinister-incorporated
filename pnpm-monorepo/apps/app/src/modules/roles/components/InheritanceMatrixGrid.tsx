@@ -1,21 +1,16 @@
 "use client";
 
 import { runAction } from "@/modules/actions/utils/runAction";
-import type { Role, Upload } from "@sam-monorepo/database/browser";
+import type { InheritanceMatrixRole } from "@sam-monorepo/application";
 import type { ChangeEventHandler, CSSProperties } from "react";
 import { updateSingleRoleInheritance } from "../actions/updateSingleRoleInheritance";
 import { MatrixCell } from "./MatrixCell";
 import { MatrixRoleCell } from "./MatrixRoleCell";
 
-interface MatrixRole extends Readonly<Pick<Role, "id" | "name">> {
-  readonly icon: Pick<Upload, "id" | "mimeType"> | null;
-  readonly inheritedRoleIds: readonly string[];
-}
-
 const SELF_INHERITANCE_TITLE = "Eine Rolle kann sich nicht selbst erben.";
 
 interface Props {
-  readonly roles: readonly MatrixRole[];
+  readonly roles: readonly InheritanceMatrixRole[];
 }
 
 /**
@@ -93,8 +88,8 @@ export const InheritanceMatrixGrid = ({ roles }: Props) => {
 };
 
 interface MatrixRowProps {
-  readonly role: MatrixRole;
-  readonly roles: readonly MatrixRole[];
+  readonly role: InheritanceMatrixRole;
+  readonly roles: readonly InheritanceMatrixRole[];
 }
 
 const MatrixRow = ({ role, roles }: MatrixRowProps) => {

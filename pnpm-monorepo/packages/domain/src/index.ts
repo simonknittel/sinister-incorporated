@@ -174,6 +174,7 @@ export {
 } from "./profitDistribution/cyclePhase.js";
 export { endCollectionPhaseInTransaction } from "./profitDistribution/endCollectionPhaseInTransaction.js";
 export { ReadMarkerSubject } from "./readMarkers/ReadMarkerSubject.js";
+export { ROLE_DESCRIPTION_MAX_LENGTH } from "./roles/roleLimits.js";
 export { getInGameYear } from "./seasonal/inGameYear.js";
 export {
   SEASONAL_EVENT_DEFINITIONS,
@@ -240,6 +241,7 @@ export {
   UPLOAD_USAGE_RELATIONS,
 } from "./uploadUsageRelations.js";
 export { ASSUMABLE_USER_WHERE } from "./user/assumableUser.js";
+export { BAN_REASON_MAX_LENGTH } from "./user/userLimits.js";
 export {
   WIKI_PAGE_CONTENT_JSON_MAX_LENGTH,
   WIKI_PAGE_TITLE_MAX_LENGTH,
