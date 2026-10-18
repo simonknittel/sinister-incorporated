@@ -1,111 +1,27 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
-import { getSilcBalanceOfAllCitizens } from "@/modules/silc/queries/getSilcBalanceOfAllCitizens";
-import { getSilcBalanceOfCurrentCitizen } from "@/modules/silc/queries/getSilcBalanceOfCurrentCitizen";
-import { withTrace } from "@/modules/tracing/utils/withTrace";
-import type { ProfitDistributionCycle } from "@sam-monorepo/database/client";
 import {
-  CyclePhase,
-  getAuecPerSilc,
-  getCurrentPhase,
-  getTotalSilc,
-} from "@sam-monorepo/domain";
-import { forbidden } from "next/navigation";
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
+import { findProfitDistributionCycleDetails } from "@sam-monorepo/application";
+import type { ProfitDistributionCycle } from "@sam-monorepo/database/client";
 import { cache } from "react";
-import { getPayoutState } from "../utils/getMyPayoutStatus";
-import { getMyShare } from "../utils/getMyShare";
-import { getOpenAuecPayout } from "../utils/getOpenAuecPayout";
-import { getPaidAuec } from "../utils/getPaidAuec";
 
+/**
+ * The cycle of the page and of the management page (see
+ * `findProfitDistributionCycleDetails` of the application package), or null
+ * when it does not exist
+ */
 export const getProfitDistributionCycleById = cache(
-  withTrace(
-    "getProfitDistributionCycleById",
-    async (id: ProfitDistributionCycle["id"]) => {
-      const authentication = await requireAuthentication();
-      const [hasProfitDistributionCycleRead, hasProfitDistributionCycleManage] =
-        await Promise.all([
-          authentication.authorize("profitDistributionCycle", "read"),
-          authentication.authorize("profitDistributionCycle", "manage"),
-        ]);
-      if (!hasProfitDistributionCycleRead) forbidden();
-
-      const cycle = await prisma.profitDistributionCycle.findUnique({
-        where: {
-          id,
-        },
-        include: {
-          participants: {
-            select: {
-              citizenId: true,
-              silcBalanceSnapshot: true,
-              cededAt: true,
-              acceptedAt: true,
-              disbursedAt: true,
-              citizen: {
-                select: {
-                  id: true,
-                  handle: true,
-                  deletedAt: true,
-                  silcBalance: true,
-                },
-              },
-              disbursedBy: {
-                select: {
-                  id: true,
-                  handle: true,
-                  deletedAt: true,
-                },
-              },
-            },
-          },
-        },
-      });
-      if (!cycle) return null;
-
-      const currentPhase = getCurrentPhase(cycle);
-      const myParticipant = cycle.participants.find(
-        (participant) =>
-          participant.citizenId === authentication.session.entity!.id,
+  async (id: ProfitDistributionCycle["id"]) => {
+    try {
+      return await findProfitDistributionCycleDetails(
+        getApplicationContext(),
+        await getRequestActor(),
+        id,
       );
-      const mySilcBalance =
-        currentPhase === CyclePhase.Collection
-          ? await getSilcBalanceOfCurrentCitizen()
-          : myParticipant?.silcBalanceSnapshot || 0;
-      const totalSilc = getTotalSilc(cycle.participants);
-      const auecPerSilc =
-        cycle.auecProfit !== null
-          ? getAuecPerSilc(cycle.auecProfit, totalSilc)
-          : null;
-      const myShare =
-        auecPerSilc !== null ? getMyShare(mySilcBalance, auecPerSilc) : null;
-      const myPayoutState = getPayoutState(cycle, myParticipant);
-      const allSilcBalances = hasProfitDistributionCycleManage
-        ? (await getSilcBalanceOfAllCitizens()).filter(
-            (citizen) => citizen.silcBalance > 0,
-          )
-        : [];
-      const openAuecPayout =
-        auecPerSilc !== null
-          ? getOpenAuecPayout(cycle.participants, auecPerSilc)
-          : null;
-      const paidAuec =
-        auecPerSilc !== null
-          ? getPaidAuec(cycle.participants, auecPerSilc)
-          : null;
-
-      return {
-        cycle,
-        currentPhase,
-        myParticipant,
-        mySilcBalance,
-        myShare,
-        myPayoutState,
-        allSilcBalances,
-        totalSilc,
-        openAuecPayout,
-        paidAuec,
-        auecPerSilc,
-      };
-    },
-  ),
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  },
 );

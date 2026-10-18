@@ -5,7 +5,11 @@ import { DateInput } from "@/modules/common/components/form/DateInput";
 import { TextInput } from "@/modules/common/components/form/TextInput";
 import { Note } from "@/modules/common/components/Note";
 import { RichText } from "@/modules/common/components/RichText";
-import { getLocalDateKey, ORGANIZATION_TIMEZONE } from "@sam-monorepo/domain";
+import {
+  getLocalDateKey,
+  ORGANIZATION_TIMEZONE,
+  PROFIT_CYCLE_TITLE_MAXIMUM_LENGTH,
+} from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useNow } from "next-intl";
 import { useState } from "react";
@@ -98,8 +102,8 @@ export const CreateProfitDistributionCycleForm = ({
       <TextInput
         label="Titel"
         name="title"
-        hint="max. 128 Zeichen, Beispiele: &ldquo;Q1 2026&rdquo; oder &ldquo;3x SILC-Bonuswochen&rdquo;"
-        maxLength={128}
+        hint={`max. ${PROFIT_CYCLE_TITLE_MAXIMUM_LENGTH} Zeichen, Beispiele: “Q1 2026” oder “3x SILC-Bonuswochen”`}
+        maxLength={PROFIT_CYCLE_TITLE_MAXIMUM_LENGTH}
         className="mt-4"
         required
         autoFocus

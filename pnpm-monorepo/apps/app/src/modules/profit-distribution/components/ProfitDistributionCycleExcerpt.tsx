@@ -2,10 +2,9 @@ import { AccordeonLink } from "@/modules/common/components/Accordeon";
 import { Badge } from "@/modules/common/components/Badge";
 import { Link } from "@/modules/common/components/Link";
 import { formatDate } from "@/modules/common/utils/formatDate";
-import { CyclePhase } from "@sam-monorepo/domain";
+import { CyclePhase, PayoutState } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import type { getProfitDistributionCycles } from "../queries/getProfitDistributionCycles";
-import { PayoutState } from "../utils/getMyPayoutStatus";
 
 interface Props {
   readonly className?: string;

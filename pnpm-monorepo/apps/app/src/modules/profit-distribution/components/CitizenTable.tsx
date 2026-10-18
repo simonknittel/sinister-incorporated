@@ -5,11 +5,15 @@ import { YesNoCheckbox } from "@/modules/common/components/form/YesNoCheckbox";
 import { SortableTable } from "@/modules/common/components/SortableTable";
 import { formatDate } from "@/modules/common/utils/formatDate";
 import type { Citizen } from "@sam-monorepo/database/browser";
-import { CyclePhase, getCitizenDisplayName } from "@sam-monorepo/domain";
+import {
+  CyclePhase,
+  getCitizenDisplayName,
+  getPayoutState,
+  PayoutState,
+} from "@sam-monorepo/domain";
 import { createColumnHelper, type SortingState } from "@tanstack/react-table";
 import clsx from "clsx";
 import type { getProfitDistributionCycleById } from "../queries/getProfitDistributionCycleById";
-import { getPayoutState, PayoutState } from "../utils/getMyPayoutStatus";
 import { CitizenTableForm } from "./CitizenTableForm";
 
 interface Row {

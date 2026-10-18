@@ -1,15 +1,16 @@
-import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
-import { AuditEventType } from "@sam-monorepo/domain";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { endCollectionPhases } from "./endCollectionPhases";
+import { AuditEventType, type AuditEventInput } from "@sam-monorepo/domain";
+import { beforeEach, describe, expect, test } from "vitest";
+import { createTestApplicationContext } from "../../test/applicationContext.js";
+import { truncateAllTables } from "../../test/database.js";
+import { endDueCollectionPhases } from "./endDueCollectionPhases.js";
 
-const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-const ONE_HOUR_MS = 60 * 60 * 1000;
+const ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+const ONE_HOUR_IN_MILLISECONDS = 60 * 60 * 1000;
 /** The first minutes of a day in Europe/Berlin, when the midnight job runs */
 const NOW = new Date("2026-09-27T00:05:00+02:00");
-const YESTERDAY = new Date(NOW.getTime() - ONE_DAY_MS);
-const TOMORROW = new Date(NOW.getTime() + ONE_DAY_MS);
+const YESTERDAY = new Date(NOW.getTime() - ONE_DAY_IN_MILLISECONDS);
+const TOMORROW = new Date(NOW.getTime() + ONE_DAY_IN_MILLISECONDS);
 
 /**
  * Writes the ledger rows of a citizen. The cached balance is only correct
@@ -37,28 +38,26 @@ const getBookings = (cycleId: string) =>
     where: { profitDistributionCycleId: cycleId },
   });
 
-const countAuditEvents = () =>
-  prisma.auditEvent.count({
-    where: { type: AuditEventType.PROFIT_CYCLE_COLLECTION_ENDED },
-  });
+const getCollectionEndedEvents = (auditEvents: readonly AuditEventInput[]) =>
+  auditEvents.filter(
+    (event) => event.type === AuditEventType.PROFIT_CYCLE_COLLECTION_ENDED,
+  );
 
 beforeEach(async () => {
   await truncateAllTables();
-  vi.setSystemTime(NOW);
 });
 
-afterEach(() => {
-  vi.useRealTimers();
-});
-
-describe("endCollectionPhases", () => {
+describe("endDueCollectionPhases", () => {
   test("a due cycle is booked one time, also after a second run", async () => {
     const citizen = await createCitizenWithLedger("citizen", [100, -30]);
     const cycle = await createDueCycle();
+    const firstRun = createTestApplicationContext({ now: NOW });
+    const secondRun = createTestApplicationContext({
+      now: new Date(NOW.getTime() + ONE_HOUR_IN_MILLISECONDS),
+    });
 
-    await endCollectionPhases();
-    vi.setSystemTime(new Date(NOW.getTime() + ONE_HOUR_MS));
-    await endCollectionPhases();
+    await endDueCollectionPhases(firstRun.context);
+    await endDueCollectionPhases(secondRun.context);
 
     const bookings = await getBookings(cycle.id);
     expect(bookings).toHaveLength(1);
@@ -91,24 +90,41 @@ describe("endCollectionPhases", () => {
       }),
     ).toEqual({ collectionEndedAt: NOW, collectionEndedById: null });
 
-    expect(await countAuditEvents()).toBe(1);
+    expect(
+      getCollectionEndedEvents([
+        ...firstRun.auditEvents,
+        ...secondRun.auditEvents,
+      ]),
+    ).toEqual([
+      {
+        type: AuditEventType.PROFIT_CYCLE_COLLECTION_ENDED,
+        data: { cycleId: cycle.id },
+        createdById: null,
+      },
+    ]);
   });
 
   test("two parallel runs book a due cycle one time", async () => {
     await createCitizenWithLedger("citizen", [100]);
     const cycle = await createDueCycle();
+    const { context, auditEvents } = createTestApplicationContext({
+      now: NOW,
+    });
 
-    await Promise.all([endCollectionPhases(), endCollectionPhases()]);
+    await Promise.all([
+      endDueCollectionPhases(context),
+      endDueCollectionPhases(context),
+    ]);
 
     expect(await getBookings(cycle.id)).toHaveLength(1);
-    expect(await countAuditEvents()).toBe(1);
+    expect(getCollectionEndedEvents(auditEvents)).toHaveLength(1);
   });
 
   test("a collection that a deleted admin ended is not booked again", async () => {
     await createCitizenWithLedger("citizen", [100]);
     const admin = await prisma.citizen.create({ data: { handle: "admin" } });
     /** The admin ended the phase before its planned end, which is due now */
-    const endedAt = new Date(YESTERDAY.getTime() - ONE_DAY_MS);
+    const endedAt = new Date(YESTERDAY.getTime() - ONE_DAY_IN_MILLISECONDS);
     const cycle = await prisma.profitDistributionCycle.create({
       data: {
         title: "Q3",
@@ -119,8 +135,11 @@ describe("endCollectionPhases", () => {
     });
     // The actor column is SET NULL, thus the end stays without an actor
     await prisma.citizen.delete({ where: { id: admin.id } });
+    const { context, auditEvents } = createTestApplicationContext({
+      now: NOW,
+    });
 
-    await endCollectionPhases();
+    await endDueCollectionPhases(context);
 
     expect(await getBookings(cycle.id)).toHaveLength(0);
     expect(
@@ -129,7 +148,7 @@ describe("endCollectionPhases", () => {
         select: { collectionEndedAt: true, collectionEndedById: true },
       }),
     ).toEqual({ collectionEndedAt: endedAt, collectionEndedById: null });
-    expect(await countAuditEvents()).toBe(0);
+    expect(getCollectionEndedEvents(auditEvents)).toHaveLength(0);
   });
 
   test("the booking uses the ledger, not the cached balance", async () => {
@@ -139,8 +158,9 @@ describe("endCollectionPhases", () => {
       data: { silcBalance: 999 },
     });
     const cycle = await createDueCycle();
+    const { context } = createTestApplicationContext({ now: NOW });
 
-    await endCollectionPhases();
+    await endDueCollectionPhases(context);
 
     const bookings = await getBookings(cycle.id);
     expect(bookings.map((booking) => booking.value)).toEqual([-50]);
@@ -164,8 +184,11 @@ describe("endCollectionPhases", () => {
       data: { deletedAt: YESTERDAY },
     });
     const cycle = await createDueCycle();
+    const { context, auditEvents } = createTestApplicationContext({
+      now: NOW,
+    });
 
-    await endCollectionPhases();
+    await endDueCollectionPhases(context);
 
     expect(await getBookings(cycle.id)).toHaveLength(0);
     expect(
@@ -173,7 +196,7 @@ describe("endCollectionPhases", () => {
         where: { cycleId: cycle.id },
       }),
     ).toBe(0);
-    expect(await countAuditEvents()).toBe(1);
+    expect(getCollectionEndedEvents(auditEvents)).toHaveLength(1);
   });
 
   test("a participant who ceded their share keeps it and gets a snapshot", async () => {
@@ -187,8 +210,9 @@ describe("endCollectionPhases", () => {
         cededById: citizen.id,
       },
     });
+    const { context } = createTestApplicationContext({ now: NOW });
 
-    await endCollectionPhases();
+    await endDueCollectionPhases(context);
 
     expect(
       await prisma.profitDistributionCycleParticipant.findUniqueOrThrow({
@@ -205,8 +229,9 @@ describe("endCollectionPhases", () => {
     const cycle = await prisma.profitDistributionCycle.create({
       data: { title: "Q3", collectionEndsAt: TOMORROW },
     });
+    const { context } = createTestApplicationContext({ now: NOW });
 
-    await endCollectionPhases();
+    await endDueCollectionPhases(context);
 
     expect(await getBookings(cycle.id)).toHaveLength(0);
     const { collectionEndedAt } =
