@@ -23,7 +23,7 @@ A host is a deployable program. It owns its runtime, its configuration and its e
 | Package | Layer | Content | Depends on |
 | - | - | - | - |
 | `database` | infrastructure | The Prisma schema, the migrations and the generated client | — |
-| `domain` | domain | Pure rules and helpers that more than one host uses: audit event types, calendar dates, time zone, event rules, wiki rules, read markers, the limits of the forms and the use cases, the slug helper. The permission model (`src/permissions`): permission sets, role resolution, the wiki page permission resolvers. The notification vocabulary (`src/notifications`): the payload schemas of the on-site notifications and the realtime channel names | `database` (types) |
+| `domain` | domain | Pure rules and helpers that more than one host uses: audit event types, calendar dates, time zone, event rules, wiki rules, read markers, the limits of the forms and the use cases, the slug helper. The permission model (`src/permissions`): permission sets, role resolution, the wiki page permission resolvers. The notification vocabulary (`src/notifications`): the payload schemas of the on-site notifications and the realtime channel names. The package creates no database client and reads no environment: a function that reads or writes the database takes the client or the transaction of its caller (the row locks `lockCitizen` and `lockSilcLedger`, the transaction steps of the SILC and the profit-distribution features) | `database` (types) |
 | `emails` | domain | The email templates | — |
 | `wiki-editor` | domain | The Tiptap schema of the wiki content, text extraction, the Markdown renderer and parser | — |
 | `application` | use cases | The use cases: one read or one write of a feature, with the permission checks, the audit events and the notifications inside. The actor, the application context and the typed errors. The OAuth use cases. See the [package README](../pnpm-monorepo/packages/application/README.md). | `database`, `domain`, `wiki-editor`. Never `infrastructure` or `mcp`. |
@@ -47,11 +47,11 @@ Where a feature already has use cases, the module keeps a thin wrapper per query
 
 ### Inside the Lambda functions
 
-The composition root is `apps/lambda/src/common/createApplicationContext.ts`. It uses the audit writer and the EventBridge adapters of `infrastructure`. The context has the no-op tracer of OpenTelemetry, because the functions register no tracer provider: X-Ray stays at the level of the handlers and the jobs, and the spans of the use cases are lost. The context has no changelog, no collab server and no signing key. `midnight-automations` calls the composition root: it runs the use cases of its IAM jobs (the role removal, the role assignment, the two counts and the two purges) through one small job helper that keeps the X-Ray segment of each job. The other functions do not call it yet.
+The composition root is `apps/lambda/src/common/createApplicationContext.ts`. It uses the audit writer and the EventBridge adapters of `infrastructure`. The context has the no-op tracer of OpenTelemetry, because the functions register no tracer provider: X-Ray stays at the level of the handlers and the jobs, and the spans of the use cases are lost. The context has no changelog, no collab server and no signing key. `midnight-automations` calls the composition root: it runs the use cases of its role and login jobs through one small job helper that keeps the X-Ray segment of each job. The other functions do not call it yet.
 
 ### Tests
 
-See the [Tests section of the application README](../pnpm-monorepo/packages/application/README.md#tests) for the unit tests and the integration tests. The test helpers of `application` now run the first integration tests of the package, the tests of the IAM automations and of the role level change.
+See the [Tests section of the application README](../pnpm-monorepo/packages/application/README.md#tests) for the unit tests and the integration tests.
 
 ## Target architecture
 
@@ -108,7 +108,7 @@ Dependencies point downwards only. The one exception is the dotted edge: `infras
 
 ### The layers
 
-- **Domain** (`domain`, `emails`, `wiki-editor`): pure code. No Prisma client calls, no I/O. Prisma types and selects are permitted.
+- **Domain** (`domain`, `emails`, `wiki-editor`): the rules, without other I/O than the database. The packages create no database client and read no environment. A function that reads or writes the database takes the client or the transaction of its caller, for example a row lock or a transaction step. Prisma types and selects are permitted.
 - **Use cases** (`application`): `(context, actor, input) => output`, with the context and its ports as the [package README](../pnpm-monorepo/packages/application/README.md) describes them. The use cases call Prisma directly; there are no repository ports. This is the one intentional break of the dependency rule, decided for pragmatism.
 - **Adapters**: the server actions and tRPC procedures of the Next.js app, the MCP tools and request handler, the Lambda handlers. They parse the transport-specific input, call the use cases and map the typed errors.
 - **Infrastructure** (`database`, `infrastructure`): the Prisma schema and client, and the shared implementations of the ports. Each host composes the implementations in its composition root.
