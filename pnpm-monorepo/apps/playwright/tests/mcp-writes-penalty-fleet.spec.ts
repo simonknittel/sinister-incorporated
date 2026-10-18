@@ -13,6 +13,9 @@ import {
 } from "../fixtures/mcp-client";
 import { expect, test } from "../fixtures/test";
 
+/** The citizen picker of the form needs citizen;read, thus the tool too */
+const KEEPER_PERMISSIONS = ["penaltyEntry;create", "citizen;read"];
+
 test.describe("the penalty points and fleet write tools of the MCP server", () => {
   test("create_penalty_entry books an entry like the form, with the author, the expiry and the audit event", async ({
     prisma,
@@ -21,7 +24,7 @@ test.describe("the penalty points and fleet write tools of the MCP server", () =
   }) => {
     const keeper = await createMcpCitizen(prisma, {
       handle: "mcp-strafpunkt-verwalter",
-      permissionStrings: ["penaltyEntry;create"],
+      permissionStrings: KEEPER_PERMISSIONS,
     });
     const offender = await createCitizen(prisma, { handle: "mcp-delinquent" });
     const client = await connectMcpClient(
@@ -72,18 +75,19 @@ test.describe("the penalty points and fleet write tools of the MCP server", () =
     });
   });
 
-  test("create_penalty_entry refuses a deleted citizen and is not available without the permission", async ({
+  test("create_penalty_entry refuses a deleted citizen and is not available without citizen;read", async ({
     prisma,
     authorizeMcpClient,
     connectMcpClient,
   }) => {
     const keeper = await createMcpCitizen(prisma, {
       handle: "mcp-strafpunkt-verwalter",
-      permissionStrings: ["penaltyEntry;create"],
+      permissionStrings: KEEPER_PERMISSIONS,
     });
+    // Without citizen;read
     const reader = await createMcpCitizen(prisma, {
       handle: "mcp-strafpunkt-leser",
-      permissionStrings: ["penaltyEntry;read"],
+      permissionStrings: ["penaltyEntry;read", "penaltyEntry;create"],
     });
     // A deleted citizen has no login
     const deletedCitizen = await prisma.citizen.create({

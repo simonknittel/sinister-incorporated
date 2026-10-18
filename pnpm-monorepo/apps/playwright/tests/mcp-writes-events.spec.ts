@@ -33,9 +33,15 @@ test.describe("the event write tools of the MCP server", () => {
     connectMcpClient,
   }) => {
     const escort = await createRole(prisma, { name: "Geleitschutz" });
+    const hiddenRole = await createRole(prisma, { name: "Geheimdienst" });
     const organizer = await createMcpCitizen(prisma, {
       handle: "mcp-organisatorin",
-      permissionStrings: ["event;read", "event;create"],
+      // The role picker of the form offers only the roles that the user can see
+      permissionStrings: [
+        "event;read",
+        "event;create",
+        `otherRole;read;roleId=${escort.id}`,
+      ],
     });
     const client = await connectMcpClient(
       (await authorizeMcpClient(organizer.user)).accessToken,
@@ -55,6 +61,28 @@ test.describe("the event write tools of the MCP server", () => {
         start_time: START_TIME,
         end_time: END_TIME,
         visibility: "restricted",
+      }),
+    ).toMatch(VALIDATION_RESULT);
+    expect(
+      await callForError(client, "create_event", {
+        name: "Konvoi nach Pyro",
+        start_time: START_TIME,
+        end_time: END_TIME,
+        visibility: "restricted",
+        visibility_role_ids: [hiddenRole.id],
+      }),
+    ).toMatch(VALIDATION_RESULT);
+    /**
+     * The description and the sign-up note of the Discord event must fit
+     * into 1000 characters
+     */
+    expect(
+      await callForError(client, "create_event", {
+        name: "Konvoi nach Pyro",
+        description: "a".repeat(1000),
+        start_time: START_TIME,
+        end_time: END_TIME,
+        visibility: "public",
       }),
     ).toMatch(VALIDATION_RESULT);
     expect(await prisma.event.count()).toBe(0);
@@ -137,7 +165,8 @@ test.describe("the event write tools of the MCP server", () => {
         event_id: event.id,
         name: "Bergbau-Nacht",
         start_time: START_TIME,
-        end_time: "2099-07-16T01:00:00+02:00",
+        // A time without an offset is a wall time in Europe/Berlin
+        end_time: "2099-07-16T01:00",
       }),
     ).toMatchObject({
       event: {
@@ -367,9 +396,10 @@ test.describe("the event write tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
+    const pilots = await createRole(prisma, { name: "Piloten" });
     const organizer = await createMcpCitizen(prisma, {
       handle: "mcp-planerin",
-      permissionStrings: ["event;read"],
+      permissionStrings: ["event;read", `otherRole;read;roleId=${pilots.id}`],
     });
     const event = await createAppEvent(prisma, {
       name: "Abgesagte Übung",
@@ -408,11 +438,23 @@ test.describe("the event write tools of the MCP server", () => {
         name: "Verschobene Übung",
       }),
     ).toMatch(CONFLICT_RESULT);
+    // The guild keeps seeing the Discord event of a restricted event
+    expect(
+      await callForError(client, "update_event", {
+        event_id: publishedEvent.id,
+        visibility: "restricted",
+        visibility_role_ids: [pilots.id],
+      }),
+    ).toMatch(CONFLICT_RESULT);
     expect(
       await prisma.event.findUniqueOrThrow({
         where: { id: publishedEvent.id },
       }),
-    ).toMatchObject({ name: "Öffentliche Übung", deletedAt: null });
+    ).toMatchObject({
+      name: "Öffentliche Übung",
+      visibility: EventVisibility.PUBLIC,
+      deletedAt: null,
+    });
 
     expect(
       await callForContent(client, "delete_event", { event_id: event.id }),

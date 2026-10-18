@@ -82,7 +82,7 @@ test.describe("the role tools of the MCP server", () => {
     ).toMatch(NOT_FOUND_RESULT);
   });
 
-  test("get_role gives the permission strings only with role;manage", async ({
+  test("get_role gives the inactivity rules and the permission strings only with role;manage", async ({
     prisma,
     authorizeMcpClient,
     connectMcpClient,
@@ -113,8 +113,6 @@ test.describe("the role tools of the MCP server", () => {
       icon_url: null,
       max_level: null,
       inherited_role_ids: [],
-      max_age_days: 30,
-      assign_after_inactive_days: null,
     };
 
     const readerClient = await connectMcpClient(
@@ -124,7 +122,12 @@ test.describe("the role tools of the MCP server", () => {
       await callForContent(readerClient, "get_role", {
         role_id: logistics.id,
       }),
-    ).toEqual({ ...expectedRole, permission_strings: null });
+    ).toEqual({
+      ...expectedRole,
+      max_age_days: null,
+      assign_after_inactive_days: null,
+      permission_strings: null,
+    });
 
     const managerClient = await connectMcpClient(
       (await authorizeMcpClient(manager.user)).accessToken,
@@ -135,6 +138,8 @@ test.describe("the role tools of the MCP server", () => {
       }),
     ).toEqual({
       ...expectedRole,
+      max_age_days: 30,
+      assign_after_inactive_days: null,
       permission_strings: ["event;read", "ship;read"],
     });
   });

@@ -777,7 +777,7 @@ test("taking on a task that a different user deleted shows the message and that 
   ).toBe(0);
 });
 
-test("taking on a task that a different tab took on shows the message and the assignment", async ({
+test("taking on a task that a different tab took on shows the assignment", async ({
   page,
   prisma,
   signIn,
@@ -786,7 +786,7 @@ test("taking on a task that a different tab took on shows the message and the as
     isTakenOn: false,
   });
 
-  /** The second assignment of the click fails on the unique index */
+  /** A repeated assignment changes nothing */
   await prisma.taskAssignment.create({
     data: {
       taskId: task.id,
@@ -796,9 +796,6 @@ test("taking on a task that a different tab took on shows the message and the as
   });
   await page.getByRole("button", { name: "Annehmen" }).click();
 
-  await expect(
-    page.getByText("Du hast diesen Task bereits angenommen."),
-  ).toBeVisible();
   // The refresh shows the assignment of the other tab
   await expect(page.getByRole("button", { name: "Aufgeben" })).toBeEnabled();
   expect(

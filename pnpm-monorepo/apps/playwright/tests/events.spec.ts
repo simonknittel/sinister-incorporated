@@ -190,7 +190,7 @@ test("a position application travels from the participant to the manager's assig
     .toBe(applicant.entity.id);
 });
 
-test("a position application that a different tab changed shows the error and the current state", async ({
+test("a position application that a different tab changed shows the current state", async ({
   page,
   prisma,
   signIn,
@@ -235,11 +235,11 @@ test("a position application that a different tab changed shows the error and th
     data: { positionId: position.id, citizenId: applicant.entity.id },
   });
 
+  /**
+   * A repeated application changes nothing, and the page shows the current
+   * state without a reload
+   */
   await applyButton.click();
-  await expect(
-    page.getByText("Du hast für diesen Posten bereits Interesse angemeldet."),
-  ).toBeVisible();
-  /** The page shows the current state without a reload */
   await expect(withdrawButton).toBeVisible();
 
   /** A different tab withdraws the application after the page showed it */
@@ -253,7 +253,10 @@ test("a position application that a different tab changed shows the error and th
   ).toBeVisible();
   await expect(applyButton).toBeVisible();
 
-  /** The two conflicts changed nothing, thus they wrote no audit records */
+  /**
+   * The repeated application and the conflict changed nothing, thus they
+   * wrote no audit records
+   */
   const auditCount = await prisma.auditEvent.count({
     where: {
       type: {

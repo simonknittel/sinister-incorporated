@@ -53,6 +53,8 @@ test.describe("the wiki write tool of the MCP server", () => {
       path: `/app/wiki/${page.id}/einsatzplan`,
       parent_id: null,
       event_id: null,
+      // The owner of the private page manages it
+      can_add_children: true,
     });
     expect(created.markdown).toContain("## Ablauf");
 
@@ -81,16 +83,26 @@ test.describe("the wiki write tool of the MCP server", () => {
       createdById: author.entity.id,
     });
 
-    await expectAuditEvents(prisma, ["WIKI_PAGE_CREATED"]);
+    // The content writes the event of an editor session
+    await expectAuditEvents(prisma, ["WIKI_PAGE_CREATED", "WIKI_PAGE_UPDATED"]);
     expect(
-      await prisma.auditEvent.findFirstOrThrow({
-        where: { type: "WIKI_PAGE_CREATED" },
-        select: { createdById: true, data: true },
+      await prisma.auditEvent.findMany({
+        where: { type: { in: ["WIKI_PAGE_CREATED", "WIKI_PAGE_UPDATED"] } },
+        select: { type: true, createdById: true, data: true },
+        orderBy: { type: "asc" },
       }),
-    ).toEqual({
-      createdById: author.user.id,
-      data: { pageId: page.id, title: "Einsatzplan", parentId: null },
-    });
+    ).toEqual([
+      {
+        type: "WIKI_PAGE_CREATED",
+        createdById: author.user.id,
+        data: { pageId: page.id, title: "Einsatzplan", parentId: null },
+      },
+      {
+        type: "WIKI_PAGE_UPDATED",
+        createdById: author.user.id,
+        data: { pageId: page.id },
+      },
+    ]);
   });
 
   test("create_wiki_page adds a page to the briefing of a managed event, but not after the event", async ({
@@ -201,6 +213,11 @@ test.describe("the wiki write tool of the MCP server", () => {
     const authorClient = await connectMcpClient(
       (await authorizeMcpClient(author.user)).accessToken,
     );
+    expect(
+      await callForContent(authorClient, "get_wiki_page", {
+        page_id: publicPage.id,
+      }),
+    ).toMatchObject({ id: publicPage.id, can_add_children: false });
     expect(
       await callForError(authorClient, "create_wiki_page", {
         title: "Unterseite",

@@ -268,7 +268,7 @@ test.describe("the OAuth server and the MCP endpoint", () => {
     expect(await prisma.oAuthGrant.count()).toBe(0);
   });
 
-  test("a connected client gets 403 when the user loses the permission mcp;use", async ({
+  test("a connected client gets 403 and no new token when the user loses the permission mcp;use", async ({
     prisma,
     request,
     authorizeMcpClient,
@@ -296,6 +296,11 @@ test.describe("the OAuth server and the MCP endpoint", () => {
     expect(await callAfter.json()).toMatchObject({ error: "forbidden" });
     // No challenge: a new token does not help the user
     expect(callAfter.headers()["www-authenticate"]).toBeUndefined();
+
+    // The token endpoint gives no new token either
+    const refresh = await authorization.refresh(authorization.refreshToken);
+    expect(refresh.status).toBe(400);
+    expect(refresh.error).toBe("invalid_grant");
   });
 
   test("the consent page refuses an invalid client or redirect URI and links other errors back to the client", async ({
