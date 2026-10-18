@@ -1,18 +1,15 @@
 import {
   CYCLE_PHASE_WHERE,
   CyclePhase,
-  getAuecPerSilc,
   getCurrentPhase,
-  getPayoutState,
-  getTotalSilc,
   type PayoutState,
 } from "@sam-monorepo/domain";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { getOwnSilcBalance } from "../silc/silcBalances.js";
 import { withSpan } from "../withSpan.js";
-import { getMyShare } from "./cycleAmounts.js";
 import { CYCLE_EXCERPT_SELECT, type CycleExcerptRow } from "./cycleSelects.js";
+import { getOwnCycleView } from "./ownCycleView.js";
 
 /** The filter of the list of the cycles */
 export enum ProfitDistributionCycleListStatus {
@@ -107,26 +104,21 @@ export const findProfitDistributionCycleExcerpts = (
       : 0;
 
     return visibleCycles.map((cycle) => {
-      const currentPhase = getCurrentPhase(cycle);
-      const myParticipant = cycle.participants.find(
-        (participant) => participant.citizenId === actor.citizen?.id,
-      );
-      const mySilcBalance =
-        currentPhase === CyclePhase.Collection
-          ? ownSilcBalance
-          : myParticipant?.silcBalanceSnapshot || 0;
-      const auecPerSilc =
-        cycle.auecProfit !== null
-          ? getAuecPerSilc(cycle.auecProfit, getTotalSilc(cycle.participants))
-          : 0;
+      const {
+        currentPhase,
+        myParticipant,
+        mySilcBalance,
+        auecPerSilc,
+        myPayoutState,
+      } = getOwnCycleView(cycle, actor, ownSilcBalance);
 
       return {
         cycle,
         currentPhase,
         myParticipant,
         mySilcBalance,
-        myShare: getMyShare(mySilcBalance, auecPerSilc),
-        myPayoutState: getPayoutState(cycle, myParticipant),
+        myShare: mySilcBalance * (auecPerSilc ?? 0),
+        myPayoutState,
       };
     });
   });

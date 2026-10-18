@@ -6,22 +6,26 @@ import { CyclePhase, getCurrentPhase } from "./cyclePhase.js";
 
 /** The payout state of one participant of a profit distribution cycle */
 export enum PayoutState {
-  NOT_PARTICIPATING,
-  PAYOUT_NOT_YET_STARTED,
-  AWAITING_ACCEPTANCE,
-  AWAITING_PAYOUT,
-  DISBURSED,
-  EXPIRED,
-  PAYOUT_OVERDUE,
-  CEDED,
+  NotParticipating,
+  PayoutNotYetStarted,
+  AwaitingAcceptance,
+  AwaitingPayout,
+  Disbursed,
+  Expired,
+  PayoutOverdue,
+  Ceded,
 }
 
+/**
+ * The payout state of a participant in the current phase of the cycle. A
+ * citizen without a participant row does not participate.
+ */
 export const getPayoutState = (
   cycle: Pick<
     ProfitDistributionCycle,
     "collectionEndedAt" | "payoutStartedAt" | "payoutEndedAt"
   >,
-  myParticipant:
+  participant:
     | Pick<
         ProfitDistributionCycleParticipant,
         "cededAt" | "acceptedAt" | "disbursedAt"
@@ -29,27 +33,27 @@ export const getPayoutState = (
     | null
     | undefined,
 ) => {
-  if (!myParticipant) return PayoutState.NOT_PARTICIPATING;
+  if (!participant) return PayoutState.NotParticipating;
 
-  if (myParticipant.disbursedAt) return PayoutState.DISBURSED;
+  if (participant.disbursedAt) return PayoutState.Disbursed;
 
-  if (myParticipant.cededAt) return PayoutState.CEDED;
+  if (participant.cededAt) return PayoutState.Ceded;
 
   const phase = getCurrentPhase(cycle);
   switch (phase) {
     case CyclePhase.Collection:
     case CyclePhase.PayoutPreparation:
-      return PayoutState.PAYOUT_NOT_YET_STARTED;
+      return PayoutState.PayoutNotYetStarted;
 
     case CyclePhase.Payout:
-      return myParticipant.acceptedAt
-        ? PayoutState.AWAITING_PAYOUT
-        : PayoutState.AWAITING_ACCEPTANCE;
+      return participant.acceptedAt
+        ? PayoutState.AwaitingPayout
+        : PayoutState.AwaitingAcceptance;
 
     case CyclePhase.Completed:
-      return myParticipant.acceptedAt
-        ? PayoutState.PAYOUT_OVERDUE
-        : PayoutState.EXPIRED;
+      return participant.acceptedAt
+        ? PayoutState.PayoutOverdue
+        : PayoutState.Expired;
 
     default:
       throw new Error(`Unknown cycle phase: ${phase satisfies never}`);

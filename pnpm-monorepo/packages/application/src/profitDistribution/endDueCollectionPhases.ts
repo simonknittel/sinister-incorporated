@@ -13,8 +13,8 @@ export interface EndDueCollectionPhasesOutput {
 
 /**
  * Ends the collection phases whose planned end is due, and books the
- * balances away. It sends no notification for the bookings, as before the
- * move (the manual end sends one).
+ * balances away. It sends no notification for the bookings; the manual end
+ * sends one (an open decision).
  */
 export const endDueCollectionPhases = (
   context: ApplicationContext,

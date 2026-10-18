@@ -18,17 +18,13 @@ interface BookedBalance {
 
 /**
  * Books the positive SILC balance of each citizen that is not deleted away:
- * one negative booking for each citizen, then the balance update. "Expire
- * all" and the end of a collection phase both use this function.
+ * one negative booking for each citizen, then the balance update.
  *
  * The balances come from the ledger in the transaction of the caller, not
  * from the cached copy on the citizen. The ledger lock makes sure that no
  * other ledger write can come between the read and the booking. Thus two
  * parallel calls cannot book the same balance two times: the second call
  * waits and then reads a balance of 0.
- *
- * It takes the client from the caller, thus this package still creates no
- * database client itself.
  */
 export const bookPositiveBalancesAway = async (
   transaction: Prisma.TransactionClient,

@@ -201,8 +201,10 @@ export {
 export { getAuecPerSilc } from "./silc/getAuecPerSilc.js";
 export { getTotalSilc } from "./silc/getTotalSilc.js";
 export { lockSilcLedger } from "./silc/lockSilcLedger.js";
-export { SILC_DESCRIPTION_MAXIMUM_LENGTH } from "./silc/silcLimits.js";
-export { MAX_SILC_VALUE } from "./silc/silcValueLimit.js";
+export {
+  SILC_DESCRIPTION_MAXIMUM_LENGTH,
+  SILC_VALUE_MAXIMUM,
+} from "./silc/silcLimits.js";
 export { updateSilcBalances } from "./silc/updateSilcBalances.js";
 export {
   SLUG_MAX_LENGTH,

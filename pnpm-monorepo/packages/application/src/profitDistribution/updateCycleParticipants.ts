@@ -10,17 +10,14 @@ import { NotFoundError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { CYCLE_PHASE_SELECT } from "./cycleSelects.js";
+import {
+  ParticipantAttribute,
+  getAttributeColumns,
+  getAttributeData,
+  upsertParticipant,
+} from "./participantAttributes.js";
 import { ProfitDistributionErrorMessage } from "./profitDistributionErrors.js";
-
-/**
- * A state of a participant that a manager sets. The values are also the
- * attributes in the audit events and in the notifications.
- */
-export enum ParticipantAttribute {
-  Ceded = "ceded",
-  Accepted = "accepted",
-  Disbursed = "disbursed",
-}
 
 /**
  * The number of citizens has no fixed maximum, thus the limit is an
@@ -58,28 +55,6 @@ export interface UpdateCycleParticipantsOutput {
   readonly changes: CycleParticipantChange[];
   readonly notifications_sent: boolean;
 }
-
-/** The column of the time of an attribute, and the column of its author */
-const getAttributeColumns = (attribute: ParticipantAttribute) => {
-  switch (attribute) {
-    case ParticipantAttribute.Ceded:
-      return { changedAt: "cededAt", changedById: "cededById" } as const;
-
-    case ParticipantAttribute.Accepted:
-      return { changedAt: "acceptedAt", changedById: "acceptedById" } as const;
-
-    case ParticipantAttribute.Disbursed:
-      return {
-        changedAt: "disbursedAt",
-        changedById: "disbursedById",
-      } as const;
-
-    default:
-      throw new Error(
-        `Unknown participant attribute: ${attribute satisfies never}`,
-      );
-  }
-};
 
 /** The attributes that a manager can change in the phase */
 const getChangeableAttributes = (phase: CyclePhase) => {
@@ -124,9 +99,7 @@ export const updateCycleParticipants = (
       where: { id: input.cycle_id },
       select: {
         id: true,
-        collectionEndedAt: true,
-        payoutStartedAt: true,
-        payoutEndedAt: true,
+        ...CYCLE_PHASE_SELECT,
         participants: {
           select: {
             citizenId: true,
@@ -169,28 +142,14 @@ export const updateCycleParticipants = (
 
     const now = context.now();
     await context.prisma.$transaction(
-      changes.map((change) => {
-        const columns = getAttributeColumns(change.attribute);
-        const data = {
-          [columns.changedAt]: change.enabled ? now : null,
-          [columns.changedById]: citizen.id,
-        };
-
-        return context.prisma.profitDistributionCycleParticipant.upsert({
-          where: {
-            cycleId_citizenId: {
-              cycleId: cycle.id,
-              citizenId: change.citizen_id,
-            },
-          },
-          update: data,
-          create: {
-            cycleId: cycle.id,
-            citizenId: change.citizen_id,
-            ...data,
-          },
-        });
-      }),
+      changes.map((change) =>
+        upsertParticipant(
+          context.prisma,
+          cycle.id,
+          change.citizen_id,
+          getAttributeData(change.attribute, change.enabled, citizen.id, now),
+        ),
+      ),
     );
 
     const changesOfPayload = changes.map((change) => ({

@@ -41,6 +41,7 @@ export {
   type SetOwnParticipationInput,
   type SetOwnParticipationOutput,
 } from "./ownParticipation.js";
+export { ParticipantAttribute } from "./participantAttributes.js";
 export { ProfitDistributionErrorMessage } from "./profitDistributionErrors.js";
 export {
   startPayout,
@@ -49,7 +50,6 @@ export {
   type StartPayoutOutput,
 } from "./startPayout.js";
 export {
-  ParticipantAttribute,
   updateCycleParticipants,
   updateCycleParticipantsInputSchema,
   type CycleParticipantChange,

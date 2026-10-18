@@ -5,10 +5,13 @@ import { createTestApplicationContext } from "../../test/applicationContext.js";
 import { truncateAllTables } from "../../test/database.js";
 import { disburseRoleSalaries } from "./disburseRoleSalaries.js";
 
-/** A payout day in Europe/Berlin, the time zone of the organization */
-const NOW = new Date("2026-09-15T10:00:00+02:00");
+/**
+ * The run time of the midnight job on a payout day in Europe/Berlin, the
+ * time zone of the organization. In UTC, it is still the day before.
+ */
+const NOW = new Date("2026-09-15T00:05:00+02:00");
 const PAYOUT_DAY = 15;
-const LAST_DAY_OF_SEPTEMBER = new Date("2026-09-30T10:00:00+02:00");
+const LAST_DAY_OF_SEPTEMBER = new Date("2026-09-30T00:05:00+02:00");
 const SALARY = 100;
 
 const createCitizenWithRole = async () => {
@@ -106,7 +109,7 @@ describe("disburseRoleSalaries", () => {
       data: { roleId: role.id, value: SALARY, dayOfMonth: 31 },
     });
     const { context } = createTestApplicationContext({
-      now: new Date("2026-09-29T10:00:00+02:00"),
+      now: new Date("2026-09-29T00:05:00+02:00"),
     });
 
     await disburseRoleSalaries(context);

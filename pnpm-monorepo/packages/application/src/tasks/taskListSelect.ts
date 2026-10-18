@@ -42,7 +42,7 @@ export type TaskListRow = Prisma.TaskGetPayload<{
 /**
  * A list row of the use cases: the fields of `TASK_LIST_SELECT` and the
  * fields of the list items of the MCP tools. The app keeps only the fields
- * of `TASK_LIST_SELECT` before a row goes to the client.
+ * of `TASK_LIST_SELECT` (`toTaskListRow()`) before a row goes to the client.
  */
 export const TASK_LIST_ITEM_SELECT = {
   ...TASK_LIST_SELECT,
@@ -57,6 +57,31 @@ export const TASK_LIST_ITEM_SELECT = {
 export type TaskListItemRow = Prisma.TaskGetPayload<{
   select: typeof TASK_LIST_ITEM_SELECT;
 }>;
+
+/** The fields of `TASK_LIST_SELECT` of a list row of the use cases */
+export const toTaskListRow = ({
+  id,
+  title,
+  createdAt,
+  completedAt,
+  expiresAt,
+  repeatable,
+  cancelledAt,
+  deletedAt,
+  assignments,
+  completionists,
+}: TaskListItemRow): TaskListRow => ({
+  id,
+  title,
+  createdAt,
+  completedAt,
+  expiresAt,
+  repeatable,
+  cancelledAt,
+  deletedAt,
+  assignments,
+  completionists,
+});
 
 /** The relations of the task page and of the task actions */
 export const TASK_DETAILS_INCLUDE = {

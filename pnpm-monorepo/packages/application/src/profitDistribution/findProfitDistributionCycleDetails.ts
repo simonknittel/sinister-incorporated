@@ -1,8 +1,6 @@
 import {
   CyclePhase,
-  getAuecPerSilc,
   getCurrentPhase,
-  getPayoutState,
   getTotalSilc,
   type PayoutState,
 } from "@sam-monorepo/domain";
@@ -14,8 +12,9 @@ import {
   type SilcBalanceRow,
 } from "../silc/silcBalances.js";
 import { withSpan } from "../withSpan.js";
-import { getMyShare, getOpenAuecPayout, getPaidAuec } from "./cycleAmounts.js";
+import { getOpenAuecPayout, getPaidAuec } from "./cycleAmounts.js";
 import { CYCLE_DETAILS_SELECT, type CycleDetailsRow } from "./cycleSelects.js";
+import { getOwnCycleView } from "./ownCycleView.js";
 
 /** A cycle with the numbers of its page, from the view of the actor */
 export interface ProfitDistributionCycleDetails {
@@ -64,19 +63,12 @@ export const findProfitDistributionCycleDetails = (
     });
     if (!cycle) return null;
 
-    const currentPhase = getCurrentPhase(cycle);
-    const myParticipant = cycle.participants.find(
-      (participant) => participant.citizenId === actor.citizen?.id,
-    );
-    const mySilcBalance =
-      currentPhase === CyclePhase.Collection
+    const ownSilcBalance =
+      getCurrentPhase(cycle) === CyclePhase.Collection
         ? await getOwnSilcBalance(context, actor)
-        : myParticipant?.silcBalanceSnapshot || 0;
-    const totalSilc = getTotalSilc(cycle.participants);
-    const auecPerSilc =
-      cycle.auecProfit !== null
-        ? getAuecPerSilc(cycle.auecProfit, totalSilc)
-        : null;
+        : 0;
+    const ownCycleView = getOwnCycleView(cycle, actor, ownSilcBalance);
+    const { mySilcBalance, auecPerSilc } = ownCycleView;
     const allSilcBalances = isManager
       ? (await findSilcBalanceRows(context, actor)).filter(
           (citizen) => citizen.silcBalance > 0,
@@ -85,14 +77,10 @@ export const findProfitDistributionCycleDetails = (
 
     return {
       cycle,
-      currentPhase,
-      myParticipant,
-      mySilcBalance,
-      myShare:
-        auecPerSilc !== null ? getMyShare(mySilcBalance, auecPerSilc) : null,
-      myPayoutState: getPayoutState(cycle, myParticipant),
+      ...ownCycleView,
+      myShare: auecPerSilc !== null ? mySilcBalance * auecPerSilc : null,
       allSilcBalances,
-      totalSilc,
+      totalSilc: getTotalSilc(cycle.participants),
       openAuecPayout:
         auecPerSilc !== null
           ? getOpenAuecPayout(cycle.participants, auecPerSilc)
@@ -101,6 +89,5 @@ export const findProfitDistributionCycleDetails = (
         auecPerSilc !== null
           ? getPaidAuec(cycle.participants, auecPerSilc)
           : null,
-      auecPerSilc,
     };
   });

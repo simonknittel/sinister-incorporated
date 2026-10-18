@@ -1,8 +1,8 @@
 import {
   AuditEventType,
   lockSilcLedger,
-  MAX_SILC_VALUE,
   SILC_DESCRIPTION_MAXIMUM_LENGTH,
+  SILC_VALUE_MAXIMUM,
   updateSilcBalances,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
@@ -22,8 +22,8 @@ export const updateSilcTransactionInputSchema = z.object({
   transaction_id: idSchema,
   value: z
     .int()
-    .min(-MAX_SILC_VALUE)
-    .max(MAX_SILC_VALUE)
+    .min(-SILC_VALUE_MAXIMUM)
+    .max(SILC_VALUE_MAXIMUM)
     .describe("A negative value takes SILC away."),
   description: z
     .string()

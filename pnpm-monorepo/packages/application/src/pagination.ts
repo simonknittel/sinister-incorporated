@@ -75,6 +75,45 @@ export interface CursorPage<Item> {
   readonly previousCursor: string | null;
 }
 
+interface CursorPageTrimOptions<Item> {
+  readonly cursor?: string | null;
+  readonly direction: CursorDirection;
+  readonly pageSize: number;
+  readonly getCursor: (item: Item) => string;
+}
+
+/**
+ * Makes the page from the rows of one page and one more row, which tells if
+ * there are more rows in the direction. A cursor tells that there are rows
+ * in the other direction.
+ */
+const toCursorPage = <Item>(
+  rows: Item[],
+  { cursor, direction, pageSize, getCursor }: CursorPageTrimOptions<Item>,
+): CursorPage<Item> => {
+  const hasMore = rows.length > pageSize;
+
+  let items = rows;
+  if (hasMore)
+    items =
+      direction === CursorDirection.Next
+        ? rows.slice(0, pageSize)
+        : rows.slice(1);
+
+  const hasNextPage =
+    direction === CursorDirection.Next ? hasMore : Boolean(cursor);
+  const hasPreviousPage =
+    direction === CursorDirection.Prev ? hasMore : Boolean(cursor);
+  const firstItem = items.at(0);
+  const lastItem = items.at(-1);
+
+  return {
+    items,
+    nextCursor: hasNextPage && lastItem ? getCursor(lastItem) : null,
+    previousCursor: hasPreviousPage && firstItem ? getCursor(firstItem) : null,
+  };
+};
+
 /**
  * The cursor pagination of the lists that sort in memory: takes one page
  * (and one more item that tells if there are more) from the sorted list and
@@ -118,27 +157,7 @@ export const paginateByCursor = <Item>(
     pageItems = sortedItems.slice(0, pageSize + 1);
   }
 
-  const hasMore = pageItems.length > pageSize;
-
-  let items = pageItems;
-  if (hasMore)
-    items =
-      direction === CursorDirection.Next
-        ? pageItems.slice(0, pageSize)
-        : pageItems.slice(1);
-
-  const hasNextPage =
-    direction === CursorDirection.Next ? hasMore : Boolean(cursor);
-  const hasPreviousPage =
-    direction === CursorDirection.Prev ? hasMore : Boolean(cursor);
-  const firstItem = items.at(0);
-  const lastItem = items.at(-1);
-
-  return {
-    items,
-    nextCursor: hasNextPage && lastItem ? getCursor(lastItem) : null,
-    previousCursor: hasPreviousPage && firstItem ? getCursor(firstItem) : null,
-  };
+  return toCursorPage(pageItems, { cursor, direction, pageSize, getCursor });
 };
 
 /** The cursor arguments of a Prisma `findMany` for one page */
@@ -194,25 +213,10 @@ export const paginateByDatabaseCursor = async <
     );
   }
 
-  const hasMore = rows.length > pageSize;
-
-  let items = rows;
-  if (hasMore)
-    items =
-      direction === CursorDirection.Prev
-        ? rows.slice(1)
-        : rows.slice(0, pageSize);
-
-  const hasNextPage =
-    direction === CursorDirection.Next ? hasMore : Boolean(cursor);
-  const hasPreviousPage =
-    direction === CursorDirection.Prev ? hasMore : Boolean(cursor);
-  const firstItem = items.at(0);
-  const lastItem = items.at(-1);
-
-  return {
-    items,
-    nextCursor: hasNextPage && lastItem ? lastItem.id : null,
-    previousCursor: hasPreviousPage && firstItem ? firstItem.id : null,
-  };
+  return toCursorPage(rows, {
+    cursor,
+    direction,
+    pageSize,
+    getCursor: (row) => row.id,
+  });
 };

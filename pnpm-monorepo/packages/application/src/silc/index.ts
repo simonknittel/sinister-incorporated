@@ -24,19 +24,8 @@ export {
   refreshSilcBalances,
   type RefreshSilcBalancesOutput,
 } from "./refreshSilcBalances.js";
-export {
-  listRoleSalaries,
-  updateRoleSalaries,
-  updateRoleSalariesInputSchema,
-  type RoleSalaryRow,
-  type UpdateRoleSalariesInput,
-  type UpdateRoleSalariesOutput,
-} from "./roleSalaries.js";
-export {
-  findSilcBalanceRows,
-  getOwnSilcBalance,
-  type SilcBalanceRow,
-} from "./silcBalances.js";
+export { findRoleSalaryRows, type RoleSalaryRow } from "./roleSalaryRows.js";
+export { findSilcBalanceRows, type SilcBalanceRow } from "./silcBalances.js";
 export { SilcErrorMessage } from "./silcErrors.js";
 export type { SilcTransactionOutput } from "./silcTransactionOutput.js";
 export {
@@ -47,6 +36,12 @@ export {
   type SilcTransactionTablePageOptions,
   type SilcTransactionTableRow,
 } from "./silcTransactionRows.js";
+export {
+  updateRoleSalaries,
+  updateRoleSalariesInputSchema,
+  type UpdateRoleSalariesInput,
+  type UpdateRoleSalariesOutput,
+} from "./updateRoleSalaries.js";
 export {
   updateSilcSetting,
   updateSilcSettingInputSchema,

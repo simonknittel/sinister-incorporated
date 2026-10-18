@@ -67,7 +67,7 @@ src/
   actor.ts                 Actor, createActor(), requirePermission(), requireCitizen()
   context.ts               ApplicationContext, its ports and createApplicationUrls()
   errors.ts                the typed errors and rethrowRecordNotFound()
-  pagination.ts            the shared page size, cursor and id schemas, paginateByCursor()
+  pagination.ts            the shared page size, cursor and id schemas, paginateByCursor(), paginateByDatabaseCursor()
   dateTime.ts              the shared date-time input schema
   notifications.ts         triggerNotificationsAfterSave()
   mcpAccess.ts             the permission that gates the MCP server
@@ -84,10 +84,10 @@ src/
 
 These exports are not use cases. No MCP tool calls them:
 
-- The `find…` row helpers (for example `findEventListPage`, `findVisibleTask`, `findEventPositionTree`, `findManagedRole`, `findRoleTableRows`, `findSpynetCitizen`, `findNoteTablePage`, `findUserListPage`, `findSilcTransactionTablePage`, `findProfitDistributionCycleDetails` and `findOwnOpenTaskRows`) give rows only to the renderers of the app.
+- The `find…` row helpers (for example `findEventListPage`, `findVisibleTask`, `findEventPositionTree`, `findManagedRole`, `findRoleTableRows`, `findSpynetCitizen`, `findNoteTablePage`, `findUserListPage`, `findSilcTransactionTablePage`, `findRoleSalaryRows`, `findProfitDistributionCycleDetails` and `findOwnOpenTaskRows`) give rows only to the renderers of the app.
 - `findAllRoleBadges` has no permission check. Its callers check the permission.
 - `findRolesForSalaries` and `getAuecConversionRate` take no actor and check no permission. The settings page and the SILC dashboard check the permission, and the conversion rate is not personal. `findRolesForSalaries` keeps a known gap: its tRPC procedure checks only the clearance, and its output holds roles that the caller cannot see. Whether to close the gap is an open decision.
-- `filterLeaderboardMembers` takes the ranks of the RSI leaderboard as host data (the interface `LeaderboardRank`, no schema). The host reads and validates the ranks.
+- `filterLeaderboardMembers` takes the ranks of the leaderboard of the Roberts Space Industries website as host data (the interface `LeaderboardRank`, no schema). The host reads and validates the ranks.
 - `linkCitizenOfSignedInUser` and `hasBirthdayTodaySafely` (the Spynet) are helpers for the auth zone; `deletePermissionStringsReferencing` (the roles) is a helper for the settings of the Spynet. They carry no permission check: the caller checks it.
 - The writes of the positions that the lineup of an event and the lineup of an event template share (`insertLineupPosition`, `updateLineupPosition`, `deleteLineupPosition`, `writeLineupOrder`, `findLineupPositionContainer`) carry no permission check. The use cases of the event lineup check the event first, the app checks the template first.
 - `createWikiPageInScope` takes the wiki scope from its caller: the app also loads the briefings of the event templates.

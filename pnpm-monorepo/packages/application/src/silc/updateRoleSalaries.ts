@@ -1,5 +1,4 @@
-import type { Prisma } from "@sam-monorepo/database/client";
-import { AuditEventType, MAX_SILC_VALUE } from "@sam-monorepo/domain";
+import { AuditEventType, SILC_VALUE_MAXIMUM } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
@@ -12,42 +11,17 @@ import { SilcErrorMessage } from "./silcErrors.js";
 const MAXIMUM_ROLE_SALARIES = 250;
 
 /** See the check `SilcRoleSalary_dayOfMonth_check` */
-const SALARY_DAY_OF_MONTH_MAXIMUM = 31;
-
-export const ROLE_SALARY_SELECT = {
-  id: true,
-  roleId: true,
-  value: true,
-  dayOfMonth: true,
-} as const satisfies Prisma.SilcRoleSalarySelect;
-
-/** A salary of a role in the salary editor */
-export type RoleSalaryRow = Prisma.SilcRoleSalaryGetPayload<{
-  select: typeof ROLE_SALARY_SELECT;
-}>;
-
-/**
- * All salaries of the roles. Requires `silcSetting;manage`, like the page of
- * the salary editor.
- */
-export const listRoleSalaries = async (
-  context: Pick<ApplicationContext, "prisma">,
-  actor: Actor,
-): Promise<RoleSalaryRow[]> => {
-  requirePermission(actor, "silcSetting", "manage");
-
-  return context.prisma.silcRoleSalary.findMany({ select: ROLE_SALARY_SELECT });
-};
+const MAXIMUM_SALARY_DAY_OF_MONTH = 31;
 
 /** The three lists give the salaries: the items with one index are one salary */
 export const updateRoleSalariesInputSchema = z
   .object({
     role_ids: z.array(idSchema).max(MAXIMUM_ROLE_SALARIES),
     values: z
-      .array(z.int().min(1).max(MAX_SILC_VALUE))
+      .array(z.int().min(1).max(SILC_VALUE_MAXIMUM))
       .max(MAXIMUM_ROLE_SALARIES),
     days_of_month: z
-      .array(z.int().min(1).max(SALARY_DAY_OF_MONTH_MAXIMUM))
+      .array(z.int().min(1).max(MAXIMUM_SALARY_DAY_OF_MONTH))
       .max(MAXIMUM_ROLE_SALARIES)
       .describe(
         "In a shorter month, a day after its end pays on its last day.",

@@ -6,22 +6,28 @@ import { ACTIVE_CITIZEN_WHERE, hasReachedMaxLevel } from "@sam-monorepo/domain";
  * of citizens that are not deleted, not the inherited roles (decision of
  * 2026-09-27)
  */
-export const SALARY_ASSIGNMENTS_ARGS = {
+const SALARY_ASSIGNMENTS_ARGS = {
   where: { citizen: ACTIVE_CITIZEN_WHERE },
   select: { citizenId: true, currentLevel: true },
 } as const satisfies Prisma.Role$assignmentsArgs;
 
+/** A role with the role assignments that can get its salary */
+export const SALARY_ROLE_SELECT = {
+  id: true,
+  name: true,
+  maxLevel: true,
+  assignments: SALARY_ASSIGNMENTS_ARGS,
+} as const satisfies Prisma.RoleSelect;
+
+type SalaryRole = Prisma.RoleGetPayload<{ select: typeof SALARY_ROLE_SELECT }>;
+
 /**
- * The assignments of `SALARY_ASSIGNMENTS_ARGS` that get the salary of the
- * role. A role with levels pays only at its maximum level, the same level
- * gate as for the permissions.
+ * The assignments of the role that get its salary. A role with levels pays
+ * only at its maximum level, the same level gate as for the permissions.
  */
-export const getPaidAssignments = <
-  Assignment extends { readonly currentLevel: number | null },
->(role: {
-  readonly maxLevel: number | null;
-  readonly assignments: readonly Assignment[];
-}): Assignment[] =>
+export const getPaidAssignments = (
+  role: SalaryRole,
+): SalaryRole["assignments"] =>
   role.assignments.filter((assignment) =>
     hasReachedMaxLevel({ currentLevel: assignment.currentLevel, role }),
   );

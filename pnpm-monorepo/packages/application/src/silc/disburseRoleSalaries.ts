@@ -9,8 +9,8 @@ import {
 } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
-import { ROLE_SALARY_SELECT } from "./roleSalaries.js";
-import { getPaidAssignments, SALARY_ASSIGNMENTS_ARGS } from "./salaryRules.js";
+import { ROLE_SALARY_SELECT } from "./roleSalaryRows.js";
+import { getPaidAssignments, SALARY_ROLE_SELECT } from "./salaryRules.js";
 import { announceSilcTransactions } from "./silcLedger.js";
 
 export interface DisburseRoleSalariesOutput {
@@ -74,12 +74,7 @@ export const disburseRoleSalaries = (
 
     const roles = await context.prisma.role.findMany({
       where: { id: { in: [...todaysValueByRoleId.keys()] } },
-      select: {
-        id: true,
-        name: true,
-        maxLevel: true,
-        assignments: SALARY_ASSIGNMENTS_ARGS,
-      },
+      select: SALARY_ROLE_SELECT,
     });
 
     const salaryDate = toDateColumnValue(today);

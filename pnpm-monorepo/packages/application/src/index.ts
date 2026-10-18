@@ -47,9 +47,7 @@ export {
   UnknownCursorBehavior,
   idSchema,
   paginateByCursor,
-  paginateByDatabaseCursor,
   type CursorPage,
-  type DatabaseCursorArguments,
   type PageOptions,
 } from "./pagination.js";
 export * from "./penaltyPoints/index.js";

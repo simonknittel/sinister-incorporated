@@ -1,7 +1,7 @@
 import { TaskRewardType, TaskVisibility } from "@sam-monorepo/database/browser";
 import {
   ACTIVE_CITIZEN_WHERE,
-  MAX_SILC_VALUE,
+  SILC_VALUE_MAXIMUM,
   TASK_DESCRIPTION_MAX_LENGTH,
   TASK_MAX_CITIZENS,
   TASK_MAX_REQUIRED_ROLES,
@@ -42,7 +42,7 @@ export const taskFieldSchemas = {
   reward_silc_value: z
     .int32()
     .min(1)
-    .max(MAX_SILC_VALUE)
+    .max(SILC_VALUE_MAXIMUM)
     .describe("The SILC for each completionist."),
   reward_text: z
     .string()

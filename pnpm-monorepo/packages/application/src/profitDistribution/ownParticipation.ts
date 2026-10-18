@@ -9,6 +9,12 @@ import type { ApplicationContext } from "../context.js";
 import { ConflictError, NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { CYCLE_PHASE_SELECT } from "./cycleSelects.js";
+import {
+  ParticipantAttribute,
+  getAttributeData,
+  upsertParticipant,
+} from "./participantAttributes.js";
 import { ProfitDistributionErrorMessage } from "./profitDistributionErrors.js";
 
 export const setOwnParticipationInputSchema = z.object({
@@ -30,21 +36,17 @@ export interface SetOwnParticipationOutput {
 
 interface Configuration {
   readonly requiredPhase: CyclePhase;
+  readonly attribute:
+    ParticipantAttribute.Accepted | ParticipantAttribute.Ceded;
   readonly auditEventType:
     | AuditEventType.PROFIT_DISTRIBUTION_MY_ACCEPTED_TOGGLED
     | AuditEventType.PROFIT_DISTRIBUTION_MY_CEDED_TOGGLED;
-  readonly toParticipantData: (
-    enabled: boolean,
-    citizenId: string,
-    now: Date,
-  ) =>
-    | { acceptedAt: Date | null; acceptedById: string }
-    | { cededAt: Date | null; cededById: string };
 }
 
 /**
  * Sets or removes one state of the own participation in a cycle. The two
- * use cases below differ only in the phase, the columns and the audit event.
+ * use cases below differ only in the phase, the attribute and the audit
+ * event.
  * Requires only a citizen: each member decides about their own share.
  */
 const setOwnParticipation = async (
@@ -57,11 +59,7 @@ const setOwnParticipation = async (
 
   const cycle = await context.prisma.profitDistributionCycle.findUnique({
     where: { id: input.cycle_id },
-    select: {
-      collectionEndedAt: true,
-      payoutStartedAt: true,
-      payoutEndedAt: true,
-    },
+    select: CYCLE_PHASE_SELECT,
   });
   if (!cycle)
     throw new NotFoundError(ProfitDistributionErrorMessage.CycleNotFound);
@@ -69,22 +67,17 @@ const setOwnParticipation = async (
   if (getCurrentPhase(cycle) !== configuration.requiredPhase)
     throw new ConflictError(ProfitDistributionErrorMessage.WrongPhase);
 
-  const participantData = configuration.toParticipantData(
-    input.enabled,
+  await upsertParticipant(
+    context.prisma,
+    input.cycle_id,
     citizen.id,
-    context.now(),
+    getAttributeData(
+      configuration.attribute,
+      input.enabled,
+      citizen.id,
+      context.now(),
+    ),
   );
-  await context.prisma.profitDistributionCycleParticipant.upsert({
-    where: {
-      cycleId_citizenId: { cycleId: input.cycle_id, citizenId: citizen.id },
-    },
-    update: participantData,
-    create: {
-      cycleId: input.cycle_id,
-      citizenId: citizen.id,
-      ...participantData,
-    },
-  });
 
   await context.audit.create([
     {
@@ -120,11 +113,8 @@ export const setOwnPayoutAccepted = (
   withSpan(context, "setOwnPayoutAccepted", () =>
     setOwnParticipation(context, actor, input, {
       requiredPhase: CyclePhase.Payout,
+      attribute: ParticipantAttribute.Accepted,
       auditEventType: AuditEventType.PROFIT_DISTRIBUTION_MY_ACCEPTED_TOGGLED,
-      toParticipantData: (enabled, citizenId, now) => ({
-        acceptedAt: enabled ? now : null,
-        acceptedById: citizenId,
-      }),
     }),
   );
 
@@ -143,10 +133,7 @@ export const setOwnShareCeded = (
   withSpan(context, "setOwnShareCeded", () =>
     setOwnParticipation(context, actor, input, {
       requiredPhase: CyclePhase.Collection,
+      attribute: ParticipantAttribute.Ceded,
       auditEventType: AuditEventType.PROFIT_DISTRIBUTION_MY_CEDED_TOGGLED,
-      toParticipantData: (enabled, citizenId, now) => ({
-        cededAt: enabled ? now : null,
-        cededById: citizenId,
-      }),
     }),
   );

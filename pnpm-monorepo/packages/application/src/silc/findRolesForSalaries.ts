@@ -1,5 +1,5 @@
 import type { ApplicationContext } from "../context.js";
-import { getPaidAssignments, SALARY_ASSIGNMENTS_ARGS } from "./salaryRules.js";
+import { getPaidAssignments, SALARY_ROLE_SELECT } from "./salaryRules.js";
 
 /** A role with the number of citizens who get its salary */
 export interface RoleForSalaries {
@@ -24,12 +24,7 @@ export const findRolesForSalaries = async (
   context: Pick<ApplicationContext, "prisma">,
 ): Promise<RoleForSalaries[]> => {
   const roles = await context.prisma.role.findMany({
-    select: {
-      id: true,
-      name: true,
-      maxLevel: true,
-      assignments: SALARY_ASSIGNMENTS_ARGS,
-    },
+    select: SALARY_ROLE_SELECT,
   });
 
   return roles.map((role) => ({

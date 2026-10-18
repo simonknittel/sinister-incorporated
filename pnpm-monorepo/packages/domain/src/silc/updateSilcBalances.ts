@@ -8,9 +8,6 @@ import { lockSilcLedger } from "./lockSilcLedger.js";
  * ones. Call it with the client of the transaction that changes the ledger
  * (after `lockSilcLedger()`), so that the copy can never differ from the
  * ledger.
- *
- * It takes the client from the caller, thus this package still creates no
- * database client itself.
  */
 export const updateSilcBalances = async (
   client: Prisma.TransactionClient,

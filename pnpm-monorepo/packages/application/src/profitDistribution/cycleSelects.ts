@@ -1,17 +1,22 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 
+/** The columns of a cycle that `getCurrentPhase()` reads */
+export const CYCLE_PHASE_SELECT = {
+  collectionEndedAt: true,
+  payoutStartedAt: true,
+  payoutEndedAt: true,
+} as const satisfies Prisma.ProfitDistributionCycleSelect;
+
 /**
  * The columns of a cycle that the pages show. `auecProfit` stays a BigInt:
  * the page calls `toLocaleString()` on it, and React serializes a BigInt.
  */
 const CYCLE_COLUMNS_SELECT = {
+  ...CYCLE_PHASE_SELECT,
   id: true,
   title: true,
   collectionEndsAt: true,
-  collectionEndedAt: true,
-  payoutStartedAt: true,
   payoutEndsAt: true,
-  payoutEndedAt: true,
   auecProfit: true,
 } as const satisfies Prisma.ProfitDistributionCycleSelect;
 

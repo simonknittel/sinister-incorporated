@@ -1,9 +1,17 @@
 import type { ProfitDistributionCycleParticipant } from "@sam-monorepo/database/client";
 
-/** The aUEC share of a SILC balance */
-export const getMyShare = (mySilcBalance: number, auecPerSilc: number) => {
-  return mySilcBalance * auecPerSilc;
-};
+const sumAuec = (
+  participants: readonly Pick<
+    ProfitDistributionCycleParticipant,
+    "silcBalanceSnapshot"
+  >[],
+  auecPerSilc: number,
+) =>
+  participants.reduce(
+    (total, participant) =>
+      total + (participant.silcBalanceSnapshot ?? 0) * auecPerSilc,
+    0,
+  );
 
 /** The aUEC of the participants that did not cede and are not paid yet */
 export const getOpenAuecPayout = (
@@ -12,20 +20,13 @@ export const getOpenAuecPayout = (
     "silcBalanceSnapshot" | "cededAt" | "disbursedAt"
   >[],
   auecPerSilc: number,
-) => {
-  return participants
-    .filter(
-      (participant) =>
-        !participant.disbursedAt &&
-        !participant.cededAt &&
-        participant.silcBalanceSnapshot,
-    )
-    .reduce(
-      (total, participant) =>
-        total + participant.silcBalanceSnapshot! * auecPerSilc,
-      0,
-    );
-};
+) =>
+  sumAuec(
+    participants.filter(
+      (participant) => !participant.disbursedAt && !participant.cededAt,
+    ),
+    auecPerSilc,
+  );
 
 /** The aUEC of the participants that are paid */
 export const getPaidAuec = (
@@ -34,15 +35,8 @@ export const getPaidAuec = (
     "silcBalanceSnapshot" | "disbursedAt"
   >[],
   auecPerSilc: number,
-) => {
-  return participants
-    .filter(
-      (participant) =>
-        participant.disbursedAt && participant.silcBalanceSnapshot,
-    )
-    .reduce(
-      (total, participant) =>
-        total + participant.silcBalanceSnapshot! * auecPerSilc,
-      0,
-    );
-};
+) =>
+  sumAuec(
+    participants.filter((participant) => participant.disbursedAt),
+    auecPerSilc,
+  );

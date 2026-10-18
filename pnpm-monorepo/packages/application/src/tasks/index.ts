@@ -59,7 +59,11 @@ export {
   type VisibleTask,
 } from "./taskDetails.js";
 export { TaskErrorMessage } from "./taskErrors.js";
-export type { TaskListItemRow, TaskListRow } from "./taskListSelect.js";
+export {
+  toTaskListRow,
+  type TaskListItemRow,
+  type TaskListRow,
+} from "./taskListSelect.js";
 export {
   TaskRewardKind,
   TaskVisibilityKind,

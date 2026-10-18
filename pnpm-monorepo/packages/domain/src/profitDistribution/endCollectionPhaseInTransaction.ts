@@ -13,8 +13,7 @@ interface Options {
 /**
  * Ends the collection phase of a cycle. It books the positive SILC balance
  * of each citizen that is not deleted away and keeps the balance as the
- * snapshot of the participant. The app action and the midnight job both use
- * this function.
+ * snapshot of the participant.
  *
  * Call it in one interactive transaction:
  * - It takes the ledger lock first (see `lockSilcLedger()`), before the
@@ -27,9 +26,6 @@ interface Options {
  * - If a booking of the cycle exists already, the unique index
  *   `SilcTransaction_profitDistributionCycle_key` makes the whole
  *   transaction fail.
- *
- * It takes the client from the caller, thus this package still creates no
- * database client itself.
  *
  * @returns The ids of the new SILC transactions, or null if the cycle is not
  * in its collection phase
