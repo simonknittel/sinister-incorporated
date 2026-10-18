@@ -1,5 +1,4 @@
 import { prisma } from "@/db";
-import { lockCitizen } from "@/modules/citizen/utils/lockCitizen";
 import {
   ConfirmationStatus,
   OrganizationMembershipType,
@@ -7,6 +6,7 @@ import {
   type Organization,
   type Prisma,
 } from "@sam-monorepo/database/client";
+import { lockCitizen } from "@sam-monorepo/domain";
 
 /**
  * Thrown inside the callback of `changeMembershipHistory()` to reject a

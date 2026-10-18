@@ -1,9 +1,11 @@
 /** The use cases of the Spynet: citizens, their notes and organizations */
+export { hasBirthdayTodaySafely } from "./birthdays.js";
 export { requireCitizenReadAccess } from "./citizenAccess.js";
 export {
   getVisiblePenaltyPointSum,
   getVisibleShipCount,
 } from "./citizenMetrics.js";
+export { linkCitizenOfSignedInUser } from "./citizenUserLink.js";
 export {
   getCitizen,
   getCitizenInputSchema,

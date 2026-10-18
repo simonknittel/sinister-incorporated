@@ -1,4 +1,3 @@
-import type { GenericCitizenLogType } from "@sam-monorepo/domain";
 import "react";
 
 declare module "react" {
@@ -8,14 +7,7 @@ declare module "react" {
   }
 }
 
-export type { GenericCitizenLogType } from "@sam-monorepo/domain";
-
-/**
- * The values of `CitizenLog.type`. The column is text with a CHECK
- * constraint and not a Prisma enum, because the permission resources, the
- * URL filters and the texts use the same values.
- */
-export type CitizenLogType =
-  | GenericCitizenLogType
-  | "spectrum-id" // TODO: Move to GenericCitizenLogType
-  | "note";
+export type {
+  CitizenLogType,
+  GenericCitizenLogType,
+} from "@sam-monorepo/domain";

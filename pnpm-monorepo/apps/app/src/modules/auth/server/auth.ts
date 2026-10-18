@@ -3,15 +3,15 @@ import { env } from "@/env";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { DEVELOPMENT_SESSION_TOKEN_COOKIE } from "@/modules/auth/utils/sessionTokenCookie";
-import { linkCitizenOfSignedInUser } from "@/modules/citizen/utils/citizenUserLink";
-import { hasBirthdayToday } from "@/modules/citizen/utils/hasBirthdayToday";
 import { getDiscordAvatar } from "@/modules/discord/utils/getDiscordAvatar";
 import { getGuildMember } from "@/modules/discord/utils/getGuildMember";
 import { log } from "@/modules/logging";
 import { triggerNotifications } from "@/modules/notifications/utils/triggerNotification";
-import { ASSUMABLE_USER_WHERE } from "@/modules/users/queries/getAssumableUsers";
-import { getUserById } from "@/modules/users/queries/getUserById";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import {
+  hasBirthdayTodaySafely,
+  linkCitizenOfSignedInUser,
+} from "@sam-monorepo/application";
 import {
   UserRole,
   type Citizen,
@@ -19,6 +19,7 @@ import {
 } from "@sam-monorepo/database/client";
 import {
   ACTIVE_CITIZEN_WHERE,
+  ASSUMABLE_USER_WHERE,
   comparePermissionSets,
   getLocalDateKey,
   ORGANIZATION_TIMEZONE,
@@ -236,7 +237,11 @@ export const authOptions: NextAuthOptions = {
         entity = {
           id: citizen.id,
           handle: citizen.handle,
-          hasBirthdayToday: hasBirthdayToday(citizen, new Date()),
+          hasBirthdayToday: hasBirthdayTodaySafely(
+            { log },
+            citizen,
+            new Date(),
+          ),
           roleAssignments: effectiveRoles.roleAssignments,
         };
       }
@@ -331,7 +336,11 @@ export const authOptions: NextAuthOptions = {
         profileEmail: profile.email,
       });
 
-      const existingUser = await getUserById(user.id);
+      /** The sign-in callback only checks whether the user exists and is banned */
+      const existingUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { id: true, bannedAt: true },
+      });
 
       if (!account) throw new Error("account is missing");
       if (!account.access_token)
@@ -492,6 +501,7 @@ export const authOptions: NextAuthOptions = {
       if (message.account?.provider === "discord") {
         try {
           await linkCitizenOfSignedInUser(
+            { prisma },
             message.user.id,
             message.account.providerAccountId,
           );

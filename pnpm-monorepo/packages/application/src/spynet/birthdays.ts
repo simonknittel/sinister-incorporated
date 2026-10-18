@@ -1,0 +1,31 @@
+import type { Citizen } from "@sam-monorepo/database/client";
+import { isBirthdayToday } from "@sam-monorepo/domain";
+import type { ApplicationContext } from "../context.js";
+
+type BirthdayCitizen = Pick<
+  Citizen,
+  "id" | "timezone" | "birthdayDay" | "birthdayMonth"
+>;
+
+/**
+ * The same rule the greeting job of the Lambda applies, made safe for the
+ * surfaces which only draw a party hat with it: the shared rule throws for a
+ * time zone the runtime does not know, and neither a profile nor a session
+ * must fail because of a decoration. Such a citizen gets no hat.
+ */
+export const hasBirthdayTodaySafely = (
+  { log }: Pick<ApplicationContext, "log">,
+  citizen: BirthdayCitizen,
+  now: Date,
+): boolean => {
+  try {
+    return isBirthdayToday(citizen, now);
+  } catch (error) {
+    log.warn("Failed to check the birthday of a citizen", {
+      citizenId: citizen.id,
+      error,
+    });
+
+    return false;
+  }
+};

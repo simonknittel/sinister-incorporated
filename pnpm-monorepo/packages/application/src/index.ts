@@ -12,10 +12,7 @@ export {
   type ActorFields,
 } from "./actor.js";
 export * from "./audit/index.js";
-export {
-  getEffectiveRolesOfCitizen,
-  type EffectiveRoles,
-} from "./auth/getEffectiveRolesOfCitizen.js";
+export * from "./auth/index.js";
 export * from "./changelog/index.js";
 export type { CitizenReference } from "./citizenReference.js";
 export type {
@@ -35,6 +32,7 @@ export {
 } from "./errors.js";
 export * from "./events/index.js";
 export * from "./fleet/index.js";
+export * from "./iam/index.js";
 export * from "./lineup/index.js";
 export { canUseMcp, requireMcpAccess } from "./mcpAccess.js";
 export * from "./mcpSettings/index.js";
@@ -54,5 +52,6 @@ export * from "./readMarkers/index.js";
 export * from "./roles/index.js";
 export * from "./spynet/index.js";
 export * from "./tasks/index.js";
+export * from "./users/index.js";
 export * from "./wiki/index.js";
 export { withSpan } from "./withSpan.js";
