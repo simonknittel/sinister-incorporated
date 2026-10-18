@@ -11,7 +11,7 @@ import {
   updateRolePermissions as updateRolePermissionsUseCase,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { ROLE_ERROR_TEXTS } from "../utils/roleErrorTexts";
+import { getRoleErrorTexts } from "../utils/roleErrorTexts";
 
 export const updateRolePermissions = createAuthenticatedAction(
   "updateRolePermissions",
@@ -27,7 +27,7 @@ export const updateRolePermissions = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: ROLE_ERROR_TEXTS,
+        texts: getRoleErrorTexts(t),
       });
     }
 

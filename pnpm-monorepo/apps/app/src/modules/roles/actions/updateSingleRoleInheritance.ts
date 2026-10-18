@@ -12,7 +12,7 @@ import {
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import * as z from "zod";
-import { ROLE_ERROR_TEXTS } from "../utils/roleErrorTexts";
+import { getRoleErrorTexts } from "../utils/roleErrorTexts";
 
 /** The checkbox of the matrix sends its state as text */
 const schema = setRoleInheritanceInputSchema.extend({
@@ -33,7 +33,7 @@ export const updateSingleRoleInheritance = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: ROLE_ERROR_TEXTS,
+        texts: getRoleErrorTexts(t),
       });
     }
 

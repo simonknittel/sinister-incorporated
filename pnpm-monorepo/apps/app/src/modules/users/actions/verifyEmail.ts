@@ -6,7 +6,6 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
-import { AUTH_ERROR_TEXTS } from "@/modules/auth/utils/authErrorTexts";
 import { verifyEmail, verifyEmailInputSchema } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 
@@ -21,11 +20,7 @@ export const verifyEmailAction = createAuthenticatedAction(
         data,
       );
     } catch (error) {
-      return mapApplicationErrorToActionResponse(error, {
-        formData,
-        t,
-        texts: AUTH_ERROR_TEXTS,
-      });
+      return mapApplicationErrorToActionResponse(error, { formData, t });
     }
 
     refresh();

@@ -12,15 +12,18 @@ export const UsersFilters = () => {
         name="sort"
         label="Sortierung"
         items={[
-          { value: UserSort.CreatedAtDesc, label: "Registriert am ↓" },
-          { value: UserSort.CreatedAtAsc, label: "Registriert am ↑" },
+          { value: UserSort.CreatedAtDescending, label: "Registriert am ↓" },
+          { value: UserSort.CreatedAtAscending, label: "Registriert am ↑" },
           {
-            value: UserSort.EmailVerifiedDesc,
+            value: UserSort.EmailVerifiedDescending,
             label: "Datenschutzerklärung ↓",
           },
-          { value: UserSort.EmailVerifiedAsc, label: "Datenschutzerklärung ↑" },
-          { value: UserSort.NameAsc, label: "Handle A - Z" },
-          { value: UserSort.NameDesc, label: "Handle Z - A" },
+          {
+            value: UserSort.EmailVerifiedAscending,
+            label: "Datenschutzerklärung ↑",
+          },
+          { value: UserSort.NameAscending, label: "Handle A - Z" },
+          { value: UserSort.NameDescending, label: "Handle Z - A" },
         ]}
         resetCursorPagination
       />

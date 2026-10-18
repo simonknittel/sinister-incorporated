@@ -13,9 +13,6 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 export async function GET(request: NextRequest) {
   try {
-    /**
-     * Validate the request
-     */
     const input = confirmEmailWithTokenInputSchema.parse({
       token: request.nextUrl.searchParams.get("token"),
     });

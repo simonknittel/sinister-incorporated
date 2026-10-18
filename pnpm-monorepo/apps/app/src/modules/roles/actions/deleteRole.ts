@@ -12,7 +12,7 @@ import {
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
-import { ROLE_ERROR_TEXTS } from "../utils/roleErrorTexts";
+import { getRoleErrorTexts } from "../utils/roleErrorTexts";
 
 export const deleteRole = createAuthenticatedAction(
   "deleteRole",
@@ -28,7 +28,7 @@ export const deleteRole = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: ROLE_ERROR_TEXTS,
+        texts: getRoleErrorTexts(t),
       });
     }
 

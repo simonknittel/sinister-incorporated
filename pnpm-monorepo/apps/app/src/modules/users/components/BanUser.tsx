@@ -4,7 +4,7 @@ import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import { Button2, Button2Variant } from "@/modules/common/components/Button2";
 import { ConfirmActionButton } from "@/modules/common/components/ConfirmActionButton";
 import { Textarea } from "@/modules/common/components/form/Textarea";
-import { BAN_REASON_MAX_LENGTH } from "@sam-monorepo/domain";
+import { BAN_REASON_MAXIMUM_LENGTH } from "@sam-monorepo/domain";
 import { FaBan } from "react-icons/fa";
 import { banUserAction } from "../actions/banUser";
 
@@ -35,7 +35,7 @@ export const BanUser = ({ userId }: Props) => {
         <Textarea
           label="Grund (optional)"
           name="reason"
-          maxLength={BAN_REASON_MAX_LENGTH}
+          maxLength={BAN_REASON_MAXIMUM_LENGTH}
         />
       </div>
     </ConfirmActionButton>

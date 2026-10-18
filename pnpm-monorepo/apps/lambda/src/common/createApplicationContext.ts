@@ -1,5 +1,8 @@
 import { trace } from "@opentelemetry/api";
-import type { ApplicationContext } from "@sam-monorepo/application";
+import {
+  createApplicationUrls,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
 import { prisma } from "@sam-monorepo/database";
 import {
   createEventBridgeNotificationTrigger,
@@ -16,24 +19,6 @@ interface ApplicationContextOptions {
   /** The public base URL of the uploads bucket */
   readonly publicUploadBaseUrl: string;
 }
-
-/** The app builds the same URLs in its composition root */
-const createUrls = ({
-  baseUrl: baseUrlValue,
-  publicUploadBaseUrl,
-}: Pick<
-  ApplicationContextOptions,
-  "baseUrl" | "publicUploadBaseUrl"
->): ApplicationContext["urls"] => {
-  const baseUrl = new URL(baseUrlValue);
-
-  return {
-    baseUrl,
-    issuer: baseUrl.href.replace(/\/$/, ""),
-    mcpResourceUrl: new URL("/api/mcp", baseUrl),
-    publicUploadBaseUrl: publicUploadBaseUrl.replace(/\/+$/, ""),
-  };
-};
 
 /**
  * The composition root of the Lambda functions. Each function builds its
@@ -59,7 +44,7 @@ export const createApplicationContext = ({
   now: () => new Date(),
   changelog: null,
   collab: null,
-  urls: createUrls({ baseUrl, publicUploadBaseUrl }),
+  urls: createApplicationUrls({ baseUrl, publicUploadBaseUrl }),
   signingKey: async () => null,
   allowInsecureLoopbackClientIds: false,
 });

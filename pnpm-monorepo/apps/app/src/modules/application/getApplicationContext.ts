@@ -11,40 +11,37 @@ import { triggerNotifications } from "@/modules/notifications/utils/triggerNotif
 import { getTracer } from "@/modules/tracing/utils/getTracer";
 import { getWikiCollabUrl } from "@/modules/wiki/utils/getWikiCollabUrl";
 import { replaceWikiPageContent } from "@/modules/wiki/utils/replaceWikiPageContent";
-import type { ApplicationContext } from "@sam-monorepo/application";
+import {
+  createApplicationUrls,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
 import { createPrismaAuditWriter } from "@sam-monorepo/infrastructure";
 
-const createApplicationContext = (): ApplicationContext => {
-  const baseUrl = new URL(env.NEXT_PUBLIC_BASE_URL);
+const createApplicationContext = (): ApplicationContext => ({
+  prisma,
+  audit: createPrismaAuditWriter({ prisma, log }),
+  notifications: { trigger: triggerNotifications },
+  log,
+  tracer: getTracer(),
+  now: () => new Date(),
+  changelog: { list: listChangelogEntriesAsMarkdown },
+  collab: getWikiCollabUrl()
+    ? { replaceContent: replaceWikiPageContent }
+    : null,
+  urls: createApplicationUrls({
+    baseUrl: env.NEXT_PUBLIC_BASE_URL,
+    publicUploadBaseUrl: getPublicUploadBaseUrl(),
+  }),
+  // The embed tokens and the access tokens use the same key
+  signingKey: async () => {
+    const signingKey = await getEmbedSigningKey();
+    if (!signingKey) return null;
 
-  return {
-    prisma,
-    audit: createPrismaAuditWriter({ prisma, log }),
-    notifications: { trigger: triggerNotifications },
-    log,
-    tracer: getTracer(),
-    now: () => new Date(),
-    changelog: { list: listChangelogEntriesAsMarkdown },
-    collab: getWikiCollabUrl()
-      ? { replaceContent: replaceWikiPageContent }
-      : null,
-    urls: {
-      baseUrl,
-      issuer: baseUrl.href.replace(/\/$/, ""),
-      mcpResourceUrl: new URL("/api/mcp", baseUrl),
-      publicUploadBaseUrl: getPublicUploadBaseUrl(),
-    },
-    // The embed tokens and the access tokens use the same key
-    signingKey: async () => {
-      const signingKey = await getEmbedSigningKey();
-      if (!signingKey) return null;
-
-      return { ...signingKey, algorithm: EMBED_TOKEN_ALGORITHM };
-    },
-    allowInsecureLoopbackClientIds:
-      env.OAUTH_ALLOW_INSECURE_LOOPBACK_CLIENT_IDS === "1",
-  };
-};
+    return { ...signingKey, algorithm: EMBED_TOKEN_ALGORITHM };
+  },
+  allowInsecureLoopbackClientIds:
+    env.OAUTH_ALLOW_INSECURE_LOOPBACK_CLIENT_IDS === "1",
+});
 
 /**
  * The environment does not change while the process runs, thus one context

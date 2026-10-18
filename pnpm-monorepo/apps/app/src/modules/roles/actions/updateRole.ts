@@ -11,7 +11,7 @@ import {
   updateRole as updateRoleUseCase,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { ROLE_ERROR_TEXTS } from "../utils/roleErrorTexts";
+import { getRoleErrorTexts } from "../utils/roleErrorTexts";
 
 /** An empty number field removes the value */
 const parseOptionalNumber = (value: FormDataEntryValue | null) =>
@@ -31,7 +31,7 @@ export const updateRole = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: ROLE_ERROR_TEXTS,
+        texts: getRoleErrorTexts(t),
       });
     }
 

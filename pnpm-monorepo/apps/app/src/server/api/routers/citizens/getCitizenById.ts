@@ -1,11 +1,15 @@
 import { getApplicationContext, toActor } from "@/modules/application";
-import { getCitizenProfile, NotFoundError } from "@sam-monorepo/application";
+import {
+  getCitizenProfile,
+  idSchema,
+  NotFoundError,
+} from "@sam-monorepo/application";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
 export const getCitizenById = protectedProcedure
-  .input(z.object({ id: z.cuid() }))
+  .input(z.object({ id: idSchema }))
   .query(async ({ ctx, input }) => {
     try {
       return await getCitizenProfile(

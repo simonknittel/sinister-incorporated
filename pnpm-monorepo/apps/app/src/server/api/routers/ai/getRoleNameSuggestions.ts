@@ -2,11 +2,7 @@ import { env } from "@/env";
 import { getApplicationContext, toActor } from "@/modules/application";
 import { isOpenAIEnabled } from "@/modules/common/utils/isOpenAIEnabled";
 import { log } from "@/modules/logging";
-import {
-  listRoles,
-  MAXIMUM_PAGE_LIMIT,
-  type Actor,
-} from "@sam-monorepo/application";
+import { findVisibleRoleBadges } from "@sam-monorepo/application";
 import { TRPCError } from "@trpc/server";
 import type { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import * as z from "zod";
@@ -30,27 +26,6 @@ const responseSchema = z.object({
   roleNames: z.array(z.string()).max(MAXIMUM_ROLE_NAMES),
 });
 
-/**
- * The names of the roles that the actor can see, sorted by name. A hidden
- * role name never goes to the model.
- */
-const listVisibleRoleNames = async (actor: Actor) => {
-  const roleNames: string[] = [];
-
-  let cursor: string | undefined;
-  do {
-    const page = await listRoles(getApplicationContext(), actor, {
-      limit: MAXIMUM_PAGE_LIMIT,
-      cursor,
-    });
-
-    roleNames.push(...page.roles.map((role) => role.name));
-    cursor = page.next_cursor ?? undefined;
-  } while (cursor);
-
-  return roleNames;
-};
-
 export const getRoleNameSuggestions = protectedProcedure.query(
   async ({ ctx }) => {
     const actor = await toActor(ctx.session);
@@ -63,7 +38,10 @@ export const getRoleNameSuggestions = protectedProcedure.query(
         message: "Generation is disabled",
       });
 
-    const existingRoleNames = await listVisibleRoleNames(actor);
+    // A hidden role name never goes to the model
+    const existingRoleNames = (
+      await findVisibleRoleBadges(getApplicationContext(), actor)
+    ).map((role) => role.name);
 
     const defaultHeaders = new Headers();
     if (env.OPENAI_EXTRA_API_KEY)

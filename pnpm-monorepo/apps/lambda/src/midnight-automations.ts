@@ -36,14 +36,11 @@ const context = createApplicationContext({
 const createJob =
   (
     name: string,
-    automation: (
-      context: ApplicationContext,
-      input: { readonly now: Date },
-    ) => Promise<object>,
+    automation: (context: ApplicationContext) => Promise<object>,
   ) =>
   () =>
     captureAsyncFunc(name, async () => {
-      const output = await automation(context, { now: new Date() });
+      const output = await automation(context);
       log.info("Job finished", { job: name, ...output });
     });
 

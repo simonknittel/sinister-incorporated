@@ -8,7 +8,14 @@ import { ImageUpload } from "@/modules/common/components/ImageUpload";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { Tile } from "@/modules/common/components/Tile";
 import type { ManagedRole } from "@sam-monorepo/application";
-import { ROLE_DESCRIPTION_MAX_LENGTH } from "@sam-monorepo/domain";
+import {
+  ROLE_DESCRIPTION_MAXIMUM_LENGTH,
+  ROLE_INACTIVITY_DAYS_MAXIMUM,
+  ROLE_INACTIVITY_DAYS_MINIMUM,
+  ROLE_LEVEL_MAXIMUM,
+  ROLE_LEVEL_MINIMUM,
+  ROLE_NAME_MAXIMUM_LENGTH,
+} from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { FaSave } from "react-icons/fa";
 import { updateRole } from "../actions/updateRole";
@@ -39,13 +46,18 @@ export const OverviewTab = ({ className, role }: Props) => {
         <form action={updateFormAction}>
           <input type="hidden" name="id" value={role.id} />
 
-          <TextInput label="Name" name="name" defaultValue={role.name} />
+          <TextInput
+            label="Name"
+            name="name"
+            defaultValue={role.name}
+            maxLength={ROLE_NAME_MAXIMUM_LENGTH}
+          />
 
           <Textarea
             label="Beschreibung"
             name="description"
             defaultValue={role.description ?? undefined}
-            maxLength={ROLE_DESCRIPTION_MAX_LENGTH}
+            maxLength={ROLE_DESCRIPTION_MAXIMUM_LENGTH}
             hint="(Optional) Markdown wird unterstützt"
             className="mt-4"
           />
@@ -56,7 +68,8 @@ export const OverviewTab = ({ className, role }: Props) => {
                 label="Entfernung nach (in Tagen)"
                 name="maxAgeDays"
                 defaultValue={role.maxAgeDays ?? undefined}
-                min={1}
+                min={ROLE_INACTIVITY_DAYS_MINIMUM}
+                max={ROLE_INACTIVITY_DAYS_MAXIMUM}
                 step={1}
                 hint="(Optional) Citizen, die sich innerhalb dieses Zeitraums nicht einloggen, wird automatisch diese Rolle entfernt"
                 labelClassName="mt-4"
@@ -68,7 +81,8 @@ export const OverviewTab = ({ className, role }: Props) => {
                 label="Zuweisung nach (in Tagen)"
                 name="assignAfterInactiveDays"
                 defaultValue={role.assignAfterInactiveDays ?? undefined}
-                min={1}
+                min={ROLE_INACTIVITY_DAYS_MINIMUM}
+                max={ROLE_INACTIVITY_DAYS_MAXIMUM}
                 step={1}
                 hint="(Optional) Citizen, die sich innerhalb dieses Zeitraums nicht einloggen, wird automatisch diese Rolle zugewiesen"
                 labelClassName="mt-4"
@@ -80,7 +94,8 @@ export const OverviewTab = ({ className, role }: Props) => {
             label="Level"
             name="maxLevel"
             defaultValue={role.maxLevel ?? undefined}
-            min={1}
+            min={ROLE_LEVEL_MINIMUM}
+            max={ROLE_LEVEL_MAXIMUM}
             step={1}
             hint="(Optional) Die Anzahl an Level, die ein Citizen erreichen muss, um die Berechtigungen dieser Rolle zu erhalten"
             labelClassName="mt-4"

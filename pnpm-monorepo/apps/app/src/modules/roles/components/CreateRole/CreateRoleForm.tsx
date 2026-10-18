@@ -4,6 +4,7 @@ import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import { Button2 } from "@/modules/common/components/Button2";
 import { TextInput } from "@/modules/common/components/form/TextInput";
 import { api } from "@/trpc/react";
+import { ROLE_NAME_MAXIMUM_LENGTH } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useState } from "react";
 import { FaSave } from "react-icons/fa";
@@ -42,6 +43,7 @@ export const CreateRoleForm = ({ className, onSuccess }: Props) => {
         value={name}
         onChange={(event) => setName(event.target.value)}
         required
+        maxLength={ROLE_NAME_MAXIMUM_LENGTH}
         autoFocus
       />
 

@@ -8,3 +8,11 @@ import type { Session } from "next-auth";
  */
 export const isAdminBehindSession = (session: Session) =>
   session.user.role === UserRole.ADMIN || Boolean(session.assumedByAdminId);
+
+/**
+ * The user id of the admin behind the session: the id of the admin during
+ * an assume, else the own id. Call it only after a check with
+ * `isAdminBehindSession()`.
+ */
+export const getAdminUserIdBehindSession = (session: Session) =>
+  session.assumedByAdminId ?? session.user.id;

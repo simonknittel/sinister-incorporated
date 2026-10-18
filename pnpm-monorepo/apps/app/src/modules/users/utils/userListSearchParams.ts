@@ -11,7 +11,7 @@ export { UserBanStatus, UserSort };
 
 export const loadUserListSearchParams = createCursorPaginationLoader({
   sort: parseAsStringEnum(Object.values(UserSort)).withDefault(
-    UserSort.CreatedAtDesc,
+    UserSort.CreatedAtDescending,
   ),
   q: parseAsString,
   banned: parseAsStringEnum(Object.values(UserBanStatus)).withDefault(

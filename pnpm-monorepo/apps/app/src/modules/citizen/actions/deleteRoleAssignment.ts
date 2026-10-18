@@ -6,7 +6,7 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
-import { getRoleAssignmentErrorTexts } from "@/modules/roles/utils/roleErrorTexts";
+import { getRoleErrorTexts } from "@/modules/roles/utils/roleErrorTexts";
 import {
   deleteRoleAssignmentInputSchema,
   deleteRoleAssignment as deleteRoleAssignmentUseCase,
@@ -27,7 +27,7 @@ export const deleteRoleAssignment = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: getRoleAssignmentErrorTexts(t),
+        texts: getRoleErrorTexts(t),
       });
     }
 

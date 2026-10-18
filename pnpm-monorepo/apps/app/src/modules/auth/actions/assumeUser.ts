@@ -20,6 +20,7 @@ import {
   ASSUME_USER_COOKIE_MAX_AGE,
 } from "../utils/adminCookies";
 import { AUTH_ERROR_TEXTS } from "../utils/authErrorTexts";
+import { getAdminUserIdBehindSession } from "../utils/isAdminBehindSession";
 
 /** The session holds the other fields of the input */
 const schema = startAssumingUserInputSchema.pick({ target_user_id: true });
@@ -33,7 +34,7 @@ export const assumeUser = createAuthenticatedAction(
     let assumedUser;
     try {
       assumedUser = await startAssumingUser(getApplicationContext(), {
-        admin_user_id: session.assumedByAdminId ?? session.user.id,
+        admin_user_id: getAdminUserIdBehindSession(session),
         target_user_id: data.target_user_id,
         current_assumed_user: session.assumedByAdminId
           ? { id: session.user.id, name: session.user.name ?? null }
