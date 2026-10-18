@@ -36,6 +36,34 @@ export {
   isSupportedTimezone,
 } from "./citizen/timezones.js";
 export {
+  DISCORD_CHANNEL_ID_MAX_LENGTH,
+  DISCORD_EVENT_LOCATION_MAX_LENGTH,
+  DISCORD_EVENT_NAME_MAX_LENGTH,
+  DiscordChannelType,
+  DiscordScheduledEventEntityType,
+  GuildScheduledEventContentProblem,
+  findContentProblem,
+  findPublishProblem,
+  getEntityTypeForChannelType,
+  getGuildScheduledEventPath,
+  toGuildScheduledEventChange,
+  type GuildScheduledEventChange,
+  type GuildScheduledEventContent,
+  type GuildScheduledEventTarget,
+  type PublishableGuildChannel,
+} from "./discord/guildScheduledEvent.js";
+export {
+  EventContainerKind,
+  eventContainerColumns,
+  getPositionContainer,
+  getWikiPageContainer,
+  toEventContainer,
+  toTemplateContainer,
+  wikiContainerColumns,
+  type EventContainer,
+  type EventContainerColumns,
+} from "./events/eventContainer.js";
+export {
   DISCORD_EVENT_DESCRIPTION_MAX_LENGTH,
   buildDiscordEventDescription,
   getDiscordEventDescriptionFooter,
@@ -59,6 +87,15 @@ export {
   LINEUP_MAX_POSITIONS,
   LINEUP_MAX_POSITIONS_PER_LEVEL,
 } from "./events/lineupLimits.js";
+export {
+  buildPositionTree,
+  canPasteSubtree,
+  getPositionLevel,
+  getPositionSubtree,
+  getSubtreeDepth,
+  getSubtreeSize,
+  type PositionSubtree,
+} from "./events/positionTree.js";
 export { HIGH_VOLUME_AUDIT_EVENT_TYPES } from "./highVolumeAuditEventTypes.js";
 export { MAX_HUMAN_RESOURCES_ROLES } from "./iam/humanResourcesRoles.js";
 export { isAllowedWebPushEndpointUrl } from "./isAllowedWebPushEndpointUrl.js";

@@ -1,5 +1,5 @@
-import { LINEUP_MAX_DEPTH } from "@sam-monorepo/domain";
 import { describe, expect, it } from "vitest";
+import { LINEUP_MAX_DEPTH } from "./lineupLimits.js";
 import {
   buildPositionTree,
   canPasteSubtree,
@@ -7,7 +7,7 @@ import {
   getPositionSubtree,
   getSubtreeDepth,
   getSubtreeSize,
-} from "./positionTree";
+} from "./positionTree.js";
 
 /**
  * ```
@@ -35,8 +35,8 @@ describe("getSubtreeDepth", () => {
   it("returns the depth of the deepest branch", () => {
     const tree = buildPositionTree(positions);
 
-    expect(getSubtreeDepth(tree[0])).toBe(3);
-    expect(getSubtreeDepth(tree[1])).toBe(1);
+    expect(getSubtreeDepth(tree[0]!)).toBe(3);
+    expect(getSubtreeDepth(tree[1]!)).toBe(1);
   });
 });
 
@@ -44,8 +44,8 @@ describe("getSubtreeSize", () => {
   it("counts the position itself and all of its descendants", () => {
     const tree = buildPositionTree(positions);
 
-    expect(getSubtreeSize(tree[0])).toBe(4);
-    expect(getSubtreeSize(tree[1])).toBe(1);
+    expect(getSubtreeSize(tree[0]!)).toBe(4);
+    expect(getSubtreeSize(tree[1]!)).toBe(1);
   });
 });
 
@@ -66,12 +66,12 @@ describe("buildPositionTree", () => {
     const tree = buildPositionTree(positions);
 
     expect(tree.map((position) => position.id)).toEqual(["alpha", "bravo"]);
-    expect(tree[0].childPositions.map((position) => position.id)).toEqual([
+    expect(tree[0]!.childPositions.map((position) => position.id)).toEqual([
       "alphaOne",
       "alphaTwo",
     ]);
     expect(
-      tree[0].childPositions[0].childPositions.map((position) => position.id),
+      tree[0]!.childPositions[0]!.childPositions.map((position) => position.id),
     ).toEqual(["alphaOneDeep"]);
   });
 
@@ -79,7 +79,7 @@ describe("buildPositionTree", () => {
     const tree = buildPositionTree([...positions].toReversed());
 
     expect(tree.map((position) => position.id)).toEqual(["bravo", "alpha"]);
-    expect(tree[1].childPositions.map((position) => position.id)).toEqual([
+    expect(tree[1]!.childPositions.map((position) => position.id)).toEqual([
       "alphaTwo",
       "alphaOne",
     ]);

@@ -1,5 +1,5 @@
-import type { EventPosition } from "@sam-monorepo/database/browser";
-import { LINEUP_MAX_DEPTH } from "@sam-monorepo/domain";
+import type { EventPosition } from "@sam-monorepo/database/client";
+import { LINEUP_MAX_DEPTH } from "./lineupLimits.js";
 
 interface PositionNode {
   childPositions?: PositionNode[];
