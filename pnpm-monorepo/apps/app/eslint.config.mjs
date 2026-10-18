@@ -5,6 +5,37 @@ import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need
 import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
+// A later config object that sets `no-restricted-imports` replaces the whole
+// option array of the rule for its files. Thus it spreads this list.
+const sharedRestrictedImports = [
+  {
+    name: "next/link",
+    message: "Please use @/modules/common/components/Link instead.",
+  },
+  {
+    name: "@radix-ui/react-popover",
+    message: "Please use @/modules/common/components/Popover instead.",
+  },
+  {
+    name: "@base-ui/react/popover",
+    message: "Please use @/modules/common/components/PopoverBaseUI instead.",
+  },
+  {
+    name: "@radix-ui/react-tooltip",
+    message: "Please use @/modules/common/components/Tooltip instead.",
+  },
+  {
+    name: "@headlessui/react",
+    importNames: ["Popover"],
+    message: "Please use @/modules/common/components/Popover instead.",
+  },
+  {
+    name: "@headlessui/react",
+    importNames: ["Tab", "TabList"],
+    message: "Please use @/modules/common/components/tabs instead.",
+  },
+];
+
 const eslintConfig = defineConfig([
   ...nextCoreWebVitals,
   ...tseslint.configs.recommendedTypeChecked,
@@ -70,36 +101,7 @@ const eslintConfig = defineConfig([
         },
       ],
 
-      "no-restricted-imports": [
-        "error",
-        {
-          name: "next/link",
-          message: "Please use @/modules/common/components/Link instead.",
-        },
-        {
-          name: "@radix-ui/react-popover",
-          message: "Please use @/modules/common/components/Popover instead.",
-        },
-        {
-          name: "@base-ui/react/popover",
-          message:
-            "Please use @/modules/common/components/PopoverBaseUI instead.",
-        },
-        {
-          name: "@radix-ui/react-tooltip",
-          message: "Please use @/modules/common/components/Tooltip instead.",
-        },
-        {
-          name: "@headlessui/react",
-          importNames: ["Popover"],
-          message: "Please use @/modules/common/components/Popover instead.",
-        },
-        {
-          name: "@headlessui/react",
-          importNames: ["Tab", "TabList"],
-          message: "Please use @/modules/common/components/tabs instead.",
-        },
-      ],
+      "no-restricted-imports": ["error", ...sharedRestrictedImports],
 
       "no-restricted-syntax": [
         "error",
@@ -136,6 +138,39 @@ const eslintConfig = defineConfig([
         {
           // This needs to be set to true to make use of the `satisfies never` type guard for `switch` statements exhaustive checks.
           allowNever: true,
+        },
+      ],
+    },
+  },
+
+  {
+    name: "use-cases-only",
+    // The list grows as the modules move to use cases. After the last
+    // module it is `src/**` with the ignores
+    // `src/modules/application/**` and `src/modules/auth/server/**`.
+    files: [
+      "src/modules/mcp-settings/**",
+      "src/modules/oauth/**",
+      "src/modules/mcp/**",
+      "src/app/app/account/mcp/**",
+      "src/app/app/oauth/**",
+      "src/app/api/oauth/**",
+      "src/app/api/mcp/**",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        ...sharedRestrictedImports,
+        {
+          name: "@/db",
+          message:
+            "This module is on use cases. Read and write through @sam-monorepo/application. Only the composition root (src/modules/application) and the auth zone (src/modules/auth/server) use Prisma.",
+        },
+        {
+          name: "@sam-monorepo/database",
+          importNames: ["prisma"],
+          message:
+            "This module is on use cases. Read and write through @sam-monorepo/application. Only the composition root (src/modules/application) and the auth zone (src/modules/auth/server) use the Prisma client.",
         },
       ],
     },
