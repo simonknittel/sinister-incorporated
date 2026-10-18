@@ -1,56 +1,36 @@
 import {
-  EventBridgeClient,
-  PutEventsCommand,
-  type PutEventsCommandInput,
-} from "@aws-sdk/client-eventbridge";
+  createEventBridgeClient,
+  createEventBridgeEmitter,
+  EventBridgeFailedEntriesError,
+  type EventBridgeEntry,
+} from "@sam-monorepo/infrastructure";
 import { log } from "./logger";
 import { captureAsyncFunc } from "./xray";
 
-const client = new EventBridgeClient({
-  region: "eu-central-1",
+/** Without static credentials: the client uses the role of the function */
+export const eventBridgeClient = createEventBridgeClient({});
+
+const emitEventsOrThrow = createEventBridgeEmitter({
+  client: eventBridgeClient,
+  eventBusArn: process.env.AWS_EVENT_BUS_ARN,
+  log,
 });
 
-/** PutEvents accepts at most 10 entries per call */
-const BATCH_SIZE = 10;
-
 /**
- * Sends the entries to the event bus. Callers pass as many entries as they
- * have; the AWS limit of ten entries per call is handled here, so that it
- * does not leak into every automation.
+ * Sends the entries to the event bus. When EventBridge does not take an
+ * entry, the function logs the error and does not throw. Other errors go to
+ * the caller. This keeps the behavior of the automations until they become
+ * use cases (milestones 2 to 6 of the clean-architecture plan). Then this
+ * wrapper goes away.
  */
-export const emitEvents = async (
-  entries: Omit<
-    NonNullable<PutEventsCommandInput["Entries"]>[number],
-    "EventBusName"
-  >[],
-) => {
+export const emitEvents = async (entries: EventBridgeEntry[]) => {
   await captureAsyncFunc("emitEvents", async () => {
-    if (!process.env.AWS_EVENT_BUS_ARN) {
-      log.info("Event bus ARN not configured, skipping emitting events.");
-      return;
-    }
+    try {
+      await emitEventsOrThrow(entries);
+    } catch (error) {
+      if (!(error instanceof EventBridgeFailedEntriesError)) throw error;
 
-    if (entries.length <= 0) {
-      log.info("No entries provided to send to EventBridge.");
-      return;
-    }
-
-    for (let index = 0; index < entries.length; index += BATCH_SIZE) {
-      const input: PutEventsCommandInput = {
-        Entries: entries.slice(index, index + BATCH_SIZE).map((entry) => ({
-          ...entry,
-          EventBusName: process.env.AWS_EVENT_BUS_ARN,
-        })),
-      };
-
-      const command = new PutEventsCommand(input);
-      const response = await client.send(command);
-
-      if (response.FailedEntryCount) {
-        log.error("Failed to send events to EventBridge", {
-          response,
-        });
-      }
+      log.error("Failed to send events to EventBridge", { error });
     }
   });
 };
