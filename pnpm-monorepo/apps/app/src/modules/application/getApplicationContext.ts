@@ -2,7 +2,6 @@ import "server-only";
 
 import { prisma } from "@/db";
 import { env } from "@/env";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { listChangelogEntriesAsMarkdown } from "@/modules/changelog/utils/listChangelogEntriesAsMarkdown";
 import { getPublicUploadBaseUrl } from "@/modules/common/utils/getPublicUploadUrl";
 import { EMBED_TOKEN_ALGORITHM } from "@/modules/embed-authentication/utils/constants";
@@ -13,17 +12,14 @@ import { getTracer } from "@/modules/tracing/utils/getTracer";
 import { getWikiCollabUrl } from "@/modules/wiki/utils/getWikiCollabUrl";
 import { replaceWikiPageContent } from "@/modules/wiki/utils/replaceWikiPageContent";
 import type { ApplicationContext } from "@sam-monorepo/application";
+import { createPrismaAuditWriter } from "@sam-monorepo/infrastructure";
 
 const createApplicationContext = (): ApplicationContext => {
   const baseUrl = new URL(env.NEXT_PUBLIC_BASE_URL);
 
   return {
     prisma,
-    audit: {
-      create: async (events) => {
-        await createAuditEvents(events);
-      },
-    },
+    audit: createPrismaAuditWriter({ prisma, log }),
     notifications: { trigger: triggerNotifications },
     log,
     tracer: getTracer(),

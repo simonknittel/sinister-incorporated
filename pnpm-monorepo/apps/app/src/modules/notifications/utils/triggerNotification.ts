@@ -1,13 +1,14 @@
 import { emitEvents } from "@/modules/eventbridge/utils";
 import { log } from "@/modules/logging";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { createId } from "@paralleldrive/cuid2";
+import type { Notification } from "@sam-monorepo/application";
+import { createEventBridgeNotificationTrigger } from "@sam-monorepo/infrastructure";
 import { emailConfirmationHandler } from "./type-handlers/email_confirmation";
 
-interface Notification {
-  type: string;
-  payload: unknown;
-}
+const notificationTrigger = createEventBridgeNotificationTrigger({
+  emitEvents,
+  source: "App",
+});
 
 export const triggerNotifications = withTrace(
   "triggerNotifications",
@@ -20,17 +21,7 @@ export const triggerNotifications = withTrace(
         >[0],
       );
     } else {
-      await emitEvents(
-        notifications.map((notification) => ({
-          Source: "App",
-          DetailType: "NotificationRequested",
-          Detail: JSON.stringify({
-            type: notification.type,
-            payload: notification.payload,
-            requestId: createId(),
-          }),
-        })),
-      );
+      await notificationTrigger.trigger(notifications);
     }
   },
 );
