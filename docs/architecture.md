@@ -23,12 +23,10 @@ A host is a deployable program. It owns its runtime, its configuration and its e
 | Package | Layer | Content | Depends on |
 | - | - | - | - |
 | `database` | infrastructure | The Prisma schema, the migrations and the generated client | — |
-| `domain` | domain | Pure rules and helpers that more than one host uses: audit event types, calendar dates, time zone, event rules, wiki rules, read markers, the limits of the forms and the use cases, the slug helper | `database` (types) |
-| `permissions` | domain | The permission model: permission sets, role resolution, the wiki page permission resolvers | `database` (types) |
-| `notifications` | domain | The notification channel vocabulary | — |
+| `domain` | domain | Pure rules and helpers that more than one host uses: audit event types, calendar dates, time zone, event rules, wiki rules, read markers, the limits of the forms and the use cases, the slug helper. The permission model (`src/permissions`): permission sets, role resolution, the wiki page permission resolvers. The notification vocabulary (`src/notifications`): the payload schemas of the on-site notifications and the realtime channel names | `database` (types) |
 | `emails` | domain | The email templates | — |
 | `wiki-editor` | domain | The Tiptap schema of the wiki content, text extraction, the Markdown renderer and parser | — |
-| `application` | use cases | The use cases: one read or one write of a feature, with the permission checks, the audit events and the notifications inside. The actor, the application context and the typed errors. The OAuth use cases. See the [package README](../pnpm-monorepo/packages/application/README.md). | `database`, `domain`, `permissions`, `wiki-editor` |
+| `application` | use cases | The use cases: one read or one write of a feature, with the permission checks, the audit events and the notifications inside. The actor, the application context and the typed errors. The OAuth use cases. See the [package README](../pnpm-monorepo/packages/application/README.md). | `database`, `domain`, `wiki-editor` |
 | `mcp` | interface adapter | The MCP server: the tool registry, the tools, the request handler with the bearer verification. See [mcp-server.md](./mcp-server.md). | `application`, `domain`, `database` |
 
 ### Inside the Next.js app
@@ -69,7 +67,7 @@ flowchart TB
   end
 
   subgraph domain [Domain]
-    domainPackages["packages/domain, permissions, notifications, emails, wiki-editor"]
+    domainPackages["packages/domain, emails, wiki-editor"]
   end
 
   subgraph infrastructure [Infrastructure]
@@ -94,7 +92,7 @@ Dependencies point downwards only. A package never imports a host. `application`
 
 ### The layers
 
-- **Domain** (`domain`, `permissions`, `notifications`, `emails`, `wiki-editor`): pure code. No Prisma client calls, no I/O. Prisma types and selects are permitted.
+- **Domain** (`domain`, `emails`, `wiki-editor`): pure code. No Prisma client calls, no I/O. Prisma types and selects are permitted.
 - **Use cases** (`application`): `(context, actor, input) => output`, with the context and its ports as the [package README](../pnpm-monorepo/packages/application/README.md) describes them. The use cases call Prisma directly; there are no repository ports. This is the one intentional break of the dependency rule, decided for pragmatism.
 - **Adapters**: the server actions and tRPC procedures of the Next.js app, the MCP tools and request handler, the Lambda handlers. They parse the transport-specific input, call the use cases and map the typed errors.
 - **Hosts**: the deployables. Each host has one composition root that builds its context.
@@ -109,8 +107,8 @@ Dependencies point downwards only. A package never imports a host. `application`
 | Lambda automations that use Prisma and the app's rules | Use cases in `application`, called from thin Lambda handlers | One implementation of each rule |
 | The MCP endpoint in `apps/app` | A service of its own that imports `mcp` and `application` and builds its own context | Independent scaling and deployment |
 | The Next.js app with all business logic | A dedicated backend with Next.js as a backend-for-frontend (open decision) | Only when a second frontend or a scaling need makes it necessary |
-| `packages/permissions` | Folded into `domain` | It is domain code (the permission model and the resolvers) with the same dependencies as `domain`; one package has less to maintain. Until then it stays a domain-level package next to `domain`. |
-| `packages/notifications` | Folded into `domain` | It is only the channel vocabulary. Same reason as `permissions`. |
+| `packages/permissions` | Done: folded into `domain` (`src/permissions`) | It is domain code with the same dependencies as `domain`; one package has less to maintain. |
+| `packages/notifications` | Done: folded into `domain` (`src/notifications`) | Same reason as `permissions`. |
 | `packages/wiki-editor` | Stays a separate domain-level package | It is domain code (the content format of the wiki), but it depends on Tiptap and has a browser entry (`helpers`). A merge into `domain` would pull Tiptap into the Lambdas and the collab server. |
 | `packages/emails` | Stays separate as an adapter | Email templates are presentation, not rules. A use case asks the context to send a notification; the template renders it. |
 

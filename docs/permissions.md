@@ -1,6 +1,6 @@
 # Permissions
 
-The permission logic is in [packages/permissions](../pnpm-monorepo/packages/permissions). These rules are not easy to see in the code:
+The permission logic is in [packages/domain/src/permissions](../pnpm-monorepo/packages/domain/src/permissions). These rules are not easy to see in the code:
 
 - **Inheritance has one level.** A role gets the permissions of the roles that it inherits directly (`resolveEffectiveRoles`), but not the permissions that these roles inherit. Thus a cycle between roles is harmless. Only a role that inherits itself is not permitted.
 - **`manage` includes all operations of a resource**, also `negate` (`comparePermissionSets`). It does not include a permission string with more attributes: `task;manage` does not give `task;read;taskDeleted=1`. To find out if a role has a negation, compare the literal permission string.

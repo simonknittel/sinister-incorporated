@@ -33,7 +33,7 @@ Unit tests (run them from `pnpm-monorepo`):
 ```sh
 pnpm --filter @sam-monorepo/app run test
 pnpm --filter @sam-monorepo/lambda run test
-pnpm --filter @sam-monorepo/permissions run test
+pnpm --filter @sam-monorepo/domain run test
 pnpm --filter @sam-monorepo/wiki-editor run test
 ```
 
