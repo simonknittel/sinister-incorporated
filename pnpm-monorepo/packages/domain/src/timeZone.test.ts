@@ -5,10 +5,13 @@
 
 import { describe, expect, test } from "vitest";
 import {
+  addDaysToLocalDate,
   getLocalDate,
   getLocalDateKey,
+  getStartOfLocalDay,
   instantToWallTime,
   ORGANIZATION_TIMEZONE,
+  subtractCalendarDays,
   wallTimeToInstant,
 } from "./timeZone.js";
 
@@ -202,5 +205,119 @@ describe("getLocalDateKey", () => {
     [TOKYO, "2026-12-31T15:00:00.000Z", "2027-01-01"],
   ])("%s: the day of %s is %s", (timeZone, instant, expectedKey) => {
     expect(getLocalDateKey(new Date(instant), timeZone)).toBe(expectedKey);
+  });
+});
+
+describe("getStartOfLocalDay", () => {
+  test.each([
+    ["the day of the spring-forward change", 3, 29, "2026-03-28T23:00:00.000Z"],
+    [
+      "the day after the spring-forward change",
+      3,
+      30,
+      "2026-03-29T22:00:00.000Z",
+    ],
+    ["the day of the fall-back change", 10, 25, "2026-10-24T22:00:00.000Z"],
+    ["the day after the fall-back change", 10, 26, "2026-10-25T23:00:00.000Z"],
+  ])("Europe/Berlin: %s", (_description, month, day, expectedInstant) => {
+    expect(
+      getStartOfLocalDay(
+        { year: 2026, month, day },
+        ORGANIZATION_TIMEZONE,
+      ).toISOString(),
+    ).toBe(expectedInstant);
+  });
+
+  test("a midnight in the spring-forward gap gives the end of the gap", () => {
+    expect(
+      getStartOfLocalDay(
+        { year: 2026, month: 9, day: 6 },
+        "America/Santiago",
+      ).toISOString(),
+    ).toBe("2026-09-06T04:00:00.000Z");
+  });
+});
+
+describe("addDaysToLocalDate", () => {
+  test.each([
+    [
+      "the next day",
+      { year: 2026, month: 10, day: 25 },
+      1,
+      { year: 2026, month: 10, day: 26 },
+    ],
+    [
+      "a month rollover",
+      { year: 2026, month: 3, day: 1 },
+      -1,
+      { year: 2026, month: 2, day: 28 },
+    ],
+    [
+      "a leap day",
+      { year: 2028, month: 3, day: 1 },
+      -1,
+      { year: 2028, month: 2, day: 29 },
+    ],
+    [
+      "a year rollover",
+      { year: 2026, month: 1, day: 1 },
+      -1,
+      { year: 2025, month: 12, day: 31 },
+    ],
+  ])("%s", (_description, date, days, expectedDate) => {
+    expect(addDaysToLocalDate(date, days)).toEqual(expectedDate);
+  });
+});
+
+/**
+ * The expected instants are the results of `Date#setDate(getDate() - days)`
+ * in a process with the time zone Europe/Berlin.
+ */
+describe("subtractCalendarDays", () => {
+  test.each([
+    [
+      "over the spring-forward change, a day of 23 hours",
+      "2026-03-29T22:05:00.000Z",
+      1,
+      "2026-03-28T23:05:00.000Z",
+    ],
+    [
+      "over the fall-back change, a day of 25 hours",
+      "2026-10-25T23:05:00.000Z",
+      1,
+      "2026-10-24T22:05:00.000Z",
+    ],
+    [
+      "into the spring-forward gap, moved forward by one hour",
+      "2026-03-30T00:30:00.000Z",
+      1,
+      "2026-03-29T01:30:00.000Z",
+    ],
+    [
+      "into the fall-back overlap, the earlier instant",
+      "2026-10-26T01:30:00.000Z",
+      1,
+      "2026-10-25T00:30:00.000Z",
+    ],
+    [
+      "a month rollover, with the milliseconds",
+      "2026-03-14T23:10:00.123Z",
+      30,
+      "2026-02-12T23:10:00.123Z",
+    ],
+    [
+      "a year rollover",
+      "2025-12-31T23:10:00.000Z",
+      30,
+      "2025-12-01T23:10:00.000Z",
+    ],
+  ])("Europe/Berlin: %s", (_description, instant, days, expectedInstant) => {
+    expect(
+      subtractCalendarDays(
+        new Date(instant),
+        days,
+        ORGANIZATION_TIMEZONE,
+      ).toISOString(),
+    ).toBe(expectedInstant);
   });
 });

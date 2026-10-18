@@ -16,11 +16,26 @@ export {
   toDateColumnValue,
 } from "./calendarDate.js";
 export { ACTIVE_CITIZEN_WHERE } from "./citizen/activeCitizen.js";
-export { getCelebrationDate, isBirthdayToday } from "./citizen/birthday.js";
+export {
+  BIRTHDAY_DAY_MAX,
+  BIRTHDAY_DAY_MIN,
+  BIRTHDAY_MONTH_MAX,
+  BIRTHDAY_MONTH_MIN,
+  getCelebrationDate,
+  getMaximumDayOfMonth,
+  isBirthdayToday,
+} from "./citizen/birthday.js";
 export {
   DELETED_CITIZEN_LABEL,
   getCitizenDisplayName,
 } from "./citizen/citizenDisplayName.js";
+export type { CitizenLogType } from "./citizen/citizenLogType.js";
+export { lockCitizen } from "./citizen/lockCitizen.js";
+export {
+  SUPPORTED_TIMEZONES,
+  TIMEZONE_MAX_LENGTH,
+  isSupportedTimezone,
+} from "./citizen/timezones.js";
 export {
   DISCORD_EVENT_DESCRIPTION_MAX_LENGTH,
   buildDiscordEventDescription,
@@ -46,6 +61,7 @@ export {
   LINEUP_MAX_POSITIONS_PER_LEVEL,
 } from "./events/lineupLimits.js";
 export { HIGH_VOLUME_AUDIT_EVENT_TYPES } from "./highVolumeAuditEventTypes.js";
+export { MAX_HUMAN_RESOURCES_ROLES } from "./iam/humanResourcesRoles.js";
 export { isAllowedWebPushEndpointUrl } from "./isAllowedWebPushEndpointUrl.js";
 export {
   CITIZEN_CHANNEL_PREFIX,
@@ -108,6 +124,7 @@ export type {
   GenericCitizenLogType,
   PermissionSet,
 } from "./permissions/PermissionSet.js";
+export { PERMISSION_STRING_PATTERN } from "./permissions/permissionStringPattern.js";
 export {
   hasReachedMaxLevel,
   resolveEffectiveRoles,
@@ -184,6 +201,18 @@ export {
   slugifyWikiPageTitle,
 } from "./slug.js";
 export {
+  ConfirmationValue,
+  toConfirmationStatus,
+  toConfirmationValue,
+} from "./spynet/citizenLogConfirmation.js";
+export { CitizenLogTableSort } from "./spynet/citizenLogTableSort.js";
+export {
+  CITIZEN_MENTION_PATTERN,
+  NOTE_MENTION_PATTERN,
+  ORGANIZATION_MENTION_PATTERN,
+  getNoteMentionSpectrumIds,
+} from "./spynet/noteMentions.js";
+export {
   SPYNET_SEARCH_QUERY_MAXIMUM_LENGTH,
   SPYNET_SEARCH_QUERY_MINIMUM_LENGTH,
   SpynetSearchHitType,
@@ -197,9 +226,12 @@ export {
 } from "./tasks/taskLimits.js";
 export {
   ORGANIZATION_TIMEZONE,
+  addDaysToLocalDate,
   getLocalDate,
   getLocalDateKey,
+  getStartOfLocalDay,
   instantToWallTime,
+  subtractCalendarDays,
   wallTimeToInstant,
   type LocalDate,
 } from "./timeZone.js";
@@ -207,6 +239,7 @@ export {
   UNUSED_UPLOAD_WHERE,
   UPLOAD_USAGE_RELATIONS,
 } from "./uploadUsageRelations.js";
+export { ASSUMABLE_USER_WHERE } from "./user/assumableUser.js";
 export {
   WIKI_PAGE_CONTENT_JSON_MAX_LENGTH,
   WIKI_PAGE_TITLE_MAX_LENGTH,

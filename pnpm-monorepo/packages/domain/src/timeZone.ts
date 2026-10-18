@@ -84,8 +84,67 @@ const getOffsetMilliseconds = (instant: number, timeZone: string): number => {
     parts.minute,
     parts.second,
   );
+  // The parts have no milliseconds, thus the instant also loses them
+  const instantInWholeSeconds =
+    instant - new Date(instant).getUTCMilliseconds();
 
-  return wallTimeAsUtc - instant;
+  return wallTimeAsUtc - instantInWholeSeconds;
+};
+
+/**
+ * The instant that a wall time in the fall-back overlap gives. The wall time
+ * occurs two times in the overlap.
+ */
+enum OverlapInstant {
+  /** The instant before the change. `Date` uses this rule. */
+  Earlier = "earlier",
+  /** The instant after the change, which is in standard time */
+  Later = "later",
+}
+
+/**
+ * The instant of a wall time in the given IANA time zone. `wallTimeAsUtc` is
+ * the wall time as if the zone were UTC, thus the value of `Date.UTC` for the
+ * parts of the wall time.
+ *
+ * A wall time in the spring-forward gap does not occur. It moves forward by
+ * the length of the gap.
+ */
+const resolveWallTime = (
+  wallTimeAsUtc: number,
+  timeZone: string,
+  overlapInstant: OverlapInstant,
+): Date => {
+  /**
+   * A zone changes its offset at most one time in these two days, thus only
+   * the offsets one day before and one day after the wall time can apply.
+   * A wall time exists with an offset if the instant that it gives has this
+   * offset. In the overlap, the wall time exists with both offsets. In the
+   * gap, it exists with neither offset, and the offset before the change
+   * moves it forward.
+   */
+  const offsetBefore = getOffsetMilliseconds(
+    wallTimeAsUtc - MILLISECONDS_PER_DAY,
+    timeZone,
+  );
+  const offsetAfter = getOffsetMilliseconds(
+    wallTimeAsUtc + MILLISECONDS_PER_DAY,
+    timeZone,
+  );
+  const instantWithOffsetBefore = wallTimeAsUtc - offsetBefore;
+  const instantWithOffsetAfter = wallTimeAsUtc - offsetAfter;
+  const existsWithOffsetBefore =
+    getOffsetMilliseconds(instantWithOffsetBefore, timeZone) === offsetBefore;
+  const existsWithOffsetAfter =
+    getOffsetMilliseconds(instantWithOffsetAfter, timeZone) === offsetAfter;
+
+  if (
+    existsWithOffsetAfter &&
+    (overlapInstant === OverlapInstant.Later || !existsWithOffsetBefore)
+  )
+    return new Date(instantWithOffsetAfter);
+
+  return new Date(instantWithOffsetBefore);
 };
 
 const padNumber = (value: number, length: number) =>
@@ -151,26 +210,7 @@ export const wallTimeToInstant = (wallTime: string, timeZone: string): Date => {
   if (new Date(wallTimeAsUtc).toISOString().slice(0, 16) !== matchedWallTime)
     throw new Error(`Invalid wall time: ${wallTime}`);
 
-  /**
-   * A zone changes its offset at most one time in these two days, thus only
-   * the offsets one day before and one day after the wall time can apply.
-   * The offset after the change wins if the wall time exists with it: this
-   * gives the later instant in an overlap. Else the offset before the change
-   * applies: this moves a wall time in a gap forward.
-   */
-  const offsetBefore = getOffsetMilliseconds(
-    wallTimeAsUtc - MILLISECONDS_PER_DAY,
-    timeZone,
-  );
-  const offsetAfter = getOffsetMilliseconds(
-    wallTimeAsUtc + MILLISECONDS_PER_DAY,
-    timeZone,
-  );
-  const instantWithOffsetAfter = wallTimeAsUtc - offsetAfter;
-  if (getOffsetMilliseconds(instantWithOffsetAfter, timeZone) === offsetAfter)
-    return new Date(instantWithOffsetAfter);
-
-  return new Date(wallTimeAsUtc - offsetBefore);
+  return resolveWallTime(wallTimeAsUtc, timeZone, OverlapInstant.Later);
 };
 
 /**
@@ -182,4 +222,73 @@ export const instantToWallTime = (instant: Date, timeZone: string): string => {
   const parts = getZonedDateTimeParts(instant, timeZone);
 
   return `${formatLocalDateKey(parts)}T${padNumber(parts.hour, 2)}:${padNumber(parts.minute, 2)}`;
+};
+
+/**
+ * The first instant of a calendar date in the given IANA time zone. Usually
+ * this is midnight. If midnight is in the spring-forward gap, it is the end
+ * of the gap. If midnight occurs two times, it is the earlier instant. A day
+ * outside the month rolls over, like in `toDateColumnValue`. Throws for a
+ * time zone the runtime does not know.
+ */
+export const getStartOfLocalDay = (
+  { year, month, day }: LocalDate,
+  timeZone: string,
+): Date =>
+  resolveWallTime(
+    Date.UTC(year, month - 1, day),
+    timeZone,
+    OverlapInstant.Earlier,
+  );
+
+/**
+ * The calendar date the given number of days after the date. A negative
+ * number gives a date before it. The result rolls over into the next or the
+ * previous month and year.
+ */
+export const addDaysToLocalDate = (
+  { year, month, day }: LocalDate,
+  days: number,
+): LocalDate => {
+  const shiftedDate = new Date(Date.UTC(year, month - 1, day + days));
+
+  return {
+    year: shiftedDate.getUTCFullYear(),
+    month: shiftedDate.getUTCMonth() + 1,
+    day: shiftedDate.getUTCDate(),
+  };
+};
+
+/**
+ * The instant the given number of calendar days before an instant, with the
+ * same wall time in the given IANA time zone. The result is the same as the
+ * result of `Date#setDate(getDate() - days)` in a process that runs in this
+ * zone, but it does not depend on the time zone of the process. Thus a
+ * calendar day with a daylight-saving change has 23 or 25 hours:
+ * - A wall time in the spring-forward gap moves forward by the length of the
+ *   gap.
+ * - A wall time in the fall-back overlap gives the earlier instant.
+ *
+ * Throws for a time zone the runtime does not know.
+ */
+export const subtractCalendarDays = (
+  instant: Date,
+  days: number,
+  timeZone: string,
+): Date => {
+  const parts = getZonedDateTimeParts(instant, timeZone);
+
+  return resolveWallTime(
+    Date.UTC(
+      parts.year,
+      parts.month - 1,
+      parts.day - days,
+      parts.hour,
+      parts.minute,
+      parts.second,
+      instant.getUTCMilliseconds(),
+    ),
+    timeZone,
+    OverlapInstant.Earlier,
+  );
 };
