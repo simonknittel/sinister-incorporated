@@ -49,8 +49,8 @@ import { FaCopy } from "react-icons/fa";
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
-    key: "2026-10-17-mcp-server",
-    date: "2026-10-17",
+    key: "2026-10-18-mcp-server",
+    date: "2026-10-18",
     title: "MCP-Server für KI-Clients",
     tags: ["Neu", "MCP"],
     isTracked: true,
