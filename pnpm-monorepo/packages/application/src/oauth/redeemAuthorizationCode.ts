@@ -1,5 +1,6 @@
 import * as z from "zod";
 import type { ApplicationContext } from "../context.js";
+import { canUseMcp } from "../mcpAccess.js";
 import { withSpan } from "../withSpan.js";
 import { requireSigningKey } from "./accessToken.js";
 import {
@@ -8,6 +9,7 @@ import {
   PKCE_VALUE,
 } from "./constants.js";
 import { OAuthTokenError, OAuthTokenErrorCode } from "./errors.js";
+import { createGrantActor, GRANT_ACTOR_SELECT } from "./grantActor.js";
 import { isMcpResource } from "./resource.js";
 import { revokeGrant } from "./revokeGrant.js";
 import { hashOpaqueToken, verifyCodeVerifier } from "./secrets.js";
@@ -91,12 +93,11 @@ export const redeemAuthorizationCode = (
         codeChallenge: true,
         grant: {
           select: {
+            ...GRANT_ACTOR_SELECT,
             id: true,
-            userId: true,
             clientId: true,
             scope: true,
             revokedAt: true,
-            user: { select: { bannedAt: true } },
           },
         },
       },
@@ -124,6 +125,10 @@ export const redeemAuthorizationCode = (
     const { grant } = code;
     if (grant.revokedAt || grant.user.bannedAt)
       throw invalidGrant("The grant is revoked");
+
+    // The user lost the permission after the consent
+    if (!canUseMcp(await createGrantActor(context, grant)))
+      throw invalidGrant("The user cannot use the MCP server");
 
     const refreshToken = createRefreshToken(context, grant.id);
     await context.prisma.oAuthRefreshToken.create({

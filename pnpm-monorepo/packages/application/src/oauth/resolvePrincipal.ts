@@ -1,10 +1,10 @@
-import { createActor, type Actor } from "../actor.js";
-import { getEffectiveRolesOfCitizen } from "../auth/getEffectiveRolesOfCitizen.js";
+import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { requireMcpAccess } from "../mcpAccess.js";
 import { withSpan } from "../withSpan.js";
 import type { VerifiedAccessToken } from "./accessToken.js";
 import { InvalidTokenError } from "./errors.js";
+import { createGrantActor, GRANT_ACTOR_SELECT } from "./grantActor.js";
 
 /** The app updates `lastUsedAt` of a grant at most one time in this interval */
 const LAST_USED_AT_INTERVAL_IN_MILLISECONDS = 60 * 60 * 1000;
@@ -41,28 +41,13 @@ export const resolvePrincipal = (
     const grant = await context.prisma.oAuthGrant.findUnique({
       where: { id: token.grantId },
       select: {
+        ...GRANT_ACTOR_SELECT,
         id: true,
-        userId: true,
         clientId: true,
         clientName: true,
         createdAt: true,
         lastUsedAt: true,
         revokedAt: true,
-        adminModeEnabledAt: true,
-        user: {
-          select: {
-            role: true,
-            emailVerified: true,
-            bannedAt: true,
-            citizen: { select: { id: true, handle: true } },
-            // The same account as the `discordId` of the session of the app
-            accounts: {
-              where: { provider: "discord" },
-              select: { providerAccountId: true },
-              take: 1,
-            },
-          },
-        },
       },
     });
 
@@ -74,24 +59,9 @@ export const resolvePrincipal = (
     )
       throw new InvalidTokenError("The grant of the access token is revoked");
 
-    const { user } = grant;
-    if (user.bannedAt) throw new InvalidTokenError("The user is banned");
+    if (grant.user.bannedAt) throw new InvalidTokenError("The user is banned");
 
-    const effectiveRoles = user.citizen
-      ? await getEffectiveRolesOfCitizen(context.prisma, user.citizen.id)
-      : null;
-
-    const actor = createActor({
-      userId: grant.userId,
-      userRole: user.role,
-      emailConfirmedAt: user.emailVerified,
-      citizen: user.citizen,
-      roleIds: effectiveRoles?.roleIds ?? new Set(),
-      discordUserId: user.accounts[0]?.providerAccountId ?? null,
-      permissionSets: effectiveRoles?.permissionSets ?? [],
-      // `createActor()` applies admin mode only to an admin
-      adminMode: grant.adminModeEnabledAt !== null,
-    });
+    const actor = await createGrantActor(context, grant);
 
     actor.requireClearance();
     requireMcpAccess(actor);

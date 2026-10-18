@@ -1,5 +1,6 @@
 import * as z from "zod";
 import type { ApplicationContext } from "../context.js";
+import { canUseMcp } from "../mcpAccess.js";
 import { withSpan } from "../withSpan.js";
 import { requireSigningKey } from "./accessToken.js";
 import {
@@ -8,6 +9,7 @@ import {
   SUPPORTED_SCOPES,
 } from "./constants.js";
 import { OAuthTokenError, OAuthTokenErrorCode } from "./errors.js";
+import { createGrantActor, GRANT_ACTOR_SELECT } from "./grantActor.js";
 import { isMcpResource } from "./resource.js";
 import { revokeGrant } from "./revokeGrant.js";
 import { hashOpaqueToken } from "./secrets.js";
@@ -58,12 +60,11 @@ export const refreshAccessToken = (
         expiresAt: true,
         grant: {
           select: {
+            ...GRANT_ACTOR_SELECT,
             id: true,
-            userId: true,
             clientId: true,
             scope: true,
             revokedAt: true,
-            user: { select: { bannedAt: true } },
           },
         },
       },
@@ -91,6 +92,13 @@ export const refreshAccessToken = (
 
     if (grant.clientId !== input.client_id)
       throw invalidGrant("The refresh token belongs to a different client");
+
+    /**
+     * The user lost the permission after the consent. The token stays
+     * unused: a role can give the permission back.
+     */
+    if (!canUseMcp(await createGrantActor(context, grant)))
+      throw invalidGrant("The user cannot use the MCP server");
 
     if (input.resource !== undefined && !isMcpResource(context, input.resource))
       throw new OAuthTokenError(
