@@ -5,6 +5,9 @@ import {
   autoAssignInactiveRoles,
   countCitizensPerRole,
   countUniqueLogins,
+  disburseRoleSalaries,
+  endDueCollectionPhases,
+  endDuePayoutPhases,
   purgeExpiredAuthenticationRecords,
   purgeExpiredOAuthRecords,
   removeExpiredRoleAssignments,
@@ -17,9 +20,6 @@ import { captureAsyncFunc } from "./common/xray";
 import { archiveIrrelevantOnSiteNotifications } from "./midnight-automations/archiveIrrelevantOnSiteNotifications";
 import { countShips } from "./midnight-automations/countShips";
 import { deleteUnusedUploads } from "./midnight-automations/deleteUnusedUploads";
-import { disburseRoleSalaries } from "./midnight-automations/disburseRoleSalaries";
-import { endCollectionPhases } from "./midnight-automations/endCollectionPhases";
-import { endPayoutPhases } from "./midnight-automations/endPayoutPhases";
 import { purgeOrphanedWikiTags } from "./midnight-automations/purgeOrphanedWikiTags";
 import { purgeTrashedWikiPages } from "./midnight-automations/purgeTrashedWikiPages";
 
@@ -46,8 +46,11 @@ const createJob =
 
 export const handler: ScheduledHandler = async () =>
   runJobsInIsolation({
-    endCollectionPhases,
-    endPayoutPhases,
+    endCollectionPhases: createJob(
+      "endCollectionPhases",
+      endDueCollectionPhases,
+    ),
+    endPayoutPhases: createJob("endPayoutPhases", endDuePayoutPhases),
     removeExpiredRoles: createJob(
       "removeExpiredRoles",
       removeExpiredRoleAssignments,
@@ -60,7 +63,10 @@ export const handler: ScheduledHandler = async () =>
       "countCitizensPerRole",
       countCitizensPerRole,
     ),
-    disburseRoleSalaries,
+    disburseRoleSalaries: createJob(
+      "disburseRoleSalaries",
+      disburseRoleSalaries,
+    ),
     countShips,
     countUniqueLogins: createJob("countUniqueLogins", countUniqueLogins),
     purgeTrashedWikiPages,
