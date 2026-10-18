@@ -1,7 +1,7 @@
-import type { CitizenNote } from "@/modules/citizen/queries/citizenLogTableSelect";
 import { getAllClassificationLevels } from "@/modules/spynet/queries/getAllClassificationLevels";
 import { getAllNoteTypes } from "@/modules/spynet/queries/getAllNoteTypes";
 import { getCreatableClassificationLevelsDeduped } from "@/modules/spynet/utils/getAllClassificationLevels";
+import type { CitizenNoteRow } from "@sam-monorepo/application";
 import { UpdateNoteModal } from "./UpdateNoteModal";
 
 /**
@@ -24,7 +24,7 @@ const getOptions = <Option extends { readonly id: string }>(
   );
 
 interface Props {
-  readonly note: CitizenNote;
+  readonly note: CitizenNoteRow;
   readonly withBullet?: boolean;
 }
 

@@ -7,16 +7,16 @@ import { Button2 } from "@/modules/common/components/Button2";
 import { Select } from "@/modules/common/components/form/Select";
 import { Tile } from "@/modules/common/components/Tile";
 import { OnboardingTargetId } from "@/modules/onboarding/utils/targets";
-import { useId, useState, type ChangeEvent } from "react";
-import { FaSave } from "react-icons/fa";
-import { updateMyProfile } from "../actions/updateMyProfile";
 import {
   BIRTHDAY_DAY_MAX,
   BIRTHDAY_MONTH_MAX,
   BIRTHDAY_MONTH_MIN,
   getMaximumDayOfMonth,
-  getMonthName,
-} from "../utils/birthday";
+} from "@sam-monorepo/domain";
+import { useId, useState, type ChangeEvent } from "react";
+import { FaSave } from "react-icons/fa";
+import { updateMyProfile } from "../actions/updateMyProfile";
+import { getMonthName } from "../utils/birthday";
 
 /** Both selects submit this when the citizen did not choose a value. */
 const NOT_SET = "";

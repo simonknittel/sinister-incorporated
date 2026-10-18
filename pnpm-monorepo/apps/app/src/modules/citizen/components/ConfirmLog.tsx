@@ -1,11 +1,11 @@
 "use client";
 
 import { useAction } from "@/modules/actions/utils/useAction";
-import { ConfirmationValue } from "@/modules/citizen/utils/citizenLogConfirmation";
 import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import Button from "@/modules/common/components/Button";
 import { api } from "@/trpc/react";
 import { type CitizenLog } from "@sam-monorepo/database/browser";
+import { ConfirmationValue } from "@sam-monorepo/domain";
 import type { ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { FaCheck, FaTimes } from "react-icons/fa";

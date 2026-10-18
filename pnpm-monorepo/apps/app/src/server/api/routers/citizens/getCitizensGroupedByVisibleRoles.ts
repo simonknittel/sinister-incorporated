@@ -1,21 +1,16 @@
-import { getCitizensGroupedByVisibleRoles as query } from "@/modules/citizen/queries/getCitizensGroupedByVisibleRoles";
-import { log } from "@/modules/logging";
-import { TRPCError } from "@trpc/server";
-import { protectedProcedure } from "../../trpc";
+import { getApplicationContext, toActor } from "@/modules/application";
+import { listCitizensGroupedByVisibleRoles } from "@sam-monorepo/application";
+import { protectedProcedure, toTrpcError } from "../../trpc";
 
 export const getCitizensGroupedByVisibleRoles = protectedProcedure.query(
-  async () => {
+  async ({ ctx }) => {
     try {
-      return await query();
+      return await listCitizensGroupedByVisibleRoles(
+        getApplicationContext(),
+        await toActor(ctx.session),
+      );
     } catch (error) {
-      log.error("Failed to fetch citizens", {
-        error,
-      });
-
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to fetch citizens",
-      });
+      throw toTrpcError(error, "Failed to fetch citizens");
     }
   },
 );

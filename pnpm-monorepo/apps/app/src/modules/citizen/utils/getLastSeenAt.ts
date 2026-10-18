@@ -1,18 +1,10 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
+import { getLastSeenAt as getLastSeenAtUseCase } from "@sam-monorepo/application";
 import { type Citizen } from "@sam-monorepo/database/client";
 import { cache } from "react";
 
-export const getLastSeenAt = cache(async (userId: Citizen["userId"]) => {
-  const authentication = await requireAuthentication();
-
-  if (!(await authentication.authorize("lastSeen", "read")) || !userId)
-    return undefined;
-
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { lastSeenAt: true },
-  });
-
-  return user?.lastSeenAt;
-});
+export const getLastSeenAt = cache(async (userId: Citizen["userId"]) =>
+  getLastSeenAtUseCase(getApplicationContext(), await getRequestActor(), {
+    user_id: userId,
+  }),
+);

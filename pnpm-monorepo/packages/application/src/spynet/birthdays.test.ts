@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { getNextBirthday } from "./upcomingBirthdays";
+import { getNextBirthday } from "./birthdays.js";
 
 /** The list uses Europe/Berlin, thus 12:00 UTC is always the same local day */
 const noonOn = (isoDate: string) => new Date(`${isoDate}T12:00:00Z`);

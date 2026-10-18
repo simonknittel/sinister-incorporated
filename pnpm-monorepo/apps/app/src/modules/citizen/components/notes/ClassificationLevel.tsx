@@ -1,10 +1,10 @@
-import type { CitizenNote } from "@/modules/citizen/queries/citizenLogTableSelect";
 import { getAllClassificationLevels } from "@/modules/spynet/queries/getAllClassificationLevels";
+import type { CitizenNoteRow } from "@sam-monorepo/application";
 import clsx from "clsx";
 
 interface Props {
   readonly className?: string;
-  readonly note: CitizenNote;
+  readonly note: CitizenNoteRow;
 }
 
 export const ClassificationLevel = async ({ className, note }: Props) => {

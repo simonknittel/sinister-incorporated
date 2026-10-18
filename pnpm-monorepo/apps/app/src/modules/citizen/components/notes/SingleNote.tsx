@@ -1,16 +1,24 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { requireAuthentication } from "@/modules/auth/server";
-import type { CitizenNote } from "@/modules/citizen/queries/citizenLogTableSelect";
 import { Link } from "@/modules/common/components/Link";
 import { formatDate } from "@/modules/common/utils/formatDate";
-import { getNotePermissionAttributes } from "@sam-monorepo/application";
 import {
-  ConfirmationStatus,
-  type Organization,
-} from "@sam-monorepo/database/client";
+  findNoteMentionTargets,
+  getNotePermissionAttributes,
+  type CitizenNoteRow,
+  type NoteMentionTargets,
+} from "@sam-monorepo/application";
+import { ConfirmationStatus } from "@sam-monorepo/database/client";
 import {
+  CITIZEN_MENTION_PATTERN,
   DELETED_CITIZEN_LABEL,
   getOrganizationLogoUrl,
+  NOTE_MENTION_PATTERN,
+  ORGANIZATION_MENTION_PATTERN,
 } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import Image from "next/image";
@@ -25,7 +33,7 @@ import ClassificationLevelSkeleton from "./ClassificationLevelSkeleton";
 import { UpdateNote } from "./UpdateNote";
 
 interface Props {
-  readonly note: CitizenNote;
+  readonly note: CitizenNoteRow;
 }
 
 export const SingleNote = async ({ note }: Props) => {
@@ -38,65 +46,25 @@ export const SingleNote = async ({ note }: Props) => {
   const log = { id: note.id, citizenId: note.citizenId };
 
   let content: ReactNode = note.content;
-  const matches = note.content?.match(/@citizen:(\d+)|@org:([a-zA-Z0-9_]+)/g);
-  if (matches) {
-    const uniqueCitizenSpectrumIds = new Set<string>(
-      matches
-        .filter((match) => match.startsWith("@citizen:"))
-        .map((match) => match.slice(9)),
-    );
-
-    const uniqueOrganizationSpectrumIds = new Set<Organization["spectrumId"]>(
-      matches
-        .filter((match) => match.startsWith("@org:"))
-        .map((match) => match.slice(5)),
-    );
-
-    const [citizens, organizations] = await Promise.all([
-      uniqueCitizenSpectrumIds.size > 0
-        ? prisma.citizen.findMany({
-            where: {
-              spectrumId: {
-                in: Array.from(uniqueCitizenSpectrumIds),
-              },
-            },
-            /**
-             * A deleted citizen can have the Spectrum ID of an active one,
-             * thus the active citizen comes first and wins
-             */
-            orderBy: { deletedAt: { sort: "asc", nulls: "first" } },
-            select: {
-              handle: true,
-              spectrumId: true,
-              id: true,
-              deletedAt: true,
-            },
-          })
-        : [],
-
-      uniqueOrganizationSpectrumIds.size > 0
-        ? prisma.organization.findMany({
-            where: {
-              spectrumId: {
-                in: Array.from(uniqueOrganizationSpectrumIds),
-              },
-            },
-            select: {
-              name: true,
-              spectrumId: true,
-              id: true,
-              logo: true,
-            },
-          })
-        : [],
-    ]);
+  if (note.content?.match(NOTE_MENTION_PATTERN)) {
+    let mentionTargets: NoteMentionTargets;
+    try {
+      mentionTargets = await findNoteMentionTargets(
+        getApplicationContext(),
+        await getRequestActor(),
+        { content: note.content },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+    const { citizens, organizations } = mentionTargets;
 
     content = note.content
-      ?.split(/(@citizen:\d+)|(@org:[a-zA-Z0-9_]+)/g)
+      .split(NOTE_MENTION_PATTERN)
       .filter((part) => part !== undefined)
       .map((part, index) => {
-        const citizenMatch = /@citizen:(\d+)/.exec(part);
-        const organizationMatch = /@org:([a-zA-Z0-9_]+)/.exec(part);
+        const citizenMatch = CITIZEN_MENTION_PATTERN.exec(part);
+        const organizationMatch = ORGANIZATION_MENTION_PATTERN.exec(part);
 
         if (citizenMatch?.[1]) {
           const citizen = citizens.find(

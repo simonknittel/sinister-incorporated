@@ -1,19 +1,14 @@
-import { getCitizens } from "@/modules/citizen/queries/getCitizens";
-import { log } from "@/modules/logging";
-import { TRPCError } from "@trpc/server";
-import { protectedProcedure } from "../../trpc";
+import { getApplicationContext, toActor } from "@/modules/application";
+import { listAllCitizens } from "@sam-monorepo/application";
+import { protectedProcedure, toTrpcError } from "../../trpc";
 
-export const getAllCitizens = protectedProcedure.query(async () => {
+export const getAllCitizens = protectedProcedure.query(async ({ ctx }) => {
   try {
-    return await getCitizens();
+    return await listAllCitizens(
+      getApplicationContext(),
+      await toActor(ctx.session),
+    );
   } catch (error) {
-    log.error("Failed to fetch citizens", {
-      error,
-    });
-
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Failed to fetch citizens",
-    });
+    throw toTrpcError(error, "Failed to fetch citizens");
   }
 });

@@ -1,7 +1,7 @@
-import { prisma } from "@/db";
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { ProfileForm } from "@/modules/citizen/components/ProfileForm";
-import { SUPPORTED_TIMEZONES } from "@/modules/citizen/utils/timezones";
+import { getOwnProfileSettings } from "@/modules/citizen/queries/getOwnProfileSettings";
+import { SUPPORTED_TIMEZONES } from "@sam-monorepo/domain";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -15,10 +15,7 @@ export default async function Page() {
   );
   if (!authentication.session.entity) notFound();
 
-  const citizen = await prisma.citizen.findUniqueOrThrow({
-    where: { id: authentication.session.entity.id },
-    select: { timezone: true, birthdayDay: true, birthdayMonth: true },
-  });
+  const citizen = await getOwnProfileSettings();
 
   return (
     <ProfileForm

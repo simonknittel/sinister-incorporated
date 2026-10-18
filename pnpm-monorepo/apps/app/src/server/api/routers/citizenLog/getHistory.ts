@@ -1,46 +1,28 @@
 import { getApplicationContext, toActor } from "@/modules/application";
-import type { GenericCitizenLogType } from "@/types";
-import { getReadableCitizenLogWhere } from "@sam-monorepo/application";
+import {
+  idSchema,
+  listCitizenLogHistory,
+  listCitizenLogHistoryInputSchema,
+} from "@sam-monorepo/application";
 import * as z from "zod";
-import { protectedProcedure } from "../../trpc";
+import { protectedProcedure, toTrpcError } from "../../trpc";
 
+/** The history modal of an identity attribute of a citizen */
 export const getHistory = protectedProcedure
   .input(
     z.object({
-      type: z.enum([
-        "handle",
-        "discord-id",
-        "teamspeak-id",
-        "community-moniker",
-        "citizen-id",
-      ] satisfies GenericCitizenLogType[]),
-      citizenId: z.string(),
+      type: listCitizenLogHistoryInputSchema.shape.type,
+      citizenId: idSchema,
     }),
   )
   .query(async ({ ctx, input }) => {
-    /** The same rule as the Spynet log tables */
-    const readableWhere = await getReadableCitizenLogWhere(
-      getApplicationContext(),
-      await toActor(ctx.session),
-      [input.type],
-    );
-
-    return ctx.prisma.citizenLog.findMany({
-      where: {
-        AND: [{ citizenId: input.citizenId }, readableWhere],
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      select: {
-        id: true,
-        citizenId: true,
-        type: true,
-        content: true,
-        createdAt: true,
-        confirmed: true,
-        confirmedBy: { select: { name: true } },
-        submittedBy: { select: { name: true } },
-      },
-    });
+    try {
+      return await listCitizenLogHistory(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        { type: input.type, citizen_id: input.citizenId },
+      );
+    } catch (error) {
+      throw toTrpcError(error, "Failed to fetch the citizen log history");
+    }
   });

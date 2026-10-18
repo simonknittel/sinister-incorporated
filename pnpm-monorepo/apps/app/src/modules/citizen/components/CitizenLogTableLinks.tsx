@@ -3,7 +3,6 @@
 import {
   citizenLogTableParsers,
   serializeCitizenLogTableSearchParams,
-  type CitizenLogTableSort,
 } from "@/modules/citizen/utils/citizenLogTableSearchParams";
 import Pagination from "@/modules/common/components/Pagination";
 import {
@@ -11,6 +10,7 @@ import {
   type SortableColumnHeaderProps,
 } from "@/modules/common/components/SortableColumnHeader";
 import { useTableLinks } from "@/modules/common/utils/useTableLinks";
+import type { CitizenLogTableSort } from "@sam-monorepo/domain";
 
 interface PaginationProps {
   readonly totalPages: number;

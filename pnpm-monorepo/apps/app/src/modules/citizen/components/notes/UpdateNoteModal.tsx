@@ -1,12 +1,12 @@
 "use client";
 
 import { useAction } from "@/modules/actions/utils/useAction";
-import type { CitizenNote } from "@/modules/citizen/queries/citizenLogTableSelect";
 import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import Button from "@/modules/common/components/Button";
 import { Button2 } from "@/modules/common/components/Button2";
 import { Select } from "@/modules/common/components/form/Select";
 import Modal from "@/modules/common/components/Modal";
+import type { CitizenNoteRow } from "@sam-monorepo/application";
 import {
   type ClassificationLevel,
   type NoteType,
@@ -23,7 +23,7 @@ type ClassificationLevelsByNoteType = Readonly<
 interface Props {
   readonly className?: string;
   readonly note: Pick<
-    CitizenNote,
+    CitizenNoteRow,
     "id" | "noteTypeId" | "classificationLevelId"
   >;
   readonly noteTypes: readonly NoteType[];
@@ -68,7 +68,7 @@ export const UpdateNoteModal = ({
 
 interface UpdateNoteFormProps {
   readonly note: Pick<
-    CitizenNote,
+    CitizenNoteRow,
     "id" | "noteTypeId" | "classificationLevelId"
   >;
   readonly noteTypes: readonly NoteType[];

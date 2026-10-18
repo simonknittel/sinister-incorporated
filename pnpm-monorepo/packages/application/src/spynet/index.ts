@@ -2,20 +2,105 @@
 export { hasBirthdayTodaySafely } from "./birthdays.js";
 export { requireCitizenReadAccess } from "./citizenAccess.js";
 export {
+  CitizenErrorMessage,
+  CitizenLogErrorMessage,
+} from "./citizenErrors.js";
+export type {
+  CitizenLogTablePageOptions,
+  CitizenLogTableRow,
+} from "./citizenLogTablePage.js";
+export {
   getVisiblePenaltyPointSum,
   getVisibleShipCount,
 } from "./citizenMetrics.js";
+export type { CitizenNoteRow } from "./citizenNoteRow.js";
 export { linkCitizenOfSignedInUser } from "./citizenUserLink.js";
+export {
+  confirmCitizenLog,
+  confirmCitizenLogInputSchema,
+  type ConfirmCitizenLogInput,
+  type ConfirmCitizenLogOutput,
+} from "./confirmCitizenLog.js";
+export {
+  createCitizen,
+  createCitizenInputSchema,
+  type CreateCitizenInput,
+  type CreateCitizenOutput,
+} from "./createCitizen.js";
+export {
+  createCitizenLog,
+  createCitizenLogInputSchema,
+  type CreateCitizenLogInput,
+  type CreateCitizenLogOutput,
+} from "./createCitizenLog.js";
+export {
+  deleteCitizen,
+  deleteCitizenInputSchema,
+  type DeleteCitizenInput,
+  type DeleteCitizenOutput,
+} from "./deleteCitizen.js";
+export {
+  deleteCitizenLog,
+  deleteCitizenLogInputSchema,
+  type DeleteCitizenLogInput,
+  type DeleteCitizenLogOutput,
+} from "./deleteCitizenLog.js";
+export {
+  findCitizenNoteTabs,
+  type CitizenNoteTab,
+  type CitizenNoteTabEntry,
+  type CitizenNoteTabsInput,
+  type RedactedCitizenNoteRow,
+} from "./findCitizenNoteTabs.js";
+export {
+  findIdentityLogTablePage,
+  type IdentityLogTablePage,
+  type IdentityLogTablePageInput,
+} from "./findIdentityLogTablePage.js";
+export {
+  findNoteMentionTargets,
+  type NoteMentionTargets,
+  type NoteMentionTargetsInput,
+} from "./findNoteMentionTargets.js";
+export {
+  findNoteTablePage,
+  type NoteTablePage,
+  type NoteTablePageInput,
+} from "./findNoteTablePage.js";
+export { findSpynetCitizen, type SpynetCitizen } from "./findSpynetCitizen.js";
 export {
   getCitizen,
   getCitizenInputSchema,
   type GetCitizenOutput,
 } from "./getCitizen.js";
 export {
+  getCitizenProfile,
+  getCitizenProfileInputSchema,
+  type CitizenProfile,
+  type GetCitizenProfileInput,
+} from "./getCitizenProfile.js";
+export {
+  getLastSeenAt,
+  getLastSeenAtInputSchema,
+  type GetLastSeenAtInput,
+} from "./getLastSeenAt.js";
+export {
   getOrganization,
   getOrganizationInputSchema,
   type GetOrganizationOutput,
 } from "./getOrganization.js";
+export {
+  getOwnProfileSettings,
+  type OwnProfileSettings,
+} from "./getOwnProfileSettings.js";
+export { listAllCitizens, type PickableCitizen } from "./listAllCitizens.js";
+export { listCitizenIdsWithBirthdayToday } from "./listCitizenIdsWithBirthdayToday.js";
+export {
+  listCitizenLogHistory,
+  listCitizenLogHistoryInputSchema,
+  type CitizenLogHistoryEntry,
+  type ListCitizenLogHistoryInput,
+} from "./listCitizenLogHistory.js";
 export {
   CitizenNoteConfirmation,
   listCitizenNotes,
@@ -33,6 +118,17 @@ export {
   type CitizenListItem,
   type ListCitizensOutput,
 } from "./listCitizens.js";
+export {
+  listCitizensGroupedByVisibleRoles,
+  type CitizensGroupedByVisibleRoles,
+} from "./listCitizensGroupedByVisibleRoles.js";
+export {
+  UPCOMING_BIRTHDAYS_HANDLE_QUERY_MAX_LENGTH,
+  listUpcomingBirthdays,
+  listUpcomingBirthdaysInputSchema,
+  type ListUpcomingBirthdaysInput,
+  type UpcomingBirthday,
+} from "./listUpcomingBirthdays.js";
 export {
   canReadNote,
   canReadNoteRedacted,
@@ -58,3 +154,15 @@ export {
   type SearchCitizensAndOrganizationsOutput,
   type SpynetSearchHit,
 } from "./searchCitizensAndOrganizations.js";
+export {
+  updateNote,
+  updateNoteInputSchema,
+  type UpdateNoteInput,
+  type UpdateNoteOutput,
+} from "./updateNote.js";
+export {
+  updateOwnProfile,
+  updateOwnProfileInputSchema,
+  type UpdateOwnProfileInput,
+  type UpdateOwnProfileOutput,
+} from "./updateOwnProfile.js";

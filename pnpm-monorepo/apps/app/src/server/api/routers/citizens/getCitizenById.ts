@@ -1,23 +1,25 @@
-import { getCitizenProfile } from "@/modules/citizen/queries/getCitizenProfile";
+import { getApplicationContext, toActor } from "@/modules/application";
+import { getCitizenProfile, NotFoundError } from "@sam-monorepo/application";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
 export const getCitizenById = protectedProcedure
   .input(z.object({ id: z.cuid() }))
-  .query(async ({ input }) => {
+  .query(async ({ ctx, input }) => {
     try {
-      const profile = await getCitizenProfile(input.id);
-
-      if (!profile) {
+      return await getCitizenProfile(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        { citizen_id: input.id },
+      );
+    } catch (error) {
+      if (error instanceof NotFoundError)
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Citizen not found",
         });
-      }
 
-      return profile;
-    } catch (error) {
       throw toTrpcError(error, "Failed to fetch citizen by ID");
     }
   });

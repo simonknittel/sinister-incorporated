@@ -1,19 +1,7 @@
 /**
- * A citizen's birthday is stored as a day and a month without a year, thus
- * February 29 is always a valid day and no age can be calculated.
+ * The texts of a birthday. A birthday has a day and a month without a year
+ * (see `getCelebrationDate` of the domain package for the rule).
  */
-
-export const BIRTHDAY_MONTH_MIN = 1;
-export const BIRTHDAY_MONTH_MAX = 12;
-export const BIRTHDAY_DAY_MIN = 1;
-
-/** Index 0 is January. February has 29 days, because there is no year. */
-const DAYS_PER_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-export const BIRTHDAY_DAY_MAX = Math.max(...DAYS_PER_MONTH);
-
-export const getMaximumDayOfMonth = (month: number) =>
-  DAYS_PER_MONTH[month - 1] ?? BIRTHDAY_DAY_MAX;
 
 /**
  * A leap year, so that February 29 can be formatted. The year is never

@@ -1,11 +1,8 @@
 "use client";
 
-import {
-  ConfirmationValue,
-  toConfirmationValue,
-} from "@/modules/citizen/utils/citizenLogConfirmation";
 import { FilterCheckboxList } from "@/modules/common/components/FilterCheckboxList";
 import type { ConfirmationStatus } from "@sam-monorepo/database/browser";
+import { ConfirmationValue, toConfirmationValue } from "@sam-monorepo/domain";
 
 const CONFIRMATION_LABELS: Record<ConfirmationValue, string> = {
   [ConfirmationValue.Unconfirmed]: "Unbestätigt",

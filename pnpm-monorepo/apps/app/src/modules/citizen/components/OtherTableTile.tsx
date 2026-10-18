@@ -1,68 +1,48 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
 import {
-  getCitizenLogTablePage,
-  getConfirmationFilterWhere,
-  getReadableCitizenLogWhere,
-  type CitizenLogTableType,
-} from "@/modules/citizen/queries/getCitizenLogTablePage";
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { loadCitizenLogTableSearchParams } from "@/modules/citizen/utils/citizenLogTableSearchParams";
 import { getFilterValues } from "@/modules/common/utils/filterCheckboxListParsers";
-import type { CitizenLogType } from "@/types";
-import type { Prisma } from "@sam-monorepo/database/client";
+import { PER_PAGE } from "@/modules/common/utils/pagination";
+import { findIdentityLogTablePage } from "@sam-monorepo/application";
 import clsx from "clsx";
 import type { SearchParams } from "nuqs/server";
 import { CitizenLogTablePagination } from "./CitizenLogTableLinks";
 import { OtherFilters } from "./OtherFilters";
 import { OtherTable } from "./OtherTable";
 
-const IDENTITY_LOG_TYPES: readonly CitizenLogTableType[] = [
-  "handle",
-  "discord-id",
-  "teamspeak-id",
-  "community-moniker",
-  "citizen-id",
-];
-
 interface Props {
   readonly className?: string;
   readonly searchParams: Promise<SearchParams>;
 }
 
-const OtherTableTile = async ({ className, searchParams }: Props) => {
-  const authentication = await requireAuthentication();
-
+const loadOtherTable = async (searchParams: Promise<SearchParams>) => {
   const { filters, sort, page } =
     await loadCitizenLogTableSearchParams(searchParams);
 
-  const visibleWhere = await getReadableCitizenLogWhere(
-    IDENTITY_LOG_TYPES,
-    authentication,
-  );
+  try {
+    return await findIdentityLogTablePage(
+      getApplicationContext(),
+      await getRequestActor(),
+      {
+        filters: {
+          types: getFilterValues(filters, "type"),
+          confirmationValues: getFilterValues(filters, "confirmation"),
+        },
+        sort,
+        page,
+      },
+      { pageSize: PER_PAGE },
+    );
+  } catch (error) {
+    return throwApplicationErrorForPage(error);
+  }
+};
 
-  const types = getFilterValues(filters, "type");
-  const filteredWhere: Prisma.CitizenLogWhereInput = {
-    AND: [
-      visibleWhere,
-      getConfirmationFilterWhere(filters) ?? {},
-      types.length > 0 ? { type: { in: types } } : {},
-    ],
-  };
-
-  const [{ logs, totalPages }, options] = await Promise.all([
-    getCitizenLogTablePage(filteredWhere, sort, page),
-    prisma.citizenLog.groupBy({
-      by: ["type", "confirmed"],
-      where: visibleWhere,
-    }),
-  ]);
-
-  const confirmationStates = [
-    ...new Set(options.map((option) => option.confirmed)),
-  ];
-  const optionTypes = [
-    ...new Set(options.map((option) => option.type as CitizenLogType)),
-  ];
+const OtherTableTile = async ({ className, searchParams }: Props) => {
+  const { rows, totalPages, options } = await loadOtherTable(searchParams);
 
   return (
     <section
@@ -73,12 +53,12 @@ const OtherTableTile = async ({ className, searchParams }: Props) => {
     >
       <div className="mb-6">
         <OtherFilters
-          confirmationStates={confirmationStates}
-          types={optionTypes}
+          confirmationStates={options.confirmationStates}
+          types={options.types}
         />
       </div>
 
-      <OtherTable rows={logs} />
+      <OtherTable rows={rows} />
 
       <div className="mt-6 flex justify-center">
         <CitizenLogTablePagination totalPages={totalPages} />

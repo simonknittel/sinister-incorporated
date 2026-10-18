@@ -1,15 +1,14 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
 import {
-  getCitizenLogTablePage,
-  getConfirmationFilterWhere,
-  getReadableCitizenLogWhere,
-} from "@/modules/citizen/queries/getCitizenLogTablePage";
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { loadCitizenLogTableSearchParams } from "@/modules/citizen/utils/citizenLogTableSearchParams";
 import { getFilterValues } from "@/modules/common/utils/filterCheckboxListParsers";
+import { PER_PAGE } from "@/modules/common/utils/pagination";
 import { getAllClassificationLevels } from "@/modules/spynet/queries/getAllClassificationLevels";
 import { getAllNoteTypes } from "@/modules/spynet/queries/getAllNoteTypes";
-import type { Prisma } from "@sam-monorepo/database/client";
+import { findNoteTablePage } from "@sam-monorepo/application";
 import clsx from "clsx";
 import type { SearchParams } from "nuqs/server";
 import { CitizenLogTablePagination } from "./CitizenLogTableLinks";
@@ -21,52 +20,43 @@ interface Props {
   readonly searchParams: Promise<SearchParams>;
 }
 
-export const NotesTableTile = async ({ className, searchParams }: Props) => {
-  const authentication = await requireAuthentication();
-
+const loadNotesTable = async (searchParams: Promise<SearchParams>) => {
   const { filters, sort, page } =
     await loadCitizenLogTableSearchParams(searchParams);
 
-  /** Only notes with a note type and a classification level match */
-  const visibleWhere = await getReadableCitizenLogWhere(
-    ["note"],
-    authentication,
-  );
-
-  const noteTypeIds = getFilterValues(filters, "note-type");
-  const classificationLevelIds = getFilterValues(
-    filters,
-    "classification-level",
-  );
-  const filteredWhere: Prisma.CitizenLogWhereInput = {
-    AND: [
-      visibleWhere,
-      getConfirmationFilterWhere(filters) ?? {},
-      noteTypeIds.length > 0 ? { noteTypeId: { in: noteTypeIds } } : {},
-      classificationLevelIds.length > 0
-        ? { classificationLevelId: { in: classificationLevelIds } }
-        : {},
-    ],
-  };
-
-  const [{ logs, totalPages }, options, noteTypes, classificationLevels] =
-    await Promise.all([
-      getCitizenLogTablePage(filteredWhere, sort, page),
-      prisma.citizenLog.groupBy({
-        by: ["noteTypeId", "classificationLevelId", "confirmed"],
-        where: visibleWhere,
-      }),
+  try {
+    return await Promise.all([
+      findNoteTablePage(
+        getApplicationContext(),
+        await getRequestActor(),
+        {
+          filters: {
+            noteTypeIds: getFilterValues(filters, "note-type"),
+            classificationLevelIds: getFilterValues(
+              filters,
+              "classification-level",
+            ),
+            confirmationValues: getFilterValues(filters, "confirmation"),
+          },
+          sort,
+          page,
+        },
+        { pageSize: PER_PAGE },
+      ),
       getAllNoteTypes(),
       getAllClassificationLevels(),
     ]);
+  } catch (error) {
+    return throwApplicationErrorForPage(error);
+  }
+};
 
-  const optionNoteTypeIds = new Set(options.map((option) => option.noteTypeId));
-  const optionClassificationLevelIds = new Set(
-    options.map((option) => option.classificationLevelId),
-  );
-  const confirmationStates = [
-    ...new Set(options.map((option) => option.confirmed)),
-  ];
+export const NotesTableTile = async ({ className, searchParams }: Props) => {
+  const [{ rows, totalPages, options }, noteTypes, classificationLevels] =
+    await loadNotesTable(searchParams);
+
+  const optionNoteTypeIds = new Set(options.noteTypeIds);
+  const optionClassificationLevelIds = new Set(options.classificationLevelIds);
 
   return (
     <section
@@ -84,11 +74,11 @@ export const NotesTableTile = async ({ className, searchParams }: Props) => {
             (classificationLevel) =>
               optionClassificationLevelIds.has(classificationLevel.id),
           )}
-          confirmationStates={confirmationStates}
+          confirmationStates={options.confirmationStates}
         />
       </div>
 
-      <NotesTable rows={logs} />
+      <NotesTable rows={rows} />
 
       <div className="mt-6 flex justify-center">
         <CitizenLogTablePagination totalPages={totalPages} />

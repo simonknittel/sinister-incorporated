@@ -1,18 +1,16 @@
-import { prisma } from "@/db";
-import { getRequestActor } from "@/modules/application";
 import {
-  CITIZEN_NOTE_SELECT,
-  type CitizenNote,
-} from "@/modules/citizen/queries/citizenLogTableSelect";
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import Tab from "@/modules/common/components/tabs/Tab";
 import TabList from "@/modules/common/components/tabs/TabList";
 import { TabsProvider } from "@/modules/common/components/tabs/TabsContext";
-import { canReadNote, canReadNoteRedacted } from "@sam-monorepo/application";
 import {
-  type Citizen,
-  type CitizenLog,
-  type NoteType,
-} from "@sam-monorepo/database/client";
+  findCitizenNoteTabs,
+  type CitizenNoteTab,
+} from "@sam-monorepo/application";
+import { type Citizen } from "@sam-monorepo/database/client";
 import clsx from "clsx";
 import { NoteTypePanel } from "./NoteTypePanel";
 
@@ -21,53 +19,17 @@ interface Props {
   readonly entity: Pick<Citizen, "id">;
 }
 
-type VisibleNote = CitizenNote | { id: CitizenLog["id"]; redacted: true };
-
 export const Notes = async ({ className, entity }: Props) => {
-  const actor = await getRequestActor();
-
-  /**
-   * Each note shows in the tab of its note type, thus a note of a deleted
-   * note type does not show
-   */
-  const allNoteTypes = await prisma.noteType.findMany({
-    select: {
-      id: true,
-      name: true,
-      citizenLogs: {
-        where: {
-          citizenId: entity.id,
-          type: "note",
-        },
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        select: CITIZEN_NOTE_SELECT,
-      },
-    },
-  });
-
-  const tabs: Record<NoteType["id"], VisibleNote[]> = {};
-
-  for (const noteType of allNoteTypes) {
-    const notes: VisibleNote[] = [];
-
-    for (const note of noteType.citizenLogs) {
-      if (canReadNote(actor, note)) notes.push(note);
-      else if (canReadNoteRedacted(actor, note))
-        notes.push({ id: note.id, redacted: true });
-    }
-
-    tabs[noteType.id] = notes;
-  }
-
-  const filteredNoteTypes = allNoteTypes.filter((noteType) => {
-    const attributes = [{ key: "noteTypeId" as const, value: noteType.id }];
-
-    return (
-      actor.authorize("note", "read", attributes) ||
-      actor.authorize("note", "readRedacted", attributes) ||
-      actor.authorize("note", "create", attributes)
+  let filteredNoteTypes: CitizenNoteTab[];
+  try {
+    filteredNoteTypes = await findCitizenNoteTabs(
+      getApplicationContext(),
+      await getRequestActor(),
+      { citizenId: entity.id },
     );
-  });
+  } catch (error) {
+    return throwApplicationErrorForPage(error);
+  }
 
   if (filteredNoteTypes.length <= 0) return null;
 
@@ -86,7 +48,7 @@ export const Notes = async ({ className, entity }: Props) => {
           <NoteTypePanel
             key={noteType.id}
             noteType={noteType}
-            notes={tabs[noteType.id] || []}
+            notes={noteType.notes}
             entityId={entity.id}
           />
         ))}
