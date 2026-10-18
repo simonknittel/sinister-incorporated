@@ -2,10 +2,10 @@
 
 import Button from "@/modules/common/components/Button";
 import { Tooltip } from "@/modules/common/components/Tooltip";
+import { getSubtreeDepth, getSubtreeSize } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import toast from "react-hot-toast";
 import { FaRegCopy } from "react-icons/fa";
-import { getSubtreeDepth, getSubtreeSize } from "../utils/positionTree";
 import { useLineupClipboard } from "./LineupClipboardContext";
 import { useLineupOrder } from "./LineupOrderContext/Context";
 import type { PositionType } from "./Position";

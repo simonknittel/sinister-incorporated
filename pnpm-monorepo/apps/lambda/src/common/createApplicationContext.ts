@@ -18,6 +18,8 @@ interface ApplicationContextOptions {
   readonly baseUrl: string;
   /** The public base URL of the uploads bucket */
   readonly publicUploadBaseUrl: string;
+  /** Only the functions with a bot token give the gateway */
+  readonly discord?: ApplicationContext["discord"];
 }
 
 /**
@@ -32,6 +34,7 @@ export const createApplicationContext = ({
   source,
   baseUrl,
   publicUploadBaseUrl,
+  discord = null,
 }: ApplicationContextOptions): ApplicationContext => ({
   prisma,
   audit: createPrismaAuditWriter({ prisma, log }),
@@ -44,6 +47,8 @@ export const createApplicationContext = ({
   now: () => new Date(),
   changelog: null,
   collab: null,
+  discord,
+  storage: null,
   urls: createApplicationUrls({ baseUrl, publicUploadBaseUrl }),
   signingKey: async () => null,
   allowInsecureLoopbackClientIds: false,

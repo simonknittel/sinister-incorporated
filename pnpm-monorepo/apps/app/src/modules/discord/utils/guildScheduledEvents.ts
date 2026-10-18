@@ -1,6 +1,10 @@
 import "server-only";
 
 import { env } from "@/env";
+import type {
+  GuildScheduledEventContent,
+  GuildScheduledEventTarget,
+} from "@sam-monorepo/domain";
 import {
   discordBotRequest,
   DiscordRequestMethod,
@@ -9,8 +13,6 @@ import {
 import {
   buildCreateGuildScheduledEventPayload,
   buildModifyGuildScheduledEventPayload,
-  type GuildScheduledEventContent,
-  type GuildScheduledEventTarget,
 } from "./guildScheduledEventPayload";
 import {
   DISCORD_ERROR_UNKNOWN_GUILD_SCHEDULED_EVENT,

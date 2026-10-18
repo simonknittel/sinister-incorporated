@@ -1,12 +1,9 @@
-import { DISCORD_EVENT_LOCATION_MAX_LENGTH } from "@/modules/discord/utils/guildScheduledEventPayload";
 import { EventDiscordPublishTarget } from "@sam-monorepo/database/client";
+import {
+  DISCORD_CHANNEL_ID_MAX_LENGTH,
+  DISCORD_EVENT_LOCATION_MAX_LENGTH,
+} from "@sam-monorepo/domain";
 import * as z from "zod";
-
-/**
- * Discord snowflakes are numeric strings well under this; the bound only
- * keeps an arbitrary client string out of the channel lookup.
- */
-const DISCORD_CHANNEL_ID_MAX_LENGTH = 64;
 
 /**
  * The fields `DiscordPublishTargetFields` submits, shared by every action

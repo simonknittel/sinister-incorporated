@@ -1,6 +1,6 @@
 import { WikiPageEventScope } from "@sam-monorepo/database/browser";
 import { describe, expect, test } from "vitest";
-import { remapBriefingScopePositions } from "./copyWikiPageSubtree";
+import { remapBriefingScopePositions } from "./wikiPageCopy.js";
 
 const page = (
   overrides: Partial<Parameters<typeof remapBriefingScopePositions>[0]> = {},

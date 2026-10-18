@@ -11,7 +11,7 @@ import {
   applyForEventPositionInputSchema,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { LINEUP_ERROR_TEXTS } from "../utils/eventErrorTexts";
+import { LINEUP_ERROR_TEXTS } from "../utils/lineupErrorTexts";
 
 export const createEventPositionApplicationForCurrentUser =
   createAuthenticatedAction(

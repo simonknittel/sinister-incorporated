@@ -3,6 +3,7 @@ import {
   LINEUP_MAX_DEPTH,
   LINEUP_MAX_POSITIONS,
   LINEUP_MAX_POSITIONS_PER_LEVEL,
+  type EventContainerColumns,
 } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
 import { ConflictError, NotFoundError, ValidationError } from "../errors.js";
@@ -21,13 +22,8 @@ import {
  * (the rules of the templates are in the app). No MCP tool calls them.
  */
 
-/**
- * The container of a position: an event or an event template. Exactly one of
- * the two columns is set (a CHECK constraint of the database).
- */
-export type LineupContainerColumns =
-  | { readonly eventId: string; readonly templateId: null }
-  | { readonly eventId: null; readonly templateId: string };
+/** The container of a position: an event or an event template */
+export type LineupContainerColumns = EventContainerColumns;
 
 /** @throws NotFoundError when the position does not exist */
 export const findLineupPositionContainer = async (

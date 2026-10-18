@@ -4,11 +4,11 @@ import Note from "@/modules/common/components/Note";
 import { RadioGroup } from "@/modules/common/components/form/RadioGroup";
 import { Select } from "@/modules/common/components/form/Select";
 import { TextInput } from "@/modules/common/components/form/TextInput";
+import { EventDiscordPublishTarget } from "@sam-monorepo/database/browser";
 import {
   DISCORD_EVENT_LOCATION_MAX_LENGTH,
   type PublishableGuildChannel,
-} from "@/modules/discord/utils/guildScheduledEventPayload";
-import { EventDiscordPublishTarget } from "@sam-monorepo/database/browser";
+} from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useId, useState } from "react";
 import { FaGlobe, FaMicrophone } from "react-icons/fa";

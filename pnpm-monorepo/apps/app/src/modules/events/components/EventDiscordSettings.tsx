@@ -10,11 +10,11 @@ import Note from "@/modules/common/components/Note";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { Tile } from "@/modules/common/components/Tile";
 import { formatDate } from "@/modules/common/utils/formatDate";
+import { EventVisibility } from "@sam-monorepo/database/browser";
 import {
   getGuildScheduledEventPath,
   type PublishableGuildChannel,
-} from "@/modules/discord/utils/guildScheduledEventPayload";
-import { EventVisibility } from "@sam-monorepo/database/browser";
+} from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { FaDiscord, FaTrash } from "react-icons/fa";
 import { publishEventToDiscord } from "../actions/publishEventToDiscord";

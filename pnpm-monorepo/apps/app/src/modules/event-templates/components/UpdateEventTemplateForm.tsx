@@ -6,7 +6,6 @@ import { Button2 } from "@/modules/common/components/Button2";
 import { RadioGroup } from "@/modules/common/components/form/RadioGroup";
 import { TextInput } from "@/modules/common/components/form/TextInput";
 import { YesNoCheckbox } from "@/modules/common/components/form/YesNoCheckbox";
-import type { PublishableGuildChannel } from "@/modules/discord/utils/guildScheduledEventPayload";
 import { EventTemplateDescriptionHint } from "@/modules/event-templates/components/EventTemplateDescriptionHint";
 import { DiscordPublishTargetFields } from "@/modules/events/components/DiscordPublishTargetFields";
 import { EventCoverImageField } from "@/modules/events/components/EventCoverImageField";
@@ -16,6 +15,7 @@ import {
   EventVisibility,
   type EventDiscordPublishTarget,
 } from "@sam-monorepo/database/browser";
+import type { PublishableGuildChannel } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useId, useState } from "react";
 import { FaGlobe, FaLock, FaSave } from "react-icons/fa";

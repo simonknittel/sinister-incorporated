@@ -28,6 +28,8 @@ const createApplicationContext = (): ApplicationContext => ({
   collab: getWikiCollabUrl()
     ? { replaceContent: replaceWikiPageContent }
     : null,
+  discord: null,
+  storage: null,
   urls: createApplicationUrls({
     baseUrl: env.NEXT_PUBLIC_BASE_URL,
     publicUploadBaseUrl: getPublicUploadBaseUrl(),

@@ -10,7 +10,7 @@ import {
 import type { getTranslations } from "next-intl/server";
 import { refresh } from "next/cache";
 import { EventContainerKind, type EventContainer } from "./eventContainer";
-import { LINEUP_ERROR_TEXTS } from "./eventErrorTexts";
+import { LINEUP_ERROR_TEXTS } from "./lineupErrorTexts";
 
 export type EventContainerAuthorization =
   | { readonly allowed: true; readonly error?: never }

@@ -2,14 +2,14 @@ import "server-only";
 
 import { env } from "@/env";
 import {
+  getEntityTypeForChannelType,
+  type PublishableGuildChannel,
+} from "@sam-monorepo/domain";
+import {
   discordBotRequest,
   DiscordOutcome,
   DiscordRequestMethod,
 } from "./discordBotRequest";
-import {
-  getEntityTypeForChannelType,
-  type PublishableGuildChannel,
-} from "./guildScheduledEventPayload";
 import { guildChannelsResponseSchema } from "./schemas";
 
 /**

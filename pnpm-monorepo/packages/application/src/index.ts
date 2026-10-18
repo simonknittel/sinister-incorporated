@@ -16,15 +16,22 @@ export * from "./auth/index.js";
 export * from "./changelog/index.js";
 export type { CitizenReference } from "./citizenReference.js";
 export {
+  DiscordOutcome,
   createApplicationUrls,
   type ApplicationContext,
   type ChangelogEntrySource,
+  type DiscordGateway,
+  type DiscordGuildChannel,
+  type DiscordResult,
+  type DiscordScheduledEvent,
+  type FileStorage,
   type LogArguments,
   type Logger,
   type Notification,
   type SigningKey,
   type WikiPageContentReplacement,
 } from "./context.js";
+export * from "./discord/index.js";
 export {
   ConflictError,
   ForbiddenError,
@@ -33,6 +40,7 @@ export {
   rethrowRecordNotFound,
 } from "./errors.js";
 export * from "./events/index.js";
+export * from "./eventTemplates/index.js";
 export * from "./fleet/index.js";
 export * from "./iam/index.js";
 export * from "./leaderboards/index.js";

@@ -60,6 +60,8 @@ export const createTestApplicationContext = ({
     now: () => new Date(now),
     changelog: null,
     collab: null,
+    discord: null,
+    storage: null,
     urls: createApplicationUrls({
       baseUrl: "https://sam.example.com",
       publicUploadBaseUrl: "https://uploads.example.com",

@@ -15,7 +15,7 @@ import {
   findLineupPositionContainer,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { LINEUP_ERROR_TEXTS } from "../utils/eventErrorTexts";
+import { LINEUP_ERROR_TEXTS } from "../utils/lineupErrorTexts";
 import { requireManageablePosition } from "../utils/requireManageablePosition";
 
 export const deleteEventPosition = createAuthenticatedAction(

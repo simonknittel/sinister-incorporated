@@ -6,6 +6,7 @@ import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { getWikiPageContainer } from "@/modules/events/utils/eventContainer";
+import { findOrCreateWikiTags } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import {
@@ -13,7 +14,6 @@ import {
   isWikiScopeFrozen,
   rejectFrozenWikiScope,
 } from "../queries/getWikiPageScopedContext";
-import { findOrCreateWikiTags } from "../utils/findOrCreateWikiTags";
 
 const tagNameSchema = z
   .string()

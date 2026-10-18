@@ -5,12 +5,11 @@ import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import Button from "@/modules/common/components/Button";
 import { Popover, usePopover } from "@/modules/common/components/Popover";
 import type { EventPosition } from "@sam-monorepo/database/browser";
-import { LINEUP_MAX_DEPTH } from "@sam-monorepo/domain";
+import { canPasteSubtree, LINEUP_MAX_DEPTH } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { FaPaste } from "react-icons/fa";
 import { pasteEventPosition } from "../actions/pasteEventPosition";
 import { EventContainerKind } from "../utils/eventContainer";
-import { canPasteSubtree } from "../utils/positionTree";
 import {
   useLineupClipboard,
   type LineupClipboardEntry,

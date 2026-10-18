@@ -24,7 +24,7 @@ import {
   EventContainerKind,
   toTemplateContainer,
 } from "../utils/eventContainer";
-import { LINEUP_ERROR_TEXTS } from "../utils/eventErrorTexts";
+import { LINEUP_ERROR_TEXTS } from "../utils/lineupErrorTexts";
 
 /** The lineup editor also adds the positions of an event template */
 const schema = newPositionFieldsSchema.extend({

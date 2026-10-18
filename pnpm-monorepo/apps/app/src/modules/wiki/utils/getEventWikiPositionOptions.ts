@@ -1,7 +1,4 @@
-import {
-  buildPositionTree,
-  type PositionSubtree,
-} from "@/modules/events/utils/positionTree";
+import { buildPositionTree, type PositionSubtree } from "@sam-monorepo/domain";
 import type { EventWikiContextPosition } from "../queries/getEventWikiContext";
 import type { WikiPageTargetOption } from "./getWikiPageTargets";
 

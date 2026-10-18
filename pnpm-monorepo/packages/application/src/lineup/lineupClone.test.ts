@@ -1,7 +1,8 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import { describe, expect, test } from "vitest";
-import { clonePositions } from "./clonePositions";
-import { toTemplateContainer } from "./eventContainer";
+import { clonePositions } from "./lineupClone.js";
+
+const TEMPLATE_COLUMNS = { eventId: null, templateId: "template-1" } as const;
 
 interface CreatedPosition {
   readonly id: string;
@@ -79,7 +80,7 @@ describe("clone positions", () => {
         position("source-b", "Bravo"),
       ],
       {
-        container: toTemplateContainer("template-1"),
+        columns: TEMPLATE_COLUMNS,
         parentPositionId: null,
         startOrder: 3,
       },
@@ -103,7 +104,7 @@ describe("clone positions", () => {
       transaction,
       [position("source-a", "Alpha", [position("source-a1", "Alpha 1")])],
       {
-        container: toTemplateContainer("template-1"),
+        columns: TEMPLATE_COLUMNS,
         parentPositionId: null,
         startOrder: 0,
       },
@@ -128,7 +129,7 @@ describe("clone positions", () => {
         ]),
       ],
       {
-        container: toTemplateContainer("template-1"),
+        columns: TEMPLATE_COLUMNS,
         parentPositionId: "existing-parent",
         startOrder: 5,
       },

@@ -4,18 +4,8 @@ import { prisma } from "@/db";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { DiscordOutcome } from "@/modules/discord/utils/discordBotRequest";
-import { DiscordScheduledEventEntityType } from "@/modules/discord/utils/enums";
 import { getDiscordImageDataUri } from "@/modules/discord/utils/getDiscordImageDataUri";
 import { getPublishableGuildChannels } from "@/modules/discord/utils/getPublishableGuildChannels";
-import {
-  DISCORD_EVENT_LOCATION_MAX_LENGTH,
-  DISCORD_EVENT_NAME_MAX_LENGTH,
-  findContentProblem,
-  findPublishProblem,
-  GuildScheduledEventContentProblem,
-  type GuildScheduledEventContent,
-  type GuildScheduledEventTarget,
-} from "@/modules/discord/utils/guildScheduledEventPayload";
 import {
   createGuildScheduledEvent,
   deleteGuildScheduledEvent,
@@ -23,7 +13,17 @@ import {
 } from "@/modules/discord/utils/guildScheduledEvents";
 import { log } from "@/modules/logging";
 import { EventDiscordPublishTarget } from "@sam-monorepo/database/client";
-import { buildDiscordEventDescription } from "@sam-monorepo/domain";
+import {
+  buildDiscordEventDescription,
+  DISCORD_EVENT_LOCATION_MAX_LENGTH,
+  DISCORD_EVENT_NAME_MAX_LENGTH,
+  DiscordScheduledEventEntityType,
+  findContentProblem,
+  findPublishProblem,
+  GuildScheduledEventContentProblem,
+  type GuildScheduledEventContent,
+  type GuildScheduledEventTarget,
+} from "@sam-monorepo/domain";
 import { EVENT_DESCRIPTION_MAX_LENGTH } from "./discordEventDescription";
 import type { DiscordPublishFields } from "./discordPublishFields";
 import { getEventUrl } from "./eventConstraints";

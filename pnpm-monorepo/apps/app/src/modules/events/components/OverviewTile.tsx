@@ -5,12 +5,12 @@ import { DiscordMarkdown } from "@/modules/common/components/DiscordMarkdown";
 import { ImageUpload } from "@/modules/common/components/ImageUpload";
 import { formatDate } from "@/modules/common/utils/formatDate";
 import { getPublicUploadUrl } from "@/modules/common/utils/getPublicUploadUrl";
-import { getGuildScheduledEventPath } from "@/modules/discord/utils/guildScheduledEventPayload";
 import type {
   EventCitizenReference,
   EventCoverImage,
 } from "@/modules/events/queries/eventRelationSelects";
 import { EventSource, type Event } from "@sam-monorepo/database/client";
+import { getGuildScheduledEventPath } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import Image from "next/image";
 import { DownloadEventButton } from "./DownloadEventButton";

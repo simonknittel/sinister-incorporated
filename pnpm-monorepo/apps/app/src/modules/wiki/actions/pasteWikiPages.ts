@@ -12,10 +12,12 @@ import {
 } from "@/modules/events/utils/eventContainer";
 import { log } from "@/modules/logging";
 import {
+  findOrCreateWikiTags,
   getAccessibleWikiPage,
   resolveWikiPagePlacement,
   WikiPageAccessTier,
   WikiPagePlacement,
+  type CopiedWikiPage,
 } from "@sam-monorepo/application";
 import { WIKI_PAGE_TITLE_MAX_LENGTH } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
@@ -32,12 +34,8 @@ import {
   rejectFrozenWikiScope,
   type WikiPageScopedContext,
 } from "../queries/getWikiPageScopedContext";
-import {
-  copyWikiPageSubtree,
-  type CopiedWikiPage,
-} from "../utils/copyWikiPageSubtree";
+import { copyWikiPageSubtree } from "../utils/copyWikiPageSubtree";
 import { createWikiPageSafetySnapshot } from "../utils/createWikiPageSafetySnapshot";
-import { findOrCreateWikiTags } from "../utils/findOrCreateWikiTags";
 import { replaceWikiPageContent } from "../utils/replaceWikiPageContent";
 import { resolveVariantWikiRedirectHref } from "../utils/resolveVariantWikiRedirectHref";
 import {

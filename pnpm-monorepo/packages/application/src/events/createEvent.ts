@@ -15,6 +15,7 @@ import {
 import { ValidationError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { withSpan } from "../withSpan.js";
+import { requireOwnCoverImage } from "./coverImage.js";
 import { createEventActivity } from "./eventActivity.js";
 import { requireDescriptionFitsDiscord } from "./eventDescription.js";
 import { EventErrorMessage } from "./eventErrors.js";
@@ -99,27 +100,6 @@ export interface CreateEventOutput {
    */
   readonly notifications_sent: boolean;
 }
-
-/**
- * The cover was uploaded by the form before submitting; it must be the
- * submitter's own image so nobody can attach someone else's upload.
- */
-const requireOwnCoverImage = async (
-  context: ApplicationContext,
-  citizenId: string,
-  coverImageId: string,
-) => {
-  const coverImage = await context.prisma.upload.findUnique({
-    where: { id: coverImageId },
-    select: { createdById: true, mimeType: true },
-  });
-  const isOwnImageUpload =
-    coverImage !== null &&
-    coverImage.createdById === citizenId &&
-    coverImage.mimeType.startsWith("image/");
-  if (!isOwnImageUpload)
-    throw new ValidationError(EventErrorMessage.InvalidCoverImage);
-};
 
 /**
  * Creates an app event with its briefing root page (or the briefing of the

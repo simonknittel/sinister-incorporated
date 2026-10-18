@@ -2,6 +2,7 @@
  * The use cases of the wiki group, and the wiki contexts and helpers that
  * the app shares with them.
  */
+export { copyBriefingTree, findBriefingCopySource } from "./briefingCopy.js";
 export {
   createWikiPage,
   createWikiPageInScope,
@@ -59,6 +60,13 @@ export {
   type WikiSharedContextPage,
 } from "./wikiContext.js";
 export {
+  INHERITED_PERMISSIONS,
+  copyWikiPagesIntoContainer,
+  remapBriefingScopePositions,
+  type CopiedWikiPage,
+  type WikiPageCopyEntry,
+} from "./wikiPageCopy.js";
+export {
   WikiPagePlacement,
   requireWikiPagePlacement,
   resolveWikiPagePlacement,
@@ -74,3 +82,4 @@ export {
   type WikiSearchQueryResult,
   type WikiSearchScopeFilters,
 } from "./wikiSearchQuery.js";
+export { findOrCreateWikiTags } from "./wikiTags.js";
