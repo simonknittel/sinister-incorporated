@@ -47,11 +47,11 @@ Where a feature already has use cases, the module keeps a thin wrapper per query
 
 ### Inside the Lambda functions
 
-The composition root is `apps/lambda/src/common/createApplicationContext.ts`. It uses the audit writer and the EventBridge adapters of `infrastructure`. The context has the no-op tracer of OpenTelemetry, because the functions register no tracer provider: X-Ray stays at the level of the handlers and the jobs, and the spans of the use cases are lost. The context has no changelog, no collab server and no signing key. No function calls the composition root until its first use case arrives.
+The composition root is `apps/lambda/src/common/createApplicationContext.ts`. It uses the audit writer and the EventBridge adapters of `infrastructure`. The context has the no-op tracer of OpenTelemetry, because the functions register no tracer provider: X-Ray stays at the level of the handlers and the jobs, and the spans of the use cases are lost. The context has no changelog, no collab server and no signing key. `midnight-automations` calls the composition root: it runs the use cases of its IAM jobs (the role removal, the role assignment, the two counts and the two purges) through one small job helper that keeps the X-Ray segment of each job. The other functions do not call it yet.
 
 ### Tests
 
-See the [Tests section of the application README](../pnpm-monorepo/packages/application/README.md#tests) for the unit tests and the integration tests.
+See the [Tests section of the application README](../pnpm-monorepo/packages/application/README.md#tests) for the unit tests and the integration tests. The test helpers of `application` now run the first integration tests of the package, the tests of the IAM automations and of the role level change.
 
 ## Target architecture
 

@@ -28,6 +28,7 @@ Obey these rules:
 - **No framework imports.** Never import `next`, `next/*`, `react`, `react-dom`, `server-only` or a module of the app (`@/…`). The test `src/boundaries.test.ts` fails on such an import.
 - **No React `cache()`.** The app wraps a read use case with `cache()` where a page needs the deduplication per request.
 - **Spans.** Use `withSpan(context, name, callback)` for async work that is slow or that has many steps.
+- **Automations.** A job of a Lambda function is a use case with the signature `(context, input)`. The input is a TypeScript interface, not a Zod schema, because the host builds it and nobody parses it. It holds the clock (`now`), so a test can set the time. The output holds the counts for the log of the host. The audit events have `createdById: null`. The automation lives in the folder of its feature (for example `roles/removeExpiredRoleAssignments.ts`).
 
 Example:
 
@@ -72,7 +73,7 @@ src/
   mcpAccess.ts             the permission that gates the MCP server
   citizenReference.ts      the citizen in the outputs
   withSpan.ts              the span helper
-  auth/                    the effective roles of a citizen (the session and the MCP principal)
+  auth/                    the effective roles of a citizen (the session and the MCP principal), the sessions, the email confirmation and the admin toolbar
   oauth/                   the use cases of the OAuth authorization server
   <feature>/<useCase>.ts   one use case per file, with its input schema and its output type
   <feature>/index.ts       the barrel of the feature
@@ -83,15 +84,24 @@ src/
 
 These exports are not use cases. No MCP tool calls them:
 
-- The `find…` row helpers (for example `findEventListPage`, `findVisibleTask` and `findEventPositionTree`) give rows only to the renderers of the app.
+- The `find…` row helpers (for example `findEventListPage`, `findVisibleTask`, `findEventPositionTree`, `findManagedRole`, `findRoleTableRows`, `findSpynetCitizen`, `findNoteTablePage` and `findUserListPage`) give rows only to the renderers of the app.
+- `findAllRoleBadges` has no permission check. Its callers check the permission.
+- `deletePermissionStringsReferencing` (the roles) and `linkCitizenOfSignedInUser` (the Spynet) are helpers for the auth zone and the settings of the Spynet. They carry no permission check: the caller checks it.
 - The writes of the positions that the lineup of an event and the lineup of an event template share (`insertLineupPosition`, `updateLineupPosition`, `deleteLineupPosition`, `writeLineupOrder`, `findLineupPositionContainer`) carry no permission check. The use cases of the event lineup check the event first, the app checks the template first.
 - `createWikiPageInScope` takes the wiki scope from its caller: the app also loads the briefings of the event templates.
+
+These use cases run without an actor. No MCP tool calls them:
+
+- The admin toolbar (`startAssumingUser`, `stopAssumingUser` and `listAssumableUsers`) takes the id of the admin as input. During an assume, the actor is the assumed user, thus the host keeps the admin gate. A different host must not call them without a check of its own.
+- The development login (`findDevelopmentLoginUser` and `listDevelopmentLoginUsers`) and `findSessionIdByToken` run without a session. The host checks the environment and reads the cookie.
+- `confirmEmailWithToken` is public: the token is the proof.
+- The Human Resources reads of the clearance page (`getHumanResourcesRoleIds` and `listHumanResourcesContacts`) run for users who have no clearance yet.
 
 ## Tests
 
 Write unit tests (Vitest, `*.test.ts` next to the file) only for complex or critical logic. Test the behavior through the end-to-end tests of the apps.
 
-The integration tests (`*.integration.test.ts`) run against a Postgres testcontainer (`test/postgres.ts`, Docker must run). The package also holds the helper that empties the database (`test/database.ts`) and the helper that makes two sessions wait for the same locks (`test/locks.ts`). The Lambda functions use the same helpers through `@sam-monorepo/application/test/*` until their tests move into this package.
+The integration tests (`*.integration.test.ts`) run against a Postgres testcontainer (`test/postgres.ts`, Docker must run). The package also holds the helper that empties the database (`test/database.ts`) and the helper that makes two sessions wait for the same locks (`test/locks.ts`). The test factory of the context (`createTestApplicationContext()` in `test/applicationContext.ts`) records the audit events and the notifications. The Lambda functions use the same helpers through `@sam-monorepo/application/test/*` until their tests move into this package.
 
 ## Add a feature
 
