@@ -180,21 +180,13 @@ const welcomeCitizen = async (
         });
       }
 
-      try {
-        await createAuditEvents([
-          {
-            type: AuditEventType.CITIZEN_WELCOMED,
-            data: { citizenId },
-            createdById: userId,
-          },
-        ]);
-      } catch (error) {
-        log.error("Failed to log the welcome of the citizen", {
-          citizenId,
-          userId,
-          error,
-        });
-      }
+      await createAuditEvents([
+        {
+          type: AuditEventType.CITIZEN_WELCOMED,
+          data: { citizenId },
+          createdById: userId,
+        },
+      ]);
     });
   } catch (error) {
     log.error("Failed to welcome the citizen", { citizenId, userId, error });

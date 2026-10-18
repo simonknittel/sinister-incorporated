@@ -7,7 +7,7 @@ import {
 } from "@sam-monorepo/infrastructure";
 
 const client =
-  env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY && env.AWS_EVENT_BUS_ARN
+  env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY
     ? createEventBridgeClient({
         credentials: {
           accessKeyId: env.AWS_ACCESS_KEY_ID,

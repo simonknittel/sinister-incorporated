@@ -1,12 +1,10 @@
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import type { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import type { AuditEventInput } from "@sam-monorepo/domain";
 import {
   eventContainerColumns,
   EventContainerKind,
   type EventContainer,
 } from "./eventContainer";
-
-type AuditEventInput = Parameters<typeof createAuditEvents>[0][number];
 
 /**
  * The system log is immutable, so a lineup mutation on an event keeps writing

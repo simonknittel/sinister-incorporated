@@ -5,8 +5,8 @@ import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need
 import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
-// A later config object that sets `no-restricted-imports` replaces the whole
-// option array of the rule for its files. Thus it spreads this list.
+// A later configuration object that sets `no-restricted-imports` replaces the
+// whole option array of the rule for its files. Thus it spreads this list.
 const sharedRestrictedImports = [
   {
     name: "next/link",
@@ -35,6 +35,9 @@ const sharedRestrictedImports = [
     message: "Please use @/modules/common/components/tabs instead.",
   },
 ];
+
+const useCasesOnlyMessage =
+  "Use a use case of @sam-monorepo/application. Only src/modules/application and src/modules/auth/server use Prisma.";
 
 const eslintConfig = defineConfig([
   ...nextCoreWebVitals,
@@ -156,21 +159,18 @@ const eslintConfig = defineConfig([
       "src/app/app/oauth/**",
       "src/app/api/oauth/**",
       "src/app/api/mcp/**",
+      "src/app/.well-known/oauth-authorization-server/**",
+      "src/app/.well-known/oauth-protected-resource/**",
     ],
     rules: {
       "no-restricted-imports": [
         "error",
         ...sharedRestrictedImports,
-        {
-          name: "@/db",
-          message:
-            "This module is on use cases. Read and write through @sam-monorepo/application. Only the composition root (src/modules/application) and the auth zone (src/modules/auth/server) use Prisma.",
-        },
+        { name: "@/db", message: useCasesOnlyMessage },
         {
           name: "@sam-monorepo/database",
           importNames: ["prisma"],
-          message:
-            "This module is on use cases. Read and write through @sam-monorepo/application. Only the composition root (src/modules/application) and the auth zone (src/modules/auth/server) use the Prisma client.",
+          message: useCasesOnlyMessage,
         },
       ],
     },
