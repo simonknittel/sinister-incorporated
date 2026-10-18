@@ -43,7 +43,7 @@ Four modules are adapters of the packages, not features:
 
 Where a feature already has use cases, the module keeps a thin wrapper per query or action: it builds the actor from the session, calls the use case, and keeps the app-specific parts (React `cache()`, `FormData` parsing, translations, `refresh()`, `forbidden()`).
 
-**The Prisma rule.** The ESLint config object `use-cases-only` in `apps/app/eslint.config.mjs` forbids `@/db` and the `prisma` client of `@sam-monorepo/database` in the modules that are on use cases. Types from `@sam-monorepo/database/client` and enums from `@sam-monorepo/database/browser` stay permitted. The list of modules grows with each milestone of the move. At the end it covers `src/**`, except the composition root (`modules/application`) and the auth zone (`modules/auth/server`).
+**The Prisma rule.** The ESLint configuration object `use-cases-only` in `apps/app/eslint.config.mjs` forbids `@/db` and the `prisma` client of `@sam-monorepo/database` in the modules that are on use cases. Types from `@sam-monorepo/database/client` and enums from `@sam-monorepo/database/browser` stay permitted. The list of modules grows with each milestone of the move. At the end it covers `src/**`, except the composition root (`modules/application`) and the auth zone (`modules/auth/server`).
 
 ### Inside the Lambda functions
 
@@ -51,7 +51,7 @@ The composition root is `apps/lambda/src/common/createApplicationContext.ts`. It
 
 ### Tests
 
-The helpers of the integration tests (the Postgres testcontainer, the truncate helper and the lock helper) live in `packages/application/test`. The Lambda functions share them through `@sam-monorepo/application/test/*`. See the [package README](../pnpm-monorepo/packages/application/README.md#tests).
+See the [Tests section of the application README](../pnpm-monorepo/packages/application/README.md#tests) for the unit tests and the integration tests.
 
 ## Target architecture
 
@@ -137,5 +137,3 @@ Dependencies point downwards only. The one exception is the dotted edge: `infras
 3. Make the app query or action a thin wrapper: the same export name and signature where practical, the actor from the session, the use case call, the app-specific response.
 4. Delete the moved logic from the app. Never keep two copies.
 5. Keep the end-to-end tests green without changes: the behavior of the app does not change.
-
-The modules of the app that the `use-cases-only` lint rule does not list still hold their logic.

@@ -35,6 +35,9 @@ pnpm --filter @sam-monorepo/app run test
 pnpm --filter @sam-monorepo/lambda run test
 pnpm --filter @sam-monorepo/domain run test
 pnpm --filter @sam-monorepo/wiki-editor run test
+pnpm --filter @sam-monorepo/application run test
+pnpm --filter @sam-monorepo/infrastructure run test
+pnpm --filter @sam-monorepo/mcp run test
 ```
 
 Playwright end-to-end tests (they require Docker and the Playwright browsers, see [pnpm-monorepo/apps/playwright/README.md](./pnpm-monorepo/apps/playwright/README.md)):
