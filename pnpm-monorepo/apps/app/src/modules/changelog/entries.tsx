@@ -77,8 +77,8 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
 
         <p>
           Der MCP-Server erfordert die neue Berechtigung &quot;MCP-Server
-          nutzen&quot;. Nur Rollen mit dieser Berechtigung können den
-          MCP-Server nutzen.
+          nutzen&quot;. Nur Rollen mit dieser Berechtigung können den MCP-Server
+          nutzen.
         </p>
       </>
     ),
