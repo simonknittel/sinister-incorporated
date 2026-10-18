@@ -14,8 +14,7 @@ export default defineConfig({
         /**
          * Runs the use cases against a real PostgreSQL with all migrations
          * (see `test/postgres.ts`). The files share one database, thus they
-         * run one after the other. The set of files is empty until the first
-         * use case has an integration test.
+         * run one after the other.
          */
         test: {
           name: "integration",

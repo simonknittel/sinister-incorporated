@@ -4,15 +4,15 @@ This package holds the shared implementations of the ports of the use cases. The
 
 ## Exports
 
-| Export                                 | Port                                                                       | Used by the app                                      | Used by the Lambda functions       |
-| -------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------------------- |
-| `createPrismaAuditWriter`              | `audit`                                                                    | the context, `createAuditEvents()`                   | the context, `createAuditEvents()` |
-| `createEventBridgeNotificationTrigger` | `notifications`                                                            | `triggerNotifications()`, except `EmailConfirmation` | the context                        |
-| `createEventBridgeEmitter`             | none: it sends the events of the trigger and the other events of the hosts | `emitEvents()`                                       | `emitEvents()`, the context        |
-| `createEventBridgeClient`              | none: the client of the emitter, with timeouts                             | `emitEvents()`                                       | `emitEvents()`, the context        |
+| Export                                 | Port                                                                       |
+| -------------------------------------- | -------------------------------------------------------------------------- |
+| `createPrismaAuditWriter`              | `audit`                                                                    |
+| `createEventBridgeNotificationTrigger` | `notifications`                                                            |
+| `createEventBridgeEmitter`             | none: it sends the events of the trigger and the other events of the hosts |
+| `createEventBridgeClient`              | none: the client of the emitter, with timeouts                             |
 
 ## Rules
 
-- **No host imports.** Never import a module of a host (`apps/…`, `@/…`), `next`, `next/*`, `react`, `react-dom` or `server-only`. The test `src/boundaries.test.ts` fails on such an import. The package can import `@sam-monorepo/application` (for the port types) and `@sam-monorepo/database`.
+- **No host imports.** Never import a host package (for example `@sam-monorepo/app`), a module of the app (`@/…`), `@sam-monorepo/mcp`, `next`, `next/*`, `react`, `react-dom` or `server-only`. The test `src/boundaries.test.ts` fails on such an import. The package can import `@sam-monorepo/application` (for the port types) and `@sam-monorepo/database`.
 - **Options from the host.** A factory gets each service and each value from its options, for example the Prisma client, the logger and the ARN of the event bus. The package reads no environment variables.
 - **One behavior for all hosts.** When two hosts need a different behavior, the host wraps the implementation. Example: the `emitEvents()` of the Lambda functions logs an `EventBridgeFailedEntriesError` and does not throw it, until the automations become use cases.

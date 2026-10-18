@@ -57,6 +57,10 @@ export interface SigningKey {
  */
 export interface ApplicationContext {
   readonly prisma: PrismaClientType;
+  /**
+   * The implementation never throws: it logs a failed write, because the
+   * mutation that the events describe has happened.
+   */
   readonly audit: {
     readonly create: (events: AuditEventInput[]) => Promise<void>;
   };

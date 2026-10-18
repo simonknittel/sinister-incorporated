@@ -14,7 +14,7 @@ export type EventBridgeEntry = Omit<PutEventsRequestEntry, "EventBusName">;
 export type EmitEvents = (entries: EventBridgeEntry[]) => Promise<void>;
 
 export interface EventBridgeEmitterOptions {
-  /** Null when the host has no credentials for AWS */
+  /** Null when the host has no credentials */
   readonly client: {
     readonly send: (
       command: PutEventsCommand,
@@ -24,12 +24,13 @@ export interface EventBridgeEmitterOptions {
   readonly log: Logger;
 }
 
-/** EventBridge did not take one or more entries of a batch */
+/** EventBridge did not take one or more entries */
 export class EventBridgeFailedEntriesError extends Error {
   override readonly name = "EventBridgeFailedEntriesError";
 
-  constructor(response: PutEventsCommandOutput) {
-    super("Failed to send events to EventBridge", { cause: response });
+  /** @param failedResponses The responses of the batches with failed entries */
+  constructor(failedResponses: PutEventsCommandOutput[]) {
+    super("Failed to send events to EventBridge", { cause: failedResponses });
   }
 }
 
@@ -39,7 +40,7 @@ export class EventBridgeFailedEntriesError extends Error {
  * local development): then the emitter logs this and sends nothing.
  *
  * @throws EventBridgeFailedEntriesError when EventBridge does not take an
- * entry. The batches after the failed batch are not sent.
+ * entry. The emitter throws after it sent all batches.
  */
 export const createEventBridgeEmitter =
   ({ client, eventBusArn, log }: EventBridgeEmitterOptions): EmitEvents =>
@@ -49,10 +50,7 @@ export const createEventBridgeEmitter =
       return;
     }
 
-    if (entries.length === 0) {
-      log.info("No entries to send to EventBridge");
-      return;
-    }
+    const failedResponses: PutEventsCommandOutput[] = [];
 
     for (let index = 0; index < entries.length; index += BATCH_SIZE) {
       const response = await client.send(
@@ -63,7 +61,9 @@ export const createEventBridgeEmitter =
         }),
       );
 
-      if (response.FailedEntryCount)
-        throw new EventBridgeFailedEntriesError(response);
+      if (response.FailedEntryCount) failedResponses.push(response);
     }
+
+    if (failedResponses.length > 0)
+      throw new EventBridgeFailedEntriesError(failedResponses);
   };

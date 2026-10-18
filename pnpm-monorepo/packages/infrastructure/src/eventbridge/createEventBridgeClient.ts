@@ -25,7 +25,7 @@ export interface EventBridgeClientOptions {
 
 export const createEventBridgeClient = ({
   credentials,
-}: EventBridgeClientOptions): EventBridgeClient =>
+}: EventBridgeClientOptions = {}): EventBridgeClient =>
   new EventBridgeClient({
     region: REGION,
     credentials,

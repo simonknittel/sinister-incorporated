@@ -101,4 +101,4 @@ The integration tests (`*.integration.test.ts`) run against a Postgres testconta
 
 ## Modules that are not on use cases yet
 
-The lint rule `use-cases-only` in `apps/app/eslint.config.mjs` names the modules of the app that are on use cases: they never import `@/db` or the `prisma` client. The modules that are not in its list still hold their logic and move later, feature group by feature group.
+The modules of the app that [the Prisma rule](../../../docs/architecture.md#inside-the-nextjs-app) does not list still hold their logic. They move later, feature group by feature group.

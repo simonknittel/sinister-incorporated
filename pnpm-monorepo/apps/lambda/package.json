@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.1146.0",
-    "@aws-sdk/client-eventbridge": "3.1146.0",
     "@aws-sdk/client-s3": "3.1146.0",
     "@aws-sdk/client-ssm": "3.1146.0",
     "@opentelemetry/api": "1.9.1",
@@ -30,13 +29,11 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
-    "@testcontainers/postgresql": "12.2.0",
     "@types/aws-lambda": "8.10.164",
     "@types/lodash": "4.17.25",
     "@types/node": "24.19.1",
     "@types/web-push": "3.6.4",
     "esbuild": "0.28.2",
-    "testcontainers": "12.2.0",
     "typescript": "7.0.2",
     "vite": "8.3.2",
     "vitest": "5.0.3"
