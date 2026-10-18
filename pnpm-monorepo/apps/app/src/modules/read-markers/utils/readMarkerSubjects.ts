@@ -1,11 +1,12 @@
 import { prisma } from "@/db";
+import { getRequestActor } from "@/modules/application";
 import { getVisibleEventsWhere } from "@/modules/events/utils/eventVisibility";
-import { getVisibleTasksWhere } from "@/modules/tasks/queries/getVisibleTasksWhere";
 import {
   findNewEventIds,
   findNewTaskIds,
   getOpenEventsWhere,
   getOpenTasksWhere,
+  getVisibleTasksWhere,
   type UnreadWhere,
 } from "@sam-monorepo/application";
 import type { Prisma } from "@sam-monorepo/database/client";
@@ -66,7 +67,10 @@ export const READ_MARKER_SUBJECTS: Record<
     canRead: async (subjectId) =>
       (await prisma.task.count({
         where: {
-          AND: [{ id: subjectId }, await getVisibleTasksWhere()],
+          AND: [
+            { id: subjectId },
+            getVisibleTasksWhere(await getRequestActor()),
+          ],
           deletedAt: null,
         },
       })) > 0,
@@ -76,7 +80,7 @@ export const READ_MARKER_SUBJECTS: Record<
       prisma.task.count({
         where: {
           AND: [
-            await getVisibleTasksWhere(),
+            getVisibleTasksWhere(await getRequestActor()),
             getOpenTasksWhere(new Date()),
             unreadWhere,
           ],

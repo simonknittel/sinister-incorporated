@@ -11,11 +11,13 @@ import * as z from "zod";
 import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ConflictError, ForbiddenError, ValidationError } from "../errors.js";
-import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
+import {
+  announceSilcTransactions,
+  areActiveReceivers,
+} from "../silc/silcLedger.js";
 import { withSpan } from "../withSpan.js";
 import { taskIdSchema } from "./getTask.js";
-import { areActiveReceivers } from "./silcLedger.js";
 import {
   findTaskOutput,
   type NotifyingTaskWriteOutput,
@@ -300,14 +302,10 @@ export const completeTask = (
       },
     ]);
 
-    const notificationsSent =
-      silcTransactionIds.length <= 0 ||
-      (await triggerNotificationsAfterSave(context, [
-        {
-          type: "SilcTransactionsCreated",
-          payload: { transactionIds: silcTransactionIds },
-        },
-      ]));
+    const notificationsSent = await announceSilcTransactions(
+      context,
+      silcTransactionIds,
+    );
 
     return {
       task: await findTaskOutput(context, actor, task.id),

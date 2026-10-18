@@ -6,7 +6,10 @@ import {
 import { CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
 import { getDateRangeFilter } from "@/modules/common/utils/getDateRangeFilter";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { listAuditEvents } from "@sam-monorepo/application";
+import {
+  listAuditEvents,
+  UnknownCursorBehavior,
+} from "@sam-monorepo/application";
 import { cache } from "react";
 import { SystemLogVolume } from "../utils/systemLogFilterParams";
 
@@ -39,7 +42,7 @@ export const getAuditEvents = cache(
             limit: AUDIT_EVENTS_PAGE_SIZE,
             cursor: cursor ?? undefined,
           },
-          { direction },
+          { direction, unknownCursor: UnknownCursorBehavior.FirstPage },
         );
 
         return {

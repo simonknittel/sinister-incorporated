@@ -38,7 +38,7 @@ export const idSchema = z
   .regex(/^[a-z0-9]{1,32}$/)
   .describe("An id from an earlier result.");
 
-/** What a list that sorts in memory does with a cursor that no item has */
+/** What a list does with a cursor that no item has */
 export enum UnknownCursorBehavior {
   /** A `ValidationError`: the MCP tools send only the cursors of a result */
   Reject = "reject",
@@ -56,7 +56,10 @@ export enum UnknownCursorBehavior {
  */
 export interface PageOptions {
   readonly direction?: CursorDirection;
-  /** Only the lists that sort in memory use it */
+  /**
+   * Only the lists that page with `paginateByCursor()` or
+   * `paginateByDatabaseCursor()` use it
+   */
   readonly unknownCursor?: UnknownCursorBehavior;
 }
 
@@ -135,5 +138,81 @@ export const paginateByCursor = <Item>(
     items,
     nextCursor: hasNextPage && lastItem ? getCursor(lastItem) : null,
     previousCursor: hasPreviousPage && firstItem ? getCursor(firstItem) : null,
+  };
+};
+
+/** The cursor arguments of a Prisma `findMany` for one page */
+export interface DatabaseCursorArguments {
+  readonly cursor?: { readonly id: string };
+  readonly skip?: number;
+  readonly take: number;
+}
+
+interface DatabaseCursorPageOptions extends PageOptions {
+  readonly cursor?: string | null;
+  readonly pageSize: number;
+}
+
+/**
+ * The cursor pagination of the lists that the database sorts, with the id of
+ * a row as the cursor. `findRows` spreads the arguments into its `findMany`;
+ * its order must be total (end it with `id`). One more row than the page size
+ * tells if there are more. Prisma gives an empty page for a cursor that no row
+ * has, thus an empty page with a cursor asks `isKnownCursor`.
+ *
+ * @throws ValidationError when no row has the cursor and `unknownCursor` is
+ * `UnknownCursorBehavior.Reject` (the default)
+ */
+export const paginateByDatabaseCursor = async <
+  Row extends { readonly id: string },
+>(
+  {
+    cursor,
+    pageSize,
+    direction = CursorDirection.Next,
+    unknownCursor = UnknownCursorBehavior.Reject,
+  }: DatabaseCursorPageOptions,
+  findRows: (cursorArguments: DatabaseCursorArguments) => Promise<Row[]>,
+  isKnownCursor: (id: string) => Promise<boolean>,
+): Promise<CursorPage<Row>> => {
+  // A negative `take` reads the rows before the cursor
+  const take =
+    direction === CursorDirection.Prev ? -(pageSize + 1) : pageSize + 1;
+
+  const rows = await findRows(
+    cursor ? { cursor: { id: cursor }, skip: 1, take } : { take },
+  );
+
+  if (cursor && rows.length === 0 && !(await isKnownCursor(cursor))) {
+    if (unknownCursor === UnknownCursorBehavior.Reject)
+      throw new ValidationError("Unknown cursor");
+
+    return paginateByDatabaseCursor(
+      { pageSize, direction, unknownCursor },
+      findRows,
+      isKnownCursor,
+    );
+  }
+
+  const hasMore = rows.length > pageSize;
+
+  let items = rows;
+  if (hasMore)
+    items =
+      direction === CursorDirection.Prev
+        ? rows.slice(1)
+        : rows.slice(0, pageSize);
+
+  const hasNextPage =
+    direction === CursorDirection.Next ? hasMore : Boolean(cursor);
+  const hasPreviousPage =
+    direction === CursorDirection.Prev ? hasMore : Boolean(cursor);
+  const firstItem = items.at(0);
+  const lastItem = items.at(-1);
+
+  return {
+    items,
+    nextCursor: hasNextPage && lastItem ? lastItem.id : null,
+    previousCursor: hasPreviousPage && firstItem ? firstItem.id : null,
   };
 };

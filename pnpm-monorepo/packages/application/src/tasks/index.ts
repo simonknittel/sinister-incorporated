@@ -45,7 +45,6 @@ export {
   type TaskListPage,
   type TaskListPageOptions,
 } from "./listTasks.js";
-export { areActiveReceivers } from "./silcLedger.js";
 export {
   type GetTaskOutput,
   type NotifyingTaskWriteOutput,

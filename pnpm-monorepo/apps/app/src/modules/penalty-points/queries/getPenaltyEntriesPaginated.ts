@@ -8,6 +8,7 @@ import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
   listPenaltyEntries,
   PenaltyEntryStatus,
+  UnknownCursorBehavior,
 } from "@sam-monorepo/application";
 import { cache } from "react";
 
@@ -30,7 +31,7 @@ export const getPenaltyEntriesPaginated = cache(
             limit: PENALTY_ENTRIES_PAGE_SIZE,
             cursor: cursor ?? undefined,
           },
-          { direction },
+          { direction, unknownCursor: UnknownCursorBehavior.FirstPage },
         );
 
         return {

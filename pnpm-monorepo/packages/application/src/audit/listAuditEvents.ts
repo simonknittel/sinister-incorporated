@@ -1,8 +1,5 @@
 import type { Prisma } from "@sam-monorepo/database/client";
-import {
-  CursorDirection,
-  HIGH_VOLUME_AUDIT_EVENT_TYPES,
-} from "@sam-monorepo/domain";
+import { HIGH_VOLUME_AUDIT_EVENT_TYPES } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import {
@@ -18,6 +15,7 @@ import {
   cursorSchema,
   idSchema,
   pageLimitSchema,
+  paginateByDatabaseCursor,
   type PageOptions,
 } from "../pagination.js";
 
@@ -165,49 +163,42 @@ const toAuditEventOutput = (
  * of an event.
  *
  * @throws ForbiddenError when the actor does not have `systemLog;read`
+ * @throws ValidationError when no event has the cursor (see
+ * `PageOptions.unknownCursor`)
  */
 export const listAuditEvents = async (
   context: ApplicationContext,
   actor: Actor,
   input: ListAuditEventsInput,
-  { direction = CursorDirection.Next }: PageOptions = {},
+  { direction, unknownCursor }: PageOptions = {},
 ): Promise<ListAuditEventsOutput> => {
   requirePermission(actor, "systemLog", "read");
 
-  // One more event than the page size tells if there is a further page. A
-  // negative `take` reads the events before the cursor.
-  const take =
-    direction === CursorDirection.Prev ? -(input.limit + 1) : input.limit + 1;
+  const where = buildWhere(input);
 
-  const rows = await context.prisma.auditEvent.findMany({
-    where: buildWhere(input),
-    // `id` makes the order total: the events of one batch can have the same
-    // `createdAt`, and the cursor needs exactly one position in the order
-    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-    select: AUDIT_EVENT_SELECT,
-    ...(input.cursor ? { cursor: { id: input.cursor }, skip: 1 } : {}),
-    take,
-  });
-
-  const hasMore = rows.length > input.limit;
-
-  let pageRows = rows;
-  if (hasMore)
-    pageRows =
-      direction === CursorDirection.Prev
-        ? rows.slice(1)
-        : rows.slice(0, input.limit);
-
-  const hasNextPage =
-    direction === CursorDirection.Next ? hasMore : Boolean(input.cursor);
-  const hasPreviousPage =
-    direction === CursorDirection.Prev ? hasMore : Boolean(input.cursor);
-  const firstRow = pageRows.at(0);
-  const lastRow = pageRows.at(-1);
+  const page = await paginateByDatabaseCursor(
+    {
+      cursor: input.cursor,
+      pageSize: input.limit,
+      direction,
+      unknownCursor,
+    },
+    (cursorArguments) =>
+      context.prisma.auditEvent.findMany({
+        where,
+        // The events of one batch can have the same `createdAt`, thus `id`
+        // makes the order total
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        select: AUDIT_EVENT_SELECT,
+        ...cursorArguments,
+      }),
+    async (id) =>
+      (await context.prisma.auditEvent.count({ where: { id } })) > 0,
+  );
 
   return {
-    events: pageRows.map(toAuditEventOutput),
-    next_cursor: hasNextPage && lastRow ? lastRow.id : null,
-    previous_cursor: hasPreviousPage && firstRow ? firstRow.id : null,
+    events: page.items.map(toAuditEventOutput),
+    next_cursor: page.nextCursor,
+    previous_cursor: page.previousCursor,
   };
 };

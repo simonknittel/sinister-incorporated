@@ -1,5 +1,4 @@
 import type { Prisma } from "@sam-monorepo/database/client";
-import { CursorDirection } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
@@ -8,6 +7,7 @@ import {
   cursorSchema,
   idSchema,
   pageLimitSchema,
+  paginateByDatabaseCursor,
   type PageOptions,
 } from "../pagination.js";
 import { buildActivePenaltyEntryWhere } from "./activePenaltyEntryWhere.js";
@@ -94,50 +94,44 @@ const authorizeList = (
 
 /**
  * The penalty entries, the newest first. The cursor is the id of an entry.
+ *
+ * @throws ValidationError when no entry has the cursor (see
+ * `PageOptions.unknownCursor`)
  */
 export const listPenaltyEntries = async (
   context: ApplicationContext,
   actor: Actor,
   input: z.infer<typeof listPenaltyEntriesInputSchema>,
-  { direction = CursorDirection.Next }: PageOptions = {},
+  { direction, unknownCursor }: PageOptions = {},
 ): Promise<ListPenaltyEntriesOutput> => {
   authorizeList(actor, input);
 
-  // One more entry than the page size tells if there is a further page. A
-  // negative `take` reads the entries before the cursor.
-  const take =
-    direction === CursorDirection.Prev ? -(input.limit + 1) : input.limit + 1;
+  const where: Prisma.PenaltyEntryWhereInput = {
+    ...buildStatusWhere(input.status, context.now()),
+    ...(input.citizen_id ? { citizenId: input.citizen_id } : {}),
+  };
 
-  const rows = await context.prisma.penaltyEntry.findMany({
-    where: {
-      ...buildStatusWhere(input.status, context.now()),
-      ...(input.citizen_id ? { citizenId: input.citizen_id } : {}),
+  const page = await paginateByDatabaseCursor(
+    {
+      cursor: input.cursor,
+      pageSize: input.limit,
+      direction,
+      unknownCursor,
     },
-    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-    select: PENALTY_ENTRY_SELECT,
-    ...(input.cursor ? { cursor: { id: input.cursor }, skip: 1 } : {}),
-    take,
-  });
-
-  const hasMore = rows.length > input.limit;
-
-  let pageRows = rows;
-  if (hasMore)
-    pageRows =
-      direction === CursorDirection.Prev
-        ? rows.slice(1)
-        : rows.slice(0, input.limit);
-
-  const hasNextPage =
-    direction === CursorDirection.Next ? hasMore : Boolean(input.cursor);
-  const hasPreviousPage =
-    direction === CursorDirection.Prev ? hasMore : Boolean(input.cursor);
-  const firstRow = pageRows.at(0);
-  const lastRow = pageRows.at(-1);
+    (cursorArguments) =>
+      context.prisma.penaltyEntry.findMany({
+        where,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        select: PENALTY_ENTRY_SELECT,
+        ...cursorArguments,
+      }),
+    async (id) =>
+      (await context.prisma.penaltyEntry.count({ where: { id } })) > 0,
+  );
 
   return {
-    entries: pageRows.map(toPenaltyEntryOutput),
-    next_cursor: hasNextPage && lastRow ? lastRow.id : null,
-    previous_cursor: hasPreviousPage && firstRow ? firstRow.id : null,
+    entries: page.items.map(toPenaltyEntryOutput),
+    next_cursor: page.nextCursor,
+    previous_cursor: page.previousCursor,
   };
 };

@@ -35,6 +35,7 @@ export {
 export * from "./events/index.js";
 export * from "./fleet/index.js";
 export * from "./iam/index.js";
+export * from "./leaderboards/index.js";
 export * from "./lineup/index.js";
 export { canUseMcp, requireMcpAccess } from "./mcpAccess.js";
 export * from "./mcpSettings/index.js";
@@ -46,12 +47,16 @@ export {
   UnknownCursorBehavior,
   idSchema,
   paginateByCursor,
+  paginateByDatabaseCursor,
   type CursorPage,
+  type DatabaseCursorArguments,
   type PageOptions,
 } from "./pagination.js";
 export * from "./penaltyPoints/index.js";
+export * from "./profitDistribution/index.js";
 export * from "./readMarkers/index.js";
 export * from "./roles/index.js";
+export * from "./silc/index.js";
 export * from "./spynet/index.js";
 export * from "./tasks/index.js";
 export * from "./users/index.js";
