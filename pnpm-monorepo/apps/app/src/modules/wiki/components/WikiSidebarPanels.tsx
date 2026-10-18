@@ -1,4 +1,4 @@
-import type { WikiPageTierPermissions } from "@sam-monorepo/permissions";
+import type { WikiPageTierPermissions } from "@sam-monorepo/domain";
 import { buildVisibleWikiTree } from "@sam-monorepo/wiki-editor/helpers";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";

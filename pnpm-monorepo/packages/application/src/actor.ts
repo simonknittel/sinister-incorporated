@@ -2,7 +2,7 @@ import { UserRole } from "@sam-monorepo/database/browser";
 import {
   comparePermissionSets,
   type PermissionSet,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { ForbiddenError } from "./errors.js";
 
 export interface ActorCitizen {

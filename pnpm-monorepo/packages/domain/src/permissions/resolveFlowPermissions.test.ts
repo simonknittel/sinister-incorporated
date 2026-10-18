@@ -1,11 +1,11 @@
 import { FlowRoleAccessType } from "@sam-monorepo/database/browser";
 import { describe, expect, test } from "vitest";
+import { resolveEffectiveRoles } from "./resolveEffectiveRoles.js";
 import {
-  resolveEffectiveRoles,
   resolveFlowPermissions,
   type FlowPermissionSource,
   type FlowViewer,
-} from "./index.js";
+} from "./resolveFlowPermissions.js";
 
 const flow = (
   overrides: Partial<FlowPermissionSource> & { id: string },

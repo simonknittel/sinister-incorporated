@@ -1,4 +1,4 @@
-import { ONBOARDING_POPOVER_PATH } from "@sam-monorepo/notifications";
+import { ONBOARDING_POPOVER_PATH } from "@sam-monorepo/domain";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { truncateAllTables } from "../../../test/database";
 import {

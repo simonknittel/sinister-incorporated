@@ -1,4 +1,4 @@
-import type { GenericCitizenLogType } from "@sam-monorepo/permissions";
+import type { GenericCitizenLogType } from "@sam-monorepo/domain";
 import "react";
 
 declare module "react" {
@@ -8,7 +8,7 @@ declare module "react" {
   }
 }
 
-export type { GenericCitizenLogType } from "@sam-monorepo/permissions";
+export type { GenericCitizenLogType } from "@sam-monorepo/domain";
 
 /**
  * The values of `CitizenLog.type`. The column is text with a CHECK

@@ -8,7 +8,7 @@ import {
   resolveEventWikiPagePermissions,
   type EventWikiViewer,
   type ResolvedEventWikiPagePermissions,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import {

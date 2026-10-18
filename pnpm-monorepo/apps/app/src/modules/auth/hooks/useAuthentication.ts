@@ -3,7 +3,7 @@
 import {
   comparePermissionSets,
   type PermissionSet,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { useSession } from "next-auth/react";
 import { useContext } from "react";
 import { AdminModeContext } from "./AdminModeContext";

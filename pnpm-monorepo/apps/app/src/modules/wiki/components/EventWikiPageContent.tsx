@@ -3,7 +3,7 @@ import { Button2, Button2Variant } from "@/modules/common/components/Button2";
 import { EditableInput } from "@/modules/common/components/form/EditableInput";
 import { Link } from "@/modules/common/components/Link";
 import { formatDate } from "@/modules/common/utils/formatDate";
-import type { ResolvedEventWikiPagePermissions } from "@sam-monorepo/permissions";
+import type { ResolvedEventWikiPagePermissions } from "@sam-monorepo/domain";
 import { FaHistory } from "react-icons/fa";
 import { renameWikiPage } from "../actions/renameWikiPage";
 import {

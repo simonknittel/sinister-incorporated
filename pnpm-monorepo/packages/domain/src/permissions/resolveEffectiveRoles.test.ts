@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { resolveEffectiveRoles } from "./index.js";
+import { resolveEffectiveRoles } from "./resolveEffectiveRoles.js";
 
 const role = (name: string, maxLevel: number | null = null) => ({
   name,

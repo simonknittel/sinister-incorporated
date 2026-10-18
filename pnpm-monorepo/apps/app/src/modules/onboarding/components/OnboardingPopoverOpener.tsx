@@ -1,6 +1,6 @@
 "use client";
 
-import { ONBOARDING_POPOVER_SEARCH_PARAM } from "@sam-monorepo/notifications";
+import { ONBOARDING_POPOVER_SEARCH_PARAM } from "@sam-monorepo/domain";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useOnboarding } from "./OnboardingProvider";

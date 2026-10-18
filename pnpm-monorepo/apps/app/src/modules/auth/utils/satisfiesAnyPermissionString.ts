@@ -1,5 +1,5 @@
 import type { authenticate } from "@/modules/auth/server";
-import { transformPermissionStringToPermissionSet } from "@sam-monorepo/permissions";
+import { transformPermissionStringToPermissionSet } from "@sam-monorepo/domain";
 
 type Authentication = Exclude<Awaited<ReturnType<typeof authenticate>>, false>;
 

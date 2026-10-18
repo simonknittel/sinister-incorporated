@@ -2,6 +2,7 @@
   "name": "@sam-monorepo/domain",
   "private": true,
   "type": "module",
+  "sideEffects": false,
   "files": [
     "./dist/*"
   ],
@@ -16,7 +17,8 @@
   },
   "dependencies": {
     "@sam-monorepo/database": "workspace:*",
-    "slug": "12.0.1"
+    "slug": "12.0.1",
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@types/node": "24.19.1",

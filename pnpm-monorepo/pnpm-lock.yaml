@@ -129,12 +129,6 @@ importers:
       '@sam-monorepo/mcp':
         specifier: workspace:*
         version: file:packages/mcp(@tiptap/extension-code-block@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@tiptap/extension-text-style@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4)))(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
-      '@sam-monorepo/notifications':
-        specifier: workspace:*
-        version: link:../../packages/notifications
-      '@sam-monorepo/permissions':
-        specifier: workspace:*
-        version: file:packages/permissions(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(typescript@6.0.3)
       '@sam-monorepo/wiki-editor':
         specifier: workspace:*
         version: link:../../packages/wiki-editor
@@ -449,12 +443,6 @@ importers:
       '@sam-monorepo/emails':
         specifier: workspace:*
         version: link:../../packages/emails
-      '@sam-monorepo/notifications':
-        specifier: workspace:*
-        version: link:../../packages/notifications
-      '@sam-monorepo/permissions':
-        specifier: workspace:*
-        version: link:../../packages/permissions
       aws-xray-sdk-core:
         specifier: 3.12.0
         version: 3.12.0
@@ -589,9 +577,6 @@ importers:
       '@sam-monorepo/domain':
         specifier: workspace:*
         version: link:../domain
-      '@sam-monorepo/permissions':
-        specifier: workspace:*
-        version: link:../permissions
       '@sam-monorepo/wiki-editor':
         specifier: workspace:*
         version: link:../wiki-editor
@@ -645,6 +630,9 @@ importers:
       slug:
         specifier: 12.0.1
         version: 12.0.1
+      zod:
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@types/node':
         specifier: 24.19.1
@@ -698,38 +686,6 @@ importers:
       zod:
         specifier: 4.6.5
         version: 4.6.5
-    devDependencies:
-      '@types/node':
-        specifier: 24.19.1
-        version: 24.19.1
-      typescript:
-        specifier: 7.0.2
-        version: 7.0.2
-      vite:
-        specifier: 8.3.2
-        version: 8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-      vitest:
-        specifier: 5.0.3
-        version: 5.0.3(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.1)(@vitest/coverage-v8@5.0.3)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
-
-  packages/notifications:
-    dependencies:
-      zod:
-        specifier: 4.6.5
-        version: 4.6.5
-    devDependencies:
-      '@types/node':
-        specifier: 24.19.1
-        version: 24.19.1
-      typescript:
-        specifier: 7.0.2
-        version: 7.0.2
-
-  packages/permissions:
-    dependencies:
-      '@sam-monorepo/database':
-        specifier: workspace:*
-        version: link:../database
     devDependencies:
       '@types/node':
         specifier: 24.19.1
@@ -3540,9 +3496,6 @@ packages:
 
   '@sam-monorepo/mcp@file:packages/mcp':
     resolution: {directory: packages/mcp, type: directory}
-
-  '@sam-monorepo/permissions@file:packages/permissions':
-    resolution: {directory: packages/permissions, type: directory}
 
   '@sam-monorepo/wiki-editor@file:packages/wiki-editor':
     resolution: {directory: packages/wiki-editor, type: directory}
@@ -11639,7 +11592,6 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@sam-monorepo/database': file:packages/database(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(typescript@6.0.3)
       '@sam-monorepo/domain': file:packages/domain(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(typescript@6.0.3)
-      '@sam-monorepo/permissions': file:packages/permissions(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(typescript@6.0.3)
       '@sam-monorepo/wiki-editor': file:packages/wiki-editor(@tiptap/extension-code-block@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@tiptap/extension-text-style@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4)))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       jose: 6.2.12
       zod: 4.6.5
@@ -11666,6 +11618,7 @@ snapshots:
     dependencies:
       '@sam-monorepo/database': file:packages/database(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(typescript@6.0.3)
       slug: 12.0.1
+      zod: 4.6.5
     transitivePeerDependencies:
       - pg-native
       - prisma
@@ -11685,14 +11638,6 @@ snapshots:
       - prisma
       - react
       - react-dom
-      - typescript
-
-  '@sam-monorepo/permissions@file:packages/permissions(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(typescript@6.0.3)':
-    dependencies:
-      '@sam-monorepo/database': file:packages/database(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(typescript@6.0.3)
-    transitivePeerDependencies:
-      - pg-native
-      - prisma
       - typescript
 
   '@sam-monorepo/wiki-editor@file:packages/wiki-editor(@tiptap/extension-code-block@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@tiptap/extension-text-style@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4)))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':

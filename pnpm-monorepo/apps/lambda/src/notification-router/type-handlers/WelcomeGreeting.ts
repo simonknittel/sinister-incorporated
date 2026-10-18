@@ -1,5 +1,5 @@
 import { type Citizen } from "@sam-monorepo/database";
-import { ONBOARDING_POPOVER_PATH } from "@sam-monorepo/notifications";
+import { ONBOARDING_POPOVER_PATH } from "@sam-monorepo/domain";
 import { findCitizenIdsWithPermissions } from "../../common/effectivePermissions";
 import { publishNotifications } from "../publish";
 

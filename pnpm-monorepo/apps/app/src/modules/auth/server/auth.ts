@@ -19,13 +19,11 @@ import {
 } from "@sam-monorepo/database/client";
 import {
   ACTIVE_CITIZEN_WHERE,
+  comparePermissionSets,
   getLocalDateKey,
   ORGANIZATION_TIMEZONE,
-} from "@sam-monorepo/domain";
-import {
-  comparePermissionSets,
   type PermissionSet,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import {
   getServerSession,
   type DefaultSession,

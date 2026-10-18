@@ -1,5 +1,5 @@
 import { EventVisibility } from "@sam-monorepo/database/browser";
-import { resolveEffectiveRoles } from "@sam-monorepo/permissions";
+import { resolveEffectiveRoles } from "@sam-monorepo/domain";
 import { describe, expect, test } from "vitest";
 import {
   resolveEventVisibility,

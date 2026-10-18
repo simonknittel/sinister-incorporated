@@ -1,5 +1,5 @@
 import { type Citizen } from "@sam-monorepo/database";
-import { type ParsedOnSiteNotificationPayload } from "@sam-monorepo/notifications";
+import type { ParsedOnSiteNotificationPayload } from "@sam-monorepo/domain";
 
 /**
  * A single notification for a single recipient. The `notificationType` +

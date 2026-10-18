@@ -10,7 +10,7 @@ import type { Variant } from "@sam-monorepo/database/client";
 import type {
   ResolvedWikiPagePermissions,
   WikiPageViewer,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { cache } from "react";
 import { collectWikiPageDescendants } from "../utils/collectWikiPageDescendants";
 import {

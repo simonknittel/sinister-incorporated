@@ -10,7 +10,7 @@ import {
   WikiPageNamespace,
   type Event,
 } from "@sam-monorepo/database/client";
-import { collectPositionScopeIdsForCitizen } from "@sam-monorepo/permissions";
+import { collectPositionScopeIdsForCitizen } from "@sam-monorepo/domain";
 
 /**
  * Whether the current viewer may read an event's briefing — the same rule

@@ -8,7 +8,7 @@ import {
   resolveEventWikiPagePermissions,
   type EventWikiPagePermissionSource,
   type EventWikiViewer,
-} from "./index.js";
+} from "./resolveEventWikiPagePermissions.js";
 
 const page = (
   overrides: Partial<EventWikiPagePermissionSource> & { id: string },

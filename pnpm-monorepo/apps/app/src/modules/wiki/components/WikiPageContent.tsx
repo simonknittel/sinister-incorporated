@@ -6,11 +6,11 @@ import { EditableInput } from "@/modules/common/components/form/EditableInput";
 import { Link } from "@/modules/common/components/Link";
 import { formatDate } from "@/modules/common/utils/formatDate";
 import { WikiPageAccessType } from "@sam-monorepo/database/client";
-import { getCitizenDisplayName } from "@sam-monorepo/domain";
 import {
+  getCitizenDisplayName,
   resolveWikiPageReadRoleIds,
   type ResolvedWikiPagePermissions,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import type { ReactNode } from "react";
 import { FaExternalLinkAlt, FaHistory } from "react-icons/fa";
 import { renameWikiPage } from "../actions/renameWikiPage";

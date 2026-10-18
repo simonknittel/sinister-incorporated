@@ -4,7 +4,7 @@ import {
   comparePermissionSets,
   getPermissionSetsByRoles,
   type WikiPermissionRole,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { cache } from "react";
 
 type WikiPermissionRoleWithName = WikiPermissionRole & {

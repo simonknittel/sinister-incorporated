@@ -2,7 +2,7 @@ import { getEffectiveRoles } from "@/modules/auth/server";
 import {
   comparePermissionSets,
   type WikiPageViewer,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 
 /**
  * Builds the wiki viewer of another citizen, e.g. to check whether someone

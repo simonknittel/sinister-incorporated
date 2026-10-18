@@ -1,6 +1,6 @@
 import { authenticate, getEffectiveRoles } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { type EventTemplateViewer } from "@sam-monorepo/permissions";
+import type { EventTemplateViewer } from "@sam-monorepo/domain";
 import { cache } from "react";
 
 /**

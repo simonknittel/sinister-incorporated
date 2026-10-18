@@ -1,7 +1,6 @@
 import type { Tracer } from "@opentelemetry/api";
 import type { PrismaClientType } from "@sam-monorepo/database";
-import type { AuditEventInput } from "@sam-monorepo/domain";
-import type { PermissionSet } from "@sam-monorepo/permissions";
+import type { AuditEventInput, PermissionSet } from "@sam-monorepo/domain";
 import type { JWK } from "jose";
 import type { KeyObject } from "node:crypto";
 

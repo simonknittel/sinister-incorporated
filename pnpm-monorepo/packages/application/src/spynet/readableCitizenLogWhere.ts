@@ -3,7 +3,7 @@ import type { Prisma } from "@sam-monorepo/database/client";
 import type {
   GenericCitizenLogType,
   PermissionSet,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { getNotePermissionAttributes } from "./notePermissions.js";

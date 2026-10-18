@@ -1,4 +1,4 @@
-import type { PermissionSet } from "@sam-monorepo/permissions";
+import type { PermissionSet } from "@sam-monorepo/domain";
 
 interface Authorizer {
   readonly authorize: (

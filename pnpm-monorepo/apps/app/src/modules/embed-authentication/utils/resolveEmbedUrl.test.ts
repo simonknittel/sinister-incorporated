@@ -1,5 +1,5 @@
 import { UserRole } from "@sam-monorepo/database/client";
-import type { PermissionSet } from "@sam-monorepo/permissions";
+import type { PermissionSet } from "@sam-monorepo/domain";
 import { createLocalJWKSet, jwtVerify } from "jose";
 import type { Session } from "next-auth";
 import { generateKeyPairSync } from "node:crypto";

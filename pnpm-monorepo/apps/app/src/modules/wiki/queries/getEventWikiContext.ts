@@ -19,7 +19,7 @@ import { WikiPageNamespace } from "@sam-monorepo/database/client";
 import {
   resolveEventWikiPagePermissions,
   type EventWikiViewer,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { cache } from "react";
 
 export {

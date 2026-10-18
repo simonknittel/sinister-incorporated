@@ -12,8 +12,6 @@ import * as z from "zod/mini";
  * generic renderer for unknown types, unknown versions and invalid payloads.
  */
 
-export * from "./channels.js";
-
 export const eventCreatedPayloadSchema = z.object({
   eventId: z.string(),
   eventName: z.string(),

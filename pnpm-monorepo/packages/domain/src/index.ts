@@ -46,6 +46,44 @@ export {
   LINEUP_MAX_POSITIONS_PER_LEVEL,
 } from "./events/lineupLimits.js";
 export { isAllowedWebPushEndpointUrl } from "./isAllowedWebPushEndpointUrl.js";
+export {
+  CITIZEN_CHANNEL_PREFIX,
+  ON_SITE_NOTIFICATION_CREATED_EVENT,
+  getCitizenChannelName,
+} from "./notifications/channels.js";
+export {
+  BIRTHDAY_FALLBACK_WORDING,
+  ONBOARDING_POPOVER_PATH,
+  ONBOARDING_POPOVER_SEARCH_PARAM,
+  ON_SITE_NOTIFICATION_PAYLOAD_VERSIONS,
+  birthdayPayloadSchema,
+  eventBriefingPublishedPayloadSchema,
+  eventCreatedPayloadSchema,
+  eventDeletedPayloadSchema,
+  eventLineupEnabledPayloadSchema,
+  eventParticipationAddedPayloadSchema,
+  eventParticipationRemovedPayloadSchema,
+  eventStartingPayloadSchema,
+  eventUpdatedPayloadSchema,
+  isOnSiteNotificationType,
+  newYearPayloadSchema,
+  onSiteNotificationPayloadSchemas,
+  parseOnSiteNotificationPayload,
+  penaltyEntryCreatedPayloadSchema,
+  roleAddedPayloadSchema,
+  silcTransactionCreatedPayloadSchema,
+  sincomePayoutDisbursedPayloadSchema,
+  sincomePayoutStartedPayloadSchema,
+  taskAssignmentUpdatedPayloadSchema,
+  taskCreatedPayloadSchema,
+  taskDeletedPayloadSchema,
+  welcomePayloadSchema,
+  wikiCitizenMentionedPayloadSchema,
+  wikiPageReportedPayloadSchema,
+  type OnSiteNotificationPayload,
+  type OnSiteNotificationType,
+  type ParsedOnSiteNotificationPayload,
+} from "./notifications/onSiteNotificationPayloads.js";
 export { ORG_ID } from "./ORG_ID.js";
 export { getOrganizationLogoUrl } from "./organization/organizationLogoUrl.js";
 export { CursorDirection } from "./pagination/CursorDirection.js";
@@ -63,7 +101,54 @@ export {
   type MergedCursorSource,
   type MergedCursorSourceInput,
 } from "./pagination/mergedCursor.js";
+export { comparePermissionSets } from "./permissions/comparePermissionSets.js";
+export { getPermissionSetsByRoles } from "./permissions/getPermissionSetsByRoles.js";
+export type {
+  GenericCitizenLogType,
+  PermissionSet,
+} from "./permissions/PermissionSet.js";
+export {
+  hasReachedMaxLevel,
+  resolveEffectiveRoles,
+} from "./permissions/resolveEffectiveRoles.js";
+export {
+  createEventTemplatePermissionResolver,
+  resolveEventTemplatePermissions,
+  type EventTemplatePermissionSource,
+  type EventTemplateViewer,
+  type ResolvedEventTemplatePermissions,
+} from "./permissions/resolveEventTemplatePermissions.js";
+export {
+  collectPositionScopeIdsForCitizen,
+  createEventWikiPagePermissionResolver,
+  resolveEventWikiPagePermissions,
+  type EventWikiPagePermissionSource,
+  type EventWikiViewer,
+  type ResolvedEventWikiPagePermissions,
+} from "./permissions/resolveEventWikiPagePermissions.js";
+export {
+  createFlowPermissionResolver,
+  resolveFlowPermissions,
+  type FlowPermissionSource,
+  type FlowViewer,
+  type ResolvedFlowPermissions,
+} from "./permissions/resolveFlowPermissions.js";
+export {
+  createWikiPagePermissionResolver,
+  resolveWikiPagePermissions,
+  type ResolvedWikiPagePermissions,
+  type WikiPagePermissionSource,
+  type WikiPageTierPermissions,
+  type WikiPageViewer,
+} from "./permissions/resolveWikiPagePermissions.js";
+export {
+  createWikiPageRoleResolvers,
+  resolveWikiPageReadRoleIds,
+  type WikiPermissionRole,
+} from "./permissions/resolveWikiPageRolePermissions.js";
 export { EFFECTIVE_ROLE_PERMISSIONS_SELECT } from "./permissions/roleAssignmentSelects.js";
+export { transformPermissionSetToPermissionString } from "./permissions/transformPermissionSetToPermissionString.js";
+export { transformPermissionStringToPermissionSet } from "./permissions/transformPermissionStringToPermissionSet.js";
 export {
   CYCLE_PHASE_WHERE,
   CyclePhase,

@@ -1,4 +1,4 @@
-import type { WikiPageTierPermissions } from "@sam-monorepo/permissions";
+import type { WikiPageTierPermissions } from "@sam-monorepo/domain";
 
 /** The permission tiers of a wiki page */
 export enum WikiPageAccessTier {

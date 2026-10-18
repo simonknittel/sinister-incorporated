@@ -3,13 +3,11 @@ import type { Prisma } from "@sam-monorepo/database/client";
 import {
   ACTIVE_CITIZEN_WHERE,
   EFFECTIVE_ROLE_PERMISSIONS_SELECT,
-} from "@sam-monorepo/domain";
-import {
   comparePermissionSets,
   getPermissionSetsByRoles,
   resolveEffectiveRoles,
   type PermissionSet,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 
 export interface EffectivePermissions {
   readonly roleIds: ReadonlySet<string>;

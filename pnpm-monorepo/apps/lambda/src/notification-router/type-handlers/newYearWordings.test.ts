@@ -1,4 +1,4 @@
-import { newYearPayloadSchema } from "@sam-monorepo/notifications";
+import { newYearPayloadSchema } from "@sam-monorepo/domain";
 import { describe, expect, test } from "vitest";
 import { buildWording, NEW_YEAR_WORDINGS } from "./newYearWordings";
 

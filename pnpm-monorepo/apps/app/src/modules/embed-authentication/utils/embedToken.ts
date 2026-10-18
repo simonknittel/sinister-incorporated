@@ -2,7 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import {
   transformPermissionSetToPermissionString,
   type PermissionSet,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { SignJWT } from "jose";
 import {
   EMBED_TOKEN_ALGORITHM,

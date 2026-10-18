@@ -1,4 +1,4 @@
-import type { PermissionSet } from "@sam-monorepo/permissions";
+import type { PermissionSet } from "@sam-monorepo/domain";
 import { createLocalJWKSet, decodeProtectedHeader, jwtVerify } from "jose";
 import { generateKeyPairSync } from "node:crypto";
 import { describe, expect, test } from "vitest";

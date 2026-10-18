@@ -1,14 +1,15 @@
 import { createId } from "@paralleldrive/cuid2";
 import { prisma } from "@sam-monorepo/database";
 import { WikiPageNamespace } from "@sam-monorepo/database/client";
-import { AuditEventType, getEventEndTime } from "@sam-monorepo/domain";
 import {
+  AuditEventType,
   collectPositionScopeIdsForCitizen,
   comparePermissionSets,
   createEventWikiPagePermissionResolver,
   createWikiPagePermissionResolver,
+  getEventEndTime,
   type PermissionSet,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { createAuditEvents } from "../common/audit";
 import { loadEffectivePermissions } from "../common/effectivePermissions";
 import { emitEvents } from "../common/eventbridge";

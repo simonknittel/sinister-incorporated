@@ -1,11 +1,11 @@
 import { prisma } from "@/db";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import type { Prisma } from "@sam-monorepo/database/client";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import {
+  ACTIVE_CITIZEN_WHERE,
   resolveEventTemplatePermissions,
   type ResolvedEventTemplatePermissions,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { cache } from "react";
 import {
   EventTemplateSharing,

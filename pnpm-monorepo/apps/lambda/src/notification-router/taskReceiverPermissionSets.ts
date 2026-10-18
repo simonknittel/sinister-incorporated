@@ -1,4 +1,4 @@
-import { type PermissionSet } from "@sam-monorepo/permissions";
+import type { PermissionSet } from "@sam-monorepo/domain";
 
 /**
  * The receiver of a task notification must be able to log in and to open

@@ -2,7 +2,7 @@ import { ConfirmationStatus } from "@sam-monorepo/database/browser";
 import {
   comparePermissionSets,
   transformPermissionStringToPermissionSet,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { describe, expect, test } from "vitest";
 import {
   getNotePermissionAttributes,

@@ -2,7 +2,7 @@ import {
   BIRTHDAY_FALLBACK_WORDING,
   ONBOARDING_POPOVER_PATH,
   parseOnSiteNotificationPayload,
-} from "@sam-monorepo/notifications";
+} from "@sam-monorepo/domain";
 import { NOTIFICATIONS_APPS } from "./NotificationTypes";
 import type { OnSiteNotificationRow } from "./types";
 

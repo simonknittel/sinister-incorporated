@@ -1,4 +1,4 @@
-import type { PermissionSet } from "@sam-monorepo/permissions";
+import type { PermissionSet } from "@sam-monorepo/domain";
 
 /**
  * Opts one external app into authenticated embedding: its iframe URL

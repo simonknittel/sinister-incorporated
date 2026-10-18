@@ -9,7 +9,7 @@ import {
   resolveWikiPagePermissions,
   type WikiPagePermissionSource,
   type WikiPageViewer,
-} from "./index.js";
+} from "./resolveWikiPagePermissions.js";
 
 const page = (
   overrides: Partial<WikiPagePermissionSource> & { id: string },

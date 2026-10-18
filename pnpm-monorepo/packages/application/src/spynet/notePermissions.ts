@@ -1,6 +1,6 @@
 import { ConfirmationStatus } from "@sam-monorepo/database/browser";
 import type { CitizenLog } from "@sam-monorepo/database/client";
-import type { PermissionSet } from "@sam-monorepo/permissions";
+import type { PermissionSet } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
 
 type PermissionAttributes = NonNullable<PermissionSet["attributes"]>;

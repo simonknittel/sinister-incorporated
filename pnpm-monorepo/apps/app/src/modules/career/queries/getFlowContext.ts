@@ -6,7 +6,7 @@ import {
   resolveFlowPermissions,
   type FlowViewer,
   type ResolvedFlowPermissions,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { cache } from "react";
 
 /**

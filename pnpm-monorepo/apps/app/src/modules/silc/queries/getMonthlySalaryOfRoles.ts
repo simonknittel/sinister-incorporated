@@ -1,7 +1,7 @@
 import { prisma } from "@/db";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import type { RoleAssignment } from "@sam-monorepo/database/client";
-import { hasReachedMaxLevel } from "@sam-monorepo/permissions";
+import { hasReachedMaxLevel } from "@sam-monorepo/domain";
 
 /**
  * The SILC a citizen with these role assignments receives each month. The

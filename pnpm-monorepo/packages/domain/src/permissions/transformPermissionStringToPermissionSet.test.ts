@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { transformPermissionStringToPermissionSet } from "./index.js";
+import { transformPermissionStringToPermissionSet } from "./transformPermissionStringToPermissionSet.js";
 
 describe("transform permission string to permission set", () => {
   test("splits resource and operation", () => {

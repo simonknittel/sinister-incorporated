@@ -1,7 +1,6 @@
 import { prisma } from "@/db";
 import { log } from "@/modules/logging";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
-import { hasReachedMaxLevel } from "@sam-monorepo/permissions";
+import { ACTIVE_CITIZEN_WHERE, hasReachedMaxLevel } from "@sam-monorepo/domain";
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure } from "../../trpc";
 

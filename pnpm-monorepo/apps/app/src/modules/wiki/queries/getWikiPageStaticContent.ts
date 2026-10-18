@@ -4,7 +4,7 @@ import {
   getPublicUploadUrl,
 } from "@/modules/common/utils/getPublicUploadUrl";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import type { WikiPageTierPermissions } from "@sam-monorepo/permissions";
+import type { WikiPageTierPermissions } from "@sam-monorepo/domain";
 import {
   collectWikiImageUploadIds,
   collectWikiPageIndexConfigs,

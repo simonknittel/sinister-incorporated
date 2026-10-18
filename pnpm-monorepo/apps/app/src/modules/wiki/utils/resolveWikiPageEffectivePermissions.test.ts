@@ -7,7 +7,7 @@ import {
 import type {
   WikiPagePermissionSource,
   WikiPermissionRole,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { describe, expect, test } from "vitest";
 import { resolveWikiPageEffectivePermissions } from "./resolveWikiPageEffectivePermissions";
 

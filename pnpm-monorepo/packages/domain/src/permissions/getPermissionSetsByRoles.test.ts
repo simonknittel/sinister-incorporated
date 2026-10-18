@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { getPermissionSetsByRoles } from "./index.js";
+import { getPermissionSetsByRoles } from "./getPermissionSetsByRoles.js";
 
 const roleWith = (...permissionStrings: string[]) => ({
   permissionStrings: permissionStrings.map((permissionString) => ({

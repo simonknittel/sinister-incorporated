@@ -4,7 +4,7 @@ import type { Prisma } from "@sam-monorepo/database/client";
 import {
   resolveEventTemplatePermissions,
   type ResolvedEventTemplatePermissions,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { cache } from "react";
 import { visibleEventTemplatesWhere } from "../utils/visibleEventTemplatesWhere";
 import { getEventTemplateViewer } from "./getEventTemplateViewer";

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { comparePermissionSets } from "./index.js";
+import { comparePermissionSets } from "./comparePermissionSets.js";
 
 describe("compare permission sets", () => {
   test("permission set containing no attributes vs. no permission sets", () => {

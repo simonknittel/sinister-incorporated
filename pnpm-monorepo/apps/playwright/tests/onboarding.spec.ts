@@ -34,7 +34,7 @@ const stepDialog = (page: Page, title: string) =>
 /**
  * The dashboard with the query parameter which opens the popover, the link
  * of the welcome notification (`ONBOARDING_POPOVER_PATH` of the
- * notifications package)
+ * domain package)
  */
 const POPOVER_OPENER_PATH = "/app/dashboard?erste-schritte=1";
 

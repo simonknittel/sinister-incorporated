@@ -1,6 +1,8 @@
 import { prisma } from "@sam-monorepo/database";
-import { AuditEventType } from "@sam-monorepo/domain";
-import { type OnSiteNotificationType } from "@sam-monorepo/notifications";
+import {
+  AuditEventType,
+  type OnSiteNotificationType,
+} from "@sam-monorepo/domain";
 import { createAuditEvents } from "../common/audit";
 import { log } from "../common/logger";
 import { captureAsyncFunc } from "../common/xray";

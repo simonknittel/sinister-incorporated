@@ -1,10 +1,10 @@
 import type { RoleAssignment } from "@sam-monorepo/database/client";
-import { EFFECTIVE_ROLE_PERMISSIONS_SELECT } from "@sam-monorepo/domain";
 import {
+  EFFECTIVE_ROLE_PERMISSIONS_SELECT,
   getPermissionSetsByRoles,
   resolveEffectiveRoles,
   type PermissionSet,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
 
 export interface EffectiveRoles {

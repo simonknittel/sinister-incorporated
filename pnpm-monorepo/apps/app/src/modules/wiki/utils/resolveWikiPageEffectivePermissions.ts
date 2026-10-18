@@ -4,7 +4,7 @@ import {
   createWikiPageRoleResolvers,
   type WikiPagePermissionSource,
   type WikiPermissionRole,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import type { WikiRoleReadAudience } from "./wikiReadAudienceLabel";
 
 export interface WikiEffectivePermissionEntry {

@@ -3,12 +3,10 @@ import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
   ACTIVE_CITIZEN_WHERE,
   EFFECTIVE_ROLE_PERMISSIONS_SELECT,
-} from "@sam-monorepo/domain";
-import {
   comparePermissionSets,
   getPermissionSetsByRoles,
   resolveEffectiveRoles,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { cache } from "react";
 import { getHumanResourcesRoleIds } from "./getHumanResourcesRoleIds";
 

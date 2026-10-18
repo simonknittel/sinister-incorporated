@@ -14,7 +14,7 @@ import {
 import {
   createWikiPagePermissionResolver,
   resolveWikiPageReadRoleIds,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import {

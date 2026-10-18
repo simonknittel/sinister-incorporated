@@ -1,5 +1,5 @@
 import type { Prisma } from "@sam-monorepo/database/client";
-import type { EventTemplateViewer } from "@sam-monorepo/permissions";
+import type { EventTemplateViewer } from "@sam-monorepo/domain";
 
 /**
  * The `where` fragment matching exactly the templates a viewer may see —

@@ -4,7 +4,7 @@ import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
 import { canSeeEvent } from "@/modules/events/utils/eventVisibility";
 import { log } from "@/modules/logging";
 import { channelsClient } from "@/modules/pusher/utils/channelsClient";
-import { CITIZEN_CHANNEL_PREFIX } from "@sam-monorepo/notifications";
+import { CITIZEN_CHANNEL_PREFIX } from "@sam-monorepo/domain";
 import { NextResponse } from "next/server";
 import * as z from "zod";
 

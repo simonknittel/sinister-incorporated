@@ -13,7 +13,7 @@ import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
   comparePermissionSets,
   type PermissionSet,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import { getServerSession, type Session } from "next-auth";
 import { headers } from "next/headers";
 import { forbidden, redirect } from "next/navigation";

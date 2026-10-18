@@ -4,13 +4,13 @@ import {
   ACTIVE_CITIZEN_WHERE,
   AuditEventType,
   getLocalDate,
+  hasReachedMaxLevel,
   lockSilcLedger,
   ORGANIZATION_TIMEZONE,
   toDateColumnValue,
   updateSilcBalances,
   type LocalDate,
 } from "@sam-monorepo/domain";
-import { hasReachedMaxLevel } from "@sam-monorepo/permissions";
 import { createAuditEvents } from "../common/audit";
 import { emitEvents } from "../common/eventbridge";
 import { log } from "../common/logger";

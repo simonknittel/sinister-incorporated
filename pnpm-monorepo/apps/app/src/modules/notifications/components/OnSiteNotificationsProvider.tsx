@@ -10,7 +10,7 @@ import { api } from "@/trpc/react";
 import {
   getCitizenChannelName,
   ON_SITE_NOTIFICATION_CREATED_EVENT,
-} from "@sam-monorepo/notifications/channels";
+} from "@sam-monorepo/domain";
 import {
   createContext,
   useContext,

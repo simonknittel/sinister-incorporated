@@ -9,8 +9,7 @@ import {
   type UnreadWhere,
 } from "@sam-monorepo/application";
 import type { Prisma } from "@sam-monorepo/database/client";
-import { ReadMarkerSubject } from "@sam-monorepo/domain";
-import type { PermissionSet } from "@sam-monorepo/permissions";
+import { ReadMarkerSubject, type PermissionSet } from "@sam-monorepo/domain";
 
 interface ReadMarkerSubjectDefinition {
   /** The app whose dot badge counts the new items */

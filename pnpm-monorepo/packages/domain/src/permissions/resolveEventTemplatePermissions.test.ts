@@ -4,7 +4,7 @@ import {
   resolveEventTemplatePermissions,
   type EventTemplatePermissionSource,
   type EventTemplateViewer,
-} from "./index.js";
+} from "./resolveEventTemplatePermissions.js";
 
 const OWNER_ID = "owner-citizen";
 

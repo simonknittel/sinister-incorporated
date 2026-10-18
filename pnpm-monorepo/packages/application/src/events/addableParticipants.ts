@@ -2,8 +2,8 @@ import type { Citizen } from "@sam-monorepo/database/client";
 import {
   buildEventRecipientWhere,
   NOTIFIABLE_CITIZEN_WHERE,
+  resolveEffectiveRoles,
 } from "@sam-monorepo/domain";
-import { resolveEffectiveRoles } from "@sam-monorepo/permissions";
 import type { ApplicationContext } from "../context.js";
 import {
   resolveEventVisibility,

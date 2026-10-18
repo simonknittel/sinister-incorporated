@@ -2,7 +2,7 @@ import { type OnSiteNotification } from "@sam-monorepo/database";
 import {
   getCitizenChannelName,
   ON_SITE_NOTIFICATION_CREATED_EVENT,
-} from "@sam-monorepo/notifications";
+} from "@sam-monorepo/domain";
 import Pusher from "pusher";
 import { log } from "../common/logger";
 import { env } from "./setup";

@@ -8,7 +8,7 @@ import {
   type ResolvedWikiPagePermissions,
   type WikiPageTierPermissions,
   type WikiPageViewer,
-} from "@sam-monorepo/permissions";
+} from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
