@@ -505,7 +505,7 @@ test.describe("the read tools of the MCP server", () => {
     const client = await connectMcpClient(
       (await authorizeMcpClient(citizen.user)).accessToken,
     );
-    const key = "2026-10-17-mcp-server";
+    const key = "2026-10-18-mcp-server";
 
     const list = (await callForContent(client, "list_changelog_entries")) as {
       entries: { key: string; title: string; markdown: string }[];
