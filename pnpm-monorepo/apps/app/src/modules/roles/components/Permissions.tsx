@@ -5,10 +5,10 @@ import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import Tab from "@/modules/common/components/tabs/Tab";
 import TabList from "@/modules/common/components/tabs/TabList";
 import { TabsProvider } from "@/modules/common/components/tabs/TabsContext";
+import type { ManagedRole, RoleBadge } from "@sam-monorepo/application";
 import {
   type ClassificationLevel,
   type NoteType,
-  type Role,
 } from "@sam-monorepo/database/browser";
 import {
   FaBookOpen,
@@ -35,10 +35,10 @@ import { WikiTab } from "./tabs/WikiTab";
 
 interface Props {
   readonly className?: string;
-  readonly role: Role;
+  readonly role: Pick<ManagedRole, "id">;
   readonly noteTypes: NoteType[];
   readonly classificationLevels: ClassificationLevel[];
-  readonly allRoles: readonly Pick<Role, "id" | "name">[];
+  readonly allRoles: readonly Pick<RoleBadge, "id" | "name">[];
 }
 
 export const Permissions = ({

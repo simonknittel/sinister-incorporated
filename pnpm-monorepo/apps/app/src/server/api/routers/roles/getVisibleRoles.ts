@@ -1,19 +1,14 @@
-import { log } from "@/modules/logging";
-import { getVisibleRoles as query } from "@/modules/roles/utils/getRoles";
-import { TRPCError } from "@trpc/server";
-import { protectedProcedure } from "../../trpc";
+import { getApplicationContext, toActor } from "@/modules/application";
+import { findVisibleRoleBadges } from "@sam-monorepo/application";
+import { protectedProcedure, toTrpcError } from "../../trpc";
 
-export const getVisibleRoles = protectedProcedure.query(async () => {
+export const getVisibleRoles = protectedProcedure.query(async ({ ctx }) => {
   try {
-    return await query();
+    return await findVisibleRoleBadges(
+      getApplicationContext(),
+      await toActor(ctx.session),
+    );
   } catch (error) {
-    log.error("Failed to fetch visible roles", {
-      error,
-    });
-
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Failed to fetch visible roles",
-    });
+    throw toTrpcError(error, "Failed to fetch visible roles");
   }
 });

@@ -3,6 +3,7 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
+import { RoleErrorMessage } from "./roleErrors.js";
 import {
   ROLE_OUTPUT_SELECT,
   toRoleOutput,
@@ -45,7 +46,7 @@ export const getRole = async (
   input: GetRoleInput,
 ): Promise<GetRoleOutput> => {
   if (!isRoleVisible(actor, input.role_id))
-    throw new NotFoundError("The role does not exist");
+    throw new NotFoundError(RoleErrorMessage.NotFound);
 
   const role = await context.prisma.role.findUnique({
     where: { id: input.role_id },
@@ -59,7 +60,7 @@ export const getRole = async (
       },
     },
   });
-  if (!role) throw new NotFoundError("The role does not exist");
+  if (!role) throw new NotFoundError(RoleErrorMessage.NotFound);
 
   const canManageRoles = actor.authorize("role", "manage");
 

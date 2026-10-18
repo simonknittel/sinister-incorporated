@@ -1,20 +1,20 @@
-import { prisma } from "@/db";
 import type { ActivitySource } from "@/modules/activity/utils/activityEntry";
 import type { ActivityFilters } from "@/modules/activity/utils/activityFilterParams";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  findRoleAssignmentChanges,
+  findRoleAssignmentLevelChanges,
+  type RoleAssignmentHistoryInput,
+} from "@sam-monorepo/application";
 import {
   RoleAssignmentChangeType,
   RoleAssignmentLevelChangeType,
   type Citizen,
 } from "@sam-monorepo/database/client";
-import {
-  buildCursorConditions,
-  cursorOrderBy,
-  type MergedCursorSourceInput,
-} from "@sam-monorepo/domain";
+import type { MergedCursorSourceInput } from "@sam-monorepo/domain";
 import { SingleRoleBadge } from "../components/SingleRoleBadge";
-import { getVisibleRoles } from "../utils/getRoles";
 import { RoleActivitySourceKey } from "./roleActivityTypes";
 
 interface Input {
@@ -25,73 +25,27 @@ interface Input {
   readonly filters?: ActivityFilters;
 }
 
-const CHANGE_SELECT = {
-  id: true,
-  roleId: true,
-  type: true,
-  createdAt: true,
-  citizen: {
-    select: {
-      id: true,
-      handle: true,
-      deletedAt: true,
-    },
-  },
-  createdBy: {
-    select: {
-      id: true,
-      handle: true,
-      deletedAt: true,
-    },
-  },
-} as const;
-
-/**
- * The conditions both role sources share. Which roles the reader may see is
- * the whole permission gate here, and it runs as part of the query rather
- * than afterwards so a page never comes back short of entries.
- */
-const buildWhere = (
-  visibleRoleIds: string[],
+const toHistoryInput = (
   { citizenId, filters }: Input,
-) => ({
-  roleId: { in: visibleRoleIds },
-  ...(citizenId ? { citizenId } : {}),
-  ...(filters?.actorIds ? { createdById: { in: filters.actorIds } } : {}),
-  ...(filters && Object.keys(filters.createdAt).length > 0
-    ? { createdAt: filters.createdAt }
-    : {}),
+  sourceKey: RoleActivitySourceKey,
+  sourceInput: MergedCursorSourceInput,
+): RoleAssignmentHistoryInput => ({
+  ...sourceInput,
+  sourceKey,
+  citizenId,
+  actorIds: filters?.actorIds,
+  createdAt: filters?.createdAt,
 });
-
-/** `null` when the reader may not see a single role — nothing to query then. */
-const getVisibleRoleIds = async () => {
-  const visibleRoles = await getVisibleRoles();
-  return visibleRoles.length > 0 ? visibleRoles.map((role) => role.id) : null;
-};
 
 export const createRoleAssignmentSource = (input: Input = {}): ActivitySource =>
   withTrace(
     "roleAssignmentActivitySource",
-    async ({ position, direction, take }: MergedCursorSourceInput) => {
-      const visibleRoleIds = await getVisibleRoleIds();
-      if (!visibleRoleIds) return [];
-
-      const changes = await prisma.roleAssignmentChange.findMany({
-        where: {
-          AND: [
-            buildWhere(visibleRoleIds, input),
-            ...buildCursorConditions(
-              position,
-              RoleActivitySourceKey.Assignment,
-              direction,
-              "createdAt",
-            ),
-          ],
-        },
-        orderBy: cursorOrderBy(direction, "createdAt"),
-        take,
-        select: CHANGE_SELECT,
-      });
+    async (sourceInput: MergedCursorSourceInput) => {
+      const changes = await findRoleAssignmentChanges(
+        getApplicationContext(),
+        await getRequestActor(),
+        toHistoryInput(input, RoleActivitySourceKey.Assignment, sourceInput),
+      );
 
       return changes.map((change) => ({
         sourceKey: RoleActivitySourceKey.Assignment,
@@ -111,26 +65,16 @@ export const createRoleAssignmentLevelSource = (
 ): ActivitySource =>
   withTrace(
     "roleAssignmentLevelActivitySource",
-    async ({ position, direction, take }: MergedCursorSourceInput) => {
-      const visibleRoleIds = await getVisibleRoleIds();
-      if (!visibleRoleIds) return [];
-
-      const changes = await prisma.roleAssignmentLevelChange.findMany({
-        where: {
-          AND: [
-            buildWhere(visibleRoleIds, input),
-            ...buildCursorConditions(
-              position,
-              RoleActivitySourceKey.AssignmentLevel,
-              direction,
-              "createdAt",
-            ),
-          ],
-        },
-        orderBy: cursorOrderBy(direction, "createdAt"),
-        take,
-        select: CHANGE_SELECT,
-      });
+    async (sourceInput: MergedCursorSourceInput) => {
+      const changes = await findRoleAssignmentLevelChanges(
+        getApplicationContext(),
+        await getRequestActor(),
+        toHistoryInput(
+          input,
+          RoleActivitySourceKey.AssignmentLevel,
+          sourceInput,
+        ),
+      );
 
       return changes.map((change) => ({
         sourceKey: RoleActivitySourceKey.AssignmentLevel,

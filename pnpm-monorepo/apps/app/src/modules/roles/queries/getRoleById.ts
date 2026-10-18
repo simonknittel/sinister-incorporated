@@ -1,23 +1,26 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import type { Role } from "@sam-monorepo/database/client";
+import { findManagedRole } from "@sam-monorepo/application";
 import { cache } from "react";
 
 /**
- * Use the methods from `getRoles.ts` preferably for correct permission management.
+ * The role of the role pages, or null when it does not exist. Requires
+ * `role;manage`.
  */
 export const getRoleById = cache(
-  withTrace("getRoleById", async (id: Role["id"]) => {
-    return prisma.role.findUnique({
-      where: {
+  withTrace("getRoleById", async (id: string) => {
+    try {
+      return await findManagedRole(
+        getApplicationContext(),
+        await getRequestActor(),
         id,
-      },
-      include: {
-        permissionStrings: { select: { permissionString: true } },
-        inherits: { select: { id: true } },
-        icon: { select: { id: true, mimeType: true } },
-        thumbnail: { select: { id: true, mimeType: true } },
-      },
-    });
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
   }),
 );

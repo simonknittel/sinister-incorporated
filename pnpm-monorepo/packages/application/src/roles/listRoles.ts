@@ -7,12 +7,11 @@ import {
   paginateByCursor,
 } from "../pagination.js";
 import {
-  compareRoleNames,
   ROLE_OUTPUT_SELECT,
   toRoleOutput,
   type RoleOutput,
 } from "./roleOutput.js";
-import { isRoleVisible } from "./roleVisibility.js";
+import { compareRoleNames, isRoleVisible } from "./roleVisibility.js";
 
 /** The role names are much shorter */
 const MAXIMUM_QUERY_LENGTH = 100;

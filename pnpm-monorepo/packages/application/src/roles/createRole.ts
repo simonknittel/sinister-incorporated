@@ -1,0 +1,64 @@
+import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
+import { AuditEventType } from "@sam-monorepo/domain";
+import * as z from "zod";
+import { requirePermission, type Actor } from "../actor.js";
+import type { ApplicationContext } from "../context.js";
+import { ValidationError } from "../errors.js";
+import { withSpan } from "../withSpan.js";
+import { RoleErrorMessage } from "./roleErrors.js";
+import { ROLE_NAME_MAX_LENGTH } from "./roleInputSchemas.js";
+
+export const createRoleInputSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1)
+    .max(ROLE_NAME_MAX_LENGTH)
+    .describe("The name of the new role. Each role has a different name."),
+});
+
+export type CreateRoleInput = z.infer<typeof createRoleInputSchema>;
+
+export interface CreateRoleOutput {
+  readonly id: string;
+  readonly name: string;
+}
+
+/**
+ * Creates a role without permissions. Requires `role;manage`.
+ *
+ * @throws ValidationError when a role with the name exists already
+ */
+export const createRole = (
+  context: ApplicationContext,
+  actor: Actor,
+  input: CreateRoleInput,
+): Promise<CreateRoleOutput> =>
+  withSpan(context, "createRole", async () => {
+    requirePermission(actor, "role", "manage");
+
+    let role;
+    try {
+      role = await context.prisma.role.create({
+        data: { name: input.name },
+        select: { id: true, name: true },
+      });
+    } catch (error) {
+      if (isPrismaError(error, PrismaErrorCode.UniqueConstraintFailed))
+        throw new ValidationError(RoleErrorMessage.NameTaken, {
+          cause: error,
+        });
+
+      throw error;
+    }
+
+    await context.audit.create([
+      {
+        type: AuditEventType.ROLE_CREATED,
+        data: { roleId: role.id, name: role.name },
+        createdById: actor.userId,
+      },
+    ]);
+
+    return role;
+  });

@@ -4,17 +4,6 @@ import { InheritanceMatrixGrid } from "./InheritanceMatrixGrid";
 export const InheritanceMatrix = async () => {
   const roles = await getRolesWithInheritance();
 
-  /**
-   * Mapped down to the exact shape the grid renders, so the RSC payload
-   * carries each role once and nothing else.
-   */
-  const matrixRoles = roles.map((role) => ({
-    id: role.id,
-    name: role.name,
-    icon: role.icon,
-    inheritedRoleIds: role.inherits.map((inheritedRole) => inheritedRole.id),
-  }));
-
   return (
     <section className="overflow-x-scroll rounded-primary bg-secondary p-4 lg:p-6">
       <p className="max-w-prose">
@@ -23,7 +12,7 @@ export const InheritanceMatrix = async () => {
         nicht berücksichtigt.
       </p>
 
-      <InheritanceMatrixGrid roles={matrixRoles} />
+      <InheritanceMatrixGrid roles={roles} />
     </section>
   );
 };

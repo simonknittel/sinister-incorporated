@@ -55,13 +55,13 @@ export const RolesTable = async ({ className, searchParams }: Props) => {
     }
     switch (filter) {
       case "has-inheritance":
-        return role._count.inherits > 0;
+        return role.inheritanceCount > 0;
       case "has-level":
         return role.maxLevel != null;
       case "has-citizen":
-        return role._count.assignments > 0;
+        return role.citizenCount > 0;
       case "no-citizen":
-        return role._count.assignments === 0;
+        return role.citizenCount === 0;
       default:
         return true;
     }
@@ -74,16 +74,13 @@ export const RolesTable = async ({ className, searchParams }: Props) => {
       case "name-desc":
         return sortDescAndNullLast(a.name, b.name);
       case "inherits-desc":
-        return sortDescAndNullLast(a._count.inherits, b._count.inherits);
+        return sortDescAndNullLast(a.inheritanceCount, b.inheritanceCount);
       case "inherits-asc":
-        return sortAscWithAndNullLast(a._count.inherits, b._count.inherits);
+        return sortAscWithAndNullLast(a.inheritanceCount, b.inheritanceCount);
       case "citizen-desc":
-        return sortDescAndNullLast(a._count.assignments, b._count.assignments);
+        return sortDescAndNullLast(a.citizenCount, b.citizenCount);
       case "citizen-asc":
-        return sortAscWithAndNullLast(
-          a._count.assignments,
-          b._count.assignments,
-        );
+        return sortAscWithAndNullLast(a.citizenCount, b.citizenCount);
       default:
         throw new Error(`Unknown sort: ${sort satisfies never}`);
     }
@@ -162,7 +159,7 @@ export const RolesTable = async ({ className, searchParams }: Props) => {
                   className="flex h-8 items-center justify-center gap-2 rounded-secondary px-2 hover:bg-white/10"
                   prefetch={false}
                 >
-                  {role._count.inherits > 0 ? role._count.inherits : null}
+                  {role.inheritanceCount > 0 ? role.inheritanceCount : null}
                 </Link>
               </td>
 
@@ -178,7 +175,7 @@ export const RolesTable = async ({ className, searchParams }: Props) => {
                   className="flex h-8 items-center justify-center gap-2 rounded-secondary px-2 hover:bg-white/10"
                   prefetch={false}
                 >
-                  {role._count.assignments > 0 ? role._count.assignments : null}
+                  {role.citizenCount > 0 ? role.citizenCount : null}
                 </Link>
               </td>
             </TRow>

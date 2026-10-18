@@ -4,7 +4,7 @@ import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { deletePermissionStringsReferencing } from "@/modules/roles/utils/deletePermissionStringsReferencing";
+import { deletePermissionStringsReferencing } from "@sam-monorepo/application";
 import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
 import { refresh } from "next/cache";
 import * as z from "zod";
@@ -28,7 +28,11 @@ export const deleteClassificationLevel = createAuthenticatedAction(
         prisma.classificationLevel.delete({
           where: { id: data.id },
         }),
-        deletePermissionStringsReferencing("classificationLevelId", data.id),
+        deletePermissionStringsReferencing(
+          prisma,
+          "classificationLevelId",
+          data.id,
+        ),
       ])
       .then(([classificationLevel]) => classificationLevel)
       .catch((error: unknown) => {

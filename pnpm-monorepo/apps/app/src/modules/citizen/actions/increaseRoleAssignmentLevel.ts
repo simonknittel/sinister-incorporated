@@ -1,20 +1,44 @@
 "use server";
 
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { RoleAssignmentLevelChangeType } from "@sam-monorepo/database/client";
-import { createRoleAssignmentLevelAction } from "../utils/createRoleAssignmentLevelAction";
+import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import { getRoleAssignmentErrorTexts } from "@/modules/roles/utils/roleErrorTexts";
+import {
+  changeRoleAssignmentLevelInputSchema,
+  increaseRoleAssignmentLevel as increaseRoleAssignmentLevelUseCase,
+} from "@sam-monorepo/application";
+import { refresh } from "next/cache";
 
-export const increaseRoleAssignmentLevel = createRoleAssignmentLevelAction(
+export const increaseRoleAssignmentLevel = createAuthenticatedAction(
   "increaseRoleAssignmentLevel",
+  changeRoleAssignmentLevelInputSchema,
+  async (formData, authentication, data, t) => {
+    try {
+      await increaseRoleAssignmentLevelUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: getRoleAssignmentErrorTexts(t),
+      });
+    }
+
+    refresh();
+
+    return { success: t("Common.successfullySaved") };
+  },
   {
-    permission: "assign",
-    changeType: RoleAssignmentLevelChangeType.UP,
-    auditEventType: AuditEventType.ROLE_ASSIGNMENT_LEVEL_INCREASED,
-    nextLevel: (roleAssignment) =>
-      roleAssignment.currentLevel === null
-        ? 1
-        : roleAssignment.currentLevel >= roleAssignment.role.maxLevel
-          ? roleAssignment.currentLevel
-          : { increment: 1 },
+    parseFormData: (formData) => ({
+      citizen_id: formData.get("citizenId"),
+      role_id: formData.get("roleId"),
+    }),
   },
 );

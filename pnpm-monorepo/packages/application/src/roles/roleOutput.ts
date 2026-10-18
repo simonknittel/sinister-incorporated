@@ -56,9 +56,3 @@ export const toRoleOutput = (
     .map((inheritedRole) => inheritedRole.id)
     .filter((inheritedRoleId) => isRoleVisible(actor, inheritedRoleId)),
 });
-
-/** The order of the role picker of the app */
-export const compareRoleNames = (
-  first: { readonly name: string },
-  second: { readonly name: string },
-) => first.name.localeCompare(second.name);

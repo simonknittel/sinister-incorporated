@@ -1,7 +1,12 @@
 import { env } from "@/env";
-import { authorize } from "@/modules/auth/server";
+import { getApplicationContext, toActor } from "@/modules/application";
 import { isOpenAIEnabled } from "@/modules/common/utils/isOpenAIEnabled";
 import { log } from "@/modules/logging";
+import {
+  listRoles,
+  MAXIMUM_PAGE_LIMIT,
+  type Actor,
+} from "@sam-monorepo/application";
 import { TRPCError } from "@trpc/server";
 import type { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import * as z from "zod";
@@ -25,9 +30,31 @@ const responseSchema = z.object({
   roleNames: z.array(z.string()).max(MAXIMUM_ROLE_NAMES),
 });
 
+/**
+ * The names of the roles that the actor can see, sorted by name. A hidden
+ * role name never goes to the model.
+ */
+const listVisibleRoleNames = async (actor: Actor) => {
+  const roleNames: string[] = [];
+
+  let cursor: string | undefined;
+  do {
+    const page = await listRoles(getApplicationContext(), actor, {
+      limit: MAXIMUM_PAGE_LIMIT,
+      cursor,
+    });
+
+    roleNames.push(...page.roles.map((role) => role.name));
+    cursor = page.next_cursor ?? undefined;
+  } while (cursor);
+
+  return roleNames;
+};
+
 export const getRoleNameSuggestions = protectedProcedure.query(
   async ({ ctx }) => {
-    if (!(await authorize(ctx.session, "role", "manage")))
+    const actor = await toActor(ctx.session);
+    if (!actor.authorize("role", "manage"))
       throw new TRPCError({ code: "FORBIDDEN" });
 
     if (!(await isOpenAIEnabled()))
@@ -36,12 +63,7 @@ export const getRoleNameSuggestions = protectedProcedure.query(
         message: "Generation is disabled",
       });
 
-    const existingRoles = await ctx.prisma.role.findMany({
-      select: {
-        name: true,
-      },
-    });
-    const existingRoleNames = existingRoles.map((role) => role.name);
+    const existingRoleNames = await listVisibleRoleNames(actor);
 
     const defaultHeaders = new Headers();
     if (env.OPENAI_EXTRA_API_KEY)

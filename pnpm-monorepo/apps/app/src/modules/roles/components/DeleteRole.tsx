@@ -2,13 +2,13 @@ import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import { Button2 } from "@/modules/common/components/Button2";
 import { ConfirmActionButton } from "@/modules/common/components/ConfirmActionButton";
 import { Tile, TileVariant } from "@/modules/common/components/Tile";
-import type { Role } from "@sam-monorepo/database/client";
+import type { ManagedRole } from "@sam-monorepo/application";
 import { FaTrash } from "react-icons/fa";
 import { deleteRole } from "../actions/deleteRole";
 
 interface Props {
   readonly className?: string;
-  readonly role: Pick<Role, "id" | "name">;
+  readonly role: Pick<ManagedRole, "id" | "name">;
 }
 
 export const DeleteRole = ({ className, role }: Props) => {

@@ -1,20 +1,44 @@
 "use server";
 
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { RoleAssignmentLevelChangeType } from "@sam-monorepo/database/client";
-import { createRoleAssignmentLevelAction } from "../utils/createRoleAssignmentLevelAction";
+import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import { getRoleAssignmentErrorTexts } from "@/modules/roles/utils/roleErrorTexts";
+import {
+  changeRoleAssignmentLevelInputSchema,
+  decreaseRoleAssignmentLevel as decreaseRoleAssignmentLevelUseCase,
+} from "@sam-monorepo/application";
+import { refresh } from "next/cache";
 
-export const decreaseRoleAssignmentLevel = createRoleAssignmentLevelAction(
+export const decreaseRoleAssignmentLevel = createAuthenticatedAction(
   "decreaseRoleAssignmentLevel",
+  changeRoleAssignmentLevelInputSchema,
+  async (formData, authentication, data, t) => {
+    try {
+      await decreaseRoleAssignmentLevelUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: getRoleAssignmentErrorTexts(t),
+      });
+    }
+
+    refresh();
+
+    return { success: t("Common.successfullySaved") };
+  },
   {
-    permission: "dismiss",
-    changeType: RoleAssignmentLevelChangeType.DOWN,
-    auditEventType: AuditEventType.ROLE_ASSIGNMENT_LEVEL_DECREASED,
-    nextLevel: (roleAssignment) =>
-      roleAssignment.currentLevel
-        ? roleAssignment.currentLevel > 0
-          ? { decrement: 1 }
-          : 0
-        : 0,
+    parseFormData: (formData) => ({
+      citizen_id: formData.get("citizenId"),
+      role_id: formData.get("roleId"),
+    }),
   },
 );

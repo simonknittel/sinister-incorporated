@@ -1,6 +1,11 @@
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { compareRoleNames } from "./roleOutput.js";
+
+/** The order of the role picker of the app */
+export const compareRoleNames = (
+  first: { readonly name: string },
+  second: { readonly name: string },
+) => first.name.localeCompare(second.name);
 
 /**
  * Whether the actor can see the role: `otherRole;read` with the id of the

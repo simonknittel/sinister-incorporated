@@ -3,17 +3,15 @@
 import { useAction } from "@/modules/actions/utils/useAction";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { SingleRoleBadge } from "@/modules/roles/components/SingleRoleBadge";
-import type { Role } from "@sam-monorepo/database/browser";
+import type { ManagedRole, RoleBadge } from "@sam-monorepo/application";
 import clsx from "clsx";
 import { FaSave } from "react-icons/fa";
 import { updateRoleInheritance } from "../actions/updateRoleInheritance";
 
 interface Props {
   readonly className?: string;
-  readonly currentRole: Pick<Role, "id"> & {
-    readonly inherits: readonly Pick<Role, "id">[];
-  };
-  readonly roles: readonly Pick<Role, "id" | "name">[];
+  readonly currentRole: Pick<ManagedRole, "id" | "inherits">;
+  readonly roles: readonly Pick<RoleBadge, "id" | "name">[];
 }
 
 export const InheritanceForm = ({ className, currentRole, roles }: Props) => {

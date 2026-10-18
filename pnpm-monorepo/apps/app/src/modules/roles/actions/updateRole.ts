@@ -1,106 +1,54 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  updateRoleInputSchema,
+  updateRole as updateRoleUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
+import { ROLE_ERROR_TEXTS } from "../utils/roleErrorTexts";
 
-const schema = z.object({
-  id: z.cuid(),
-  name: z.string().min(1).max(255),
-  description: z.string().max(2048).nullish(),
-  maxAgeDays: z.coerce.number().min(1).max(10_000).nullish(),
-  assignAfterInactiveDays: z.coerce.number().min(1).max(10_000).nullish(),
-  maxLevel: z.coerce.number().min(1).max(100).nullish(),
-});
+/** An empty number field removes the value */
+const parseOptionalNumber = (value: FormDataEntryValue | null) =>
+  value ? Number(value) : null;
 
 export const updateRole = createAuthenticatedAction(
   "updateRole",
-  schema,
+  updateRoleInputSchema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("role", "manage")))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Update role
-     */
-    const existingRole = await prisma.role.findUnique({
-      where: {
-        id: data.id,
-      },
-      select: {
-        name: true,
-        description: true,
-        maxAgeDays: true,
-        assignAfterInactiveDays: true,
-      },
-    });
-    if (!existingRole) {
-      /** A different user deleted the role, and the page must show it */
-      return rejectConflict(t("Common.notFound"), formData);
+    try {
+      await updateRoleUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: ROLE_ERROR_TEXTS,
+      });
     }
-
-    const updatedRole = await prisma.role.update({
-      where: {
-        id: data.id,
-      },
-      data: {
-        name: data.name,
-        description: data.description,
-        maxAgeDays: data.maxAgeDays,
-        assignAfterInactiveDays: data.assignAfterInactiveDays,
-        maxLevel: data.maxLevel,
-      },
-    });
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.ROLE_UPDATED_V3,
-        data: {
-          roleId: updatedRole.id,
-          previousName: existingRole.name,
-          newName: updatedRole.name,
-          previousMaxAgeDays: existingRole.maxAgeDays ?? null,
-          newMaxAgeDays: updatedRole.maxAgeDays,
-          previousAssignAfterInactiveDays:
-            existingRole.assignAfterInactiveDays ?? null,
-          newAssignAfterInactiveDays: updatedRole.assignAfterInactiveDays,
-          previousDescription: existingRole.description ?? null,
-          newDescription: updatedRole.description,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
-    return {
-      success: t("Common.successfullySaved"),
-    };
+    return { success: t("Common.successfullySaved") };
   },
   {
     parseFormData: (formData) => ({
-      id: formData.get("id"),
+      role_id: formData.get("id"),
       name: formData.get("name"),
       description: formData.get("description") || null,
-      maxAgeDays: formData.get("maxAgeDays")
-        ? Number(formData.get("maxAgeDays"))
-        : null,
-      assignAfterInactiveDays: formData.get("assignAfterInactiveDays")
-        ? Number(formData.get("assignAfterInactiveDays"))
-        : null,
-      maxLevel: formData.get("maxLevel")
-        ? Number(formData.get("maxLevel"))
-        : null,
+      max_age_days: parseOptionalNumber(formData.get("maxAgeDays")),
+      assign_after_inactive_days: parseOptionalNumber(
+        formData.get("assignAfterInactiveDays"),
+      ),
+      max_level: parseOptionalNumber(formData.get("maxLevel")),
     }),
   },
 );

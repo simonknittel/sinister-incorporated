@@ -1,113 +1,67 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import type { Prisma } from "@sam-monorepo/database/client";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
+import {
+  findAllRoleBadges,
+  findInheritanceMatrixRoles,
+  findPermissionMatrixRoles,
+  findRoleTableRows,
+  type RoleBadge,
+} from "@sam-monorepo/application";
 import { cache } from "react";
 
-/**
- * Everything a role badge renders. The result is cached behind the app
- * layout and serialized into the client roles context on every /app page,
- * so the shape stays at badge level: no permission strings, no inherited
- * roles, and no assignment row per citizen and role.
- */
-const ROLE_BADGE_SELECT = {
-  id: true,
-  name: true,
-  description: true,
-  maxLevel: true,
-  iconId: true,
-  icon: { select: { id: true, mimeType: true } },
-  thumbnail: { select: { id: true, mimeType: true } },
-} as const satisfies Prisma.RoleSelect;
-
-export type BadgeRole = Prisma.RoleGetPayload<{
-  select: typeof ROLE_BADGE_SELECT;
-}>;
+export type BadgeRole = RoleBadge;
 
 /**
- * Prefer the wrappers in `modules/roles/utils/getRoles.ts`: they apply the
- * viewer's `otherRole;read` permission, which this query does not.
+ * The badges of all roles. Prefer the wrappers in
+ * `modules/roles/utils/getRoles.ts`: they apply the `otherRole;read`
+ * permission of the viewer, which this query does not.
  */
 export const getRoles = cache(
-  withTrace("getRoles", async () =>
-    prisma.role.findMany({
-      orderBy: {
-        name: "asc",
-      },
-      select: ROLE_BADGE_SELECT,
-    }),
-  ),
+  withTrace("getRoles", () => findAllRoleBadges(getApplicationContext())),
 );
 
-/**
- * The permission matrix: the role link column plus the permission strings
- * behind its checkboxes. Narrower than the badge shape on purpose — the
- * matrix is the only consumer, and it renders neither description, level
- * nor thumbnail.
- */
+/** The roles of the permission matrix. Requires `role;manage`. */
 export const getRolesWithPermissionStrings = cache(
-  withTrace("getRolesWithPermissionStrings", async () =>
-    prisma.role.findMany({
-      orderBy: {
-        name: "asc",
-      },
-      select: {
-        id: true,
-        name: true,
-        icon: { select: { id: true, mimeType: true } },
-        permissionStrings: { select: { permissionString: true } },
-      },
-    }),
-  ),
+  withTrace("getRolesWithPermissionStrings", async () => {
+    try {
+      return await findPermissionMatrixRoles(
+        getApplicationContext(),
+        await getRequestActor(),
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  }),
 );
 
-/**
- * The inheritance matrix: the role link column plus the ids of the roles
- * behind its checkboxes. The same role list carries the rows and the
- * columns, so both axes always agree on the order.
- */
+/** The roles of the inheritance matrix. Requires `role;manage`. */
 export const getRolesWithInheritance = cache(
-  withTrace("getRolesWithInheritance", async () =>
-    prisma.role.findMany({
-      orderBy: {
-        name: "asc",
-      },
-      select: {
-        id: true,
-        name: true,
-        icon: { select: { id: true, mimeType: true } },
-        inherits: { select: { id: true } },
-      },
-    }),
-  ),
+  withTrace("getRolesWithInheritance", async () => {
+    try {
+      return await findInheritanceMatrixRoles(
+        getApplicationContext(),
+        await getRequestActor(),
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  }),
 );
 
-/**
- * The role administration table: its own columns plus the two relation
- * counts it filters and sorts by. Counting in SQL keeps the assignment rows
- * of every citizen out of the page.
- */
+/** The rows of the role administration table. Requires `role;manage`. */
 export const getRolesForTable = cache(
-  withTrace("getRolesForTable", async () =>
-    prisma.role.findMany({
-      orderBy: {
-        name: "asc",
-      },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        maxLevel: true,
-        maxAgeDays: true,
-        assignAfterInactiveDays: true,
-        icon: { select: { id: true, mimeType: true } },
-        _count: {
-          select: {
-            inherits: true,
-            assignments: { where: { citizen: ACTIVE_CITIZEN_WHERE } },
-          },
-        },
-      },
-    }),
-  ),
+  withTrace("getRolesForTable", async () => {
+    try {
+      return await findRoleTableRows(
+        getApplicationContext(),
+        await getRequestActor(),
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  }),
 );

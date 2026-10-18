@@ -1,91 +1,51 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  setRolePermission,
+  setRolePermissionInputSchema,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import * as z from "zod";
+import { ROLE_ERROR_TEXTS } from "../utils/roleErrorTexts";
 
-const schema = z.object({
-  roleId: z.cuid(),
-  permissionString: z
-    .string()
-    .trim()
-    .min(1)
-    .regex(/^[\w\-]+;[\w\-]+(?:;[\w\-]+=[\w\-\*]+)*$/),
-  checked: z.stringbool(),
+/** The checkbox of the matrix sends its state as text */
+const schema = setRolePermissionInputSchema.extend({
+  enabled: z.stringbool(),
 });
 
 export const updateSingleRolePermission = createAuthenticatedAction(
   "updateSingleRolePermission",
   schema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("role", "manage")))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Update role. The update fails with P2025 when the role is gone.
-     */
-    const isUpdated = await prisma.role
-      .update({
-        where: {
-          id: data.roleId,
-        },
-        data: {
-          permissionStrings: data.checked
-            ? {
-                createMany: {
-                  data: { permissionString: data.permissionString },
-                  // A double click or a second admin must not create a duplicate
-                  skipDuplicates: true,
-                },
-              }
-            : {
-                deleteMany: { permissionString: data.permissionString },
-              },
-        },
-        select: { id: true },
-      })
-      .then(() => true)
-      .catch((error: unknown) => {
-        if (isPrismaError(error, PrismaErrorCode.RecordNotFound)) return false;
-        throw error;
+    try {
+      await setRolePermission(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: ROLE_ERROR_TEXTS,
       });
+    }
 
-    /**
-     * Also for the error below: then a different user deleted the role, and
-     * the page must show it.
-     */
     refresh();
 
-    if (!isUpdated)
-      return {
-        error: t("Common.notFound"),
-        requestPayload: formData,
-      };
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.ROLE_PERMISSION_TOGGLED,
-        data: {
-          roleId: data.roleId,
-          permissionString: data.permissionString,
-          enabled: data.checked,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
-    return {
-      success: t("Common.successfullySaved"),
-    };
+    return { success: t("Common.successfullySaved") };
+  },
+  {
+    parseFormData: (formData) => ({
+      role_id: formData.get("roleId"),
+      permission_string: formData.get("permissionString"),
+      enabled: formData.get("checked"),
+    }),
   },
 );

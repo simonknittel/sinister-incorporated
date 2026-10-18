@@ -7,7 +7,7 @@ import { TextInput } from "@/modules/common/components/form/TextInput";
 import { ImageUpload } from "@/modules/common/components/ImageUpload";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { Tile } from "@/modules/common/components/Tile";
-import type { Role, Upload } from "@sam-monorepo/database/browser";
+import type { ManagedRole } from "@sam-monorepo/application";
 import clsx from "clsx";
 import { FaSave } from "react-icons/fa";
 import { updateRole } from "../actions/updateRole";
@@ -15,9 +15,18 @@ import { DeleteRole } from "./DeleteRole";
 
 interface Props {
   readonly className?: string;
-  readonly role: Role & {
-    readonly icon: Pick<Upload, "id" | "mimeType"> | null;
-  };
+  readonly role: Pick<
+    ManagedRole,
+    | "id"
+    | "name"
+    | "description"
+    | "maxAgeDays"
+    | "assignAfterInactiveDays"
+    | "maxLevel"
+    | "iconId"
+    | "thumbnailId"
+    | "icon"
+  >;
 }
 
 export const OverviewTab = ({ className, role }: Props) => {
