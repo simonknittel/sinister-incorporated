@@ -1,7 +1,7 @@
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
 import { AuditEventType } from "@sam-monorepo/domain";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { truncateAllTables } from "../../test/database";
 import { countUniqueLogins } from "./countUniqueLogins";
 
 beforeEach(async () => {

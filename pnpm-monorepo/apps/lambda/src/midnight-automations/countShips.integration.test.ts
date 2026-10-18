@@ -1,3 +1,4 @@
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
 import {
   OrganizationMembershipType,
@@ -5,7 +6,6 @@ import {
 } from "@sam-monorepo/database/client";
 import { ORG_ID } from "@sam-monorepo/domain";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { truncateAllTables } from "../../test/database";
 import { countShips } from "./countShips";
 
 /**

@@ -1,3 +1,5 @@
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
+import { runAgainstLockHolder } from "@sam-monorepo/application/test/locks";
 import { prisma, type Prisma } from "@sam-monorepo/database";
 import {
   bookPositiveBalancesAway,
@@ -5,8 +7,6 @@ import {
   lockSilcLedger,
 } from "@sam-monorepo/domain";
 import { beforeEach, describe, expect, test } from "vitest";
-import { truncateAllTables } from "../../test/database";
-import { runAgainstLockHolder } from "../../test/locks";
 
 const createCitizenWithLedger = async (
   handle: string,

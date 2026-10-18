@@ -3,6 +3,7 @@ import {
   ListObjectsV2Command,
   type DeleteObjectsCommandOutput,
 } from "@aws-sdk/client-s3";
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
 import {
   WikiPageSnapshotKind,
@@ -10,7 +11,6 @@ import {
 } from "@sam-monorepo/database/client";
 import { AuditEventType } from "@sam-monorepo/domain";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { truncateAllTables } from "../../test/database";
 import { deleteUnusedUploads } from "./deleteUnusedUploads";
 
 const { sendMock } = vi.hoisted(() => ({ sendMock: vi.fn() }));

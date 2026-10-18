@@ -1,3 +1,4 @@
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
 import {
   EventSource,
@@ -5,7 +6,6 @@ import {
   WikiPageNamespace,
 } from "@sam-monorepo/database/client";
 import { beforeEach, expect, test, vi } from "vitest";
-import { truncateAllTables } from "../../test/database";
 import { wikiCitizenMentioned } from "./wikiCitizenMentioned";
 
 vi.mock("../common/eventbridge", () => ({ emitEvents: vi.fn() }));

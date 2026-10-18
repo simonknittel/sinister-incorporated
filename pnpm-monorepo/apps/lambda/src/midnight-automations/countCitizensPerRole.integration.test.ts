@@ -1,6 +1,6 @@
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { truncateAllTables } from "../../test/database";
 import { countCitizensPerRole } from "./countCitizensPerRole";
 
 /**

@@ -1,10 +1,10 @@
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
 import { EventSource } from "@sam-monorepo/database/client";
 import type { Context, ScheduledEvent } from "aws-lambda";
 import { randomUUID } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type * as z from "zod";
-import { truncateAllTables } from "../../test/database";
 import { handler } from "../scrape-discord-events";
 import { getEvents } from "./discord/utils/getEvents";
 import { getEventUsers } from "./discord/utils/getEventUsers";

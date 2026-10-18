@@ -1,6 +1,6 @@
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { truncateAllTables } from "../../test/database";
 import { disburseRoleSalaries } from "./disburseRoleSalaries";
 
 /** A payout day in Europe/Berlin, the time zone of the function */

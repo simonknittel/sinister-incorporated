@@ -7,7 +7,8 @@
     "./dist/*"
   ],
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./test/*": "./test/*.ts"
   },
   "scripts": {
     "postinstall": "tsc -p tsconfig.build.json",
@@ -24,7 +25,9 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
+    "@testcontainers/postgresql": "12.2.0",
     "@types/node": "24.19.1",
+    "testcontainers": "12.2.0",
     "typescript": "7.0.2",
     "vite": "8.3.2",
     "vitest": "5.0.3"

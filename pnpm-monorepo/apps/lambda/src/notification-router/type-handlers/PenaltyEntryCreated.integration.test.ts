@@ -1,6 +1,6 @@
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { truncateAllTables } from "../../../test/database";
 import {
   createCitizenWithInheritedPermissions,
   createCitizenWithLeveledRole,

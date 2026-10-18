@@ -599,9 +599,15 @@ importers:
         specifier: 4.6.5
         version: 4.6.5
     devDependencies:
+      '@testcontainers/postgresql':
+        specifier: 12.2.0
+        version: 12.2.0
       '@types/node':
         specifier: 24.19.1
         version: 24.19.1
+      testcontainers:
+        specifier: 12.2.0
+        version: 12.2.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2

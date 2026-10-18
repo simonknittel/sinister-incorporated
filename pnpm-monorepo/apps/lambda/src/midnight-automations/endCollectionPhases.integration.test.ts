@@ -1,7 +1,7 @@
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
 import { AuditEventType } from "@sam-monorepo/domain";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { truncateAllTables } from "../../test/database";
 import { endCollectionPhases } from "./endCollectionPhases";
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;

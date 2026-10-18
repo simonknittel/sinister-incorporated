@@ -1,3 +1,4 @@
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import {
   prisma,
   TaskRewardType,
@@ -5,7 +6,6 @@ import {
   type Prisma,
 } from "@sam-monorepo/database";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { truncateAllTables } from "../../../test/database";
 import {
   createCitizenWithPermissions,
   MAXIMUM_LEVEL,

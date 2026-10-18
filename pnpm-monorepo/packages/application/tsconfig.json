@@ -7,5 +7,5 @@
        uses the "lib" and the Node.js "types" of the base config. */
     "noEmit": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "test/**/*.ts"]
 }

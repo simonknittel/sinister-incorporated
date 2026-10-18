@@ -13,14 +13,14 @@ export default defineConfig({
       {
         /**
          * Runs the jobs against a real PostgreSQL with all migrations (see
-         * `test/postgres.ts`). The files share one database, thus they run
-         * one after the other.
+         * `@sam-monorepo/application/test/postgres`). The files share one
+         * database, thus they run one after the other.
          */
         test: {
           name: "integration",
           include: ["src/**/*.integration.test.ts"],
-          globalSetup: ["./test/postgres.ts"],
-          setupFiles: ["./test/databaseUrl.ts"],
+          globalSetup: ["@sam-monorepo/application/test/postgres"],
+          setupFiles: ["@sam-monorepo/application/test/databaseUrl"],
           fileParallelism: false,
           hookTimeout: 120_000,
           mockReset: true,

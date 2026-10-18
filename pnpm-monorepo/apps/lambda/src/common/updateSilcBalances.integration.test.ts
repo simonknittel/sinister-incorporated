@@ -1,8 +1,8 @@
+import { truncateAllTables } from "@sam-monorepo/application/test/database";
+import { runAgainstLockHolder } from "@sam-monorepo/application/test/locks";
 import { prisma } from "@sam-monorepo/database";
 import { updateSilcBalances } from "@sam-monorepo/domain";
 import { beforeEach, describe, expect, test } from "vitest";
-import { truncateAllTables } from "../../test/database";
-import { runAgainstLockHolder } from "../../test/locks";
 
 beforeEach(async () => {
   await truncateAllTables();
