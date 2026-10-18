@@ -44,6 +44,7 @@
     "@sam-monorepo/application": "workspace:*",
     "@sam-monorepo/database": "workspace:*",
     "@sam-monorepo/domain": "workspace:*",
+    "@sam-monorepo/infrastructure": "workspace:*",
     "@sam-monorepo/mcp": "workspace:*",
     "@sam-monorepo/wiki-editor": "workspace:*",
     "@t3-oss/env-nextjs": "0.13.11",

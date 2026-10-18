@@ -135,7 +135,7 @@ jobs:
         working-directory: pnpm-monorepo
 
       - name: Test packages
-        run: pnpm --filter @sam-monorepo/domain --filter @sam-monorepo/wiki-editor --filter @sam-monorepo/application --filter @sam-monorepo/mcp run test
+        run: pnpm --filter @sam-monorepo/domain --filter @sam-monorepo/wiki-editor --filter @sam-monorepo/application --filter @sam-monorepo/infrastructure --filter @sam-monorepo/mcp run test
         working-directory: pnpm-monorepo
 
       - name: Test Lambda functions
@@ -183,7 +183,7 @@ jobs:
         working-directory: pnpm-monorepo
 
       - name: Typecheck packages
-        run: pnpm --filter @sam-monorepo/domain --filter @sam-monorepo/wiki-editor --filter @sam-monorepo/application --filter @sam-monorepo/mcp run typecheck
+        run: pnpm --filter @sam-monorepo/domain --filter @sam-monorepo/wiki-editor --filter @sam-monorepo/application --filter @sam-monorepo/infrastructure --filter @sam-monorepo/mcp run typecheck
         working-directory: pnpm-monorepo
 
       - name: Typecheck scripts

@@ -1,0 +1,31 @@
+{
+  "name": "@sam-monorepo/infrastructure",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "./dist/*"
+  ],
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "postinstall": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-eventbridge": "3.1146.0",
+    "@paralleldrive/cuid2": "3.3.0",
+    "@sam-monorepo/application": "workspace:*",
+    "@sam-monorepo/database": "workspace:*"
+  },
+  "devDependencies": {
+    "@sam-monorepo/domain": "workspace:*",
+    "@types/node": "24.19.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.2",
+    "vitest": "5.0.3"
+  }
+}

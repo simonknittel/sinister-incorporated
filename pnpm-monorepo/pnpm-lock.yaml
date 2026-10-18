@@ -126,6 +126,9 @@ importers:
       '@sam-monorepo/domain':
         specifier: workspace:*
         version: file:packages/domain(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(typescript@6.0.3)
+      '@sam-monorepo/infrastructure':
+        specifier: workspace:*
+        version: file:packages/infrastructure(@tiptap/extension-code-block@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@tiptap/extension-text-style@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4)))(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       '@sam-monorepo/mcp':
         specifier: workspace:*
         version: file:packages/mcp(@tiptap/extension-code-block@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@tiptap/extension-text-style@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4)))(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
@@ -431,9 +434,15 @@ importers:
       '@aws-sdk/client-ssm':
         specifier: 3.1146.0
         version: 3.1146.0
+      '@opentelemetry/api':
+        specifier: 1.9.1
+        version: 1.9.1
       '@paralleldrive/cuid2':
         specifier: 3.3.0
         version: 3.3.0
+      '@sam-monorepo/application':
+        specifier: workspace:*
+        version: link:../../packages/application
       '@sam-monorepo/database':
         specifier: workspace:*
         version: link:../../packages/database
@@ -443,6 +452,9 @@ importers:
       '@sam-monorepo/emails':
         specifier: workspace:*
         version: link:../../packages/emails
+      '@sam-monorepo/infrastructure':
+        specifier: workspace:*
+        version: link:../../packages/infrastructure
       aws-xray-sdk-core:
         specifier: 3.12.0
         version: 3.12.0
@@ -668,6 +680,37 @@ importers:
       react-dom:
         specifier: 19.3.0
         version: 19.3.0(react@19.3.0)
+
+  packages/infrastructure:
+    dependencies:
+      '@aws-sdk/client-eventbridge':
+        specifier: 3.1146.0
+        version: 3.1146.0
+      '@paralleldrive/cuid2':
+        specifier: 3.3.0
+        version: 3.3.0
+      '@sam-monorepo/application':
+        specifier: workspace:*
+        version: link:../application
+      '@sam-monorepo/database':
+        specifier: workspace:*
+        version: link:../database
+    devDependencies:
+      '@sam-monorepo/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@types/node':
+        specifier: 24.19.1
+        version: 24.19.1
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+      vite:
+        specifier: 8.3.2
+        version: 8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+      vitest:
+        specifier: 5.0.3
+        version: 5.0.3(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.1)(@vitest/coverage-v8@5.0.3)(vite@8.3.2(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
 
   packages/mcp:
     dependencies:
@@ -3493,6 +3536,9 @@ packages:
 
   '@sam-monorepo/domain@file:packages/domain':
     resolution: {directory: packages/domain, type: directory}
+
+  '@sam-monorepo/infrastructure@file:packages/infrastructure':
+    resolution: {directory: packages/infrastructure, type: directory}
 
   '@sam-monorepo/mcp@file:packages/mcp':
     resolution: {directory: packages/mcp, type: directory}
@@ -11622,6 +11668,21 @@ snapshots:
     transitivePeerDependencies:
       - pg-native
       - prisma
+      - typescript
+
+  '@sam-monorepo/infrastructure@file:packages/infrastructure(@tiptap/extension-code-block@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@tiptap/extension-text-style@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4)))(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)':
+    dependencies:
+      '@aws-sdk/client-eventbridge': 3.1146.0
+      '@paralleldrive/cuid2': 3.3.0
+      '@sam-monorepo/application': file:packages/application(@tiptap/extension-code-block@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@tiptap/extension-text-style@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4)))(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
+      '@sam-monorepo/database': file:packages/database(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(typescript@6.0.3)
+    transitivePeerDependencies:
+      - '@tiptap/extension-code-block'
+      - '@tiptap/extension-text-style'
+      - pg-native
+      - prisma
+      - react
+      - react-dom
       - typescript
 
   '@sam-monorepo/mcp@file:packages/mcp(@tiptap/extension-code-block@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4))(@tiptap/extension-text-style@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4)))(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)':
