@@ -74,6 +74,12 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
           findest du die Anleitung zum Verbinden, trennst verbundene Clients und
           deaktivierst einzelne Tools.
         </p>
+
+        <p>
+          Der MCP-Server erfordert die neue Berechtigung &quot;MCP-Server
+          nutzen&quot;. Nur Rollen mit dieser Berechtigung können den
+          MCP-Server nutzen.
+        </p>
       </>
     ),
   },
