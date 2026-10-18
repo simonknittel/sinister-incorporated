@@ -1,10 +1,9 @@
 import {
-  canReadSystemLog,
   listAuditEvents,
   listAuditEventsInputSchema,
 } from "@sam-monorepo/application";
 import * as z from "zod";
-import { dateTimeOutputSchema } from "../../schemas.js";
+import { citizenReferenceSchema, dateTimeOutputSchema } from "../../schemas.js";
 import {
   defineTool,
   READ_ONLY_TOOL_ANNOTATIONS,
@@ -21,6 +20,11 @@ const auditEventOutputSchema = z.strictObject({
     .strictObject({
       user_id: z.string(),
       name: z.string().nullable(),
+      citizen: citizenReferenceSchema
+        .nullable()
+        .describe(
+          "The citizen of the user. Null for a user without a citizen or with a deleted citizen.",
+        ),
     })
     .nullable()
     .describe(
@@ -40,14 +44,14 @@ export const listAuditEventsTool = defineTool({
   group: ToolGroup.SystemLog,
   title: "List the audit events",
   description:
-    "Gives the system log of SAM, the newest first: each user action and each automation run with its type, its time, the user who did it and the payload. Filter by the types, by the users (created_by_user_ids) and by a time range (from inclusive, to exclusive). Without a type filter, the list does not show the high-volume types (logins, first visits of the day, wiki visits, notifications, read markers), unless include_high_volume is true. The keys of the payload are the data as the app stored them.",
+    "Gives the system log of SAM, the newest first: the audited user actions and automation runs with their type, their time, the user who did it and the payload. Filter by the types, by the users (created_by_user_ids) or their citizens (created_by_citizen_ids) and by a time range. The list hides the high-volume types, unless a type filter is set or include_high_volume is true.",
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: listAuditEventsInputSchema,
   outputSchema: z.strictObject({
     events: z.array(auditEventOutputSchema),
     next_cursor: z.string().nullable(),
   }),
-  isVisible: canReadSystemLog,
+  isVisible: (actor) => actor.authorize("systemLog", "read"),
   handler: async (context, actor, input) => {
     const { events, next_cursor } = await listAuditEvents(
       context,

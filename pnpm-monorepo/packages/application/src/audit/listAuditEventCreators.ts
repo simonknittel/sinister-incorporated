@@ -1,6 +1,10 @@
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import type { AuditEventCreatorOutput } from "./listAuditEvents.js";
+
+export interface AuditEventCreator {
+  readonly id: string;
+  readonly name: string | null;
+}
 
 /**
  * The users who created at least one audit event, sorted by name. The
@@ -11,7 +15,7 @@ import type { AuditEventCreatorOutput } from "./listAuditEvents.js";
 export const listAuditEventCreators = async (
   context: ApplicationContext,
   actor: Actor,
-): Promise<AuditEventCreatorOutput[]> => {
+): Promise<AuditEventCreator[]> => {
   requirePermission(actor, "systemLog", "read");
 
   // A query on the users with an event, not a `distinct` on the events:
@@ -23,5 +27,5 @@ export const listAuditEventCreators = async (
     orderBy: [{ name: "asc" }, { id: "asc" }],
   });
 
-  return users.map((user) => ({ user_id: user.id, name: user.name }));
+  return users;
 };

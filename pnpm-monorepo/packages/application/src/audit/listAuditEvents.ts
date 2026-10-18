@@ -5,6 +5,10 @@ import {
 } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
+import {
+  toCitizenReference,
+  type CitizenReference,
+} from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import {
   DATE_TIME_INPUT_DESCRIPTION,
@@ -29,7 +33,7 @@ export const listAuditEventsInputSchema = z.object({
     .max(MAXIMUM_FILTER_VALUES)
     .optional()
     .describe(
-      "Only the events of these types, for example TASK_CREATED, SHIP_CREATED_V2 or ROLE_ASSIGNMENT_CREATED. Use the type values of earlier results. A type filter also shows the high-volume types.",
+      "Only the events of these types, for example TASK_CREATED, SHIP_CREATED_V2 or ROLE_ASSIGNMENT_CREATED. Use the type values of earlier results. A type filter also shows the high-volume types (see include_high_volume).",
     ),
   created_by_user_ids: z
     .array(idSchema)
@@ -37,6 +41,13 @@ export const listAuditEventsInputSchema = z.object({
     .optional()
     .describe(
       "Only the events of these users: created_by.user_id of earlier results, or user_id of get_current_user.",
+    ),
+  created_by_citizen_ids: z
+    .array(idSchema)
+    .max(MAXIMUM_FILTER_VALUES)
+    .optional()
+    .describe(
+      "Only the events of the users of these citizens: the citizen ids of earlier results, for example from list_citizens or get_citizen.",
     ),
   from: dateTimeInputSchema
     .optional()
@@ -52,7 +63,7 @@ export const listAuditEventsInputSchema = z.object({
     .boolean()
     .default(false)
     .describe(
-      "Also the types that the app writes per page view, per notification or per automation run (logins, first visits of the day, wiki visits, notifications, read markers). Without this flag or a type filter, the list does not show them.",
+      `Also the types that the app writes per page view, per notification or per automation run, which the list hides without this flag or a type filter: ${[...HIGH_VOLUME_AUDIT_EVENT_TYPES].join(", ")}.`,
     ),
   limit: pageLimitSchema,
   cursor: cursorSchema.optional(),
@@ -63,6 +74,8 @@ export type ListAuditEventsInput = z.output<typeof listAuditEventsInputSchema>;
 export interface AuditEventCreatorOutput {
   readonly user_id: string;
   readonly name: string | null;
+  /** Null for a user without a citizen or with a deleted citizen */
+  readonly citizen: CitizenReference | null;
 }
 
 export interface AuditEventOutput {
@@ -89,7 +102,13 @@ const AUDIT_EVENT_SELECT = {
   type: true,
   createdAt: true,
   data: true,
-  createdBy: { select: { id: true, name: true } },
+  createdBy: {
+    select: {
+      id: true,
+      name: true,
+      citizen: { select: { id: true, handle: true, deletedAt: true } },
+    },
+  },
 } as const satisfies Prisma.AuditEventSelect;
 
 /**
@@ -114,6 +133,9 @@ const buildWhere = (
   ...(input.created_by_user_ids && input.created_by_user_ids.length > 0
     ? { createdById: { in: input.created_by_user_ids } }
     : {}),
+  ...(input.created_by_citizen_ids && input.created_by_citizen_ids.length > 0
+    ? { createdBy: { citizen: { id: { in: input.created_by_citizen_ids } } } }
+    : {}),
   ...(input.from || input.to
     ? {
         createdAt: {
@@ -133,6 +155,7 @@ const toAuditEventOutput = (
   created_by: event.createdBy && {
     user_id: event.createdBy.id,
     name: event.createdBy.name,
+    citizen: toCitizenReference(event.createdBy.citizen),
   },
   data: event.data,
 });
