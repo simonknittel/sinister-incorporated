@@ -1,6 +1,10 @@
-import { prisma } from "@/db";
+import { getApplicationContext } from "@/modules/application";
 import { SESSION_TOKEN_COOKIE_NAMES } from "@/modules/auth/utils/sessionTokenCookie";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  findSessionIdByToken,
+  findSessionIdByTokenInputSchema,
+} from "@sam-monorepo/application";
 import { cookies } from "next/headers";
 import { cache } from "react";
 
@@ -18,15 +22,12 @@ export const getCurrentSessionId = cache(
     ).find(Boolean);
     if (!sessionToken) return null;
 
-    const session = await prisma.session.findUnique({
-      where: {
-        sessionToken,
-      },
-      select: {
-        id: true,
-      },
+    // A cookie that no session token can match is no session
+    const input = findSessionIdByTokenInputSchema.safeParse({
+      session_token: sessionToken,
     });
+    if (!input.success) return null;
 
-    return session?.id ?? null;
+    return findSessionIdByToken(getApplicationContext(), input.data);
   }),
 );

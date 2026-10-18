@@ -1,68 +1,47 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  deleteOwnSession,
+  deleteOwnSessionInputSchema,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
 import { getCurrentSessionId } from "../queries/getCurrentSessionId";
-
-const schema = z.object({
-  id: z.cuid(),
-});
+import { AUTH_ERROR_TEXTS } from "../utils/authErrorTexts";
 
 export const deleteSession = createAuthenticatedAction(
   "deleteSession",
-  schema,
+  deleteOwnSessionInputSchema,
   async (formData, authentication, data, t) => {
-    /**
-     * Deleting the session behind this very request would log the user out
-     * mid-page, so signing out stays the job of the logout button.
-     */
-    if (data.id === (await getCurrentSessionId()))
-      return {
-        error: "Die aktuelle Sitzung kann nicht gelöscht werden.",
-        requestPayload: formData,
-      };
+    try {
+      await deleteOwnSession(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+        { currentSessionId: await getCurrentSessionId() },
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: AUTH_ERROR_TEXTS,
+      });
+    }
 
-    /**
-     * Scoping the delete to the signed-in user turns a foreign session id
-     * into a no-op instead of letting anyone probe or revoke other people's
-     * sessions.
-     */
-    const { count } = await prisma.session.deleteMany({
-      where: {
-        id: data.id,
-        userId: authentication.session.user.id,
-      },
-    });
-
-    /**
-     * Also when a different tab deleted the session before: the page then
-     * shows the current list
-     */
     refresh();
-
-    if (count === 0)
-      return {
-        error: t("Common.notFound"),
-        requestPayload: formData,
-      };
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.USER_SESSION_DELETED,
-        data: {
-          sessionId: data.id,
-          userId: authentication.session.user.id,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
 
     return {
       success: t("Common.successfullyDeleted"),
     };
+  },
+  {
+    parseFormData: (formData) => ({
+      session_id: formData.get("id"),
+    }),
   },
 );

@@ -1,21 +1,13 @@
-import { log } from "@/modules/logging";
-import { getAssumableUsers as getAssumableUsersQuery } from "@/modules/users/queries/getAssumableUsers";
-import { TRPCError } from "@trpc/server";
-import { adminProcedure } from "../../trpc";
+import { getApplicationContext } from "@/modules/application";
+import { listAssumableUsers } from "@sam-monorepo/application";
+import { adminProcedure, toTrpcError } from "../../trpc";
 
 export const getAssumableUsers = adminProcedure.query(async ({ ctx }) => {
   try {
-    return await getAssumableUsersQuery(
-      ctx.session.assumedByAdminId ?? ctx.session.user.id,
-    );
+    return await listAssumableUsers(getApplicationContext(), {
+      admin_user_id: ctx.session.assumedByAdminId ?? ctx.session.user.id,
+    });
   } catch (error) {
-    log.error("Failed to fetch assumable users", {
-      error,
-    });
-
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Failed to fetch assumable users",
-    });
+    throw toTrpcError(error, "Failed to fetch assumable users");
   }
 });

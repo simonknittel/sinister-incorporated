@@ -1,18 +1,21 @@
 "use server";
 
-import { prisma } from "@/db";
 import { env } from "@/env";
 import type { ActionResponse } from "@/modules/actions/utils/createAction";
+import { getApplicationContext } from "@/modules/application";
 import { createSession, SESSION_MAX_AGE } from "@/modules/auth/server/auth";
 import { validateRedirectTo } from "@/modules/auth/utils/redirectTo";
 import { DEVELOPMENT_SESSION_TOKEN_COOKIE } from "@/modules/auth/utils/sessionTokenCookie";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  findDevelopmentLoginUser,
+  findDevelopmentLoginUserInputSchema,
+} from "@sam-monorepo/application";
 import { getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { randomBytes } from "node:crypto";
 import * as z from "zod";
-import { DEVELOPMENT_LOGIN_USER_WHERE } from "../queries/getDevelopmentLoginUsers";
 
 /** 256 bits, the same as the fallback token generator of NextAuth */
 const SESSION_TOKEN_BYTES = 32;
@@ -21,7 +24,7 @@ const SESSION_TOKEN_BYTES = 32;
 const MAX_REDIRECT_TO_LENGTH = 2048;
 
 const schema = z.object({
-  userId: z.cuid(),
+  userId: findDevelopmentLoginUserInputSchema.shape.user_id,
   redirectTo: z.string().max(MAX_REDIRECT_TO_LENGTH).optional(),
 });
 
@@ -50,14 +53,8 @@ export const developmentLogin = withTrace(
         requestPayload: formData,
       };
 
-    const user = await prisma.user.findFirst({
-      where: {
-        ...DEVELOPMENT_LOGIN_USER_WHERE,
-        id: result.data.userId,
-      },
-      select: {
-        id: true,
-      },
+    const user = await findDevelopmentLoginUser(getApplicationContext(), {
+      user_id: result.data.userId,
     });
     if (!user)
       return {
