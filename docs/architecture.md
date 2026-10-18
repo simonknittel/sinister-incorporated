@@ -26,7 +26,8 @@ A host is a deployable program. It owns its runtime, its configuration and its e
 | `domain` | domain | Pure rules and helpers that more than one host uses: audit event types, calendar dates, time zone, event rules, wiki rules, read markers, the limits of the forms and the use cases, the slug helper. The permission model (`src/permissions`): permission sets, role resolution, the wiki page permission resolvers. The notification vocabulary (`src/notifications`): the payload schemas of the on-site notifications and the realtime channel names | `database` (types) |
 | `emails` | domain | The email templates | — |
 | `wiki-editor` | domain | The Tiptap schema of the wiki content, text extraction, the Markdown renderer and parser | — |
-| `application` | use cases | The use cases: one read or one write of a feature, with the permission checks, the audit events and the notifications inside. The actor, the application context and the typed errors. The OAuth use cases. See the [package README](../pnpm-monorepo/packages/application/README.md). | `database`, `domain`, `wiki-editor` |
+| `application` | use cases | The use cases: one read or one write of a feature, with the permission checks, the audit events and the notifications inside. The actor, the application context and the typed errors. The OAuth use cases. See the [package README](../pnpm-monorepo/packages/application/README.md). | `database`, `domain`, `wiki-editor`. Never `infrastructure` or `mcp`. |
+| `infrastructure` | infrastructure | The shared implementations of the ports of `application`: the Prisma audit writer, and the EventBridge client, emitter and notification trigger. See the [package README](../pnpm-monorepo/packages/infrastructure/README.md). | `application` (the port types), `database`, the AWS SDK |
 | `mcp` | interface adapter | The MCP server: the tool registry, the tools, the request handler with the bearer verification. See [mcp-server.md](./mcp-server.md). | `application`, `domain`, `database` |
 
 ### Inside the Next.js app
@@ -35,12 +36,22 @@ A host is a deployable program. It owns its runtime, its configuration and its e
 
 Four modules are adapters of the packages, not features:
 
-- `modules/application`: the composition root. `getApplicationContext()` builds the one context of the app from the existing modules (Prisma, audit, notifications, logging, tracing, changelog, collab, URLs, signing key). `toActor(session)` maps the next-auth session to the actor of the use cases, and `getRequestActor()` gives the actor of the current request to the pages and queries. Two helpers map the typed errors to action responses and to `forbidden()` / `notFound()`.
+- `modules/application`: the composition root. `getApplicationContext()` builds the one context of the app. The audit port comes from `infrastructure`. The other ports come from the modules of the app (Prisma, notifications, logging, tracing, changelog, collab, URLs, signing key); the notification trigger of the app wraps the one of `infrastructure`. `toActor(session)` maps the next-auth session to the actor of the use cases, and `getRequestActor()` gives the actor of the current request to the pages and queries. Two helpers map the typed errors to action responses and to `forbidden()` / `notFound()`.
 - `modules/oauth`: the consent page, the token and revocation endpoints and the metadata documents.
 - `modules/mcp`: the `/api/mcp` route.
 - `modules/mcp-settings`: the account page `/app/account/mcp` (the connected clients and the tool settings).
 
 Where a feature already has use cases, the module keeps a thin wrapper per query or action: it builds the actor from the session, calls the use case, and keeps the app-specific parts (React `cache()`, `FormData` parsing, translations, `refresh()`, `forbidden()`).
+
+**The Prisma rule.** The ESLint config object `use-cases-only` in `apps/app/eslint.config.mjs` forbids `@/db` and the `prisma` client of `@sam-monorepo/database` in the modules that are on use cases. Types from `@sam-monorepo/database/client` and enums from `@sam-monorepo/database/browser` stay permitted. The list of modules grows with each milestone of the move. At the end it covers `src/**`, except the composition root (`modules/application`) and the auth zone (`modules/auth/server`).
+
+### Inside the Lambda functions
+
+The composition root is `apps/lambda/src/common/createApplicationContext.ts`. It uses the audit writer and the EventBridge adapters of `infrastructure`. The context has the no-op tracer of OpenTelemetry, because the functions register no tracer provider: X-Ray stays at the level of the handlers and the jobs, and the spans of the use cases are lost. The context has no changelog, no collab server and no signing key. No function calls the composition root until its first use case arrives.
+
+### Tests
+
+The helpers of the integration tests (the Postgres testcontainer, the truncate helper and the lock helper) live in `packages/application/test`. The Lambda functions share them through `@sam-monorepo/application/test/*`. See the [package README](../pnpm-monorepo/packages/application/README.md#tests).
 
 ## Target architecture
 
@@ -71,6 +82,7 @@ flowchart TB
   end
 
   subgraph infrastructure [Infrastructure]
+    infrastructurePackage["packages/infrastructure (ports)"]
     database["packages/database (Prisma)"]
   end
 
@@ -83,18 +95,23 @@ flowchart TB
   lambdaHandlers --> application
   mcp --> application
   controllers --> application
+  app --> infrastructurePackage
+  lambda --> infrastructurePackage
+  infrastructurePackage -. port types .-> application
+  infrastructurePackage --> database
   application --> domainPackages
   application --> database
   domainPackages --> database
 ```
 
-Dependencies point downwards only. A package never imports a host. `application` never imports `mcp` or `next`. `domain` never imports `application`.
+Dependencies point downwards only. The one exception is the dotted edge: `infrastructure` imports the port types of `application`, so that each host can pass the implementations to the use cases. A package never imports a host. `application` never imports `infrastructure`, `mcp` or `next`. `domain` never imports `application`.
 
 ### The layers
 
 - **Domain** (`domain`, `emails`, `wiki-editor`): pure code. No Prisma client calls, no I/O. Prisma types and selects are permitted.
 - **Use cases** (`application`): `(context, actor, input) => output`, with the context and its ports as the [package README](../pnpm-monorepo/packages/application/README.md) describes them. The use cases call Prisma directly; there are no repository ports. This is the one intentional break of the dependency rule, decided for pragmatism.
 - **Adapters**: the server actions and tRPC procedures of the Next.js app, the MCP tools and request handler, the Lambda handlers. They parse the transport-specific input, call the use cases and map the typed errors.
+- **Infrastructure** (`database`, `infrastructure`): the Prisma schema and client, and the shared implementations of the ports. Each host composes the implementations in its composition root.
 - **Hosts**: the deployables. Each host has one composition root that builds its context.
 
 ### What moves, and where to
@@ -102,7 +119,8 @@ Dependencies point downwards only. A package never imports a host. `application`
 | Today | Target | Why |
 | - | - | - |
 | Business logic in `apps/app/src/modules/*/actions` and `queries` | Use cases in `application`; the app keeps thin wrappers | The MCP server, the Lambdas and a later backend call the same logic |
-| The audit writer, the notification trigger, the logger and the tracer in `apps/app/src/modules` | Packages with ports; each host adapts them in its context | The later MCP service and the backend need the same services |
+| The audit writer and the EventBridge adapters in `apps/app` and `apps/lambda` | Done: shared in `infrastructure`; each host composes them in its context | The later MCP service and the backend need the same services |
+| The logger and the tracer in `apps/app/src/modules` | Stay per host; each host adapts them in its context | The app logs in `after()`, the Lambda functions log to the console |
 | Permission checks in pages and components | Inside the use cases; the pages keep their gates as a second check | A new host cannot forget a check that the use case does |
 | Lambda automations that use Prisma and the app's rules | Use cases in `application`, called from thin Lambda handlers | One implementation of each rule |
 | The MCP endpoint in `apps/app` | A service of its own that imports `mcp` and `application` and builds its own context | Independent scaling and deployment |
@@ -120,4 +138,4 @@ Dependencies point downwards only. A package never imports a host. `application`
 4. Delete the moved logic from the app. Never keep two copies.
 5. Keep the end-to-end tests green without changes: the behavior of the app does not change.
 
-The remaining actions and queries of the app are listed as a follow-up in the application README after each rollout.
+The modules of the app that the `use-cases-only` lint rule does not list still hold their logic.

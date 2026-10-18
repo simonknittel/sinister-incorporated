@@ -91,40 +91,14 @@ These exports are not use cases. No MCP tool calls them:
 
 Write unit tests (Vitest, `*.test.ts` next to the file) only for complex or critical logic. Test the behavior through the end-to-end tests of the apps.
 
+The integration tests (`*.integration.test.ts`) run against a Postgres testcontainer (`test/postgres.ts`, Docker must run). The package also holds the helper that empties the database (`test/database.ts`) and the helper that makes two sessions wait for the same locks (`test/locks.ts`). The Lambda functions use the same helpers through `@sam-monorepo/application/test/*` until their tests move into this package.
+
 ## Add a feature
 
 1. Add `src/<feature>/<useCase>.ts` with the input schema, the output type and the use case. Export them from the barrel `src/<feature>/index.ts`. The package index re-exports the barrel.
 2. Next.js app: the composition root is `apps/app/src/modules/application`. A server action parses the `FormData` with the schema, calls the use case with `getApplicationContext()` and `await toActor(authentication.session)`, keeps its `refresh()`, and maps the errors with `mapApplicationErrorToActionResponse()` and the texts of the feature. Pages and queries get the actor with `getRequestActor()` and map the errors with `throwApplicationErrorForPage()`. tRPC procedures call the read use cases with `toActor(ctx.session)`.
 3. MCP server: add a tool that shows the input schema and calls the use case.
 
-## Follow-up
+## Modules that are not on use cases yet
 
-The actions and queries of the app that no MCP tool uses stay in the app for now. They move into this package later. These server actions (`apps/app/src/modules/<module>/actions`) still hold their business logic and call no use case (2026-10-18):
-
-- `apps`: `toggleAppFavorite`
-- `auth`: `assumeUser`, `deleteSession`, `developmentLogin`, `requestEmailConfirmationAction`, `setAdminMode`, `stopAssumingUser`
-- `career`: `createFlow`, `deleteFlow`, `duplicateFlow`, `renameFlow`, `reorderFlows`, `restoreFlow`, `updateFlow`, `updateFlowRoleAccess`
-- `changelog`: `markChangelogEntriesSeen`
-- `citizen`: `confirmCitizenLog`, `createCitizen`, `createCitizenLog`, `decreaseRoleAssignmentLevel`, `deleteCitizen`, `deleteCitizenLog`, `deleteRoleAssignment`, `increaseRoleAssignmentLevel`, `updateMyProfile`, `updateNote`, `updateRoleAssignment`
-- `dashboard`: `setGreetingBannerPreview`
-- `event-templates`: `createEventTemplate`, `createEventTemplateFromEvent`, `deleteEventTemplate`, `duplicateEventTemplate`, `restoreEventTemplate`, `transferEventTemplateOwnership`, `updateEventTemplate`, `updateEventTemplateRoleAccess`
-- `events`: `copyLineupFromEvent`, `pasteEventPosition`, `publishEventToDiscord`, `unpublishEventFromDiscord`, `updateEventPositionName`
-- `fleet`: `createManufacturer`, `createSeries`, `createVariant`, `deleteManufacturer`, `deleteSeries`, `deleteVariant`, `updateManufacturer`, `updateSeries`, `updateVariant`
-- `iam`: `updateHumanResourcesRoles`
-- `log-analyzer`: `uploadLogAnalyzerEntries`
-- `notifications`: `archiveOnSiteNotification`, `archiveReadOnSiteNotifications`, `markAllOnSiteNotificationsRead`, `markOnSiteNotificationsRead`, `markOnSiteNotificationUnread`, `subscribeWebPush`, `unarchiveOnSiteNotification`, `unsubscribeWebPush`, `updateMyNotificationSettings`
-- `onboarding`: `completeOnboardingStep`, `completeOnboardingTask`, `skipAllOnboardingTasks`
-- `organizations`: `confirmOrganizationMembership`, `createOrganization`, `createOrganizationMembership`, `deleteOrganizationMembership`
-- `penalty-points`: `deletePenaltyEntry`
-- `profit-distribution`: `createProfitDistributionCycle`, `endCollectionPhase`, `endPayout`, `startPayout`, `toggleMyAccepted`, `toggleMyCeded`, `updateParticipantAttribute`
-- `read-markers`: `markAsRead`
-- `roles`: `createRole`, `deleteRole`, `updateRole`, `updateRoleInheritance`, `updateRolePermissions`, `updateSingleRoleInheritance`, `updateSingleRolePermission`
-- `seasonal-events`: `setSeasonalDateOverride`, `updateMySeasonalThemeSettings`
-- `silc`: `createSilcTransaction`, `deleteSilcTransaction`, `expireAllSilc`, `refreshSilcBalances`, `updateRoleSalaries`, `updateSilcSetting`, `updateSilcTransaction`
-- `spynet`: `createClassificationLevel`, `createNoteType`, `deleteClassificationLevel`, `deleteNoteType`, `updateClassificationLevel`, `updateNoteType`
-- `tasks`: `deleteTask`
-- `uploads`: `deleteUpload`
-- `users`: `banUser`, `unbanUser`, `verifyEmail`
-- `wiki`: `createWikiCollabToken`, `createWikiPageReport`, `deleteWikiPage`, `destroyWikiPage`, `importWikiPageContent`, `moveWikiPage`, `pasteWikiPages`, `renameWikiPage`, `resolveWikiPageReport`, `restoreWikiPage`, `restoreWikiPageSnapshot`, `trackWikiPageVisit`, `updateEventWikiPagePermissions`, `updateWikiDashboardPage`, `updateWikiFeaturedPages`, `updateWikiIframeAllowlist`, `updateWikiPageFavorite`, `updateWikiPageLink`, `updateWikiPagePermissions`, `updateWikiPagePosition`, `updateWikiPageSidebarMode`, `updateWikiPageTags`, `validateWikiIframeSrc`
-
-The lineup actions of the event templates use the shared writes (see "Exceptions") with the rules of the templates in the app.
+The lint rule `use-cases-only` in `apps/app/eslint.config.mjs` names the modules of the app that are on use cases: they never import `@/db` or the `prisma` client. The modules that are not in its list still hold their logic and move later, feature group by feature group.
