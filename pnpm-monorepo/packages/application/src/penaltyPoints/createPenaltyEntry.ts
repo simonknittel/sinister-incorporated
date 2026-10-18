@@ -9,7 +9,9 @@ import {
 import { ConflictError, NotFoundError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
+import { CitizenErrorMessage } from "../spynet/citizenErrors.js";
 import { withSpan } from "../withSpan.js";
+import { PenaltyEntryErrorMessage } from "./penaltyEntryErrors.js";
 import {
   PENALTY_ENTRY_SELECT,
   toPenaltyEntryOutput,
@@ -35,15 +37,6 @@ export const createPenaltyEntryInputSchema = z.object({
       `When the points expire. ${DATE_TIME_INPUT_DESCRIPTION} Without it, the points never expire.`,
     ),
 });
-
-/**
- * The messages of the typed errors of the penalty entries that the app shows
- * with its own text
- */
-export enum PenaltyEntryErrorMessage {
-  /** A `ConflictError`: usually a citizen that a different user deleted */
-  CitizenDeleted = "The citizen is deleted",
-}
 
 export interface CreatePenaltyEntryOutput {
   readonly entry: PenaltyEntryOutput;
@@ -72,7 +65,7 @@ export const createPenaltyEntry = (
       where: { id: input.citizen_id },
       select: { deletedAt: true },
     });
-    if (!citizen) throw new NotFoundError("The citizen does not exist");
+    if (!citizen) throw new NotFoundError(CitizenErrorMessage.NotFound);
     if (citizen.deletedAt)
       throw new ConflictError(PenaltyEntryErrorMessage.CitizenDeleted);
 

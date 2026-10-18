@@ -20,6 +20,13 @@ export {
   type CreateTaskInput,
   type CreateTaskOutput,
 } from "./createTask.js";
+export { findNewTaskRows, findOwnOpenTaskRows } from "./dashboardTaskRows.js";
+export {
+  deleteTask,
+  deleteTaskInputSchema,
+  type DeleteTaskInput,
+  type DeleteTaskOutput,
+} from "./deleteTask.js";
 export {
   dropTask,
   dropTaskInputSchema,
@@ -52,11 +59,7 @@ export {
   type VisibleTask,
 } from "./taskDetails.js";
 export { TaskErrorMessage } from "./taskErrors.js";
-export {
-  TASK_LIST_SELECT,
-  type TaskListItemRow,
-  type TaskListRow,
-} from "./taskListSelect.js";
+export type { TaskListItemRow, TaskListRow } from "./taskListSelect.js";
 export {
   TaskRewardKind,
   TaskVisibilityKind,

@@ -1,2 +1,5 @@
 /** The use cases of the leaderboards */
-export {};
+export {
+  filterLeaderboardMembers,
+  type LeaderboardRank,
+} from "./filterLeaderboardMembers.js";

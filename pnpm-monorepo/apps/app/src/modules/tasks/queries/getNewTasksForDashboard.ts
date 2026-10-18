@@ -1,12 +1,11 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
-import { getUnreadWhere } from "@/modules/read-markers/queries/getUnreadWhere";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { getOpenTasksWhere, TASK_LIST_SELECT } from "@sam-monorepo/application";
-import { ReadMarkerSubject } from "@sam-monorepo/domain";
-import { forbidden } from "next/navigation";
+import { findNewTaskRows } from "@sam-monorepo/application";
 import { cache } from "react";
-import { getVisibleTasksWhere } from "./getVisibleTasksWhere";
 
 /** Keeps the tile short; the tasks list shows all new tasks */
 const MAX_TASKS = 5;
@@ -18,33 +17,14 @@ const MAX_TASKS = 5;
  */
 export const getNewTasksForDashboard = cache(
   withTrace("getNewTasksForDashboard", async () => {
-    const authentication = await requireAuthentication();
-    if (!authentication.session.entity) forbidden();
-    if (!(await authentication.authorize("task", "read"))) forbidden();
-
-    const unreadWhere = await getUnreadWhere(ReadMarkerSubject.Task);
-    if (!unreadWhere) return [];
-
-    return prisma.task.findMany({
-      where: {
-        AND: [
-          await getVisibleTasksWhere(),
-          getOpenTasksWhere(new Date()),
-          unreadWhere,
-          {
-            assignments: {
-              none: {
-                citizenId: authentication.session.entity.id,
-              },
-            },
-          },
-        ],
-      },
-      select: TASK_LIST_SELECT,
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: MAX_TASKS,
-    });
+    try {
+      return await findNewTaskRows(
+        getApplicationContext(),
+        await getRequestActor(),
+        { limit: MAX_TASKS },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
   }),
 );

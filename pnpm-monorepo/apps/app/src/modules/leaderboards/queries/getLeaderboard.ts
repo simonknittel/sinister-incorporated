@@ -1,5 +1,10 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { filterLeaderboardMembers } from "@sam-monorepo/application";
 import { unstable_cache } from "next/cache";
 import * as z from "zod";
 
@@ -41,10 +46,22 @@ const schema = z.object({
   }),
 });
 
-export const getLeaderboard = (mode: "SB", season: string, pages: number) => {
+/** The fields of a rank that the leaderboard page shows */
+interface CachedRank {
+  readonly nickname: string;
+  readonly displayname: string;
+  readonly rank: number;
+}
+
+/**
+ * The ranks of all players, not only of the members: the cache must not read
+ * the session, thus the filter for the members runs after the cache (see
+ * `getLeaderboard`). The cache keeps only the fields that the page shows.
+ */
+const getRanks = (mode: "SB", season: string, pages: number) => {
   return unstable_cache(
     withTrace("getLeaderboard", async (mode: "SB", season: string) => {
-      const ranks: z.infer<typeof schema>["data"]["resultset"] = [];
+      const ranks: CachedRank[] = [];
       const signal = AbortSignal.timeout(TOTAL_TIMEOUT_MILLISECONDS);
 
       for (let page = 1; page <= pages; page++) {
@@ -69,29 +86,39 @@ export const getLeaderboard = (mode: "SB", season: string, pages: number) => {
 
         const json = (await response.json()) as unknown;
         const result = schema.parse(json);
-        ranks.push(...result.data.resultset);
+        ranks.push(
+          ...result.data.resultset.map(({ nickname, displayname, rank }) => ({
+            nickname,
+            displayname,
+            rank,
+          })),
+        );
       }
 
-      // The org members are the citizens with a login
-      const members = await prisma.citizen.findMany({
-        where: {
-          userId: { not: null },
-        },
-        select: {
-          handle: true,
-        },
-      });
-      const memberHandles = new Set(members.map((member) => member.handle));
-
-      const filteredRanks = ranks.filter((rank) =>
-        memberHandles.has(rank.nickname),
-      );
-      const sortedRanks = filteredRanks.toSorted((a, b) => a.rank - b.rank);
-      return sortedRanks;
+      return ranks;
     }),
     [`mode=${mode}`, `season=${season}`],
     {
       revalidate: 60 * 60, // 1 hour
     },
   )(mode, season);
+};
+
+/** The ranks of the members of the organization, the best rank first */
+export const getLeaderboard = async (
+  mode: "SB",
+  season: string,
+  pages: number,
+) => {
+  const ranks = await getRanks(mode, season, pages);
+
+  try {
+    return await filterLeaderboardMembers(
+      getApplicationContext(),
+      await getRequestActor(),
+      ranks,
+    );
+  } catch (error) {
+    return throwApplicationErrorForPage(error);
+  }
 };

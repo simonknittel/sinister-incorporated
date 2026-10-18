@@ -2,7 +2,7 @@ import type { ApplicationErrorTexts } from "@/modules/application";
 import { INACTIVE_RECEIVER_ERROR } from "@/modules/silc/utils/activeReceivers";
 import { TaskErrorMessage } from "@sam-monorepo/application";
 
-export const TASK_NOT_FOUND_ERROR = "Task nicht gefunden";
+const TASK_NOT_FOUND_ERROR = "Task nicht gefunden";
 
 /**
  * The texts of the task actions for the errors of the task use cases. The

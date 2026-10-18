@@ -1,98 +1,46 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { triggerNotificationsAfterSave } from "@/modules/notifications/utils/triggerNotification";
-import { refresh } from "next/cache";
-import * as z from "zod";
-import { getTaskById } from "../queries/getTaskById";
 import {
-  isAllowedToDeleteTask,
-  isAllowedToManageTask,
-} from "../utils/isAllowedToTask";
-import { TASK_NOT_FOUND_ERROR } from "../utils/taskErrorTexts";
-
-const schema = z.object({
-  id: z.union([z.cuid(), z.cuid2()]),
-});
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  deleteTaskInputSchema,
+  deleteTask as deleteTaskUseCase,
+  type DeleteTaskOutput,
+} from "@sam-monorepo/application";
+import { refresh } from "next/cache";
+import { TASK_ERROR_TEXTS } from "../utils/taskErrorTexts";
 
 export const deleteTask = createAuthenticatedAction(
   "deleteTask",
-  schema,
+  deleteTaskInputSchema,
   async (formData, authentication, data, t) => {
-    if (!authentication.session.entity || !(await isAllowedToDeleteTask()))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Authorize the request
-     */
-    const task = await getTaskById(data.id);
-    if (!task) {
-      /** A different user deleted the task before, and the page must show it */
-      return rejectConflict(TASK_NOT_FOUND_ERROR, formData);
+    let result: DeleteTaskOutput;
+    try {
+      result = await deleteTaskUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: TASK_ERROR_TEXTS,
+      });
     }
-    if (!(await isAllowedToManageTask(task)))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Delete the task. The condition on `deletedAt` lets only one of two
-     * parallel requests delete the task. The other request stops here, thus
-     * it writes no audit event and sends nothing.
-     */
-    const { count } = await prisma.task.updateMany({
-      where: {
-        id: task.id,
-        deletedAt: null,
-      },
-      data: {
-        deletedAt: new Date(),
-        deletedById: authentication.session.entity.id,
-      },
-    });
-    if (count === 0) return rejectConflict(TASK_NOT_FOUND_ERROR, formData);
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.TASK_DELETED,
-        data: {
-          taskId: task.id,
-          title: task.title,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Trigger notifications
-     */
-    const areNotificationsSent = await triggerNotificationsAfterSave([
-      {
-        type: "TaskDeleted",
-        payload: {
-          taskId: task.id,
-        },
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
     return {
       success: t("Common.successfullyDeleted"),
-      ...(areNotificationsSent
+      ...(result.notifications_sent
         ? {}
         : { warning: t("Common.notificationsFailed") }),
     };
   },
+  { parseFormData: (formData) => ({ task_id: formData.get("id") }) },
 );
