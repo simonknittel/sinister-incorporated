@@ -20,6 +20,11 @@ export {
   getProtectedResourceMetadata,
 } from "./metadata.js";
 export {
+  purgeExpiredOAuthRecords,
+  type PurgeExpiredOAuthRecordsInput,
+  type PurgeExpiredOAuthRecordsOutput,
+} from "./purgeExpiredOAuthRecords.js";
+export {
   redeemAuthorizationCode,
   redeemAuthorizationCodeInputSchema,
 } from "./redeemAuthorizationCode.js";

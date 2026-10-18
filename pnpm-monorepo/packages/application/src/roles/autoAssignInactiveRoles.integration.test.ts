@@ -1,13 +1,15 @@
-import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
 import { AuditEventType } from "@sam-monorepo/domain";
 import { beforeEach, expect, test } from "vitest";
-import { autoAssignInactiveRoles } from "./autoAssignInactiveRoles";
+import { createTestApplicationContext } from "../../test/applicationContext.js";
+import { truncateAllTables } from "../../test/database.js";
+import { autoAssignInactiveRoles } from "./autoAssignInactiveRoles.js";
 
+const NOW = new Date("2026-06-15T10:00:00.000Z");
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const INACTIVE_DAYS = 60;
 
-const daysAgo = (days: number) => new Date(Date.now() - days * ONE_DAY_MS);
+const daysAgo = (days: number) => new Date(NOW.getTime() - days * ONE_DAY_MS);
 
 beforeEach(async () => {
   await truncateAllTables();
@@ -33,8 +35,11 @@ test("assigns the role to inactive citizens with a login only", async () => {
     data: { handle: "without-login" },
   });
 
-  await autoAssignInactiveRoles();
+  const { context, auditEvents } = createTestApplicationContext({ now: NOW });
 
+  const output = await autoAssignInactiveRoles(context, { now: NOW });
+
+  expect(output).toEqual({ assignedCount: 1 });
   const assignments = await prisma.roleAssignment.findMany({
     select: { citizenId: true },
   });
@@ -44,19 +49,16 @@ test("assigns the role to inactive citizens with a login only", async () => {
       where: { citizenId: { in: [active.id, withoutLogin.id] } },
     }),
   ).toBe(0);
-  expect(
-    await prisma.auditEvent.findMany({
-      where: { type: AuditEventType.ROLE_AUTO_ASSIGNED },
-      select: { data: true },
-    }),
-  ).toEqual([
+  expect(auditEvents).toEqual([
     {
+      type: AuditEventType.ROLE_AUTO_ASSIGNED,
       data: {
         citizenId: inactive.id,
         citizenHandle: "inactive",
         roleId: expect.any(String),
         roleName: "Reserve",
       },
+      createdById: null,
     },
   ]);
 });
@@ -69,9 +71,12 @@ test("a second run adds no second history row", async () => {
     },
   });
 
-  await autoAssignInactiveRoles();
-  await autoAssignInactiveRoles();
+  const { context, auditEvents } = createTestApplicationContext({ now: NOW });
+
+  await autoAssignInactiveRoles(context, { now: NOW });
+  await autoAssignInactiveRoles(context, { now: NOW });
 
   expect(await prisma.roleAssignment.count()).toBe(1);
   expect(await prisma.roleAssignmentChange.count()).toBe(1);
+  expect(auditEvents).toHaveLength(1);
 });

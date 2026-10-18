@@ -1,20 +1,21 @@
-import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
 import { AuditEventType } from "@sam-monorepo/domain";
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { countUniqueLogins } from "./countUniqueLogins";
+import { beforeEach, expect, test } from "vitest";
+import { createTestApplicationContext } from "../../test/applicationContext.js";
+import { truncateAllTables } from "../../test/database.js";
+import { countUniqueLogins } from "./countUniqueLogins.js";
+
+/**
+ * The scheduler starts the function at midnight in Europe/Berlin. The result
+ * must not depend on the time zone of the process (the `TZ` variable).
+ */
+const MIDNIGHT = new Date("2026-09-16T00:00:05+02:00");
 
 beforeEach(async () => {
   await truncateAllTables();
 });
 
-afterEach(() => {
-  vi.useRealTimers();
-});
-
 test("stores the count under the day that it counts in Europe/Berlin", async () => {
-  // The scheduler starts the function at midnight in Europe/Berlin
-  vi.setSystemTime(new Date("2026-09-16T00:00:05+02:00"));
   await prisma.user.createMany({
     data: [
       { lastSeenAt: new Date("2026-09-15T00:30:00+02:00") },
@@ -23,8 +24,11 @@ test("stores the count under the day that it counts in Europe/Berlin", async () 
     ],
   });
 
-  await countUniqueLogins();
+  const { context } = createTestApplicationContext({ now: MIDNIGHT });
 
+  const output = await countUniqueLogins(context, { now: MIDNIGHT });
+
+  expect(output).toEqual({ date: "2026-09-15", count: 2, saved: true });
   const rows = await prisma.dailyLoginCount.findMany();
   expect(
     rows.map((row) => ({
@@ -35,28 +39,30 @@ test("stores the count under the day that it counts in Europe/Berlin", async () 
 });
 
 test("a second run later in the night keeps the count of the first run", async () => {
-  vi.setSystemTime(new Date("2026-09-16T00:00:05+02:00"));
   const [returningUser] = await prisma.user.createManyAndReturn({
     data: [
       { lastSeenAt: new Date("2026-09-15T20:00:00+02:00") },
       { lastSeenAt: new Date("2026-09-15T21:00:00+02:00") },
     ],
   });
-  await countUniqueLogins();
+  const { context, auditEvents } = createTestApplicationContext({
+    now: MIDNIGHT,
+  });
+  await countUniqueLogins(context, { now: MIDNIGHT });
 
   // A user of the counted day visits again after midnight
   await prisma.user.update({
     where: { id: returningUser!.id },
     data: { lastSeenAt: new Date("2026-09-16T00:30:00+02:00") },
   });
-  vi.setSystemTime(new Date("2026-09-16T01:00:00+02:00"));
-  await countUniqueLogins();
+  const repeatedRun = await countUniqueLogins(context, {
+    now: new Date("2026-09-16T01:00:00+02:00"),
+  });
 
+  expect(repeatedRun.saved).toBe(false);
   const rows = await prisma.dailyLoginCount.findMany();
   expect(rows.map((row) => row.count)).toEqual([2]);
-  expect(
-    await prisma.auditEvent.count({
-      where: { type: AuditEventType.UNIQUE_LOGINS_COUNTED },
-    }),
-  ).toBe(1);
+  expect(auditEvents.map(({ type }) => type)).toEqual([
+    AuditEventType.UNIQUE_LOGINS_COUNTED,
+  ]);
 });

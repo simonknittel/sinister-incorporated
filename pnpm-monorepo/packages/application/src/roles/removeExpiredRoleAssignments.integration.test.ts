@@ -1,14 +1,16 @@
-import { truncateAllTables } from "@sam-monorepo/application/test/database";
-import { runAgainstLockHolder } from "@sam-monorepo/application/test/locks";
 import { prisma } from "@sam-monorepo/database";
 import { AuditEventType } from "@sam-monorepo/domain";
 import { beforeEach, expect, test } from "vitest";
-import { removeExpiredRoles } from "./removeExpiredRoles";
+import { createTestApplicationContext } from "../../test/applicationContext.js";
+import { truncateAllTables } from "../../test/database.js";
+import { runAgainstLockHolder } from "../../test/locks.js";
+import { removeExpiredRoleAssignments } from "./removeExpiredRoleAssignments.js";
 
+const NOW = new Date("2026-06-15T10:00:00.000Z");
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_AGE_DAYS = 30;
 
-const daysAgo = (days: number) => new Date(Date.now() - days * ONE_DAY_MS);
+const daysAgo = (days: number) => new Date(NOW.getTime() - days * ONE_DAY_MS);
 
 const createAssignment = async ({
   handle,
@@ -53,28 +55,27 @@ test("removes the expired role of an inactive citizen with a login", async () =>
     lastSeenAt: daysAgo(MAX_AGE_DAYS + 5),
     assignedAt: daysAgo(MAX_AGE_DAYS + 10),
   });
+  const { context, auditEvents } = createTestApplicationContext({ now: NOW });
 
-  await removeExpiredRoles();
+  const output = await removeExpiredRoleAssignments(context, { now: NOW });
 
+  expect(output).toEqual({ removedCount: 1 });
   expect(await hasRole(citizen.id)).toBe(false);
   expect(
     await prisma.roleAssignmentChange.count({
       where: { citizenId: citizen.id, type: "REMOVE" },
     }),
   ).toBe(1);
-  expect(
-    await prisma.auditEvent.findMany({
-      where: { type: AuditEventType.ROLE_AUTO_REMOVED },
-      select: { data: true },
-    }),
-  ).toEqual([
+  expect(auditEvents).toEqual([
     {
+      type: AuditEventType.ROLE_AUTO_REMOVED,
       data: {
         citizenId: citizen.id,
         citizenHandle: "inactive",
         roleId: expect.any(String),
         roleName: "Expiring",
       },
+      createdById: null,
     },
   ]);
 });
@@ -87,7 +88,9 @@ test("keeps the role of a citizen without a login", async () => {
     withLogin: false,
   });
 
-  await removeExpiredRoles();
+  const { context } = createTestApplicationContext({ now: NOW });
+
+  await removeExpiredRoleAssignments(context, { now: NOW });
 
   expect(await hasRole(citizen.id)).toBe(true);
 });
@@ -99,7 +102,9 @@ test("keeps a role that was assigned after the last visit", async () => {
     assignedAt: daysAgo(1),
   });
 
-  await removeExpiredRoles();
+  const { context } = createTestApplicationContext({ now: NOW });
+
+  await removeExpiredRoleAssignments(context, { now: NOW });
 
   expect(await hasRole(citizen.id)).toBe(true);
 });
@@ -111,7 +116,9 @@ test("keeps the role of an active citizen", async () => {
     assignedAt: daysAgo(MAX_AGE_DAYS + 10),
   });
 
-  await removeExpiredRoles();
+  const { context } = createTestApplicationContext({ now: NOW });
+
+  await removeExpiredRoleAssignments(context, { now: NOW });
 
   expect(await hasRole(citizen.id)).toBe(true);
 });
@@ -136,7 +143,9 @@ test("uses the maximum age of each role", async () => {
     },
   });
 
-  await removeExpiredRoles();
+  const { context } = createTestApplicationContext({ now: NOW });
+
+  await removeExpiredRoleAssignments(context, { now: NOW });
 
   expect(
     await prisma.roleAssignment.findMany({
@@ -153,19 +162,17 @@ test("writes no history for a role that a parallel transaction removed first", a
     assignedAt: daysAgo(MAX_AGE_DAYS + 10),
   });
 
+  const { context, auditEvents } = createTestApplicationContext({ now: NOW });
+
   await runAgainstLockHolder(
     (transaction) =>
       transaction.roleAssignment.deleteMany({
         where: { citizenId: citizen.id },
       }),
-    removeExpiredRoles,
+    () => removeExpiredRoleAssignments(context, { now: NOW }),
   );
 
   expect(await hasRole(citizen.id)).toBe(false);
   expect(await prisma.roleAssignmentChange.count()).toBe(0);
-  expect(
-    await prisma.auditEvent.count({
-      where: { type: AuditEventType.ROLE_AUTO_REMOVED },
-    }),
-  ).toBe(0);
+  expect(auditEvents).toEqual([]);
 });

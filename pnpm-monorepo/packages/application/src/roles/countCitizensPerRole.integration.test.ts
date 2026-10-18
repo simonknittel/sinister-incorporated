@@ -1,7 +1,8 @@
-import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { countCitizensPerRole } from "./countCitizensPerRole";
+import { beforeEach, expect, test } from "vitest";
+import { createTestApplicationContext } from "../../test/applicationContext.js";
+import { truncateAllTables } from "../../test/database.js";
+import { countCitizensPerRole } from "./countCitizensPerRole.js";
 
 /**
  * The scheduler starts the function at midnight in Europe/Berlin. The first
@@ -27,11 +28,6 @@ const readCounts = async () => {
 
 beforeEach(async () => {
   await truncateAllTables();
-  vi.setSystemTime(MIDNIGHT);
-});
-
-afterEach(() => {
-  vi.useRealTimers();
 });
 
 test("stores the counts under the day that just ended in Europe/Berlin", async () => {
@@ -46,13 +42,16 @@ test("stores the counts under the day that just ended in Europe/Berlin", async (
   await prisma.citizen.create({
     data: {
       handle: "deleted-citizen",
-      deletedAt: new Date(),
+      deletedAt: MIDNIGHT,
       roleAssignments: { create: { roleId: pilot.id } },
     },
   });
 
-  await countCitizensPerRole();
+  const { context } = createTestApplicationContext({ now: MIDNIGHT });
 
+  const output = await countCitizensPerRole(context, { now: MIDNIGHT });
+
+  expect(output).toEqual({ roleCount: 2, savedCount: 2 });
   expect(await readCounts()).toEqual([
     { role: "Pilot", day: COUNTED_DAY, count: 1 },
     { role: "Quartermaster", day: COUNTED_DAY, count: 0 },
@@ -68,7 +67,8 @@ test("a second run in the same night keeps the counts of the first run", async (
     },
   });
 
-  await countCitizensPerRole();
+  const { context } = createTestApplicationContext({ now: MIDNIGHT });
+  await countCitizensPerRole(context, { now: MIDNIGHT });
 
   await prisma.citizen.create({
     data: {
@@ -76,8 +76,7 @@ test("a second run in the same night keeps the counts of the first run", async (
       roleAssignments: { create: { roleId: pilot.id } },
     },
   });
-  vi.setSystemTime(REPEATED_RUN);
-  await countCitizensPerRole();
+  await countCitizensPerRole(context, { now: REPEATED_RUN });
 
   expect(await readCounts()).toEqual([
     { role: "Pilot", day: COUNTED_DAY, count: 1 },
