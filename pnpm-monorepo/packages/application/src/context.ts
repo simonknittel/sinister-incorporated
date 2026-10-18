@@ -66,9 +66,13 @@ export interface ApplicationContext {
   readonly log: Logger;
   readonly tracer: Tracer;
   readonly now: () => Date;
+  /**
+   * Null when the host has no changelog entries. The entries are React code
+   * of the Next.js app, thus the Lambda functions give null.
+   */
   readonly changelog: {
     readonly list: () => Promise<ChangelogEntrySource[]>;
-  };
+  } | null;
   /**
    * Replaces the content of a wiki page through the collab server, thus the
    * open editors get the new content. Null when the collab server is not

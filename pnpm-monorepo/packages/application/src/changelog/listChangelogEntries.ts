@@ -1,6 +1,7 @@
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext, ChangelogEntrySource } from "../context.js";
+import { ConflictError } from "../errors.js";
 import {
   cursorSchema,
   pageLimitSchema,
@@ -55,6 +56,7 @@ const compareChangelogEntries = (
  * Reading does not mark the entries as seen. The cursor is the key of an
  * entry.
  *
+ * @throws ConflictError when the host has no changelog
  * @throws ValidationError when no entry of the list has the cursor
  */
 export const listChangelogEntries = async (
@@ -62,6 +64,9 @@ export const listChangelogEntries = async (
   actor: Actor,
   input: ListChangelogEntriesInput,
 ): Promise<ListChangelogEntriesOutput> => {
+  if (!context.changelog)
+    throw new ConflictError("The changelog is not available");
+
   const entries = (await context.changelog.list())
     .filter(
       (entry) =>

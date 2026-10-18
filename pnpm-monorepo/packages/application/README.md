@@ -10,7 +10,7 @@ Each use case has this signature:
 (context: ApplicationContext, actor: Actor, input: Input) => Promise<Output>;
 ```
 
-- `context` gives the services of the app that runs the use case: the Prisma client, the audit events, the notifications, the logger, the tracer, the clock, the changelog, the collab server, the URLs and the signing key (`src/context.ts`).
+- `context` gives the services of the app that runs the use case (the ports, `src/context.ts`): `prisma`, `audit`, `notifications`, `log`, `tracer`, `now`, `changelog`, `collab`, `urls`, `signingKey` and `allowInsecureLoopbackClientIds`. `changelog` and `collab` can be null: then a use case that needs the port throws a `ConflictError`. The shared implementations of the ports are in [`packages/infrastructure`](../infrastructure/README.md).
 - `actor` is the user for whom the use case runs (`src/actor.ts`). The Next.js app builds it from the session, the MCP server from the access token.
 - A use case without a user, for example the public token endpoint of the OAuth server, takes `(context, input)`.
 - The use cases of a feature live in `src/<feature>/` with a barrel `index.ts` that the package index re-exports.
