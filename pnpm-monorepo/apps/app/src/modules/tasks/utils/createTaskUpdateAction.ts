@@ -1,12 +1,16 @@
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import {
   updateTask,
   updateTaskInputSchema,
   type NotifyingTaskWriteOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { mapTaskErrorToActionResponse } from "./mapTaskErrorToActionResponse";
+import { TASK_ERROR_TEXTS } from "./taskErrorTexts";
 
 interface Options {
   /** Maps the fields of the form to the input of `updateTask` */
@@ -35,7 +39,11 @@ export const createTaskUpdateAction = (
           data,
         );
       } catch (error) {
-        return mapTaskErrorToActionResponse(error, { formData, t });
+        return mapApplicationErrorToActionResponse(error, {
+          formData,
+          t,
+          texts: TASK_ERROR_TEXTS,
+        });
       }
 
       refresh();

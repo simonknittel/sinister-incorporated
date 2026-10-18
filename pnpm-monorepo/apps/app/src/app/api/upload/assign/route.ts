@@ -4,7 +4,6 @@ import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { requireAuthenticationApi } from "@/modules/auth/server";
 import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
 import { probeUploadImageDimensions } from "@/modules/common/utils/probeUploadImageDimensions";
-import { EVENT_MANAGE_GUARD_SELECT } from "@/modules/events/queries/eventManageGuardSelect";
 import {
   getDiscordCoverImageWarning,
   getDiscordSyncWarning,
@@ -16,6 +15,7 @@ import {
   getWikiPageScopedContext,
   isWikiScopeFrozen,
 } from "@/modules/wiki/queries/getWikiPageScopedContext";
+import { EVENT_MANAGE_GUARD_SELECT } from "@sam-monorepo/application";
 import { EventSource, WikiPageUploadKind } from "@sam-monorepo/database/client";
 import { NextResponse } from "next/server";
 import * as z from "zod";

@@ -1,3 +1,4 @@
+import { LINEUP_MAX_DEPTH } from "@sam-monorepo/domain";
 import { describe, expect, it } from "vitest";
 import {
   buildPositionTree,
@@ -6,7 +7,6 @@ import {
   getPositionSubtree,
   getSubtreeDepth,
   getSubtreeSize,
-  MAX_LINEUP_DEPTH,
 } from "./positionTree";
 
 /**
@@ -51,12 +51,12 @@ describe("getSubtreeSize", () => {
 
 describe("canPasteSubtree", () => {
   it("allows a subtree which fits into the remaining levels", () => {
-    expect(canPasteSubtree(0, MAX_LINEUP_DEPTH)).toBe(true);
+    expect(canPasteSubtree(0, LINEUP_MAX_DEPTH)).toBe(true);
     expect(canPasteSubtree(3, 1)).toBe(true);
   });
 
   it("rejects a subtree which would exceed the maximum depth", () => {
-    expect(canPasteSubtree(1, MAX_LINEUP_DEPTH)).toBe(false);
+    expect(canPasteSubtree(1, LINEUP_MAX_DEPTH)).toBe(false);
     expect(canPasteSubtree(3, 2)).toBe(false);
   });
 });

@@ -1,3 +1,4 @@
+import type { LineupContainerColumns } from "@sam-monorepo/application";
 import type { EventPosition } from "@sam-monorepo/database/browser";
 
 /**
@@ -98,7 +99,9 @@ export const getLineupPath = (container: EventContainer) => {
  * The container columns of a position row — usable both as a `where` filter
  * that can never match the other container and as `create` data.
  */
-export const eventContainerColumns = (container: EventContainer) => {
+export const eventContainerColumns = (
+  container: EventContainer,
+): LineupContainerColumns => {
   switch (container.kind) {
     case EventContainerKind.Event:
       return { eventId: container.id, templateId: null };

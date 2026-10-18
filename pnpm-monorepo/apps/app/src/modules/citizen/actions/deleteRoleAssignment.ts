@@ -7,8 +7,8 @@ import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import {
   isPrismaError,
   PrismaErrorCode,
-} from "@/modules/common/utils/isPrismaError";
-import { RoleAssignmentChangeType } from "@sam-monorepo/database/client";
+  RoleAssignmentChangeType,
+} from "@sam-monorepo/database/client";
 import { refresh } from "next/cache";
 import * as z from "zod";
 

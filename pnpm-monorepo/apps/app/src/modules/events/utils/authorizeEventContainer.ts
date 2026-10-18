@@ -5,12 +5,12 @@ import {
   ForbiddenError,
   NotFoundError,
   requireManageableEventLineup,
-  type ManageableEventLineupOptions,
+  type ManageableEventOptions,
 } from "@sam-monorepo/application";
 import type { getTranslations } from "next-intl/server";
 import { refresh } from "next/cache";
 import { EventContainerKind, type EventContainer } from "./eventContainer";
-import { toLineupErrorText } from "./lineupErrorResponse";
+import { LINEUP_ERROR_TEXTS } from "./eventErrorTexts";
 
 export type EventContainerAuthorization =
   | { readonly allowed: true; readonly error?: never }
@@ -38,7 +38,7 @@ const rejectContainerConflict = (
 export const authorizeEventContainer = async (
   container: EventContainer,
   t: Awaited<ReturnType<typeof getTranslations>>,
-  options: ManageableEventLineupOptions = {},
+  options: ManageableEventOptions = {},
 ): Promise<EventContainerAuthorization> => {
   switch (container.kind) {
     case EventContainerKind.Event:
@@ -53,7 +53,9 @@ export const authorizeEventContainer = async (
         if (error instanceof ForbiddenError)
           return { allowed: false, error: t("Common.forbidden") };
         if (error instanceof NotFoundError || error instanceof ConflictError)
-          return rejectContainerConflict(toLineupErrorText(error));
+          return rejectContainerConflict(
+            LINEUP_ERROR_TEXTS[error.message] ?? error.message,
+          );
         throw error;
       }
 

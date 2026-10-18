@@ -16,11 +16,11 @@ import {
   type Upload,
   type Variant,
 } from "@sam-monorepo/database/client";
+import { LINEUP_MAX_DEPTH } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { updateEventPositionName } from "../actions/updateEventPositionName";
 import { checkRequirements } from "../utils/checkRequirements";
 import { EventContainerKind } from "../utils/eventContainer";
-import { MAX_LINEUP_DEPTH } from "../utils/positionTree";
 import { CopyEventPositionButton } from "./CopyEventPositionButton";
 import { CreateOrUpdateEventPosition } from "./CreateOrUpdateEventPosition";
 import { DeleteEventPosition } from "./DeleteEventPosition";
@@ -299,7 +299,7 @@ export const Position = ({
 
               {showManage && (
                 <div className="flex items-center justify-center gap-2">
-                  {groupLevel < MAX_LINEUP_DEPTH && (
+                  {groupLevel < LINEUP_MAX_DEPTH && (
                     <CreateOrUpdateEventPosition
                       container={container}
                       parentPositionId={position.id}

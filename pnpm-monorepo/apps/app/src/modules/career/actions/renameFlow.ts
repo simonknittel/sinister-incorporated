@@ -5,11 +5,8 @@ import { createAuthenticatedAction } from "@/modules/actions/utils/createAction"
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import {
-  isPrismaError,
-  PrismaErrorCode,
-} from "@/modules/common/utils/isPrismaError";
-import { SLUG_MAX_LENGTH } from "@/modules/common/utils/slugify";
+import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
+import { SLUG_MAX_LENGTH } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import {

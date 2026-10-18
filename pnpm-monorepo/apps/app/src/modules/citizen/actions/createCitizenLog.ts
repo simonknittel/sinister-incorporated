@@ -6,11 +6,8 @@ import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { lockCitizen } from "@/modules/citizen/utils/lockCitizen";
-import {
-  isPrismaError,
-  PrismaErrorCode,
-} from "@/modules/common/utils/isPrismaError";
 import type { GenericCitizenLogType } from "@/types";
+import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";

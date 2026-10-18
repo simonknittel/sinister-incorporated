@@ -2,7 +2,11 @@
 
 import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import {
   EventChange,
   EventVisibilityType,
@@ -10,12 +14,11 @@ import {
   updateEvent as updateEventUseCase,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { findDescriptionProblem } from "../utils/discordEventDescription";
 import {
   getDiscordSyncWarning,
   syncDiscordEventPublication,
 } from "../utils/discordPublishing";
-import { mapEventErrorToActionResponse } from "../utils/eventActionErrors";
+import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 import { parseEventDetailsFormData } from "../utils/eventFormData";
 
 /** The changes that the Discord event shows */
@@ -37,16 +40,6 @@ export const updateEvent = createAuthenticatedAction(
   "updateEvent",
   updateEventInputSchema,
   async (formData, authentication, data, t) => {
-    /**
-     * A description stored before the limit became smaller reaches the
-     * action untouched, thus the action names the field.
-     */
-    const descriptionProblem = findDescriptionProblem(
-      data.description ?? undefined,
-    );
-    if (descriptionProblem)
-      return { error: descriptionProblem, requestPayload: formData };
-
     let result;
     try {
       result = await updateEventUseCase(
@@ -56,7 +49,11 @@ export const updateEvent = createAuthenticatedAction(
         { syncsDiscordPublication: true },
       );
     } catch (error) {
-      return mapEventErrorToActionResponse(error, formData, t);
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: EVENT_ERROR_TEXTS,
+      });
     }
 
     /**

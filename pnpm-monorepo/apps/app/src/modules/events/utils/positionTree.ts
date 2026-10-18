@@ -1,19 +1,5 @@
 import type { EventPosition } from "@sam-monorepo/database/browser";
-
-/**
- * The lineup is limited to four levels in three independent places: the nested
- * `childPositions` of `getEventById()`, the schema of
- * `updateEventLineupOrder()` and the `groupLevel` check of `<Position />`.
- * Exceeding it hides the deepest positions from the page and makes reordering
- * the lineup fail validation.
- */
-export const MAX_LINEUP_DEPTH = 4;
-
-/**
- * `updateEventLineupOrder()` refuses to reorder a lineup which has more
- * positions than this on a single level.
- */
-export const MAX_POSITIONS_PER_LEVEL = 50;
+import { LINEUP_MAX_DEPTH } from "@sam-monorepo/domain";
 
 interface PositionNode {
   childPositions?: PositionNode[];
@@ -50,7 +36,7 @@ export const getSubtreeSize = (position: PositionNode): number => {
  * ...
  */
 export const canPasteSubtree = (parentLevel: number, subtreeDepth: number) =>
-  parentLevel + subtreeDepth <= MAX_LINEUP_DEPTH;
+  parentLevel + subtreeDepth <= LINEUP_MAX_DEPTH;
 
 interface FlatPosition {
   id: EventPosition["id"];

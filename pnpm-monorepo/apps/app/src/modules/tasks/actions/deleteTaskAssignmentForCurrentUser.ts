@@ -1,10 +1,14 @@
 "use server";
 
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import { dropTask, dropTaskInputSchema } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { mapTaskErrorToActionResponse } from "../utils/mapTaskErrorToActionResponse";
+import { TASK_ERROR_TEXTS } from "../utils/taskErrorTexts";
 
 export const deleteTaskAssignmentForCurrentUser = createAuthenticatedAction(
   "deleteTaskAssignmentForCurrentUser",
@@ -17,7 +21,11 @@ export const deleteTaskAssignmentForCurrentUser = createAuthenticatedAction(
         data,
       );
     } catch (error) {
-      return mapTaskErrorToActionResponse(error, { formData, t });
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: TASK_ERROR_TEXTS,
+      });
     }
 
     refresh();

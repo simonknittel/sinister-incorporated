@@ -14,11 +14,11 @@ import { EventDescriptionField } from "@/modules/events/components/EventDescript
 import { EventDescriptionHint } from "@/modules/events/components/EventDescriptionHint";
 import { WikiRoleSelector } from "@/modules/wiki/components/WikiRoleSelector";
 import { EventVisibility } from "@sam-monorepo/database/browser";
+import { EVENT_NAME_MAX_LENGTH } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { FaGlobe, FaLock, FaSave, FaTrash } from "react-icons/fa";
-import { EVENT_NAME_MAX_LENGTH } from "../utils/eventConstraints";
 import { EventDateTimeField } from "./EventDateTimeField";
 
 interface Props {

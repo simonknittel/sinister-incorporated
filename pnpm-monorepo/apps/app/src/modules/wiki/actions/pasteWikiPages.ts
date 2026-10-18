@@ -13,8 +13,11 @@ import {
 import { log } from "@/modules/logging";
 import {
   getAccessibleWikiPage,
+  resolveWikiPagePlacement,
   WikiPageAccessTier,
+  WikiPagePlacement,
 } from "@sam-monorepo/application";
+import { WIKI_PAGE_TITLE_MAX_LENGTH } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect, unstable_rethrow } from "next/navigation";
@@ -38,16 +41,11 @@ import { findOrCreateWikiTags } from "../utils/findOrCreateWikiTags";
 import { replaceWikiPageContent } from "../utils/replaceWikiPageContent";
 import { resolveVariantWikiRedirectHref } from "../utils/resolveVariantWikiRedirectHref";
 import {
-  resolveWikiPagePlacement,
-  WikiPagePlacement,
-} from "../utils/resolveWikiPagePlacement";
-import {
   WIKI_CLIPBOARD_COOKIE,
   WIKI_CLIPBOARD_COOKIE_PATH,
 } from "../utils/wikiClipboardCookie";
 import { getWikiPageRouteHref, WikiScope } from "../utils/wikiPageHref";
 
-const TITLE_MAX_LENGTH = 128;
 const TITLE_SUFFIX = " (Kopie)";
 
 const SOURCE_GONE_ERROR =
@@ -304,8 +302,10 @@ export const pasteWikiPages = createAuthenticatedAction(
       }
     } else {
       const rootTitle =
-        sourcePage.title.slice(0, TITLE_MAX_LENGTH - TITLE_SUFFIX.length) +
-        TITLE_SUFFIX;
+        sourcePage.title.slice(
+          0,
+          WIKI_PAGE_TITLE_MAX_LENGTH - TITLE_SUFFIX.length,
+        ) + TITLE_SUFFIX;
 
       ({ root, copiedPages } = await copyWikiPageSubtree({
         sourceScoped,

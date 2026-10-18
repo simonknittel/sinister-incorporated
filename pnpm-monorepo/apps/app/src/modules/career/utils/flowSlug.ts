@@ -1,4 +1,4 @@
-import { SLUG_MAX_LENGTH, SLUG_PATTERN } from "@/modules/common/utils/slugify";
+import { SLUG_MAX_LENGTH, SLUG_PATTERN } from "@sam-monorepo/domain";
 
 /**
  * Static segments under `/app/career`. The router matches them before

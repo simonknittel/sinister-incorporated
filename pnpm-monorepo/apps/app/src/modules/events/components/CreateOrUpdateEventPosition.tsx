@@ -446,9 +446,9 @@ const PositionFormatting = ({
         <select
           name="fontSize"
           className="w-full rounded-secondary bg-neutral-900 p-2"
-          defaultValue={defaultFontSize || ""}
+          defaultValue={defaultFontSize || "normal"}
         >
-          <option value="">Standard</option>
+          <option value="normal">Standard</option>
           <option value="large">Groß</option>
         </select>
       </div>

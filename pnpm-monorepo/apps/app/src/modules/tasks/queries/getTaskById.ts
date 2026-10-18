@@ -4,13 +4,13 @@ import {
   throwApplicationErrorForPage,
 } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { findVisibleTask } from "@sam-monorepo/application";
+import { findVisibleTask, NotFoundError } from "@sam-monorepo/application";
 import type { Task } from "@sam-monorepo/database/client";
 import { cache } from "react";
 
 /**
  * The task with the relations of the task page, or null when the viewer
- * cannot see it. The task actions use the same row.
+ * cannot see it. The deletion of a task uses the same row.
  */
 export const getTaskById = cache(
   withTrace("getTaskById", async (id: Task["id"]) => {
@@ -21,6 +21,8 @@ export const getTaskById = cache(
         id,
       );
     } catch (error) {
+      if (error instanceof NotFoundError) return null;
+
       return throwApplicationErrorForPage(error);
     }
   }),

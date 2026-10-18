@@ -1,6 +1,10 @@
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import type { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { EventContainerKind, type EventContainer } from "./eventContainer";
+import {
+  eventContainerColumns,
+  EventContainerKind,
+  type EventContainer,
+} from "./eventContainer";
 
 type AuditEventInput = Parameters<typeof createAuditEvents>[0][number];
 
@@ -56,13 +60,8 @@ export const buildPositionCopiedAuditEvent = (
       createdById,
     };
 
-  const idsOf = (container: EventContainer) =>
-    container.kind === EventContainerKind.Event
-      ? { eventId: container.id, templateId: null }
-      : { eventId: null, templateId: container.id };
-
-  const sourceIds = idsOf(source.container);
-  const targetIds = idsOf(target.container);
+  const sourceIds = eventContainerColumns(source.container);
+  const targetIds = eventContainerColumns(target.container);
 
   return {
     type: AuditEventType.EVENT_TEMPLATE_POSITION_COPIED,

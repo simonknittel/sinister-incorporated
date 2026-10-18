@@ -10,17 +10,6 @@ import type { Event, Prisma, Ship } from "@sam-monorepo/database/client";
  * props it feeds from drifting apart.
  */
 
-/**
- * The freeze window and the manage tier of an event, as
- * `isEventUpdatable()` and `isAllowedToManageEvent()` read them. Both
- * position application actions guard on the event behind the position.
- */
-export const EVENT_FREEZE_WINDOW_SELECT = {
-  id: true,
-  startTime: true,
-  endTime: true,
-} as const satisfies Prisma.EventSelect;
-
 export type EventCitizenReference = Prisma.CitizenGetPayload<{
   select: (typeof EVENT_PAGE_RELATIONS_SELECT)["managers"]["select"];
 }>;

@@ -10,11 +10,11 @@ import {
 import { Textarea } from "@/modules/common/components/form/Textarea";
 import { Markdown } from "@/modules/common/components/Markdown";
 import type { Task } from "@sam-monorepo/database/browser";
+import { TASK_DESCRIPTION_MAX_LENGTH } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useState } from "react";
 import { FaPen, FaSave, FaTimes } from "react-icons/fa";
 import { updateTaskDescription } from "../actions/updateTaskDescription";
-import { TASK_DESCRIPTION_MAX_LENGTH } from "../utils/taskConstraints";
 import { TaskDescriptionHint } from "./TaskDescriptionHint";
 
 interface Props {

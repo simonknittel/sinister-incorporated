@@ -1,7 +1,11 @@
 "use server";
 
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import {
   createTaskInputSchema,
   createTask as createTaskUseCase,
@@ -11,8 +15,7 @@ import {
 } from "@sam-monorepo/application";
 import { TaskRewardType, TaskVisibility } from "@sam-monorepo/database/client";
 import { refresh } from "next/cache";
-import { mapTaskErrorToActionResponse } from "../utils/mapTaskErrorToActionResponse";
-import { parseWallTimeField } from "../utils/parseWallTimeField";
+import { TASK_ERROR_TEXTS } from "../utils/taskErrorTexts";
 
 /**
  * The form sends the values of the Prisma enums, the use case takes the
@@ -38,7 +41,8 @@ const parseCreateTaskForm = (formData: FormData) => {
           ? formData.get("rewardTypeTextValue")
           : Number(formData.get("rewardSilcValue")),
     },
-    expires_at: parseWallTimeField(formData, "expiresAt") ?? undefined,
+    // The wall time of the form, in the time zone of the organization
+    expires_at: formData.get("expiresAt") || undefined,
     repeatable: Number(formData.get("repeatable")),
     assignment_limit: assignmentLimit ? Number(assignmentLimit) : null,
     required_role_ids: formData.getAll("requiredRole[]"),
@@ -60,7 +64,11 @@ export const createTask = createAuthenticatedAction(
         data,
       );
     } catch (error) {
-      return mapTaskErrorToActionResponse(error, { formData, t });
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: TASK_ERROR_TEXTS,
+      });
     }
 
     refresh();

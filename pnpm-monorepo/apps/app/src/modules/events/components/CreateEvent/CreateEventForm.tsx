@@ -18,10 +18,10 @@ import {
   EventVisibility,
   type EventDiscordPublishTarget,
 } from "@sam-monorepo/database/browser";
+import { EVENT_NAME_MAX_LENGTH } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useId, useState } from "react";
 import { FaGlobe, FaLock, FaSave } from "react-icons/fa";
-import { EVENT_NAME_MAX_LENGTH } from "../../utils/eventConstraints";
 import { DiscordPublishTargetFields } from "../DiscordPublishTargetFields";
 import { EventCoverImageField } from "../EventCoverImageField";
 import { EventDateTimeField } from "../EventDateTimeField";

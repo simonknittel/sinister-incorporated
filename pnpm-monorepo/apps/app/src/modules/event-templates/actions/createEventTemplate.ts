@@ -5,9 +5,11 @@ import { createAuthenticatedAction } from "@/modules/actions/utils/createAction"
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { probeUploadImageDimensions } from "@/modules/common/utils/probeUploadImageDimensions";
-import { DISCORD_EVENT_DESCRIPTION_MAX_LENGTH } from "@/modules/discord/utils/guildScheduledEventPayload";
 import { findDescriptionProblem } from "@/modules/events/utils/discordEventDescription";
-import { buildBriefingRootPageSeed } from "@sam-monorepo/domain";
+import {
+  buildBriefingRootPageSeed,
+  DISCORD_EVENT_DESCRIPTION_MAX_LENGTH,
+} from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import * as z from "zod";

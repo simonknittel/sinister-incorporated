@@ -11,12 +11,12 @@ import {
   WikiPageVisibility,
   type Prisma,
 } from "@sam-monorepo/database/client";
+import { slugifyWikiPageTitle } from "@sam-monorepo/domain";
 import { compareWikiPagesByOrder } from "@sam-monorepo/wiki-editor/helpers";
 import type { WikiSharedContextPage } from "../queries/getWikiContext";
 import type { WikiPageScopedContext } from "../queries/getWikiPageScopedContext";
 import { collectVisibleWikiSubtree } from "./collectVisibleWikiSubtree";
 import { findOrCreateWikiTags } from "./findOrCreateWikiTags";
-import { slugifyWikiPageTitle } from "./slugifyWikiPageTitle";
 import { WikiScope } from "./wikiPageHref";
 
 const TRANSACTION_TIMEOUT_MS = 30_000;

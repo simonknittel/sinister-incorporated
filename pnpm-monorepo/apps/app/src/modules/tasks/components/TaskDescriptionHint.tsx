@@ -1,5 +1,5 @@
 import { Link } from "@/modules/common/components/Link";
-import { TASK_DESCRIPTION_MAX_LENGTH } from "../utils/taskConstraints";
+import { TASK_DESCRIPTION_MAX_LENGTH } from "@sam-monorepo/domain";
 
 /** The hint below the description field of a task. */
 export const TaskDescriptionHint = () => {

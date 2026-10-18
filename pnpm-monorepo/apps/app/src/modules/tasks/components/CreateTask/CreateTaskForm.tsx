@@ -14,8 +14,12 @@ import { YesNoCheckbox } from "@/modules/common/components/form/YesNoCheckbox";
 import { Link } from "@/modules/common/components/Link";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { createTask } from "@/modules/tasks/actions/createTask";
-import { TASK_DESCRIPTION_MAX_LENGTH } from "@/modules/tasks/utils/taskConstraints";
 import { TaskRewardType, TaskVisibility } from "@sam-monorepo/database/browser";
+import {
+  TASK_DESCRIPTION_MAX_LENGTH,
+  TASK_REWARD_TEXT_MAX_LENGTH,
+  TASK_TITLE_MAX_LENGTH,
+} from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useState } from "react";
 import { FaChevronRight, FaSave } from "react-icons/fa";
@@ -134,7 +138,7 @@ export const CreateTaskForm = ({ className, onSuccess }: Props) => {
         <TextInput
           name="title"
           label="Titel"
-          maxLength={64}
+          maxLength={TASK_TITLE_MAX_LENGTH}
           defaultValue={getDefaultValueWithFallback("title", "")}
           required
           autoFocus
@@ -304,7 +308,8 @@ export const CreateTaskForm = ({ className, onSuccess }: Props) => {
             label="Text"
             hint={
               <>
-                optional, max. 2048 Zeichen,{" "}
+                optional, max.{" "}
+                {TASK_REWARD_TEXT_MAX_LENGTH.toLocaleString("de-DE")} Zeichen,{" "}
                 <Link
                   href="https://github.github.com/gfm/"
                   target="_blank"
@@ -314,7 +319,7 @@ export const CreateTaskForm = ({ className, onSuccess }: Props) => {
                 </Link>
               </>
             }
-            maxLength={2048}
+            maxLength={TASK_REWARD_TEXT_MAX_LENGTH}
             defaultValue={getDefaultValueWithFallback(
               "rewardTypeTextValue",
               "",

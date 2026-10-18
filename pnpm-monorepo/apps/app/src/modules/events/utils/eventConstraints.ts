@@ -1,16 +1,5 @@
 import { env } from "@/env";
 
-/**
- * The forms run in the browser and cannot import the application package,
- * thus they have a copy of its limit. The use cases check the limit of the
- * package (`EVENT_NAME_MAX_LENGTH` in `packages/application/src/events`).
- * Change both together.
- */
-export const EVENT_NAME_MAX_LENGTH = 128;
-
-/** A copy of the limit of the application package, see `EVENT_NAME_MAX_LENGTH` */
-export const EVENT_MAX_VISIBILITY_ROLES = 50;
-
 export const getEventPath = (eventId: string) => `/app/events/${eventId}`;
 
 /**

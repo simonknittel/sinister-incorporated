@@ -5,17 +5,15 @@ import { createAuthenticatedAction } from "@/modules/actions/utils/createAction"
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import { areActiveReceivers } from "@sam-monorepo/application";
+import {
+  createSilcTransactionsInTransaction,
+  MAX_SILC_VALUE,
+} from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
-import {
-  areActiveReceivers,
-  INACTIVE_RECEIVER_ERROR,
-} from "../utils/activeReceivers";
-import {
-  announceSilcTransactions,
-  createSilcTransactionsInTransaction,
-} from "../utils/createSilcTransactions";
-import { MAX_SILC_VALUE } from "../utils/silcValueLimit";
+import { INACTIVE_RECEIVER_ERROR } from "../utils/activeReceivers";
+import { announceSilcTransactions } from "../utils/createSilcTransactions";
 
 const schema = z.object({
   receiverIds: z.array(z.string().trim().cuid()).min(1).max(250), // Arbitrary (untested) limit to prevent DDoS
@@ -42,7 +40,7 @@ export const createSilcTransaction = createAuthenticatedAction(
         error: t("Common.forbidden"),
         requestPayload: formData,
       };
-    if (!(await areActiveReceivers(data.receiverIds))) {
+    if (!(await areActiveReceivers(prisma, data.receiverIds))) {
       /** A different user deleted a receiver, and the page must show it */
       return rejectConflict(INACTIVE_RECEIVER_ERROR, formData);
     }

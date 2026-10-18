@@ -7,11 +7,8 @@ import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { CITIZEN_LOG_GUARD_SELECT } from "@/modules/citizen/queries/citizenLogTableSelect";
 import { lockCitizen } from "@/modules/citizen/utils/lockCitizen";
-import {
-  isPrismaError,
-  PrismaErrorCode,
-} from "@/modules/common/utils/isPrismaError";
 import { getNotePermissionAttributes } from "@sam-monorepo/application";
+import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";

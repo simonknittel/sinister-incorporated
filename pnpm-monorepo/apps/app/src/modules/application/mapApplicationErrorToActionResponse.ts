@@ -8,15 +8,22 @@ import {
 } from "@sam-monorepo/application";
 import type { getTranslations } from "next-intl/server";
 
+/**
+ * The texts of the app for the messages of the typed errors, by message. The
+ * use cases write the messages in English and take them from an enum of
+ * their group (for example `EventErrorMessage`).
+ */
+export type ApplicationErrorTexts = Readonly<Partial<Record<string, string>>>;
+
 interface Options {
   readonly formData: FormData;
   readonly t: Awaited<ReturnType<typeof getTranslations>>;
   /**
-   * The use cases write the message of a conflict in English for the MCP
-   * clients. Give the translated text for the conflicts of the action.
-   * Without it, the response shows the English message.
+   * The texts of the messages that the action can get. A message without a
+   * text gets the common text of its error class, a conflict its English
+   * message.
    */
-  readonly conflictMessage?: (error: ConflictError) => string;
+  readonly texts?: ApplicationErrorTexts;
 }
 
 /**
@@ -28,19 +35,28 @@ interface Options {
  */
 export const mapApplicationErrorToActionResponse = (
   error: unknown,
-  { formData, t, conflictMessage }: Options,
+  { formData, t, texts = {} }: Options,
 ): ActionResponse => {
   if (error instanceof ForbiddenError)
-    return { error: t("Common.forbidden"), requestPayload: formData };
+    return {
+      error: texts[error.message] ?? t("Common.forbidden"),
+      requestPayload: formData,
+    };
 
   if (error instanceof NotFoundError)
-    return rejectConflict(t("Common.notFound"), formData);
+    return rejectConflict(
+      texts[error.message] ?? t("Common.notFound"),
+      formData,
+    );
 
   if (error instanceof ConflictError)
-    return rejectConflict(conflictMessage?.(error) ?? error.message, formData);
+    return rejectConflict(texts[error.message] ?? error.message, formData);
 
   if (error instanceof ValidationError)
-    return { error: t("Common.badRequest"), requestPayload: formData };
+    return {
+      error: texts[error.message] ?? t("Common.badRequest"),
+      requestPayload: formData,
+    };
 
   throw error;
 };

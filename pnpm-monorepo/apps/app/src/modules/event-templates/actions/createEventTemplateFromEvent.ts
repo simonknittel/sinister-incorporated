@@ -5,7 +5,6 @@ import { createAuthenticatedAction } from "@/modules/actions/utils/createAction"
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { EVENT_MANAGE_GUARD_SELECT } from "@/modules/events/queries/eventManageGuardSelect";
 import {
   CLONABLE_POSITION_SELECT,
   clonePositions,
@@ -24,6 +23,7 @@ import {
 } from "@/modules/uploads/utils/copyUpload";
 import { getEventWikiContext } from "@/modules/wiki/queries/getEventWikiContext";
 import { copyBriefingTree } from "@/modules/wiki/utils/copyBriefingTree";
+import { EVENT_MANAGE_GUARD_SELECT } from "@sam-monorepo/application";
 import {
   EventDiscordPublishTarget,
   EventSource,

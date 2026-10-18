@@ -1,8 +1,5 @@
-import {
-  isPrismaError,
-  PrismaErrorCode,
-} from "@/modules/common/utils/isPrismaError";
 import { log } from "@/modules/logging";
+import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 

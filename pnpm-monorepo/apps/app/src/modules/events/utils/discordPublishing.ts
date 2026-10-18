@@ -23,10 +23,8 @@ import {
 } from "@/modules/discord/utils/guildScheduledEvents";
 import { log } from "@/modules/logging";
 import { EventDiscordPublishTarget } from "@sam-monorepo/database/client";
-import {
-  buildDiscordEventDescription,
-  EVENT_DESCRIPTION_MAX_LENGTH,
-} from "./discordEventDescription";
+import { buildDiscordEventDescription } from "@sam-monorepo/domain";
+import { EVENT_DESCRIPTION_MAX_LENGTH } from "./discordEventDescription";
 import type { DiscordPublishFields } from "./discordPublishFields";
 import { getEventUrl } from "./eventConstraints";
 

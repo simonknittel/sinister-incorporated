@@ -1,13 +1,17 @@
 "use server";
 
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import {
   removeEventManager,
   removeEventManagerInputSchema,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { mapEventErrorToActionResponse } from "../utils/eventActionErrors";
+import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
 export const deleteManager = createAuthenticatedAction(
   "deleteManager",
@@ -20,7 +24,11 @@ export const deleteManager = createAuthenticatedAction(
         data,
       );
     } catch (error) {
-      return mapEventErrorToActionResponse(error, formData, t);
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: EVENT_ERROR_TEXTS,
+      });
     }
 
     refresh();

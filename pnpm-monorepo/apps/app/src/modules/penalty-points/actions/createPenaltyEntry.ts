@@ -6,10 +6,10 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
-import { wallTimeSchema } from "@/modules/common/utils/wallTimeSchema";
 import {
   createPenaltyEntryInputSchema,
   createPenaltyEntry as createPenaltyEntryUseCase,
+  PenaltyEntryErrorMessage,
   type CreatePenaltyEntryOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
@@ -29,8 +29,10 @@ export const createPenaltyEntry = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        // The only conflict: a different user deleted the citizen
-        conflictMessage: () => "Der Citizen ist gelöscht.",
+        texts: {
+          [PenaltyEntryErrorMessage.CitizenDeleted]:
+            "Der Citizen ist gelöscht.",
+        },
       });
     }
 
@@ -48,11 +50,8 @@ export const createPenaltyEntry = createAuthenticatedAction(
       citizen_id: formData.get("citizenId"),
       points: Number(formData.get("points")),
       reason: formData.has("reason") ? formData.get("reason") : undefined,
-      // The form sends a wall time in the time zone of the organization
-      expires_at:
-        formData.has("expiresAt") && formData.get("expiresAt") !== ""
-          ? wallTimeSchema.parse(formData.get("expiresAt")).toISOString()
-          : undefined,
+      // The wall time of the form, in the time zone of the organization
+      expires_at: formData.get("expiresAt") || undefined,
     }),
   },
 );

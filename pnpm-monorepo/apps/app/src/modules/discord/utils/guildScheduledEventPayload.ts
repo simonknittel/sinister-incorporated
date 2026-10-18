@@ -1,3 +1,4 @@
+import { DISCORD_EVENT_DESCRIPTION_MAX_LENGTH } from "@sam-monorepo/domain";
 import {
   DiscordChannelType,
   DiscordScheduledEventEntityType,
@@ -15,9 +16,12 @@ export const getGuildScheduledEventPath = (
 ) =>
   `events/${encodeURIComponent(guildId)}/${encodeURIComponent(scheduledEventId)}`;
 
-/** https://discord.com/developers/docs/resources/guild-scheduled-event */
+/**
+ * https://discord.com/developers/docs/resources/guild-scheduled-event. The
+ * cap of the description is `DISCORD_EVENT_DESCRIPTION_MAX_LENGTH` of the
+ * domain package, because the use cases of the events need it too.
+ */
 export const DISCORD_EVENT_NAME_MAX_LENGTH = 100;
-export const DISCORD_EVENT_DESCRIPTION_MAX_LENGTH = 1000;
 export const DISCORD_EVENT_LOCATION_MAX_LENGTH = 100;
 
 /**

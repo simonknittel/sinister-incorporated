@@ -1,7 +1,7 @@
 import {
   EVENT_MAX_VISIBILITY_ROLES,
   EVENT_NAME_MAX_LENGTH,
-} from "@/modules/events/utils/eventConstraints";
+} from "@sam-monorepo/domain";
 
 /**
  * A template's bounds are the event's bounds, so a prefill can never exceed

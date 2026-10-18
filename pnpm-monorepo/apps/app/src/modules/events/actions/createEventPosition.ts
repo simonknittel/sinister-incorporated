@@ -1,11 +1,16 @@
 "use server";
 
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import {
   createEventPosition as createEventPositionUseCase,
+  idSchema,
   insertLineupPosition,
   newPositionFieldsSchema,
 } from "@sam-monorepo/application";
@@ -19,12 +24,12 @@ import {
   EventContainerKind,
   toTemplateContainer,
 } from "../utils/eventContainer";
-import { mapLineupErrorToActionResponse } from "../utils/lineupErrorResponse";
+import { LINEUP_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
 /** The lineup editor also adds the positions of an event template */
 const schema = newPositionFieldsSchema.extend({
   container_kind: z.enum(EventContainerKind),
-  container_id: z.string().min(1).max(64),
+  container_id: idSchema,
 });
 
 export const createEventPosition = createAuthenticatedAction(
@@ -76,7 +81,11 @@ export const createEventPosition = createAuthenticatedAction(
           );
       }
     } catch (error) {
-      return mapLineupErrorToActionResponse(error, formData, t);
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: LINEUP_ERROR_TEXTS,
+      });
     }
 
     refresh();

@@ -4,7 +4,7 @@ import { ActionErrorNote } from "@/modules/actions/components/ActionErrorNote";
 import { useAction } from "@/modules/actions/utils/useAction";
 import { TextInput } from "@/modules/common/components/form/TextInput";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
-import { SLUG_MAX_LENGTH, slugify } from "@/modules/common/utils/slugify";
+import { SLUG_MAX_LENGTH, slugify } from "@sam-monorepo/domain";
 import { useId, useState } from "react";
 import { FaSave } from "react-icons/fa";
 import { createFlow } from "../actions/createFlow";

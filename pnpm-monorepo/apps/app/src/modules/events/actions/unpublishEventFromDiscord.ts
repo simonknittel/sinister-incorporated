@@ -3,10 +3,10 @@
 import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
+import { EVENT_MANAGE_GUARD_SELECT } from "@sam-monorepo/application";
 import { EventSource } from "@sam-monorepo/database/client";
 import { refresh } from "next/cache";
 import * as z from "zod";
-import { EVENT_MANAGE_GUARD_SELECT } from "../queries/eventManageGuardSelect";
 import {
   DiscordSyncOutcome,
   removeDiscordEventPublication,

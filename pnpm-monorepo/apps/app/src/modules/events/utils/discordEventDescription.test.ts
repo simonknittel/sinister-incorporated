@@ -1,4 +1,7 @@
-import { DISCORD_EVENT_DESCRIPTION_MAX_LENGTH } from "@/modules/discord/utils/guildScheduledEventPayload";
+import {
+  buildDiscordEventDescription,
+  DISCORD_EVENT_DESCRIPTION_MAX_LENGTH,
+} from "@sam-monorepo/domain";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const BASE_URL = "https://sam.example.com";
@@ -21,17 +24,13 @@ beforeEach(() => {
 });
 
 describe("buildDiscordEventDescription", () => {
-  test("puts the note below the text of the manager", async () => {
-    const { buildDiscordEventDescription } = await importModule();
-
+  test("puts the note below the text of the manager", () => {
     expect(buildDiscordEventDescription("Fleet-Op um 20 Uhr", EVENT_URL)).toBe(
       `Fleet-Op um 20 Uhr\n\nAnmeldung nur über SAM, nicht über Discord:\n${EVENT_URL}`,
     );
   });
 
-  test("sends the note alone when there is no description", async () => {
-    const { buildDiscordEventDescription } = await importModule();
-
+  test("sends the note alone when there is no description", () => {
     expect(buildDiscordEventDescription(null, EVENT_URL)).toBe(
       `Anmeldung nur über SAM, nicht über Discord:\n${EVENT_URL}`,
     );
@@ -67,8 +66,7 @@ describe("findDescriptionProblem", () => {
 
 describe("EVENT_DESCRIPTION_MAX_LENGTH", () => {
   test("leaves room for the note inside Discord's cap", async () => {
-    const { EVENT_DESCRIPTION_MAX_LENGTH, buildDiscordEventDescription } =
-      await importModule();
+    const { EVENT_DESCRIPTION_MAX_LENGTH } = await importModule();
 
     const description = "a".repeat(EVENT_DESCRIPTION_MAX_LENGTH);
 

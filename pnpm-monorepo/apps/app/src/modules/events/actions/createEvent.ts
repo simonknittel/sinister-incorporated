@@ -3,7 +3,11 @@
 import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import { probeUploadImageDimensions } from "@/modules/common/utils/probeUploadImageDimensions";
 import { getEventTemplateById } from "@/modules/event-templates/queries/getEventTemplateById";
 import {
@@ -25,7 +29,6 @@ import {
   CLONABLE_POSITION_SELECT,
   clonePositions,
 } from "../utils/clonePositions";
-import { findDescriptionProblem } from "../utils/discordEventDescription";
 import {
   discordPublishFieldsSchema,
   parseDiscordPublishFields,
@@ -35,7 +38,6 @@ import {
   DiscordSyncOutcome,
   resolveDiscordPublishTarget,
 } from "../utils/discordPublishing";
-import { mapEventErrorToActionResponse } from "../utils/eventActionErrors";
 import {
   DISCORD_PUBLISH_FAILED_PARAM,
   getEventPath,
@@ -46,6 +48,7 @@ import {
   toEventContainer,
   toTemplateContainer,
 } from "../utils/eventContainer";
+import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 import { parseEventDetailsFormData } from "../utils/eventFormData";
 import { buildPositionTree } from "../utils/positionTree";
 
@@ -160,14 +163,15 @@ export const createEvent = createAuthenticatedAction(
     } = data;
 
     /**
+     * Authorize the request before the template is loaded. The use case
+     * checks the permission again with the details.
+     */
+    if (!(await authentication.authorize("event", "create")))
+      return { error: t("Common.forbidden"), requestPayload: formData };
+
+    /**
      * Validate the request
      */
-    const descriptionProblem = findDescriptionProblem(
-      input.description ?? undefined,
-    );
-    if (descriptionProblem)
-      return { error: descriptionProblem, requestPayload: formData };
-
     const template = templateId
       ? await prepareTemplate(templateId, {
           copiesCover: keepTemplateCover === true && !coverImageId,
@@ -188,7 +192,11 @@ export const createEvent = createAuthenticatedAction(
         { coverImageId, template: template ?? undefined },
       );
     } catch (error) {
-      return mapEventErrorToActionResponse(error, formData, t);
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: EVENT_ERROR_TEXTS,
+      });
     }
     const eventId = result.event.id;
 

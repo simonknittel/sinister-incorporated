@@ -5,11 +5,12 @@ import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import Button from "@/modules/common/components/Button";
 import { Popover, usePopover } from "@/modules/common/components/Popover";
 import type { EventPosition } from "@sam-monorepo/database/browser";
+import { LINEUP_MAX_DEPTH } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { FaPaste } from "react-icons/fa";
 import { pasteEventPosition } from "../actions/pasteEventPosition";
 import { EventContainerKind } from "../utils/eventContainer";
-import { canPasteSubtree, MAX_LINEUP_DEPTH } from "../utils/positionTree";
+import { canPasteSubtree } from "../utils/positionTree";
 import {
   useLineupClipboard,
   type LineupClipboardEntry,
@@ -148,7 +149,7 @@ const PasteMenu = ({ clipboard, position, groupLevel }: PasteMenuProps) => {
 
       {(!canPasteAfter || !canPasteInside) && (
         <p className="text-sm">
-          Ausgegraute Optionen: Es sind maximal {MAX_LINEUP_DEPTH} Ebenen
+          Ausgegraute Optionen: Es sind maximal {LINEUP_MAX_DEPTH} Ebenen
           erlaubt.
         </p>
       )}

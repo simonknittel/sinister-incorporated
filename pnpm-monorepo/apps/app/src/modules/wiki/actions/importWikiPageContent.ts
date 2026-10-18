@@ -5,6 +5,7 @@ import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { log } from "@/modules/logging";
+import { WIKI_PAGE_CONTENT_JSON_MAX_LENGTH } from "@sam-monorepo/domain";
 import {
   collectWikiIframeSrcs,
   getWikiEditorSchema,
@@ -27,7 +28,7 @@ import { WikiScope } from "../utils/wikiPageHref";
 const schema = z.object({
   id: z.cuid2(),
   /** Tiptap JSON document, stringified — the uploaded file's text */
-  content: z.string().max(2_000_000),
+  content: z.string().max(WIKI_PAGE_CONTENT_JSON_MAX_LENGTH),
 });
 
 /**

@@ -4,7 +4,7 @@ import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import { Button2, Button2Variant } from "@/modules/common/components/Button2";
 import { ConfirmActionButton } from "@/modules/common/components/ConfirmActionButton";
 import { TextInput } from "@/modules/common/components/form/TextInput";
-import { SLUG_MAX_LENGTH } from "@/modules/common/utils/slugify";
+import { SLUG_MAX_LENGTH } from "@sam-monorepo/domain";
 import { FaTrashRestore } from "react-icons/fa";
 import { restoreFlow } from "../actions/restoreFlow";
 

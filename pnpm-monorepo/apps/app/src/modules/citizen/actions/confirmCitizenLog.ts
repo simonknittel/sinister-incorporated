@@ -15,12 +15,13 @@ import {
 } from "@/modules/citizen/utils/citizenLogConfirmation";
 import { lockCitizen } from "@/modules/citizen/utils/lockCitizen";
 import { syncCitizenIdentityAfterLogChange } from "@/modules/citizen/utils/syncCitizenIdentityAfterLogChange";
+import { getNotePermissionAttributes } from "@sam-monorepo/application";
 import {
+  ConfirmationStatus,
   isPrismaError,
   PrismaErrorCode,
-} from "@/modules/common/utils/isPrismaError";
-import { getNotePermissionAttributes } from "@sam-monorepo/application";
-import { ConfirmationStatus, type Prisma } from "@sam-monorepo/database/client";
+  type Prisma,
+} from "@sam-monorepo/database/client";
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";

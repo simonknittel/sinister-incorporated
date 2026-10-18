@@ -4,10 +4,13 @@ import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { lockSilcLedger, updateSilcBalances } from "@sam-monorepo/domain";
+import {
+  lockSilcLedger,
+  MAX_SILC_VALUE,
+  updateSilcBalances,
+} from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
-import { MAX_SILC_VALUE } from "../utils/silcValueLimit";
 
 const schema = z.object({
   transactionId: z.cuid(),

@@ -4,6 +4,7 @@ import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import { LINEUP_MAX_POSITIONS_PER_LEVEL } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import { authorizeEventContainer } from "../utils/authorizeEventContainer";
@@ -22,7 +23,6 @@ import {
   getPositionLevel,
   getPositionSubtree,
   getSubtreeDepth,
-  MAX_POSITIONS_PER_LEVEL,
 } from "../utils/positionTree";
 
 const schema = z.object({
@@ -141,9 +141,9 @@ export const pasteEventPosition = createAuthenticatedAction(
         parentPositionId,
       },
     });
-    if (siblings >= MAX_POSITIONS_PER_LEVEL)
+    if (siblings >= LINEUP_MAX_POSITIONS_PER_LEVEL)
       return {
-        error: `Auf dieser Ebene sind maximal ${MAX_POSITIONS_PER_LEVEL} Posten möglich.`,
+        error: `Auf dieser Ebene sind maximal ${LINEUP_MAX_POSITIONS_PER_LEVEL} Posten möglich.`,
         requestPayload: formData,
       };
 

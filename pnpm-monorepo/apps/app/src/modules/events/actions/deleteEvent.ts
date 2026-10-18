@@ -1,7 +1,11 @@
 "use server";
 
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import { log } from "@/modules/logging";
 import {
   deleteEventInputSchema,
@@ -12,7 +16,7 @@ import {
   DiscordSyncOutcome,
   removeDiscordEventPublication,
 } from "../utils/discordPublishing";
-import { mapEventErrorToActionResponse } from "../utils/eventActionErrors";
+import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
 export const deleteEvent = createAuthenticatedAction(
   "deleteEvent",
@@ -27,7 +31,11 @@ export const deleteEvent = createAuthenticatedAction(
         { removesDiscordPublication: true },
       );
     } catch (error) {
-      return mapEventErrorToActionResponse(error, formData, t);
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: EVENT_ERROR_TEXTS,
+      });
     }
 
     refresh();

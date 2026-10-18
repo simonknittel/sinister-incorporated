@@ -4,14 +4,17 @@ import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  slugifyWikiPageTitle,
+  WIKI_PAGE_TITLE_MAX_LENGTH,
+} from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import { requireAdminableWikiPage } from "../utils/requireAdminableWikiPage";
-import { slugifyWikiPageTitle } from "../utils/slugifyWikiPageTitle";
 
 const schema = z.object({
   id: z.cuid2(),
-  title: z.string().trim().min(1).max(128),
+  title: z.string().trim().min(1).max(WIKI_PAGE_TITLE_MAX_LENGTH),
 });
 
 export const renameWikiPage = createAuthenticatedAction(

@@ -4,11 +4,8 @@ import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import {
-  isPrismaError,
-  PrismaErrorCode,
-} from "@/modules/common/utils/isPrismaError";
 import { deletePermissionStringsReferencing } from "@/modules/roles/utils/deletePermissionStringsReferencing";
+import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
 import { refresh } from "next/cache";
 import * as z from "zod";
 

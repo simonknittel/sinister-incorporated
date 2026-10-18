@@ -22,8 +22,9 @@ interface Props {
 
 /**
  * The input shows and sends a wall time in the time zone of the
- * organization. The action must read the value with `wallTimeSchema`. The
- * display after a save uses the same schema.
+ * organization. The action must read the value as such a wall time, for
+ * example with `dateTimeInputSchema` of the application package. The display
+ * after a save reads it with `wallTimeSchema`.
  */
 export const EditableDateTimeInput = ({
   className,

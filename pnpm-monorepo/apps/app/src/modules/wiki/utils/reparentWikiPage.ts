@@ -1,6 +1,10 @@
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import type { authenticate } from "@/modules/auth/server";
+import {
+  resolveWikiPagePlacement,
+  WikiPagePlacement,
+} from "@sam-monorepo/application";
 import { Prisma } from "@sam-monorepo/database/client";
 import type { getTranslations } from "next-intl/server";
 import * as z from "zod";
@@ -8,10 +12,6 @@ import { buildEventWikiPageMoveReset } from "./buildEventWikiPageMoveReset";
 import { buildWikiPageMoveReset } from "./buildWikiPageMoveReset";
 import { collectWikiPageDescendants } from "./collectWikiPageDescendants";
 import type { ScopedContext, ScopedWikiPage } from "./requireAdminableWikiPage";
-import {
-  resolveWikiPagePlacement,
-  WikiPagePlacement,
-} from "./resolveWikiPagePlacement";
 import { WikiScope } from "./wikiPageHref";
 
 type Authentication = NonNullable<

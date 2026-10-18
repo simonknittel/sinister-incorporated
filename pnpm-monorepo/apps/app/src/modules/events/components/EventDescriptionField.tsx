@@ -3,11 +3,11 @@
 import { DiscordMarkdown } from "@/modules/common/components/DiscordMarkdown";
 import { DiscordFormattingHint } from "@/modules/common/components/form/DiscordFormattingHint";
 import { Textarea } from "@/modules/common/components/form/Textarea";
+import { getDiscordEventDescriptionFooter } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
   EVENT_DESCRIPTION_MAX_LENGTH,
-  getDiscordEventDescriptionFooter,
   PLACEHOLDER_EVENT_URL,
 } from "../utils/discordEventDescription";
 import { getEventUrl } from "../utils/eventConstraints";

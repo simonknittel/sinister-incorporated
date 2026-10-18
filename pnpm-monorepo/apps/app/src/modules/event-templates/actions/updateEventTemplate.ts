@@ -6,7 +6,6 @@ import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { probeUploadImageDimensions } from "@/modules/common/utils/probeUploadImageDimensions";
-import { DISCORD_EVENT_DESCRIPTION_MAX_LENGTH } from "@/modules/discord/utils/guildScheduledEventPayload";
 import { findDescriptionProblem } from "@/modules/events/utils/discordEventDescription";
 import {
   discordPublishFieldsSchema,
@@ -16,6 +15,7 @@ import {
   EventDiscordPublishTarget,
   EventVisibility,
 } from "@sam-monorepo/database/client";
+import { DISCORD_EVENT_DESCRIPTION_MAX_LENGTH } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import { getEventTemplateById } from "../queries/getEventTemplateById";

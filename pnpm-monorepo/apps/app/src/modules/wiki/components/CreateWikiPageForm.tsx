@@ -8,6 +8,7 @@ import { TextInput } from "@/modules/common/components/form/TextInput";
 import YesNoCheckbox from "@/modules/common/components/form/YesNoCheckbox";
 import type { EventContainer } from "@/modules/events/utils/eventContainer";
 import { api } from "@/trpc/react";
+import { WIKI_PAGE_TITLE_MAX_LENGTH } from "@sam-monorepo/domain";
 import { useId, useState } from "react";
 import { FaSave } from "react-icons/fa";
 import { createWikiPage } from "../actions/createWikiPage";
@@ -84,7 +85,7 @@ export const CreateWikiPageForm = ({
       <TextInput
         name="title"
         label="Titel"
-        maxLength={128}
+        maxLength={WIKI_PAGE_TITLE_MAX_LENGTH}
         required
         autoFocus
       />
