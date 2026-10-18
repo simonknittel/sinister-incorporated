@@ -16,9 +16,9 @@ export type FindSessionIdByTokenInput = z.infer<
  * Resolves the session token to the id of its session, or to null when no
  * session has the token. The token is a secret: the use case gives the id
  * only, thus the token stays out of everything downstream, and it never goes
- * into a log or into an error. The use case has no actor, because the
- * caller needs the session to build the actor. A tool of the MCP server must
- * not call it.
+ * into a log or into an error. The use case has no actor, because the caller
+ * needs the session to build the actor. See the exceptions in the README of
+ * the package.
  */
 export const findSessionIdByToken = async (
   context: ApplicationContext,

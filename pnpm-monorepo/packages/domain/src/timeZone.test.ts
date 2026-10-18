@@ -5,7 +5,6 @@
 
 import { describe, expect, test } from "vitest";
 import {
-  addDaysToLocalDate,
   getLocalDate,
   getLocalDateKey,
   getStartOfLocalDay,
@@ -235,37 +234,6 @@ describe("getStartOfLocalDay", () => {
         "America/Santiago",
       ).toISOString(),
     ).toBe("2026-09-06T04:00:00.000Z");
-  });
-});
-
-describe("addDaysToLocalDate", () => {
-  test.each([
-    [
-      "the next day",
-      { year: 2026, month: 10, day: 25 },
-      1,
-      { year: 2026, month: 10, day: 26 },
-    ],
-    [
-      "a month rollover",
-      { year: 2026, month: 3, day: 1 },
-      -1,
-      { year: 2026, month: 2, day: 28 },
-    ],
-    [
-      "a leap day",
-      { year: 2028, month: 3, day: 1 },
-      -1,
-      { year: 2028, month: 2, day: 29 },
-    ],
-    [
-      "a year rollover",
-      { year: 2026, month: 1, day: 1 },
-      -1,
-      { year: 2025, month: 12, day: 31 },
-    ],
-  ])("%s", (_description, date, days, expectedDate) => {
-    expect(addDaysToLocalDate(date, days)).toEqual(expectedDate);
   });
 });
 

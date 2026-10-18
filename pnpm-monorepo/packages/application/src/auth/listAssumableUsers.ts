@@ -29,8 +29,8 @@ export const ASSUMABLE_USER_SELECT = {
  * The users that an admin can assume, sorted by name. It leaves out the own
  * account of the admin, which the session ignores. The caller checks that an
  * admin is behind the session: the actor during an assume is the assumed
- * user, thus the use case has no actor. A tool of the MCP server must not
- * call it without a check of its own.
+ * user, thus the use case has no actor. See the exceptions in the README of
+ * the package.
  */
 export const listAssumableUsers = (
   context: ApplicationContext,

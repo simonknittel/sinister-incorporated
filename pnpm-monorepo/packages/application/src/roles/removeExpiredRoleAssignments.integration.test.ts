@@ -1,16 +1,19 @@
 import { prisma } from "@sam-monorepo/database";
 import { AuditEventType } from "@sam-monorepo/domain";
 import { beforeEach, expect, test } from "vitest";
-import { createTestApplicationContext } from "../../test/applicationContext.js";
+import {
+  createTestApplicationContext,
+  TEST_NOW,
+} from "../../test/applicationContext.js";
 import { truncateAllTables } from "../../test/database.js";
 import { runAgainstLockHolder } from "../../test/locks.js";
 import { removeExpiredRoleAssignments } from "./removeExpiredRoleAssignments.js";
 
-const NOW = new Date("2026-06-15T10:00:00.000Z");
-const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-const MAX_AGE_DAYS = 30;
+const ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+const MAXIMUM_AGE_DAYS = 30;
 
-const daysAgo = (days: number) => new Date(NOW.getTime() - days * ONE_DAY_MS);
+const daysAgo = (days: number) =>
+  new Date(TEST_NOW.getTime() - days * ONE_DAY_IN_MILLISECONDS);
 
 const createAssignment = async ({
   handle,
@@ -25,7 +28,7 @@ const createAssignment = async ({
 }) => {
   const role = await prisma.role.upsert({
     where: { name: "Expiring" },
-    create: { name: "Expiring", maxAgeDays: MAX_AGE_DAYS },
+    create: { name: "Expiring", maxAgeDays: MAXIMUM_AGE_DAYS },
     update: {},
   });
 
@@ -52,12 +55,12 @@ beforeEach(async () => {
 test("removes the expired role of an inactive citizen with a login", async () => {
   const citizen = await createAssignment({
     handle: "inactive",
-    lastSeenAt: daysAgo(MAX_AGE_DAYS + 5),
-    assignedAt: daysAgo(MAX_AGE_DAYS + 10),
+    lastSeenAt: daysAgo(MAXIMUM_AGE_DAYS + 5),
+    assignedAt: daysAgo(MAXIMUM_AGE_DAYS + 10),
   });
-  const { context, auditEvents } = createTestApplicationContext({ now: NOW });
+  const { context, auditEvents } = createTestApplicationContext();
 
-  const output = await removeExpiredRoleAssignments(context, { now: NOW });
+  const output = await removeExpiredRoleAssignments(context);
 
   expect(output).toEqual({ removedCount: 1 });
   expect(await hasRole(citizen.id)).toBe(false);
@@ -84,13 +87,13 @@ test("keeps the role of a citizen without a login", async () => {
   const citizen = await createAssignment({
     handle: "no-login",
     lastSeenAt: null,
-    assignedAt: daysAgo(MAX_AGE_DAYS + 10),
+    assignedAt: daysAgo(MAXIMUM_AGE_DAYS + 10),
     withLogin: false,
   });
 
-  const { context } = createTestApplicationContext({ now: NOW });
+  const { context } = createTestApplicationContext();
 
-  await removeExpiredRoleAssignments(context, { now: NOW });
+  await removeExpiredRoleAssignments(context);
 
   expect(await hasRole(citizen.id)).toBe(true);
 });
@@ -98,13 +101,13 @@ test("keeps the role of a citizen without a login", async () => {
 test("keeps a role that was assigned after the last visit", async () => {
   const citizen = await createAssignment({
     handle: "recently-assigned",
-    lastSeenAt: daysAgo(MAX_AGE_DAYS + 70),
+    lastSeenAt: daysAgo(MAXIMUM_AGE_DAYS + 70),
     assignedAt: daysAgo(1),
   });
 
-  const { context } = createTestApplicationContext({ now: NOW });
+  const { context } = createTestApplicationContext();
 
-  await removeExpiredRoleAssignments(context, { now: NOW });
+  await removeExpiredRoleAssignments(context);
 
   expect(await hasRole(citizen.id)).toBe(true);
 });
@@ -113,39 +116,39 @@ test("keeps the role of an active citizen", async () => {
   const citizen = await createAssignment({
     handle: "active",
     lastSeenAt: daysAgo(1),
-    assignedAt: daysAgo(MAX_AGE_DAYS + 10),
+    assignedAt: daysAgo(MAXIMUM_AGE_DAYS + 10),
   });
 
-  const { context } = createTestApplicationContext({ now: NOW });
+  const { context } = createTestApplicationContext();
 
-  await removeExpiredRoleAssignments(context, { now: NOW });
+  await removeExpiredRoleAssignments(context);
 
   expect(await hasRole(citizen.id)).toBe(true);
 });
 
 test("uses the maximum age of each role", async () => {
   const shortRole = await prisma.role.create({
-    data: { name: "Short", maxAgeDays: MAX_AGE_DAYS },
+    data: { name: "Short", maxAgeDays: MAXIMUM_AGE_DAYS },
   });
   const longRole = await prisma.role.create({
-    data: { name: "Long", maxAgeDays: 3 * MAX_AGE_DAYS },
+    data: { name: "Long", maxAgeDays: 3 * MAXIMUM_AGE_DAYS },
   });
   const citizen = await prisma.citizen.create({
     data: {
       handle: "two-roles",
-      user: { create: { lastSeenAt: daysAgo(2 * MAX_AGE_DAYS) } },
+      user: { create: { lastSeenAt: daysAgo(2 * MAXIMUM_AGE_DAYS) } },
       roleAssignments: {
         create: [shortRole, longRole].map((role) => ({
           roleId: role.id,
-          createdAt: daysAgo(4 * MAX_AGE_DAYS),
+          createdAt: daysAgo(4 * MAXIMUM_AGE_DAYS),
         })),
       },
     },
   });
 
-  const { context } = createTestApplicationContext({ now: NOW });
+  const { context } = createTestApplicationContext();
 
-  await removeExpiredRoleAssignments(context, { now: NOW });
+  await removeExpiredRoleAssignments(context);
 
   expect(
     await prisma.roleAssignment.findMany({
@@ -158,18 +161,18 @@ test("uses the maximum age of each role", async () => {
 test("writes no history for a role that a parallel transaction removed first", async () => {
   const citizen = await createAssignment({
     handle: "removed-by-manager",
-    lastSeenAt: daysAgo(MAX_AGE_DAYS + 5),
-    assignedAt: daysAgo(MAX_AGE_DAYS + 10),
+    lastSeenAt: daysAgo(MAXIMUM_AGE_DAYS + 5),
+    assignedAt: daysAgo(MAXIMUM_AGE_DAYS + 10),
   });
 
-  const { context, auditEvents } = createTestApplicationContext({ now: NOW });
+  const { context, auditEvents } = createTestApplicationContext();
 
   await runAgainstLockHolder(
     (transaction) =>
       transaction.roleAssignment.deleteMany({
         where: { citizenId: citizen.id },
       }),
-    () => removeExpiredRoleAssignments(context, { now: NOW }),
+    () => removeExpiredRoleAssignments(context),
   );
 
   expect(await hasRole(citizen.id)).toBe(false);

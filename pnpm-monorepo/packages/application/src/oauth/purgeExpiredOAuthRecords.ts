@@ -6,11 +6,6 @@ import { AUTHORIZATION_CODE_LIFETIME_IN_MILLISECONDS } from "./constants.js";
 /** 24 hours after its expiry, a cached client metadata document is deleted */
 const CLIENT_METADATA_RETENTION_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
-export interface PurgeExpiredOAuthRecordsInput {
-  /** The time of the run. A record is expired when it ends before this time. */
-  readonly now: Date;
-}
-
 export interface PurgeExpiredOAuthRecordsOutput {
   readonly authorizationCodeCount: number;
   readonly refreshTokenCount: number;
@@ -19,7 +14,8 @@ export interface PurgeExpiredOAuthRecordsOutput {
 }
 
 /**
- * Deletes the OAuth records of the MCP server that grant nothing anymore:
+ * Deletes the OAuth records of the MCP server that grant nothing anymore at
+ * the time of the run:
  *
  * - Expired authorization codes that the client did not redeem. A used code
  *   stays with its grant, thus its reuse still revokes the grant.
@@ -34,9 +30,9 @@ export interface PurgeExpiredOAuthRecordsOutput {
  */
 export const purgeExpiredOAuthRecords = (
   context: ApplicationContext,
-  { now }: PurgeExpiredOAuthRecordsInput,
 ): Promise<PurgeExpiredOAuthRecordsOutput> =>
   withSpan(context, "purgeExpiredOAuthRecords", async () => {
+    const now = context.now();
     const { count: authorizationCodeCount } =
       await context.prisma.oAuthAuthorizationCode.deleteMany({
         where: { usedAt: null, expiresAt: { lt: now } },

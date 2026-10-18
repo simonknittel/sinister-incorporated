@@ -49,7 +49,7 @@ test("stores the counts under the day that just ended in Europe/Berlin", async (
 
   const { context } = createTestApplicationContext({ now: MIDNIGHT });
 
-  const output = await countCitizensPerRole(context, { now: MIDNIGHT });
+  const output = await countCitizensPerRole(context);
 
   expect(output).toEqual({ roleCount: 2, savedCount: 2 });
   expect(await readCounts()).toEqual([
@@ -67,8 +67,9 @@ test("a second run in the same night keeps the counts of the first run", async (
     },
   });
 
-  const { context } = createTestApplicationContext({ now: MIDNIGHT });
-  await countCitizensPerRole(context, { now: MIDNIGHT });
+  await countCitizensPerRole(
+    createTestApplicationContext({ now: MIDNIGHT }).context,
+  );
 
   await prisma.citizen.create({
     data: {
@@ -76,7 +77,9 @@ test("a second run in the same night keeps the counts of the first run", async (
       roleAssignments: { create: { roleId: pilot.id } },
     },
   });
-  await countCitizensPerRole(context, { now: REPEATED_RUN });
+  await countCitizensPerRole(
+    createTestApplicationContext({ now: REPEATED_RUN }).context,
+  );
 
   expect(await readCounts()).toEqual([
     { role: "Pilot", day: COUNTED_DAY, count: 1 },

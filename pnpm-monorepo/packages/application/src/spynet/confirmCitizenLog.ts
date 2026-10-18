@@ -1,10 +1,5 @@
+import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
 import {
-  isPrismaError,
-  PrismaErrorCode,
-  type Prisma,
-} from "@sam-monorepo/database/client";
-import {
-  ACTIVE_CITIZEN_WHERE,
   AuditEventType,
   ConfirmationValue,
   lockCitizen,
@@ -21,6 +16,7 @@ import { CitizenLogErrorMessage } from "./citizenErrors.js";
 import { syncCitizenIdentityAfterLogChange } from "./citizenIdentitySync.js";
 import {
   authorizeCitizenLogOperation,
+  getCheckedLogWhere,
   requireActiveCitizenLog,
 } from "./citizenLogGuard.js";
 
@@ -117,17 +113,7 @@ export const confirmCitizenLog = (
     )
       throw new ValidationError(CitizenLogErrorMessage.OwnDiscordId);
 
-    /**
-     * The log as the permission check saw it. A different user who moves the
-     * note or deletes the log or its citizen after the check makes the write
-     * fail.
-     */
-    const checkedLogWhere = {
-      id: citizenLog.id,
-      noteTypeId: citizenLog.noteTypeId,
-      classificationLevelId: citizenLog.classificationLevelId,
-      citizen: ACTIVE_CITIZEN_WHERE,
-    } satisfies Prisma.CitizenLogWhereInput;
+    const checkedLogWhere = getCheckedLogWhere(citizenLog);
 
     let isUpdated: boolean;
     try {

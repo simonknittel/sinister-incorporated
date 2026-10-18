@@ -1,14 +1,20 @@
-import { PERMISSION_STRING_PATTERN } from "@sam-monorepo/domain";
+import {
+  PERMISSION_STRING_PATTERN,
+  ROLE_NAME_MAXIMUM_LENGTH,
+} from "@sam-monorepo/domain";
 import * as z from "zod";
 
-/** A role name is much shorter. The limit keeps the input bounded. */
-export const ROLE_NAME_MAX_LENGTH = 255;
-
 /**
- * A role has much fewer permission strings or inherited roles. The limit
- * keeps the writes bounded.
+ * A role has much fewer permission strings or inherited roles, and a citizen
+ * has much fewer roles. The limit keeps the writes bounded.
  */
 export const MAXIMUM_ROLE_RELATIONS = 250;
+
+export const roleNameSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(ROLE_NAME_MAXIMUM_LENGTH);
 
 export const permissionStringSchema = z
   .string()

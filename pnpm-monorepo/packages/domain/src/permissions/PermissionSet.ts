@@ -4,9 +4,7 @@
  * load the data (the session, the role assignments, the flows, the
  * templates, the pages) and give it to the resolvers.
  */
-
-export type GenericCitizenLogType =
-  "handle" | "discord-id" | "teamspeak-id" | "citizen-id" | "community-moniker";
+import type { GenericCitizenLogType } from "../spynet/citizenLogType.js";
 
 export interface PermissionSet {
   resource:

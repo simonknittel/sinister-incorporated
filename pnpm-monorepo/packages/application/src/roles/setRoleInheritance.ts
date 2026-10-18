@@ -2,11 +2,10 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ValidationError } from "../errors.js";
+import { rethrowRecordNotFound, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { RoleErrorMessage } from "./roleErrors.js";
-import { updateExistingRole } from "./roleUpdates.js";
 
 /**
  * Without a refine for the self-inheritance: Zod cannot extend a refined
@@ -54,16 +53,18 @@ export const setRoleInheritance = (
     if (input.role_id === input.inherited_role_id)
       throw new ValidationError(RoleErrorMessage.SelfInheritance);
 
-    await updateExistingRole(() =>
-      context.prisma.role.update({
-        where: { id: input.role_id },
-        data: {
-          inherits: input.enabled
-            ? { connect: { id: input.inherited_role_id } }
-            : { disconnect: { id: input.inherited_role_id } },
-        },
-        select: { id: true },
-      }),
+    await rethrowRecordNotFound(
+      () =>
+        context.prisma.role.update({
+          where: { id: input.role_id },
+          data: {
+            inherits: input.enabled
+              ? { connect: { id: input.inherited_role_id } }
+              : { disconnect: { id: input.inherited_role_id } },
+          },
+          select: { id: true },
+        }),
+      RoleErrorMessage.NotFound,
     );
 
     await context.audit.create([

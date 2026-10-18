@@ -15,20 +15,22 @@ export * from "./audit/index.js";
 export * from "./auth/index.js";
 export * from "./changelog/index.js";
 export type { CitizenReference } from "./citizenReference.js";
-export type {
-  ApplicationContext,
-  ChangelogEntrySource,
-  LogArguments,
-  Logger,
-  Notification,
-  SigningKey,
-  WikiPageContentReplacement,
+export {
+  createApplicationUrls,
+  type ApplicationContext,
+  type ChangelogEntrySource,
+  type LogArguments,
+  type Logger,
+  type Notification,
+  type SigningKey,
+  type WikiPageContentReplacement,
 } from "./context.js";
 export {
   ConflictError,
   ForbiddenError,
   NotFoundError,
   ValidationError,
+  rethrowRecordNotFound,
 } from "./errors.js";
 export * from "./events/index.js";
 export * from "./fleet/index.js";

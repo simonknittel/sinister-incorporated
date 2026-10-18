@@ -6,15 +6,12 @@ import type { ApplicationContext } from "../context.js";
 import { ValidationError } from "../errors.js";
 import { withSpan } from "../withSpan.js";
 import { RoleErrorMessage } from "./roleErrors.js";
-import { ROLE_NAME_MAX_LENGTH } from "./roleInputSchemas.js";
+import { roleNameSchema } from "./roleInputSchemas.js";
 
 export const createRoleInputSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1)
-    .max(ROLE_NAME_MAX_LENGTH)
-    .describe("The name of the new role. Each role has a different name."),
+  name: roleNameSchema.describe(
+    "The name of the new role. Each role has a different name.",
+  ),
 });
 
 export type CreateRoleInput = z.infer<typeof createRoleInputSchema>;

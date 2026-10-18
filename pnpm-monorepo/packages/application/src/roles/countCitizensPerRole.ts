@@ -6,14 +6,6 @@ import {
 import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
 
-export interface CountCitizensPerRoleInput {
-  /**
-   * The time of the run. The run counts the day before it in the time zone
-   * of the organization.
-   */
-  readonly now: Date;
-}
-
 export interface CountCitizensPerRoleOutput {
   /** The number of roles that the run counted */
   readonly roleCount: number;
@@ -23,13 +15,14 @@ export interface CountCitizensPerRoleOutput {
 
 /**
  * Saves the number of active citizens of each role for the day that just
- * ended.
+ * ended: the day before the time of the run in the time zone of the
+ * organization.
  */
 export const countCitizensPerRole = (
   context: ApplicationContext,
-  { now }: CountCitizensPerRoleInput,
 ): Promise<CountCitizensPerRoleOutput> =>
   withSpan(context, "countCitizensPerRole", async () => {
+    const now = context.now();
     const countedDay = getYesterdayDateColumnValue(now);
 
     const [roles, roleCounts] = await context.prisma.$transaction(

@@ -1,21 +1,12 @@
 import {
-  addDaysToLocalDate,
   AuditEventType,
   getLocalDate,
   getStartOfLocalDay,
+  getYesterdayDateColumnValue,
   ORGANIZATION_TIMEZONE,
-  toDateColumnValue,
 } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
-
-export interface CountUniqueLoginsInput {
-  /**
-   * The time of the run. The run counts the day before it in the time zone
-   * of the organization.
-   */
-  readonly now: Date;
-}
 
 export interface CountUniqueLoginsOutput {
   /** The counted day as "YYYY-MM-DD" */
@@ -26,23 +17,23 @@ export interface CountUniqueLoginsOutput {
 }
 
 /**
- * Saves the number of users who visited the app on the day that just ended.
- * The day starts and ends at midnight in the time zone of the organization.
- * The time zone of the process does not change the result.
+ * Saves the number of users who visited the app on the day that just ended:
+ * the day before the time of the run. The day starts and ends at midnight in
+ * the time zone of the organization. The time zone of the process does not
+ * change the result.
  */
 export const countUniqueLogins = (
   context: ApplicationContext,
-  { now }: CountUniqueLoginsInput,
 ): Promise<CountUniqueLoginsOutput> =>
   withSpan(context, "countUniqueLogins", async () => {
+    const now = context.now();
     const today = getLocalDate(now, ORGANIZATION_TIMEZONE);
-    const countedLocalDate = addDaysToLocalDate(today, -1);
+    const startOfToday = getStartOfLocalDay(today, ORGANIZATION_TIMEZONE);
     const startOfCountedDay = getStartOfLocalDay(
-      countedLocalDate,
+      { ...today, day: today.day - 1 },
       ORGANIZATION_TIMEZONE,
     );
-    const startOfToday = getStartOfLocalDay(today, ORGANIZATION_TIMEZONE);
-    const countedDay = toDateColumnValue(countedLocalDate);
+    const countedDay = getYesterdayDateColumnValue(now);
     const date = countedDay.toISOString().slice(0, 10);
 
     const count = await context.prisma.user.count({

@@ -242,24 +242,6 @@ export const getStartOfLocalDay = (
   );
 
 /**
- * The calendar date the given number of days after the date. A negative
- * number gives a date before it. The result rolls over into the next or the
- * previous month and year.
- */
-export const addDaysToLocalDate = (
-  { year, month, day }: LocalDate,
-  days: number,
-): LocalDate => {
-  const shiftedDate = new Date(Date.UTC(year, month - 1, day + days));
-
-  return {
-    year: shiftedDate.getUTCFullYear(),
-    month: shiftedDate.getUTCMonth() + 1,
-    day: shiftedDate.getUTCDate(),
-  };
-};
-
-/**
  * The instant the given number of calendar days before an instant, with the
  * same wall time in the given IANA time zone. The result is the same as the
  * result of `Date#setDate(getDate() - days)` in a process that runs in this

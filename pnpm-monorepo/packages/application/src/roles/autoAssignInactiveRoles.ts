@@ -8,11 +8,6 @@ import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
 import { createRoleAssignmentChanges } from "./roleAssignmentWrites.js";
 
-export interface AutoAssignInactiveRolesInput {
-  /** The time of the run. The inactive days of a role count back from it. */
-  readonly now: Date;
-}
-
 export interface AutoAssignInactiveRolesOutput {
   readonly assignedCount: number;
 }
@@ -26,14 +21,14 @@ interface Candidate {
 
 /**
  * Assigns a role to the citizens who did not visit the app for the inactive
- * days of the role. A citizen without a login or without a known visit is
- * skipped.
+ * days of the role. The inactive days count back from the time of the run.
+ * A citizen without a login or without a known visit is skipped.
  */
 export const autoAssignInactiveRoles = (
   context: ApplicationContext,
-  { now }: AutoAssignInactiveRolesInput,
 ): Promise<AutoAssignInactiveRolesOutput> =>
   withSpan(context, "autoAssignInactiveRoles", async () => {
+    const now = context.now();
     const rolesWithAutoAssign = await context.prisma.role.findMany({
       where: {
         assignAfterInactiveDays: {

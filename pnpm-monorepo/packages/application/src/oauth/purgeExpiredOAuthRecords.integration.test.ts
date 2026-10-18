@@ -1,16 +1,18 @@
 import { prisma } from "@sam-monorepo/database";
 import { AuditEventType } from "@sam-monorepo/domain";
 import { beforeEach, expect, test } from "vitest";
-import { createTestApplicationContext } from "../../test/applicationContext.js";
+import {
+  createTestApplicationContext,
+  TEST_NOW,
+} from "../../test/applicationContext.js";
 import { truncateAllTables } from "../../test/database.js";
 import { purgeExpiredOAuthRecords } from "./purgeExpiredOAuthRecords.js";
 
-const NOW = new Date("2026-06-15T10:00:00.000Z");
 const ONE_MINUTE_IN_MILLISECONDS = 60 * 1000;
 const ONE_DAY_IN_MILLISECONDS = 24 * 60 * ONE_MINUTE_IN_MILLISECONDS;
 
 const minutesFromNow = (minutes: number) =>
-  new Date(NOW.getTime() + minutes * ONE_MINUTE_IN_MILLISECONDS);
+  new Date(TEST_NOW.getTime() + minutes * ONE_MINUTE_IN_MILLISECONDS);
 
 const CLIENT = {
   clientId: "https://client.example.com/metadata",
@@ -88,18 +90,18 @@ const createClientMetadata = (clientId: string, expiresAt: Date) =>
 
 test("deletes expired codes, expired refresh tokens, grants without a token and expired client metadata", async () => {
   const connectedGrant = await createGrant({
-    createdAt: new Date(NOW.getTime() - 40 * ONE_DAY_IN_MILLISECONDS),
+    createdAt: new Date(TEST_NOW.getTime() - 40 * ONE_DAY_IN_MILLISECONDS),
   });
   const redeemedCode = await createCode(connectedGrant.id, {
-    expiresAt: new Date(NOW.getTime() - 40 * ONE_DAY_IN_MILLISECONDS),
-    usedAt: new Date(NOW.getTime() - 40 * ONE_DAY_IN_MILLISECONDS),
+    expiresAt: new Date(TEST_NOW.getTime() - 40 * ONE_DAY_IN_MILLISECONDS),
+    usedAt: new Date(TEST_NOW.getTime() - 40 * ONE_DAY_IN_MILLISECONDS),
   });
   await createRefreshToken(connectedGrant.id, {
     expiresAt: minutesFromNow(-60),
-    usedAt: new Date(NOW.getTime() - 31 * ONE_DAY_IN_MILLISECONDS),
+    usedAt: new Date(TEST_NOW.getTime() - 31 * ONE_DAY_IN_MILLISECONDS),
   });
   const currentRefreshToken = await createRefreshToken(connectedGrant.id, {
-    expiresAt: new Date(NOW.getTime() + ONE_DAY_IN_MILLISECONDS),
+    expiresAt: new Date(TEST_NOW.getTime() + ONE_DAY_IN_MILLISECONDS),
   });
 
   // The client did not redeem the code
@@ -130,9 +132,9 @@ test("deletes expired codes, expired refresh tokens, grants without a token and 
     minutesFromNow(-60),
   );
 
-  const { context, auditEvents } = createTestApplicationContext({ now: NOW });
+  const { context, auditEvents } = createTestApplicationContext();
 
-  const output = await purgeExpiredOAuthRecords(context, { now: NOW });
+  const output = await purgeExpiredOAuthRecords(context);
 
   expect(output).toEqual({
     authorizationCodeCount: 1,

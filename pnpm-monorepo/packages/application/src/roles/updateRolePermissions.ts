@@ -2,13 +2,14 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { rethrowRecordNotFound } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { RoleErrorMessage } from "./roleErrors.js";
 import {
   MAXIMUM_ROLE_RELATIONS,
   permissionStringSchema,
 } from "./roleInputSchemas.js";
-import { updateExistingRole } from "./roleUpdates.js";
 
 export const updateRolePermissionsInputSchema = z.object({
   role_id: idSchema,
@@ -43,28 +44,30 @@ export const updateRolePermissions = (
   withSpan(context, "updateRolePermissions", async () => {
     requirePermission(actor, "role", "manage");
 
-    const role = await updateExistingRole(() =>
-      context.prisma.role.update({
-        where: { id: input.role_id },
-        data: {
-          permissionStrings: {
-            deleteMany: {},
-            createMany: {
-              data: input.permission_strings.map((permissionString) => ({
-                permissionString,
-              })),
-              skipDuplicates: true,
+    const role = await rethrowRecordNotFound(
+      () =>
+        context.prisma.role.update({
+          where: { id: input.role_id },
+          data: {
+            permissionStrings: {
+              deleteMany: {},
+              createMany: {
+                data: input.permission_strings.map((permissionString) => ({
+                  permissionString,
+                })),
+                skipDuplicates: true,
+              },
             },
           },
-        },
-        select: {
-          id: true,
-          permissionStrings: {
-            select: { permissionString: true },
-            orderBy: { permissionString: "asc" },
+          select: {
+            id: true,
+            permissionStrings: {
+              select: { permissionString: true },
+              orderBy: { permissionString: "asc" },
+            },
           },
-        },
-      }),
+        }),
+      RoleErrorMessage.NotFound,
     );
 
     await context.audit.create([

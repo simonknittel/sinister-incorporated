@@ -6,18 +6,18 @@ import type { ApplicationContext } from "../context.js";
  * email.
  */
 export const markEmailConfirmed = async (
-  client: ApplicationContext["prisma"],
+  { prisma }: Pick<ApplicationContext, "prisma">,
   userId: string,
   now: Date,
 ): Promise<void> => {
-  await client.$transaction([
-    client.emailConfirmationToken.deleteMany({
+  await prisma.$transaction([
+    prisma.emailConfirmationToken.deleteMany({
       where: {
         userId,
       },
     }),
 
-    client.user.update({
+    prisma.user.update({
       where: {
         id: userId,
       },

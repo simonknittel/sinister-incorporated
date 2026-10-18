@@ -1,5 +1,8 @@
 import type { ConfirmationStatus } from "@sam-monorepo/database/client";
-import type { GenericCitizenLogType } from "@sam-monorepo/domain";
+import {
+  IDENTITY_LOG_TYPES,
+  type GenericCitizenLogType,
+} from "@sam-monorepo/domain";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import {
@@ -9,7 +12,6 @@ import {
   type CitizenLogTablePageOptions,
   type CitizenLogTablePageRequest,
 } from "./citizenLogTablePage.js";
-import { IDENTITY_LOG_TYPES } from "./identityLogTypes.js";
 import { getReadableCitizenLogWhere } from "./readableCitizenLogWhere.js";
 
 export interface IdentityLogTablePageInput extends CitizenLogTablePageRequest {

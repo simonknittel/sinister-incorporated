@@ -1,5 +1,23 @@
 /**
- * The longest description of a role. The role form of the app and the use
- * cases use the same value.
+ * The limits of the role form of the app. The use cases use the same values.
  */
-export const ROLE_DESCRIPTION_MAX_LENGTH = 2048;
+
+/** A role name is much shorter. The limit keeps the input bounded. */
+export const ROLE_NAME_MAXIMUM_LENGTH = 255;
+
+/** The longest Markdown description of a role */
+export const ROLE_DESCRIPTION_MAXIMUM_LENGTH = 2048;
+
+/**
+ * The days of inactivity after which a citizen loses or gets a role. The
+ * maximum is about 27 years: far above a real period of inactivity.
+ */
+export const ROLE_INACTIVITY_DAYS_MINIMUM = 1;
+export const ROLE_INACTIVITY_DAYS_MAXIMUM = 10_000;
+
+/**
+ * The number of levels of a role. The popover of a role badge shows one
+ * segment for each level.
+ */
+export const ROLE_LEVEL_MINIMUM = 1;
+export const ROLE_LEVEL_MAXIMUM = 100;

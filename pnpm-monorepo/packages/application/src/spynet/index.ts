@@ -123,7 +123,7 @@ export {
   type CitizensGroupedByVisibleRoles,
 } from "./listCitizensGroupedByVisibleRoles.js";
 export {
-  UPCOMING_BIRTHDAYS_HANDLE_QUERY_MAX_LENGTH,
+  UPCOMING_BIRTHDAYS_HANDLE_QUERY_MAXIMUM_LENGTH,
   listUpcomingBirthdays,
   listUpcomingBirthdaysInputSchema,
   type ListUpcomingBirthdaysInput,

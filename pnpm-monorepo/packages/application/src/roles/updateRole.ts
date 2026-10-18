@@ -1,30 +1,31 @@
 import {
   AuditEventType,
-  ROLE_DESCRIPTION_MAX_LENGTH,
+  ROLE_DESCRIPTION_MAXIMUM_LENGTH,
+  ROLE_INACTIVITY_DAYS_MAXIMUM,
+  ROLE_INACTIVITY_DAYS_MINIMUM,
+  ROLE_LEVEL_MAXIMUM,
+  ROLE_LEVEL_MINIMUM,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
+import { NotFoundError, rethrowRecordNotFound } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { RoleErrorMessage } from "./roleErrors.js";
-import { ROLE_NAME_MAX_LENGTH } from "./roleInputSchemas.js";
+import { roleNameSchema } from "./roleInputSchemas.js";
 
-/** About 27 years: far above a real period of inactivity */
-const MAXIMUM_INACTIVITY_DAYS = 10_000;
-
-/** The popover of a role badge shows one segment for each level */
-const MAXIMUM_LEVEL = 100;
-
-const inactivityDaysSchema = z.int().min(1).max(MAXIMUM_INACTIVITY_DAYS);
+const inactivityDaysSchema = z
+  .int()
+  .min(ROLE_INACTIVITY_DAYS_MINIMUM)
+  .max(ROLE_INACTIVITY_DAYS_MAXIMUM);
 
 export const updateRoleInputSchema = z.object({
   role_id: idSchema,
-  name: z.string().min(1).max(ROLE_NAME_MAX_LENGTH),
+  name: roleNameSchema,
   description: z
     .string()
-    .max(ROLE_DESCRIPTION_MAX_LENGTH)
+    .max(ROLE_DESCRIPTION_MAXIMUM_LENGTH)
     .nullish()
     .describe("Markdown. Null removes the description."),
   max_age_days: inactivityDaysSchema
@@ -39,8 +40,8 @@ export const updateRoleInputSchema = z.object({
     ),
   max_level: z
     .int()
-    .min(1)
-    .max(MAXIMUM_LEVEL)
+    .min(ROLE_LEVEL_MINIMUM)
+    .max(ROLE_LEVEL_MAXIMUM)
     .nullish()
     .describe(
       "The number of levels that a citizen must reach to get the permissions of the role. Null removes the levels.",
@@ -83,24 +84,28 @@ export const updateRole = (
     });
     if (!existingRole) throw new NotFoundError(RoleErrorMessage.NotFound);
 
-    const updatedRole = await context.prisma.role.update({
-      where: { id: input.role_id },
-      data: {
-        name: input.name,
-        description: input.description,
-        maxAgeDays: input.max_age_days,
-        assignAfterInactiveDays: input.assign_after_inactive_days,
-        maxLevel: input.max_level,
-      },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        maxAgeDays: true,
-        assignAfterInactiveDays: true,
-        maxLevel: true,
-      },
-    });
+    const updatedRole = await rethrowRecordNotFound(
+      () =>
+        context.prisma.role.update({
+          where: { id: input.role_id },
+          data: {
+            name: input.name,
+            description: input.description,
+            maxAgeDays: input.max_age_days,
+            assignAfterInactiveDays: input.assign_after_inactive_days,
+            maxLevel: input.max_level,
+          },
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            maxAgeDays: true,
+            assignAfterInactiveDays: true,
+            maxLevel: true,
+          },
+        }),
+      RoleErrorMessage.NotFound,
+    );
 
     await context.audit.create([
       {

@@ -3,9 +3,9 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 
 /**
- * Expired sessions stay in the database for another 30 days before the
- * midnight automation deletes them, so the list defaults to the ones that
- * still grant access.
+ * Expired sessions stay in the database for some days before
+ * `purgeExpiredAuthenticationRecords` deletes them, so the list defaults to
+ * the ones that still grant access.
  */
 export enum SessionStatus {
   Active = "active",

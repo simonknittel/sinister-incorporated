@@ -36,7 +36,7 @@ export const unbanUser = (
       where: { id: input.user_id },
       select: { id: true },
     });
-    if (!user) throw new NotFoundError("The user does not exist");
+    if (!user) throw new NotFoundError(UserErrorMessage.NotFound);
 
     // Only one of two parallel unbans finds the user banned
     const { count } = await context.prisma.user.updateMany({

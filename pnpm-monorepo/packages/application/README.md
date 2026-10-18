@@ -22,13 +22,13 @@ Obey these rules:
 - **App-only options.** An option that only the app can give (for example an upload, a template or the Discord sync of the events: `CreateEventOptions`, `UpdateEventOptions`, `DeleteEventOptions`, and `PageOptions` of the lists) is a fourth parameter, not a field of the input schema. The MCP tools call the use case without it.
 - **Key case.** The input schemas and the outputs that the MCP tools use have lowercase snake_case keys. The outputs that only the app uses have camelCase keys.
 - **Shared schemas.** Take the page size, the cursor and the ids from `src/pagination.ts` (`pageLimitSchema`, `cursorSchema`, `idSchema`), and the times from `src/dateTime.ts` (`dateTimeInputSchema`: an ISO 8601 instant, or a wall time in the time zone of the organization, which the forms of the app send). Take the limits that the forms of the app also need (lengths, caps) from the `domain` package. A list that sorts in memory pages with `paginateByCursor()`, which refuses an unknown cursor with a `ValidationError`. A list that the app pages in both directions takes a `PageOptions` parameter, not fields in its input schema: the direction, and `UnknownCursorBehavior.FirstPage` for the stale cursors in the URLs of the app.
-- **Typed errors.** Throw the errors of `src/errors.ts`: `ForbiddenError`, `NotFoundError`, `ConflictError` and `ValidationError`. Write a short English message. Do not use translated strings: each app maps the errors to its own response. When an app shows its own text for a message, the message is a member of a message enum of the feature (for example `EventErrorMessage`, `LineupErrorMessage`, `TaskErrorMessage`), thrown through the base classes. The Next.js app maps the errors with `mapApplicationErrorToActionResponse()` and a record of texts by message; a not-found error and a conflict refresh the page.
+- **Typed errors.** Throw the errors of `src/errors.ts`: `ForbiddenError`, `NotFoundError`, `ConflictError` and `ValidationError`. Write a short English message. Do not use translated strings: each app maps the errors to its own response. When an app shows its own text for a message, the message is a member of a message enum of the feature (for example `EventErrorMessage`, `LineupErrorMessage`, `TaskErrorMessage`), thrown through the base classes. The Next.js app maps the errors with `mapApplicationErrorToActionResponse()` and a record of texts by message; a not-found error and a conflict refresh the page. A write whose record can go away after the read (the Prisma error P2025) runs in `rethrowRecordNotFound()`, which throws a `NotFoundError` with the message of the feature.
 - **Permissions in the use case.** The caller does the gate of the app (`actor.requireClearance()`). The use case checks the permissions of its operation with `requirePermission(actor, resource, operation, attributes)`, or with `actor.authorize()` when the result changes the output.
 - **Side effects in the use case.** Write the audit events with `context.audit.create()`. Send the notifications after the save with `triggerNotificationsAfterSave()` (`src/notifications.ts`): a failure does not make the result an error, the output gives `notifications_sent: false` instead, and the caller shows a warning. Use `context.now()` for the current time.
 - **No framework imports.** Never import `next`, `next/*`, `react`, `react-dom`, `server-only` or a module of the app (`@/…`). The test `src/boundaries.test.ts` fails on such an import.
 - **No React `cache()`.** The app wraps a read use case with `cache()` where a page needs the deduplication per request.
 - **Spans.** Use `withSpan(context, name, callback)` for async work that is slow or that has many steps.
-- **Automations.** A job of a Lambda function is a use case with the signature `(context, input)`. The input is a TypeScript interface, not a Zod schema, because the host builds it and nobody parses it. It holds the clock (`now`), so a test can set the time. The output holds the counts for the log of the host. The audit events have `createdById: null`. The automation lives in the folder of its feature (for example `roles/removeExpiredRoleAssignments.ts`).
+- **Automations.** A job of a Lambda function is a use case with the signature `(context)`. It reads the clock with `context.now()`, thus a test sets the time through the test context. The output holds the counts for the log of the host. The audit events have `createdById: null`. The automation lives in the folder of its feature (for example `roles/removeExpiredRoleAssignments.ts`).
 
 Example:
 
@@ -65,8 +65,8 @@ export const renameShip = async (
 ```
 src/
   actor.ts                 Actor, createActor(), requirePermission(), requireCitizen()
-  context.ts               ApplicationContext and its ports
-  errors.ts                the typed errors
+  context.ts               ApplicationContext, its ports and createApplicationUrls()
+  errors.ts                the typed errors and rethrowRecordNotFound()
   pagination.ts            the shared page size, cursor and id schemas, paginateByCursor()
   dateTime.ts              the shared date-time input schema
   notifications.ts         triggerNotificationsAfterSave()
@@ -86,7 +86,7 @@ These exports are not use cases. No MCP tool calls them:
 
 - The `find…` row helpers (for example `findEventListPage`, `findVisibleTask`, `findEventPositionTree`, `findManagedRole`, `findRoleTableRows`, `findSpynetCitizen`, `findNoteTablePage` and `findUserListPage`) give rows only to the renderers of the app.
 - `findAllRoleBadges` has no permission check. Its callers check the permission.
-- `deletePermissionStringsReferencing` (the roles) and `linkCitizenOfSignedInUser` (the Spynet) are helpers for the auth zone and the settings of the Spynet. They carry no permission check: the caller checks it.
+- `linkCitizenOfSignedInUser` and `hasBirthdayTodaySafely` (the Spynet) are helpers for the auth zone; `deletePermissionStringsReferencing` (the roles) is a helper for the settings of the Spynet. They carry no permission check: the caller checks it.
 - The writes of the positions that the lineup of an event and the lineup of an event template share (`insertLineupPosition`, `updateLineupPosition`, `deleteLineupPosition`, `writeLineupOrder`, `findLineupPositionContainer`) carry no permission check. The use cases of the event lineup check the event first, the app checks the template first.
 - `createWikiPageInScope` takes the wiki scope from its caller: the app also loads the briefings of the event templates.
 

@@ -1,7 +1,6 @@
 /** The use cases of the roles group. */
 export {
   autoAssignInactiveRoles,
-  type AutoAssignInactiveRolesInput,
   type AutoAssignInactiveRolesOutput,
 } from "./autoAssignInactiveRoles.js";
 export {
@@ -13,7 +12,6 @@ export {
 } from "./changeRoleAssignmentLevel.js";
 export {
   countCitizensPerRole,
-  type CountCitizensPerRoleInput,
   type CountCitizensPerRoleOutput,
 } from "./countCitizensPerRole.js";
 export {
@@ -50,7 +48,6 @@ export {
 } from "./listRoles.js";
 export {
   removeExpiredRoleAssignments,
-  type RemoveExpiredRoleAssignmentsInput,
   type RemoveExpiredRoleAssignmentsOutput,
 } from "./removeExpiredRoleAssignments.js";
 export {
@@ -69,11 +66,6 @@ export {
   type RoleAssignmentHistoryInput,
   type RoleAssignmentLevelChangeRow,
 } from "./roleAssignmentHistory.js";
-export {
-  canAssignRole,
-  canChangeRoleAssignment,
-  canDismissRole,
-} from "./roleAssignmentPermissions.js";
 export {
   findAllRoleBadges,
   findAssignableRoleBadges,

@@ -1,5 +1,8 @@
 import { UserRole } from "@sam-monorepo/database/browser";
-import { AuditEventType, BAN_REASON_MAX_LENGTH } from "@sam-monorepo/domain";
+import {
+  AuditEventType,
+  BAN_REASON_MAXIMUM_LENGTH,
+} from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
@@ -13,7 +16,7 @@ export const banUserInputSchema = z.object({
   reason: z
     .string()
     .trim()
-    .max(BAN_REASON_MAX_LENGTH)
+    .max(BAN_REASON_MAXIMUM_LENGTH)
     .optional()
     .describe("Why the user gets banned."),
 });
@@ -52,7 +55,7 @@ export const banUser = (
       where: { id: input.user_id },
       select: { role: true },
     });
-    if (!user) throw new NotFoundError("The user does not exist");
+    if (!user) throw new NotFoundError(UserErrorMessage.NotFound);
 
     // Admins bypass the permission checks and could unban themselves anyway
     if (user.role === UserRole.ADMIN)

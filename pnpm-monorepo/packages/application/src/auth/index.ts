@@ -49,7 +49,6 @@ export {
 } from "./listOwnSessions.js";
 export {
   purgeExpiredAuthenticationRecords,
-  type PurgeExpiredAuthenticationRecordsInput,
   type PurgeExpiredAuthenticationRecordsOutput,
 } from "./purgeExpiredAuthenticationRecords.js";
 export {

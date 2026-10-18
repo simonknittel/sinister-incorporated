@@ -1,9 +1,5 @@
 import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
-import {
-  ACTIVE_CITIZEN_WHERE,
-  AuditEventType,
-  lockCitizen,
-} from "@sam-monorepo/domain";
+import { AuditEventType, lockCitizen } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
@@ -11,7 +7,10 @@ import { NotFoundError, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { CitizenLogErrorMessage } from "./citizenErrors.js";
-import { requireActiveCitizenLog } from "./citizenLogGuard.js";
+import {
+  getCheckedLogWhere,
+  requireActiveCitizenLog,
+} from "./citizenLogGuard.js";
 import { getNotePermissionAttributes } from "./notePermissions.js";
 
 export const updateNoteInputSchema = z.object({
@@ -64,19 +63,8 @@ export const updateNote = (
       isUpdated = await context.prisma.$transaction(async (transaction) => {
         await lockCitizen(transaction, note.citizenId);
 
-        /**
-         * The note as the permission check saw it. A different user who
-         * moves or decides the note or deletes it or its citizen after the
-         * check makes the write fail.
-         */
         const { count } = await transaction.citizenLog.updateMany({
-          where: {
-            id: note.id,
-            noteTypeId: note.noteTypeId,
-            classificationLevelId: note.classificationLevelId,
-            confirmed: note.confirmed,
-            citizen: ACTIVE_CITIZEN_WHERE,
-          },
+          where: { ...getCheckedLogWhere(note), confirmed: note.confirmed },
           data: {
             noteTypeId: input.note_type_id,
             classificationLevelId: input.classification_level_id,

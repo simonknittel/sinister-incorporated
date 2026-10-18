@@ -4,7 +4,11 @@ import { AuditEventType, type PermissionSet } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ConflictError, NotFoundError } from "../errors.js";
+import {
+  ConflictError,
+  NotFoundError,
+  rethrowRecordNotFound,
+} from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { RoleAssignmentErrorMessage } from "./roleErrors.js";
@@ -69,28 +73,32 @@ const changeRoleAssignmentLevel = (
     if (!maxLevel)
       throw new ConflictError(RoleAssignmentErrorMessage.RoleHasNoLevels);
 
-    const [updatedRoleAssignment] = await context.prisma.$transaction([
-      context.prisma.roleAssignment.update({
-        where,
-        data: {
-          currentLevel: levelChange.getNextLevel(
-            roleAssignment.currentLevel,
-            maxLevel,
-          ),
-          currentLevelUpdatedAt: context.now(),
-        },
-        select: { currentLevel: true },
-      }),
-      context.prisma.roleAssignmentLevelChange.create({
-        data: {
-          citizenId: input.citizen_id,
-          roleId: input.role_id,
-          type: levelChange.changeType,
-          createdById: actorCitizen.id,
-        },
-        select: { id: true },
-      }),
-    ]);
+    const [updatedRoleAssignment] = await rethrowRecordNotFound(
+      () =>
+        context.prisma.$transaction([
+          context.prisma.roleAssignment.update({
+            where,
+            data: {
+              currentLevel: levelChange.getNextLevel(
+                roleAssignment.currentLevel,
+                maxLevel,
+              ),
+              currentLevelUpdatedAt: context.now(),
+            },
+            select: { currentLevel: true },
+          }),
+          context.prisma.roleAssignmentLevelChange.create({
+            data: {
+              citizenId: input.citizen_id,
+              roleId: input.role_id,
+              type: levelChange.changeType,
+              createdById: actorCitizen.id,
+            },
+            select: { id: true },
+          }),
+        ]),
+      RoleAssignmentErrorMessage.NotAssigned,
+    );
 
     await context.audit.create([
       {

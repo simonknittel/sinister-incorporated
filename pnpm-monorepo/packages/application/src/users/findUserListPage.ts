@@ -2,13 +2,14 @@ import type { Prisma } from "@sam-monorepo/database/client";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 
+/** The values are the values of the URL */
 export enum UserSort {
-  CreatedAtDesc = "createdAt-desc",
-  CreatedAtAsc = "createdAt-asc",
-  EmailVerifiedDesc = "emailVerified-desc",
-  EmailVerifiedAsc = "emailVerified-asc",
-  NameAsc = "name-asc",
-  NameDesc = "name-desc",
+  CreatedAtDescending = "createdAt-desc",
+  CreatedAtAscending = "createdAt-asc",
+  EmailVerifiedDescending = "emailVerified-desc",
+  EmailVerifiedAscending = "emailVerified-asc",
+  NameAscending = "name-asc",
+  NameDescending = "name-desc",
 }
 
 export enum UserBanStatus {
@@ -17,13 +18,14 @@ export enum UserBanStatus {
   Active = "active",
 }
 
-const USERS_PAGE_SIZE = 50;
-
-/** Longer than any handle; the search comes from the URL */
-const MAX_HANDLE_QUERY_LENGTH = 100;
+/**
+ * Longer than any handle. The search comes from the URL, thus the host cuts
+ * it to this length.
+ */
+export const USER_LIST_HANDLE_QUERY_MAXIMUM_LENGTH = 100;
 
 /** The largest offset that the database accepts (32-bit integer) */
-const MAX_OFFSET = 2_147_483_647;
+const MAXIMUM_OFFSET = 2_147_483_647;
 
 const USER_LIST_SELECT = {
   id: true,
@@ -59,9 +61,15 @@ type UserListRow = Prisma.UserGetPayload<{ select: typeof USER_LIST_SELECT }>;
 export interface UserListInput {
   readonly sort: UserSort;
   readonly banStatus: UserBanStatus;
+  /** At most `USER_LIST_HANDLE_QUERY_MAXIMUM_LENGTH` characters */
   readonly handleQuery: string | null;
   /** The `nextCursor` or the `prevCursor` of a page */
   readonly cursor: string | null;
+}
+
+export interface UserListPageOptions {
+  /** The number of users on one page */
+  readonly pageSize: number;
 }
 
 export interface UserListEntry {
@@ -78,25 +86,25 @@ export interface UserListPage {
 
 const getOrderBy = (sort: UserSort): Prisma.UserOrderByWithRelationInput[] => {
   switch (sort) {
-    case UserSort.CreatedAtDesc:
+    case UserSort.CreatedAtDescending:
       return [{ createdAt: { sort: "desc", nulls: "last" } }, { id: "desc" }];
 
-    case UserSort.CreatedAtAsc:
+    case UserSort.CreatedAtAscending:
       return [{ createdAt: { sort: "asc", nulls: "last" } }, { id: "asc" }];
 
-    case UserSort.EmailVerifiedDesc:
+    case UserSort.EmailVerifiedDescending:
       return [
         { emailVerified: { sort: "desc", nulls: "last" } },
         { id: "desc" },
       ];
 
-    case UserSort.EmailVerifiedAsc:
+    case UserSort.EmailVerifiedAscending:
       return [{ emailVerified: { sort: "asc", nulls: "last" } }, { id: "asc" }];
 
-    case UserSort.NameAsc:
+    case UserSort.NameAscending:
       return [{ name: { sort: "asc", nulls: "last" } }, { id: "asc" }];
 
-    case UserSort.NameDesc:
+    case UserSort.NameDescending:
       return [{ name: { sort: "desc", nulls: "last" } }, { id: "desc" }];
 
     default:
@@ -137,7 +145,7 @@ const getHandleWhere = (handleQuery: string): Prisma.UserWhereInput => ({
  */
 const parseOffset = (cursor: string | null) => {
   const offset = Number(cursor);
-  return Number.isSafeInteger(offset) && offset > 0 && offset <= MAX_OFFSET
+  return Number.isSafeInteger(offset) && offset > 0 && offset <= MAXIMUM_OFFSET
     ? offset
     : 0;
 };
@@ -147,9 +155,10 @@ const parseOffset = (cursor: string | null) => {
  * order and the offset cursor. Requires `user;read`.
  */
 export const findUserListPage = async (
-  context: ApplicationContext,
+  context: Pick<ApplicationContext, "prisma">,
   actor: Actor,
   { sort, banStatus, handleQuery, cursor }: UserListInput,
+  { pageSize }: UserListPageOptions,
 ): Promise<UserListPage> => {
   requirePermission(actor, "user", "read");
 
@@ -158,18 +167,16 @@ export const findUserListPage = async (
   const rows = await context.prisma.user.findMany({
     where: {
       ...getBanStatusWhere(banStatus),
-      ...(handleQuery
-        ? getHandleWhere(handleQuery.slice(0, MAX_HANDLE_QUERY_LENGTH))
-        : {}),
+      ...(handleQuery ? getHandleWhere(handleQuery) : {}),
     },
     orderBy: getOrderBy(sort),
     skip: offset,
-    take: USERS_PAGE_SIZE + 1,
+    take: pageSize + 1,
     select: USER_LIST_SELECT,
   });
 
-  const hasNextPage = rows.length > USERS_PAGE_SIZE;
-  const pageRows = rows.slice(0, USERS_PAGE_SIZE);
+  const hasNextPage = rows.length > pageSize;
+  const pageRows = rows.slice(0, pageSize);
 
   const users = pageRows.map(({ accounts, citizen, ...user }) => ({
     user,
@@ -179,8 +186,7 @@ export const findUserListPage = async (
 
   return {
     users,
-    nextCursor: hasNextPage ? String(offset + USERS_PAGE_SIZE) : null,
-    prevCursor:
-      offset > 0 ? String(Math.max(0, offset - USERS_PAGE_SIZE)) : null,
+    nextCursor: hasNextPage ? String(offset + pageSize) : null,
+    prevCursor: offset > 0 ? String(Math.max(0, offset - pageSize)) : null,
   };
 };

@@ -8,13 +8,13 @@ import { getNextBirthday, type NextBirthday } from "./birthdays.js";
 import type { PickableCitizen } from "./listAllCitizens.js";
 
 /** The search text is a part of a handle, thus a short limit is sufficient */
-export const UPCOMING_BIRTHDAYS_HANDLE_QUERY_MAX_LENGTH = 100;
+export const UPCOMING_BIRTHDAYS_HANDLE_QUERY_MAXIMUM_LENGTH = 100;
 
 export const listUpcomingBirthdaysInputSchema = z.object({
   /** A part of the handle. Null or empty for all citizens. */
   handle_query: z
     .string()
-    .max(UPCOMING_BIRTHDAYS_HANDLE_QUERY_MAX_LENGTH)
+    .max(UPCOMING_BIRTHDAYS_HANDLE_QUERY_MAXIMUM_LENGTH)
     .nullable(),
 });
 

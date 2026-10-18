@@ -21,7 +21,6 @@ export {
 } from "./metadata.js";
 export {
   purgeExpiredOAuthRecords,
-  type PurgeExpiredOAuthRecordsInput,
   type PurgeExpiredOAuthRecordsOutput,
 } from "./purgeExpiredOAuthRecords.js";
 export {

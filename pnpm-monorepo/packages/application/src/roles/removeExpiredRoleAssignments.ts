@@ -8,11 +8,6 @@ import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
 import { createRoleAssignmentChanges } from "./roleAssignmentWrites.js";
 
-export interface RemoveExpiredRoleAssignmentsInput {
-  /** The time of the run. The maximum age of a role counts back from it. */
-  readonly now: Date;
-}
-
 export interface RemoveExpiredRoleAssignmentsOutput {
   readonly removedCount: number;
 }
@@ -29,13 +24,14 @@ interface RemovedAssignment {
  * older than the maximum age. An assignment after the last visit counts as
  * activity too, otherwise the next run would remove a role assigned
  * yesterday. Only citizens with a login can be active, thus a citizen
- * without one keeps the role (the join with "User").
+ * without one keeps the role (the join with "User"). The maximum age counts
+ * back from the time of the run.
  */
 export const removeExpiredRoleAssignments = (
   context: ApplicationContext,
-  { now }: RemoveExpiredRoleAssignmentsInput,
 ): Promise<RemoveExpiredRoleAssignmentsOutput> =>
   withSpan(context, "removeExpiredRoleAssignments", async () => {
+    const now = context.now();
     const rolesWithMaximumAge = await context.prisma.role.findMany({
       where: {
         maxAgeDays: {

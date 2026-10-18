@@ -13,7 +13,7 @@ import {
   increaseRoleAssignmentLevel,
 } from "./changeRoleAssignmentLevel.js";
 
-const MAX_LEVEL = 3;
+const MAXIMUM_LEVEL = 3;
 const MANAGER_USER_ID = "manager";
 
 const createAssignment = async ({
@@ -25,7 +25,7 @@ const createAssignment = async ({
   readonly operations?: readonly string[];
 }) => {
   const role = await prisma.role.create({
-    data: { name: "Pilot", maxLevel: MAX_LEVEL },
+    data: { name: "Pilot", maxLevel: MAXIMUM_LEVEL },
   });
   const member = await prisma.citizen.create({
     data: {
@@ -96,12 +96,14 @@ test("raises a role without a level to level 1 and records the change", async ()
 });
 
 test("keeps the level at the maximum level", async () => {
-  const { actor, input } = await createAssignment({ currentLevel: MAX_LEVEL });
+  const { actor, input } = await createAssignment({
+    currentLevel: MAXIMUM_LEVEL,
+  });
   const { context } = createTestApplicationContext();
 
   const output = await increaseRoleAssignmentLevel(context, actor, input);
 
-  expect(output.current_level).toBe(MAX_LEVEL);
+  expect(output.current_level).toBe(MAXIMUM_LEVEL);
 });
 
 test("lowers the level down to 0", async () => {
@@ -146,3 +148,34 @@ test("refuses a change without the permission to assign or to dismiss the role",
   expect(await prisma.roleAssignmentLevelChange.count()).toBe(0);
   expect(auditEvents).toEqual([]);
 });
+
+test.each([
+  {
+    operation: "assign",
+    permittedChange: increaseRoleAssignmentLevel,
+    refusedChange: decreaseRoleAssignmentLevel,
+    expectedLevel: 2,
+  },
+  {
+    operation: "dismiss",
+    permittedChange: decreaseRoleAssignmentLevel,
+    refusedChange: increaseRoleAssignmentLevel,
+    expectedLevel: 0,
+  },
+])(
+  "with only `otherRole;$operation`, changes the level in one direction only",
+  async ({ operation, permittedChange, refusedChange, expectedLevel }) => {
+    const { actor, input } = await createAssignment({
+      currentLevel: 1,
+      operations: [operation],
+    });
+    const { context } = createTestApplicationContext();
+
+    await expect(refusedChange(context, actor, input)).rejects.toThrow(
+      ForbiddenError,
+    );
+    expect((await permittedChange(context, actor, input)).current_level).toBe(
+      expectedLevel,
+    );
+  },
+);

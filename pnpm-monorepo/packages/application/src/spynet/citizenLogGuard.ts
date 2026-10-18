@@ -44,6 +44,22 @@ export const requireActiveCitizenLog = async (
 };
 
 /**
+ * The log as the permission check saw it. A different user who moves the
+ * note, or deletes the log or its citizen after the check, makes the write
+ * with this filter fail. The caller adds the decision that it expects
+ * (`confirmed`), thus a decision after the check also makes the write fail.
+ */
+export const getCheckedLogWhere = (
+  log: Pick<CitizenLogGuardRow, "id" | "noteTypeId" | "classificationLevelId">,
+) =>
+  ({
+    id: log.id,
+    noteTypeId: log.noteTypeId,
+    classificationLevelId: log.classificationLevelId,
+    citizen: ACTIVE_CITIZEN_WHERE,
+  }) satisfies Prisma.CitizenLogWhereInput;
+
+/**
  * Throws when the actor cannot confirm or delete the log: an identity log
  * needs the permission of its type, a note the note permission for its
  * classification.

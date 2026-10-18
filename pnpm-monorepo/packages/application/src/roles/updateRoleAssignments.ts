@@ -6,22 +6,18 @@ import type { ApplicationContext } from "../context.js";
 import { ConflictError, NotFoundError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
+import { CitizenErrorMessage } from "../spynet/citizenErrors.js";
 import { withSpan } from "../withSpan.js";
 import { canAssignRole, canDismissRole } from "./roleAssignmentPermissions.js";
 import { createRoleAssignmentChanges } from "./roleAssignmentWrites.js";
 import { RoleAssignmentErrorMessage } from "./roleErrors.js";
-
-/**
- * The number of roles has no fixed maximum, thus the limit is an arbitrary
- * number above it. It keeps the loops of the use case bounded.
- */
-const MAXIMUM_ROLE_COUNT = 500;
+import { MAXIMUM_ROLE_RELATIONS } from "./roleInputSchemas.js";
 
 export const updateRoleAssignmentsInputSchema = z.object({
   citizen_id: idSchema,
   role_ids: z
     .array(idSchema)
-    .max(MAXIMUM_ROLE_COUNT)
+    .max(MAXIMUM_ROLE_RELATIONS)
     .describe(
       "All roles that the citizen has after the change. Each role that is not in the list is removed.",
     ),
@@ -76,8 +72,7 @@ export const updateRoleAssignments = (
         select: { roleId: true },
       }),
     ]);
-    if (!citizen)
-      throw new NotFoundError(RoleAssignmentErrorMessage.CitizenNotFound);
+    if (!citizen) throw new NotFoundError(CitizenErrorMessage.NotFound);
     if (citizen.deletedAt)
       throw new ConflictError(RoleAssignmentErrorMessage.CitizenDeleted);
 
@@ -98,27 +93,29 @@ export const updateRoleAssignments = (
     });
 
     if (changes.length > 0) {
-      await context.prisma.$transaction(async (transaction) => {
-        for (const change of changes) {
-          if (change.enabled)
-            await transaction.roleAssignment.create({
-              data: { citizenId: input.citizen_id, roleId: change.role_id },
-              select: { id: true },
-            });
-          else
-            await transaction.roleAssignment.delete({
-              where: {
-                citizenId_roleId: {
-                  citizenId: input.citizen_id,
-                  roleId: change.role_id,
+      /**
+       * The history rows are in the same transaction, thus a failed change
+       * writes no history
+       */
+      await context.prisma.$transaction([
+        ...changes.map((change) =>
+          change.enabled
+            ? context.prisma.roleAssignment.create({
+                data: { citizenId: input.citizen_id, roleId: change.role_id },
+                select: { id: true },
+              })
+            : context.prisma.roleAssignment.delete({
+                where: {
+                  citizenId_roleId: {
+                    citizenId: input.citizen_id,
+                    roleId: change.role_id,
+                  },
                 },
-              },
-              select: { id: true },
-            });
-        }
-
-        await createRoleAssignmentChanges(
-          transaction,
+                select: { id: true },
+              }),
+        ),
+        createRoleAssignmentChanges(
+          context.prisma,
           changes.map((change) => ({
             citizenId: input.citizen_id,
             roleId: change.role_id,
@@ -127,8 +124,8 @@ export const updateRoleAssignments = (
               : RoleAssignmentChangeType.REMOVE,
           })),
           actorCitizen.id,
-        );
-      });
+        ),
+      ]);
 
       await context.audit.create([
         {

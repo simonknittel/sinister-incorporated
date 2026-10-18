@@ -4,6 +4,7 @@ import {
   getLocalDate,
   isBirthdayToday,
   ORGANIZATION_TIMEZONE,
+  toDateColumnValue,
 } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
 
@@ -61,20 +62,13 @@ export const getBirthdayCandidateDays = (now: Date) => [
   LEAP_DAY,
 ];
 
-/** Midnight UTC of a calendar date, thus whole days can be counted */
-const toUtcMidnight = (year: number, month: number, day: number) =>
-  new Date(Date.UTC(year, month - 1, day));
-
 /**
  * The list of upcoming birthdays is the same for each viewer, thus it does
  * not read the day in the time zone of a citizen but in the one of the
- * organization
+ * organization. Midnight UTC of the date, thus whole days can be counted.
  */
-const getDateInListTimezone = (moment: Date) => {
-  const today = getLocalDate(moment, ORGANIZATION_TIMEZONE);
-
-  return toUtcMidnight(today.year, today.month, today.day);
-};
+const getDateInListTimezone = (moment: Date) =>
+  toDateColumnValue(getLocalDate(moment, ORGANIZATION_TIMEZONE));
 
 export interface NextBirthday {
   /** Midnight UTC of the day the birthday is celebrated next */
@@ -97,7 +91,7 @@ export const getNextBirthday = (
 
   const celebrationIn = (year: number) => {
     const celebration = getCelebrationDate(birthdayDay, birthdayMonth, year);
-    return toUtcMidnight(year, celebration.month, celebration.day);
+    return toDateColumnValue({ year, ...celebration });
   };
 
   const thisYear = celebrationIn(today.getUTCFullYear());

@@ -7,6 +7,7 @@ import { idSchema } from "../pagination.js";
 import { isRoleVisible } from "../roles/roleVisibility.js";
 import { withSpan } from "../withSpan.js";
 import { requireCitizenReadAccess } from "./citizenAccess.js";
+import { CitizenErrorMessage } from "./citizenErrors.js";
 import {
   getVisiblePenaltyPointSum,
   getVisibleShipCount,
@@ -85,7 +86,7 @@ export const getCitizen = async (
         user: { select: { lastSeenAt: true } },
       },
     });
-    if (!citizen) throw new NotFoundError("The citizen does not exist");
+    if (!citizen) throw new NotFoundError(CitizenErrorMessage.NotFound);
 
     // The level of an assignment does not matter, like on the role badges
     const visibleRoleIds = citizen.roleAssignments

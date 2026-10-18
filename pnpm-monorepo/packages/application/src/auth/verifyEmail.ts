@@ -31,7 +31,7 @@ export const verifyEmail = (
     requirePermission(actor, "user", "manage");
 
     const now = context.now();
-    await markEmailConfirmed(context.prisma, input.user_id, now);
+    await markEmailConfirmed(context, input.user_id, now);
 
     await context.audit.create([
       {

@@ -104,3 +104,25 @@ export interface ApplicationContext {
   /** Permits client ids with plain HTTP on a loopback host (tests only) */
   readonly allowInsecureLoopbackClientIds: boolean;
 }
+
+interface ApplicationUrlsOptions {
+  /** The base URL of the app */
+  readonly baseUrl: string | URL;
+  /** The public base URL of the uploads bucket */
+  readonly publicUploadBaseUrl: string;
+}
+
+/** Each host derives the URLs of its context with this function */
+export const createApplicationUrls = ({
+  baseUrl: baseUrlValue,
+  publicUploadBaseUrl,
+}: ApplicationUrlsOptions): ApplicationContext["urls"] => {
+  const baseUrl = new URL(baseUrlValue);
+
+  return {
+    baseUrl,
+    issuer: baseUrl.href.replace(/\/$/, ""),
+    mcpResourceUrl: new URL("/api/mcp", baseUrl),
+    publicUploadBaseUrl: publicUploadBaseUrl.replace(/\/+$/, ""),
+  };
+};

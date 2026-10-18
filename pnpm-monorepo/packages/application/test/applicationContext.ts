@@ -6,12 +6,14 @@ import {
   type AuditEventInput,
 } from "@sam-monorepo/domain";
 import { createActor, type Actor, type ActorCitizen } from "../src/actor.js";
-import type { ApplicationContext, Notification } from "../src/context.js";
+import {
+  createApplicationUrls,
+  type ApplicationContext,
+  type Notification,
+} from "../src/context.js";
 
 /** A fixed clock, thus a result does not depend on the day of the test run */
 export const TEST_NOW = new Date("2026-06-15T10:00:00.000Z");
-
-const TEST_BASE_URL = new URL("https://sam.example.com");
 
 const SILENT_LOGGER: ApplicationContext["log"] = {
   info: () => undefined,
@@ -58,12 +60,10 @@ export const createTestApplicationContext = ({
     now: () => new Date(now),
     changelog: null,
     collab: null,
-    urls: {
-      baseUrl: TEST_BASE_URL,
-      issuer: TEST_BASE_URL.origin,
-      mcpResourceUrl: new URL("/api/mcp", TEST_BASE_URL),
+    urls: createApplicationUrls({
+      baseUrl: "https://sam.example.com",
       publicUploadBaseUrl: "https://uploads.example.com",
-    },
+    }),
     signingKey: async () => null,
     allowInsecureLoopbackClientIds: false,
     ...overrides,

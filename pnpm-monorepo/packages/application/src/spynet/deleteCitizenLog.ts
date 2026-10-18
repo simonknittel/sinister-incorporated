@@ -1,8 +1,4 @@
-import {
-  ACTIVE_CITIZEN_WHERE,
-  AuditEventType,
-  lockCitizen,
-} from "@sam-monorepo/domain";
+import { AuditEventType, lockCitizen } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
@@ -13,6 +9,7 @@ import { CitizenLogErrorMessage } from "./citizenErrors.js";
 import { syncCitizenIdentityAfterLogChange } from "./citizenIdentitySync.js";
 import {
   authorizeCitizenLogOperation,
+  getCheckedLogWhere,
   requireActiveCitizenLog,
 } from "./citizenLogGuard.js";
 
@@ -47,18 +44,10 @@ export const deleteCitizenLog = (
     const isDeleted = await context.prisma.$transaction(async (transaction) => {
       await lockCitizen(transaction, citizenLog.citizenId);
 
-      /**
-       * The log as the permission check saw it. A different user who moves
-       * the note, decides about the log or deletes the log or its citizen
-       * after the check makes the delete fail.
-       */
       const { count } = await transaction.citizenLog.deleteMany({
         where: {
-          id: citizenLog.id,
-          noteTypeId: citizenLog.noteTypeId,
-          classificationLevelId: citizenLog.classificationLevelId,
+          ...getCheckedLogWhere(citizenLog),
           confirmed: citizenLog.confirmed,
-          citizen: ACTIVE_CITIZEN_WHERE,
         },
       });
       if (count === 0) return false;

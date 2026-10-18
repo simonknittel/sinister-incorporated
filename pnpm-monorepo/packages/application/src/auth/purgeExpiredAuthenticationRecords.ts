@@ -13,11 +13,6 @@ import { withSpan } from "../withSpan.js";
  */
 const SESSION_RETENTION_DAYS = 30;
 
-export interface PurgeExpiredAuthenticationRecordsInput {
-  /** The time of the run. A record is expired when it ends before this time. */
-  readonly now: Date;
-}
-
 export interface PurgeExpiredAuthenticationRecordsOutput {
   readonly sessionCount: number;
   readonly verificationTokenCount: number;
@@ -36,9 +31,9 @@ export interface PurgeExpiredAuthenticationRecordsOutput {
  */
 export const purgeExpiredAuthenticationRecords = (
   context: ApplicationContext,
-  { now }: PurgeExpiredAuthenticationRecordsInput,
 ): Promise<PurgeExpiredAuthenticationRecordsOutput> =>
   withSpan(context, "purgeExpiredAuthenticationRecords", async () => {
+    const now = context.now();
     const sessionCutoff = subtractCalendarDays(
       now,
       SESSION_RETENTION_DAYS,

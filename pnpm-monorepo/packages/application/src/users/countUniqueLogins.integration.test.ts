@@ -26,7 +26,7 @@ test("stores the count under the day that it counts in Europe/Berlin", async () 
 
   const { context } = createTestApplicationContext({ now: MIDNIGHT });
 
-  const output = await countUniqueLogins(context, { now: MIDNIGHT });
+  const output = await countUniqueLogins(context);
 
   expect(output).toEqual({ date: "2026-09-15", count: 2, saved: true });
   const rows = await prisma.dailyLoginCount.findMany();
@@ -45,24 +45,24 @@ test("a second run later in the night keeps the count of the first run", async (
       { lastSeenAt: new Date("2026-09-15T21:00:00+02:00") },
     ],
   });
-  const { context, auditEvents } = createTestApplicationContext({
-    now: MIDNIGHT,
-  });
-  await countUniqueLogins(context, { now: MIDNIGHT });
+  const firstRun = createTestApplicationContext({ now: MIDNIGHT });
+  await countUniqueLogins(firstRun.context);
 
   // A user of the counted day visits again after midnight
   await prisma.user.update({
     where: { id: returningUser!.id },
     data: { lastSeenAt: new Date("2026-09-16T00:30:00+02:00") },
   });
-  const repeatedRun = await countUniqueLogins(context, {
+  const repeatedRun = createTestApplicationContext({
     now: new Date("2026-09-16T01:00:00+02:00"),
   });
+  const repeatedOutput = await countUniqueLogins(repeatedRun.context);
 
-  expect(repeatedRun.saved).toBe(false);
+  expect(repeatedOutput.saved).toBe(false);
   const rows = await prisma.dailyLoginCount.findMany();
   expect(rows.map((row) => row.count)).toEqual([2]);
-  expect(auditEvents.map(({ type }) => type)).toEqual([
+  expect(firstRun.auditEvents.map(({ type }) => type)).toEqual([
     AuditEventType.UNIQUE_LOGINS_COUNTED,
   ]);
+  expect(repeatedRun.auditEvents).toEqual([]);
 });

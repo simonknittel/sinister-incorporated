@@ -1,10 +1,9 @@
 import { RoleAssignmentChangeType } from "@sam-monorepo/database/browser";
-import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
 import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
+import { rethrowRecordNotFound } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { createRoleAssignmentChanges } from "./roleAssignmentWrites.js";
@@ -45,38 +44,32 @@ export const deleteRoleAssignment = (
      * The history row is in the same transaction, thus it is not written
      * when the delete fails
      */
-    try {
-      await context.prisma.$transaction(async (transaction) => {
-        await transaction.roleAssignment.delete({
-          where: {
-            citizenId_roleId: {
-              citizenId: input.citizen_id,
-              roleId: input.role_id,
+    await rethrowRecordNotFound(
+      () =>
+        context.prisma.$transaction([
+          context.prisma.roleAssignment.delete({
+            where: {
+              citizenId_roleId: {
+                citizenId: input.citizen_id,
+                roleId: input.role_id,
+              },
             },
-          },
-          select: { id: true },
-        });
-
-        await createRoleAssignmentChanges(
-          transaction,
-          [
-            {
-              citizenId: input.citizen_id,
-              roleId: input.role_id,
-              type: RoleAssignmentChangeType.REMOVE,
-            },
-          ],
-          actorCitizen.id,
-        );
-      });
-    } catch (error) {
-      if (isPrismaError(error, PrismaErrorCode.RecordNotFound))
-        throw new NotFoundError(RoleAssignmentErrorMessage.NotAssigned, {
-          cause: error,
-        });
-
-      throw error;
-    }
+            select: { id: true },
+          }),
+          createRoleAssignmentChanges(
+            context.prisma,
+            [
+              {
+                citizenId: input.citizen_id,
+                roleId: input.role_id,
+                type: RoleAssignmentChangeType.REMOVE,
+              },
+            ],
+            actorCitizen.id,
+          ),
+        ]),
+      RoleAssignmentErrorMessage.NotAssigned,
+    );
 
     await context.audit.create([
       {

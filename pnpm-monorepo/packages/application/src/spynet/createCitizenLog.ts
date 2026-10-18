@@ -1,32 +1,31 @@
-import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
 import {
   ACTIVE_CITIZEN_WHERE,
   AuditEventType,
+  IDENTITY_LOG_TYPES,
   lockCitizen,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
+import { NotFoundError, rethrowRecordNotFound } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import {
   CitizenErrorMessage,
   CitizenLogErrorMessage,
 } from "./citizenErrors.js";
-import { IDENTITY_LOG_TYPES } from "./identityLogTypes.js";
 
 /**
  * An identity log holds a short value, for example a handle or an ID. The
  * column has no limit, thus the schema sets one.
  */
-const IDENTITY_LOG_CONTENT_MAX_LENGTH = 255;
+const IDENTITY_LOG_CONTENT_MAXIMUM_LENGTH = 255;
 
 export const createCitizenLogInputSchema = z.discriminatedUnion("type", [
   z.object({
     citizen_id: idSchema,
     type: z.enum(IDENTITY_LOG_TYPES),
-    content: z.string().trim().min(1).max(IDENTITY_LOG_CONTENT_MAX_LENGTH),
+    content: z.string().trim().min(1).max(IDENTITY_LOG_CONTENT_MAXIMUM_LENGTH),
   }),
   z.object({
     citizen_id: idSchema,
@@ -66,47 +65,41 @@ export const createCitizenLog = (
       ]);
     else requirePermission(actor, input.type, "create");
 
-    let createdLog;
-    try {
-      createdLog = await context.prisma.$transaction(async (transaction) => {
-        await lockCitizen(transaction, input.citizen_id);
+    /**
+     * The connect fails with P2025 when a different user deleted the note
+     * type or the classification level of the note
+     */
+    const createdLog = await rethrowRecordNotFound(
+      () =>
+        context.prisma.$transaction(async (transaction) => {
+          await lockCitizen(transaction, input.citizen_id);
 
-        const citizen = await transaction.citizen.findFirst({
-          where: { id: input.citizen_id, ...ACTIVE_CITIZEN_WHERE },
-          select: { id: true },
-        });
-        if (!citizen) return null;
+          const citizen = await transaction.citizen.findFirst({
+            where: { id: input.citizen_id, ...ACTIVE_CITIZEN_WHERE },
+            select: { id: true },
+          });
+          if (!citizen) return null;
 
-        return transaction.citizenLog.create({
-          data: {
-            type: input.type,
-            content: input.content,
-            submittedBy: { connect: { id: actor.userId } },
-            citizen: { connect: { id: citizen.id } },
-            ...(input.type === "note"
-              ? {
-                  noteType: { connect: { id: input.note_type_id } },
-                  classificationLevel: {
-                    connect: { id: input.classification_level_id },
-                  },
-                }
-              : {}),
-          },
-          select: { id: true, type: true, citizenId: true },
-        });
-      });
-    } catch (error) {
-      /**
-       * A different user deleted the note type or the classification level
-       * of the note
-       */
-      if (isPrismaError(error, PrismaErrorCode.RecordNotFound))
-        throw new NotFoundError(
-          CitizenLogErrorMessage.NoteClassificationNotFound,
-          { cause: error },
-        );
-      throw error;
-    }
+          return transaction.citizenLog.create({
+            data: {
+              type: input.type,
+              content: input.content,
+              submittedBy: { connect: { id: actor.userId } },
+              citizen: { connect: { id: citizen.id } },
+              ...(input.type === "note"
+                ? {
+                    noteType: { connect: { id: input.note_type_id } },
+                    classificationLevel: {
+                      connect: { id: input.classification_level_id },
+                    },
+                  }
+                : {}),
+            },
+            select: { id: true, type: true, citizenId: true },
+          });
+        }),
+      CitizenLogErrorMessage.NoteClassificationNotFound,
+    );
     /** A different user deleted the citizen */
     if (!createdLog) throw new NotFoundError(CitizenErrorMessage.NotFound);
 

@@ -2,7 +2,7 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
+import { NotFoundError, rethrowRecordNotFound } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { deletePermissionStringsReferencing } from "./deletePermissionStringsReferencing.js";
@@ -40,10 +40,14 @@ export const deleteRole = (
     });
     if (!role) throw new NotFoundError(RoleErrorMessage.NotFound);
 
-    await context.prisma.$transaction([
-      context.prisma.role.delete({ where: { id: role.id } }),
-      deletePermissionStringsReferencing(context.prisma, "roleId", role.id),
-    ]);
+    await rethrowRecordNotFound(
+      () =>
+        context.prisma.$transaction([
+          context.prisma.role.delete({ where: { id: role.id } }),
+          deletePermissionStringsReferencing(context.prisma, "roleId", role.id),
+        ]),
+      RoleErrorMessage.NotFound,
+    );
 
     await context.audit.create([
       {

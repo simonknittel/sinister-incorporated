@@ -32,8 +32,8 @@ export interface StartAssumingUserOutput {
  * Writes the start of an assume to the audit log, after the end of the
  * previous assume. The caller sets the cookie. The caller checks that an
  * admin is behind the session: the actor during an assume is the assumed
- * user, thus the use case has no actor. A tool of the MCP server must not
- * call it without a check of its own.
+ * user, thus the use case has no actor. See the exceptions in the README of
+ * the package.
  */
 export const startAssumingUser = (
   context: ApplicationContext,

@@ -2,10 +2,11 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { rethrowRecordNotFound } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { RoleErrorMessage } from "./roleErrors.js";
 import { permissionStringSchema } from "./roleInputSchemas.js";
-import { updateExistingRole } from "./roleUpdates.js";
 
 export const setRolePermissionInputSchema = z.object({
   role_id: idSchema,
@@ -41,24 +42,26 @@ export const setRolePermission = (
   withSpan(context, "setRolePermission", async () => {
     requirePermission(actor, "role", "manage");
 
-    await updateExistingRole(() =>
-      context.prisma.role.update({
-        where: { id: input.role_id },
-        data: {
-          permissionStrings: input.enabled
-            ? {
-                createMany: {
-                  data: { permissionString: input.permission_string },
-                  // A double click or a second admin must not create a duplicate
-                  skipDuplicates: true,
+    await rethrowRecordNotFound(
+      () =>
+        context.prisma.role.update({
+          where: { id: input.role_id },
+          data: {
+            permissionStrings: input.enabled
+              ? {
+                  createMany: {
+                    data: { permissionString: input.permission_string },
+                    // A double click or a second admin must not create a duplicate
+                    skipDuplicates: true,
+                  },
+                }
+              : {
+                  deleteMany: { permissionString: input.permission_string },
                 },
-              }
-            : {
-                deleteMany: { permissionString: input.permission_string },
-              },
-        },
-        select: { id: true },
-      }),
+          },
+          select: { id: true },
+        }),
+      RoleErrorMessage.NotFound,
     );
 
     await context.audit.create([

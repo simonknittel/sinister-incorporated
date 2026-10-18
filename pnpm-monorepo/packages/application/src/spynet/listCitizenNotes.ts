@@ -17,6 +17,7 @@ import type { ApplicationContext } from "../context.js";
 import { NotFoundError, ValidationError } from "../errors.js";
 import { cursorSchema, idSchema, pageLimitSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { CitizenErrorMessage } from "./citizenErrors.js";
 import { canReadNote, canReadNoteRedacted } from "./notePermissions.js";
 import {
   getNoteClassificationConditions,
@@ -138,7 +139,7 @@ export const listCitizenNotes = async (
       }),
       loadNoteClassifications(context),
     ]);
-    if (!citizen) throw new NotFoundError("The citizen does not exist");
+    if (!citizen) throw new NotFoundError(CitizenErrorMessage.NotFound);
 
     const visibleClassifications = [
       ...getNoteClassificationConditions(actor, "read", classifications),

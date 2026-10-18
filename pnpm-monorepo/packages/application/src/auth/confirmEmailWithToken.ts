@@ -42,7 +42,7 @@ export const confirmEmailWithToken = (
     });
     if (!token) return { confirmed: false };
 
-    await markEmailConfirmed(context.prisma, token.userId, now);
+    await markEmailConfirmed(context, token.userId, now);
 
     await context.audit.create([
       {

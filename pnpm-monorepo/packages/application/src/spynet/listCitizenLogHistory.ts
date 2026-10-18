@@ -1,9 +1,9 @@
 import type { ConfirmationStatus } from "@sam-monorepo/database/client";
+import { IDENTITY_LOG_TYPES } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { idSchema } from "../pagination.js";
-import { IDENTITY_LOG_TYPES } from "./identityLogTypes.js";
 import { getReadableCitizenLogWhere } from "./readableCitizenLogWhere.js";
 
 export const listCitizenLogHistoryInputSchema = z.object({

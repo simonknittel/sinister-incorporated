@@ -1,18 +1,13 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { ROLE_BADGE_SELECT } from "./roleBadges.js";
 
 const MANAGED_ROLE_SELECT = {
-  id: true,
-  name: true,
-  description: true,
+  ...ROLE_BADGE_SELECT,
   maxAgeDays: true,
   assignAfterInactiveDays: true,
-  maxLevel: true,
-  iconId: true,
   thumbnailId: true,
-  icon: { select: { id: true, mimeType: true } },
-  thumbnail: { select: { id: true, mimeType: true } },
   permissionStrings: { select: { permissionString: true } },
   inherits: { select: { id: true } },
 } as const satisfies Prisma.RoleSelect;

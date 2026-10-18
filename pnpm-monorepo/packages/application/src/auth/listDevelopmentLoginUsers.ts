@@ -14,7 +14,7 @@ const MAXIMUM_DEVELOPMENT_LOGIN_USERS = 50;
 /**
  * The users of the development login, sorted by name. The host checks that
  * it runs in development: the use case has no actor, because the visitor has
- * no session yet. A tool of the MCP server must not call it.
+ * no session yet. See the exceptions in the README of the package.
  */
 export const listDevelopmentLoginUsers = (
   context: ApplicationContext,

@@ -7,16 +7,17 @@ export {
 } from "./banUser.js";
 export {
   countUniqueLogins,
-  type CountUniqueLoginsInput,
   type CountUniqueLoginsOutput,
 } from "./countUniqueLogins.js";
 export {
+  USER_LIST_HANDLE_QUERY_MAXIMUM_LENGTH,
   UserBanStatus,
   UserSort,
   findUserListPage,
   type UserListEntry,
   type UserListInput,
   type UserListPage,
+  type UserListPageOptions,
 } from "./findUserListPage.js";
 export {
   unbanUser,

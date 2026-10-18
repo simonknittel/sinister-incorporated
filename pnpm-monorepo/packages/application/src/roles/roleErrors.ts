@@ -18,8 +18,6 @@ export enum RoleErrorMessage {
  * rule of the role assignments
  */
 export enum RoleAssignmentErrorMessage {
-  /** A `NotFoundError` */
-  CitizenNotFound = "The citizen does not exist",
   /** A `ConflictError` */
   CitizenDeleted = "The citizen is deleted",
   /** A `NotFoundError` */
