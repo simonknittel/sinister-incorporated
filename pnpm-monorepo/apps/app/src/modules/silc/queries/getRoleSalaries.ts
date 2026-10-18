@@ -1,9 +1,21 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { listRoleSalaries } from "@sam-monorepo/application";
 import { cache } from "react";
 
 export const getRoleSalaries = cache(
   withTrace("getRoleSalaries", async () => {
-    return prisma.silcRoleSalary.findMany();
+    try {
+      return await listRoleSalaries(
+        getApplicationContext(),
+        await getRequestActor(),
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
   }),
 );

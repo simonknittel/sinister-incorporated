@@ -1,99 +1,39 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { lockSilcLedger, updateSilcBalances } from "@sam-monorepo/domain";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  deleteSilcTransactionInputSchema,
+  deleteSilcTransaction as deleteSilcTransactionUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-
-const schema = z.object({
-  id: z.cuid(),
-});
+import { SILC_ERROR_TEXTS } from "../utils/silcErrorTexts";
 
 export const deleteSilcTransaction = createAuthenticatedAction(
   "deleteSilcTransaction",
-  schema,
+  deleteSilcTransactionInputSchema,
   async (formData, authentication, data, t) => {
-    if (
-      !(await authentication.authorize(
-        "silcTransactionOfOtherCitizen",
-        "delete",
-      ))
-    )
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * (Soft-)delete the transaction. The claim after the ledger lock makes a
-     * parallel second delete change nothing.
-     */
-    const deletedById = authentication.session.entity.id;
-    const deletedEntry = await prisma.$transaction(async (transaction) => {
-      await lockSilcLedger(transaction);
-
-      const [entry] = await transaction.silcTransaction.updateManyAndReturn({
-        where: {
-          id: data.id,
-          deletedAt: null,
-        },
-        data: {
-          deletedAt: new Date(),
-          deletedById,
-        },
-        select: {
-          id: true,
-          receiverId: true,
-          value: true,
-          description: true,
-        },
+    try {
+      await deleteSilcTransactionUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: SILC_ERROR_TEXTS,
       });
-      if (!entry) return null;
+    }
 
-      /** The balance changes in the same transaction as the ledger */
-      await updateSilcBalances(transaction, [entry.receiverId]);
-
-      return entry;
-    });
-
-    /**
-     * Also for the error below: then a different tab or user deleted the
-     * transaction before, and the page must show it.
-     */
     refresh();
 
-    if (!deletedEntry)
-      return {
-        error: t("Common.notFound"),
-        requestPayload: formData,
-      };
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.SILC_TRANSACTION_DELETED,
-        data: {
-          transactionId: deletedEntry.id,
-          receiverId: deletedEntry.receiverId,
-          value: deletedEntry.value,
-          description: deletedEntry.description,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
-    return {
-      success: t("Common.successfullyDeleted"),
-    };
+    return { success: t("Common.successfullyDeleted") };
   },
+  { parseFormData: (formData) => ({ transaction_id: formData.get("id") }) },
 );

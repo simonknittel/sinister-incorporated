@@ -1,8 +1,60 @@
 /** The use cases of the SILC: the ledger, the balances and the salaries */
 export {
+  createSilcTransaction,
+  createSilcTransactionInputSchema,
+  type CreateSilcTransactionInput,
+  type CreateSilcTransactionOutput,
+} from "./createSilcTransaction.js";
+export {
+  deleteSilcTransaction,
+  deleteSilcTransactionInputSchema,
+  type DeleteSilcTransactionInput,
+} from "./deleteSilcTransaction.js";
+export {
+  disburseRoleSalaries,
+  type DisburseRoleSalariesOutput,
+} from "./disburseRoleSalaries.js";
+export { expireAllSilc, type ExpireAllSilcOutput } from "./expireAllSilc.js";
+export {
+  findRolesForSalaries,
+  type RoleForSalaries,
+} from "./findRolesForSalaries.js";
+export { getAuecConversionRate } from "./getAuecConversionRate.js";
+export {
+  refreshSilcBalances,
+  type RefreshSilcBalancesOutput,
+} from "./refreshSilcBalances.js";
+export {
+  listRoleSalaries,
+  updateRoleSalaries,
+  updateRoleSalariesInputSchema,
+  type RoleSalaryRow,
+  type UpdateRoleSalariesInput,
+  type UpdateRoleSalariesOutput,
+} from "./roleSalaries.js";
+export {
   findSilcBalanceRows,
   getOwnSilcBalance,
   type SilcBalanceRow,
 } from "./silcBalances.js";
-// The silc agent removes this line when the app action uses the use case
-export { areActiveReceivers } from "./silcLedger.js";
+export { SilcErrorMessage } from "./silcErrors.js";
+export type { SilcTransactionOutput } from "./silcTransactionOutput.js";
+export {
+  findCitizenSilcTransactionRows,
+  findSilcTransactionTablePage,
+  type SilcTransactionTablePage,
+  type SilcTransactionTablePageInput,
+  type SilcTransactionTablePageOptions,
+  type SilcTransactionTableRow,
+} from "./silcTransactionRows.js";
+export {
+  updateSilcSetting,
+  updateSilcSettingInputSchema,
+  type UpdateSilcSettingInput,
+  type UpdateSilcSettingOutput,
+} from "./updateSilcSetting.js";
+export {
+  updateSilcTransaction,
+  updateSilcTransactionInputSchema,
+  type UpdateSilcTransactionInput,
+} from "./updateSilcTransaction.js";

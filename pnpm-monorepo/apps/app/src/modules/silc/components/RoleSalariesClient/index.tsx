@@ -7,7 +7,7 @@ import { Button2, Button2Variant } from "@/modules/common/components/Button2";
 import Note from "@/modules/common/components/Note";
 import { api } from "@/trpc/react";
 import { createId } from "@paralleldrive/cuid2";
-import { type SilcRoleSalary } from "@sam-monorepo/database/browser";
+import type { RoleSalaryRow } from "@sam-monorepo/application";
 import clsx from "clsx";
 import { useState } from "react";
 import { FaPlus, FaSave, FaTrash } from "react-icons/fa";
@@ -16,7 +16,7 @@ import { RoleSelector } from "./RoleSelector";
 
 interface Props {
   readonly className?: string;
-  readonly initialSalaries: SilcRoleSalary[];
+  readonly initialSalaries: RoleSalaryRow[];
   readonly auecConversionRate: number;
 }
 

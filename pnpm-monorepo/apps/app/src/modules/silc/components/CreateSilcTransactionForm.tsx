@@ -8,6 +8,7 @@ import Button from "@/modules/common/components/Button";
 import { Button2 } from "@/modules/common/components/Button2";
 import { NumberInput } from "@/modules/common/components/form/NumberInput";
 import { Textarea } from "@/modules/common/components/form/Textarea";
+import { SILC_DESCRIPTION_MAXIMUM_LENGTH } from "@sam-monorepo/domain";
 import { FaSave } from "react-icons/fa";
 import { createSilcTransaction } from "../actions/createSilcTransaction";
 
@@ -42,7 +43,7 @@ export const CreateSilcTransactionForm = ({ onSuccess }: Props) => {
         name="description"
         label="Beschreibung"
         hint="optional"
-        maxLength={512}
+        maxLength={SILC_DESCRIPTION_MAXIMUM_LENGTH}
         defaultValue={getDefaultValueWithFallback("description", "")}
         className="mt-4"
       />

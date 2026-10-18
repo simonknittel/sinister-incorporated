@@ -1,9 +1,11 @@
-import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { disburseRoleSalaries } from "./disburseRoleSalaries";
+import { AuditEventType } from "@sam-monorepo/domain";
+import { beforeEach, describe, expect, test } from "vitest";
+import { createTestApplicationContext } from "../../test/applicationContext.js";
+import { truncateAllTables } from "../../test/database.js";
+import { disburseRoleSalaries } from "./disburseRoleSalaries.js";
 
-/** A payout day in Europe/Berlin, the time zone of the function */
+/** A payout day in Europe/Berlin, the time zone of the organization */
 const NOW = new Date("2026-09-15T10:00:00+02:00");
 const PAYOUT_DAY = 15;
 const LAST_DAY_OF_SEPTEMBER = new Date("2026-09-30T10:00:00+02:00");
@@ -23,11 +25,6 @@ const createCitizenWithRole = async () => {
 
 beforeEach(async () => {
   await truncateAllTables();
-  vi.setSystemTime(NOW);
-});
-
-afterEach(() => {
-  vi.useRealTimers();
 });
 
 describe("disburseRoleSalaries", () => {
@@ -36,9 +33,21 @@ describe("disburseRoleSalaries", () => {
     await prisma.silcRoleSalary.create({
       data: { roleId: role.id, value: SALARY, dayOfMonth: PAYOUT_DAY },
     });
+    const { context, auditEvents, notifications } =
+      createTestApplicationContext({ now: NOW });
 
-    await disburseRoleSalaries();
-    await disburseRoleSalaries();
+    expect(await disburseRoleSalaries(context)).toEqual({
+      dueRoleCount: 1,
+      transactionCount: 1,
+      disbursedValue: SALARY,
+      notificationsSent: true,
+    });
+    expect(await disburseRoleSalaries(context)).toEqual({
+      dueRoleCount: 1,
+      transactionCount: 0,
+      disbursedValue: 0,
+      notificationsSent: true,
+    });
 
     const transactions = await prisma.silcTransaction.findMany({
       where: { receiverId: citizen.id },
@@ -50,10 +59,27 @@ describe("disburseRoleSalaries", () => {
       where: { id: citizen.id },
     });
     expect(silcBalance).toBe(SALARY);
+
+    expect(auditEvents).toEqual([
+      {
+        type: AuditEventType.ROLE_SALARIES_DISBURSED,
+        data: {
+          roleIds: [role.id],
+          transactionCount: 1,
+          disbursedValue: SALARY,
+        },
+        createdById: null,
+      },
+    ]);
+    expect(notifications).toEqual([
+      {
+        type: "SilcTransactionsCreated",
+        payload: { transactionIds: [transactions[0]?.id] },
+      },
+    ]);
   });
 
   test("the last day of a short month pays the salaries of the missing days in one booking", async () => {
-    vi.setSystemTime(LAST_DAY_OF_SEPTEMBER);
     const { role, citizen } = await createCitizenWithRole();
     await prisma.silcRoleSalary.createMany({
       data: [
@@ -61,8 +87,11 @@ describe("disburseRoleSalaries", () => {
         { roleId: role.id, value: 2 * SALARY, dayOfMonth: 31 },
       ],
     });
+    const { context } = createTestApplicationContext({
+      now: LAST_DAY_OF_SEPTEMBER,
+    });
 
-    await disburseRoleSalaries();
+    await disburseRoleSalaries(context);
 
     const transactions = await prisma.silcTransaction.findMany({
       where: { receiverId: citizen.id },
@@ -72,13 +101,15 @@ describe("disburseRoleSalaries", () => {
   });
 
   test("a salary on the 31st is not paid before the last day of a short month", async () => {
-    vi.setSystemTime(new Date("2026-09-29T10:00:00+02:00"));
     const { role, citizen } = await createCitizenWithRole();
     await prisma.silcRoleSalary.create({
       data: { roleId: role.id, value: SALARY, dayOfMonth: 31 },
     });
+    const { context } = createTestApplicationContext({
+      now: new Date("2026-09-29T10:00:00+02:00"),
+    });
 
-    await disburseRoleSalaries();
+    await disburseRoleSalaries(context);
 
     expect(
       await prisma.silcTransaction.count({ where: { receiverId: citizen.id } }),
@@ -94,8 +125,9 @@ describe("disburseRoleSalaries", () => {
     await prisma.silcRoleSalary.create({
       data: { roleId: role.id, value: SALARY, dayOfMonth: PAYOUT_DAY },
     });
+    const { context } = createTestApplicationContext({ now: NOW });
 
-    await disburseRoleSalaries();
+    await disburseRoleSalaries(context);
 
     expect(
       await prisma.silcTransaction.count({ where: { receiverId: citizen.id } }),
@@ -119,8 +151,9 @@ describe("disburseRoleSalaries", () => {
     await prisma.silcRoleSalary.create({
       data: { roleId: role.id, value: SALARY, dayOfMonth: PAYOUT_DAY },
     });
+    const { context } = createTestApplicationContext({ now: NOW });
 
-    await disburseRoleSalaries();
+    await disburseRoleSalaries(context);
 
     const receiverIds = (
       await prisma.silcTransaction.findMany({ select: { receiverId: true } })
@@ -146,8 +179,9 @@ describe("disburseRoleSalaries", () => {
     await prisma.silcRoleSalary.create({
       data: { roleId: paidRole.id, value: SALARY, dayOfMonth: PAYOUT_DAY },
     });
+    const { context } = createTestApplicationContext({ now: NOW });
 
-    await disburseRoleSalaries();
+    await disburseRoleSalaries(context);
 
     expect(
       await prisma.silcTransaction.findMany({
@@ -161,8 +195,9 @@ describe("disburseRoleSalaries", () => {
     await prisma.silcRoleSalary.create({
       data: { roleId: role.id, value: SALARY, dayOfMonth: PAYOUT_DAY + 1 },
     });
+    const { context } = createTestApplicationContext({ now: NOW });
 
-    await disburseRoleSalaries();
+    await disburseRoleSalaries(context);
 
     expect(
       await prisma.silcTransaction.count({ where: { receiverId: citizen.id } }),

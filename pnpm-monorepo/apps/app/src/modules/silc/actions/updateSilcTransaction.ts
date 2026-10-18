@@ -1,127 +1,44 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import {
-  lockSilcLedger,
-  MAX_SILC_VALUE,
-  updateSilcBalances,
-} from "@sam-monorepo/domain";
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  updateSilcTransactionInputSchema,
+  updateSilcTransaction as updateSilcTransactionUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-
-const schema = z.object({
-  transactionId: z.cuid(),
-  value: z.coerce.number().int().min(-MAX_SILC_VALUE).max(MAX_SILC_VALUE),
-  description: z.string().trim().max(512).optional(),
-});
+import { SILC_ERROR_TEXTS } from "../utils/silcErrorTexts";
 
 export const updateSilcTransaction = createAuthenticatedAction(
   "updateSilcTransaction",
-  schema,
+  updateSilcTransactionInputSchema,
   async (formData, authentication, data, t) => {
-    if (
-      !(await authentication.authorize(
-        "silcTransactionOfOtherCitizen",
-        "update",
-      ))
-    )
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Update the transaction. It is read after the ledger lock, thus a
-     * parallel delete or update cannot come between the read and the write.
-     */
-    const updatedById = authentication.session.entity.id;
-    const result = await prisma.$transaction(async (transaction) => {
-      await lockSilcLedger(transaction);
-
-      const existingTransaction = await transaction.silcTransaction.findFirst({
-        where: {
-          id: data.transactionId,
-          deletedAt: null,
-        },
-        select: {
-          value: true,
-          description: true,
-        },
+    try {
+      await updateSilcTransactionUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: SILC_ERROR_TEXTS,
       });
-      if (!existingTransaction) return null;
+    }
 
-      const updated = await transaction.silcTransaction.update({
-        where: {
-          id: data.transactionId,
-        },
-        data: {
-          value: data.value,
-          description: data.description,
-          updatedAt: new Date(),
-          updatedById,
-        },
-        select: {
-          id: true,
-          receiverId: true,
-          value: true,
-          description: true,
-        },
-      });
-
-      /** The balance changes in the same transaction as the ledger */
-      await updateSilcBalances(transaction, [updated.receiverId]);
-
-      return { existingTransaction, updatedTransaction: updated };
-    });
-
-    /**
-     * Also for the error below: then a different tab or user deleted the
-     * transaction before, and the page must show it.
-     */
     refresh();
 
-    if (!result)
-      return {
-        error: t("Common.notFound"),
-        requestPayload: formData,
-      };
-    const { existingTransaction, updatedTransaction } = result;
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.SILC_TRANSACTION_UPDATED,
-        data: {
-          transactionId: updatedTransaction.id,
-          previousValue: existingTransaction.value ?? updatedTransaction.value,
-          newValue: updatedTransaction.value,
-          previousDescription:
-            existingTransaction.description ?? updatedTransaction.description,
-          newDescription: updatedTransaction.description,
-          receiverId: updatedTransaction.receiverId,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
-    return {
-      success: t("Common.successfullySaved"),
-    };
+    return { success: t("Common.successfullySaved") };
   },
   {
     parseFormData: (formData) => ({
-      transactionId: formData.get("transactionId"),
-      value: formData.get("value"),
+      transaction_id: formData.get("transactionId"),
+      value: Number(formData.get("value")),
       description: formData.has("description")
         ? formData.get("description")
         : undefined,

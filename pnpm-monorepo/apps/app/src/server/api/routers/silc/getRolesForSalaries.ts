@@ -1,50 +1,16 @@
-import { prisma } from "@/db";
-import { log } from "@/modules/logging";
-import { ACTIVE_CITIZEN_WHERE, hasReachedMaxLevel } from "@sam-monorepo/domain";
-import { TRPCError } from "@trpc/server";
-import { protectedProcedure } from "../../trpc";
+import { getApplicationContext } from "@/modules/application";
+import { findRolesForSalaries } from "@sam-monorepo/application";
+import { protectedProcedure, toTrpcError } from "../../trpc";
 
 /**
- * Every role with the number of citizens who get its salary, for the salary
- * editor's "citizens × SILC" preview. The same rule as the salary job: only
- * the direct assignments of citizens that are not deleted count, and a role
- * with levels counts only at its maximum level. The badge itself is rendered
- * from the roles context by id, so the role needs no more than its id and
- * its name for sorting.
+ * Each role with the number of citizens who get its salary, for the
+ * "citizens × SILC" preview of the salary editor (see
+ * `findRolesForSalaries`)
  */
 export const getRolesForSalaries = protectedProcedure.query(async () => {
   try {
-    const roles = await prisma.role.findMany({
-      select: {
-        id: true,
-        name: true,
-        maxLevel: true,
-        assignments: {
-          where: { citizen: ACTIVE_CITIZEN_WHERE },
-          select: {
-            currentLevel: true,
-          },
-        },
-      },
-    });
-
-    return roles.map(({ id, name, maxLevel, assignments }) => ({
-      role: { id, name },
-      citizenCount: assignments.filter((assignment) =>
-        hasReachedMaxLevel({
-          currentLevel: assignment.currentLevel,
-          role: { maxLevel },
-        }),
-      ).length,
-    }));
+    return await findRolesForSalaries(getApplicationContext());
   } catch (error) {
-    log.error("Failed to fetch roles", {
-      error,
-    });
-
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Failed to fetch roles",
-    });
+    throw toTrpcError(error, "Failed to fetch roles");
   }
 });

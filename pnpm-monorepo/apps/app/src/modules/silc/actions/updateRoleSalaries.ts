@@ -1,91 +1,46 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { MAX_SILC_VALUE } from "@sam-monorepo/domain";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  updateRoleSalariesInputSchema,
+  updateRoleSalaries as updateRoleSalariesUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-
-const schema = z
-  .object({
-    roleIds: z.array(z.cuid()).max(250), // Arbitrary (untested) limit to prevent DDoS
-    values: z
-      .array(z.coerce.number().int().min(1).max(MAX_SILC_VALUE))
-      .max(250), // Arbitrary (untested) limit to prevent DDoS
-    dayOfMonths: z.array(z.coerce.number().int().min(1).max(31)).max(250), // Arbitrary (untested) limit to prevent DDoS
-  })
-  .refine(
-    (data) =>
-      data.values.length === data.roleIds.length &&
-      data.dayOfMonths.length === data.roleIds.length,
-  );
+import { SILC_ERROR_TEXTS } from "../utils/silcErrorTexts";
 
 export const updateRoleSalaries = createAuthenticatedAction(
   "updateRoleSalaries",
-  schema,
+  updateRoleSalariesInputSchema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("silcSetting", "update")))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /** See `SilcRoleSalary_roleId_dayOfMonth_key` */
-    const salaryDays = data.roleIds.map(
-      (roleId, index) => `${roleId}:${data.dayOfMonths[index]}`,
-    );
-    if (new Set(salaryDays).size !== salaryDays.length)
-      return {
-        error: "Eine Rolle kann nur ein Gehalt pro Tag haben.",
-        requestPayload: formData,
-      };
-
-    /**
-     * Update salaries
-     */
-    await prisma.$transaction([
-      prisma.silcRoleSalary.deleteMany(),
-
-      prisma.silcRoleSalary.createMany({
-        data: data.roleIds.map((roleId, index) => ({
-          roleId,
-          dayOfMonth: data.dayOfMonths[index],
-          value: data.values[index],
-        })),
-      }),
-    ]);
+    try {
+      await updateRoleSalariesUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: SILC_ERROR_TEXTS,
+      });
+    }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.SALARY_CONFIG_UPDATED,
-        data: {
-          roleIds: data.roleIds,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
-    return {
-      success: t("Common.successfullySaved"),
-    };
+    return { success: t("Common.successfullySaved") };
   },
   {
+    /** A row without a selected role sends no role id: the lengths differ */
     parseFormData: (formData) => ({
-      roleIds: formData.getAll("roleId[]"),
-      values: formData.getAll("value[]"),
-      dayOfMonths: formData.getAll("dayOfMonth[]"),
+      role_ids: formData.getAll("roleId[]"),
+      values: formData.getAll("value[]").map(Number),
+      days_of_month: formData.getAll("dayOfMonth[]").map(Number),
     }),
   },
 );

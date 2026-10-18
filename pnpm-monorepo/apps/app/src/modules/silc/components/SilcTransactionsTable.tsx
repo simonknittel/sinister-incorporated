@@ -3,7 +3,7 @@
 import { CitizenCellLink } from "@/modules/common/components/CitizenCellLink";
 import { Table, TBody, THead, TRow } from "@/modules/common/components/Table";
 import { formatDate } from "@/modules/common/utils/formatDate";
-import type { SilcTransactionTableRow } from "@/modules/silc/queries/silcTransactionTableSelect";
+import type { SilcTransactionTableRow } from "@sam-monorepo/application";
 import clsx from "clsx";
 import { CreateOrUpdateSilcTransaction } from "./CreateOrUpdateSilcTransaction";
 import { DeleteSilcTransaction } from "./DeleteSilcTransaction";

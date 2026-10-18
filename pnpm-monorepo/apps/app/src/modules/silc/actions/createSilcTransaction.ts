@@ -1,95 +1,51 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { areActiveReceivers } from "@sam-monorepo/application";
 import {
-  createSilcTransactionsInTransaction,
-  MAX_SILC_VALUE,
-} from "@sam-monorepo/domain";
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  createSilcTransactionInputSchema,
+  createSilcTransaction as createSilcTransactionUseCase,
+  type CreateSilcTransactionOutput,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { INACTIVE_RECEIVER_ERROR } from "../utils/activeReceivers";
-import { announceSilcTransactions } from "../utils/createSilcTransactions";
-
-const schema = z.object({
-  receiverIds: z.array(z.string().trim().cuid()).min(1).max(250), // Arbitrary (untested) limit to prevent DDoS
-  value: z.coerce.number().int().min(-MAX_SILC_VALUE).max(MAX_SILC_VALUE),
-  description: z.string().trim().max(512).optional(),
-});
+import { SILC_ERROR_TEXTS } from "../utils/silcErrorTexts";
 
 export const createSilcTransaction = createAuthenticatedAction(
   "createSilcTransaction",
-  schema,
+  createSilcTransactionInputSchema,
   async (formData, authentication, data, t) => {
-    if (
-      !(await authentication.authorize(
-        "silcTransactionOfOtherCitizen",
-        "create",
-      ))
-    )
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    if (!(await areActiveReceivers(prisma, data.receiverIds))) {
-      /** A different user deleted a receiver, and the page must show it */
-      return rejectConflict(INACTIVE_RECEIVER_ERROR, formData);
+    let result: CreateSilcTransactionOutput;
+    try {
+      result = await createSilcTransactionUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: SILC_ERROR_TEXTS,
+      });
     }
-
-    /**
-     * Create transaction
-     */
-    const createdById = authentication.session.entity.id;
-    const transactionIds = await prisma.$transaction((transaction) =>
-      createSilcTransactionsInTransaction(
-        transaction,
-        data.receiverIds.map((receiverId) => ({
-          receiverId,
-          value: data.value,
-          description: data.description,
-          createdById,
-        })),
-      ),
-    );
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.SILC_TRANSACTION_CREATED,
-        data: {
-          transactionIds,
-          receiverIds: data.receiverIds,
-          value: data.value,
-          description: data.description,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    const isAnnounced = await announceSilcTransactions(transactionIds);
-
-    /**
-     * Respond with the result
-     */
     return {
       success: "Erfolgreich gespeichert.",
-      ...(isAnnounced ? {} : { warning: t("Common.notificationsFailed") }),
+      ...(result.notifications_sent
+        ? {}
+        : { warning: t("Common.notificationsFailed") }),
     };
   },
   {
     parseFormData: (formData) => ({
-      receiverIds: formData.getAll("receiverId[]"),
-      value: formData.get("value"),
+      receiver_ids: formData.getAll("receiverId[]"),
+      value: Number(formData.get("value")),
       description: formData.has("description")
         ? formData.get("description")
         : undefined,

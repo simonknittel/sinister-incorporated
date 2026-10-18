@@ -1,42 +1,26 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { findCitizenSilcTransactionRows } from "@sam-monorepo/application";
 import type { Citizen } from "@sam-monorepo/database/client";
-import { forbidden } from "next/navigation";
 import { cache } from "react";
-import { SILC_TRANSACTION_TABLE_SELECT } from "./silcTransactionTableSelect";
 
 export const getSilcTransactionsOfCitizen = cache(
   withTrace(
     "getSilcTransactionsOfCitizen",
     async (citizenId: Citizen["id"]) => {
-      const authentication = await requireAuthentication();
-      if (!authentication.session.entity) forbidden();
-      if (
-        !(await authentication.authorize(
-          "silcTransactionOfOtherCitizen",
-          "read",
-        )) &&
-        !(
-          citizenId === authentication.session.entity.id &&
-          (await authentication.authorize(
-            "silcTransactionOfCurrentCitizen",
-            "read",
-          ))
-        )
-      )
-        forbidden();
-
-      return prisma.silcTransaction.findMany({
-        where: {
-          receiverId: citizenId,
-          deletedAt: null,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: SILC_TRANSACTION_TABLE_SELECT,
-      });
+      try {
+        return await findCitizenSilcTransactionRows(
+          getApplicationContext(),
+          await getRequestActor(),
+          citizenId,
+        );
+      } catch (error) {
+        return throwApplicationErrorForPage(error);
+      }
     },
   ),
 );

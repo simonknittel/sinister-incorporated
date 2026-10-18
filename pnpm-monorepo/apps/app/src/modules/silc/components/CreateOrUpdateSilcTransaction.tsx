@@ -9,6 +9,7 @@ import { NumberInput } from "@/modules/common/components/form/NumberInput";
 import { Textarea } from "@/modules/common/components/form/Textarea";
 import Modal from "@/modules/common/components/Modal";
 import type { Citizen, SilcTransaction } from "@sam-monorepo/database/browser";
+import { SILC_DESCRIPTION_MAXIMUM_LENGTH } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useState } from "react";
 import { FaPen, FaPlus, FaSave } from "react-icons/fa";
@@ -124,7 +125,7 @@ export const CreateOrUpdateSilcTransaction = (props: Props) => {
             name="description"
             label="Beschreibung"
             hint="optional"
-            maxLength={512}
+            maxLength={SILC_DESCRIPTION_MAXIMUM_LENGTH}
             defaultValue={getDefaultValueWithFallback(
               "description",
               "transaction" in props && props.transaction?.description

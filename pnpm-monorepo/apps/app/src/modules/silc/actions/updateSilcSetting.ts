@@ -1,78 +1,33 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { SilcSettingKey } from "@sam-monorepo/database/client";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  updateSilcSettingInputSchema,
+  updateSilcSetting as updateSilcSettingUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { auecConversionRateSchema } from "../utils/auecConversionRate";
-
-const schema = z.object({
-  key: z.literal(SilcSettingKey.AUEC_CONVERSION_RATE),
-  value: auecConversionRateSchema.transform((value) => value.toString()),
-});
 
 export const updateSilcSetting = createAuthenticatedAction(
   "updateSilcSetting",
-  schema,
+  updateSilcSettingInputSchema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("silcSetting", "update")))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Update setting
-     */
-    await prisma.silcSetting.upsert({
-      where: {
-        key: data.key,
-      },
-      update: {
-        value: data.value,
-        updatedBy: {
-          connect: {
-            id: authentication.session.entity.id,
-          },
-        },
-      },
-      create: {
-        key: data.key,
-        value: data.value,
-        updatedBy: {
-          connect: {
-            id: authentication.session.entity.id,
-          },
-        },
-      },
-    });
+    try {
+      await updateSilcSettingUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, { formData, t });
+    }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.SILC_SETTING_UPDATED,
-        data: {
-          key: data.key,
-          value: data.value,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
-    return {
-      success: t("Common.successfullySaved"),
-    };
+    return { success: t("Common.successfullySaved") };
   },
 );

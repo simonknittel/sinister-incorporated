@@ -1,9 +1,15 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
+import { CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { forbidden } from "next/navigation";
+import {
+  findSilcTransactionTablePage,
+  UnknownCursorBehavior,
+} from "@sam-monorepo/application";
 import { cache } from "react";
-import { SILC_TRANSACTION_TABLE_SELECT } from "./silcTransactionTableSelect";
 
 const SILC_TRANSACTIONS_PAGE_SIZE = 100;
 
@@ -13,71 +19,22 @@ export const getSilcTransactionsPaginated = cache(
     async (
       showDeleted: "alle" | "deleted" = "alle",
       cursor: string | null = null,
-      direction: "next" | "prev" = "next",
+      direction: CursorDirection = CursorDirection.Next,
     ) => {
-      const authentication = await requireAuthentication();
-      if (
-        !(await authentication.authorize(
-          "silcTransactionOfOtherCitizen",
-          "read",
-        ))
-      )
-        forbidden();
-
-      const take =
-        direction === "prev"
-          ? -(SILC_TRANSACTIONS_PAGE_SIZE + 1)
-          : SILC_TRANSACTIONS_PAGE_SIZE + 1;
-
-      const rows = await prisma.silcTransaction.findMany({
-        where:
-          showDeleted === "alle"
-            ? {
-                deletedAt: null,
-              }
-            : {
-                deletedAt: { not: null },
-              },
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: SILC_TRANSACTION_TABLE_SELECT,
-        ...(cursor
-          ? {
-              cursor: {
-                id: cursor,
-              },
-              skip: 1,
-            }
-          : {}),
-        take,
-      });
-
-      const hasMore = rows.length > SILC_TRANSACTIONS_PAGE_SIZE;
-
-      let transactions;
-      if (hasMore) {
-        if (direction === "prev") {
-          transactions = rows.slice(1);
-        } else {
-          transactions = rows.slice(0, SILC_TRANSACTIONS_PAGE_SIZE);
-        }
-      } else {
-        transactions = rows;
+      try {
+        return await findSilcTransactionTablePage(
+          getApplicationContext(),
+          await getRequestActor(),
+          { deleted: showDeleted === "deleted", cursor },
+          {
+            pageSize: SILC_TRANSACTIONS_PAGE_SIZE,
+            direction,
+            unknownCursor: UnknownCursorBehavior.FirstPage,
+          },
+        );
+      } catch (error) {
+        return throwApplicationErrorForPage(error);
       }
-
-      const hasNextPage = direction === "next" ? hasMore : !!cursor;
-      const hasPrevPage = direction === "prev" ? hasMore : !!cursor;
-
-      return {
-        transactions,
-        nextCursor:
-          hasNextPage && transactions.length > 0
-            ? transactions.at(-1)!.id
-            : null,
-        prevCursor:
-          hasPrevPage && transactions.length > 0 ? transactions[0].id : null,
-      };
     },
   ),
 );
