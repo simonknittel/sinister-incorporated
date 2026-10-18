@@ -1,11 +1,21 @@
 /** The use cases of the roles group. */
 export {
+  autoAssignInactiveRoles,
+  type AutoAssignInactiveRolesInput,
+  type AutoAssignInactiveRolesOutput,
+} from "./autoAssignInactiveRoles.js";
+export {
   changeRoleAssignmentLevelInputSchema,
   decreaseRoleAssignmentLevel,
   increaseRoleAssignmentLevel,
   type ChangeRoleAssignmentLevelInput,
   type ChangeRoleAssignmentLevelOutput,
 } from "./changeRoleAssignmentLevel.js";
+export {
+  countCitizensPerRole,
+  type CountCitizensPerRoleInput,
+  type CountCitizensPerRoleOutput,
+} from "./countCitizensPerRole.js";
 export {
   createRole,
   createRoleInputSchema,
@@ -38,6 +48,11 @@ export {
   type ListRolesInput,
   type ListRolesOutput,
 } from "./listRoles.js";
+export {
+  removeExpiredRoleAssignments,
+  type RemoveExpiredRoleAssignmentsInput,
+  type RemoveExpiredRoleAssignmentsOutput,
+} from "./removeExpiredRoleAssignments.js";
 export {
   findInheritanceMatrixRoles,
   findPermissionMatrixRoles,

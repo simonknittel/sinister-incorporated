@@ -1,3 +1,4 @@
+import type { PrismaClientType } from "@sam-monorepo/database";
 import type {
   Prisma,
   RoleAssignmentChangeType,
@@ -20,10 +21,10 @@ export interface NewRoleAssignmentChange {
  * `$transaction([...])` accepts it, and an interactive transaction awaits it.
  */
 export const createRoleAssignmentChanges = (
-  client: Pick<Prisma.TransactionClient, "roleAssignmentChange">,
+  client: Pick<PrismaClientType, "roleAssignmentChange">,
   changes: readonly NewRoleAssignmentChange[],
   createdById: string | null,
-) =>
+): Prisma.PrismaPromise<Prisma.BatchPayload> =>
   client.roleAssignmentChange.createMany({
     data: changes.map(({ citizenId, roleId, type }) => ({
       citizenId,

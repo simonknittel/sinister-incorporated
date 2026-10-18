@@ -90,7 +90,7 @@ export const countShips = async () => {
 
     /**
      * A run that repeats in the same night keeps the counts of the first run,
-     * see `countCitizensPerRole()`.
+     * like `countCitizensPerRole()` of the application package.
      */
     const created = await captureAsyncFunc("save variant ship counts", () =>
       prisma.variantShipCount.createMany({

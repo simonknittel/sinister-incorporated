@@ -11,8 +11,29 @@ import { log } from "./logger";
 interface ApplicationContextOptions {
   /** The `Source` of the notification events: the name of the function */
   readonly source: string;
-  readonly urls: ApplicationContext["urls"];
+  /** The base URL of the app */
+  readonly baseUrl: string;
+  /** The public base URL of the uploads bucket */
+  readonly publicUploadBaseUrl: string;
 }
+
+/** The app builds the same URLs in its composition root */
+const createUrls = ({
+  baseUrl: baseUrlValue,
+  publicUploadBaseUrl,
+}: Pick<
+  ApplicationContextOptions,
+  "baseUrl" | "publicUploadBaseUrl"
+>): ApplicationContext["urls"] => {
+  const baseUrl = new URL(baseUrlValue);
+
+  return {
+    baseUrl,
+    issuer: baseUrl.href.replace(/\/$/, ""),
+    mcpResourceUrl: new URL("/api/mcp", baseUrl),
+    publicUploadBaseUrl: publicUploadBaseUrl.replace(/\/+$/, ""),
+  };
+};
 
 /**
  * The composition root of the Lambda functions. Each function builds its
@@ -24,7 +45,8 @@ interface ApplicationContextOptions {
  */
 export const createApplicationContext = ({
   source,
-  urls,
+  baseUrl,
+  publicUploadBaseUrl,
 }: ApplicationContextOptions): ApplicationContext => ({
   prisma,
   audit: createPrismaAuditWriter({ prisma, log }),
@@ -37,7 +59,7 @@ export const createApplicationContext = ({
   now: () => new Date(),
   changelog: null,
   collab: null,
-  urls,
+  urls: createUrls({ baseUrl, publicUploadBaseUrl }),
   signingKey: async () => null,
   allowInsecureLoopbackClientIds: false,
 });

@@ -6,6 +6,11 @@ export {
   type BanUserOutput,
 } from "./banUser.js";
 export {
+  countUniqueLogins,
+  type CountUniqueLoginsInput,
+  type CountUniqueLoginsOutput,
+} from "./countUniqueLogins.js";
+export {
   UserBanStatus,
   UserSort,
   findUserListPage,

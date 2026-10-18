@@ -48,6 +48,11 @@ export {
   type OwnSession,
 } from "./listOwnSessions.js";
 export {
+  purgeExpiredAuthenticationRecords,
+  type PurgeExpiredAuthenticationRecordsInput,
+  type PurgeExpiredAuthenticationRecordsOutput,
+} from "./purgeExpiredAuthenticationRecords.js";
+export {
   requestEmailConfirmation,
   type RequestEmailConfirmationOutput,
 } from "./requestEmailConfirmation.js";

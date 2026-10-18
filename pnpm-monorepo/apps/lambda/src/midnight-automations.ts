@@ -1,36 +1,81 @@
-import "./midnight-automations/setup"; // must be first
+import { env } from "./midnight-automations/setup"; // must be first
 
+import type { ApplicationContext } from "@sam-monorepo/application";
+import {
+  autoAssignInactiveRoles,
+  countCitizensPerRole,
+  countUniqueLogins,
+  purgeExpiredAuthenticationRecords,
+  purgeExpiredOAuthRecords,
+  removeExpiredRoleAssignments,
+} from "@sam-monorepo/application";
 import type { ScheduledHandler } from "aws-lambda";
+import { createApplicationContext } from "./common/createApplicationContext";
+import { log } from "./common/logger";
 import { runJobsInIsolation } from "./common/runJobsInIsolation";
+import { captureAsyncFunc } from "./common/xray";
 import { archiveIrrelevantOnSiteNotifications } from "./midnight-automations/archiveIrrelevantOnSiteNotifications";
-import { autoAssignInactiveRoles } from "./midnight-automations/autoAssignInactiveRoles";
-import { countCitizensPerRole } from "./midnight-automations/countCitizensPerRole";
 import { countShips } from "./midnight-automations/countShips";
-import { countUniqueLogins } from "./midnight-automations/countUniqueLogins";
 import { deleteUnusedUploads } from "./midnight-automations/deleteUnusedUploads";
 import { disburseRoleSalaries } from "./midnight-automations/disburseRoleSalaries";
 import { endCollectionPhases } from "./midnight-automations/endCollectionPhases";
 import { endPayoutPhases } from "./midnight-automations/endPayoutPhases";
-import { purgeExpiredAuthenticationRecords } from "./midnight-automations/purgeExpiredAuthenticationRecords";
-import { purgeExpiredOAuthRecords } from "./midnight-automations/purgeExpiredOAuthRecords";
 import { purgeOrphanedWikiTags } from "./midnight-automations/purgeOrphanedWikiTags";
 import { purgeTrashedWikiPages } from "./midnight-automations/purgeTrashedWikiPages";
-import { removeExpiredRoles } from "./midnight-automations/removeExpiredRoles";
+
+const context = createApplicationContext({
+  source: "midnight-automations",
+  baseUrl: env.BASE_URL,
+  publicUploadBaseUrl: env.PUBLIC_UPLOAD_BASE_URL,
+});
+
+/**
+ * Runs an automation of the application package as a job. The name is the
+ * name of the job in the logs and in X-Ray.
+ */
+const createJob =
+  (
+    name: string,
+    automation: (
+      context: ApplicationContext,
+      input: { readonly now: Date },
+    ) => Promise<object>,
+  ) =>
+  () =>
+    captureAsyncFunc(name, async () => {
+      const output = await automation(context, { now: new Date() });
+      log.info("Job finished", { job: name, ...output });
+    });
 
 export const handler: ScheduledHandler = async () =>
   runJobsInIsolation({
     endCollectionPhases,
     endPayoutPhases,
-    removeExpiredRoles,
-    autoAssignInactiveRoles,
-    countCitizensPerRole,
+    removeExpiredRoles: createJob(
+      "removeExpiredRoles",
+      removeExpiredRoleAssignments,
+    ),
+    autoAssignInactiveRoles: createJob(
+      "autoAssignInactiveRoles",
+      autoAssignInactiveRoles,
+    ),
+    countCitizensPerRole: createJob(
+      "countCitizensPerRole",
+      countCitizensPerRole,
+    ),
     disburseRoleSalaries,
     countShips,
-    countUniqueLogins,
+    countUniqueLogins: createJob("countUniqueLogins", countUniqueLogins),
     purgeTrashedWikiPages,
     purgeOrphanedWikiTags,
     archiveIrrelevantOnSiteNotifications,
     deleteUnusedUploads,
-    purgeExpiredAuthenticationRecords,
-    purgeExpiredOAuthRecords,
+    purgeExpiredAuthenticationRecords: createJob(
+      "purgeExpiredAuthenticationRecords",
+      purgeExpiredAuthenticationRecords,
+    ),
+    purgeExpiredOAuthRecords: createJob(
+      "purgeExpiredOAuthRecords",
+      purgeExpiredOAuthRecords,
+    ),
   });
