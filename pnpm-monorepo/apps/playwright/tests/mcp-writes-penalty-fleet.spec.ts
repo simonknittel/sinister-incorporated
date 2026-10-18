@@ -1,39 +1,17 @@
 import { expectAuditEvents } from "../fixtures/audit";
-import { createCitizen, createVariant } from "../fixtures/factories";
 import {
-  structuredContentOf,
-  toolResultText,
+  createCitizen,
+  createMcpCitizen,
+  createVariant,
+} from "../fixtures/factories";
+import {
+  callForContent,
+  callForError,
+  CONFLICT_RESULT,
+  NOT_FOUND_RESULT,
   UNKNOWN_TOOL_ERROR_CODE,
-  type McpTestClient,
 } from "../fixtures/mcp-client";
 import { expect, test } from "../fixtures/test";
-
-const CONFLICT_RESULT = /^ConflictError: /;
-const NOT_FOUND_RESULT = /^NotFoundError: /;
-
-/** The structured content of a tool result that must not be an error */
-const callForContent = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError, toolResultText(result)).toBeFalsy();
-
-  return structuredContentOf(result);
-};
-
-/** The message of a tool result that must be an error */
-const callForError = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError).toBe(true);
-
-  return toolResultText(result);
-};
 
 test.describe("the penalty points and fleet write tools of the MCP server", () => {
   test("create_penalty_entry books an entry like the form, with the author, the expiry and the audit event", async ({
@@ -41,7 +19,7 @@ test.describe("the penalty points and fleet write tools of the MCP server", () =
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const keeper = await createCitizen(prisma, {
+    const keeper = await createMcpCitizen(prisma, {
       handle: "mcp-strafpunkt-verwalter",
       permissionStrings: ["penaltyEntry;create"],
     });
@@ -99,20 +77,17 @@ test.describe("the penalty points and fleet write tools of the MCP server", () =
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const keeper = await createCitizen(prisma, {
+    const keeper = await createMcpCitizen(prisma, {
       handle: "mcp-strafpunkt-verwalter",
       permissionStrings: ["penaltyEntry;create"],
     });
-    const reader = await createCitizen(prisma, {
+    const reader = await createMcpCitizen(prisma, {
       handle: "mcp-strafpunkt-leser",
       permissionStrings: ["penaltyEntry;read"],
     });
-    const deletedCitizen = await createCitizen(prisma, {
-      handle: "mcp-geloescht",
-    });
-    await prisma.citizen.update({
-      where: { id: deletedCitizen.entity.id },
-      data: { deletedAt: new Date() },
+    // A deleted citizen has no login
+    const deletedCitizen = await prisma.citizen.create({
+      data: { handle: "mcp-geloescht", deletedAt: new Date() },
     });
 
     const keeperClient = await connectMcpClient(
@@ -120,7 +95,7 @@ test.describe("the penalty points and fleet write tools of the MCP server", () =
     );
     expect(
       await callForError(keeperClient, "create_penalty_entry", {
-        citizen_id: deletedCitizen.entity.id,
+        citizen_id: deletedCitizen.id,
         points: 1,
       }),
     ).toMatch(CONFLICT_RESULT);
@@ -133,7 +108,7 @@ test.describe("the penalty points and fleet write tools of the MCP server", () =
     );
     await expect(
       readerClient.callTool("create_penalty_entry", {
-        citizen_id: deletedCitizen.entity.id,
+        citizen_id: deletedCitizen.id,
         points: 1,
       }),
     ).rejects.toMatchObject({ code: UNKNOWN_TOOL_ERROR_CODE });
@@ -146,7 +121,7 @@ test.describe("the penalty points and fleet write tools of the MCP server", () =
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const owner = await createCitizen(prisma, {
+    const owner = await createMcpCitizen(prisma, {
       handle: "mcp-pilotin",
       permissionStrings: ["ship;manage"],
     });
@@ -228,12 +203,12 @@ test.describe("the penalty points and fleet write tools of the MCP server", () =
     ]);
   });
 
-  test("delete_ship deletes only an own ship, and only once", async ({
+  test("delete_ship deletes only an own ship, only once and only while the tool is enabled", async ({
     prisma,
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const owner = await createCitizen(prisma, {
+    const owner = await createMcpCitizen(prisma, {
       handle: "mcp-pilotin",
       permissionStrings: ["ship;manage"],
     });
@@ -263,6 +238,15 @@ test.describe("the penalty points and fleet write tools of the MCP server", () =
       readOnlyHint: false,
       destructiveHint: true,
     });
+
+    // A tool that the user disabled on the account page does not exist
+    const toolSetting = await prisma.mcpToolSetting.create({
+      data: { userId: owner.user.id, toolName: "delete_ship" },
+    });
+    await expect(
+      client.callTool("delete_ship", { ship_id: ownShip.id }),
+    ).rejects.toMatchObject({ code: UNKNOWN_TOOL_ERROR_CODE });
+    await prisma.mcpToolSetting.delete({ where: { id: toolSetting.id } });
 
     // A ship of a different citizen does not exist for the user
     expect(

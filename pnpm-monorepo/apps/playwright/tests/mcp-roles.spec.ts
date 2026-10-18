@@ -1,36 +1,10 @@
-import { createCitizen, createRole } from "../fixtures/factories";
+import { createMcpCitizen, createRole } from "../fixtures/factories";
 import {
-  structuredContentOf,
-  toolResultText,
-  type McpTestClient,
+  callForContent,
+  callForError,
+  NOT_FOUND_RESULT,
 } from "../fixtures/mcp-client";
 import { expect, test } from "../fixtures/test";
-
-const NOT_FOUND_RESULT = /^NotFoundError: /;
-
-/** The structured content of a tool result that must not be an error */
-const callForContent = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError, toolResultText(result)).toBeFalsy();
-
-  return structuredContentOf(result);
-};
-
-/** The message of a tool result that must be an error */
-const callForError = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError).toBe(true);
-
-  return toolResultText(result);
-};
 
 test.describe("the role tools of the MCP server", () => {
   test("list_roles gives only the roles with otherRole;read for their id, and get_role does not find a hidden role", async ({
@@ -48,7 +22,7 @@ test.describe("the role tools of the MCP server", () => {
         inherits: { connect: [{ id: scout.id }, { id: salvage.id }] },
       },
     });
-    const viewer = await createCitizen(prisma, {
+    const viewer = await createMcpCitizen(prisma, {
       handle: "mcp-rollen-betrachter",
       permissionStrings: [
         `otherRole;read;roleId=${command.id}`,
@@ -121,11 +95,11 @@ test.describe("the role tools of the MCP server", () => {
       where: { id: logistics.id },
       data: { maxAgeDays: 30 },
     });
-    const reader = await createCitizen(prisma, {
+    const reader = await createMcpCitizen(prisma, {
       handle: "mcp-rollen-leser",
       permissionStrings: [`otherRole;read;roleId=${logistics.id}`],
     });
-    const manager = await createCitizen(prisma, {
+    const manager = await createMcpCitizen(prisma, {
       handle: "mcp-rollen-verwalter",
       permissionStrings: [
         "role;manage",

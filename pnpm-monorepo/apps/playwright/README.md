@@ -32,6 +32,8 @@ database for each test case.
   Citizen, the role and the permissions in the form that the session
   callback expects. The MCP tests connect a client with the real OAuth flow
   (`authorizeMcpClient()` and `connectMcpClient()`, see `fixtures/oauth.ts`).
+  Their users come from `createMcpCitizen()`, which adds the permission
+  `mcp;use` that the MCP server requires.
   Their assertions never print a token: compare the status and the error of
   a token response, not the response.
 

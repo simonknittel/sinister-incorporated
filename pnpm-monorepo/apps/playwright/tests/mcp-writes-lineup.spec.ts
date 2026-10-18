@@ -1,8 +1,8 @@
 import { expectAuditEvents } from "../fixtures/audit";
 import {
   createAppEvent,
-  createCitizen,
   createEventTemplate,
+  createMcpCitizen,
   createParticipant,
   createVariant,
   futureEvent,
@@ -10,42 +10,16 @@ import {
   ONE_HOUR_MS,
 } from "../fixtures/factories";
 import {
-  structuredContentOf,
-  toolResultText,
-  type McpTestClient,
+  callForContent,
+  callForError,
+  CONFLICT_RESULT,
+  FORBIDDEN_RESULT,
+  NOT_FOUND_RESULT,
 } from "../fixtures/mcp-client";
 import { expect, test } from "../fixtures/test";
 
-const CONFLICT_RESULT = /^ConflictError: /;
-const FORBIDDEN_RESULT = /^ForbiddenError: /;
-const NOT_FOUND_RESULT = /^NotFoundError: /;
-
 /** The tools of the lineup see only events, thus `event;read` is enough */
 const EVENT_READ_PERMISSION = "event;read";
-
-/** The structured content of a tool result that must not be an error */
-const callForContent = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError, toolResultText(result)).toBeFalsy();
-
-  return structuredContentOf(result);
-};
-
-/** The message of a tool result that must be an error */
-const callForError = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError).toBe(true);
-
-  return toolResultText(result);
-};
 
 test.describe("the lineup write tools of the MCP server", () => {
   test("an organizer creates, updates and reorders positions with the audit events of the web app", async ({
@@ -53,7 +27,7 @@ test.describe("the lineup write tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const organizer = await createCitizen(prisma, {
+    const organizer = await createMcpCitizen(prisma, {
       handle: "mcp-staffelfuehrer",
       permissionStrings: [EVENT_READ_PERMISSION],
     });
@@ -164,11 +138,11 @@ test.describe("the lineup write tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const organizer = await createCitizen(prisma, {
+    const organizer = await createMcpCitizen(prisma, {
       handle: "mcp-einsatzleiter",
       permissionStrings: [EVENT_READ_PERMISSION],
     });
-    const participant = await createCitizen(prisma, {
+    const participant = await createMcpCitizen(prisma, {
       handle: "mcp-bewerberin",
       permissionStrings: [EVENT_READ_PERMISSION],
     });
@@ -260,7 +234,7 @@ test.describe("the lineup write tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const organizer = await createCitizen(prisma, {
+    const organizer = await createMcpCitizen(prisma, {
       handle: "mcp-aufraeumer",
       permissionStrings: [EVENT_READ_PERMISSION],
     });
@@ -330,15 +304,15 @@ test.describe("the lineup write tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const organizer = await createCitizen(prisma, {
+    const organizer = await createMcpCitizen(prisma, {
       handle: "mcp-veranstalter",
       permissionStrings: [EVENT_READ_PERMISSION],
     });
-    const reader = await createCitizen(prisma, {
+    const reader = await createMcpCitizen(prisma, {
       handle: "mcp-zuschauer",
       permissionStrings: [EVENT_READ_PERMISSION],
     });
-    const outsider = await createCitizen(prisma, { handle: "mcp-aussen" });
+    const outsider = await createMcpCitizen(prisma, { handle: "mcp-aussen" });
     const event = await createAppEvent(prisma, {
       name: "Patrouille",
       createdById: organizer.entity.id,

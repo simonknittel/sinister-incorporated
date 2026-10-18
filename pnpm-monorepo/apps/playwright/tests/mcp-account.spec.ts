@@ -1,6 +1,6 @@
 import { expectAuditEvents } from "../fixtures/audit";
 import { CIMD_CLIENT_NAME } from "../fixtures/cimd-server";
-import { createCitizen } from "../fixtures/factories";
+import { createCitizen, createMcpCitizen } from "../fixtures/factories";
 import {
   clickUntilVisible,
   DELETED_TEXT,
@@ -26,7 +26,7 @@ test.describe("the MCP account page", () => {
     cimdServer,
     authorizeMcpClient,
   }) => {
-    const citizen = await createCitizen(prisma, { handle: "mcp-inhaber" });
+    const citizen = await createMcpCitizen(prisma, { handle: "mcp-inhaber" });
     const authorization = await authorizeMcpClient(citizen.user);
 
     const callBefore = await postMcpEndpoint(
@@ -73,7 +73,9 @@ test.describe("the MCP account page", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const citizen = await createCitizen(prisma, { handle: "mcp-auswaehler" });
+    const citizen = await createMcpCitizen(prisma, {
+      handle: "mcp-auswaehler",
+    });
     const authorization = await authorizeMcpClient(citizen.user);
     const client = await connectMcpClient(authorization.accessToken);
     expect(await client.listToolNames()).toContain("get_current_user");
@@ -117,8 +119,8 @@ test.describe("the MCP account page", () => {
     connectMcpClient,
     enableAdminMode,
   }) => {
-    const member = await createCitizen(prisma, { handle: "mcp-mitglied" });
-    const admin = await createCitizen(prisma, {
+    const member = await createMcpCitizen(prisma, { handle: "mcp-mitglied" });
+    const admin = await createMcpCitizen(prisma, {
       handle: "mcp-admin",
       admin: true,
     });
@@ -176,7 +178,9 @@ test.describe("the MCP account page", () => {
       handle: "mcp-vertreter",
       admin: true,
     });
-    const target = await createCitizen(prisma, { handle: "mcp-vertretener" });
+    const target = await createMcpCitizen(prisma, {
+      handle: "mcp-vertretener",
+    });
     await signIn(admin.user);
     await context.addCookies([
       {

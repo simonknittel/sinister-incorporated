@@ -1,41 +1,15 @@
 import { TaskRewardType, TaskVisibility } from "@sam-monorepo/database/client";
 import { expectAuditEvents } from "../fixtures/audit";
-import { createCitizen } from "../fixtures/factories";
+import { createCitizen, createMcpCitizen } from "../fixtures/factories";
 import {
-  structuredContentOf,
-  toolResultText,
+  callForContent,
+  callForError,
+  CONFLICT_RESULT,
+  FORBIDDEN_RESULT,
   UNKNOWN_TOOL_ERROR_CODE,
-  type McpTestClient,
+  VALIDATION_RESULT,
 } from "../fixtures/mcp-client";
 import { expect, test } from "../fixtures/test";
-
-const CONFLICT_RESULT = /^ConflictError: /;
-const FORBIDDEN_RESULT = /^ForbiddenError: /;
-const VALIDATION_RESULT = /^ValidationError: /;
-
-/** The structured content of a tool result that must not be an error */
-const callForContent = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError, toolResultText(result)).toBeFalsy();
-
-  return structuredContentOf(result);
-};
-
-/** The message of a tool result that must be an error */
-const callForError = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError).toBe(true);
-
-  return toolResultText(result);
-};
 
 test.describe("the task write tools of the MCP server", () => {
   test("create_task creates a public task with a SILC reward like the form, with the audit event", async ({
@@ -43,7 +17,7 @@ test.describe("the task write tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const creator = await createCitizen(prisma, {
+    const creator = await createMcpCitizen(prisma, {
       handle: "mcp-auftraggeber",
       permissionStrings: ["task;read", "task;create"],
     });
@@ -105,11 +79,11 @@ test.describe("the task write tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const planner = await createCitizen(prisma, {
+    const planner = await createMcpCitizen(prisma, {
       handle: "mcp-planer",
       permissionStrings: ["task;read", "task;create"],
     });
-    const dispatcher = await createCitizen(prisma, {
+    const dispatcher = await createMcpCitizen(prisma, {
       handle: "mcp-disponent",
       permissionStrings: [
         "task;read",
@@ -160,11 +134,11 @@ test.describe("the task write tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const creator = await createCitizen(prisma, {
+    const creator = await createMcpCitizen(prisma, {
       handle: "mcp-auftraggeber",
       permissionStrings: ["task;read"],
     });
-    const worker = await createCitizen(prisma, {
+    const worker = await createMcpCitizen(prisma, {
       handle: "mcp-auftragnehmer",
       permissionStrings: ["task;read"],
     });
@@ -240,7 +214,7 @@ test.describe("the task write tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const creator = await createCitizen(prisma, {
+    const creator = await createMcpCitizen(prisma, {
       handle: "mcp-auftraggeber",
       permissionStrings: ["task;read"],
     });
@@ -307,11 +281,11 @@ test.describe("the task write tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const creator = await createCitizen(prisma, {
+    const creator = await createMcpCitizen(prisma, {
       handle: "mcp-auftraggeber",
       permissionStrings: ["task;read"],
     });
-    const bystander = await createCitizen(prisma, {
+    const bystander = await createMcpCitizen(prisma, {
       handle: "mcp-beobachter",
       permissionStrings: ["task;read"],
     });

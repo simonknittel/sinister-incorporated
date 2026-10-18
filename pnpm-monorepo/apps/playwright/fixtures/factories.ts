@@ -137,6 +137,22 @@ export const createCitizen = async (
   return { user, entity, role };
 };
 
+/**
+ * The permission that gates the MCP server: the consent page, the creation
+ * of a grant, each request with an access token and the account page.
+ */
+export const MCP_USE_PERMISSION = "mcp;use";
+
+/** A citizen who can connect an MCP client and use it */
+export const createMcpCitizen = (
+  prisma: PrismaClient,
+  { permissionStrings = [], ...options }: CreateCitizenOptions,
+) =>
+  createCitizen(prisma, {
+    ...options,
+    permissionStrings: [MCP_USE_PERMISSION, ...permissionStrings],
+  });
+
 interface CreateUserWithoutCitizenOptions {
   readonly name: string;
   /** Grants the all-permissions override once enableAdminMode() is used. */

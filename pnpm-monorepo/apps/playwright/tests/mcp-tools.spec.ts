@@ -9,6 +9,7 @@ import {
   addCitizenToOrganization,
   createAppEvent,
   createCitizen,
+  createMcpCitizen,
   createRole,
   createVariant,
   createWikiPage,
@@ -21,10 +22,11 @@ import {
   wikiParagraph,
 } from "../fixtures/factories";
 import {
-  structuredContentOf,
-  toolResultText,
+  callForContent,
+  callForError,
+  FORBIDDEN_RESULT,
+  NOT_FOUND_RESULT,
   UNKNOWN_TOOL_ERROR_CODE,
-  type McpTestClient,
 } from "../fixtures/mcp-client";
 import { expect, test } from "../fixtures/test";
 
@@ -42,40 +44,15 @@ const TOOLS_WITHOUT_PERMISSION = [
   "list_changelog_entries",
 ];
 
-const FORBIDDEN_RESULT = /^ForbiddenError: /;
-const NOT_FOUND_RESULT = /^NotFoundError: /;
-
-/** The structured content of a tool result that must not be an error */
-const callForContent = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError, toolResultText(result)).toBeFalsy();
-
-  return structuredContentOf(result);
-};
-
-/** The message of a tool result that must be an error */
-const callForError = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError).toBe(true);
-
-  return toolResultText(result);
-};
-
 test.describe("the read tools of the MCP server", () => {
   test("a user without permissions sees only the tools that need none, and reads only the own citizen", async ({
     prisma,
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const outsider = await createCitizen(prisma, { handle: "mcp-ohne-rechte" });
+    const outsider = await createMcpCitizen(prisma, {
+      handle: "mcp-ohne-rechte",
+    });
     const stranger = await createCitizen(prisma, { handle: "mcp-fremder" });
     const client = await connectMcpClient(
       (await authorizeMcpClient(outsider.user)).accessToken,
@@ -110,7 +87,7 @@ test.describe("the read tools of the MCP server", () => {
     const secret = await prisma.classificationLevel.create({
       data: { name: "Geheim" },
     });
-    const analyst = await createCitizen(prisma, {
+    const analyst = await createMcpCitizen(prisma, {
       handle: "mcp-analyst",
       permissionStrings: [
         "citizen;read",
@@ -222,12 +199,12 @@ test.describe("the read tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const penalized = await createCitizen(prisma, {
+    const penalized = await createMcpCitizen(prisma, {
       handle: "mcp-verwarnter",
       // The app shows the own entries on the profile of the citizen
       permissionStrings: ["ownPenaltyEntry;read", "citizen;read"],
     });
-    const withoutProfile = await createCitizen(prisma, {
+    const withoutProfile = await createMcpCitizen(prisma, {
       handle: "mcp-ohne-profil",
       permissionStrings: ["ownPenaltyEntry;read"],
     });
@@ -279,7 +256,7 @@ test.describe("the read tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const owner = await createCitizen(prisma, {
+    const owner = await createMcpCitizen(prisma, {
       handle: "mcp-pilotin",
       permissionStrings: [
         // The page of the own ships needs it
@@ -288,7 +265,7 @@ test.describe("the read tools of the MCP server", () => {
         "organizationMembership;read",
       ],
     });
-    const neighbour = await createCitizen(prisma, {
+    const neighbour = await createMcpCitizen(prisma, {
       handle: "mcp-nachbar",
       permissionStrings: ["ship;read"],
     });
@@ -360,7 +337,7 @@ test.describe("the read tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const reader = await createCitizen(prisma, { handle: "mcp-leser" });
+    const reader = await createMcpCitizen(prisma, { handle: "mcp-leser" });
     const secretRole = await createRole(prisma, { name: "mcp-geheim" });
     const page = await createWikiPage(prisma, {
       title: "Sprungpunkte",
@@ -413,7 +390,7 @@ test.describe("the read tools of the MCP server", () => {
     const organizer = await createCitizen(prisma, {
       handle: "mcp-organisator",
     });
-    const participant = await createCitizen(prisma, {
+    const participant = await createMcpCitizen(prisma, {
       handle: "mcp-teilnehmer",
       permissionStrings: LINEUP_PERMISSIONS,
     });
@@ -470,7 +447,7 @@ test.describe("the read tools of the MCP server", () => {
     connectMcpClient,
   }) => {
     const creator = await createCitizen(prisma, { handle: "mcp-auftraggeber" });
-    const worker = await createCitizen(prisma, {
+    const worker = await createMcpCitizen(prisma, {
       handle: "mcp-auftragnehmer",
       permissionStrings: ["task;read"],
     });
@@ -524,7 +501,7 @@ test.describe("the read tools of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const citizen = await createCitizen(prisma, { handle: "mcp-neugierig" });
+    const citizen = await createMcpCitizen(prisma, { handle: "mcp-neugierig" });
     const client = await connectMcpClient(
       (await authorizeMcpClient(citizen.user)).accessToken,
     );

@@ -1,6 +1,10 @@
 import type { Page } from "@playwright/test";
 import { CIMD_CLIENT_NAME } from "../fixtures/cimd-server";
-import { createCitizen } from "../fixtures/factories";
+import {
+  createCitizen,
+  createMcpCitizen,
+  MCP_USE_PERMISSION,
+} from "../fixtures/factories";
 import {
   LEGACY_INITIALIZE_REQUEST,
   modernMcpRequest,
@@ -36,6 +40,9 @@ const KILL_SWITCH_TEST_TIMEOUT = 150_000;
 
 const CONSENT_UNAVAILABLE_TEXT =
   "Die Verbindung von Anwendungen über MCP ist zurzeit nicht verfügbar.";
+
+const MCP_ACCESS_DENIED_TEXT =
+  "Du hast keine Berechtigung, den MCP-Server zu nutzen.";
 
 interface JsonRpcErrorResponse {
   readonly error: { readonly code: number; readonly message: string };
@@ -122,7 +129,7 @@ test.describe("the OAuth server and the MCP endpoint", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const citizen = await createCitizen(prisma, { handle: "mcp-nutzer" });
+    const citizen = await createMcpCitizen(prisma, { handle: "mcp-nutzer" });
 
     const authorization = await authorizeMcpClient(citizen.user);
     const { issuer } = authorization.metadata;
@@ -168,7 +175,7 @@ test.describe("the OAuth server and the MCP endpoint", () => {
     request,
     authorizeMcpClient,
   }) => {
-    const citizen = await createCitizen(prisma, { handle: "mcp-erneuerer" });
+    const citizen = await createMcpCitizen(prisma, { handle: "mcp-erneuerer" });
     const authorization = await authorizeMcpClient(citizen.user);
 
     const rotation = await authorization.refresh(authorization.refreshToken);
@@ -212,7 +219,7 @@ test.describe("the OAuth server and the MCP endpoint", () => {
     request,
     authorizeMcpClient,
   }) => {
-    const citizen = await createCitizen(prisma, { handle: "mcp-trenner" });
+    const citizen = await createMcpCitizen(prisma, { handle: "mcp-trenner" });
     const authorization = await authorizeMcpClient(citizen.user);
 
     const callBefore = await postMcpEndpoint(
@@ -235,6 +242,62 @@ test.describe("the OAuth server and the MCP endpoint", () => {
     expect(refresh.error).toBe("invalid_grant");
   });
 
+  test("the consent page refuses a user without the permission mcp;use", async ({
+    page,
+    prisma,
+    request,
+    signIn,
+    stack,
+    cimdServer,
+  }) => {
+    const citizen = await createCitizen(prisma, { handle: "mcp-ohne-zugang" });
+    await signIn(citizen.user);
+    const { resource } = await readMcpServerMetadata(request);
+
+    await page.goto(
+      buildAuthorizationUrl(stack.baseURL, {
+        clientId: cimdServer.clientId,
+        codeChallenge: createPkcePair().challenge,
+        state: createState(),
+        resource,
+      }),
+    );
+
+    await expect(page.getByText(MCP_ACCESS_DENIED_TEXT)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Erlauben" })).toHaveCount(0);
+    expect(await prisma.oAuthGrant.count()).toBe(0);
+  });
+
+  test("a connected client gets 403 when the user loses the permission mcp;use", async ({
+    prisma,
+    request,
+    authorizeMcpClient,
+  }) => {
+    const citizen = await createMcpCitizen(prisma, { handle: "mcp-entzogen" });
+    const authorization = await authorizeMcpClient(citizen.user);
+
+    const callBefore = await postMcpEndpoint(
+      request,
+      modernMcpRequest("tools/list"),
+      authorization.accessToken,
+    );
+    expect(callBefore.status()).toBe(200);
+
+    await prisma.permissionString.deleteMany({
+      where: { roleId: citizen.role.id, permissionString: MCP_USE_PERMISSION },
+    });
+
+    const callAfter = await postMcpEndpoint(
+      request,
+      modernMcpRequest("tools/list"),
+      authorization.accessToken,
+    );
+    expect(callAfter.status()).toBe(403);
+    expect(await callAfter.json()).toMatchObject({ error: "forbidden" });
+    // No challenge: a new token does not help the user
+    expect(callAfter.headers()["www-authenticate"]).toBeUndefined();
+  });
+
   test("the consent page refuses an invalid client or redirect URI and links other errors back to the client", async ({
     page,
     prisma,
@@ -243,7 +306,7 @@ test.describe("the OAuth server and the MCP endpoint", () => {
     stack,
     cimdServer,
   }) => {
-    const citizen = await createCitizen(prisma, { handle: "mcp-pruefer" });
+    const citizen = await createMcpCitizen(prisma, { handle: "mcp-pruefer" });
     await signIn(citizen.user);
     const { issuer, resource } = await readMcpServerMetadata(request);
     const { challenge } = createPkcePair();
@@ -334,7 +397,7 @@ test.describe("the OAuth server and the MCP endpoint", () => {
   }) => {
     test.setTimeout(KILL_SWITCH_TEST_TIMEOUT);
 
-    const citizen = await createCitizen(prisma, { handle: "mcp-notaus" });
+    const citizen = await createMcpCitizen(prisma, { handle: "mcp-notaus" });
     await signIn(citizen.user);
     const { resource } = await readMcpServerMetadata(request);
     const consentUrl = buildAuthorizationUrl(stack.baseURL, {

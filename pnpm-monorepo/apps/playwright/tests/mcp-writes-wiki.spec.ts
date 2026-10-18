@@ -2,47 +2,21 @@ import { WikiPageNamespace } from "@sam-monorepo/database/client";
 import { expectAuditEvents } from "../fixtures/audit";
 import {
   createAppEvent,
-  createCitizen,
+  createMcpCitizen,
   createWikiPage,
   futureEvent,
   ONE_DAY_MS,
   WikiPageVisibility,
 } from "../fixtures/factories";
 import {
-  structuredContentOf,
-  toolResultText,
+  callForContent,
+  callForError,
+  CONFLICT_RESULT,
+  FORBIDDEN_RESULT,
+  NOT_FOUND_RESULT,
   UNKNOWN_TOOL_ERROR_CODE,
-  type McpTestClient,
 } from "../fixtures/mcp-client";
 import { expect, test } from "../fixtures/test";
-
-const CONFLICT_RESULT = /^ConflictError: /;
-const FORBIDDEN_RESULT = /^ForbiddenError: /;
-const NOT_FOUND_RESULT = /^NotFoundError: /;
-
-/** The structured content of a tool result that must not be an error */
-const callForContent = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError, toolResultText(result)).toBeFalsy();
-
-  return structuredContentOf(result);
-};
-
-/** The message of a tool result that must be an error */
-const callForError = async (
-  client: McpTestClient,
-  name: string,
-  toolArguments?: Record<string, unknown>,
-) => {
-  const result = await client.callTool(name, toolArguments);
-  expect(result.isError).toBe(true);
-
-  return toolResultText(result);
-};
 
 test.describe("the wiki write tool of the MCP server", () => {
   test("create_wiki_page creates a private top-level page with the Markdown content and the audit event of the form", async ({
@@ -50,7 +24,7 @@ test.describe("the wiki write tool of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const author = await createCitizen(prisma, {
+    const author = await createMcpCitizen(prisma, {
       handle: "mcp-autorin",
       permissionStrings: ["wiki;create"],
     });
@@ -124,7 +98,7 @@ test.describe("the wiki write tool of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const organizer = await createCitizen(prisma, {
+    const organizer = await createMcpCitizen(prisma, {
       handle: "mcp-organisator",
       permissionStrings: ["event;read"],
     });
@@ -201,8 +175,10 @@ test.describe("the wiki write tool of the MCP server", () => {
     authorizeMcpClient,
     connectMcpClient,
   }) => {
-    const outsider = await createCitizen(prisma, { handle: "mcp-ohne-rechte" });
-    const author = await createCitizen(prisma, {
+    const outsider = await createMcpCitizen(prisma, {
+      handle: "mcp-ohne-rechte",
+    });
+    const author = await createMcpCitizen(prisma, {
       handle: "mcp-autor",
       permissionStrings: ["wiki;create"],
     });

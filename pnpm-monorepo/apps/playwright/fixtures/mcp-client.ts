@@ -8,7 +8,7 @@ import {
   type DiscoverResult,
   type Tool,
 } from "@modelcontextprotocol/client";
-import type { APIRequestContext } from "@playwright/test";
+import { expect, type APIRequestContext } from "@playwright/test";
 
 /**
  * The revision of the protocol that the MCP endpoint serves. The SDK exports
@@ -94,6 +94,36 @@ export const toolResultText = (result: CallToolResult) =>
   result.content
     .flatMap((content) => (content.type === "text" ? [content.text] : []))
     .join("\n");
+
+/** The text of a tool error starts with the name of the error of the use case */
+export const CONFLICT_RESULT = /^ConflictError: /;
+export const FORBIDDEN_RESULT = /^ForbiddenError: /;
+export const NOT_FOUND_RESULT = /^NotFoundError: /;
+export const VALIDATION_RESULT = /^ValidationError: /;
+
+/** The structured content of a tool result that must not be an error */
+export const callForContent = async (
+  client: McpTestClient,
+  name: string,
+  toolArguments?: Record<string, unknown>,
+) => {
+  const result = await client.callTool(name, toolArguments);
+  expect(result.isError, toolResultText(result)).toBeFalsy();
+
+  return structuredContentOf(result);
+};
+
+/** The message of a tool result that must be an error */
+export const callForError = async (
+  client: McpTestClient,
+  name: string,
+  toolArguments?: Record<string, unknown>,
+) => {
+  const result = await client.callTool(name, toolArguments);
+  expect(result.isError).toBe(true);
+
+  return toolResultText(result);
+};
 
 interface McpHttpRequest {
   readonly body: object;
