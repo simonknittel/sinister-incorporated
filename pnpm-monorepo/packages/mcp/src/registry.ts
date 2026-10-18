@@ -8,6 +8,7 @@ import {
   type Actor,
   type ApplicationContext,
 } from "@sam-monorepo/application";
+import * as z from "zod";
 import { TOOL_CATALOG, toToolCatalogEntry } from "./catalog.js";
 import type { CatalogTool, ToolRequestScope } from "./toolDefinition.js";
 
@@ -113,13 +114,23 @@ const toErrorResult = (
  * The message of an error can contain personal data, for example the
  * arguments of a Prisma query. Thus the log record gets only the name, the
  * code (for example the Prisma error code `P2002`) and the frames of the stack.
- * The first lines of a stack repeat the message, thus they are removed.
+ * The first lines of a stack repeat the message, thus they are removed. An
+ * output that does not agree with the output schema also gives the codes and
+ * the paths of its issues, without the values.
  */
 const toLoggableError = (error: unknown) => {
   if (!(error instanceof Error)) return { errorName: typeof error };
 
   return {
     errorName: error.name,
+    ...(error instanceof z.ZodError
+      ? {
+          issues: error.issues.map(({ code, path }) => ({
+            code,
+            path: path.map(String).join("."),
+          })),
+        }
+      : {}),
     ...("code" in error && typeof error.code === "string"
       ? { errorCode: error.code }
       : {}),

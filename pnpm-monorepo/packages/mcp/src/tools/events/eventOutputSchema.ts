@@ -35,12 +35,6 @@ export const eventOutputSchema = z.strictObject({
   is_participating: z.boolean(),
 });
 
-export const notificationsSentSchema = z
-  .boolean()
-  .describe(
-    "False when the change is saved, but the notifications failed. The change stands: do not repeat it.",
-  );
-
 /**
  * The write tools of an existing event give the event like `get_event`, thus
  * they need the same permission and a citizen. The use case checks the

@@ -4,14 +4,17 @@ import {
 } from "@sam-monorepo/application";
 import { defineTool } from "../../toolDefinition.js";
 import { ToolGroup } from "../../toolGroup.js";
-import { lineupPositionSchema } from "./lineupOutputSchemas.js";
+import {
+  isLineupToolVisible,
+  lineupPositionSchema,
+} from "./lineupOutputSchemas.js";
 
 export const assignEventPositionTool = defineTool({
   name: "assign_event_position",
   group: ToolGroup.Lineup,
   title: "Assign a citizen to a position of an event",
   description:
-    "Sets the citizen of a position (position id from get_event_lineup), usually an applicant or a participant of the event, or removes the assigned citizen with citizen_id null. Needs the right to manage the positions of the event, and the event must not have ended. Gives the position.",
+    "Sets the citizen of a position (position id from get_event_lineup): a participant of the event or a citizen who applied for the position. citizen_id null removes the assigned citizen. Needs the right to manage the positions of the event, and the event must not have ended. Gives the position.",
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,
@@ -20,6 +23,6 @@ export const assignEventPositionTool = defineTool({
   },
   inputSchema: assignEventPositionInputSchema,
   outputSchema: lineupPositionSchema,
-  isVisible: (actor) => actor.authorize("event", "read"),
+  isVisible: isLineupToolVisible,
   handler: assignEventPosition,
 });

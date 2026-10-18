@@ -17,3 +17,10 @@ export const eventReferenceSchema = z.strictObject({
   id: z.string(),
   name: z.string(),
 });
+
+/** The flag of the writes that notify other members */
+export const notificationsSentSchema = z
+  .boolean()
+  .describe(
+    "False when the change is saved, but the notifications failed. The change stands: do not repeat it.",
+  );

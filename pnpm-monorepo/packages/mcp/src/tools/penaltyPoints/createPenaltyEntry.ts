@@ -3,6 +3,7 @@ import {
   createPenaltyEntryInputSchema,
 } from "@sam-monorepo/application";
 import * as z from "zod";
+import { notificationsSentSchema } from "../../schemas.js";
 import { defineTool } from "../../toolDefinition.js";
 import { ToolGroup } from "../../toolGroup.js";
 import { penaltyEntryOutputSchema } from "./penaltyEntryOutputSchema.js";
@@ -12,7 +13,7 @@ export const createPenaltyEntryTool = defineTool({
   group: ToolGroup.PenaltyPoints,
   title: "Create a penalty entry",
   description:
-    "Gives penalty points to a citizen (citizen_id from a Spynet tool) with an optional reason and an optional expiry time. The citizen is notified like in the web app. Gives the new entry in the format of list_penalty_entries. notifications_sent is false when the entry is saved but the notifications failed: do not create the entry again.",
+    "Gives penalty points to a citizen (citizen_id from a Spynet tool) with an optional reason and an optional expiry time. The citizen is notified like in the SAM web app. Gives the new entry in the format of list_penalty_entries.",
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,
@@ -22,8 +23,11 @@ export const createPenaltyEntryTool = defineTool({
   inputSchema: createPenaltyEntryInputSchema,
   outputSchema: z.strictObject({
     entry: penaltyEntryOutputSchema,
-    notifications_sent: z.boolean(),
+    notifications_sent: notificationsSentSchema,
   }),
-  isVisible: (actor) => actor.authorize("penaltyEntry", "create"),
+  isVisible: (actor) =>
+    actor.authorize("penaltyEntry", "create") &&
+    actor.authorize("citizen", "read") &&
+    actor.citizen !== null,
   handler: createPenaltyEntry,
 });

@@ -2,9 +2,14 @@ import {
   TaskRewardKind,
   TaskStatus,
   TaskVisibilityKind,
+  type Actor,
 } from "@sam-monorepo/application";
 import * as z from "zod";
-import { citizenReferenceSchema, dateTimeOutputSchema } from "../../schemas.js";
+import {
+  citizenReferenceSchema,
+  dateTimeOutputSchema,
+  notificationsSentSchema,
+} from "../../schemas.js";
 
 /** The fields of a task in `list_tasks`, and the base of `get_task` */
 export const taskListItemOutputShape = {
@@ -48,19 +53,15 @@ export const taskOutputSchema = z.strictObject({
   assignment_limit: z.number().int().nullable(),
 });
 
-export const notificationsSentOutputSchema = z
-  .boolean()
-  .describe(
-    "False when the change is saved, but the notifications failed: do not send the change again.",
-  );
-
-/** The output of the writes of one task */
-export const taskWriteOutputSchema = z.strictObject({
-  task: taskOutputSchema,
-});
-
 /** The output of the writes of one task that notify other members */
 export const notifyingTaskWriteOutputSchema = z.strictObject({
   task: taskOutputSchema,
-  notifications_sent: notificationsSentOutputSchema,
+  notifications_sent: notificationsSentSchema,
 });
+
+/**
+ * The task writes need a citizen (the assignments and the visibility use
+ * it), like `get_task`
+ */
+export const isTaskWriteToolVisible = (actor: Actor) =>
+  actor.authorize("task", "read") && actor.citizen !== null;

@@ -21,4 +21,9 @@ export const wikiPageOutputSchema = z.strictObject({
   created_at: dateTimeOutputSchema,
   updated_at: dateTimeOutputSchema,
   markdown: z.string(),
+  can_add_children: z
+    .boolean()
+    .describe(
+      "Whether the user can add a page below this page with create_wiki_page.",
+    ),
 });

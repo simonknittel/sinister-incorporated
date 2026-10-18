@@ -1,18 +1,16 @@
 import { createEvent, createEventInputSchema } from "@sam-monorepo/application";
 import * as z from "zod";
+import { notificationsSentSchema } from "../../schemas.js";
 import { defineTool } from "../../toolDefinition.js";
 import { ToolGroup } from "../../toolGroup.js";
-import {
-  eventOutputSchema,
-  notificationsSentSchema,
-} from "./eventOutputSchema.js";
+import { eventOutputSchema } from "./eventOutputSchema.js";
 
 export const createEventTool = defineTool({
   name: "create_event",
   group: ToolGroup.Events,
   title: "Create an event",
   description:
-    "Creates an event in SAM with the user as its creator and organizer, and notifies the users who can see it. Give the name, the start and the end (ISO 8601 with a time zone offset), the visibility and, for a restricted event, the visibility role ids (from list_roles). Templates, cover images and the publication on Discord are only available in SAM itself. Gives the new event like get_event.",
+    "Creates an event in SAM with the user as its creator and organizer, and notifies the users who can see it. Give the name, the start and the end, the visibility and, for a restricted event, the visibility role ids (from list_roles). Templates, cover images, the location and the publication on Discord are only available in the SAM web app. Gives the new event like get_event.",
   annotations: {
     readOnlyHint: false,
     destructiveHint: false,

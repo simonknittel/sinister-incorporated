@@ -17,6 +17,7 @@ export const createShipTool = defineTool({
   },
   inputSchema: createShipInputSchema,
   outputSchema: shipOutputSchema,
-  isVisible: (actor) => actor.authorize("ship", "manage"),
+  isVisible: (actor) =>
+    actor.authorize("ship", "manage") && actor.citizen !== null,
   handler: createShip,
 });

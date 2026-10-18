@@ -16,7 +16,7 @@ export const getRoleTool = defineTool({
   group: ToolGroup.Roles,
   title: "Get a role",
   description:
-    "Gives one role by its id (from list_roles or get_citizen): the fields of list_roles, the inactivity rules and, only with the permission to manage roles, the permission strings. A role that the user cannot see gives a NotFoundError.",
+    "Gives one role by its id (from list_roles or get_citizen): the fields of list_roles and, only with the permission to manage roles, the inactivity rules and the permission strings. A role that the user cannot see gives a NotFoundError.",
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: getRoleInputSchema,
   outputSchema: z.strictObject({
@@ -25,13 +25,13 @@ export const getRoleTool = defineTool({
       .int()
       .nullable()
       .describe(
-        "The number of days of inactivity after which a citizen loses the role, or null.",
+        "The number of days of inactivity after which a citizen loses the role, or null. Null without the permission to manage roles.",
       ),
     assign_after_inactive_days: z
       .int()
       .nullable()
       .describe(
-        "The number of days of inactivity after which a citizen gets the role automatically, or null.",
+        "The number of days of inactivity after which a citizen gets the role automatically, or null. Null without the permission to manage roles.",
       ),
     permission_strings: z
       .array(z.string())

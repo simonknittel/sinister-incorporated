@@ -7,7 +7,10 @@ import {
   READ_ONLY_TOOL_ANNOTATIONS,
 } from "../../toolDefinition.js";
 import { ToolGroup } from "../../toolGroup.js";
-import { eventLineupSchema } from "./lineupOutputSchemas.js";
+import {
+  eventLineupSchema,
+  isLineupToolVisible,
+} from "./lineupOutputSchemas.js";
 
 export const getEventLineupTool = defineTool({
   name: "get_event_lineup",
@@ -18,9 +21,6 @@ export const getEventLineupTool = defineTool({
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: getEventLineupInputSchema,
   outputSchema: eventLineupSchema,
-  isVisible: (actor) =>
-    actor.authorize("event", "read") &&
-    actor.authorize("ship", "read") &&
-    actor.citizen !== null,
+  isVisible: isLineupToolVisible,
   handler: getEventLineup,
 });

@@ -298,8 +298,12 @@ describe("tools/call", () => {
       tool: "get_current_user",
       userId: "user",
       errorName: "ZodError",
+      issues: [{ code: "unrecognized_keys", path: "" }],
       stack: expect.any(String),
     });
+    expect(JSON.stringify(log.error.mock.calls)).not.toContain(
+      "user@example.com",
+    );
   });
 
   test("the log record of a failed tool has the code of the error, but not its message", async () => {

@@ -17,6 +17,7 @@ export const deleteShipTool = defineTool({
   },
   inputSchema: deleteShipInputSchema,
   outputSchema: shipOutputSchema,
-  isVisible: (actor) => actor.authorize("ship", "manage"),
+  isVisible: (actor) =>
+    actor.authorize("ship", "manage") && actor.citizen !== null,
   handler: deleteShip,
 });

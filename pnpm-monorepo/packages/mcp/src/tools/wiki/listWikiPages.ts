@@ -28,6 +28,11 @@ export const listWikiPagesTool = defineTool({
         parent_id: z.string().nullable(),
         depth: z.number().int().min(0),
         child_count: z.number().int().min(0),
+        can_add_children: z
+          .boolean()
+          .describe(
+            "Whether the user can add a page below this page with create_wiki_page.",
+          ),
       }),
     ),
     next_cursor: z.string().nullable(),

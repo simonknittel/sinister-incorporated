@@ -4,7 +4,10 @@ import {
 } from "@sam-monorepo/application";
 import { defineTool } from "../../toolDefinition.js";
 import { ToolGroup } from "../../toolGroup.js";
-import { lineupPositionSchema } from "./lineupOutputSchemas.js";
+import {
+  isLineupToolVisible,
+  lineupPositionSchema,
+} from "./lineupOutputSchemas.js";
 
 export const deleteEventPositionTool = defineTool({
   name: "delete_event_position",
@@ -20,6 +23,6 @@ export const deleteEventPositionTool = defineTool({
   },
   inputSchema: deleteEventPositionInputSchema,
   outputSchema: lineupPositionSchema,
-  isVisible: (actor) => actor.authorize("event", "read"),
+  isVisible: isLineupToolVisible,
   handler: deleteEventPosition,
 });

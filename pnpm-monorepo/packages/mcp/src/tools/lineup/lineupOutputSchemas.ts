@@ -1,3 +1,4 @@
+import type { Actor } from "@sam-monorepo/application";
 import * as z from "zod";
 import { citizenReferenceSchema, eventReferenceSchema } from "../../schemas.js";
 
@@ -33,7 +34,7 @@ const createPositionSchema = <Children extends z.ZodType>(children: Children) =>
  */
 const fourthLevelPositionSchema = z.strictObject({
   ...positionFields,
-  children: z.array(z.unknown()).max(0),
+  children: z.tuple([]),
 });
 
 /** A position with its children, as the lineup tools give it */
@@ -51,3 +52,13 @@ export const eventLineupSchema = z.strictObject({
     ),
   positions: z.array(lineupPositionSchema),
 });
+
+/**
+ * The lineup tools give the positions like `get_event_lineup`, thus they
+ * need its permissions: `event;read`, `ship;read` and a citizen. The use
+ * cases check the rules of the event.
+ */
+export const isLineupToolVisible = (actor: Actor) =>
+  actor.authorize("event", "read") &&
+  actor.authorize("ship", "read") &&
+  actor.citizen !== null;

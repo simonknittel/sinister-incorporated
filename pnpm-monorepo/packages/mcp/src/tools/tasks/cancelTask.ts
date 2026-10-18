@@ -1,7 +1,10 @@
 import { cancelTask, cancelTaskInputSchema } from "@sam-monorepo/application";
 import { defineTool } from "../../toolDefinition.js";
 import { ToolGroup } from "../../toolGroup.js";
-import { taskWriteOutputSchema } from "./taskOutputSchemas.js";
+import {
+  isTaskWriteToolVisible,
+  taskOutputSchema,
+} from "./taskOutputSchemas.js";
 
 export const cancelTaskTool = defineTool({
   name: "cancel_task",
@@ -16,7 +19,7 @@ export const cancelTaskTool = defineTool({
     openWorldHint: false,
   },
   inputSchema: cancelTaskInputSchema,
-  outputSchema: taskWriteOutputSchema,
-  isVisible: (actor) => actor.authorize("task", "read"),
+  outputSchema: taskOutputSchema,
+  isVisible: isTaskWriteToolVisible,
   handler: cancelTask,
 });

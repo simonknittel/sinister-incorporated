@@ -4,7 +4,10 @@ import {
 } from "@sam-monorepo/application";
 import { defineTool } from "../../toolDefinition.js";
 import { ToolGroup } from "../../toolGroup.js";
-import { notifyingTaskWriteOutputSchema } from "./taskOutputSchemas.js";
+import {
+  isTaskWriteToolVisible,
+  notifyingTaskWriteOutputSchema,
+} from "./taskOutputSchemas.js";
 
 export const completeTaskTool = defineTool({
   name: "complete_task",
@@ -20,6 +23,6 @@ export const completeTaskTool = defineTool({
   },
   inputSchema: completeTaskInputSchema,
   outputSchema: notifyingTaskWriteOutputSchema,
-  isVisible: (actor) => actor.authorize("task", "read"),
+  isVisible: isTaskWriteToolVisible,
   handler: completeTask,
 });

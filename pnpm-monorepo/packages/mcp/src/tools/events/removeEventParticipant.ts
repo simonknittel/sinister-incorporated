@@ -3,12 +3,12 @@ import {
   removeEventParticipantInputSchema,
 } from "@sam-monorepo/application";
 import * as z from "zod";
+import { notificationsSentSchema } from "../../schemas.js";
 import { defineTool } from "../../toolDefinition.js";
 import { ToolGroup } from "../../toolGroup.js";
 import {
   eventOutputSchema,
   isEventWriteToolVisible,
-  notificationsSentSchema,
 } from "./eventOutputSchema.js";
 
 export const removeEventParticipantTool = defineTool({
