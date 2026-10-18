@@ -12,6 +12,7 @@ import { lineupTools } from "./tools/lineup/index.js";
 import { penaltyPointsTools } from "./tools/penaltyPoints/index.js";
 import { rolesTools } from "./tools/roles/index.js";
 import { spynetTools } from "./tools/spynet/index.js";
+import { systemLogTools } from "./tools/systemLog/index.js";
 import { tasksTools } from "./tools/tasks/index.js";
 import { wikiTools } from "./tools/wiki/index.js";
 
@@ -32,6 +33,7 @@ export const TOOL_CATALOG: readonly CatalogTool[] = [
   ...lineupTools,
   ...tasksTools,
   ...changelogTools,
+  ...systemLogTools,
 ].sort(compareTools);
 
 export const toToolCatalogEntry = (tool: CatalogTool): ToolCatalogEntry => ({

@@ -11,6 +11,7 @@ export {
   type ActorCitizen,
   type ActorFields,
 } from "./actor.js";
+export * from "./audit/index.js";
 export {
   getEffectiveRolesOfCitizen,
   type EffectiveRoles,

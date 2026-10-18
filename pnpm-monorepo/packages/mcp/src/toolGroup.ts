@@ -13,6 +13,7 @@ export enum ToolGroup {
   Lineup = "lineup",
   Tasks = "tasks",
   Changelog = "changelog",
+  SystemLog = "system_log",
 }
 
 export const TOOL_GROUP_TITLES: Readonly<Record<ToolGroup, string>> = {
@@ -26,6 +27,7 @@ export const TOOL_GROUP_TITLES: Readonly<Record<ToolGroup, string>> = {
   [ToolGroup.Lineup]: "Lineup",
   [ToolGroup.Tasks]: "Tasks",
   [ToolGroup.Changelog]: "Changelog",
+  [ToolGroup.SystemLog]: "System log",
 };
 
 export const TOOL_GROUP_ORDER: readonly ToolGroup[] = Object.values(ToolGroup);

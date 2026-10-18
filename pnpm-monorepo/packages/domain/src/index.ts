@@ -45,6 +45,7 @@ export {
   LINEUP_MAX_POSITIONS,
   LINEUP_MAX_POSITIONS_PER_LEVEL,
 } from "./events/lineupLimits.js";
+export { HIGH_VOLUME_AUDIT_EVENT_TYPES } from "./highVolumeAuditEventTypes.js";
 export { isAllowedWebPushEndpointUrl } from "./isAllowedWebPushEndpointUrl.js";
 export {
   CITIZEN_CHANNEL_PREFIX,
