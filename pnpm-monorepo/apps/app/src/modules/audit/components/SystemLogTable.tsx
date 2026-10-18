@@ -86,11 +86,11 @@ export const SystemLogTable = async ({ className, searchParams }: Props) => {
     >
       {events.map((event) => {
         const message = getAuditEventMessage(event.type, event.data);
-        const createdBy = event.createdBy?.name || event.createdBy?.id;
+        const createdBy = event.created_by?.name || event.created_by?.user_id;
 
         return (
           <TRow key={event.id} className="h-8">
-            <td>{formatDate(event.createdAt)}</td>
+            <td>{formatDate(new Date(event.created_at))}</td>
 
             <td
               title={event.type}

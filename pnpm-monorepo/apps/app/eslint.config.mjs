@@ -152,11 +152,13 @@ const eslintConfig = defineConfig([
     // module it is `src/**` with the ignores
     // `src/modules/application/**` and `src/modules/auth/server/**`.
     files: [
+      "src/modules/audit/**",
       "src/modules/mcp-settings/**",
       "src/modules/oauth/**",
       "src/modules/mcp/**",
       "src/app/app/account/mcp/**",
       "src/app/app/oauth/**",
+      "src/app/app/system-log/**",
       "src/app/api/oauth/**",
       "src/app/api/mcp/**",
       "src/app/.well-known/oauth-authorization-server/**",

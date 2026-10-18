@@ -1,6 +1,7 @@
 import { DateRangeFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/DateRangeFilter";
 import { MultiSelectComboboxFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/MultiSelectComboboxFilter";
 import { RadioFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/RadioFilter";
+import type { AuditEventCreatorOutput } from "@sam-monorepo/application";
 import {
   AuditEventType,
   HIGH_VOLUME_AUDIT_EVENT_TYPES,
@@ -12,13 +13,8 @@ import {
   SystemLogVolume,
 } from "../utils/systemLogFilterParams";
 
-interface Creator {
-  id: string;
-  name: string | null;
-}
-
 interface Props {
-  readonly creators: Creator[];
+  readonly creators: AuditEventCreatorOutput[];
 }
 
 /**
@@ -43,8 +39,8 @@ export const SystemLogFilters = ({ creators }: Props) => {
 
   const creatorItems = [
     ...creators.map((creator) => ({
-      value: creator.id,
-      label: creator.name ?? creator.id,
+      value: creator.user_id,
+      label: creator.name ?? creator.user_id,
     })),
   ];
 
