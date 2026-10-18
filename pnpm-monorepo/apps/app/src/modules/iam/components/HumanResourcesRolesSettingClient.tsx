@@ -5,9 +5,9 @@ import { useAction } from "@/modules/actions/utils/useAction";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { RolesPicker } from "@/modules/roles/components/RolesPicker";
 import type { Role } from "@sam-monorepo/database/browser";
+import { MAX_HUMAN_RESOURCES_ROLES } from "@sam-monorepo/domain";
 import { FaSave } from "react-icons/fa";
 import { updateHumanResourcesRoles } from "../actions/updateHumanResourcesRoles";
-import { MAX_HUMAN_RESOURCES_ROLES } from "../utils/humanResourcesRoles";
 
 interface Props {
   readonly defaultRoleIds: readonly Role["id"][];
