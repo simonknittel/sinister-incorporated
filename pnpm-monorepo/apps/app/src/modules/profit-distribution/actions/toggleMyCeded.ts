@@ -43,7 +43,7 @@ export const toggleMyCeded = createAuthenticatedAction(
   },
   {
     parseFormData: (formData) => {
-      // The last entry of each field, see `ToggleMyAcceptedButton`
+      // The last entry of each field, see `ToggleMyCededButton`
       const { id, value } = Object.fromEntries(formData);
 
       return { cycle_id: id, enabled: value };

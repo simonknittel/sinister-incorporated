@@ -19,19 +19,19 @@ export const ProfitDistributionCycleExcerpt = ({
 }: Props) => {
   let myPayoutStateBadge;
   switch (cycleData.myPayoutState) {
-    case PayoutState.NOT_PARTICIPATING:
+    case PayoutState.NotParticipating:
       myPayoutStateBadge = (
         <Badge label="Status deiner Auszahlung" showLabel value="-" />
       );
       break;
 
-    case PayoutState.CEDED:
+    case PayoutState.Ceded:
       myPayoutStateBadge = (
         <Badge label="Status deiner Auszahlung" showLabel value="Abgetreten" />
       );
       break;
 
-    case PayoutState.AWAITING_ACCEPTANCE:
+    case PayoutState.AwaitingAcceptance:
       myPayoutStateBadge = (
         <Badge
           label="Status deiner Auszahlung"
@@ -41,7 +41,7 @@ export const ProfitDistributionCycleExcerpt = ({
       );
       break;
 
-    case PayoutState.AWAITING_PAYOUT:
+    case PayoutState.AwaitingPayout:
       myPayoutStateBadge = (
         <Badge
           label="Status deiner Auszahlung"
@@ -51,25 +51,25 @@ export const ProfitDistributionCycleExcerpt = ({
       );
       break;
 
-    case PayoutState.DISBURSED:
+    case PayoutState.Disbursed:
       myPayoutStateBadge = (
         <Badge label="Status deiner Auszahlung" showLabel value="Ausgezahlt" />
       );
       break;
 
-    case PayoutState.EXPIRED:
+    case PayoutState.Expired:
       myPayoutStateBadge = (
         <Badge label="Status deiner Auszahlung" showLabel value="Verfallen" />
       );
       break;
 
-    case PayoutState.PAYOUT_OVERDUE:
+    case PayoutState.PayoutOverdue:
       myPayoutStateBadge = (
         <Badge label="Status deiner Auszahlung" showLabel value="Überfällig" />
       );
       break;
 
-    case PayoutState.PAYOUT_NOT_YET_STARTED:
+    case PayoutState.PayoutNotYetStarted:
       myPayoutStateBadge = (
         <Badge
           label="Status deiner Auszahlung"

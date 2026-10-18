@@ -1,6 +1,9 @@
 import type { ApplicationErrorTexts } from "@/modules/application";
 import { SilcErrorMessage } from "@sam-monorepo/application";
-import { INACTIVE_RECEIVER_ERROR } from "./activeReceivers";
+
+/** The text of the app for a receiver of SILC that is missing or deleted */
+export const INACTIVE_RECEIVER_ERROR =
+  "Mindestens ein Citizen existiert nicht oder ist gelöscht.";
 
 /**
  * The texts of the SILC actions for the errors of their use cases. The

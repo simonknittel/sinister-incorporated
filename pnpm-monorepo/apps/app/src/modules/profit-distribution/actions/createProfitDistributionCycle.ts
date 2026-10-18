@@ -9,6 +9,7 @@ import {
 import {
   createProfitDistributionCycleInputSchema,
   createProfitDistributionCycle as createProfitDistributionCycleUseCase,
+  type CreateProfitDistributionCycleOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
@@ -18,7 +19,7 @@ export const createProfitDistributionCycle = createAuthenticatedAction(
   "createProfitDistributionCycle",
   createProfitDistributionCycleInputSchema,
   async (formData, authentication, data, t) => {
-    let result;
+    let result: CreateProfitDistributionCycleOutput;
     try {
       result = await createProfitDistributionCycleUseCase(
         getApplicationContext(),

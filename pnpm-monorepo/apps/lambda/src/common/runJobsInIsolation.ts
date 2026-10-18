@@ -6,16 +6,17 @@ import { log } from "./logger";
  * visible in the Lambda metrics.
  *
  * The object keys name the jobs in the logs. They are string literals, thus
- * a minifier cannot change them like a function name.
+ * a minifier cannot change them like a function name. Each job gets its key,
+ * for example as the name of its span.
  */
 export const runJobsInIsolation = async (
-  jobs: Readonly<Record<string, () => Promise<void>>>,
+  jobs: Readonly<Record<string, (name: string) => Promise<void>>>,
 ) => {
   const failedJobs: string[] = [];
 
   for (const [name, job] of Object.entries(jobs)) {
     try {
-      await job();
+      await job(name);
     } catch (error) {
       failedJobs.push(name);
       log.error("Job failed", { job: name, error });

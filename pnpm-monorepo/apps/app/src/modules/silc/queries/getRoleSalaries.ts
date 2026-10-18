@@ -4,13 +4,13 @@ import {
   throwApplicationErrorForPage,
 } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { listRoleSalaries } from "@sam-monorepo/application";
+import { findRoleSalaryRows } from "@sam-monorepo/application";
 import { cache } from "react";
 
 export const getRoleSalaries = cache(
   withTrace("getRoleSalaries", async () => {
     try {
-      return await listRoleSalaries(
+      return await findRoleSalaryRows(
         getApplicationContext(),
         await getRequestActor(),
       );

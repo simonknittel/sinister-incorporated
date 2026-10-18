@@ -1,5 +1,5 @@
 import type { ApplicationErrorTexts } from "@/modules/application";
-import { INACTIVE_RECEIVER_ERROR } from "@/modules/silc/utils/activeReceivers";
+import { INACTIVE_RECEIVER_ERROR } from "@/modules/silc/utils/silcErrorTexts";
 import { TaskErrorMessage } from "@sam-monorepo/application";
 
 const TASK_NOT_FOUND_ERROR = "Task nicht gefunden";

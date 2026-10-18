@@ -9,6 +9,7 @@ import {
 import {
   startPayoutInputSchema,
   startPayout as startPayoutUseCase,
+  type StartPayoutOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { getProfitDistributionErrorTexts } from "../utils/profitDistributionErrorTexts";
@@ -17,7 +18,7 @@ export const startPayout = createAuthenticatedAction(
   "startPayout",
   startPayoutInputSchema,
   async (formData, authentication, data, t) => {
-    let result;
+    let result: StartPayoutOutput;
     try {
       result = await startPayoutUseCase(
         getApplicationContext(),

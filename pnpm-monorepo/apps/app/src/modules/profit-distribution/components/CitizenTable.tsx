@@ -66,7 +66,7 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
         displayName: getCitizenDisplayName(citizen),
         silc,
         auec: null,
-        payoutState: PayoutState.PAYOUT_NOT_YET_STARTED,
+        payoutState: PayoutState.PayoutNotYetStarted,
         cededAt,
         acceptedAt,
         disbursedAt,
@@ -141,19 +141,19 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
         const payoutState = row.getValue();
 
         switch (payoutState) {
-          case PayoutState.NOT_PARTICIPATING:
+          case PayoutState.NotParticipating:
             return <span>-</span>;
 
-          case PayoutState.CEDED:
+          case PayoutState.Ceded:
             return <span>Abgetreten</span>;
 
-          case PayoutState.PAYOUT_NOT_YET_STARTED:
+          case PayoutState.PayoutNotYetStarted:
             return <span>Auszahlung noch nicht gestartet</span>;
 
-          case PayoutState.AWAITING_ACCEPTANCE:
+          case PayoutState.AwaitingAcceptance:
             return <span className="text-red-500">Zustimmung ausstehend</span>;
 
-          case PayoutState.AWAITING_PAYOUT:
+          case PayoutState.AwaitingPayout:
             return (
               <span className="flex flex-col">
                 <span className="text-blue-500">Auszahlung ausstehend</span>{" "}
@@ -163,13 +163,13 @@ export const CitizenTable = ({ className, cycleData }: Props) => {
               </span>
             );
 
-          case PayoutState.DISBURSED:
+          case PayoutState.Disbursed:
             return <span className="text-green-500">Ausgezahlt</span>;
 
-          case PayoutState.EXPIRED:
+          case PayoutState.Expired:
             return <span className="text-blue-500">Verfallen</span>;
 
-          case PayoutState.PAYOUT_OVERDUE:
+          case PayoutState.PayoutOverdue:
             return <span className="text-red-500">Überfällig</span>;
 
           default:

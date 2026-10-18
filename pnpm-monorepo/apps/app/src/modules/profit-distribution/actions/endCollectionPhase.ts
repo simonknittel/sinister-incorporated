@@ -9,6 +9,7 @@ import {
 import {
   endCollectionPhaseInputSchema,
   endCollectionPhase as endCollectionPhaseUseCase,
+  type EndCollectionPhaseOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { getProfitDistributionErrorTexts } from "../utils/profitDistributionErrorTexts";
@@ -17,7 +18,7 @@ export const endCollectionPhase = createAuthenticatedAction(
   "endCollectionPhase",
   endCollectionPhaseInputSchema,
   async (formData, authentication, data, t) => {
-    let result;
+    let result: EndCollectionPhaseOutput;
     try {
       result = await endCollectionPhaseUseCase(
         getApplicationContext(),

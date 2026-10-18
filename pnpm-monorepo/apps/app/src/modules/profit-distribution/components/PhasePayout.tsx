@@ -43,30 +43,30 @@ export const PhasePayout = ({ cycleData }: Props) => {
       </p>
 
       <StatisticTile label="Status deiner Auszahlung" className="mt-4">
-        {cycleData.myPayoutState === PayoutState.NOT_PARTICIPATING && (
+        {cycleData.myPayoutState === PayoutState.NotParticipating && (
           <span>-</span>
         )}
-        {cycleData.myPayoutState === PayoutState.CEDED && (
+        {cycleData.myPayoutState === PayoutState.Ceded && (
           <span>Abgetreten</span>
         )}
-        {cycleData.myPayoutState === PayoutState.AWAITING_ACCEPTANCE && (
+        {cycleData.myPayoutState === PayoutState.AwaitingAcceptance && (
           <span className="text-red-500">Zustimmung ausstehend</span>
         )}
-        {cycleData.myPayoutState === PayoutState.AWAITING_PAYOUT && (
+        {cycleData.myPayoutState === PayoutState.AwaitingPayout && (
           <span className="text-blue-500">Auszahlung ausstehend</span>
         )}
-        {cycleData.myPayoutState === PayoutState.DISBURSED && (
+        {cycleData.myPayoutState === PayoutState.Disbursed && (
           <span className="text-green-500">Ausgezahlt</span>
         )}
-        {cycleData.myPayoutState === PayoutState.EXPIRED && (
+        {cycleData.myPayoutState === PayoutState.Expired && (
           <span className="text-blue-500">Verfallen</span>
         )}
-        {cycleData.myPayoutState === PayoutState.PAYOUT_OVERDUE && (
+        {cycleData.myPayoutState === PayoutState.PayoutOverdue && (
           <span className="text-red-500">Überfällig</span>
         )}
       </StatisticTile>
 
-      {cycleData.myPayoutState === PayoutState.DISBURSED && (
+      {cycleData.myPayoutState === PayoutState.Disbursed && (
         <p className="pt-2 text-center text-sm text-neutral-500">
           Auszahlung geleistet durch{" "}
           <CitizenLink citizen={cycleData.myParticipant!.disbursedBy} /> am{" "}
@@ -74,7 +74,7 @@ export const PhasePayout = ({ cycleData }: Props) => {
         </p>
       )}
 
-      {[PayoutState.NOT_PARTICIPATING, PayoutState.DISBURSED].includes(
+      {[PayoutState.NotParticipating, PayoutState.Disbursed].includes(
         cycleData.myPayoutState,
       ) === false && (
         <div className="mt-4 flex flex-col items-center justify-center gap-2 border-t border-white/5 pt-2">
@@ -98,7 +98,7 @@ export const PhasePayout = ({ cycleData }: Props) => {
             </p>
           </div>
 
-          {cycleData.myPayoutState === PayoutState.AWAITING_PAYOUT && (
+          {cycleData.myPayoutState === PayoutState.AwaitingPayout && (
             <>
               <p className="text-sm text-green-500">
                 Du hast der Auszahlung am{" "}
@@ -109,7 +109,7 @@ export const PhasePayout = ({ cycleData }: Props) => {
             </>
           )}
 
-          {cycleData.myPayoutState === PayoutState.AWAITING_ACCEPTANCE && (
+          {cycleData.myPayoutState === PayoutState.AwaitingAcceptance && (
             <ToggleMyAcceptedButton cycleData={cycleData} />
           )}
         </div>

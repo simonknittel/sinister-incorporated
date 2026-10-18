@@ -30,15 +30,13 @@ const context = createApplicationContext({
 });
 
 /**
- * Runs an automation of the application package as a job. The name is the
- * name of the job in the logs and in X-Ray.
+ * Runs an automation of the application package as a job.
+ * `runJobsInIsolation()` gives the key of the job as its name in the logs and
+ * in X-Ray.
  */
 const createJob =
-  (
-    name: string,
-    automation: (context: ApplicationContext) => Promise<object>,
-  ) =>
-  () =>
+  (automation: (context: ApplicationContext) => Promise<object>) =>
+  (name: string) =>
     captureAsyncFunc(name, async () => {
       const output = await automation(context);
       log.info("Job finished", { job: name, ...output });
@@ -46,39 +44,20 @@ const createJob =
 
 export const handler: ScheduledHandler = async () =>
   runJobsInIsolation({
-    endCollectionPhases: createJob(
-      "endCollectionPhases",
-      endDueCollectionPhases,
-    ),
-    endPayoutPhases: createJob("endPayoutPhases", endDuePayoutPhases),
-    removeExpiredRoles: createJob(
-      "removeExpiredRoles",
-      removeExpiredRoleAssignments,
-    ),
-    autoAssignInactiveRoles: createJob(
-      "autoAssignInactiveRoles",
-      autoAssignInactiveRoles,
-    ),
-    countCitizensPerRole: createJob(
-      "countCitizensPerRole",
-      countCitizensPerRole,
-    ),
-    disburseRoleSalaries: createJob(
-      "disburseRoleSalaries",
-      disburseRoleSalaries,
-    ),
+    endCollectionPhases: createJob(endDueCollectionPhases),
+    endPayoutPhases: createJob(endDuePayoutPhases),
+    removeExpiredRoles: createJob(removeExpiredRoleAssignments),
+    autoAssignInactiveRoles: createJob(autoAssignInactiveRoles),
+    countCitizensPerRole: createJob(countCitizensPerRole),
+    disburseRoleSalaries: createJob(disburseRoleSalaries),
     countShips,
-    countUniqueLogins: createJob("countUniqueLogins", countUniqueLogins),
+    countUniqueLogins: createJob(countUniqueLogins),
     purgeTrashedWikiPages,
     purgeOrphanedWikiTags,
     archiveIrrelevantOnSiteNotifications,
     deleteUnusedUploads,
     purgeExpiredAuthenticationRecords: createJob(
-      "purgeExpiredAuthenticationRecords",
       purgeExpiredAuthenticationRecords,
     ),
-    purgeExpiredOAuthRecords: createJob(
-      "purgeExpiredOAuthRecords",
-      purgeExpiredOAuthRecords,
-    ),
+    purgeExpiredOAuthRecords: createJob(purgeExpiredOAuthRecords),
   });

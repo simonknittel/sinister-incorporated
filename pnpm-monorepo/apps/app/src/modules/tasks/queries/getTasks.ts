@@ -9,7 +9,7 @@ import {
   findTaskListPage,
   TaskAcceptedFilter,
   TaskCreatorFilter,
-  type TaskListItemRow,
+  toTaskListRow,
   type TaskListRow,
   type TaskListStatus,
 } from "@sam-monorepo/application";
@@ -17,34 +17,6 @@ import { cache } from "react";
 
 /** The closed tasks increase each day, thus the list shows them in pages */
 const CLOSED_TASKS_PAGE_SIZE = 20;
-
-/**
- * Only the fields of `TASK_LIST_SELECT` go to the client component: the
- * description and the reward stay on the server
- */
-const toTaskListRow = ({
-  id,
-  title,
-  createdAt,
-  completedAt,
-  expiresAt,
-  repeatable,
-  cancelledAt,
-  deletedAt,
-  assignments,
-  completionists,
-}: TaskListItemRow): TaskListRow => ({
-  id,
-  title,
-  createdAt,
-  completedAt,
-  expiresAt,
-  repeatable,
-  cancelledAt,
-  deletedAt,
-  assignments,
-  completionists,
-});
 
 interface TasksPage {
   readonly tasks: TaskListRow[];

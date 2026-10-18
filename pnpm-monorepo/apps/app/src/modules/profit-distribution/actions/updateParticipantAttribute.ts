@@ -9,6 +9,7 @@ import {
 import {
   updateCycleParticipants,
   updateCycleParticipantsInputSchema,
+  type UpdateCycleParticipantsOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { getProfitDistributionErrorTexts } from "../utils/profitDistributionErrorTexts";
@@ -19,7 +20,7 @@ export const updateParticipantAttribute = createAuthenticatedAction(
   "updateParticipantAttribute",
   updateCycleParticipantsInputSchema,
   async (formData, authentication, data, t) => {
-    let result;
+    let result: UpdateCycleParticipantsOutput;
     try {
       result = await updateCycleParticipants(
         getApplicationContext(),
