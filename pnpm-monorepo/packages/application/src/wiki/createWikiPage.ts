@@ -4,11 +4,15 @@ import {
   WikiPageUploadability,
   WikiPageVisibility,
 } from "@sam-monorepo/database/client";
-import { AuditEventType } from "@sam-monorepo/domain";
+import {
+  AuditEventType,
+  slugifyWikiPageTitle,
+  WIKI_PAGE_CONTENT_JSON_MAX_LENGTH,
+  WIKI_PAGE_TITLE_MAX_LENGTH,
+} from "@sam-monorepo/domain";
 import {
   collectWikiIframeSrcs,
   isWikiIframeSrcAllowed,
-  slugifyWikiPageTitle,
 } from "@sam-monorepo/wiki-editor";
 import { parseMarkdownToWikiContent } from "@sam-monorepo/wiki-editor/markdown";
 import * as z from "zod";
@@ -29,20 +33,16 @@ import {
 } from "./wikiPagePlacement.js";
 
 /**
- * About 7,000 words. The Markdown parser of Tiptap needs time that grows
- * with the square of the number of task lists, thus a much longer text could
- * keep the server busy for seconds.
+ * About 3,000 words. The parser (marked) needs time that grows with the
+ * square of the length for some texts: the worst case that was measured is
+ * one paragraph with many `*` or `_` without a match, about 2.5 seconds for
+ * 20,000 characters. A longer text could keep the server busy for much
+ * longer.
  */
-const MAX_MARKDOWN_LENGTH = 50_000;
-
-/**
- * The same limit as the content import of the app. The collab server takes
- * request bodies up to 4 MiB.
- */
-const MAX_CONTENT_JSON_LENGTH = 2_000_000;
+const MAX_MARKDOWN_LENGTH = 20_000;
 
 export const createWikiPageInputSchema = z.object({
-  title: z.string().trim().min(1).max(128),
+  title: z.string().trim().min(1).max(WIKI_PAGE_TITLE_MAX_LENGTH),
   parent_id: idSchema
     .optional()
     .describe(
@@ -58,7 +58,7 @@ export const createWikiPageInputSchema = z.object({
     .max(MAX_MARKDOWN_LENGTH)
     .optional()
     .describe(
-      "The content as Markdown (CommonMark with the tables and the task lists of GitHub). Without it, the page is empty.",
+      `The content as Markdown (CommonMark with the tables and the task lists of GitHub), at most ${MAX_MARKDOWN_LENGTH} characters. Without it, the page is empty.`,
     ),
 });
 
@@ -102,7 +102,7 @@ const prepareContent = (
         { cause: error },
       );
     }
-    if (JSON.stringify(content).length > MAX_CONTENT_JSON_LENGTH)
+    if (JSON.stringify(content).length > WIKI_PAGE_CONTENT_JSON_MAX_LENGTH)
       throw new ValidationError("The content is too large");
 
     // Like the content import of the app
@@ -222,6 +222,18 @@ export const createWikiPageInScope = (
           { cause: error },
         );
       }
+
+      /**
+       * Like the end of an editor session: the collab server writes no
+       * audit event for a replacement
+       */
+      await context.audit.create([
+        {
+          type: AuditEventType.WIKI_PAGE_UPDATED,
+          data: { pageId: page.id },
+          createdById: actor.userId,
+        },
+      ]);
     }
 
     return { id: page.id, slug: page.slug, eventId, templateId };

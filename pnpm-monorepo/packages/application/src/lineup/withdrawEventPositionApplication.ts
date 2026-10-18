@@ -1,14 +1,14 @@
+import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
 import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ConflictError } from "../errors.js";
 import { isAllowedToManagePositions } from "../events/eventManageRules.js";
-import { isPrismaError, PrismaErrorCode } from "../events/prismaErrors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { LineupErrorMessage } from "./lineupErrors.js";
-import { requireUpdatableEventPosition } from "./lineupGuards.js";
+import { requireApplicableEventPosition } from "./lineupGuards.js";
 import { toLineupPositionOutput, type LineupPosition } from "./lineupOutput.js";
 
 export const withdrawEventPositionApplicationInputSchema = z.object({
@@ -29,8 +29,9 @@ export const withdrawEventPositionApplication = (
 ): Promise<LineupPosition> =>
   withSpan(context, "withdrawEventPositionApplication", async () => {
     const citizen = requireCitizen(actor);
-    const position = await requireUpdatableEventPosition(
+    const position = await requireApplicableEventPosition(
       context,
+      actor,
       input.position_id,
     );
 

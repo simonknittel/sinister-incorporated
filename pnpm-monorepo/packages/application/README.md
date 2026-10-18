@@ -18,12 +18,13 @@ Each use case has this signature:
 Obey these rules:
 
 - **One schema.** Export the Zod input schema next to the use case. The caller parses the input with this schema: the server action parses its `FormData`, the MCP tool shows the schema to the client. The use case does not parse the input again.
-- **Plain output.** Give each use case an explicit output type. Never return a Prisma row: select the fields and map them to the output type. The exception: the exported `find…` row helpers (for example `findEventListPage`, `findVisibleTask` and `findEventPositionTree`) give rows only to the renderers of the app. They are not use cases, and no MCP tool calls them.
+- **Plain output.** Give each use case an explicit output type. Never return a Prisma row: select the fields and map them to the output type. A write gives the object after the write, in the shape of the read of the same object. Give the bare object, and `{ <object>, notifications_sent }` only when the write sends notifications (see "Side effects").
+- **App-only options.** An option that only the app can give (for example an upload, a template or the Discord sync of the events: `CreateEventOptions`, `UpdateEventOptions`, `DeleteEventOptions`, and `PageOptions` of the lists) is a fourth parameter, not a field of the input schema. The MCP tools call the use case without it.
 - **Key case.** The input schemas and the outputs that the MCP tools use have lowercase snake_case keys. The outputs that only the app uses have camelCase keys.
-- **Shared schemas.** Take the page size, the cursor and the ids from `src/pagination.ts` (`pageLimitSchema`, `cursorSchema`, `idSchema`). A list that sorts in memory pages with `paginateByCursor()`, which refuses an unknown cursor with a `ValidationError`. A list that the app pages in both directions takes a `PageOptions` parameter, not fields in its input schema: the direction, and `UnknownCursorBehavior.FirstPage` for the stale cursors in the URLs of the app.
-- **Typed errors.** Throw the errors of `src/errors.ts`: `ForbiddenError`, `NotFoundError`, `ConflictError` and `ValidationError`. Write a short English message. Do not use translated strings: each app maps the errors to its own response.
+- **Shared schemas.** Take the page size, the cursor and the ids from `src/pagination.ts` (`pageLimitSchema`, `cursorSchema`, `idSchema`), and the times from `src/dateTime.ts` (`dateTimeInputSchema`: an ISO 8601 instant, or a wall time in the time zone of the organization, which the forms of the app send). Take the limits that the forms of the app also need (lengths, caps) from the `domain` package. A list that sorts in memory pages with `paginateByCursor()`, which refuses an unknown cursor with a `ValidationError`. A list that the app pages in both directions takes a `PageOptions` parameter, not fields in its input schema: the direction, and `UnknownCursorBehavior.FirstPage` for the stale cursors in the URLs of the app.
+- **Typed errors.** Throw the errors of `src/errors.ts`: `ForbiddenError`, `NotFoundError`, `ConflictError` and `ValidationError`. Write a short English message. Do not use translated strings: each app maps the errors to its own response. When an app shows its own text for a message, the message is a member of a message enum of the feature (for example `EventErrorMessage`, `LineupErrorMessage`, `TaskErrorMessage`), thrown through the base classes. The Next.js app maps the errors with `mapApplicationErrorToActionResponse()` and a record of texts by message; a not-found error and a conflict refresh the page.
 - **Permissions in the use case.** The caller does the gate of the app (`actor.requireClearance()`). The use case checks the permissions of its operation with `requirePermission(actor, resource, operation, attributes)`, or with `actor.authorize()` when the result changes the output.
-- **Side effects in the use case.** Write the audit events with `context.audit.create()` and send the notifications with `context.notifications.trigger()`. Use `context.now()` for the current time.
+- **Side effects in the use case.** Write the audit events with `context.audit.create()`. Send the notifications after the save with `triggerNotificationsAfterSave()` (`src/notifications.ts`): a failure does not make the result an error, the output gives `notifications_sent: false` instead, and the caller shows a warning. Use `context.now()` for the current time.
 - **No framework imports.** Never import `next`, `next/*`, `react`, `react-dom`, `server-only` or a module of the app (`@/…`). The test `src/boundaries.test.ts` fails on such an import.
 - **No React `cache()`.** The app wraps a read use case with `cache()` where a page needs the deduplication per request.
 - **Spans.** Use `withSpan(context, name, callback)` for async work that is slow or that has many steps.
@@ -39,7 +40,7 @@ import { idSchema } from "../pagination.js";
 
 export const renameShipInputSchema = z.object({
   ship_id: idSchema,
-  name: z.string().trim().min(1).max(255),
+  name: z.string().trim().max(255).describe("An empty name removes the name."),
 });
 
 export interface RenameShipOutput {
@@ -66,6 +67,9 @@ src/
   context.ts               ApplicationContext and its ports
   errors.ts                the typed errors
   pagination.ts            the shared page size, cursor and id schemas, paginateByCursor()
+  dateTime.ts              the shared date-time input schema
+  notifications.ts         triggerNotificationsAfterSave()
+  mcpAccess.ts             the permission that gates the MCP server
   citizenReference.ts      the citizen in the outputs
   withSpan.ts              the span helper
   auth/                    the effective roles of a citizen (the session and the MCP principal)
@@ -75,6 +79,14 @@ src/
   index.ts                 the exports of the package: the barrels and the shared modules
 ```
 
+## Exceptions
+
+These exports are not use cases. No MCP tool calls them:
+
+- The `find…` row helpers (for example `findEventListPage`, `findVisibleTask` and `findEventPositionTree`) give rows only to the renderers of the app.
+- The writes of the positions that the lineup of an event and the lineup of an event template share (`insertLineupPosition`, `updateLineupPosition`, `deleteLineupPosition`, `writeLineupOrder`, `findLineupPositionContainer`) carry no permission check. The use cases of the event lineup check the event first, the app checks the template first.
+- `createWikiPageInScope` takes the wiki scope from its caller: the app also loads the briefings of the event templates.
+
 ## Tests
 
 Write unit tests (Vitest, `*.test.ts` next to the file) only for complex or critical logic. Test the behavior through the end-to-end tests of the apps.
@@ -82,9 +94,37 @@ Write unit tests (Vitest, `*.test.ts` next to the file) only for complex or crit
 ## Add a feature
 
 1. Add `src/<feature>/<useCase>.ts` with the input schema, the output type and the use case. Export them from the barrel `src/<feature>/index.ts`. The package index re-exports the barrel.
-2. Next.js app: the composition root is `apps/app/src/modules/application`. A server action parses the `FormData` with the schema, calls the use case with `getApplicationContext()` and `await toActor(authentication.session)`, keeps its `refresh()`, and maps the errors with `mapApplicationErrorToActionResponse()`. Pages and queries get the actor with `getRequestActor()` and map the errors with `throwApplicationErrorForPage()`. tRPC procedures call the read use cases with `toActor(ctx.session)`.
+2. Next.js app: the composition root is `apps/app/src/modules/application`. A server action parses the `FormData` with the schema, calls the use case with `getApplicationContext()` and `await toActor(authentication.session)`, keeps its `refresh()`, and maps the errors with `mapApplicationErrorToActionResponse()` and the texts of the feature. Pages and queries get the actor with `getRequestActor()` and map the errors with `throwApplicationErrorForPage()`. tRPC procedures call the read use cases with `toActor(ctx.session)`.
 3. MCP server: add a tool that shows the input schema and calls the use case.
 
 ## Follow-up
 
-The actions and queries of the app that no MCP tool uses stay in the app for now. They move into this package later.
+The actions and queries of the app that no MCP tool uses stay in the app for now. They move into this package later. These server actions (`apps/app/src/modules/<module>/actions`) still hold their business logic and call no use case (2026-10-18):
+
+- `apps`: `toggleAppFavorite`
+- `auth`: `assumeUser`, `deleteSession`, `developmentLogin`, `requestEmailConfirmationAction`, `setAdminMode`, `stopAssumingUser`
+- `career`: `createFlow`, `deleteFlow`, `duplicateFlow`, `renameFlow`, `reorderFlows`, `restoreFlow`, `updateFlow`, `updateFlowRoleAccess`
+- `changelog`: `markChangelogEntriesSeen`
+- `citizen`: `confirmCitizenLog`, `createCitizen`, `createCitizenLog`, `decreaseRoleAssignmentLevel`, `deleteCitizen`, `deleteCitizenLog`, `deleteRoleAssignment`, `increaseRoleAssignmentLevel`, `updateMyProfile`, `updateNote`, `updateRoleAssignment`
+- `dashboard`: `setGreetingBannerPreview`
+- `event-templates`: `createEventTemplate`, `createEventTemplateFromEvent`, `deleteEventTemplate`, `duplicateEventTemplate`, `restoreEventTemplate`, `transferEventTemplateOwnership`, `updateEventTemplate`, `updateEventTemplateRoleAccess`
+- `events`: `copyLineupFromEvent`, `pasteEventPosition`, `publishEventToDiscord`, `unpublishEventFromDiscord`, `updateEventPositionName`
+- `fleet`: `createManufacturer`, `createSeries`, `createVariant`, `deleteManufacturer`, `deleteSeries`, `deleteVariant`, `updateManufacturer`, `updateSeries`, `updateVariant`
+- `iam`: `updateHumanResourcesRoles`
+- `log-analyzer`: `uploadLogAnalyzerEntries`
+- `notifications`: `archiveOnSiteNotification`, `archiveReadOnSiteNotifications`, `markAllOnSiteNotificationsRead`, `markOnSiteNotificationsRead`, `markOnSiteNotificationUnread`, `subscribeWebPush`, `unarchiveOnSiteNotification`, `unsubscribeWebPush`, `updateMyNotificationSettings`
+- `onboarding`: `completeOnboardingStep`, `completeOnboardingTask`, `skipAllOnboardingTasks`
+- `organizations`: `confirmOrganizationMembership`, `createOrganization`, `createOrganizationMembership`, `deleteOrganizationMembership`
+- `penalty-points`: `deletePenaltyEntry`
+- `profit-distribution`: `createProfitDistributionCycle`, `endCollectionPhase`, `endPayout`, `startPayout`, `toggleMyAccepted`, `toggleMyCeded`, `updateParticipantAttribute`
+- `read-markers`: `markAsRead`
+- `roles`: `createRole`, `deleteRole`, `updateRole`, `updateRoleInheritance`, `updateRolePermissions`, `updateSingleRoleInheritance`, `updateSingleRolePermission`
+- `seasonal-events`: `setSeasonalDateOverride`, `updateMySeasonalThemeSettings`
+- `silc`: `createSilcTransaction`, `deleteSilcTransaction`, `expireAllSilc`, `refreshSilcBalances`, `updateRoleSalaries`, `updateSilcSetting`, `updateSilcTransaction`
+- `spynet`: `createClassificationLevel`, `createNoteType`, `deleteClassificationLevel`, `deleteNoteType`, `updateClassificationLevel`, `updateNoteType`
+- `tasks`: `deleteTask`
+- `uploads`: `deleteUpload`
+- `users`: `banUser`, `unbanUser`, `verifyEmail`
+- `wiki`: `createWikiCollabToken`, `createWikiPageReport`, `deleteWikiPage`, `destroyWikiPage`, `importWikiPageContent`, `moveWikiPage`, `pasteWikiPages`, `renameWikiPage`, `resolveWikiPageReport`, `restoreWikiPage`, `restoreWikiPageSnapshot`, `trackWikiPageVisit`, `updateEventWikiPagePermissions`, `updateWikiDashboardPage`, `updateWikiFeaturedPages`, `updateWikiIframeAllowlist`, `updateWikiPageFavorite`, `updateWikiPageLink`, `updateWikiPagePermissions`, `updateWikiPagePosition`, `updateWikiPageSidebarMode`, `updateWikiPageTags`, `validateWikiIframeSrc`
+
+The lineup actions of the event templates use the shared writes (see "Exceptions") with the rules of the templates in the app.

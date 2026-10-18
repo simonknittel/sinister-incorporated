@@ -2,10 +2,10 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ConflictError } from "../errors.js";
+import { ConflictError, NotFoundError } from "../errors.js";
 import { withSpan } from "../withSpan.js";
-import { taskIdSchema } from "./getTask.js";
-import { findTaskOutput, type TaskWriteOutput } from "./taskDetails.js";
+import { getTask, taskIdSchema } from "./getTask.js";
+import type { GetTaskOutput } from "./taskDetails.js";
 import { TaskErrorMessage } from "./taskErrors.js";
 import { requireSelfAssignableTask } from "./taskGuards.js";
 
@@ -15,6 +15,15 @@ export const dropTaskInputSchema = z.object({
 
 export type DropTaskInput = z.infer<typeof dropTaskInputSchema>;
 
+export interface DropTaskOutput {
+  /**
+   * The task after the drop. Null when the user cannot see the task anymore:
+   * a public task that is hidden for other roles is visible to its
+   * assignees, also when they lost the required role.
+   */
+  readonly task: GetTaskOutput | null;
+}
+
 /**
  * Removes the assignment of the citizen of the actor from an open public
  * task. Requires `task;read` and a citizen.
@@ -23,7 +32,7 @@ export const dropTask = (
   context: ApplicationContext,
   actor: Actor,
   input: DropTaskInput,
-): Promise<TaskWriteOutput> =>
+): Promise<DropTaskOutput> =>
   withSpan(context, "dropTask", async () => {
     const citizen = requireCitizen(actor);
     const task = await requireSelfAssignableTask(context, actor, input.task_id);
@@ -42,5 +51,10 @@ export const dropTask = (
       },
     ]);
 
-    return { task: await findTaskOutput(context, actor, task.id) };
+    try {
+      return { task: await getTask(context, actor, { task_id: task.id }) };
+    } catch (error) {
+      if (error instanceof NotFoundError) return { task: null };
+      throw error;
+    }
   });

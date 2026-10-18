@@ -43,6 +43,7 @@ export {
   DEFAULT_PAGE_LIMIT,
   MAXIMUM_PAGE_LIMIT,
   UnknownCursorBehavior,
+  idSchema,
   paginateByCursor,
   type CursorPage,
   type PageOptions,

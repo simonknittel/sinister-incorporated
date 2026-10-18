@@ -1,22 +1,25 @@
+import {
+  LINEUP_MAX_DEPTH,
+  LINEUP_MAX_POSITIONS,
+  LINEUP_MAX_POSITIONS_PER_LEVEL,
+} from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { ApplicationContext } from "../context.js";
-import { ConflictError } from "../errors.js";
+import { ConflictError, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { LineupErrorMessage } from "./lineupErrors.js";
+import { getPositionLevels } from "./lineupTree.js";
 import type { LineupContainerColumns } from "./lineupWrites.js";
-
-/**
- * The same limit as `MAX_POSITIONS_PER_LEVEL` of the app: the paste of a
- * position obeys it, thus a pasted position never makes the lineup too large
- * for a new order
- */
-const MAXIMUM_POSITIONS_PER_LEVEL = 50;
-
-/** One new order writes one row for each position in one transaction */
-const MAXIMUM_ORDERED_POSITIONS = 500;
 
 /** The largest value of the integer column of the database */
 const MAXIMUM_ORDER_VALUE = 2_147_483_647;
+
+/**
+ * A new order writes one row for each of up to `LINEUP_MAX_POSITIONS`
+ * positions, one after the other. The default of an interactive transaction
+ * (5 seconds) is possibly too short for this (an assumption, not measured).
+ */
+const TRANSACTION_TIMEOUT_MS = 30_000;
 
 /** A position of a new order of the lineup, with its children */
 export interface LineupOrderNode {
@@ -38,13 +41,14 @@ const orderNodeFields = {
 };
 
 const orderLevelSchema = <Node extends z.ZodType>(node: Node) =>
-  z.array(node).max(MAXIMUM_POSITIONS_PER_LEVEL);
+  z.array(node).max(LINEUP_MAX_POSITIONS_PER_LEVEL);
 
 /**
- * The lineup has four levels, thus the positions of the fourth level have no
- * children. The schema names the levels instead of a recursive reference.
+ * The lineup has four levels (`LINEUP_MAX_DEPTH`), thus the positions of the
+ * fourth level have no children. The schema names the levels instead of a
+ * recursive reference.
  */
-const fourthLevelNodeSchema = z.object(orderNodeFields);
+const fourthLevelNodeSchema = z.strictObject(orderNodeFields);
 
 const createOrderNodeSchema = <Child extends z.ZodType>(child: Child) =>
   z.object({
@@ -70,9 +74,9 @@ export const lineupOrderSchema = orderLevelSchema(
   ),
 )
   .refine(
-    (positions) => flattenOrder(positions).length <= MAXIMUM_ORDERED_POSITIONS,
+    (positions) => flattenOrder(positions).length <= LINEUP_MAX_POSITIONS,
     {
-      message: `The order has more than ${MAXIMUM_ORDERED_POSITIONS} positions`,
+      message: `The order has more than ${LINEUP_MAX_POSITIONS} positions`,
     },
   )
   // A position under itself would leave the tree
@@ -84,50 +88,73 @@ export const lineupOrderSchema = orderLevelSchema(
     { message: "The order has a position more than one time" },
   )
   .describe(
-    "The full lineup as a tree of at most four levels: the top-level positions in their new order, each with its children in their new order.",
+    `The full lineup as a tree of at most ${LINEUP_MAX_DEPTH} levels, with at most ${LINEUP_MAX_POSITIONS} positions and at most ${LINEUP_MAX_POSITIONS_PER_LEVEL} positions with the same parent: the top-level positions in their new order, each with its children in their new order. A position of the fourth level has no children.`,
   );
 
+interface OrderUpdate {
+  readonly id: string;
+  readonly order: number;
+  readonly parentPositionId: string | null;
+}
+
+const toOrderUpdates = (
+  siblings: readonly LineupOrderNode[],
+  parentPositionId: string | null,
+): OrderUpdate[] =>
+  siblings.flatMap((position, index) => [
+    { id: position.id, order: position.order ?? index, parentPositionId },
+    ...toOrderUpdates(position.children ?? [], position.id),
+  ]);
+
 /**
- * Writes the order and the parents of the tree. Each position of the tree
- * must be in the container: the parents come from the tree, thus no parent
- * goes into a different lineup.
+ * Writes the order and the parents of the tree in one transaction. Each
+ * position of the tree must be in the container: the parents come from the
+ * tree, thus no parent goes into a different lineup.
  *
  * @throws ConflictError when a position is not in the container, usually a
  * position that a different tab deleted
+ * @throws ValidationError when the new order puts a position below the last
+ * level: the positions that the tree does not name keep their parent, thus
+ * a moved position takes its children with it
  */
 export const writeLineupOrder = async (
   context: ApplicationContext,
   container: LineupContainerColumns,
   positions: readonly LineupOrderNode[],
 ) => {
-  const containerPositions = await context.prisma.eventPosition.findMany({
-    where: container,
-    select: { id: true },
-  });
-  const containerPositionIds = new Set(
-    containerPositions.map((position) => position.id),
+  await context.prisma.$transaction(
+    async (transaction) => {
+      const containerPositions = await transaction.eventPosition.findMany({
+        where: container,
+        select: { id: true },
+      });
+      const containerPositionIds = new Set(
+        containerPositions.map((position) => position.id),
+      );
+      if (
+        flattenOrder(positions).some(
+          (position) => !containerPositionIds.has(position.id),
+        )
+      )
+        throw new ConflictError(LineupErrorMessage.LineupChanged);
+
+      for (const update of toOrderUpdates(positions, null))
+        await transaction.eventPosition.update({
+          where: { id: update.id },
+          data: {
+            order: update.order,
+            parentPositionId: { set: update.parentPositionId },
+          },
+        });
+
+      const reorderedPositions = await transaction.eventPosition.findMany({
+        where: container,
+        select: { id: true, parentPositionId: true },
+      });
+      const levels = getPositionLevels(reorderedPositions);
+      if ([...levels.values()].some((level) => level > LINEUP_MAX_DEPTH))
+        throw new ValidationError(LineupErrorMessage.LineupTooDeep);
+    },
+    { timeout: TRANSACTION_TIMEOUT_MS },
   );
-  if (
-    flattenOrder(positions).some(
-      (position) => !containerPositionIds.has(position.id),
-    )
-  )
-    throw new ConflictError(LineupErrorMessage.LineupChanged);
-
-  const toUpdates = (
-    siblings: readonly LineupOrderNode[],
-    parentPositionId: string | null,
-  ): ReturnType<typeof context.prisma.eventPosition.update>[] =>
-    siblings.flatMap((position, index) => [
-      context.prisma.eventPosition.update({
-        where: { id: position.id },
-        data: {
-          order: position.order ?? index,
-          parentPositionId: { set: parentPositionId },
-        },
-      }),
-      ...toUpdates(position.children ?? [], position.id),
-    ]);
-
-  await context.prisma.$transaction(toUpdates(positions, null));
 };

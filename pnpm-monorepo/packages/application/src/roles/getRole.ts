@@ -19,12 +19,12 @@ export type GetRoleInput = z.output<typeof getRoleInputSchema>;
 export interface GetRoleOutput extends RoleOutput {
   /**
    * The number of days of inactivity after which a citizen loses the role,
-   * or null
+   * or null. Null without `role;manage`.
    */
   readonly max_age_days: number | null;
   /**
    * The number of days of inactivity after which a citizen gets the role, or
-   * null
+   * null. Null without `role;manage`.
    */
   readonly assign_after_inactive_days: number | null;
   /** Sorted. Null without `role;manage`. */
@@ -33,7 +33,8 @@ export interface GetRoleOutput extends RoleOutput {
 
 /**
  * One role that the actor can see (see `isRoleVisible()`), with its
- * permission strings for an actor with `role;manage`
+ * inactivity rules and its permission strings for an actor with
+ * `role;manage`, like the role page of the app
  *
  * @throws NotFoundError when the role does not exist or the actor cannot see
  * it
@@ -60,11 +61,15 @@ export const getRole = async (
   });
   if (!role) throw new NotFoundError("The role does not exist");
 
+  const canManageRoles = actor.authorize("role", "manage");
+
   return {
     ...toRoleOutput(context, actor, role),
-    max_age_days: role.maxAgeDays,
-    assign_after_inactive_days: role.assignAfterInactiveDays,
-    permission_strings: actor.authorize("role", "manage")
+    max_age_days: canManageRoles ? role.maxAgeDays : null,
+    assign_after_inactive_days: canManageRoles
+      ? role.assignAfterInactiveDays
+      : null,
+    permission_strings: canManageRoles
       ? role.permissionStrings.map(
           (permissionString) => permissionString.permissionString,
         )

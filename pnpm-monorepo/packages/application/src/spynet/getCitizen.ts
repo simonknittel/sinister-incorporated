@@ -4,6 +4,7 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
+import { isRoleVisible } from "../roles/roleVisibility.js";
 import { withSpan } from "../withSpan.js";
 import { requireCitizenReadAccess } from "./citizenAccess.js";
 import {
@@ -14,7 +15,6 @@ import {
   listOrganizationMembershipsOfCitizen,
   type CitizenMembershipOutput,
 } from "./organizationMemberships.js";
-import { getVisibleAssignedRoleIds } from "./visibleRoles.js";
 
 export const getCitizenInputSchema = z.object({
   citizen_id: idSchema,
@@ -87,10 +87,10 @@ export const getCitizen = async (
     });
     if (!citizen) throw new NotFoundError("The citizen does not exist");
 
-    const visibleRoleIds = getVisibleAssignedRoleIds(
-      actor,
-      citizen.roleAssignments,
-    );
+    // The level of an assignment does not matter, like on the role badges
+    const visibleRoleIds = citizen.roleAssignments
+      .map((roleAssignment) => roleAssignment.roleId)
+      .filter((roleId) => isRoleVisible(actor, roleId));
 
     const [roles, organizationMemberships, penaltyPoints, shipCount] =
       await Promise.all([

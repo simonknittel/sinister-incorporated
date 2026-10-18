@@ -2,22 +2,29 @@ import type { Prisma } from "@sam-monorepo/database/client";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ConflictError, ForbiddenError, NotFoundError } from "../errors.js";
+import { EventErrorMessage } from "../events/eventErrors.js";
+import {
+  requireManageableEvent,
+  VISIBLE_EVENT_MANAGE_GUARD_SELECT,
+  type ManageableEventOptions,
+} from "../events/eventManageGuard.js";
 import {
   isAllowedToManagePositions,
   isEventUpdatable,
-  type EventManageInput,
+  isLineupVisible,
 } from "../events/eventManageRules.js";
+import { canActorSeeEvent } from "../events/eventVisibility.js";
 import { LineupErrorMessage } from "./lineupErrors.js";
 
-/** What the guards of the lineup decide on, and the name for the outputs */
+/**
+ * What the guards of the lineup decide on (the visibility, the freeze, the
+ * manage rule and whether the lineup is enabled), and the name for the
+ * outputs
+ */
 const LINEUP_EVENT_SELECT = {
-  id: true,
+  ...VISIBLE_EVENT_MANAGE_GUARD_SELECT,
   name: true,
-  startTime: true,
-  endTime: true,
-  discordCreatorId: true,
-  createdById: true,
-  managers: { select: { id: true } },
+  lineupEnabled: true,
 } as const satisfies Prisma.EventSelect;
 
 /** What the use cases of the positions read of a position before a change */
@@ -31,28 +38,10 @@ const LINEUP_POSITION_SELECT = {
   textColor: true,
 } as const satisfies Prisma.EventPositionSelect;
 
-export interface ManageableEventLineupOptions {
-  /**
-   * Skips the check of the end of the event. Only for a lineup that the
-   * caller reads from, for example the source of a copy.
-   */
-  readonly ignoreFreeze?: boolean;
-}
-
-/** The organizers and `othersEventPosition;manage` manage the positions */
-export const requirePositionManager = (
-  actor: Actor,
-  event: EventManageInput,
-) => {
-  if (!isAllowedToManagePositions(actor, event))
-    throw new ForbiddenError(
-      "The user cannot manage the positions of the event",
-    );
-};
-
 /**
- * The guard of each change of the lineup of an event: the event exists and
- * is not deleted, it has not ended, and the actor manages its positions.
+ * The guard of each change of the lineup of an event: the event exists, is
+ * not deleted and is visible for the actor, it has not ended, and the actor
+ * manages its positions.
  *
  * @throws NotFoundError, ConflictError or ForbiddenError
  */
@@ -60,58 +49,35 @@ export const requireManageableEventLineup = async (
   context: ApplicationContext,
   actor: Actor,
   eventId: string,
-  { ignoreFreeze = false }: ManageableEventLineupOptions = {},
+  options: ManageableEventOptions = {},
 ) => {
   const event = await context.prisma.event.findUnique({
     where: { id: eventId, deletedAt: null },
     select: LINEUP_EVENT_SELECT,
   });
-  if (!event) throw new NotFoundError(LineupErrorMessage.EventNotFound);
+  if (!event) throw new NotFoundError(EventErrorMessage.NotFound);
 
-  if (!ignoreFreeze && !isEventUpdatable(event, context.now()))
-    throw new ConflictError(LineupErrorMessage.EventEnded);
-
-  requirePositionManager(actor, event);
+  requireManageableEvent(
+    context,
+    actor,
+    event,
+    isAllowedToManagePositions,
+    options,
+  );
 
   return event;
 };
 
 /**
- * A position of the lineup of an event that the actor manages, with its
- * event. A position of an event template does not exist for the use cases:
- * they change only the lineups of events.
+ * A position of the lineup of an event that is not deleted and that the
+ * actor can see, with its event. A position of an event template does not
+ * exist for the use cases: they change only the lineups of events.
  *
- * @throws NotFoundError, ConflictError or ForbiddenError
+ * @throws NotFoundError
  */
-export const requireManageableEventPosition = async (
+const findVisibleEventPosition = async (
   context: ApplicationContext,
   actor: Actor,
-  positionId: string,
-) => {
-  const position = await context.prisma.eventPosition.findUnique({
-    where: { id: positionId, eventId: { not: null } },
-    select: LINEUP_POSITION_SELECT,
-  });
-  if (!position?.eventId)
-    throw new NotFoundError(LineupErrorMessage.PositionNotFound);
-
-  const event = await requireManageableEventLineup(
-    context,
-    actor,
-    position.eventId,
-  );
-
-  return { position, event };
-};
-
-/**
- * A position of an event that is not deleted and that has not ended, with
- * the event. The guard of the assignment and of the applications.
- *
- * @throws NotFoundError or ConflictError
- */
-export const requireUpdatableEventPosition = async (
-  context: ApplicationContext,
   positionId: string,
 ) => {
   const position = await context.prisma.eventPosition.findUnique({
@@ -121,11 +87,53 @@ export const requireUpdatableEventPosition = async (
       event: { select: LINEUP_EVENT_SELECT },
     },
   });
-  if (!position?.event)
+  if (!position?.event || !canActorSeeEvent(actor, position.event))
     throw new NotFoundError(LineupErrorMessage.PositionNotFound);
 
-  if (!isEventUpdatable(position.event, context.now()))
-    throw new ConflictError(LineupErrorMessage.EventEnded);
-
   return { ...position, event: position.event };
+};
+
+/**
+ * A position of the lineup of an event that the actor manages (see
+ * `requireManageableEventLineup()`), with its event
+ *
+ * @throws NotFoundError, ConflictError or ForbiddenError
+ */
+export const requireManageableEventPosition = async (
+  context: ApplicationContext,
+  actor: Actor,
+  positionId: string,
+) => {
+  const { event, ...position } = await findVisibleEventPosition(
+    context,
+    actor,
+    positionId,
+  );
+  requireManageableEvent(context, actor, event, isAllowedToManagePositions);
+
+  return { position, event };
+};
+
+/**
+ * A position of an event that has not ended, in a lineup that the actor can
+ * see, with the event: the guard of the own applications. The lineup is
+ * visible when it is enabled or when the actor manages the positions (see
+ * `getEventLineup()`).
+ *
+ * @throws NotFoundError, ConflictError or ForbiddenError
+ */
+export const requireApplicableEventPosition = async (
+  context: ApplicationContext,
+  actor: Actor,
+  positionId: string,
+) => {
+  const position = await findVisibleEventPosition(context, actor, positionId);
+
+  if (!isEventUpdatable(position.event, context.now()))
+    throw new ConflictError(EventErrorMessage.EventEnded);
+
+  if (!isLineupVisible(actor, position.event))
+    throw new ForbiddenError("The lineup of the event is not enabled");
+
+  return position;
 };

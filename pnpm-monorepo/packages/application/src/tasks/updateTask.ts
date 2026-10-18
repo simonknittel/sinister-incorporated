@@ -1,9 +1,10 @@
-import { TaskRewardType } from "@sam-monorepo/database/browser";
+import { TaskRewardType, TaskVisibility } from "@sam-monorepo/database/browser";
 import type { Prisma } from "@sam-monorepo/database/client";
 import { AuditEventType, type AuditEventInput } from "@sam-monorepo/domain";
 import * as z from "zod";
-import { requireCitizen, type Actor } from "../actor.js";
+import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext, Notification } from "../context.js";
+import { DATE_TIME_INPUT_DESCRIPTION } from "../dateTime.js";
 import { ValidationError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { withSpan } from "../withSpan.js";
@@ -13,8 +14,13 @@ import {
   type NotifyingTaskWriteOutput,
   type VisibleTask,
 } from "./taskDetails.js";
+import { TaskErrorMessage } from "./taskErrors.js";
 import { requireManageableTask } from "./taskGuards.js";
-import { taskFieldSchemas } from "./taskInput.js";
+import {
+  requireActiveAssignees,
+  requireVisibleRoles,
+  taskFieldSchemas,
+} from "./taskInput.js";
 
 export const updateTaskInputSchema = z.object({
   task_id: taskIdSchema,
@@ -24,26 +30,38 @@ export const updateTaskInputSchema = z.object({
     .nullable()
     .optional()
     .describe(
-      "When the task expires: ISO 8601 with a time zone offset, for example 2026-12-31T23:59:00+01:00. null: the task never expires.",
+      `When the task expires. ${DATE_TIME_INPUT_DESCRIPTION} Null: the task never expires.`,
     ),
   repeatable: taskFieldSchemas.repeatable.optional(),
   reward_silc_value: taskFieldSchemas.reward_silc_value
     .optional()
     .describe(
-      "The SILC for each completionist. Only for a task with a silc or new_silc reward.",
+      "The SILC for each completionist. Only for a task with a silc or new_silc reward; a new_silc reward needs the permission to create new SILC.",
     ),
   reward_text: taskFieldSchemas.reward_text
     .optional()
     .describe(
       "The reward as a Markdown text. Only for a task with a text reward.",
     ),
-  required_role_ids: taskFieldSchemas.required_role_ids.optional(),
-  hidden_for_other_roles: taskFieldSchemas.hidden_for_other_roles.optional(),
-  assignment_limit: taskFieldSchemas.assignment_limit.optional(),
+  required_role_ids: taskFieldSchemas.required_role_ids
+    .optional()
+    .describe(
+      "Only for a public task: the full new list of the roles of which a citizen must have one to accept the task, from list_roles.",
+    ),
+  hidden_for_other_roles: taskFieldSchemas.hidden_for_other_roles
+    .optional()
+    .describe(
+      "Only for a public task: whether only the citizens with a required role can see the task.",
+    ),
+  assignment_limit: taskFieldSchemas.assignment_limit
+    .optional()
+    .describe(
+      "Only for a public task: the maximum number of citizens that can accept the task, or null for no limit.",
+    ),
   assignee_ids: taskFieldSchemas.assignee_ids
     .optional()
     .describe(
-      "The full new list of the citizens of the task. The citizens that are not in the list lose their assignment.",
+      "Only for a public task: the full new list of the citizens who accepted the task, from a Spynet tool. The citizens that are not in the list lose their assignment.",
     ),
 });
 
@@ -73,9 +91,7 @@ const getSilcRewardAuditEventType = (task: VisibleTask) => {
 
     // The reward CHECK constraint refuses a SILC value on a text reward
     case TaskRewardType.TEXT:
-      throw new ValidationError(
-        "The task has a text reward: give reward_text instead",
-      );
+      throw new ValidationError(TaskErrorMessage.TextRewardOnly);
 
     default:
       throw new Error(
@@ -144,7 +160,7 @@ const getTaskChanges = (
     });
 
   if (input.expires_at !== undefined) {
-    const expiresAt = input.expires_at ? new Date(input.expires_at) : null;
+    const expiresAt = input.expires_at;
     changes.push({
       data: { expiresAt },
       auditEvent: {
@@ -190,9 +206,7 @@ const getTaskChanges = (
   if (input.reward_text !== undefined) {
     // The reward CHECK constraint refuses a text on a SILC reward
     if (task.rewardType !== TaskRewardType.TEXT)
-      throw new ValidationError(
-        "The task has a SILC reward: give reward_silc_value instead",
-      );
+      throw new ValidationError(TaskErrorMessage.SilcRewardOnly);
 
     changes.push({
       data: { rewardTypeTextValue: input.reward_text },
@@ -252,6 +266,57 @@ const getTaskChanges = (
 };
 
 /**
+ * The checks of the fields that the forms of the task page check with their
+ * choices: the forms of the assignees, the assignment limit and the required
+ * roles exist only for a public task, the pickers offer the citizens that
+ * are not deleted and the roles that the actor can see, and only a creator
+ * of new SILC changes a reward of new SILC
+ */
+const requireAllowedChanges = async (
+  context: ApplicationContext,
+  actor: Actor,
+  task: VisibleTask,
+  input: UpdateTaskInput,
+) => {
+  const changesPublicFields =
+    input.assignee_ids !== undefined ||
+    input.assignment_limit !== undefined ||
+    input.required_role_ids !== undefined ||
+    input.hidden_for_other_roles !== undefined;
+  if (changesPublicFields && task.visibility !== TaskVisibility.PUBLIC)
+    throw new ValidationError(TaskErrorMessage.OnlyForPublicTask);
+
+  if (
+    input.reward_silc_value !== undefined &&
+    task.rewardType === TaskRewardType.NEW_SILC
+  )
+    requirePermission(actor, "task", "create", [
+      { key: "taskRewardType", value: TaskRewardType.NEW_SILC },
+    ]);
+
+  // Only the new entries: an entry that the task has already can stay
+  if (input.assignee_ids) {
+    const currentAssigneeIds = new Set(
+      task.assignments.map((assignment) => assignment.citizenId),
+    );
+    await requireActiveAssignees(
+      context,
+      input.assignee_ids.filter(
+        (citizenId) => !currentAssigneeIds.has(citizenId),
+      ),
+    );
+  }
+  if (input.required_role_ids) {
+    const currentRoleIds = new Set(task.requiredRoles.map((role) => role.id));
+    await requireVisibleRoles(
+      context,
+      actor,
+      input.required_role_ids.filter((roleId) => !currentRoleIds.has(roleId)),
+    );
+  }
+};
+
+/**
  * Changes the given fields of an open task. Requires `task;read`, a citizen,
  * and that the actor created the task or has `task;manage`. Each changed
  * field group writes its audit event; a change of the assignments notifies
@@ -264,10 +329,11 @@ export const updateTask = (
 ): Promise<NotifyingTaskWriteOutput> =>
   withSpan(context, "updateTask", async () => {
     const task = await requireManageableTask(context, actor, input.task_id);
+    await requireAllowedChanges(context, actor, task, input);
 
     const changes = getTaskChanges(task, input, actor);
     if (changes.length <= 0)
-      throw new ValidationError("Give at least one field to change");
+      throw new ValidationError(TaskErrorMessage.NoChange);
 
     await context.prisma.task.update({
       where: { id: task.id },

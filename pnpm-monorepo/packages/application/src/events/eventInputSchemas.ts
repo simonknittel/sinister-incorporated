@@ -1,11 +1,11 @@
-import * as z from "zod";
-import { idSchema } from "../pagination.js";
 import {
-  EVENT_DESCRIPTION_MAX_LENGTH,
+  DISCORD_EVENT_DESCRIPTION_MAX_LENGTH,
   EVENT_MAX_VISIBILITY_ROLES,
   EVENT_NAME_MAX_LENGTH,
   EVENT_PARTICIPATION_TEXT_MAX_LENGTH,
-} from "./eventConstraints.js";
+} from "@sam-monorepo/domain";
+import * as z from "zod";
+import { idSchema } from "../pagination.js";
 import { EventVisibilityType } from "./eventOutput.js";
 
 export const eventNameSchema = z
@@ -14,17 +14,18 @@ export const eventNameSchema = z
   .min(1)
   .max(EVENT_NAME_MAX_LENGTH);
 
+/**
+ * Discord's cap is the upper bound of the schema. The use cases also check the
+ * smaller limit that leaves room for the sign-up note of the Discord event
+ * (see `requireDescriptionFitsDiscord()`).
+ */
 export const eventDescriptionSchema = z
   .string()
   .trim()
-  .max(EVENT_DESCRIPTION_MAX_LENGTH)
+  .max(DISCORD_EVENT_DESCRIPTION_MAX_LENGTH)
   .nullable()
-  .describe("Plain text. Null or an empty text means no description.");
-
-export const eventDateTimeSchema = z.iso
-  .datetime({ offset: true })
   .describe(
-    "ISO 8601 with a time zone offset, for example 2026-10-24T20:00:00+02:00.",
+    "Plain text. Together with the sign-up note that SAM adds to the Discord event (about 100 characters), it must fit into 1000 characters. Null or an empty text means no description.",
   );
 
 export const eventVisibilitySchema = z

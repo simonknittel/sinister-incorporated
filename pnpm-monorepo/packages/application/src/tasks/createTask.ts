@@ -4,10 +4,15 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { DATE_TIME_INPUT_DESCRIPTION } from "../dateTime.js";
+import { ValidationError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { withSpan } from "../withSpan.js";
-import { findTaskOutputs, type GetTaskOutput } from "./taskDetails.js";
+import { findTaskOutput, type GetTaskOutput } from "./taskDetails.js";
+import { TaskErrorMessage } from "./taskErrors.js";
 import {
+  requireActiveAssignees,
+  requireVisibleRoles,
   TASK_REWARD_TYPE_BY_KIND,
   TASK_VISIBILITY_BY_KIND,
   taskFieldSchemas,
@@ -39,7 +44,7 @@ export const createTaskInputSchema = z.object({
   expires_at: taskFieldSchemas.expires_at
     .optional()
     .describe(
-      "When the task expires: ISO 8601 with a time zone offset, for example 2026-12-31T23:59:00+01:00. Without it, the task never expires.",
+      `When the task expires. ${DATE_TIME_INPUT_DESCRIPTION} Without it, the task never expires.`,
     ),
   repeatable: taskFieldSchemas.repeatable.default(1),
   assignment_limit: taskFieldSchemas.assignment_limit.default(null),
@@ -49,7 +54,7 @@ export const createTaskInputSchema = z.object({
   assignee_ids: taskFieldSchemas.assignee_ids
     .default([])
     .describe(
-      "Only for group and personalized: the ids of the citizens of the task.",
+      "Only for group and personalized: the citizens of the task, from a Spynet tool.",
     ),
   can_self_complete: z
     .boolean()
@@ -62,13 +67,18 @@ export const createTaskInputSchema = z.object({
 export type CreateTaskInput = z.infer<typeof createTaskInputSchema>;
 
 export interface CreateTaskOutput {
-  /** One task, or one task for each assignee of a personalized task */
-  readonly tasks: GetTaskOutput[];
   /**
    * False when the tasks are saved, but the notifications failed. The tasks
    * stand, thus the caller must not create them again.
    */
   readonly notifications_sent: boolean;
+  /**
+   * The new task. A personalized task becomes one task for each assignee:
+   * this is the first of them.
+   */
+  readonly task: GetTaskOutput;
+  /** The ids of all new tasks */
+  readonly task_ids: string[];
 }
 
 /** Only the value column of the reward type is set (see the reward CHECK) */
@@ -98,7 +108,7 @@ const createTaskRows = async (
     title: input.title,
     description: input.description,
     createdById,
-    expiresAt: input.expires_at ? new Date(input.expires_at) : undefined,
+    expiresAt: input.expires_at,
     ...getRewardColumns(input.reward),
     repeatable: input.repeatable,
   } satisfies Prisma.TaskUncheckedCreateInput;
@@ -189,6 +199,17 @@ export const createTask = (
         { key: "taskRewardType", value: TaskRewardType.NEW_SILC },
       ]);
 
+    // Each visibility stores only its own list (see `createTaskRows()`)
+    if (visibility === TaskVisibility.PUBLIC)
+      await requireVisibleRoles(context, actor, input.required_role_ids);
+    else await requireActiveAssignees(context, input.assignee_ids);
+    // Without an assignee, a personalized task would become no task
+    if (
+      visibility === TaskVisibility.PERSONALIZED &&
+      input.assignee_ids.length <= 0
+    )
+      throw new ValidationError(TaskErrorMessage.NoAssignee);
+
     const taskIds = await createTaskRows(context, input, creator.id);
 
     await context.audit.create([
@@ -203,8 +224,12 @@ export const createTask = (
       { type: "TaskCreated", payload: { taskIds } },
     ]);
 
+    const [firstTaskId] = taskIds;
+    if (!firstTaskId) throw new Error("The creation of a task created no row");
+
     return {
-      tasks: await findTaskOutputs(context, actor, taskIds),
       notifications_sent: notificationsSent,
+      task: await findTaskOutput(context, actor, firstTaskId),
+      task_ids: taskIds,
     };
   });

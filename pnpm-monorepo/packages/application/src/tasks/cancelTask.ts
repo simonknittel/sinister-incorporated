@@ -4,7 +4,7 @@ import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
 import { taskIdSchema } from "./getTask.js";
-import { findTaskOutput, type TaskWriteOutput } from "./taskDetails.js";
+import { findTaskOutput, type GetTaskOutput } from "./taskDetails.js";
 import { requireManageableTask } from "./taskGuards.js";
 
 export const cancelTaskInputSchema = z.object({
@@ -21,7 +21,7 @@ export const cancelTask = (
   context: ApplicationContext,
   actor: Actor,
   input: CancelTaskInput,
-): Promise<TaskWriteOutput> =>
+): Promise<GetTaskOutput> =>
   withSpan(context, "cancelTask", async () => {
     const citizen = requireCitizen(actor);
     const task = await requireManageableTask(context, actor, input.task_id);
@@ -39,5 +39,5 @@ export const cancelTask = (
       },
     ]);
 
-    return { task: await findTaskOutput(context, actor, task.id) };
+    return findTaskOutput(context, actor, task.id);
   });

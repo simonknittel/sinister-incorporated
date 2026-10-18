@@ -1,6 +1,12 @@
 import { TaskRewardType, TaskVisibility } from "@sam-monorepo/database/browser";
 import type { Prisma } from "@sam-monorepo/database/client";
-import { AuditEventType, lockSilcLedger } from "@sam-monorepo/domain";
+import {
+  AuditEventType,
+  createSilcTransactionsInTransaction,
+  lockSilcLedger,
+  TASK_MAX_CITIZENS,
+  type NewSilcTransaction,
+} from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
@@ -9,11 +15,7 @@ import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { taskIdSchema } from "./getTask.js";
-import {
-  areActiveReceivers,
-  createSilcTransactionsInTransaction,
-  type NewSilcTransaction,
-} from "./silcLedger.js";
+import { areActiveReceivers } from "./silcLedger.js";
 import {
   findTaskOutput,
   type NotifyingTaskWriteOutput,
@@ -27,8 +29,7 @@ export const completeTaskInputSchema = z.object({
   task_id: taskIdSchema,
   completionist_ids: z
     .array(idSchema)
-    // Arbitrary (untested) limit to prevent a denial of service
-    .max(250)
+    .max(TASK_MAX_CITIZENS)
     .describe(
       "The ids of the citizens who completed the task and get the reward, for example the assignees from get_task.",
     ),

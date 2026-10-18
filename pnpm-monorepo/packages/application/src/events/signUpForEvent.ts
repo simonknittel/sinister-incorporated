@@ -1,7 +1,8 @@
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { ConflictError } from "../errors.js";
 import { withSpan } from "../withSpan.js";
-import { EventConflict, EventConflictError } from "./eventErrors.js";
+import { EventErrorMessage } from "./eventErrors.js";
 import { loadEventOutput, type GetEventOutput } from "./getEvent.js";
 import {
   findActiveParticipation,
@@ -12,8 +13,8 @@ import {
 import { requireOpenParticipatableAppEvent } from "./participatableAppEvent.js";
 
 const isAlreadySignedUp = (error: unknown) =>
-  error instanceof EventConflictError &&
-  error.conflict === EventConflict.AlreadySignedUp;
+  error instanceof ConflictError &&
+  error.message === String(EventErrorMessage.AlreadySignedUp);
 
 /**
  * Signs the user up for an app event, or updates the comment of the existing
@@ -62,7 +63,7 @@ export const signUpForEvent = (
           citizenId,
         );
         if (!participant)
-          throw new EventConflictError(EventConflict.NotSignedUp);
+          throw new ConflictError(EventErrorMessage.NotSignedUp);
       }
     }
 

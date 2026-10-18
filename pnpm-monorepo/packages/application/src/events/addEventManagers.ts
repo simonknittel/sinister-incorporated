@@ -1,22 +1,23 @@
 import { EventActivityType } from "@sam-monorepo/database/browser";
-import { AuditEventType } from "@sam-monorepo/domain";
+import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
+import {
+  AuditEventType,
+  EVENT_MAX_CITIZENS_PER_REQUEST,
+} from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
+import { NotFoundError, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { createEventActivity } from "./eventActivity.js";
-import { EVENT_MAX_CITIZENS_PER_REQUEST } from "./eventConstraints.js";
-import { EventValidationError, EventValidationProblem } from "./eventErrors.js";
+import { EventErrorMessage } from "./eventErrors.js";
 import {
   requireManageableEvent,
   VISIBLE_EVENT_MANAGE_GUARD_SELECT,
 } from "./eventManageGuard.js";
 import { isAllowedToManageEvent } from "./eventManageRules.js";
-import { canActorSeeEvent } from "./eventVisibility.js";
 import { loadEventOutput, type GetEventOutput } from "./getEvent.js";
-import { isPrismaError, PrismaErrorCode } from "./prismaErrors.js";
 
 export const addEventManagersInputSchema = z.object({
   event_id: idSchema,
@@ -47,8 +48,7 @@ export const addEventManagers = (
       },
       select: VISIBLE_EVENT_MANAGE_GUARD_SELECT,
     });
-    if (!event || !canActorSeeEvent(actor, event))
-      throw new NotFoundError("The event does not exist");
+    if (!event) throw new NotFoundError(EventErrorMessage.NotFound);
     requireManageableEvent(context, actor, event, isAllowedToManageEvent);
 
     const actingManagerId = actor.citizen?.id ?? null;
@@ -94,7 +94,7 @@ export const addEventManagers = (
     } catch (error) {
       // A `connect` to a citizen that does not exist
       if (isPrismaError(error, PrismaErrorCode.RecordNotFound))
-        throw new EventValidationError(EventValidationProblem.UnknownCitizen);
+        throw new ValidationError(EventErrorMessage.UnknownCitizen);
       throw error;
     }
 

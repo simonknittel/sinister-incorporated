@@ -8,12 +8,17 @@ import {
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import {
+  DATE_TIME_INPUT_DESCRIPTION,
+  dateTimeInputSchema,
+} from "../dateTime.js";
+import { ValidationError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { withSpan } from "../withSpan.js";
 import { createEventActivity } from "./eventActivity.js";
-import { EventValidationError, EventValidationProblem } from "./eventErrors.js";
+import { requireDescriptionFitsDiscord } from "./eventDescription.js";
+import { EventErrorMessage } from "./eventErrors.js";
 import {
-  eventDateTimeSchema,
   eventDescriptionSchema,
   eventNameSchema,
   eventVisibilitySchema,
@@ -29,9 +34,9 @@ const TRANSACTION_TIMEOUT_MS = 30_000;
 export const createEventInputSchema = z.object({
   name: eventNameSchema,
   description: eventDescriptionSchema.optional(),
-  start_time: eventDateTimeSchema,
-  end_time: eventDateTimeSchema.describe(
-    "After start_time. ISO 8601 with a time zone offset.",
+  start_time: dateTimeInputSchema,
+  end_time: dateTimeInputSchema.describe(
+    `After start_time. ${DATE_TIME_INPUT_DESCRIPTION}`,
   ),
   visibility: eventVisibilitySchema,
   visibility_role_ids: visibilityRoleIdsSchema.optional(),
@@ -113,7 +118,7 @@ const requireOwnCoverImage = async (
     coverImage.createdById === citizenId &&
     coverImage.mimeType.startsWith("image/");
   if (!isOwnImageUpload)
-    throw new EventValidationError(EventValidationProblem.InvalidCoverImage);
+    throw new ValidationError(EventErrorMessage.InvalidCoverImage);
 };
 
 /**
@@ -130,14 +135,16 @@ export const createEvent = (
     requirePermission(actor, "event", "create");
     const citizenId = requireCitizen(actor).id;
 
-    const startTime = new Date(input.start_time);
-    const endTime = new Date(input.end_time);
+    const startTime = input.start_time;
+    const endTime = input.end_time;
     if (endTime <= startTime)
-      throw new EventValidationError(EventValidationProblem.EndBeforeStart);
+      throw new ValidationError(EventErrorMessage.EndBeforeStart);
+    requireDescriptionFitsDiscord(context, input.description);
 
     const visibility = toEventVisibility(input.visibility);
     const visibilityRoleIds = await resolveVisibilityRoleIds(
       context,
+      actor,
       visibility,
       input.visibility_role_ids ?? [],
     );

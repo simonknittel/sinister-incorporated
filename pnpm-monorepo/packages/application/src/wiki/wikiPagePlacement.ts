@@ -37,6 +37,20 @@ export const resolveWikiPagePlacement = (
   return WikiPagePlacement.Allowed;
 };
 
+/**
+ * Whether the actor can add a page below the page: the rule of
+ * `requireWikiPagePlacement()` for a parent
+ *
+ * @param frozen True for the briefing of an event that is over
+ */
+export const canAddWikiChildren = (
+  context: WikiPagePlacementContext,
+  pageId: string,
+  frozen: boolean,
+) =>
+  !frozen &&
+  resolveWikiPagePlacement(context, pageId) === WikiPagePlacement.Allowed;
+
 /** A page of the scope as the creation of a page below it needs it */
 export interface WikiPlacementPage {
   readonly id: string;

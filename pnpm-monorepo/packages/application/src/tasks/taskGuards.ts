@@ -1,12 +1,7 @@
 import { TaskVisibility } from "@sam-monorepo/database/browser";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import {
-  ConflictError,
-  ForbiddenError,
-  NotFoundError,
-  ValidationError,
-} from "../errors.js";
+import { ConflictError, ForbiddenError, ValidationError } from "../errors.js";
 import { findVisibleTask } from "./getTask.js";
 import type { VisibleTask } from "./taskDetails.js";
 import { TaskErrorMessage } from "./taskErrors.js";
@@ -23,7 +18,6 @@ export const requireOpenTask = async (
   taskId: string,
 ): Promise<VisibleTask> => {
   const task = await findVisibleTask(context, actor, taskId);
-  if (!task) throw new NotFoundError(TaskErrorMessage.NotFound);
   if (!isTaskUpdatable(task, context.now()))
     throw new ConflictError(TaskErrorMessage.NotOpen);
 

@@ -1,14 +1,14 @@
+import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
 import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ConflictError } from "../errors.js";
 import { isAllowedToManagePositions } from "../events/eventManageRules.js";
-import { isPrismaError, PrismaErrorCode } from "../events/prismaErrors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { LineupErrorMessage } from "./lineupErrors.js";
-import { requireUpdatableEventPosition } from "./lineupGuards.js";
+import { requireApplicableEventPosition } from "./lineupGuards.js";
 import { toLineupPositionOutput, type LineupPosition } from "./lineupOutput.js";
 
 export const applyForEventPositionInputSchema = z.object({
@@ -58,7 +58,8 @@ const requireOwnParticipation = async (
 /**
  * Applies the own citizen for a position of an event in which the citizen
  * participates. A manager of the positions confirms the application with the
- * assignment.
+ * assignment. A repeated application changes nothing and gives the position
+ * like the first one.
  */
 export const applyForEventPosition = (
   context: ApplicationContext,
@@ -67,8 +68,9 @@ export const applyForEventPosition = (
 ): Promise<LineupPosition> =>
   withSpan(context, "applyForEventPosition", async () => {
     const citizen = requireCitizen(actor);
-    const position = await requireUpdatableEventPosition(
+    const position = await requireApplicableEventPosition(
       context,
+      actor,
       input.position_id,
     );
     await requireOwnParticipation(
@@ -87,26 +89,25 @@ export const applyForEventPosition = (
         select: { id: true },
       })
       .catch((error: unknown) => {
-        // The unique index found the application of a different tab
+        // The unique index found the application of a different tab or call
         if (isPrismaError(error, PrismaErrorCode.UniqueConstraintFailed))
-          throw new ConflictError(LineupErrorMessage.AlreadyApplied, {
-            cause: error,
-          });
+          return null;
         throw error;
       });
 
-    await context.audit.create([
-      {
-        type: AuditEventType.EVENT_POSITION_APPLICATION_CREATED,
-        data: {
-          eventId: position.event.id,
-          positionId: position.id,
-          citizenId: citizen.id,
-          applicationId: application.id,
+    if (application)
+      await context.audit.create([
+        {
+          type: AuditEventType.EVENT_POSITION_APPLICATION_CREATED,
+          data: {
+            eventId: position.event.id,
+            positionId: position.id,
+            citizenId: citizen.id,
+            applicationId: application.id,
+          },
+          createdById: actor.userId,
         },
-        createdById: actor.userId,
-      },
-    ]);
+      ]);
 
     return toLineupPositionOutput(
       context,

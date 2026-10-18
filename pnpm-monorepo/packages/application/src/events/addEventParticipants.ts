@@ -1,15 +1,18 @@
 import { EventActivityType, EventSource } from "@sam-monorepo/database/browser";
-import { AuditEventType } from "@sam-monorepo/domain";
+import {
+  AuditEventType,
+  EVENT_MAX_CITIZENS_PER_REQUEST,
+} from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { ValidationError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { findAddableParticipantIds } from "./addableParticipants.js";
 import { createEventActivity } from "./eventActivity.js";
-import { EVENT_MAX_CITIZENS_PER_REQUEST } from "./eventConstraints.js";
-import { EventValidationError, EventValidationProblem } from "./eventErrors.js";
+import { EventErrorMessage } from "./eventErrors.js";
 import { participationTextSchema } from "./eventInputSchemas.js";
 import { requireManageableEvent } from "./eventManageGuard.js";
 import { isAllowedToManageEvent } from "./eventManageRules.js";
@@ -75,7 +78,7 @@ export const addEventParticipants = (
      */
     const requestedCitizenIds = Array.from(new Set(input.citizen_ids));
     if (requestedCitizenIds.length <= 0)
-      throw new EventValidationError(EventValidationProblem.NoCitizenSelected);
+      throw new ValidationError(EventErrorMessage.NoCitizenSelected);
 
     const [addableCitizenIds, activeParticipants] = await Promise.all([
       findAddableParticipantIds(context.prisma, event, requestedCitizenIds),
@@ -98,9 +101,7 @@ export const addEventParticipants = (
       (citizenId) => !addable.has(citizenId) && !alreadyActive.has(citizenId),
     );
     if (unknownCitizenId)
-      throw new EventValidationError(
-        EventValidationProblem.CitizenCannotSeeEvent,
-      );
+      throw new ValidationError(EventErrorMessage.CitizenCannotSeeEvent);
 
     const citizenIdsToAdd = requestedCitizenIds.filter(
       (citizenId) => !alreadyActive.has(citizenId),

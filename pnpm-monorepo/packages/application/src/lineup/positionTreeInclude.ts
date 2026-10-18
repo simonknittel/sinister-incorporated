@@ -55,8 +55,9 @@ const CHILDREN_ORDER = { order: "asc" } as const;
 
 /**
  * The nested lineup as the editor renders it, four levels deep — the depth
- * `MAX_LINEUP_DEPTH` documents. Shared by the event lineup and the lineup of
- * a template blueprint, which store their positions in the same table.
+ * `LINEUP_MAX_DEPTH` of the domain package. Shared by the event lineup and
+ * the lineup of a template blueprint, which store their positions in the same
+ * table.
  */
 export const POSITION_TREE_INCLUDE = {
   ...POSITION_INCLUDE,

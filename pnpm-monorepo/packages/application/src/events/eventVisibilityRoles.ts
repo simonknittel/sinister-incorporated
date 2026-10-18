@@ -1,29 +1,45 @@
 import { EventVisibility } from "@sam-monorepo/database/browser";
+import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { EventValidationError, EventValidationProblem } from "./eventErrors.js";
+import { ValidationError } from "../errors.js";
+import { isRoleVisible } from "../roles/roleVisibility.js";
+import { EventErrorMessage } from "./eventErrors.js";
 
 /**
  * The visibility roles that an event write stores: the roles of a restricted
- * event (at least one, and each must exist), none for a public event
+ * event (at least one, and each must exist), none for a public event. A role
+ * that the event does not have yet must be visible for the actor, like in the
+ * role picker of the form.
+ *
+ * @param previousRoleIds The visibility roles that the event has now
  */
 export const resolveVisibilityRoleIds = async (
   context: ApplicationContext,
+  actor: Actor,
   visibility: EventVisibility,
   roleIds: readonly string[],
+  previousRoleIds: readonly string[] = [],
 ): Promise<string[]> => {
   if (visibility !== EventVisibility.RESTRICTED) return [];
 
   const uniqueRoleIds = Array.from(new Set(roleIds));
   if (uniqueRoleIds.length <= 0)
-    throw new EventValidationError(EventValidationProblem.NoVisibilityRole);
+    throw new ValidationError(EventErrorMessage.NoVisibilityRole);
+
+  const previousRoleIdSet = new Set(previousRoleIds);
+  if (
+    uniqueRoleIds.some(
+      (roleId) =>
+        !previousRoleIdSet.has(roleId) && !isRoleVisible(actor, roleId),
+    )
+  )
+    throw new ValidationError(EventErrorMessage.UnknownVisibilityRole);
 
   const existingRoleCount = await context.prisma.role.count({
     where: { id: { in: uniqueRoleIds } },
   });
   if (existingRoleCount !== uniqueRoleIds.length)
-    throw new EventValidationError(
-      EventValidationProblem.UnknownVisibilityRole,
-    );
+    throw new ValidationError(EventErrorMessage.UnknownVisibilityRole);
 
   return uniqueRoleIds;
 };

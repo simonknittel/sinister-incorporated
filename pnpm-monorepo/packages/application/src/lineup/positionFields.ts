@@ -3,10 +3,21 @@ import { idSchema } from "../pagination.js";
 
 /** The text size of the name of a position in the lineup */
 export enum PositionFontSize {
-  /** The value of the form of the app for the normal size */
-  Normal = "",
+  Normal = "normal",
   Large = "large",
 }
+
+/**
+ * The value of the database column: `large`, or null for the normal size.
+ * Undefined keeps the stored value.
+ */
+export const toStoredFontSize = (
+  fontSize: PositionFontSize | null | undefined,
+): string | null | undefined => {
+  if (fontSize === undefined) return undefined;
+
+  return fontSize === PositionFontSize.Large ? PositionFontSize.Large : null;
+};
 
 /**
  * The lineup form adds the required ship variants one at a time, thus a real
@@ -21,13 +32,15 @@ const MAXIMUM_POSITION_DESCRIPTION_LENGTH = 512;
 /**
  * The color input of the app sends `#rrggbb`. The lineup puts the value into
  * the inline style of the position, thus a different value could add CSS
- * declarations.
+ * declarations. Without the flag `i`: the JSON Schema of the MCP tools has
+ * no flags.
  */
-const positionColorSchema = z.string().regex(/^#[0-9a-f]{6}$/i);
+const positionColorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/);
 
 const positionNameSchema = z
   .string()
   .trim()
+  .min(1)
   .max(MAXIMUM_POSITION_NAME_LENGTH)
   .describe("The name of the position, for example a role on a ship.");
 
@@ -48,9 +61,7 @@ const positionFormatSchemas = {
   font_size: z
     .enum(PositionFontSize)
     .nullish()
-    .describe(
-      'The text size of the name: "large", or the normal size ("" or null).',
-    ),
+    .describe("The text size of the name. Null resets it to normal."),
   background_color: positionColorSchema
     .nullish()
     .describe("A color as #rrggbb, or null for the default color."),

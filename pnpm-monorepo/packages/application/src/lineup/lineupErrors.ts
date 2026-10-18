@@ -1,16 +1,36 @@
+import {
+  LINEUP_MAX_DEPTH,
+  LINEUP_MAX_POSITIONS,
+  LINEUP_MAX_POSITIONS_PER_LEVEL,
+} from "@sam-monorepo/domain";
+
 /**
  * The messages of the typed errors of the lineup. They are the members of an
- * enum, thus the app can show its own text for each of them.
+ * enum, thus the app can show its own text for each of them. The guards of
+ * the event give the messages of the events (`EventErrorMessage`).
  */
 export enum LineupErrorMessage {
-  EventNotFound = "The event does not exist",
+  /** A `NotFoundError` */
   PositionNotFound = "The position does not exist",
-  EventEnded = "The event has ended, thus its lineup cannot change",
+  /** A `ConflictError`: usually a position that a different tab deleted */
   LineupChanged = "A position of the order is not in the lineup",
-  LineupTooDeep = "The lineup has at most four levels",
+  /** A `ValidationError` */
+  LineupTooDeep = `The lineup has at most ${LINEUP_MAX_DEPTH} levels`,
+  /** A `ConflictError` */
+  TooManyPositionsOnLevel = `A level of the lineup has at most ${LINEUP_MAX_POSITIONS_PER_LEVEL} positions`,
+  /** A `ConflictError` */
+  TooManyPositions = `The lineup has at most ${LINEUP_MAX_POSITIONS} positions`,
+  /** A `ValidationError` */
   VariantNotFound = "A ship variant does not exist",
+  /** A `ValidationError` */
   CitizenNotFound = "The citizen does not exist",
+  /**
+   * A `ConflictError`: the citizen of an assignment must participate in the
+   * event or apply for the position, usually a participation that ended
+   */
+  CitizenNotParticipating = "The citizen does not participate in the event and did not apply for the position",
+  /** A `ConflictError` */
   NotParticipating = "The user does not participate in the event",
-  AlreadyApplied = "The user already applied for the position",
+  /** A `ConflictError` */
   NotApplied = "The user did not apply for the position",
 }

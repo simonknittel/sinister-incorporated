@@ -3,8 +3,20 @@ import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { pageLimitSchema } from "../pagination.js";
+import { isRoleVisible } from "../roles/roleVisibility.js";
 import { withSpan } from "../withSpan.js";
-import { getVisibleAssignedRoleIds } from "./visibleRoles.js";
+
+/**
+ * The roles of a citizen that the actor can see. The level of an assignment
+ * does not matter, like on the role badges of the app.
+ */
+const getVisibleRoleIds = (
+  actor: Actor,
+  roleAssignments: readonly { readonly roleId: string }[],
+) =>
+  roleAssignments
+    .map((roleAssignment) => roleAssignment.roleId)
+    .filter((roleId) => isRoleVisible(actor, roleId));
 
 export enum CitizenUnknownAttribute {
   Handle = "handle",
@@ -213,8 +225,8 @@ export const listCitizens = async (
         (row) =>
           hasUnknownAttribute(row, unknownAttributes) &&
           (input.role_ids.length === 0 ||
-            getVisibleAssignedRoleIds(actor, row.roleAssignments).some(
-              (roleId) => input.role_ids.includes(roleId),
+            getVisibleRoleIds(actor, row.roleAssignments).some((roleId) =>
+              input.role_ids.includes(roleId),
             )),
       )
       .toSorted(compareRows(sort));
@@ -230,7 +242,7 @@ export const listCitizens = async (
         teamspeak_id: canReadTeamspeakId ? row.teamspeakId : null,
         created_at: row.createdAt.toISOString(),
         last_seen_at: row.lastSeenAt?.toISOString() ?? null,
-        role_ids: getVisibleAssignedRoleIds(actor, row.roleAssignments),
+        role_ids: getVisibleRoleIds(actor, row.roleAssignments),
       })),
       total: sortedRows.length,
       page: input.page,

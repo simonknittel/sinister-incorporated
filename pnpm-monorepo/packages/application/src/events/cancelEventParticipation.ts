@@ -3,11 +3,12 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { ConflictError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { cancelParticipation } from "./cancelParticipation.js";
 import { createEventActivity } from "./eventActivity.js";
-import { EventConflict, EventConflictError } from "./eventErrors.js";
+import { EventErrorMessage } from "./eventErrors.js";
 import { loadEventOutput, type GetEventOutput } from "./getEvent.js";
 import { findActiveParticipation } from "./ownParticipation.js";
 import { requireOpenParticipatableAppEvent } from "./participatableAppEvent.js";
@@ -72,7 +73,7 @@ export const cancelEventParticipation = (
      * A different tab, a parallel request or a manager cancelled the
      * participation before
      */
-    if (!isCancelled) throw new EventConflictError(EventConflict.NotSignedUp);
+    if (!isCancelled) throw new ConflictError(EventErrorMessage.NotSignedUp);
 
     await context.audit.create([
       {

@@ -25,10 +25,7 @@ export {
   type GetEventLineupInput,
 } from "./getEventLineup.js";
 export { LineupErrorMessage } from "./lineupErrors.js";
-export {
-  requireManageableEventLineup,
-  type ManageableEventLineupOptions,
-} from "./lineupGuards.js";
+export { requireManageableEventLineup } from "./lineupGuards.js";
 export {
   lineupOrderSchema,
   writeLineupOrder,
@@ -50,9 +47,7 @@ export {
   type UpdatedLineupPosition,
 } from "./lineupWrites.js";
 export {
-  PositionFontSize,
   newPositionFieldsSchema,
-  positionChangeSchema,
   type NewPositionFields,
   type PositionChange,
 } from "./positionFields.js";

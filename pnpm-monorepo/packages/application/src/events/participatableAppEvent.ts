@@ -2,8 +2,9 @@ import { EventSource } from "@sam-monorepo/database/browser";
 import type { Event } from "@sam-monorepo/database/client";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
-import { EventConflict, EventConflictError } from "./eventErrors.js";
+import { ConflictError, NotFoundError } from "../errors.js";
+import { EventErrorMessage } from "./eventErrors.js";
+import { VISIBLE_EVENT_MANAGE_GUARD_SELECT } from "./eventManageGuard.js";
 import { canActorSeeEvent } from "./eventVisibility.js";
 
 /**
@@ -22,17 +23,7 @@ export const findParticipatableAppEvent = async (
       source: EventSource.APP,
       deletedAt: null,
     },
-    select: {
-      id: true,
-      visibility: true,
-      createdById: true,
-      deletedAt: true,
-      discordCreatorId: true,
-      startTime: true,
-      endTime: true,
-      visibilityRoles: { select: { roleId: true } },
-      managers: { select: { id: true } },
-    },
+    select: VISIBLE_EVENT_MANAGE_GUARD_SELECT,
   });
   if (!event || !canActorSeeEvent(actor, event)) return null;
 
@@ -46,7 +37,7 @@ export const requireParticipatableAppEvent = async (
   eventId: string,
 ) => {
   const event = await findParticipatableAppEvent(context, actor, eventId);
-  if (!event) throw new NotFoundError("The event does not exist");
+  if (!event) throw new NotFoundError(EventErrorMessage.NotFound);
 
   return event;
 };
@@ -73,7 +64,7 @@ export const requireOpenParticipatableAppEvent = async (
 ) => {
   const event = await requireParticipatableAppEvent(context, actor, eventId);
   if (!isParticipationOpen(event, context.now()))
-    throw new EventConflictError(EventConflict.ParticipationClosed);
+    throw new ConflictError(EventErrorMessage.ParticipationClosed);
 
   return event;
 };

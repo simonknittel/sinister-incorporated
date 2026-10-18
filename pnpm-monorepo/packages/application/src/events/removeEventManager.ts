@@ -3,17 +3,16 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
+import { ConflictError, NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { createEventActivity } from "./eventActivity.js";
-import { EventConflict, EventConflictError } from "./eventErrors.js";
+import { EventErrorMessage } from "./eventErrors.js";
 import {
   requireManageableEvent,
   VISIBLE_EVENT_MANAGE_GUARD_SELECT,
 } from "./eventManageGuard.js";
 import { isAllowedToManageEvent } from "./eventManageRules.js";
-import { canActorSeeEvent } from "./eventVisibility.js";
 import { loadEventOutput, type GetEventOutput } from "./getEvent.js";
 
 export const removeEventManagerInputSchema = z.object({
@@ -45,8 +44,7 @@ export const removeEventManager = (
       },
       select: VISIBLE_EVENT_MANAGE_GUARD_SELECT,
     });
-    if (!event || !canActorSeeEvent(actor, event))
-      throw new NotFoundError("The event does not exist");
+    if (!event) throw new NotFoundError(EventErrorMessage.NotFound);
     requireManageableEvent(context, actor, event, isAllowedToManageEvent);
 
     const actingManagerId = actor.citizen?.id ?? null;
@@ -60,7 +58,7 @@ export const removeEventManager = (
       (manager) => manager.id === input.citizen_id,
     );
     if (!isManager)
-      throw new EventConflictError(EventConflict.CitizenNotManager);
+      throw new ConflictError(EventErrorMessage.CitizenNotManager);
 
     /**
      * Delete manager. One transaction, so the activity entry cannot get lost

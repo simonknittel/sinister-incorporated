@@ -35,13 +35,11 @@ export {
   type DeleteEventOptions,
   type DeleteEventOutput,
 } from "./deleteEvent.js";
+export { EventErrorMessage } from "./eventErrors.js";
 export {
-  EventConflict,
-  EventConflictError,
-  EventValidationError,
-  EventValidationProblem,
-} from "./eventErrors.js";
-export { EVENT_MANAGE_GUARD_SELECT } from "./eventManageGuard.js";
+  EVENT_MANAGE_GUARD_SELECT,
+  type ManageableEventOptions,
+} from "./eventManageGuard.js";
 export {
   isAllowedToManageEvent,
   isAllowedToManagePositions,

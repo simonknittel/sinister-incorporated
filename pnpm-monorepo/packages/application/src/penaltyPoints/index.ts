@@ -1,5 +1,6 @@
 /** The use cases of the penalty points */
 export {
+  PenaltyEntryErrorMessage,
   createPenaltyEntry,
   createPenaltyEntryInputSchema,
   type CreatePenaltyEntryOutput,

@@ -14,7 +14,11 @@ import {
   paginateByCursor,
 } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
-import { loadReadableWikiScope } from "./readableWikiScope.js";
+import {
+  loadReadableWikiScope,
+  ReadableWikiScopeKind,
+} from "./readableWikiScope.js";
+import { canAddWikiChildren } from "./wikiPagePlacement.js";
 
 export const listWikiPagesInputSchema = z.object({
   event_id: idSchema
@@ -40,6 +44,8 @@ export interface WikiPageListItem {
   readonly depth: number;
   /** The number of readable subpages */
   readonly child_count: number;
+  /** Whether the user can add a page below this page (`create_wiki_page`) */
+  readonly can_add_children: boolean;
 }
 
 export interface ListWikiPagesOutput {
@@ -98,6 +104,9 @@ export const listWikiPages = (
       scope.context.permissions,
     );
 
+    const frozen =
+      scope.kind === ReadableWikiScopeKind.Event && scope.context.frozen;
+
     let topNodes = tree;
     if (input.parent_id !== undefined) {
       const parent = findWikiTreeNode(tree, input.parent_id);
@@ -124,6 +133,7 @@ export const listWikiPages = (
         parent_id: parentId,
         depth,
         child_count: node.children.length,
+        can_add_children: canAddWikiChildren(scope.context, node.id, frozen),
       })),
       next_cursor: page.nextCursor,
     };

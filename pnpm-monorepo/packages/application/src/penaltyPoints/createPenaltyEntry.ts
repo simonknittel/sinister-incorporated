@@ -2,6 +2,10 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import {
+  DATE_TIME_INPUT_DESCRIPTION,
+  dateTimeInputSchema,
+} from "../dateTime.js";
 import { ConflictError, NotFoundError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
@@ -25,13 +29,21 @@ export const createPenaltyEntryInputSchema = z.object({
     .max(MAXIMUM_REASON_LENGTH)
     .optional()
     .describe("Why the citizen gets the points."),
-  expires_at: z.iso
-    .datetime({ offset: true })
+  expires_at: dateTimeInputSchema
     .optional()
     .describe(
-      "When the points expire: ISO 8601 with a time zone offset, for example 2026-12-31T23:59:00+01:00. Without it, the points never expire.",
+      `When the points expire. ${DATE_TIME_INPUT_DESCRIPTION} Without it, the points never expire.`,
     ),
 });
+
+/**
+ * The messages of the typed errors of the penalty entries that the app shows
+ * with its own text
+ */
+export enum PenaltyEntryErrorMessage {
+  /** A `ConflictError`: usually a citizen that a different user deleted */
+  CitizenDeleted = "The citizen is deleted",
+}
 
 export interface CreatePenaltyEntryOutput {
   readonly entry: PenaltyEntryOutput;
@@ -42,7 +54,10 @@ export interface CreatePenaltyEntryOutput {
   readonly notifications_sent: boolean;
 }
 
-/** Gives penalty points to a citizen and notifies about the new entry */
+/**
+ * Gives penalty points to a citizen and notifies about the new entry. Also
+ * needs `citizen;read`, like the citizen picker of the form.
+ */
 export const createPenaltyEntry = (
   context: ApplicationContext,
   actor: Actor,
@@ -50,6 +65,7 @@ export const createPenaltyEntry = (
 ): Promise<CreatePenaltyEntryOutput> =>
   withSpan(context, "createPenaltyEntry", async () => {
     requirePermission(actor, "penaltyEntry", "create");
+    requirePermission(actor, "citizen", "read");
     const author = requireCitizen(actor);
 
     const citizen = await context.prisma.citizen.findUnique({
@@ -57,9 +73,10 @@ export const createPenaltyEntry = (
       select: { deletedAt: true },
     });
     if (!citizen) throw new NotFoundError("The citizen does not exist");
-    if (citizen.deletedAt) throw new ConflictError("The citizen is deleted");
+    if (citizen.deletedAt)
+      throw new ConflictError(PenaltyEntryErrorMessage.CitizenDeleted);
 
-    const expiresAt = input.expires_at ? new Date(input.expires_at) : null;
+    const expiresAt = input.expires_at ?? null;
 
     const entry = await context.prisma.penaltyEntry.create({
       data: {

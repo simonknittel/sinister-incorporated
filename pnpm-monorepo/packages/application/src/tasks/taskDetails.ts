@@ -6,6 +6,7 @@ import {
 } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { buildUnreadWhere } from "../readMarkers/unreadWhere.js";
+import { isRoleVisible } from "../roles/roleVisibility.js";
 import { findNewTaskIds } from "./findNewTaskIds.js";
 import { TASK_DETAILS_INCLUDE, type TaskDetailsRow } from "./taskListSelect.js";
 import { toTaskListItem, type TaskListItem } from "./taskOutput.js";
@@ -39,14 +40,10 @@ export interface GetTaskOutput extends TaskListItem {
   readonly assignment_limit: number | null;
 }
 
-/** The output of a write of one task */
-export interface TaskWriteOutput {
+/** The output of a write of one task that notifies other members */
+export interface NotifyingTaskWriteOutput {
   /** The task after the write */
   readonly task: GetTaskOutput;
-}
-
-/** The output of a write of one task that notifies other members */
-export interface NotifyingTaskWriteOutput extends TaskWriteOutput {
   /**
    * False when the change is saved, but the notifications failed. The change
    * stands, thus the caller must not send it again. True also when the
@@ -83,7 +80,7 @@ const findReadableRoles = async (
   roleIds: ReadonlySet<string>,
 ): Promise<TaskRoleReference[]> => {
   const readableRoleIds = [...roleIds].filter((roleId) =>
-    actor.authorize("otherRole", "read", [{ key: "roleId", value: roleId }]),
+    isRoleVisible(actor, roleId),
   );
   if (readableRoleIds.length <= 0) return [];
 
@@ -142,39 +139,21 @@ export const toTaskOutputs = async (
 };
 
 /**
- * The output of the tasks after a write, in the order of the ids. The write
- * checked the access before, thus this function does not check it again.
+ * The output of a task after a write. The write checked the access before,
+ * thus this function does not check it again.
  */
-export const findTaskOutputs = async (
-  context: ApplicationContext,
-  actor: Actor,
-  taskIds: readonly string[],
-): Promise<GetTaskOutput[]> => {
-  const tasks = await context.prisma.task.findMany({
-    where: { id: { in: [...taskIds] } },
-    include: TASK_DETAILS_INCLUDE,
-  });
-  const tasksById = new Map(tasks.map((task) => [task.id, task]));
-
-  return toTaskOutputs(
-    context,
-    actor,
-    taskIds.map((taskId) => {
-      const task = tasksById.get(taskId);
-      if (!task) throw new Error(`The written task ${taskId} is missing`);
-
-      return toVisibleTask(actor, task);
-    }),
-  );
-};
-
-/** The output of one task after a write (see `findTaskOutputs()`) */
 export const findTaskOutput = async (
   context: ApplicationContext,
   actor: Actor,
   taskId: string,
 ): Promise<GetTaskOutput> => {
-  const [output] = await findTaskOutputs(context, actor, [taskId]);
+  const task = await context.prisma.task.findUniqueOrThrow({
+    where: { id: taskId },
+    include: TASK_DETAILS_INCLUDE,
+  });
+  const [output] = await toTaskOutputs(context, actor, [
+    toVisibleTask(actor, task),
+  ]);
 
   return output!;
 };

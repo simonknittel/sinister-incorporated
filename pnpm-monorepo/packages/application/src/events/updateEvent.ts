@@ -1,21 +1,29 @@
-import { EventActivityType, EventSource } from "@sam-monorepo/database/browser";
+import {
+  EventActivityType,
+  EventSource,
+  EventVisibility,
+} from "@sam-monorepo/database/browser";
 import { AuditEventType, type AuditEventInput } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext, Notification } from "../context.js";
-import { ForbiddenError, NotFoundError } from "../errors.js";
+import {
+  DATE_TIME_INPUT_DESCRIPTION,
+  dateTimeInputSchema,
+} from "../dateTime.js";
+import {
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+  ValidationError,
+} from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { createEventActivity } from "./eventActivity.js";
+import { requireDescriptionFitsDiscord } from "./eventDescription.js";
+import { EventErrorMessage } from "./eventErrors.js";
 import {
-  EventConflict,
-  EventConflictError,
-  EventValidationError,
-  EventValidationProblem,
-} from "./eventErrors.js";
-import {
-  eventDateTimeSchema,
   eventDescriptionSchema,
   eventNameSchema,
   eventVisibilitySchema,
@@ -51,10 +59,10 @@ export const updateEventInputSchema = z.object({
   event_id: idSchema,
   name: eventNameSchema.optional(),
   description: eventDescriptionSchema.optional(),
-  start_time: eventDateTimeSchema.optional(),
-  end_time: eventDateTimeSchema
+  start_time: dateTimeInputSchema.optional(),
+  end_time: dateTimeInputSchema
     .optional()
-    .describe("After the start. ISO 8601 with a time zone offset."),
+    .describe(`After the start. ${DATE_TIME_INPUT_DESCRIPTION}`),
   visibility: eventVisibilitySchema.optional(),
   visibility_role_ids: visibilityRoleIdsSchema
     .optional()
@@ -75,9 +83,11 @@ export type UpdateEventInput = z.infer<typeof updateEventInputSchema>;
 export interface UpdateEventOptions {
   /**
    * True when the caller carries a changed name, description or schedule
-   * over to the Discord event after the use case (only the app can reach
+   * over to the Discord event after the use case, and tells the user that a
+   * restricted event stays visible on Discord (only the app can reach
    * Discord). Without it, such a change of an event that is published on
-   * Discord is refused: else the Discord event would show outdated data.
+   * Discord is refused: else the Discord event would show outdated data, or
+   * the user would not know that the guild still sees the event.
    */
   readonly syncsDiscordPublication?: boolean;
 }
@@ -147,11 +157,11 @@ export const updateEvent = (
       },
     });
     if (!event || !canActorSeeEvent(actor, event))
-      throw new NotFoundError("The event does not exist");
+      throw new NotFoundError(EventErrorMessage.NotFound);
     if (changesDetails && event.source !== EventSource.APP)
-      throw new EventConflictError(EventConflict.DiscordEvent);
+      throw new ConflictError(EventErrorMessage.DiscordEvent);
     if (!isEventUpdatable(event, context.now()))
-      throw new EventConflictError(EventConflict.EventEnded);
+      throw new ConflictError(EventErrorMessage.EventEnded);
     if (changesDetails && !isAllowedToManageEvent(actor, event))
       throw new ForbiddenError("The user cannot manage the event");
     if (changesLineup && !isAllowedToManagePositions(actor, event))
@@ -161,12 +171,11 @@ export const updateEvent = (
     /**
      * Validate the request
      */
-    const startTime = input.start_time
-      ? new Date(input.start_time)
-      : event.startTime;
-    const endTime = input.end_time ? new Date(input.end_time) : event.endTime;
+    const startTime = input.start_time ?? event.startTime;
+    const endTime = input.end_time ?? event.endTime;
     if (changesDetails && (endTime === null || endTime <= startTime))
-      throw new EventValidationError(EventValidationProblem.EndBeforeStart);
+      throw new ValidationError(EventErrorMessage.EndBeforeStart);
+    requireDescriptionFitsDiscord(context, input.description);
 
     const visibility = input.visibility
       ? toEventVisibility(input.visibility)
@@ -177,8 +186,10 @@ export const updateEvent = (
     const visibilityRoleIds = changesDetails
       ? await resolveVisibilityRoleIds(
           context,
+          actor,
           visibility,
           input.visibility_role_ids ?? previousRoleIds,
+          previousRoleIds,
         )
       : previousRoleIds;
 
@@ -223,12 +234,19 @@ export const updateEvent = (
         notifications_sent: true,
       };
 
+    /**
+     * The guild keeps seeing a published event, thus a restricted event
+     * stays visible on Discord
+     */
+    const restrictsVisibility =
+      changes.includes(EventChange.Visibility) &&
+      visibility === EventVisibility.RESTRICTED;
     if (
-      changesContent &&
+      (changesContent || restrictsVisibility) &&
       event.discordPublishedId !== null &&
       !syncsDiscordPublication
     )
-      throw new EventConflictError(EventConflict.PublishedOnDiscord);
+      throw new ConflictError(EventErrorMessage.PublishedOnDiscord);
 
     /**
      * Update the event and record the activity entries atomically

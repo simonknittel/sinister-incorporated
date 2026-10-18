@@ -34,6 +34,7 @@ import {
   createEventWikiHrefBase,
   GLOBAL_WIKI_HREF_BASE,
 } from "./wikiPagePath.js";
+import { canAddWikiChildren } from "./wikiPagePlacement.js";
 
 export const getWikiPageInputSchema = z.object({
   page_id: idSchema,
@@ -64,12 +65,16 @@ export interface GetWikiPageOutput extends WikiPageReference {
   readonly updated_at: string;
   /** The content as Markdown */
   readonly markdown: string;
+  /** Whether the user can add a page below this page (`create_wiki_page`) */
+  readonly can_add_children: boolean;
 }
 
 /** A wiki scope that the actor can read, with the routes of its pages */
 interface ReadableScope {
   readonly context: WikiSharedContext;
   readonly hrefBase: WikiPageHrefBase;
+  /** True for the briefing of an event that is over: it refuses all changes */
+  readonly frozen: boolean;
 }
 
 /**
@@ -91,6 +96,7 @@ const loadScopesOfPage = async (
   const globalScope = async (): Promise<ReadableScope> => ({
     context: await buildWikiContext(context, actor),
     hrefBase: GLOBAL_WIKI_HREF_BASE,
+    frozen: false,
   });
 
   switch (record.namespace) {
@@ -114,6 +120,7 @@ const loadScopesOfPage = async (
         {
           context: eventContext,
           hrefBase: createEventWikiHrefBase(eventId, eventContext.rootPage.id),
+          frozen: eventContext.frozen,
         },
         global,
       ];
@@ -234,5 +241,10 @@ export const getWikiPage = (
         variants,
         iframeAllowlist,
       }),
+      can_add_children: canAddWikiChildren(
+        ownScope.context,
+        page.id,
+        ownScope.frozen,
+      ),
     };
   });

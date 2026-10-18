@@ -3,14 +3,14 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
+import { ConflictError, NotFoundError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
-import { EventConflict, EventConflictError } from "./eventErrors.js";
+import { EventErrorMessage } from "./eventErrors.js";
 import {
-  EVENT_MANAGE_GUARD_SELECT,
   requireManageableEvent,
+  VISIBLE_EVENT_MANAGE_GUARD_SELECT,
 } from "./eventManageGuard.js";
 import { isAllowedToManageEvent } from "./eventManageRules.js";
 
@@ -58,18 +58,18 @@ export const deleteEvent = (
         deletedAt: null,
       },
       select: {
-        ...EVENT_MANAGE_GUARD_SELECT,
+        ...VISIBLE_EVENT_MANAGE_GUARD_SELECT,
         source: true,
         name: true,
         discordPublishedId: true,
       },
     });
-    if (!event) throw new NotFoundError("The event does not exist");
-    if (event.source !== EventSource.APP)
-      throw new EventConflictError(EventConflict.DiscordEvent);
+    if (!event) throw new NotFoundError(EventErrorMessage.NotFound);
     requireManageableEvent(context, actor, event, isAllowedToManageEvent);
+    if (event.source !== EventSource.APP)
+      throw new ConflictError(EventErrorMessage.DiscordEvent);
     if (event.discordPublishedId !== null && !removesDiscordPublication)
-      throw new EventConflictError(EventConflict.PublishedOnDiscord);
+      throw new ConflictError(EventErrorMessage.PublishedOnDiscord);
 
     /**
      * Soft-delete the event. The row stays resolvable, so the notification
@@ -88,7 +88,7 @@ export const deleteEvent = (
         deletedById: actor.citizen?.id ?? null,
       },
     });
-    if (count === 0) throw new NotFoundError("The event does not exist");
+    if (count === 0) throw new NotFoundError(EventErrorMessage.NotFound);
 
     await context.audit.create([
       {

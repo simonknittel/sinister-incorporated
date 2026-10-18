@@ -3,12 +3,13 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { ConflictError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { cancelParticipation } from "./cancelParticipation.js";
 import { createEventActivity } from "./eventActivity.js";
-import { EventConflict, EventConflictError } from "./eventErrors.js";
+import { EventErrorMessage } from "./eventErrors.js";
 import { participationTextSchema } from "./eventInputSchemas.js";
 import { requireManageableEvent } from "./eventManageGuard.js";
 import { isAllowedToManageEvent } from "./eventManageRules.js";
@@ -103,7 +104,7 @@ export const removeEventParticipant = (
      * The citizen or a different manager cancelled the participation before
      */
     if (!isCancelled)
-      throw new EventConflictError(EventConflict.CitizenNotSignedUp);
+      throw new ConflictError(EventErrorMessage.CitizenNotSignedUp);
 
     await context.audit.create([
       {

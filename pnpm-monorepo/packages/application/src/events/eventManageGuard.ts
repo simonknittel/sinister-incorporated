@@ -1,9 +1,10 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ForbiddenError } from "../errors.js";
-import { EventConflict, EventConflictError } from "./eventErrors.js";
-import { isEventUpdatable, type EventManageInput } from "./eventManageRules.js";
+import { ConflictError, ForbiddenError, NotFoundError } from "../errors.js";
+import { EventErrorMessage } from "./eventErrors.js";
+import { isEventUpdatable } from "./eventManageRules.js";
+import { canActorSeeEvent } from "./eventVisibility.js";
 
 /**
  * Exactly what the event management guard decides on: the freeze window
@@ -23,10 +24,9 @@ export const EVENT_MANAGE_GUARD_SELECT = {
 } as const satisfies Prisma.EventSelect;
 
 /**
- * The guard fields plus the fields of `canActorSeeEvent()`. A write that
- * gives the event in its output checks the visibility too, thus a rule
- * without the visibility (for example `othersEventPosition;manage`) cannot
- * reveal a restricted event.
+ * The guard fields plus the fields of `canActorSeeEvent()`. A write checks
+ * the visibility too, thus a rule without the visibility (for example
+ * `othersEventPosition;manage`) cannot reveal or change a restricted event.
  */
 export const VISIBLE_EVENT_MANAGE_GUARD_SELECT = {
   ...EVENT_MANAGE_GUARD_SELECT,
@@ -35,21 +35,37 @@ export const VISIBLE_EVENT_MANAGE_GUARD_SELECT = {
   visibilityRoles: { select: { roleId: true } },
 } as const satisfies Prisma.EventSelect;
 
-type ManageGuardEvent = EventManageInput &
-  Prisma.EventGetPayload<{ select: typeof EVENT_MANAGE_GUARD_SELECT }>;
+type ManageGuardEvent = Prisma.EventGetPayload<{
+  select: typeof VISIBLE_EVENT_MANAGE_GUARD_SELECT;
+}>;
+
+export interface ManageableEventOptions {
+  /**
+   * Skips the check of the end of the event. Only for an event that the
+   * caller reads from, for example the source of a copy.
+   */
+  readonly ignoreFreeze?: boolean;
+}
 
 /**
- * Throws when the event ended (nothing of it can change then) or when the
- * rule does not let the actor manage it
+ * Throws when the actor cannot see the event (it does not exist for the
+ * actor then), when the event ended (nothing of it can change then) or when
+ * the rule does not let the actor manage it
+ *
+ * @throws NotFoundError, ConflictError or ForbiddenError
  */
 export const requireManageableEvent = (
   context: ApplicationContext,
   actor: Actor,
   event: ManageGuardEvent,
   isAllowed: (actor: Actor, event: ManageGuardEvent) => boolean,
+  { ignoreFreeze = false }: ManageableEventOptions = {},
 ) => {
-  if (!isEventUpdatable(event, context.now()))
-    throw new EventConflictError(EventConflict.EventEnded);
+  if (!canActorSeeEvent(actor, event))
+    throw new NotFoundError(EventErrorMessage.NotFound);
+
+  if (!ignoreFreeze && !isEventUpdatable(event, context.now()))
+    throw new ConflictError(EventErrorMessage.EventEnded);
 
   if (!isAllowed(actor, event))
     throw new ForbiddenError("The user cannot manage the event");

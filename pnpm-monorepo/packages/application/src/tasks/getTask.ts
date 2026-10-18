@@ -29,14 +29,14 @@ export type GetTaskInput = z.output<typeof getTaskInputSchema>;
  * Requires `task;read` and a citizen. `getTask` maps the row to its output.
  * The app wrapper of the task page keeps the row, because the page uses it.
  *
- * @returns null when the task does not exist, is deleted, or is not visible
- * for the actor
+ * @throws NotFoundError when the task does not exist, is deleted, or is not
+ * visible for the actor
  */
 export const findVisibleTask = async (
   context: ApplicationContext,
   actor: Actor,
   taskId: string,
-): Promise<VisibleTask | null> => {
+): Promise<VisibleTask> => {
   requirePermission(actor, "task", "read");
 
   const task = await context.prisma.task.findFirst({
@@ -45,7 +45,7 @@ export const findVisibleTask = async (
     },
     include: TASK_DETAILS_INCLUDE,
   });
-  if (!task) return null;
+  if (!task) throw new NotFoundError(TaskErrorMessage.NotFound);
 
   return toVisibleTask(actor, task);
 };
@@ -62,7 +62,6 @@ export const getTask = (
 ): Promise<GetTaskOutput> =>
   withSpan(context, "getTask", async () => {
     const task = await findVisibleTask(context, actor, input.task_id);
-    if (!task) throw new NotFoundError(TaskErrorMessage.NotFound);
 
     const [output] = await toTaskOutputs(context, actor, [task]);
 

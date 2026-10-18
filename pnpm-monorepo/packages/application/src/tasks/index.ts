@@ -24,6 +24,7 @@ export {
   dropTask,
   dropTaskInputSchema,
   type DropTaskInput,
+  type DropTaskOutput,
 } from "./dropTask.js";
 export { findNewTaskIds } from "./findNewTaskIds.js";
 export {
@@ -44,20 +45,14 @@ export {
   type TaskListPage,
   type TaskListPageOptions,
 } from "./listTasks.js";
-export {
-  MAX_SILC_VALUE,
-  areActiveReceivers,
-  createSilcTransactionsInTransaction,
-  type NewSilcTransaction,
-} from "./silcLedger.js";
+export { areActiveReceivers } from "./silcLedger.js";
 export {
   type GetTaskOutput,
   type NotifyingTaskWriteOutput,
   type TaskRoleReference,
-  type TaskWriteOutput,
   type VisibleTask,
 } from "./taskDetails.js";
-export { TaskErrorMessage, isTaskErrorMessage } from "./taskErrors.js";
+export { TaskErrorMessage } from "./taskErrors.js";
 export {
   TASK_LIST_SELECT,
   type TaskListItemRow,

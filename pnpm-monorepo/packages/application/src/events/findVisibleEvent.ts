@@ -1,6 +1,7 @@
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
+import { EventErrorMessage } from "./eventErrors.js";
 import { EVENT_DETAILS_INCLUDE, type EventDetails } from "./eventSelects.js";
 import { canActorSeeEvent } from "./eventVisibility.js";
 
@@ -22,7 +23,7 @@ export const findVisibleEvent = async (
   });
 
   if (!event || !canActorSeeEvent(actor, event))
-    throw new NotFoundError("The event does not exist");
+    throw new NotFoundError(EventErrorMessage.NotFound);
 
   return event;
 };

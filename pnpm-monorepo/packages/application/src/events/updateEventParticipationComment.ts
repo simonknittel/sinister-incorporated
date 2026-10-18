@@ -1,7 +1,8 @@
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { ConflictError } from "../errors.js";
 import { withSpan } from "../withSpan.js";
-import { EventConflict, EventConflictError } from "./eventErrors.js";
+import { EventErrorMessage } from "./eventErrors.js";
 import { loadEventOutput, type GetEventOutput } from "./getEvent.js";
 import {
   findActiveParticipation,
@@ -35,7 +36,7 @@ export const updateEventParticipationComment = (
       citizenId,
     );
     /** A different tab or a manager cancelled the participation before */
-    if (!participant) throw new EventConflictError(EventConflict.NotSignedUp);
+    if (!participant) throw new ConflictError(EventErrorMessage.NotSignedUp);
 
     await writeOwnParticipationComment(context, actor, participant.id, {
       eventId: event.id,
