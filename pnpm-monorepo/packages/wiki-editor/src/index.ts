@@ -6,13 +6,12 @@
  *
  * Importing this entry loads Tiptap, ProseMirror and lowlight. Client code
  * that only renders content imports `@sam-monorepo/wiki-editor/helpers`
- * instead (see helpers.ts). The Markdown renderer is the entry
- * `@sam-monorepo/wiki-editor/markdown`.
+ * instead (see helpers.ts). The Markdown renderer and the Markdown parser are
+ * the entry `@sam-monorepo/wiki-editor/markdown`.
  */
 export { extractWikiPageText } from "./extractWikiPageText.js";
 export * from "./helpers.js";
 export { isWikiPageContentEmpty } from "./isWikiPageContentEmpty.js";
-export { slugifyWikiPageTitle } from "./slugifyWikiPageTitle.js";
 export { WikiAttachment } from "./wikiAttachmentNode.js";
 export {
   WIKI_CALLOUT_COLORS,

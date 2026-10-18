@@ -285,9 +285,6 @@ importers:
       sharp:
         specifier: 0.35.5
         version: 0.35.5(@types/node@24.19.1)
-      slug:
-        specifier: 12.0.1
-        version: 12.0.1
       strip-markdown:
         specifier: 6.0.0
         version: 6.0.0
@@ -337,9 +334,6 @@ importers:
       '@types/react-dom':
         specifier: 19.3.0
         version: 19.3.0(@types/react@19.3.0)
-      '@types/slug':
-        specifier: 5.0.9
-        version: 5.0.9
       '@types/wicg-file-system-access':
         specifier: 2023.10.7
         version: 2023.10.7
@@ -648,10 +642,16 @@ importers:
       '@sam-monorepo/database':
         specifier: workspace:*
         version: link:../database
+      slug:
+        specifier: 12.0.1
+        version: 12.0.1
     devDependencies:
       '@types/node':
         specifier: 24.19.1
         version: 24.19.1
+      '@types/slug':
+        specifier: 5.0.9
+        version: 5.0.9
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -11665,6 +11665,7 @@ snapshots:
   '@sam-monorepo/domain@file:packages/domain(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(typescript@6.0.3)':
     dependencies:
       '@sam-monorepo/database': file:packages/database(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(typescript@6.0.3)
+      slug: 12.0.1
     transitivePeerDependencies:
       - pg-native
       - prisma
@@ -11716,6 +11717,7 @@ snapshots:
       '@tiptap/static-renderer': 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       highlight.js: 11.12.0
       lowlight: 3.3.0
+      marked: 17.0.6
       slug: 12.0.1
     transitivePeerDependencies:
       - '@tiptap/extension-code-block'

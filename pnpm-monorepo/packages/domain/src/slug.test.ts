@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { slugifyWikiPageTitle } from "./slugifyWikiPageTitle.js";
+import { slugifyWikiPageTitle } from "./slug.js";
 
 describe("slugify wiki page title", () => {
   test("caps the length", () => {

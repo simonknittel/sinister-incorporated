@@ -15,10 +15,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@sam-monorepo/database": "workspace:*"
+    "@sam-monorepo/database": "workspace:*",
+    "slug": "12.0.1"
   },
   "devDependencies": {
     "@types/node": "24.19.1",
+    "@types/slug": "5.0.9",
     "typescript": "7.0.2",
     "vite": "8.3.2",
     "vitest": "5.0.3"
