@@ -23,11 +23,11 @@ A host is a deployable program. It owns its runtime, its configuration and its e
 | Package | Layer | Content | Depends on |
 | - | - | - | - |
 | `database` | infrastructure | The Prisma schema, the migrations and the generated client | — |
-| `domain` | domain | Pure rules and helpers that more than one host uses: audit event types, calendar dates, time zone, event rules, wiki rules, read markers | `database` (types) |
+| `domain` | domain | Pure rules and helpers that more than one host uses: audit event types, calendar dates, time zone, event rules, wiki rules, read markers, the limits of the forms and the use cases, the slug helper | `database` (types) |
 | `permissions` | domain | The permission model: permission sets, role resolution, the wiki page permission resolvers | `database` (types) |
 | `notifications` | domain | The notification channel vocabulary | — |
 | `emails` | domain | The email templates | — |
-| `wiki-editor` | domain | The Tiptap schema of the wiki content, text extraction, the Markdown renderer | — |
+| `wiki-editor` | domain | The Tiptap schema of the wiki content, text extraction, the Markdown renderer and parser | — |
 | `application` | use cases | The use cases: one read or one write of a feature, with the permission checks, the audit events and the notifications inside. The actor, the application context and the typed errors. The OAuth use cases. See the [package README](../pnpm-monorepo/packages/application/README.md). | `database`, `domain`, `permissions`, `wiki-editor` |
 | `mcp` | interface adapter | The MCP server: the tool registry, the tools, the request handler with the bearer verification. See [mcp-server.md](./mcp-server.md). | `application`, `domain`, `database` |
 
