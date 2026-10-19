@@ -1,44 +1,58 @@
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import type { AuditEventInput } from "@sam-monorepo/domain";
 import {
+  AuditEventType,
   eventContainerColumns,
   EventContainerKind,
+  type AuditEventInput,
   type EventContainer,
-} from "./eventContainer";
+} from "@sam-monorepo/domain";
+import type { PastePlacement } from "./pasteLineupPosition.js";
 
-/**
- * The system log is immutable, so a lineup mutation on an event keeps writing
- * the exact entry it always wrote and a mutation on a template writes one of
- * the template-scoped types instead. These builders hold that mapping for the
- * actions that are not use cases yet; the use cases of the application
- * package write the event types themselves.
+/*
+ * The system log is immutable, thus a change of the lineup of an event
+ * writes the entry that it always wrote, and a change of the lineup of a
+ * template writes one of the template types.
  */
 
 export const buildPositionNameUpdatedAuditEvent = (
   container: EventContainer,
   payload: { positionId: string; previousName: string; newName: string },
   createdById: string,
-): AuditEventInput =>
-  container.kind === EventContainerKind.Event
-    ? {
+): AuditEventInput => {
+  switch (container.kind) {
+    case EventContainerKind.Event:
+      return {
         type: AuditEventType.EVENT_POSITION_NAME_UPDATED,
         data: { eventId: container.id, ...payload },
         createdById,
-      }
-    : {
+      };
+
+    case EventContainerKind.Template:
+      return {
         type: AuditEventType.EVENT_TEMPLATE_POSITION_NAME_UPDATED,
         data: { templateId: container.id, ...payload },
         createdById,
       };
 
+    default:
+      throw new Error(
+        `Unknown lineup container kind: ${container.kind satisfies never}`,
+      );
+  }
+};
+
+interface CopiedPosition {
+  readonly container: EventContainer;
+  readonly positionId: string;
+}
+
 /**
- * A paste between two events writes the entry it always wrote; as soon as a
- * template is involved on either side, the container-shaped type takes over.
+ * A paste between two events writes the entry that it always wrote. When a
+ * template is the source or the target, the template type is written.
  */
 export const buildPositionCopiedAuditEvent = (
-  source: { container: EventContainer; positionId: string },
-  target: { container: EventContainer; positionId: string },
-  payload: { placement: "after" | "inside"; positionCount: number },
+  source: CopiedPosition,
+  target: CopiedPosition,
+  payload: { placement: PastePlacement; positionCount: number },
   createdById: string,
 ): AuditEventInput => {
   const isEventToEvent =
@@ -58,17 +72,17 @@ export const buildPositionCopiedAuditEvent = (
       createdById,
     };
 
-  const sourceIds = eventContainerColumns(source.container);
-  const targetIds = eventContainerColumns(target.container);
+  const sourceColumns = eventContainerColumns(source.container);
+  const targetColumns = eventContainerColumns(target.container);
 
   return {
     type: AuditEventType.EVENT_TEMPLATE_POSITION_COPIED,
     data: {
-      sourceEventId: sourceIds.eventId,
-      sourceTemplateId: sourceIds.templateId,
+      sourceEventId: sourceColumns.eventId,
+      sourceTemplateId: sourceColumns.templateId,
       sourcePositionId: source.positionId,
-      targetEventId: targetIds.eventId,
-      targetTemplateId: targetIds.templateId,
+      targetEventId: targetColumns.eventId,
+      targetTemplateId: targetColumns.templateId,
       targetPositionId: target.positionId,
       ...payload,
     },

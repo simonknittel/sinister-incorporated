@@ -6,59 +6,24 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import {
   deleteEventPositionInputSchema,
-  deleteEventPosition as deleteEventPositionUseCase,
   deleteLineupPosition,
-  findLineupPositionContainer,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { LINEUP_ERROR_TEXTS } from "../utils/lineupErrorTexts";
-import { requireManageablePosition } from "../utils/requireManageablePosition";
 
+/** The lineup editor also deletes the positions of an event template */
 export const deleteEventPosition = createAuthenticatedAction(
   "deleteEventPosition",
   deleteEventPositionInputSchema,
   async (formData, authentication, data, t) => {
-    const context = getApplicationContext();
-
     try {
-      const container = await findLineupPositionContainer(
-        context,
-        data.position_id,
+      await deleteLineupPosition(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
       );
-
-      if (container.eventId !== null) {
-        await deleteEventPositionUseCase(
-          context,
-          await toActor(authentication.session),
-          data,
-        );
-      } else {
-        /** The lineup editor also deletes the positions of an event template */
-        const { position, failure } = await requireManageablePosition(
-          data.position_id,
-          formData,
-          t,
-        );
-        if (failure) return failure;
-
-        await deleteLineupPosition(context, position.id);
-
-        await createAuditEvents([
-          {
-            type: AuditEventType.EVENT_TEMPLATE_POSITION_DELETED,
-            data: {
-              templateId: container.templateId,
-              positionId: position.id,
-              name: position.name,
-            },
-            createdById: authentication.session.user.id,
-          },
-        ]);
-      }
     } catch (error) {
       return mapApplicationErrorToActionResponse(error, {
         formData,

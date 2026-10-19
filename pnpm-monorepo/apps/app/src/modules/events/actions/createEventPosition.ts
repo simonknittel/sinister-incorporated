@@ -6,80 +6,28 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import {
-  createEventPosition as createEventPositionUseCase,
-  idSchema,
-  insertLineupPosition,
-  newPositionFieldsSchema,
+  createLineupPosition,
+  createLineupPositionInputSchema,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { authorizeEventContainer } from "../utils/authorizeEventContainer";
 import {
   EVENT_CONTAINER_ID_FIELD,
   EVENT_CONTAINER_KIND_FIELD,
-  eventContainerColumns,
-  EventContainerKind,
-  toTemplateContainer,
 } from "../utils/eventContainer";
 import { LINEUP_ERROR_TEXTS } from "../utils/lineupErrorTexts";
 
 /** The lineup editor also adds the positions of an event template */
-const schema = newPositionFieldsSchema.extend({
-  container_kind: z.enum(EventContainerKind),
-  container_id: idSchema,
-});
-
 export const createEventPosition = createAuthenticatedAction(
   "createEventPosition",
-  schema,
-  async (
-    formData,
-    authentication,
-    { container_kind: containerKind, container_id: containerId, ...fields },
-    t,
-  ) => {
-    const context = getApplicationContext();
-
+  createLineupPositionInputSchema,
+  async (formData, authentication, data, t) => {
     try {
-      switch (containerKind) {
-        case EventContainerKind.Event:
-          await createEventPositionUseCase(
-            context,
-            await toActor(authentication.session),
-            { event_id: containerId, ...fields },
-          );
-          break;
-
-        case EventContainerKind.Template: {
-          const container = toTemplateContainer(containerId);
-          const authorization = await authorizeEventContainer(container, t);
-          if (!authorization.allowed)
-            return { error: authorization.error, requestPayload: formData };
-
-          const createdPosition = await insertLineupPosition(
-            context,
-            eventContainerColumns(container),
-            fields,
-          );
-
-          await createAuditEvents([
-            {
-              type: AuditEventType.EVENT_TEMPLATE_POSITION_CREATED,
-              data: { templateId: containerId, ...createdPosition },
-              createdById: authentication.session.user.id,
-            },
-          ]);
-          break;
-        }
-
-        default:
-          throw new Error(
-            `Unknown lineup container kind: ${containerKind satisfies never}`,
-          );
-      }
+      await createLineupPosition(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
     } catch (error) {
       return mapApplicationErrorToActionResponse(error, {
         formData,

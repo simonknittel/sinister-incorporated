@@ -1,44 +1,27 @@
-import { prisma } from "@/db";
-import { buildParticipantCitizenWhere } from "@sam-monorepo/application";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
+import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { findEventLineupCitizens } from "@sam-monorepo/application";
 import type { Event } from "@sam-monorepo/database/client";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { cache } from "react";
-import { buildRequiredVariantShipWhere } from "../queries/eventRelationSelects";
 
 /**
  * The event's active participants as citizens with their ships of the
- * required variants. The lineup offers these citizens for its positions,
- * thus a deleted citizen is not one of them.
+ * required variants, for the position picker of the lineup
  */
-export const getEventCitizens = cache(async (eventId: Event["id"]) => {
-  const databaseParticipants = await prisma.eventParticipant.findMany({
-    where: {
-      eventId,
-      cancelledAt: null,
-    },
-    select: {
-      citizenId: true,
-      discordUserId: true,
-    },
-  });
-
-  const citizens = await prisma.citizen.findMany({
-    where: {
-      ...buildParticipantCitizenWhere(databaseParticipants),
-      ...ACTIVE_CITIZEN_WHERE,
-    },
-    select: {
-      id: true,
-      handle: true,
-      deletedAt: true,
-      ships: {
-        where: buildRequiredVariantShipWhere(eventId),
-        select: {
-          variantId: true,
-        },
-      },
-    },
-  });
-
-  return citizens.map(({ ships, ...citizen }) => ({ citizen, ships }));
-});
+export const getEventCitizens = cache(
+  withTrace("getEventCitizens", async (eventId: Event["id"]) => {
+    try {
+      return await findEventLineupCitizens(
+        getApplicationContext(),
+        await getRequestActor(),
+        { eventId },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  }),
+);

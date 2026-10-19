@@ -1,5 +1,6 @@
-import type { EventPosition } from "@sam-monorepo/database/client";
+import type { EventPosition, Prisma } from "@sam-monorepo/database/client";
 import {
+  getPositionContainer,
   LINEUP_MAX_DEPTH,
   LINEUP_MAX_POSITIONS,
   LINEUP_MAX_POSITIONS_PER_LEVEL,
@@ -17,29 +18,46 @@ import {
 
 /*
  * The writes of the positions that the lineup of an event and the lineup of
- * an event template share. They carry no permission check: the use cases of
- * the event lineup check the event first, the app checks the template first
- * (the rules of the templates are in the app). No MCP tool calls them.
+ * an event template share. They are internal and carry no permission check:
+ * each use case checks the container first.
  */
 
 /** The container of a position: an event or an event template */
 export type LineupContainerColumns = EventContainerColumns;
 
-/** @throws NotFoundError when the position does not exist */
-export const findLineupPositionContainer = async (
+/** What the use cases read of a position before they change or copy it */
+const LINEUP_POSITION_ROW_SELECT = {
+  id: true,
+  name: true,
+  eventId: true,
+  templateId: true,
+  order: true,
+  parentPositionId: true,
+  fontSize: true,
+  backgroundColor: true,
+  textColor: true,
+} as const satisfies Prisma.EventPositionSelect;
+
+/**
+ * A position of a lineup with its container. Carries no permission check:
+ * the caller checks the container.
+ *
+ * @throws NotFoundError when the position does not exist
+ */
+export const findLineupPosition = async (
   context: ApplicationContext,
   positionId: string,
-): Promise<LineupContainerColumns> => {
+) => {
   const position = await context.prisma.eventPosition.findUnique({
     where: { id: positionId },
-    select: { eventId: true, templateId: true },
+    select: LINEUP_POSITION_ROW_SELECT,
   });
 
-  if (position?.eventId) return { eventId: position.eventId, templateId: null };
-  if (position?.templateId)
-    return { eventId: null, templateId: position.templateId };
+  const container = position ? getPositionContainer(position) : null;
+  if (!position || !container)
+    throw new NotFoundError(LineupErrorMessage.PositionNotFound);
 
-  throw new NotFoundError(LineupErrorMessage.PositionNotFound);
+  return { position, container };
 };
 
 /**
@@ -182,7 +200,7 @@ export interface UpdatedLineupPosition {
 const changedValue = <Value>(change: Value | undefined, current: Value) =>
   change === undefined ? current : change;
 
-export const updateLineupPosition = async (
+export const writeLineupPositionChange = async (
   context: ApplicationContext,
   position: Pick<
     EventPosition,
@@ -240,7 +258,7 @@ export const updateLineupPosition = async (
 };
 
 /** Deletes the position. Its children go with it (a cascade of the database). */
-export const deleteLineupPosition = async (
+export const removeLineupPosition = async (
   context: ApplicationContext,
   positionId: string,
 ) => {

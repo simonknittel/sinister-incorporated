@@ -6,7 +6,7 @@ import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { requireManageableEventPosition } from "./lineupGuards.js";
 import { toLineupPositionOutput, type LineupPosition } from "./lineupOutput.js";
-import { updateLineupPosition } from "./lineupWrites.js";
+import { writeLineupPositionChange } from "./lineupWrites.js";
 import { positionChangeSchema } from "./positionFields.js";
 
 export const updateEventPositionInputSchema = z.object({
@@ -36,7 +36,7 @@ export const updateEventPosition = (
       positionId,
     );
 
-    const updatedPosition = await updateLineupPosition(
+    const updatedPosition = await writeLineupPositionChange(
       context,
       position,
       change,

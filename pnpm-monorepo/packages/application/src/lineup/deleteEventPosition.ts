@@ -6,7 +6,7 @@ import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { requireManageableEventPosition } from "./lineupGuards.js";
 import { toLineupPositionOutput, type LineupPosition } from "./lineupOutput.js";
-import { deleteLineupPosition } from "./lineupWrites.js";
+import { removeLineupPosition } from "./lineupWrites.js";
 
 export const deleteEventPositionInputSchema = z.object({
   position_id: idSchema.describe(
@@ -40,7 +40,7 @@ export const deleteEventPosition = (
       true,
     );
 
-    await deleteLineupPosition(context, position.id);
+    await removeLineupPosition(context, position.id);
 
     await context.audit.create([
       {

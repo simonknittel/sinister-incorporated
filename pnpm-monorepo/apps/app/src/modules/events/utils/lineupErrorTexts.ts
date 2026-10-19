@@ -1,4 +1,5 @@
 import type { ApplicationErrorTexts } from "@/modules/application";
+import { EVENT_TEMPLATE_ERROR_TEXTS } from "@/modules/event-templates/utils/eventTemplateErrorTexts";
 import {
   EventErrorMessage,
   LineupErrorMessage,
@@ -16,8 +17,13 @@ import {
 export const EVENT_NOT_FOUND_TEXT = "Event nicht gefunden";
 export const EVENT_ENDED_TEXT = "Das Event ist bereits vorbei.";
 
-/** The texts of the lineup actions for the errors of the lineup use cases */
+/**
+ * The texts of the lineup actions for the errors of the lineup use cases. The
+ * lineup editor also changes the lineups of the event templates, thus the
+ * texts of the template guard are part of it.
+ */
 export const LINEUP_ERROR_TEXTS: ApplicationErrorTexts = {
+  ...EVENT_TEMPLATE_ERROR_TEXTS,
   [EventErrorMessage.NotFound]: EVENT_NOT_FOUND_TEXT,
   [EventErrorMessage.EventEnded]: EVENT_ENDED_TEXT,
   [LineupErrorMessage.PositionNotFound]: "Posten nicht gefunden",
@@ -34,4 +40,6 @@ export const LINEUP_ERROR_TEXTS: ApplicationErrorTexts = {
     "Du bist nicht für dieses Event angemeldet.",
   [LineupErrorMessage.NotApplied]:
     "Du hast für diesen Posten kein Interesse angemeldet.",
+  [LineupErrorMessage.PasteTooDeep]:
+    "Der Posten würde zu tief verschachtelt werden.",
 };

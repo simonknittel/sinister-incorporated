@@ -6,59 +6,24 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import {
-  findLineupPositionContainer,
   updateEventPositionInputSchema,
-  updateEventPosition as updateEventPositionUseCase,
   updateLineupPosition,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { LINEUP_ERROR_TEXTS } from "../utils/lineupErrorTexts";
-import { requireManageablePosition } from "../utils/requireManageablePosition";
 
+/** The lineup editor also changes the positions of an event template */
 export const updateEventPosition = createAuthenticatedAction(
   "updateEventPosition",
   updateEventPositionInputSchema,
   async (formData, authentication, data, t) => {
-    const context = getApplicationContext();
-
     try {
-      const container = await findLineupPositionContainer(
-        context,
-        data.position_id,
+      await updateLineupPosition(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
       );
-
-      if (container.eventId !== null) {
-        await updateEventPositionUseCase(
-          context,
-          await toActor(authentication.session),
-          data,
-        );
-      } else {
-        /** The lineup editor also changes the positions of an event template */
-        const { position, failure } = await requireManageablePosition(
-          data.position_id,
-          formData,
-          t,
-        );
-        if (failure) return failure;
-
-        const updatedPosition = await updateLineupPosition(
-          context,
-          position,
-          data,
-        );
-
-        await createAuditEvents([
-          {
-            type: AuditEventType.EVENT_TEMPLATE_POSITION_UPDATED,
-            data: { templateId: container.templateId, ...updatedPosition },
-            createdById: authentication.session.user.id,
-          },
-        ]);
-      }
     } catch (error) {
       return mapApplicationErrorToActionResponse(error, {
         formData,

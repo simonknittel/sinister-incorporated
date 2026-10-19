@@ -21,7 +21,7 @@ import { LineupErrorMessage } from "./lineupErrors.js";
  * manage rule and whether the lineup is enabled), and the name for the
  * outputs
  */
-const LINEUP_EVENT_SELECT = {
+export const LINEUP_EVENT_SELECT = {
   ...VISIBLE_EVENT_MANAGE_GUARD_SELECT,
   name: true,
   lineupEnabled: true,

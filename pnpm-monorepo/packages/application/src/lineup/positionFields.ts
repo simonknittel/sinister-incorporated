@@ -26,7 +26,7 @@ export const toStoredFontSize = (
 const MAXIMUM_REQUIRED_VARIANTS = 250;
 
 /** The lengths of the inputs of the lineup form */
-const MAXIMUM_POSITION_NAME_LENGTH = 256;
+export const MAXIMUM_POSITION_NAME_LENGTH = 256;
 const MAXIMUM_POSITION_DESCRIPTION_LENGTH = 512;
 
 /**
@@ -71,8 +71,8 @@ const positionFormatSchemas = {
 };
 
 /**
- * The fields of a new position. The use case of the event lineup adds the
- * event, the template lineup of the app adds its template.
+ * The fields of a new position. The use cases add the event or the event
+ * template.
  */
 export const newPositionFieldsSchema = z.object({
   parent_position_id: idSchema

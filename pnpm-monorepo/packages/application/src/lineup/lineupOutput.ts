@@ -131,3 +131,17 @@ export const toLineupPositionOutput = async (
     }),
     canManagePositions,
   );
+
+/**
+ * The output of a write of one position that serves the lineups of the
+ * events and of the event templates
+ */
+export interface LineupPositionWriteOutput {
+  readonly position_id: string;
+}
+
+/** The output of a copy of positions into a lineup */
+export interface LineupCopyOutput {
+  /** The number of new positions, with the children */
+  readonly position_count: number;
+}

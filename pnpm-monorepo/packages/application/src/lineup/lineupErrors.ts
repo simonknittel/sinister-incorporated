@@ -16,7 +16,7 @@ export enum LineupErrorMessage {
   LineupChanged = "A position of the order is not in the lineup",
   /** A `ValidationError` */
   LineupTooDeep = `The lineup has at most ${LINEUP_MAX_DEPTH} levels`,
-  /** A `ConflictError` */
+  /** A `ConflictError` of a new position, a `ValidationError` of a paste */
   TooManyPositionsOnLevel = `A level of the lineup has at most ${LINEUP_MAX_POSITIONS_PER_LEVEL} positions`,
   /** A `ConflictError` */
   TooManyPositions = `The lineup has at most ${LINEUP_MAX_POSITIONS} positions`,
@@ -33,4 +33,11 @@ export enum LineupErrorMessage {
   NotParticipating = "The user does not participate in the event",
   /** A `ConflictError` */
   NotApplied = "The user did not apply for the position",
+  /** A `ValidationError` */
+  PasteTooDeep = "The pasted positions would be deeper than the lineup permits",
+  /**
+   * A `ValidationError`: the source of a lineup copy does not exist, or the
+   * actor cannot see it
+   */
+  SourceEventNotFound = "The source event does not exist",
 }
