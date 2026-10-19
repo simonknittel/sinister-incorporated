@@ -9,6 +9,8 @@ import {
   endDuePayoutPhases,
   purgeExpiredAuthenticationRecords,
   purgeExpiredOAuthRecords,
+  purgeOrphanedWikiTags,
+  purgeTrashedWikiPages,
   removeExpiredRoleAssignments,
 } from "@sam-monorepo/application";
 import type { ScheduledHandler } from "aws-lambda";
@@ -18,8 +20,6 @@ import { runJobsInIsolation } from "./common/runJobsInIsolation";
 import { archiveIrrelevantOnSiteNotifications } from "./midnight-automations/archiveIrrelevantOnSiteNotifications";
 import { countShips } from "./midnight-automations/countShips";
 import { deleteUnusedUploads } from "./midnight-automations/deleteUnusedUploads";
-import { purgeOrphanedWikiTags } from "./midnight-automations/purgeOrphanedWikiTags";
-import { purgeTrashedWikiPages } from "./midnight-automations/purgeTrashedWikiPages";
 
 const context = createApplicationContext({
   source: "midnight-automations",
@@ -39,8 +39,8 @@ export const handler: ScheduledHandler = async () =>
     disburseRoleSalaries: createJob(disburseRoleSalaries),
     countShips,
     countUniqueLogins: createJob(countUniqueLogins),
-    purgeTrashedWikiPages,
-    purgeOrphanedWikiTags,
+    purgeTrashedWikiPages: createJob(purgeTrashedWikiPages),
+    purgeOrphanedWikiTags: createJob(purgeOrphanedWikiTags),
     archiveIrrelevantOnSiteNotifications,
     deleteUnusedUploads,
     purgeExpiredAuthenticationRecords: createJob(
