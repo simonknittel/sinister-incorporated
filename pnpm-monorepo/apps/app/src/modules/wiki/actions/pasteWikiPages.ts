@@ -3,6 +3,7 @@
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import {
   getApplicationContext,
+  isApplicationError,
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
@@ -86,6 +87,12 @@ export const pasteWikiPages = createAuthenticatedAction(
         },
       );
     } catch (error) {
+      /**
+       * An unexpected error can come after the safety snapshot or after the
+       * replace of the content: the page then shows the current state
+       */
+      if (!isApplicationError(error)) refresh();
+
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,

@@ -26,6 +26,13 @@ interface Options {
   readonly texts?: ApplicationErrorTexts;
 }
 
+/** Whether the error is one of the typed errors of the use cases */
+export const isApplicationError = (error: unknown) =>
+  error instanceof ForbiddenError ||
+  error instanceof NotFoundError ||
+  error instanceof ConflictError ||
+  error instanceof ValidationError;
+
 /**
  * Maps a typed error of a use case to the response of a server action. Use it
  * only in a server action: a conflict and a missing target refresh the page,

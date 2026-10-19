@@ -38,7 +38,7 @@ export async function GET(
     const upload = await findWikiAttachmentDownload(
       getApplicationContext(),
       await toActor(authentication.session),
-      { upload_id: paramsData.uploadId },
+      { uploadId: paramsData.uploadId },
     );
 
     const presignedUrl = await getPresignedDownloadUrl(upload);

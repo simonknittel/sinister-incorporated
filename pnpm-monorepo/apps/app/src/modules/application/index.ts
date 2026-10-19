@@ -1,6 +1,7 @@
 export { getApplicationContext } from "./getApplicationContext";
 export { getRequestActor } from "./getRequestActor";
 export {
+  isApplicationError,
   mapApplicationErrorToActionResponse,
   type ApplicationErrorTexts,
 } from "./mapApplicationErrorToActionResponse";

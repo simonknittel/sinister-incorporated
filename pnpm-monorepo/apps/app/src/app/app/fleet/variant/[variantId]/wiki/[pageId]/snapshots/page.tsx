@@ -65,6 +65,7 @@ export default async function Page(
       wikiContent={
         <SuspenseWithErrorBoundaryTile>
           <WikiSnapshotsTable
+            scope={result.context}
             page={result.page}
             pageHref={buildWikiPageHref(result.context.hrefMode, result.page)}
             canRestore

@@ -15,6 +15,6 @@ import { cache } from "react";
  */
 export const getWikiTagPages = cache(
   withTrace("getWikiTagPages", (scope: WikiPageScope, tagId: string) =>
-    findWikiTagPages(getApplicationContext(), scope, { tagId }),
+    findWikiTagPages(getApplicationContext(), scope, tagId),
   ),
 );

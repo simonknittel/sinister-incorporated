@@ -3,14 +3,12 @@
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import { useRolesContext } from "@/modules/roles/components/RolesContext";
 import { SingleRoleBadge } from "@/modules/roles/components/SingleRoleBadge";
-import type { WikiRoleCitizen } from "@sam-monorepo/application";
+import type { WikiCitizen } from "@sam-monorepo/application";
 import type { CSSProperties } from "react";
-
-export type { WikiRoleCitizen };
 
 interface Props {
   readonly roleId: string | null;
-  readonly citizens: readonly WikiRoleCitizen[];
+  readonly citizens: readonly WikiCitizen[];
   readonly isLoading?: boolean;
   /** The node's width/position styles in the static render (wikiBlockLayoutStyle) */
   readonly style?: CSSProperties;

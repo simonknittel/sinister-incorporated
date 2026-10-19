@@ -5,7 +5,6 @@ import {
   exportWikiPageContent,
   exportWikiPageContentInputSchema,
   NotFoundError,
-  type ExportWikiPageContentOutput,
 } from "@sam-monorepo/application";
 import { NextResponse } from "next/server";
 
@@ -26,19 +25,11 @@ export async function GET(
     const { pageId } = await context.params;
     const input = exportWikiPageContentInputSchema.parse({ page_id: pageId });
 
-    let result: ExportWikiPageContentOutput;
-    try {
-      result = await exportWikiPageContent(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        input,
-      );
-    } catch (error) {
-      if (error instanceof NotFoundError)
-        return NextResponse.json({ error: "Not Found" }, { status: 404 });
-
-      throw error;
-    }
+    const result = await exportWikiPageContent(
+      getApplicationContext(),
+      await toActor(authentication.session),
+      input,
+    );
 
     return new NextResponse(JSON.stringify(result.content, null, 2), {
       headers: {
@@ -47,6 +38,9 @@ export async function GET(
       },
     });
   } catch (error) {
+    if (error instanceof NotFoundError)
+      return NextResponse.json({ error: "Not Found" }, { status: 404 });
+
     return apiErrorHandler(error);
   }
 }

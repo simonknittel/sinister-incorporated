@@ -1,6 +1,7 @@
 "use client";
 
 import { HocuspocusProvider, WebSocketStatus } from "@hocuspocus/provider";
+import type { WikiCitizen } from "@sam-monorepo/application";
 import type {
   WikiLinkedPages,
   WikiLinkedVariant,
@@ -33,7 +34,6 @@ import { WikiEditorLayout } from "./WikiEditorLayout";
 import { WikiEmbedUrlModal } from "./WikiEmbedUrlModal";
 import { WikiLinkModal } from "./WikiLinkModal";
 import type { WikiPageIndexEntry } from "./WikiPageIndexList";
-import type { WikiRoleCitizen } from "./WikiRoleCitizensList";
 import { WikiVariantLinkModal } from "./WikiVariantLinkModal";
 
 interface Props {
@@ -63,7 +63,7 @@ interface Props {
    * Server-resolved members of the role-member nodes, keyed by role id —
    * the node views' initial data
    */
-  readonly roleCitizens: Readonly<Record<string, WikiRoleCitizen[]>>;
+  readonly roleCitizens: Readonly<Record<string, WikiCitizen[]>>;
   /**
    * Intrinsic dimensions of the page's uploaded images, by upload id —
    * lets the image node view serve optimized images
@@ -252,7 +252,7 @@ interface ConnectedEditorProps {
   readonly mentionedCitizens: Readonly<Record<string, WikiMentionedCitizen>>;
   readonly linkedVariants: Readonly<Record<string, WikiLinkedVariant>>;
   readonly pageIndexes: Readonly<Record<string, WikiPageIndexEntry[]>>;
-  readonly roleCitizens: Readonly<Record<string, WikiRoleCitizen[]>>;
+  readonly roleCitizens: Readonly<Record<string, WikiCitizen[]>>;
   readonly imageDimensions: Readonly<Record<string, WikiImageDimensions>>;
   readonly staticFallback: ReactNode;
 }

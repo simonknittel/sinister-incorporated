@@ -2,7 +2,7 @@ import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import { Link } from "@/modules/common/components/Link";
 import { Table, TBody, THead, TRow } from "@/modules/common/components/Table";
 import { formatDate } from "@/modules/common/utils/formatDate";
-import type { WikiPageSnapshotRow } from "@sam-monorepo/application";
+import type { WikiPageSnapshotRow, WikiScope } from "@sam-monorepo/application";
 import { WikiPageSnapshotKind } from "@sam-monorepo/database/client";
 import clsx from "clsx";
 import { FaArrowLeft } from "react-icons/fa";
@@ -16,6 +16,8 @@ const COLUMNS = "minmax(200px,1fr) 120px 160px 160px 180px";
 
 interface Props {
   readonly className?: string;
+  /** The scope that the page loaded for the viewer */
+  readonly scope: WikiScope;
   readonly page: WikiSharedContextPage;
   /** Route of the page, e.g. its event root route; defaults to the id-URL */
   readonly pageHref?: string;
@@ -30,11 +32,12 @@ interface Props {
  */
 export const WikiSnapshotsTable = async ({
   className,
+  scope,
   page,
   pageHref,
   canRestore,
 }: Props) => {
-  const snapshots = await getWikiPageSnapshotRows(page.id);
+  const snapshots = await getWikiPageSnapshotRows(scope, page.id);
 
   return (
     <section className={clsx("rounded-primary bg-secondary p-4", className)}>

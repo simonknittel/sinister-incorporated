@@ -1,5 +1,4 @@
 import { getApplicationContext, toActor } from "@/modules/application";
-import { eventContainerSchema } from "@/modules/events/utils/eventContainerSchema";
 import {
   getManageableWikiPageTargets,
   getReadableWikiPageTargets,
@@ -8,6 +7,7 @@ import {
   findReadableWikiScope,
   idSchema,
   toWikiScopeTarget,
+  wikiScopeInputSchema,
   WikiScopeKind,
 } from "@sam-monorepo/application";
 import * as z from "zod";
@@ -24,16 +24,11 @@ import { protectedProcedure, toTrpcError } from "../../trpc";
  */
 export const getPageTargets = protectedProcedure
   .input(
-    z
-      .object({
+    wikiScopeInputSchema
+      .safeExtend({
         permission: z.enum(["manage", "read"]),
-        container: eventContainerSchema.optional(),
-        variantId: idSchema.optional(),
-        /** The page to move — it and its subtree are no valid new parents */
+        /** The page to move: it and its subtree cannot be the new parent */
         excludeSubtreeOf: idSchema.optional(),
-      })
-      .refine((input) => !(input.container && input.variantId), {
-        message: "container and variantId are mutually exclusive",
       })
       .optional(),
   )

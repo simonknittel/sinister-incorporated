@@ -1,8 +1,10 @@
 import { getApplicationContext, getRequestActor } from "@/modules/application";
-import type { EventContainer } from "@/modules/events/utils/eventContainer";
+import type {
+  EventContainer,
+  EventContainerKind,
+} from "@/modules/events/utils/eventContainer";
 import {
-  loadWikiScope,
-  WikiScopeKind,
+  buildBriefingWikiContext,
   type EventWikiContext,
 } from "@sam-monorepo/application";
 import { cache } from "react";
@@ -15,17 +17,26 @@ export {
 } from "@sam-monorepo/application";
 
 /**
- * Loads one container's briefing pages and resolves the current viewer's
- * effective permissions once per request — the container-scoped counterpart
- * of `getWikiContext`. Everything briefing-related (tab gate, tree, page
- * views, actions) derives from this context. Returns null if the viewer may
- * not hold it: missing `event;read`, an event they cannot see, or a template
- * they have no access to (see `loadWikiScope()`).
+ * React `cache()` compares the arguments by identity, and each caller gives
+ * a new container object. Thus the cache key is the kind and the id of the
+ * container.
  */
-export const getEventWikiContext = cache(
-  async (container: EventContainer): Promise<EventWikiContext | null> =>
-    loadWikiScope(getApplicationContext(), await getRequestActor(), {
-      kind: WikiScopeKind.Briefing,
-      container,
-    }),
+const getBriefingScope = cache(async (kind: EventContainerKind, id: string) =>
+  buildBriefingWikiContext(getApplicationContext(), await getRequestActor(), {
+    kind,
+    id,
+  }),
 );
+
+/**
+ * The briefing of a container with the permissions of the viewer, one time
+ * for each request: the counterpart of `getWikiContext()` for one
+ * container. The briefing tab, the tree, the page views and the actions use
+ * it. Returns null when the viewer cannot hold it: without `event;read`, for
+ * an event that the viewer cannot see, or for a template that the viewer
+ * cannot read (see `buildBriefingWikiContext()`).
+ */
+export const getEventWikiContext = (
+  container: EventContainer,
+): Promise<EventWikiContext | null> =>
+  getBriefingScope(container.kind, container.id);

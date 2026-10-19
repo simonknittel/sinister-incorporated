@@ -1,32 +1,21 @@
 import { getApplicationContext, toActor } from "@/modules/application";
-import { eventContainerSchema } from "@/modules/events/utils/eventContainerSchema";
 import {
   findWikiLinkablePages,
-  idSchema,
   toWikiScopeTarget,
+  wikiScopeInputSchema,
 } from "@sam-monorepo/application";
-import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
 /**
- * All pages a page of the scope can link to, by id, with the label, icon
- * and route of the link — for the editor's "[[" suggestion and for page
- * links inserted after the page was rendered. The page render itself sends
- * only the pages its content links to, so the full list is loaded only
- * when an editor needs it. Scoped and gated like `getPageTargets`.
+ * All pages that a page of the scope can link to, by id, with the label,
+ * the icon and the route of the link: for the "[[" suggestion of the editor
+ * and for the page links that the editor adds after the render. The render
+ * of a page sends only the pages that its content links to, thus the full
+ * list loads only when an editor needs it. The scope and the gate are the
+ * same as for `getPageTargets`.
  */
 export const getLinkablePages = protectedProcedure
-  .input(
-    z
-      .object({
-        container: eventContainerSchema.optional(),
-        variantId: idSchema.optional(),
-      })
-      .refine((input) => !(input.container && input.variantId), {
-        message: "container and variantId are mutually exclusive",
-      })
-      .optional(),
-  )
+  .input(wikiScopeInputSchema.optional())
   .query(async ({ ctx, input }) => {
     try {
       return await findWikiLinkablePages(

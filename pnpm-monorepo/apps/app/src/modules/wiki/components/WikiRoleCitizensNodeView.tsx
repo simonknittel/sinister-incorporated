@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@/trpc/react";
+import type { WikiCitizen } from "@sam-monorepo/application";
 import {
   WikiRoleCitizens,
   normalizeWikiRoleCitizensConfig,
@@ -12,10 +13,7 @@ import {
   type NodeViewProps,
 } from "@tiptap/react";
 import { wikiNodeViewElementAttributes } from "./wikiNodeViewAttributes";
-import {
-  WikiRoleCitizensList,
-  type WikiRoleCitizen,
-} from "./WikiRoleCitizensList";
+import { WikiRoleCitizensList } from "./WikiRoleCitizensList";
 
 interface WikiRoleCitizensNodeViewOptions {
   /**
@@ -24,7 +22,7 @@ interface WikiRoleCitizensNodeViewOptions {
    * doesn't flash a loading state over the static fallback's list. Roles
    * selected after the render miss here and get the loading state.
    */
-  initialCitizens: Readonly<Record<string, WikiRoleCitizen[]>>;
+  initialCitizens: Readonly<Record<string, WikiCitizen[]>>;
 }
 
 const WikiRoleCitizensNodeView = ({ node, extension }: NodeViewProps) => {
@@ -79,7 +77,7 @@ const WikiRoleCitizensWithNodeView =
  */
 export const withWikiRoleCitizensNodeView = (
   extensions: AnyExtension[],
-  initialCitizens: Readonly<Record<string, WikiRoleCitizen[]>>,
+  initialCitizens: Readonly<Record<string, WikiCitizen[]>>,
 ): AnyExtension[] =>
   extensions.map((extension) =>
     extension.name === WikiRoleCitizens.name

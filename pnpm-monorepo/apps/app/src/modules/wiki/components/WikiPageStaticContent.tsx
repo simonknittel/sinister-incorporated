@@ -1,3 +1,4 @@
+import type { WikiCitizen } from "@sam-monorepo/application";
 import {
   createWikiHeadingIdAssigner,
   getWikiEditorExtensions,
@@ -27,10 +28,7 @@ import {
   WikiPageIndexList,
   type WikiPageIndexEntry,
 } from "./WikiPageIndexList";
-import {
-  WikiRoleCitizensList,
-  type WikiRoleCitizen,
-} from "./WikiRoleCitizensList";
+import { WikiRoleCitizensList } from "./WikiRoleCitizensList";
 import { WikiVariantLinkChip } from "./WikiVariantLinkChip";
 
 type StaticContent = Parameters<typeof renderToReactElement>[0]["content"];
@@ -66,7 +64,7 @@ const renderWikiPageContent = (
   mentionedCitizens: Readonly<Record<string, WikiMentionedCitizen>>,
   linkedVariants: Readonly<Record<string, WikiLinkedVariant>>,
   pageIndexes: Readonly<Record<string, readonly WikiPageIndexEntry[]>>,
-  roleCitizens: Readonly<Record<string, readonly WikiRoleCitizen[]>>,
+  roleCitizens: Readonly<Record<string, readonly WikiCitizen[]>>,
   imageDimensions: Readonly<Record<string, WikiImageDimensions>>,
   pageId: string | undefined,
 ) => {
@@ -253,7 +251,7 @@ interface Props {
    * Resolved members of the role-member nodes on this page, keyed by role
    * id
    */
-  readonly roleCitizens?: Readonly<Record<string, readonly WikiRoleCitizen[]>>;
+  readonly roleCitizens?: Readonly<Record<string, readonly WikiCitizen[]>>;
   /**
    * Intrinsic dimensions of the content's uploaded images, keyed by upload
    * id — images without an entry render as a plain img

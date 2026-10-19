@@ -16,15 +16,18 @@ const getAdministrablePage = async (params: Params) => {
   const context = await getWikiContext();
   if (!context) return null;
 
-  return getAccessibleWikiPage(context, pageId, WikiPageAccessTier.Admin);
+  const page = getAccessibleWikiPage(context, pageId, WikiPageAccessTier.Admin);
+  if (!page) return null;
+
+  return { context, page };
 };
 
 export const generateMetadata = async (
   props: PageProps<"/app/wiki/[pageId]/snapshots">,
 ): Promise<Metadata> => {
-  const page = await getAdministrablePage(props.params);
-  if (!page) return {};
-  return { title: `Snapshots - ${page.title}` };
+  const result = await getAdministrablePage(props.params);
+  if (!result) return {};
+  return { title: `Snapshots - ${result.page.title}` };
 };
 
 export default async function Page(
@@ -32,16 +35,20 @@ export default async function Page(
 ) {
   await requireAuthenticationPage("/app/wiki");
 
-  const page = await getAdministrablePage(props.params);
+  const result = await getAdministrablePage(props.params);
   /**
    * Pages the viewer can't administrate 404 instead of 403 to avoid
    * leaking their existence.
    */
-  if (!page) notFound();
+  if (!result) notFound();
 
   return (
     <SuspenseWithErrorBoundaryTile>
-      <WikiSnapshotsTable page={page} canRestore />
+      <WikiSnapshotsTable
+        scope={result.context}
+        page={result.page}
+        canRestore
+      />
     </SuspenseWithErrorBoundaryTile>
   );
 }

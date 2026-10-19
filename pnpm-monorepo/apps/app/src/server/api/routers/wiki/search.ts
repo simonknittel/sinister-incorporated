@@ -1,9 +1,8 @@
 import { getApplicationContext, toActor } from "@/modules/application";
-import { eventContainerSchema } from "@/modules/events/utils/eventContainerSchema";
 import {
   findWikiSearchResults,
-  idSchema,
   toWikiScopeTarget,
+  wikiScopeInputSchema,
 } from "@sam-monorepo/application";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
@@ -17,15 +16,9 @@ import { protectedProcedure, toTrpcError } from "../../trpc";
  */
 export const search = protectedProcedure
   .input(
-    z
-      .object({
-        query: z.string().trim().min(2).max(200),
-        container: eventContainerSchema.optional(),
-        variantId: idSchema.optional(),
-      })
-      .refine((input) => !(input.container && input.variantId), {
-        message: "container and variantId are mutually exclusive",
-      }),
+    wikiScopeInputSchema.safeExtend({
+      query: z.string().trim().min(2).max(200),
+    }),
   )
   .query(async ({ ctx, input }) => {
     try {
