@@ -10,7 +10,6 @@ import { EMBED_TOKEN_ALGORITHM } from "@/modules/embed-authentication/utils/cons
 import { getEmbedSigningKey } from "@/modules/embed-authentication/utils/getEmbedSigningKey";
 import { emitEvents } from "@/modules/eventbridge/utils";
 import { log } from "@/modules/logging";
-import { triggerNotifications } from "@/modules/notifications/utils/triggerNotification";
 import { getTracer } from "@/modules/tracing/utils/getTracer";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
@@ -24,6 +23,7 @@ import {
   createPrismaAuditWriter,
   createS3Storage,
 } from "@sam-monorepo/infrastructure";
+import { triggerNotifications } from "./notificationTrigger";
 import { sharpImageReader } from "./sharpImageReader";
 
 /** The S3 client needs one of the two. Without them, the app has no bucket. */

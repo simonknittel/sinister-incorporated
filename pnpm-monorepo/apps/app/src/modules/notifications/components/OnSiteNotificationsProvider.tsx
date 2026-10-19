@@ -10,6 +10,7 @@ import { api } from "@/trpc/react";
 import {
   getCitizenChannelName,
   ON_SITE_NOTIFICATION_CREATED_EVENT,
+  OnSiteNotificationTab,
 } from "@sam-monorepo/domain";
 import {
   createContext,
@@ -19,10 +20,7 @@ import {
   type ReactNode,
 } from "react";
 import * as z from "zod/mini";
-import {
-  NotificationCenterTab,
-  type OnSiteNotificationRow,
-} from "../utils/types";
+import type { OnSiteNotificationRow } from "../utils/types";
 
 const realtimeNotificationSchema = z.object({
   id: z.cuid2(),
@@ -115,12 +113,12 @@ export const OnSiteNotificationsProvider = ({
        * the popover's first open would skip the full initial fetch.
        */
       const existingData = utils.onSiteNotifications.list.getInfiniteData({
-        tab: NotificationCenterTab.Inbox,
+        tab: OnSiteNotificationTab.Inbox,
       });
       if (!existingData) return;
 
       utils.onSiteNotifications.list.setInfiniteData(
-        { tab: NotificationCenterTab.Inbox },
+        { tab: OnSiteNotificationTab.Inbox },
         (oldData) => {
           if (!oldData) return oldData;
 

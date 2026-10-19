@@ -8,10 +8,10 @@ import {
   TabsProvider,
   useTabsContext,
 } from "@/modules/common/components/tabs/TabsContext";
+import { OnSiteNotificationTab } from "@sam-monorepo/domain";
 import { useState } from "react";
 import { FaArchive, FaCheckDouble, FaCog } from "react-icons/fa";
 import { useOnSiteNotificationMutations } from "../hooks/useOnSiteNotificationMutations";
-import { NotificationCenterTab } from "../utils/types";
 import { NotificationList } from "./NotificationList";
 import { useOnSiteNotifications } from "./OnSiteNotificationsProvider";
 
@@ -46,11 +46,11 @@ export const NotificationCenter = ({ onNavigate }: Props) => {
   };
 
   return (
-    <TabsProvider initialActiveTab={NotificationCenterTab.Inbox}>
+    <TabsProvider initialActiveTab={OnSiteNotificationTab.Inbox}>
       <div className="flex items-start justify-between gap-2">
         <TabList>
-          <Tab id={NotificationCenterTab.Inbox}>Posteingang</Tab>
-          <Tab id={NotificationCenterTab.Archive}>Archiv</Tab>
+          <Tab id={OnSiteNotificationTab.Inbox}>Posteingang</Tab>
+          <Tab id={OnSiteNotificationTab.Archive}>Archiv</Tab>
         </TabList>
 
         <HeaderActions
@@ -59,18 +59,18 @@ export const NotificationCenter = ({ onNavigate }: Props) => {
         />
       </div>
 
-      <TabPanel id={NotificationCenterTab.Inbox}>
+      <TabPanel id={OnSiteNotificationTab.Inbox}>
         <NotificationList
-          tab={NotificationCenterTab.Inbox}
+          tab={OnSiteNotificationTab.Inbox}
           onNavigate={onNavigate}
           retainedHighlightIds={retainedHighlightIds}
           onRetainHighlights={retainHighlights}
         />
       </TabPanel>
 
-      <TabPanel id={NotificationCenterTab.Archive}>
+      <TabPanel id={OnSiteNotificationTab.Archive}>
         <NotificationList
-          tab={NotificationCenterTab.Archive}
+          tab={OnSiteNotificationTab.Archive}
           onNavigate={onNavigate}
         />
       </TabPanel>
@@ -93,7 +93,7 @@ const HeaderActions = ({
 
   return (
     <div className="flex items-center gap-1">
-      {activeTab === NotificationCenterTab.Inbox && (
+      {activeTab === OnSiteNotificationTab.Inbox && (
         <>
           <button
             type="button"

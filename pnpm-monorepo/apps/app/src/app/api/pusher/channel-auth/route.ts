@@ -1,10 +1,17 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  mapApplicationErrorToRouteResponse,
+  toActor,
+} from "@/modules/application";
 import { requireAuthenticationApi } from "@/modules/auth/server";
 import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
-import { canSeeEvent } from "@/modules/events/utils/eventVisibility";
 import { log } from "@/modules/logging";
 import { channelsClient } from "@/modules/pusher/utils/channelsClient";
-import { CITIZEN_CHANNEL_PREFIX } from "@sam-monorepo/domain";
+import {
+  authorizeRealtimeChannel,
+  authorizeRealtimeChannelInputSchema,
+  ValidationError,
+} from "@sam-monorepo/application";
 import { NextResponse } from "next/server";
 import * as z from "zod";
 
@@ -31,6 +38,9 @@ export async function POST(request: Request) {
       socket_id: body.get("socket_id"),
       channel_name: body.get("channel_name"),
     });
+    const input = authorizeRealtimeChannelInputSchema.parse({
+      channel_name: data.channel_name,
+    });
 
     /**
      * Do the thing
@@ -43,58 +53,29 @@ export async function POST(request: Request) {
       );
     }
 
-    if (data.channel_name.startsWith("private-event-")) {
-      await authentication.authorizeApi("event", "read");
-
-      /**
-       * Restricted and soft-deleted events must stay invisible: subscribing
-       * to their channel is treated like the event not existing.
-       */
-      const eventId = data.channel_name.slice("private-event-".length);
-      const event = await prisma.event.findUnique({
-        where: { id: eventId },
-        select: {
-          visibility: true,
-          createdById: true,
-          deletedAt: true,
-          visibilityRoles: { select: { roleId: true } },
-          managers: { select: { id: true } },
-        },
-      });
-      if (!event || !(await canSeeEvent(event))) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
-
-      const authResponse = channelsClient.authorizeChannel(
-        data.socket_id,
-        data.channel_name,
+    try {
+      await authorizeRealtimeChannel(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        input,
       );
-      return NextResponse.json(authResponse);
+    } catch (error) {
+      // The only validation error of the use case:
+      // `NotificationErrorMessage.RealtimeChannelUnknown`
+      if (error instanceof ValidationError)
+        return NextResponse.json(
+          { error: "Invalid channel name" },
+          { status: 400 },
+        );
+
+      return mapApplicationErrorToRouteResponse(error);
     }
 
-    /**
-     * On-site notification channel: every citizen may only subscribe to
-     * their own channel.
-     */
-    if (data.channel_name.startsWith(CITIZEN_CHANNEL_PREFIX)) {
-      const requestedCitizenId = data.channel_name.slice(
-        CITIZEN_CHANNEL_PREFIX.length,
-      );
-      if (requestedCitizenId !== authentication.session.entity?.id) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
-
-      const authResponse = channelsClient.authorizeChannel(
-        data.socket_id,
-        data.channel_name,
-      );
-      return NextResponse.json(authResponse);
-    }
-
-    return NextResponse.json(
-      { error: "Invalid channel name" },
-      { status: 400 },
+    const authResponse = channelsClient.authorizeChannel(
+      data.socket_id,
+      input.channel_name,
     );
+    return NextResponse.json(authResponse);
   } catch (error) {
     /**
      * Respond with an error

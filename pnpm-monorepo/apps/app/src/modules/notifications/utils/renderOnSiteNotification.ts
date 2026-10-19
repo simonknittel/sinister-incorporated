@@ -25,7 +25,7 @@ interface OnSiteNotificationRendering {
   readonly decoration: NotificationDecoration | null;
 }
 
-const appTitleByNotificationTypeId = new Map(
+const appTitleByNotificationTypeId = new Map<string, string>(
   NOTIFICATIONS_APPS.flatMap((app) =>
     app.notificationTypes.map((notificationType) => [
       notificationType.id,

@@ -1,8 +1,8 @@
 import { AuditEventType } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { triggerNotificationsAfterSave } from "../notifications.js";
 import { withSpan } from "../withSpan.js";
+import { sendEmailConfirmation } from "./emailConfirmationRequest.js";
 
 export interface RequestEmailConfirmationOutput {
   /** False when the user has no email address or the email did not go out */
@@ -36,19 +36,12 @@ export const requestEmailConfirmation = (
       return { notifications_sent: false };
     }
 
-    // The app handles this type itself until the notification Lambda sends
-    // the email
-    const notificationsSent = await triggerNotificationsAfterSave(context, [
-      {
-        type: "EmailConfirmation",
-        payload: {
-          userId: actor.userId,
-          userEmail: user.email,
-        },
-      },
-    ]);
+    const emailRequested = await sendEmailConfirmation(context, {
+      userId: actor.userId,
+      email: user.email,
+    });
 
-    if (notificationsSent)
+    if (emailRequested)
       await context.audit.create([
         {
           type: AuditEventType.EMAIL_CONFIRMATION_REQUESTED,
@@ -60,5 +53,5 @@ export const requestEmailConfirmation = (
         },
       ]);
 
-    return { notifications_sent: notificationsSent };
+    return { notifications_sent: emailRequested };
   });

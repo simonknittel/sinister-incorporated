@@ -2,6 +2,7 @@
 
 import { runAction } from "@/modules/actions/utils/runAction";
 import { api } from "@/trpc/react";
+import { OnSiteNotificationTab } from "@sam-monorepo/domain";
 import { archiveOnSiteNotification } from "../actions/archiveOnSiteNotification";
 import { archiveReadOnSiteNotifications } from "../actions/archiveReadOnSiteNotifications";
 import { markAllOnSiteNotificationsRead } from "../actions/markAllOnSiteNotificationsRead";
@@ -9,10 +10,7 @@ import { markOnSiteNotificationsRead } from "../actions/markOnSiteNotificationsR
 import { markOnSiteNotificationUnread } from "../actions/markOnSiteNotificationUnread";
 import { unarchiveOnSiteNotification } from "../actions/unarchiveOnSiteNotification";
 import { useOnSiteNotifications } from "../components/OnSiteNotificationsProvider";
-import {
-  NotificationCenterTab,
-  type OnSiteNotificationRow,
-} from "../utils/types";
+import type { OnSiteNotificationRow } from "../utils/types";
 
 /**
  * The state-changing operations of the notification center. Each runs its
@@ -25,7 +23,7 @@ export const useOnSiteNotificationMutations = () => {
   const { setUnreadCount, adjustUnreadCount } = useOnSiteNotifications();
 
   const updateListItems = (
-    tab: NotificationCenterTab,
+    tab: OnSiteNotificationTab,
     updateItem: (item: OnSiteNotificationRow) => OnSiteNotificationRow | null,
   ) => {
     utils.onSiteNotifications.list.setInfiniteData({ tab }, (oldData) => {
@@ -60,7 +58,7 @@ export const useOnSiteNotificationMutations = () => {
     });
     if (!succeeded) return;
 
-    updateListItems(NotificationCenterTab.Inbox, (item) =>
+    updateListItems(OnSiteNotificationTab.Inbox, (item) =>
       notificationIds.includes(item.id) && !item.readAt
         ? { ...item, readAt: new Date() }
         : item,
@@ -75,7 +73,7 @@ export const useOnSiteNotificationMutations = () => {
     const succeeded = await runAction(markOnSiteNotificationUnread, formData);
     if (!succeeded) return;
 
-    updateListItems(NotificationCenterTab.Inbox, (item) =>
+    updateListItems(OnSiteNotificationTab.Inbox, (item) =>
       item.id === notification.id ? { ...item, readAt: null } : item,
     );
     adjustUnreadCount(1);
@@ -88,12 +86,12 @@ export const useOnSiteNotificationMutations = () => {
     const succeeded = await runAction(archiveOnSiteNotification, formData);
     if (!succeeded) return;
 
-    updateListItems(NotificationCenterTab.Inbox, (item) =>
+    updateListItems(OnSiteNotificationTab.Inbox, (item) =>
       item.id === notification.id ? null : item,
     );
     if (!notification.readAt) adjustUnreadCount(-1);
     await utils.onSiteNotifications.list.invalidate({
-      tab: NotificationCenterTab.Archive,
+      tab: OnSiteNotificationTab.Archive,
     });
   };
 
@@ -104,12 +102,12 @@ export const useOnSiteNotificationMutations = () => {
     const succeeded = await runAction(unarchiveOnSiteNotification, formData);
     if (!succeeded) return;
 
-    updateListItems(NotificationCenterTab.Archive, (item) =>
+    updateListItems(OnSiteNotificationTab.Archive, (item) =>
       item.id === notification.id ? null : item,
     );
     if (!notification.readAt) adjustUnreadCount(1);
     await utils.onSiteNotifications.list.invalidate({
-      tab: NotificationCenterTab.Inbox,
+      tab: OnSiteNotificationTab.Inbox,
     });
   };
 
@@ -120,7 +118,7 @@ export const useOnSiteNotificationMutations = () => {
     );
     if (!succeeded) return;
 
-    updateListItems(NotificationCenterTab.Inbox, (item) =>
+    updateListItems(OnSiteNotificationTab.Inbox, (item) =>
       item.readAt ? item : { ...item, readAt: new Date() },
     );
     setUnreadCount(0);
@@ -133,11 +131,11 @@ export const useOnSiteNotificationMutations = () => {
     );
     if (!succeeded) return;
 
-    updateListItems(NotificationCenterTab.Inbox, (item) =>
+    updateListItems(OnSiteNotificationTab.Inbox, (item) =>
       item.readAt ? null : item,
     );
     await utils.onSiteNotifications.list.invalidate({
-      tab: NotificationCenterTab.Archive,
+      tab: OnSiteNotificationTab.Archive,
     });
   };
 

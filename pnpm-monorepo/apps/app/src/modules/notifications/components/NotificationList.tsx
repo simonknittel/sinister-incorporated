@@ -4,15 +4,15 @@ import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import { useTabsContext } from "@/modules/common/components/tabs/TabsContext";
 import { useReadOnView } from "@/modules/common/utils/useReadOnView";
 import { api } from "@/trpc/react";
+import { OnSiteNotificationTab } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useRef } from "react";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { useOnSiteNotificationMutations } from "../hooks/useOnSiteNotificationMutations";
-import { NotificationCenterTab } from "../utils/types";
 import { NotificationListItem } from "./NotificationListItem";
 
 interface Props {
-  readonly tab: NotificationCenterTab;
+  readonly tab: OnSiteNotificationTab;
   readonly onNavigate?: () => void;
   /** Notifications which keep their unread highlight although already read */
   readonly retainedHighlightIds?: ReadonlySet<string>;
@@ -75,7 +75,7 @@ export const NotificationList = ({
   const observeNotification = useReadOnView({
     enabled:
       isActive &&
-      tab === NotificationCenterTab.Inbox &&
+      tab === OnSiteNotificationTab.Inbox &&
       notifications.length > 0,
     rootRef: scrollContainerRef,
     onRead: handleRead,
@@ -118,7 +118,7 @@ export const NotificationList = ({
   if (notifications.length <= 0)
     return (
       <p className={clsx(statusMessageClassName, "text-sm text-neutral-500")}>
-        {tab === NotificationCenterTab.Inbox
+        {tab === OnSiteNotificationTab.Inbox
           ? "Keine Benachrichtigungen"
           : "Keine archivierten Benachrichtigungen"}
       </p>

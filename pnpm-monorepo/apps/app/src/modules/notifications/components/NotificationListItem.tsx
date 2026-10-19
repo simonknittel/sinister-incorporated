@@ -4,16 +4,14 @@ import { Link } from "@/modules/common/components/Link";
 import { RelativeDate } from "@/modules/common/components/RelativeDate";
 import { UnreadEdge } from "@/modules/common/components/UnreadEdge";
 import type { ReadOnViewRef } from "@/modules/common/utils/useReadOnView";
+import { OnSiteNotificationTab } from "@sam-monorepo/domain";
 import type { ComponentType } from "react";
 import { FaArchive, FaEnvelope, FaUndo } from "react-icons/fa";
 import {
   NotificationDecoration,
   renderOnSiteNotification,
 } from "../utils/renderOnSiteNotification";
-import {
-  NotificationCenterTab,
-  type OnSiteNotificationRow,
-} from "../utils/types";
+import type { OnSiteNotificationRow } from "../utils/types";
 import { BirthdayDecoration } from "./BirthdayDecoration";
 import { NewYearDecoration } from "./NewYearDecoration";
 import { WelcomeDecoration } from "./WelcomeDecoration";
@@ -30,7 +28,7 @@ const decorationComponents: Record<NotificationDecoration, ComponentType> = {
 
 interface Props {
   readonly notification: OnSiteNotificationRow;
-  readonly tab: NotificationCenterTab;
+  readonly tab: OnSiteNotificationTab;
   /**
    * Keeps the unread highlight visible although the notification is already
    * read — read-on-view marks notifications read while the popover is open,
@@ -61,7 +59,7 @@ export const NotificationListItem = ({
   const rendering = renderOnSiteNotification(notification);
   const isUnread = !notification.readAt;
   const showsUnreadHighlight = isUnread || keepUnreadHighlight;
-  const trackReadOnView = isUnread && tab === NotificationCenterTab.Inbox;
+  const trackReadOnView = isUnread && tab === OnSiteNotificationTab.Inbox;
   const Decoration = rendering.decoration
     ? decorationComponents[rendering.decoration]
     : null;
@@ -118,7 +116,7 @@ export const NotificationListItem = ({
         </span>
 
         <div className="relative flex gap-1 opacity-0 group-focus-within/notification:opacity-100 group-hover/notification:opacity-100">
-          {tab === NotificationCenterTab.Inbox && (
+          {tab === OnSiteNotificationTab.Inbox && (
             <>
               {!isUnread && (
                 <button
@@ -144,7 +142,7 @@ export const NotificationListItem = ({
             </>
           )}
 
-          {tab === NotificationCenterTab.Archive && (
+          {tab === OnSiteNotificationTab.Archive && (
             <button
               type="button"
               onClick={() => onUnarchive(notification)}

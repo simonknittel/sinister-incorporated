@@ -1,7 +1,11 @@
-import { prisma } from "@/db";
-import { ON_SITE_NOTIFICATIONS_PAGE_SIZE } from "@/modules/notifications/utils/config";
+import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  ForbiddenError,
+  listOwnOnSiteNotifications,
+  listOwnOnSiteNotificationsInputSchema,
+  ValidationError,
+} from "@sam-monorepo/application";
 import { TRPCError } from "@trpc/server";
-import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
 /**
@@ -11,40 +15,21 @@ import { protectedProcedure, toTrpcError } from "../../trpc";
  * client-side via the shared schemas (same code path as realtime events).
  */
 export const list = protectedProcedure
-  .input(
-    z.object({
-      tab: z.enum(["inbox", "archive"]),
-      cursor: z.cuid2().nullish(),
-    }),
-  )
+  .input(listOwnOnSiteNotificationsInputSchema)
   .query(async ({ ctx, input }) => {
     try {
-      const entityId = ctx.session.entity?.id;
-      if (!entityId)
+      return await listOwnOnSiteNotifications(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        input,
+      );
+    } catch (error) {
+      if (error instanceof ForbiddenError)
         throw new TRPCError({ code: "FORBIDDEN", message: "Missing citizen" });
 
-      const rows = await prisma.onSiteNotification.findMany({
-        where: {
-          citizenId: entityId,
-          archivedAt: input.tab === "archive" ? { not: null } : null,
-        },
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        take: ON_SITE_NOTIFICATIONS_PAGE_SIZE + 1,
-        ...(input.cursor
-          ? { cursor: { id: input.cursor }, skip: 1 }
-          : undefined),
-      });
+      if (error instanceof ValidationError)
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Unknown cursor" });
 
-      const hasNextPage = rows.length > ON_SITE_NOTIFICATIONS_PAGE_SIZE;
-      const items = hasNextPage
-        ? rows.slice(0, ON_SITE_NOTIFICATIONS_PAGE_SIZE)
-        : rows;
-
-      return {
-        items,
-        nextCursor: hasNextPage ? items.at(-1)!.id : null,
-      };
-    } catch (error) {
       throw toTrpcError(error, "Failed to load on-site notifications");
     }
   });

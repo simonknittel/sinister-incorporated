@@ -1,1 +1,0 @@
-export const ON_SITE_NOTIFICATIONS_PAGE_SIZE = 25;

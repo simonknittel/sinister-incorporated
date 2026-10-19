@@ -57,6 +57,11 @@ export {
   type RequestEmailConfirmationOutput,
 } from "./requestEmailConfirmation.js";
 export {
+  requestEmailConfirmationOfNewUser,
+  type RequestEmailConfirmationOfNewUserInput,
+  type RequestEmailConfirmationOfNewUserOutput,
+} from "./requestEmailConfirmationOfNewUser.js";
+export {
   startAssumingUser,
   startAssumingUserInputSchema,
   type StartAssumingUserInput,

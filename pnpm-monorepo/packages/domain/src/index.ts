@@ -104,6 +104,8 @@ export { isAllowedWebPushEndpointUrl } from "./isAllowedWebPushEndpointUrl.js";
 export * from "./logAnalyzer/logAnalyzerEntries.js";
 export {
   CITIZEN_CHANNEL_PREFIX,
+  EVENT_CHANNEL_PREFIX,
+  MAXIMUM_REALTIME_CHANNEL_NAME_LENGTH,
   ON_SITE_NOTIFICATION_CREATED_EVENT,
   getCitizenChannelName,
 } from "./notifications/channels.js";

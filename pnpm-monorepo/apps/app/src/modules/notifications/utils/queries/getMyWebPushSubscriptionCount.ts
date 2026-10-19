@@ -1,17 +1,13 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { countOwnWebPushSubscriptions } from "@sam-monorepo/application";
 import { cache } from "react";
 
 export const getMyWebPushSubscriptionCount = cache(
-  withTrace("getMyWebPushSubscriptionCount", async () => {
-    const authentication = await requireAuthentication();
-    if (!authentication.session.entity) return 0;
-
-    return prisma.webPushSubscription.count({
-      where: {
-        citizenId: authentication.session.entity.id,
-      },
-    });
-  }),
+  withTrace("getMyWebPushSubscriptionCount", async () =>
+    countOwnWebPushSubscriptions(
+      getApplicationContext(),
+      await getRequestActor(),
+    ),
+  ),
 );

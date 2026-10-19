@@ -1,16 +1,17 @@
 import { prisma } from "@/db";
 import { env } from "@/env";
+import { getApplicationContext } from "@/modules/application/getApplicationContext";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { DEVELOPMENT_SESSION_TOKEN_COOKIE } from "@/modules/auth/utils/sessionTokenCookie";
 import { getDiscordAvatar } from "@/modules/discord/utils/getDiscordAvatar";
 import { getGuildMember } from "@/modules/discord/utils/getGuildMember";
 import { log } from "@/modules/logging";
-import { triggerNotifications } from "@/modules/notifications/utils/triggerNotification";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import {
   hasBirthdayTodaySafely,
   linkCitizenOfSignedInUser,
+  requestEmailConfirmationOfNewUser,
 } from "@sam-monorepo/application";
 import {
   UserRole,
@@ -170,7 +171,7 @@ const welcomeCitizen = async (
 
     after(async () => {
       try {
-        await triggerNotifications([
+        await getApplicationContext().notifications.trigger([
           { type: "WelcomeGreeting", payload: { citizenId } },
         ]);
       } catch (error) {
@@ -444,15 +445,10 @@ export const authOptions: NextAuthOptions = {
       const createdUser = await adapter.createUser!(user);
 
       try {
-        await triggerNotifications([
-          {
-            type: "EmailConfirmation",
-            payload: {
-              userId: createdUser.id,
-              userEmail: user.email,
-            },
-          },
-        ]);
+        await requestEmailConfirmationOfNewUser(getApplicationContext(), {
+          userId: createdUser.id,
+          email: user.email,
+        });
       } catch (error) {
         log.error("Failed to request email confirmation for created user", {
           userId: createdUser.id,

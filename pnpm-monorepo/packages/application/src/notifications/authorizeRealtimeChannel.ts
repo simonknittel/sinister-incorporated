@@ -1,0 +1,89 @@
+import {
+  CITIZEN_CHANNEL_PREFIX,
+  EVENT_CHANNEL_PREFIX,
+  MAXIMUM_REALTIME_CHANNEL_NAME_LENGTH,
+} from "@sam-monorepo/domain";
+import * as z from "zod";
+import { requirePermission, type Actor } from "../actor.js";
+import type { ApplicationContext } from "../context.js";
+import { ForbiddenError, ValidationError } from "../errors.js";
+import { canActorSeeEvent } from "../events/eventVisibility.js";
+import { idSchema } from "../pagination.js";
+import { NotificationErrorMessage } from "./notificationErrors.js";
+
+export const authorizeRealtimeChannelInputSchema = z.object({
+  channel_name: z.string().max(MAXIMUM_REALTIME_CHANNEL_NAME_LENGTH),
+});
+
+export type AuthorizeRealtimeChannelInput = z.output<
+  typeof authorizeRealtimeChannelInputSchema
+>;
+
+export interface AuthorizeRealtimeChannelOutput {
+  readonly channel_name: string;
+}
+
+/**
+ * Restricted and soft-deleted events must stay invisible: a subscription to
+ * their channel gets the same answer as an event that does not exist.
+ */
+const requireVisibleEvent = async (
+  context: ApplicationContext,
+  actor: Actor,
+  eventId: string,
+) => {
+  requirePermission(actor, "event", "read");
+
+  if (!idSchema.safeParse(eventId).success)
+    throw new ForbiddenError(NotificationErrorMessage.RealtimeChannelForbidden);
+
+  const event = await context.prisma.event.findUnique({
+    where: { id: eventId },
+    select: {
+      visibility: true,
+      createdById: true,
+      deletedAt: true,
+      visibilityRoles: { select: { roleId: true } },
+      managers: { select: { id: true } },
+    },
+  });
+  if (!event || !canActorSeeEvent(actor, event))
+    throw new ForbiddenError(NotificationErrorMessage.RealtimeChannelForbidden);
+};
+
+/**
+ * Checks that the actor may subscribe to a private realtime channel. The
+ * host signs the subscription after the check. A citizen may subscribe only
+ * to the channel of their own on-site notifications.
+ *
+ * @throws ForbiddenError when the actor may not subscribe to the channel
+ * @throws ValidationError when the name has no prefix of a realtime channel
+ */
+export const authorizeRealtimeChannel = async (
+  context: ApplicationContext,
+  actor: Actor,
+  input: AuthorizeRealtimeChannelInput,
+): Promise<AuthorizeRealtimeChannelOutput> => {
+  const channelName = input.channel_name;
+
+  if (channelName.startsWith(EVENT_CHANNEL_PREFIX)) {
+    await requireVisibleEvent(
+      context,
+      actor,
+      channelName.slice(EVENT_CHANNEL_PREFIX.length),
+    );
+
+    return { channel_name: channelName };
+  }
+
+  if (channelName.startsWith(CITIZEN_CHANNEL_PREFIX)) {
+    if (channelName.slice(CITIZEN_CHANNEL_PREFIX.length) !== actor.citizen?.id)
+      throw new ForbiddenError(
+        NotificationErrorMessage.RealtimeChannelForbidden,
+      );
+
+    return { channel_name: channelName };
+  }
+
+  throw new ValidationError(NotificationErrorMessage.RealtimeChannelUnknown);
+};

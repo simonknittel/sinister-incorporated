@@ -2,10 +2,9 @@
 
 import { useAuthentication } from "@/modules/auth/hooks/useAuthentication";
 import YesNoCheckbox from "@/modules/common/components/form/YesNoCheckbox";
-import {
-  NotificationChannel,
-  type NotificationSetting,
-} from "@sam-monorepo/database/browser";
+import type { OwnNotificationSetting } from "@sam-monorepo/application";
+import { NotificationChannel } from "@sam-monorepo/database/browser";
+import { getNotificationSettingInputName } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { FaDesktop, FaInfoCircle, FaMobile } from "react-icons/fa";
 import {
@@ -16,7 +15,7 @@ import { NotificationSettingsForm } from "./NotificationSettingsForm";
 
 interface Props {
   readonly className?: string;
-  readonly settings?: NotificationSetting[] | null;
+  readonly settings?: readonly OwnNotificationSetting[] | null;
 }
 
 export const NotificationSettings = ({ className, settings }: Props) => {
@@ -68,7 +67,7 @@ export const NotificationSettings = ({ className, settings }: Props) => {
 interface AppSettingsProp {
   readonly title: string;
   readonly notificationTypes: NotificationType[];
-  readonly settings?: NotificationSetting[] | null;
+  readonly settings?: readonly OwnNotificationSetting[] | null;
 }
 
 const AppSettings = ({
@@ -97,19 +96,25 @@ const AppSettings = ({
 
 interface SingleNotificationSettingsProps {
   readonly notificationType: NotificationType;
-  readonly settings?: NotificationSetting[] | null;
+  readonly settings?: readonly OwnNotificationSetting[] | null;
 }
 
 const SingleNotificationSettings = ({
   notificationType,
   settings,
 }: SingleNotificationSettingsProps) => {
+  // A row holds the type as text
+  const notificationTypeId: string = notificationType.id;
   // Opt-out model: the existence of a row means the notification type is
   // disabled.
   const isWebDisabled = settings?.some(
     (setting) =>
-      setting.notificationType === notificationType.id &&
+      setting.notificationType === notificationTypeId &&
       setting.channel === NotificationChannel.WEB_PUSH,
+  );
+  const webPushInputName = getNotificationSettingInputName(
+    NotificationChannel.WEB_PUSH,
+    notificationType.id,
   );
 
   return (
@@ -135,8 +140,8 @@ const SingleNotificationSettings = ({
 
       <div className="flex w-16 flex-none items-center justify-center">
         <YesNoCheckbox
-          key={`${NotificationChannel.WEB_PUSH}_${notificationType.id}`}
-          name={`${NotificationChannel.WEB_PUSH}_${notificationType.id}`}
+          key={webPushInputName}
+          name={webPushInputName}
           aria-label={`Browser: ${notificationType.title}`}
           defaultChecked={!isWebDisabled}
           hideLabel

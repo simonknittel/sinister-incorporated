@@ -1,103 +1,53 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { triggerNotificationsAfterSave } from "@/modules/notifications/utils/triggerNotification";
-import { isAllowedWebPushEndpointUrl } from "@sam-monorepo/domain";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  subscribeWebPushInputSchema,
+  subscribeWebPush as subscribeWebPushUseCase,
+  type SubscribeWebPushOutput,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-
-const schema = z.object({
-  subscription: z
-    .string()
-    .transform((value, context) => {
-      try {
-        return JSON.parse(value) as unknown;
-      } catch {
-        context.issues.push({
-          code: "custom",
-          message: "Invalid JSON",
-          input: value,
-        });
-        return z.NEVER;
-      }
-    })
-    .pipe(
-      z.object({
-        endpoint: z.string().max(2048).refine(isAllowedWebPushEndpointUrl),
-        keys: z.object({
-          p256dh: z.string().max(512),
-          auth: z.string().max(512),
-        }),
-      }),
-    ),
-});
 
 export const subscribeWebPush = createAuthenticatedAction(
   "subscribeWebPush",
-  schema,
+  subscribeWebPushInputSchema,
   async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    const subscription = await prisma.webPushSubscription.upsert({
-      where: {
-        endpoint: data.subscription.endpoint,
-      },
-      update: {
-        p256dh: data.subscription.keys.p256dh,
-        auth: data.subscription.keys.auth,
-      },
-      create: {
-        citizenId: authentication.session.entity.id,
-        endpoint: data.subscription.endpoint,
-        p256dh: data.subscription.keys.p256dh,
-        auth: data.subscription.keys.auth,
-      },
-      select: {
-        id: true,
-        citizenId: true,
-      },
-    });
+    let result: SubscribeWebPushOutput;
+    try {
+      result = await subscribeWebPushUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, { formData, t });
+    }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.WEB_PUSH_SUBSCRIBED,
-        data: {
-          subscriptionId: subscription.id,
-          citizenId: subscription.citizenId,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * The test notification only confirms the subscription, which is saved
-     * already. A failure must not make the user subscribe again: each new
-     * subscription of the browser gets a new endpoint.
-     */
-    const notified = await triggerNotificationsAfterSave([
-      {
-        type: "WebPushSubscribed",
-        payload: {
-          subscriptionId: subscription.id,
-        },
-      },
-    ]);
-
     return {
       success: t("Common.successfullySaved"),
-      ...(notified ? {} : { warning: t("Common.notificationsFailed") }),
+      ...(result.notifications_sent
+        ? {}
+        : { warning: t("Common.notificationsFailed") }),
     };
+  },
+  {
+    // A text that is not JSON gives the answer to a bad request
+    parseFormData: (formData) => {
+      const subscription = formData.get("subscription");
+
+      return {
+        subscription:
+          typeof subscription === "string"
+            ? (JSON.parse(subscription) as unknown)
+            : null,
+      };
+    },
   },
 );

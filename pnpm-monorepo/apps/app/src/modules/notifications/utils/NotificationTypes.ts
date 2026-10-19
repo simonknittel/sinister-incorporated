@@ -1,5 +1,7 @@
+import { NotificationSettingType } from "@sam-monorepo/domain";
+
 export interface NotificationType {
-  readonly id: string;
+  readonly id: NotificationSettingType;
   readonly title: string;
   readonly description?: string;
   readonly category: string;
@@ -15,7 +17,7 @@ export const NOTIFICATIONS_APPS: NotificationApp[] = [
     appTitle: "Changelog",
     notificationTypes: [
       {
-        id: "changelog_entry_created",
+        id: NotificationSettingType.ChangelogEntryCreated,
         title: "Neuer Eintrag",
         category: "Changelog",
       },
@@ -26,49 +28,49 @@ export const NOTIFICATIONS_APPS: NotificationApp[] = [
     appTitle: "Events",
     notificationTypes: [
       {
-        id: "event_created",
+        id: NotificationSettingType.EventCreated,
         title: "Neues Event",
         category: "Events",
       },
       {
-        id: "event_updated",
+        id: NotificationSettingType.EventUpdated,
         title: "Aktualisierung",
         description:
           "Nur bei eigener Teilnahme. Bei Änderung des Titel, der Beschreibung, des Datums und des Ortes.",
         category: "Events",
       },
       {
-        id: "event_deleted",
+        id: NotificationSettingType.EventDeleted,
         title: "Absagen",
         description: "Nur bei eigener Teilnahme",
         category: "Events",
       },
       {
-        id: "event_lineup_enabled",
+        id: NotificationSettingType.EventLineupEnabled,
         title: "Aufstellung veröffentlicht",
         description: "Nur bei eigener Teilnahme",
         category: "Events",
       },
       {
-        id: "event_briefing_published",
+        id: NotificationSettingType.EventBriefingPublished,
         title: "Briefing veröffentlicht",
         description: "Wenn das Briefing eines Events für mich freigegeben wird",
         category: "Events",
       },
       {
-        id: "event_starting",
+        id: NotificationSettingType.EventStarting,
         title: "Event beginnt bald",
         description: "Nur bei eigener Teilnahme. 15 Minuten vor Event-Start.",
         category: "Events",
       },
       {
-        id: "event_participation_added",
+        id: NotificationSettingType.EventParticipationAdded,
         title: "Anmeldung durch Manager",
         description: "Wenn mich ein Manager zu einem Event hinzufügt",
         category: "Events",
       },
       {
-        id: "event_participation_removed",
+        id: NotificationSettingType.EventParticipationRemoved,
         title: "Abmeldung durch Manager",
         description: "Wenn mich ein Manager von einem Event entfernt",
         category: "Events",
@@ -80,7 +82,7 @@ export const NOTIFICATIONS_APPS: NotificationApp[] = [
     appTitle: "Karriere",
     notificationTypes: [
       {
-        id: "role_added",
+        id: NotificationSettingType.RoleAdded,
         title: "Zuweisung",
         description: "Wenn mir eine Rolle zugewiesen wird",
         category: "Karriere",
@@ -92,7 +94,7 @@ export const NOTIFICATIONS_APPS: NotificationApp[] = [
     appTitle: "SILC",
     notificationTypes: [
       {
-        id: "silc_transaction_created",
+        id: NotificationSettingType.SilcTransactionCreated,
         title: "Neue Transaktion",
         category: "SILC",
       },
@@ -103,12 +105,12 @@ export const NOTIFICATIONS_APPS: NotificationApp[] = [
     appTitle: "SINcome",
     notificationTypes: [
       {
-        id: "sincome_payout_started",
+        id: NotificationSettingType.SincomePayoutStarted,
         title: "Auszahlung gestartet",
         category: "SINcome",
       },
       {
-        id: "sincome_payout_disbursed",
+        id: NotificationSettingType.SincomePayoutDisbursed,
         title: "Auszahlung erhalten",
         category: "SINcome",
       },
@@ -119,14 +121,14 @@ export const NOTIFICATIONS_APPS: NotificationApp[] = [
     appTitle: "Spynet",
     notificationTypes: [
       {
-        id: "birthday",
+        id: NotificationSettingType.Birthday,
         title: "Geburtstag",
         description:
           "Ein Gruß an deinem Geburtstag. Nur wenn du den Geburtstag in deinem Profil angegeben hast.",
         category: "Spynet",
       },
       {
-        id: "new_year",
+        id: NotificationSettingType.NewYear,
         title: "Neujahr",
         description: "Ein Gruß zum Jahreswechsel.",
         category: "Spynet",
@@ -138,7 +140,7 @@ export const NOTIFICATIONS_APPS: NotificationApp[] = [
     appTitle: "Strafpunkte",
     notificationTypes: [
       {
-        id: "penalty_entry_created",
+        id: NotificationSettingType.PenaltyEntryCreated,
         title: "Neuer Eintrag",
         category: "Strafpunkte",
       },
@@ -149,19 +151,19 @@ export const NOTIFICATIONS_APPS: NotificationApp[] = [
     appTitle: "Tasks",
     notificationTypes: [
       {
-        id: "task_created",
+        id: NotificationSettingType.TaskCreated,
         title: "Neuer Task",
         description: "Wenn ein neuer Task erstellt wird, den ich annehmen kann",
         category: "Tasks",
       },
       {
-        id: "task_assignment_updated",
+        id: NotificationSettingType.TaskAssignmentUpdated,
         title: "Zuweisung",
         description: "Wenn mir ein Task zugewiesen wird",
         category: "Tasks",
       },
       {
-        id: "task_deleted",
+        id: NotificationSettingType.TaskDeleted,
         title: "Löschung",
         description: "Nur bei eigener Zuweisung",
         category: "Tasks",
@@ -173,14 +175,14 @@ export const NOTIFICATIONS_APPS: NotificationApp[] = [
     appTitle: "Wiki",
     notificationTypes: [
       {
-        id: "wiki_page_reported",
+        id: NotificationSettingType.WikiPageReported,
         title: "Neue Meldung",
         description:
           "Wenn eine Seite gemeldet wird. Nur für Wiki-Administratoren relevant.",
         category: "Wiki",
       },
       {
-        id: "wiki_citizen_mentioned",
+        id: NotificationSettingType.WikiCitizenMentioned,
         title: "Erwähnung",
         description:
           "Wenn ich auf einer Wiki-Seite oder in einem Event-Briefing erwähnt werde",
@@ -189,6 +191,3 @@ export const NOTIFICATIONS_APPS: NotificationApp[] = [
     ],
   },
 ];
-
-export const NOTIFICATION_TYPES: NotificationType[] =
-  NOTIFICATIONS_APPS.flatMap((app) => app.notificationTypes);
