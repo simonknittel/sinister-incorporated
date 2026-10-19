@@ -43,7 +43,7 @@ export const EventTemplatesTable = async ({ searchParams }: Props) => {
   return (
     <EventTemplatesTableClient
       entries={entries}
-      showOwner={viewer?.hasEventManage === true}
+      showOwner={viewer.hasEventManage}
       canCreate={canCreate}
       emptyMessage={
         query

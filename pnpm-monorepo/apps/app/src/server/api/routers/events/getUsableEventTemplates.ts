@@ -1,5 +1,6 @@
-import { getUsableEventTemplates as query } from "@/modules/event-templates/queries/getEventTemplates";
+import { getApplicationContext, toActor } from "@/modules/application";
 import { log } from "@/modules/logging";
+import { findUsableEventTemplates } from "@sam-monorepo/application";
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure } from "../../trpc";
 
@@ -8,31 +9,22 @@ import { protectedProcedure } from "../../trpc";
  * the create form prefills. Loaded lazily by the form, which only mounts
  * while the modal is open.
  */
-export const getUsableEventTemplates = protectedProcedure.query(async () => {
-  try {
-    const templates = await query();
+export const getUsableEventTemplates = protectedProcedure.query(
+  async ({ ctx }) => {
+    try {
+      return await findUsableEventTemplates(
+        getApplicationContext(),
+        await toActor(ctx.session),
+      );
+    } catch (error) {
+      log.error("Failed to fetch usable event templates", {
+        error,
+      });
 
-    return templates.map((template) => ({
-      id: template.id,
-      name: template.name,
-      description: template.description,
-      visibility: template.visibility,
-      visibilityRoleIds: template.visibilityRoles.map(
-        (visibilityRole) => visibilityRole.roleId,
-      ),
-      coverImageId: template.coverImageId,
-      discordPublishTarget: template.discordPublishTarget,
-      discordPublishChannelId: template.discordPublishChannelId,
-      discordPublishLocation: template.discordPublishLocation,
-    }));
-  } catch (error) {
-    log.error("Failed to fetch usable event templates", {
-      error,
-    });
-
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Failed to fetch usable event templates",
-    });
-  }
-});
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to fetch usable event templates",
+      });
+    }
+  },
+);

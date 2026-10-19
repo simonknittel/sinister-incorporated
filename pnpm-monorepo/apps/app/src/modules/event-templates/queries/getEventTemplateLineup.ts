@@ -1,24 +1,26 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { TEMPLATE_POSITION_TREE_INCLUDE } from "@sam-monorepo/application";
+import { findEventTemplatePositionTree } from "@sam-monorepo/application";
 import { cache } from "react";
 
 /**
  * The template's lineup blueprint, in the same nested shape the event lineup
- * renders. Carries no permission check of its own — callers resolve the
- * template through `getEventTemplateById` first.
+ * renders
  */
 export const getEventTemplateLineup = cache(
-  withTrace("getEventTemplateLineup", async (templateId: string) =>
-    prisma.eventPosition.findMany({
-      where: {
-        templateId,
-        parentPositionId: null,
-      },
-      orderBy: {
-        order: "asc",
-      },
-      include: TEMPLATE_POSITION_TREE_INCLUDE,
-    }),
-  ),
+  withTrace("getEventTemplateLineup", async (templateId: string) => {
+    try {
+      return await findEventTemplatePositionTree(
+        getApplicationContext(),
+        await getRequestActor(),
+        { templateId },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  }),
 );

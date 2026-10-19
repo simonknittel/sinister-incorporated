@@ -1,173 +1,86 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import { EVENT_ERROR_TEXTS } from "@/modules/events/utils/eventErrorTexts";
 import { probeUploadImageDimensions } from "@/modules/common/utils/probeUploadImageDimensions";
-import { findDescriptionProblem } from "@/modules/events/utils/discordEventDescription";
+import { parseDiscordPublishFields } from "@/modules/events/utils/discordPublishFields";
+import { parseEventDetailsFormData } from "@/modules/events/utils/eventFormData";
 import {
-  discordPublishFieldsSchema,
-  parseDiscordPublishFields,
-} from "@/modules/events/utils/discordPublishFields";
-import {
-  EventDiscordPublishTarget,
-  EventVisibility,
-} from "@sam-monorepo/database/client";
-import { DISCORD_EVENT_DESCRIPTION_MAX_LENGTH } from "@sam-monorepo/domain";
+  idSchema,
+  updateEventTemplateInputSchema,
+  updateEventTemplate as updateEventTemplateUseCase,
+  type UpdateEventTemplateOutput,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import * as z from "zod";
-import { getEventTemplateById } from "../queries/getEventTemplateById";
-import {
-  EVENT_TEMPLATE_MAX_ROLES,
-  EVENT_TEMPLATE_NAME_MAX_LENGTH,
-} from "../utils/eventTemplateConstraints";
+import { EVENT_TEMPLATE_ERROR_TEXTS } from "../utils/eventTemplateErrorTexts";
+
+/** The use case also throws the event errors of the description, the visibility roles and the cover image */
+const ERROR_TEXTS = { ...EVENT_ERROR_TEXTS, ...EVENT_TEMPLATE_ERROR_TEXTS };
 
 /** The empty marker the cover field submits when no image is selected */
 const NO_COVER = "";
 
-const schema = z.object({
-  templateId: z.cuid2(),
-  name: z.string().trim().min(1).max(EVENT_TEMPLATE_NAME_MAX_LENGTH),
-  /** See `updateEvent` for why this is Discord's limit and not the app's. */
-  description: z
-    .string()
-    .trim()
-    .max(DISCORD_EVENT_DESCRIPTION_MAX_LENGTH)
-    .optional(),
-  coverImageId: z.union([z.cuid(), z.literal(NO_COVER)]),
-  visibility: z.enum(EventVisibility),
-  visibilityRoleIds: z.array(z.cuid()).max(EVENT_TEMPLATE_MAX_ROLES).optional(),
-  /**
-   * The Discord publishing an event created from this template starts with.
-   * Absent means "do not publish".
-   */
-  ...discordPublishFieldsSchema.shape,
+/** The use case takes the details. The cover image is only in the app. */
+const schema = updateEventTemplateInputSchema.extend({
+  coverImageId: z.union([idSchema, z.literal(NO_COVER)]),
 });
 
 export const updateEventTemplate = createAuthenticatedAction(
   "updateEventTemplate",
   schema,
-  async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    const context = await getEventTemplateById(data.templateId);
-    if (!context) return rejectConflict("Vorlage nicht gefunden", formData);
-    if (context.template.deletedAt !== null)
-      return rejectConflict("Die Vorlage ist gelöscht.", formData);
-    if (!context.permissions.canEdit)
-      return { error: t("Common.forbidden"), requestPayload: formData };
-    const citizenId = authentication.session.entity?.id ?? null;
+  async (formData, authentication, { coverImageId, ...input }, t) => {
+    const coverImageIdOrNull = coverImageId === NO_COVER ? null : coverImageId;
 
-    const descriptionProblem = findDescriptionProblem(data.description);
-    if (descriptionProblem)
-      return { error: descriptionProblem, requestPayload: formData };
-
-    /**
-     * Validate the request
-     */
-    const visibilityRoleIds =
-      data.visibility === EventVisibility.RESTRICTED
-        ? (data.visibilityRoleIds ?? [])
-        : [];
-    if (
-      data.visibility === EventVisibility.RESTRICTED &&
-      visibilityRoleIds.length === 0
-    )
-      return {
-        error: "Wähle mindestens eine Rolle aus.",
-        requestPayload: formData,
-      };
-
-    /**
-     * A newly picked cover must be the submitter's own image so nobody can
-     * attach someone else's upload; keeping the current one needs no check.
-     */
-    const coverImageId =
-      data.coverImageId === NO_COVER ? null : data.coverImageId;
-    const isNewCover =
-      coverImageId !== null && coverImageId !== context.template.coverImageId;
-    if (isNewCover) {
-      const coverImage = await prisma.upload.findUnique({
-        where: { id: coverImageId },
-        select: { createdById: true, mimeType: true },
+    let result: UpdateEventTemplateOutput;
+    try {
+      result = await updateEventTemplateUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        input,
+        { coverImageId: coverImageIdOrNull },
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: ERROR_TEXTS,
       });
-      const isOwnImageUpload =
-        coverImage !== null &&
-        citizenId !== null &&
-        coverImage.createdById === citizenId &&
-        coverImage.mimeType.startsWith("image/");
-      if (!isOwnImageUpload)
-        return { error: "Ungültiges Titelbild", requestPayload: formData };
     }
-
-    /**
-     * The three publish columns only make sense together — a CHECK
-     * constraint enforces that — so they are always written as one set.
-     */
-    const publishesToChannel =
-      data.discordPublishTarget === EventDiscordPublishTarget.CHANNEL;
-    if (publishesToChannel && !data.discordPublishChannelId)
-      return {
-        error: "Wähle einen Discord-Kanal aus.",
-        requestPayload: formData,
-      };
-
-    await prisma.eventTemplate.update({
-      where: { id: context.template.id },
-      data: {
-        name: data.name,
-        description: data.description || null,
-        coverImageId,
-        visibility: data.visibility,
-        visibilityRoles: {
-          deleteMany: {},
-          create: visibilityRoleIds.map((roleId) => ({ roleId })),
-        },
-        discordPublishTarget: data.discordPublishTarget ?? null,
-        discordPublishChannelId: publishesToChannel
-          ? (data.discordPublishChannelId ?? null)
-          : null,
-        discordPublishLocation:
-          data.discordPublishTarget === EventDiscordPublishTarget.EXTERNAL
-            ? data.discordPublishLocation || null
-            : null,
-        updatedById: citizenId,
-      },
-    });
 
     refresh();
 
-    if (isNewCover) probeUploadImageDimensions(coverImageId);
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.EVENT_TEMPLATE_UPDATED,
-        data: {
-          templateId: context.template.id,
-          previousName: context.template.name,
-          name: data.name,
-          visibility: data.visibility,
-          visibilityRoleIds,
-          coverImageChanged: coverImageId !== context.template.coverImageId,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
+    if (result.cover_image_changed && coverImageIdOrNull)
+      probeUploadImageDimensions(coverImageIdOrNull);
 
     return { success: t("Common.successfullySaved") };
   },
   {
-    parseFormData: (formData) => ({
-      templateId: formData.get("templateId"),
-      name: formData.get("name"),
-      description: formData.get("description") || undefined,
-      coverImageId: formData.get("coverImageId") ?? NO_COVER,
-      visibility: formData.get("visibility"),
-      visibilityRoleIds: formData.getAll("visibilityRole[]"),
-      ...parseDiscordPublishFields(formData),
-    }),
+    parseFormData: (formData) => {
+      const { name, description, visibility, visibility_role_ids } =
+        parseEventDetailsFormData(formData);
+      const {
+        discordPublishTarget,
+        discordPublishChannelId,
+        discordPublishLocation,
+      } = parseDiscordPublishFields(formData);
+
+      return {
+        template_id: formData.get("templateId"),
+        name,
+        description,
+        coverImageId: formData.get("coverImageId") ?? NO_COVER,
+        visibility,
+        visibility_role_ids,
+        discord_publish_target: discordPublishTarget,
+        discord_publish_channel_id: discordPublishChannelId,
+        discord_publish_location: discordPublishLocation,
+      };
+    },
   },
 );

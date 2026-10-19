@@ -1,81 +1,48 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  transferEventTemplateOwnershipInputSchema,
+  transferEventTemplateOwnership as transferEventTemplateOwnershipUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { getEventTemplateById } from "../queries/getEventTemplateById";
+import { EVENT_TEMPLATE_ERROR_TEXTS } from "../utils/eventTemplateErrorTexts";
 
-const schema = z.object({
-  templateId: z.cuid2(),
-  newOwnerId: z.cuid(),
-});
-
-/**
- * Hands the template on. Only the owner changes — the role shares stay, so
- * everyone who could use or edit the template still can. The previous owner
- * keeps nothing beyond what those shares grant them, which for a personal
- * template means they lose access entirely; the UI says so before
- * confirming.
- */
 export const transferEventTemplateOwnership = createAuthenticatedAction(
   "transferEventTemplateOwnership",
-  schema,
+  transferEventTemplateOwnershipInputSchema,
   async (formData, authentication, data, t) => {
-    const context = await getEventTemplateById(data.templateId);
-    if (!context) return rejectConflict("Vorlage nicht gefunden", formData);
-    if (context.template.deletedAt !== null)
-      return rejectConflict("Die Vorlage ist gelöscht.", formData);
-    if (!context.permissions.canManageShares)
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    if (data.newOwnerId === context.template.ownedById) {
-      /**
-       * Possibly a different tab or user transferred the template before, and
-       * the page must show it.
-       */
-      refresh();
-      return { success: t("Common.successfullySaved") };
+    try {
+      await transferEventTemplateOwnershipUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: EVENT_TEMPLATE_ERROR_TEXTS,
+      });
     }
 
     /**
-     * Any citizen may own a template — holding `event;create` is not
-     * required, mirroring the wiki's tolerance for an owner who cannot reach
-     * their own page.
+     * Also without a change: possibly a different tab or user transferred
+     * the template before, and the page must show it.
      */
-    const newOwner = await prisma.citizen.findUnique({
-      where: { id: data.newOwnerId },
-      select: { id: true },
-    });
-    if (!newOwner)
-      return { error: "Citizen nicht gefunden", requestPayload: formData };
-
-    await prisma.eventTemplate.update({
-      where: { id: context.template.id },
-      data: {
-        ownedById: newOwner.id,
-        updatedById: authentication.session.entity?.id ?? null,
-      },
-    });
-
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.EVENT_TEMPLATE_OWNERSHIP_TRANSFERRED,
-        data: {
-          templateId: context.template.id,
-          name: context.template.name,
-          previousOwnerId: context.template.ownedById,
-          newOwnerId: newOwner.id,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
     return { success: t("Common.successfullySaved") };
+  },
+  {
+    parseFormData: (formData) => ({
+      template_id: formData.get("templateId"),
+      new_owner_id: formData.get("newOwnerId"),
+    }),
   },
 );

@@ -52,7 +52,7 @@ export const EventTemplatesFilters = async () => {
         ]}
       />
 
-      {viewer?.hasEventManage && owners.length > 0 && (
+      {viewer.hasEventManage && owners.length > 0 && (
         <SingleSelectComboboxFilter
           name={EVENT_TEMPLATE_OWNER_PARAM}
           label="Besitzer"
