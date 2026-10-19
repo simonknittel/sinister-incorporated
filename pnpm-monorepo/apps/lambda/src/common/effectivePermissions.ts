@@ -1,47 +1,19 @@
+import { loadEffectivePermissionsOfCitizens } from "@sam-monorepo/application";
 import { prisma } from "@sam-monorepo/database";
 import type { Prisma } from "@sam-monorepo/database/client";
 import {
-  ACTIVE_CITIZEN_WHERE,
-  EFFECTIVE_ROLE_PERMISSIONS_SELECT,
   comparePermissionSets,
-  getPermissionSetsByRoles,
-  resolveEffectiveRoles,
   type PermissionSet,
 } from "@sam-monorepo/domain";
 
-export interface EffectivePermissions {
-  readonly roleIds: ReadonlySet<string>;
-  readonly permissionSets: PermissionSet[];
-}
-
 /**
  * Effective role ids and permission sets per citizen, with the same rule as
- * the session of the app: the level gate and the inherited roles (see
- * `resolveEffectiveRoles()`). The result has only the citizens that match
- * `where`, are not deleted and have role assignments.
+ * the session of the app (see `loadEffectivePermissionsOfCitizens()`). The
+ * result has only the citizens that match `where`, are not deleted and have
+ * role assignments.
  */
-export const loadEffectivePermissions = async (
-  where: Prisma.CitizenWhereInput,
-) => {
-  const assignments = await prisma.roleAssignment.findMany({
-    where: { citizen: { AND: [where, ACTIVE_CITIZEN_WHERE] } },
-    select: { citizenId: true, ...EFFECTIVE_ROLE_PERMISSIONS_SELECT },
-  });
-
-  const permissionsByCitizenId = new Map<string, EffectivePermissions>();
-  const assignmentsByCitizenId = Map.groupBy(
-    assignments,
-    (assignment) => assignment.citizenId,
-  );
-  for (const [citizenId, citizenAssignments] of assignmentsByCitizenId) {
-    const effectiveRoles = resolveEffectiveRoles(citizenAssignments);
-    permissionsByCitizenId.set(citizenId, {
-      roleIds: new Set(effectiveRoles.map((role) => role.id)),
-      permissionSets: getPermissionSetsByRoles(effectiveRoles),
-    });
-  }
-  return permissionsByCitizenId;
-};
+export const loadEffectivePermissions = (where: Prisma.CitizenWhereInput) =>
+  loadEffectivePermissionsOfCitizens({ prisma }, where);
 
 /**
  * The effective permissions of the citizens that match `where`, are not
