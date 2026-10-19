@@ -10,6 +10,9 @@ This package holds the shared implementations of the ports of the use cases. The
 | `createEventBridgeNotificationTrigger` | `notifications`                                                            |
 | `createEventBridgeEmitter`             | none: it sends the events of the trigger and the other events of the hosts |
 | `createEventBridgeClient`              | none: the client of the emitter, with timeouts                             |
+| `createDiscordGateway`                 | `discord`                                                                  |
+| `createS3Storage`                      | `storage`                                                                  |
+| `createS3Client`                       | none: the client of the storage, with timeouts                             |
 
 ## Rules
 

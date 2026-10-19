@@ -7,6 +7,10 @@ export {
   type PrismaAuditWriterOptions,
 } from "./audit/createPrismaAuditWriter.js";
 export {
+  createDiscordGateway,
+  type DiscordGatewayOptions,
+} from "./discord/createDiscordGateway.js";
+export {
   createEventBridgeClient,
   type EventBridgeClientOptions,
 } from "./eventbridge/createEventBridgeClient.js";
@@ -21,3 +25,11 @@ export {
   createEventBridgeNotificationTrigger,
   type EventBridgeNotificationTriggerOptions,
 } from "./notifications/createEventBridgeNotificationTrigger.js";
+export {
+  createS3Client,
+  type S3ClientOptions,
+} from "./storage/createS3Client.js";
+export {
+  createS3Storage,
+  type S3StorageOptions,
+} from "./storage/createS3Storage.js";

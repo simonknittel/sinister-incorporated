@@ -3,6 +3,7 @@ import "server-only";
 import { prisma } from "@/db";
 import { env } from "@/env";
 import { listChangelogEntriesAsMarkdown } from "@/modules/changelog/utils/listChangelogEntriesAsMarkdown";
+import { createS3Client } from "@/modules/common/utils/createS3Client";
 import { getPublicUploadBaseUrl } from "@/modules/common/utils/getPublicUploadUrl";
 import { EMBED_TOKEN_ALGORITHM } from "@/modules/embed-authentication/utils/constants";
 import { getEmbedSigningKey } from "@/modules/embed-authentication/utils/getEmbedSigningKey";
@@ -15,7 +16,15 @@ import {
   createApplicationUrls,
   type ApplicationContext,
 } from "@sam-monorepo/application";
-import { createPrismaAuditWriter } from "@sam-monorepo/infrastructure";
+import {
+  createDiscordGateway,
+  createPrismaAuditWriter,
+  createS3Storage,
+} from "@sam-monorepo/infrastructure";
+
+/** The S3 client needs one of the two. Without them, the app has no bucket. */
+const hasS3Endpoint = () =>
+  env.S3_ENDPOINT !== undefined || Boolean(env.S3_ACCOUNT_ID);
 
 const createApplicationContext = (): ApplicationContext => ({
   prisma,
@@ -28,8 +37,26 @@ const createApplicationContext = (): ApplicationContext => ({
   collab: getWikiCollabUrl()
     ? { replaceContent: replaceWikiPageContent }
     : null,
-  discord: null,
-  storage: null,
+  discord: createDiscordGateway({
+    apiBaseUrl: env.DISCORD_API_BASE_URL,
+    botToken: env.DISCORD_TOKEN,
+    guildId: env.DISCORD_GUILD_ID,
+    userAgent: `DiscordBot (${env.NEXT_PUBLIC_BASE_URL}, ${env.COMMIT_SHA ?? "0.0.0"})`,
+    // A publish runs in an interactive request, thus a hanging Discord must
+    // not hold the request open for long
+    requestTimeoutMilliseconds: 10_000,
+    // One short wait is enough for the low volume of a publish. A longer wait
+    // is a failure, and the request does not block further.
+    rateLimitRetry: { maximumRetryCount: 1, maximumWaitSeconds: 5 },
+    log,
+    tracer: getTracer(),
+  }),
+  storage: hasS3Endpoint()
+    ? createS3Storage({
+        client: createS3Client(),
+        bucketName: env.S3_BUCKET_NAME,
+      })
+    : null,
   urls: createApplicationUrls({
     baseUrl: env.NEXT_PUBLIC_BASE_URL,
     publicUploadBaseUrl: getPublicUploadBaseUrl(),
