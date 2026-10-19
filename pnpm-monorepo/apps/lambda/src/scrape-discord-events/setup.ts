@@ -13,7 +13,15 @@ const environmentSchema = z.object({
     .default("postgresql://postgres:admin@localhost:5432/db"),
   DISCORD_GUILD_ID: z.string(),
   DISCORD_BOT_TOKEN: z.string(),
+  /** With its path, without a trailing slash */
+  DISCORD_API_BASE_URL: z.url().default("https://discord.com/api/v10"),
   AWS_EVENT_BUS_ARN: z.string().nullish(),
+  /**
+   * The URLs of the application context. The sync reads none of them yet.
+   * Terraform sets them when a use case of this function needs a URL.
+   */
+  BASE_URL: z.url().default("http://localhost:3000"),
+  PUBLIC_UPLOAD_BASE_URL: z.url().default("http://localhost:9000/uploads"),
 });
 
 const setup = async () => {

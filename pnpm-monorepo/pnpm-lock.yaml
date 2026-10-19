@@ -452,9 +452,6 @@ importers:
       aws-xray-sdk-core:
         specifier: 3.12.0
         version: 3.12.0
-      lodash:
-        specifier: 4.18.1
-        version: 4.18.1
       mailgun.js:
         specifier: 14.0.1
         version: 14.0.1(debug@4.4.3)
@@ -483,9 +480,6 @@ importers:
       '@types/aws-lambda':
         specifier: 8.10.164
         version: 8.10.164
-      '@types/lodash':
-        specifier: 4.17.25
-        version: 4.17.25
       '@types/node':
         specifier: 24.19.1
         version: 24.19.1

@@ -108,6 +108,10 @@ export {
   type ListEventsInput,
   type ListEventsOutput,
 } from "./listEvents.js";
+export {
+  notifyEventsStartingSoon,
+  type NotifyEventsStartingSoonOutput,
+} from "./notifyEventsStartingSoon.js";
 export { findNewEventIds, getOpenEventsWhere } from "./openEvents.js";
 export {
   findOwnEventParticipation,
@@ -131,6 +135,10 @@ export {
   type RemoveEventParticipantOutput,
 } from "./removeEventParticipant.js";
 export { signUpForEvent } from "./signUpForEvent.js";
+export {
+  syncDiscordEvents,
+  type SyncDiscordEventsOutput,
+} from "./syncDiscordEvents.js";
 export {
   EventChange,
   updateEvent,

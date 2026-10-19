@@ -11,17 +11,29 @@ const environmentSchema = z.object({
     .url()
     .default("postgresql://postgres:admin@localhost:5432/db"),
   AWS_EVENT_BUS_ARN: z.string().nullish(),
+  /**
+   * The URLs of the application context. No job reads them yet. Terraform sets
+   * them when a use case of this function needs a URL.
+   */
+  BASE_URL: z.url().default("http://localhost:3000"),
+  PUBLIC_UPLOAD_BASE_URL: z.url().default("http://localhost:9000/uploads"),
 });
 
-export const setup = async () => {
+const setup = async () => {
   const parameters = await fetchParameters(parameterMap);
 
+  // Also mutated into process.env because the database package reads its
+  // configuration from there.
   process.env = {
     ...process.env,
     ...parameters,
   };
 
-  environmentSchema.parse(process.env);
+  return environmentSchema.parse(process.env);
 };
 
-await setup();
+/**
+ * Validated environment. Importing it guarantees the SSM parameters were
+ * fetched and validated first (top-level await).
+ */
+export const env = await setup();

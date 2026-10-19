@@ -63,7 +63,6 @@ export {
   type NewPositionFields,
   type PositionChange,
 } from "./positionFields.js";
-export { TEMPLATE_POSITION_TREE_INCLUDE } from "./positionTreeInclude.js";
 export {
   renameLineupPosition,
   renameLineupPositionInputSchema,

@@ -1,6 +1,5 @@
 import { env } from "./midnight-automations/setup"; // must be first
 
-import type { ApplicationContext } from "@sam-monorepo/application";
 import {
   autoAssignInactiveRoles,
   countCitizensPerRole,
@@ -14,9 +13,8 @@ import {
 } from "@sam-monorepo/application";
 import type { ScheduledHandler } from "aws-lambda";
 import { createApplicationContext } from "./common/createApplicationContext";
-import { log } from "./common/logger";
+import { createJobFactory } from "./common/createJob";
 import { runJobsInIsolation } from "./common/runJobsInIsolation";
-import { captureAsyncFunc } from "./common/xray";
 import { archiveIrrelevantOnSiteNotifications } from "./midnight-automations/archiveIrrelevantOnSiteNotifications";
 import { countShips } from "./midnight-automations/countShips";
 import { deleteUnusedUploads } from "./midnight-automations/deleteUnusedUploads";
@@ -29,18 +27,7 @@ const context = createApplicationContext({
   publicUploadBaseUrl: env.PUBLIC_UPLOAD_BASE_URL,
 });
 
-/**
- * Runs an automation of the application package as a job.
- * `runJobsInIsolation()` gives the key of the job as its name in the logs and
- * in X-Ray.
- */
-const createJob =
-  (automation: (context: ApplicationContext) => Promise<object>) =>
-  (name: string) =>
-    captureAsyncFunc(name, async () => {
-      const output = await automation(context);
-      log.info("Job finished", { job: name, ...output });
-    });
+const createJob = createJobFactory(context);
 
 export const handler: ScheduledHandler = async () =>
   runJobsInIsolation({
