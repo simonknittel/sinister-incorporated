@@ -6,9 +6,9 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
-import { EVENT_ERROR_TEXTS } from "@/modules/events/utils/eventErrorTexts";
 import { probeUploadImageDimensions } from "@/modules/common/utils/probeUploadImageDimensions";
 import { parseDiscordPublishFields } from "@/modules/events/utils/discordPublishFields";
+import { EVENT_ERROR_TEXTS } from "@/modules/events/utils/eventErrorTexts";
 import { parseEventDetailsFormData } from "@/modules/events/utils/eventFormData";
 import {
   idSchema,

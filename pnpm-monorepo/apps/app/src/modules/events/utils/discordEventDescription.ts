@@ -25,12 +25,3 @@ export const PLACEHOLDER_EVENT_URL = `${getEventUrl("")}…`;
  * cannot save a changed title either, and reads only "bad request".
  */
 export const DESCRIPTION_TOO_LONG_TEXT = `Die Kurzbeschreibung ist länger als die ${EVENT_DESCRIPTION_MAX_LENGTH.toLocaleString("de-DE")} Zeichen, die zusammen mit dem Hinweis zur Anmeldung auf Discord passen. Kürze sie, um zu speichern.`;
-
-/**
- * Why a description of an event template cannot be saved, or null when it
- * fits. The event actions get the same check from the use cases.
- */
-export const findDescriptionProblem = (description: string | undefined) =>
-  description && description.length > EVENT_DESCRIPTION_MAX_LENGTH
-    ? DESCRIPTION_TOO_LONG_TEXT
-    : null;

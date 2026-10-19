@@ -6,8 +6,8 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
-import { EVENT_ERROR_TEXTS } from "@/modules/events/utils/eventErrorTexts";
 import { probeUploadImageDimensions } from "@/modules/common/utils/probeUploadImageDimensions";
+import { EVENT_ERROR_TEXTS } from "@/modules/events/utils/eventErrorTexts";
 import {
   createEventTemplateInputSchema,
   createEventTemplate as createEventTemplateUseCase,

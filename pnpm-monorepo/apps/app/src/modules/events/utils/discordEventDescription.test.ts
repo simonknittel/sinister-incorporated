@@ -37,33 +37,6 @@ describe("buildDiscordEventDescription", () => {
   });
 });
 
-describe("findDescriptionProblem", () => {
-  test("passes a description inside the limit", async () => {
-    const { EVENT_DESCRIPTION_MAX_LENGTH, findDescriptionProblem } =
-      await importModule();
-
-    expect(
-      findDescriptionProblem("a".repeat(EVENT_DESCRIPTION_MAX_LENGTH)),
-    ).toBeNull();
-    expect(findDescriptionProblem(undefined)).toBeNull();
-  });
-
-  /**
-   * The browser keeps a field inside `maxLength` only while somebody types
-   * in it, thus a description stored before the limit became smaller reaches
-   * the actions untouched. The message must name the field, or the manager
-   * reads only "bad request" and cannot save a changed title either.
-   */
-  test("names the field for a description from before the smaller limit", async () => {
-    const { EVENT_DESCRIPTION_MAX_LENGTH, findDescriptionProblem } =
-      await importModule();
-
-    expect(
-      findDescriptionProblem("a".repeat(EVENT_DESCRIPTION_MAX_LENGTH + 1)),
-    ).toContain("Kurzbeschreibung");
-  });
-});
-
 describe("EVENT_DESCRIPTION_MAX_LENGTH", () => {
   test("leaves room for the note inside Discord's cap", async () => {
     const { EVENT_DESCRIPTION_MAX_LENGTH } = await importModule();
