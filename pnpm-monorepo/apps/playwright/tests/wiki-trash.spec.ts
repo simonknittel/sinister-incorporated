@@ -8,10 +8,10 @@ import {
   wikiParagraph,
 } from "../fixtures/factories";
 import {
-  BAD_REQUEST_TEXT,
   clickUntilVisible,
   modal,
   NOT_FOUND_TEXT,
+  RESOURCE_NOT_FOUND_TEXT,
   waitForAppShellHydration,
 } from "../fixtures/interactions";
 import { expect, test } from "../fixtures/test";
@@ -164,7 +164,7 @@ test("a page that a different manager restored first leaves the trash", async ({
    * a navigation
    */
   await trashRow.getByRole("button", { name: "Wiederherstellen" }).click();
-  await expect(page.getByText(BAD_REQUEST_TEXT)).toBeVisible();
+  await expect(page.getByText(RESOURCE_NOT_FOUND_TEXT)).toBeVisible();
   await expect(page.getByText("Der Papierkorb ist leer")).toBeVisible();
 });
 

@@ -9,7 +9,6 @@ import {
 import {
   updateWikiPageTagsInputSchema,
   updateWikiPageTags as updateWikiPageTagsUseCase,
-  WikiErrorMessage,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
@@ -28,13 +27,7 @@ export const updateWikiPageTags = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: {
-          ...WIKI_ERROR_TEXTS,
-          /**
-           * The text for a page that a different user or tab deleted before
-           */
-          [WikiErrorMessage.PageNotFound]: t("Common.badRequest"),
-        },
+        texts: WIKI_ERROR_TEXTS,
       });
     }
 

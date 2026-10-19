@@ -9,7 +9,6 @@ import {
 import {
   restoreWikiPageInputSchema,
   restoreWikiPage as restoreWikiPageUseCase,
-  WikiErrorMessage,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
@@ -29,14 +28,7 @@ export const restoreWikiPage = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: {
-          ...WIKI_ERROR_TEXTS,
-          /**
-           * The text of the trash for a page that a different user or tab
-           * restored or deleted before
-           */
-          [WikiErrorMessage.PageNotFound]: t("Common.badRequest"),
-        },
+        texts: WIKI_ERROR_TEXTS,
       });
     }
 
