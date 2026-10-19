@@ -1,10 +1,10 @@
-import { EventSource } from "@sam-monorepo/database/client";
+import { EventSource } from "@sam-monorepo/database/browser";
 import { describe, expect, test } from "vitest";
 import {
   diffParticipants,
   excludeAppPublishedEvents,
   selectCancelledDiscordEvents,
-} from "./reconciliation";
+} from "./discordEventReconciliation.js";
 
 describe("excludeAppPublishedEvents", () => {
   test("drops the guild events the app published itself", () => {
