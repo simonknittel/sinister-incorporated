@@ -3,13 +3,10 @@ import { EventContainerKind, type EventContainer } from "@sam-monorepo/domain";
 export {
   eventContainerColumns,
   EventContainerKind,
-  getPositionContainer,
-  getWikiPageContainer,
   toEventContainer,
   toTemplateContainer,
   wikiContainerColumns,
   type EventContainer,
-  type EventContainerColumns,
 } from "@sam-monorepo/domain";
 
 /** Where the container's briefing is rendered */

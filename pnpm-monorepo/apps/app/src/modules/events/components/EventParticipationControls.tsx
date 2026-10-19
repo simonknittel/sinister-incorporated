@@ -9,6 +9,7 @@ import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { cancelEventParticipation } from "@/modules/events/actions/cancelEventParticipation";
 import { signUpForEvent } from "@/modules/events/actions/signUpForEvent";
 import { updateEventParticipationComment } from "@/modules/events/actions/updateEventParticipationComment";
+import { EVENT_PARTICIPATION_TEXT_MAX_LENGTH } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useState } from "react";
 import { FaCheck, FaSave, FaSignInAlt, FaTimes } from "react-icons/fa";
@@ -124,8 +125,8 @@ export const EventParticipationControls = ({
           <Textarea
             name="comment"
             label="Kommentar"
-            hint="optional, max. 500 Zeichen"
-            maxLength={500}
+            hint={`optional, max. ${EVENT_PARTICIPATION_TEXT_MAX_LENGTH} Zeichen`}
+            maxLength={EVENT_PARTICIPATION_TEXT_MAX_LENGTH}
             value={signUpComment}
             onChange={(changeEvent) =>
               setSignUpComment(changeEvent.target.value)
@@ -148,8 +149,8 @@ export const EventParticipationControls = ({
             <Textarea
               name="comment"
               label="Kommentar"
-              hint="optional, max. 500 Zeichen"
-              maxLength={500}
+              hint={`optional, max. ${EVENT_PARTICIPATION_TEXT_MAX_LENGTH} Zeichen`}
+              maxLength={EVENT_PARTICIPATION_TEXT_MAX_LENGTH}
               value={commentDraft}
               onChange={(changeEvent) =>
                 setCommentDraft(changeEvent.target.value)

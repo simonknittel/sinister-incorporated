@@ -7,10 +7,10 @@ import {
   toActor,
 } from "@/modules/application";
 import { probeUploadImageDimensions } from "@/modules/common/utils/probeUploadImageDimensions";
-import { EVENT_TEMPLATE_ERROR_TEXTS } from "@/modules/event-templates/utils/eventTemplateErrorTexts";
 import {
   createEventInputSchema,
   createEvent as createEventUseCase,
+  discordPublishFieldsShape,
   DiscordSyncOutcome,
   idSchema,
   type CreateEventOutput,
@@ -18,10 +18,7 @@ import {
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import * as z from "zod";
-import {
-  discordPublishFieldsSchema,
-  parseDiscordPublishFields,
-} from "../utils/discordPublishFields";
+import { parseDiscordPublishFields } from "../utils/discordPublishFields";
 import {
   DISCORD_PUBLISH_FAILED_PARAM,
   getEventPath,
@@ -48,7 +45,7 @@ const schema = createEventInputSchema.extend({
    * "do not publish"; a template's preference reaches the action by
    * prefilling these fields, so clearing them in the form still wins.
    */
-  ...discordPublishFieldsSchema.shape,
+  ...discordPublishFieldsShape,
 });
 
 export const createEvent = createAuthenticatedAction(
@@ -59,9 +56,9 @@ export const createEvent = createAuthenticatedAction(
       coverImageId,
       templateId,
       keepTemplateCover,
-      discordPublishTarget,
-      discordPublishChannelId,
-      discordPublishLocation,
+      discord_publish_target,
+      discord_publish_channel_id,
+      discord_publish_location,
       ...input
     } = data;
 
@@ -79,11 +76,11 @@ export const createEvent = createAuthenticatedAction(
                 copiesCover: keepTemplateCover === true && !coverImageId,
               }
             : undefined,
-          discordPublication: discordPublishTarget
+          discordPublication: discord_publish_target
             ? {
-                target: discordPublishTarget,
-                channelId: discordPublishChannelId,
-                location: discordPublishLocation,
+                target: discord_publish_target,
+                channelId: discord_publish_channel_id,
+                location: discord_publish_location,
               }
             : undefined,
         },
@@ -92,7 +89,7 @@ export const createEvent = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: { ...EVENT_ERROR_TEXTS, ...EVENT_TEMPLATE_ERROR_TEXTS },
+        texts: EVENT_ERROR_TEXTS,
       });
     }
     const eventId = result.event.id;

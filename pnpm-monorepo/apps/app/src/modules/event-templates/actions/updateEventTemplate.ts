@@ -18,10 +18,6 @@ import {
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import * as z from "zod";
-import { EVENT_TEMPLATE_ERROR_TEXTS } from "../utils/eventTemplateErrorTexts";
-
-/** The use case also throws the event errors of the description, the visibility roles and the cover image */
-const ERROR_TEXTS = { ...EVENT_ERROR_TEXTS, ...EVENT_TEMPLATE_ERROR_TEXTS };
 
 /** The empty marker the cover field submits when no image is selected */
 const NO_COVER = "";
@@ -49,7 +45,7 @@ export const updateEventTemplate = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: ERROR_TEXTS,
+        texts: EVENT_ERROR_TEXTS,
       });
     }
 
@@ -64,11 +60,6 @@ export const updateEventTemplate = createAuthenticatedAction(
     parseFormData: (formData) => {
       const { name, description, visibility, visibility_role_ids } =
         parseEventDetailsFormData(formData);
-      const {
-        discordPublishTarget,
-        discordPublishChannelId,
-        discordPublishLocation,
-      } = parseDiscordPublishFields(formData);
 
       return {
         template_id: formData.get("templateId"),
@@ -77,9 +68,7 @@ export const updateEventTemplate = createAuthenticatedAction(
         coverImageId: formData.get("coverImageId") ?? NO_COVER,
         visibility,
         visibility_role_ids,
-        discord_publish_target: discordPublishTarget,
-        discord_publish_channel_id: discordPublishChannelId,
-        discord_publish_location: discordPublishLocation,
+        ...parseDiscordPublishFields(formData),
       };
     },
   },

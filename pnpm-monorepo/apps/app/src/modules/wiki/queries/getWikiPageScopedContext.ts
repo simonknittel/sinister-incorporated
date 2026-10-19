@@ -1,10 +1,8 @@
 import { prisma } from "@/db";
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import {
-  getBriefingPath,
-  getWikiPageContainer,
-} from "@/modules/events/utils/eventContainer";
+import { getBriefingPath } from "@/modules/events/utils/eventContainer";
 import { WikiPageNamespace } from "@sam-monorepo/database/client";
+import { getEventContainerOfRow } from "@sam-monorepo/domain";
 import { WikiScope } from "../utils/wikiPageHref";
 import {
   getEventWikiContext,
@@ -42,7 +40,7 @@ export const getWikiPageScopedContext = async (
   switch (record.namespace) {
     case WikiPageNamespace.EVENT: {
       /** The CHECK constraint guarantees one container on EVENT rows */
-      const container = getWikiPageContainer(record);
+      const container = getEventContainerOfRow(record);
       if (!container) return null;
       const context = await getEventWikiContext(container);
       return context ? { scope: WikiScope.Event, context } : null;

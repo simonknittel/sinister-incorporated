@@ -1,10 +1,8 @@
 import { prisma } from "@/db";
 import { authenticate } from "@/modules/auth/server";
-import type {
-  EventCitizenReference,
-  EventParticipantRow,
-} from "@/modules/events/queries/eventRelationSelects";
+import type { EventCitizenReference } from "@/modules/events/queries/eventRelationSelects";
 import { isAllowedToManageEvent } from "@/modules/events/utils/isAllowedToManageEvent";
+import type { EventParticipantRow } from "@sam-monorepo/application";
 import {
   WikiPageEventScope,
   WikiPageNamespace,

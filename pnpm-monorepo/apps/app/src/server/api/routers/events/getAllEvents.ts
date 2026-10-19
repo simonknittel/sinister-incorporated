@@ -1,8 +1,6 @@
 import { getApplicationContext, toActor } from "@/modules/application";
-import { log } from "@/modules/logging";
 import { findEventOptions } from "@sam-monorepo/application";
-import { TRPCError } from "@trpc/server";
-import { protectedProcedure } from "../../trpc";
+import { protectedProcedure, toTrpcError } from "../../trpc";
 
 export const getAllEvents = protectedProcedure.query(async ({ ctx }) => {
   try {
@@ -11,13 +9,6 @@ export const getAllEvents = protectedProcedure.query(async ({ ctx }) => {
       await toActor(ctx.session),
     );
   } catch (error) {
-    log.error("Failed to fetch all events", {
-      error,
-    });
-
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Failed to fetch all events",
-    });
+    throw toTrpcError(error, "Failed to fetch all events");
   }
 });

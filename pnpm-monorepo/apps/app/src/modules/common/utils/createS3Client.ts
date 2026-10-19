@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { S3Client } from "@aws-sdk/client-s3";
+import { createS3Client as createS3ClientWithOptions } from "@sam-monorepo/infrastructure";
 
 /**
  * S3 client for the uploads bucket. The endpoint is either an explicit
@@ -16,20 +16,9 @@ export const createS3Client = () => {
   if (!endpoint)
     throw new Error("S3 is not configured: set S3_ENDPOINT or S3_ACCOUNT_ID");
 
-  return new S3Client({
-    region: "auto",
+  return createS3ClientWithOptions({
     endpoint,
     forcePathStyle: env.S3_ENDPOINT !== undefined,
-    /**
-     * Since the SDK's data integrity protections (3.729.0), presigned PUT
-     * URLs embed a CRC32 checksum of the empty command body. R2 ignores it,
-     * but stricter S3-compatible providers reject the browser's actual
-     * upload body with BadDigest. WHEN_REQUIRED restores the previous
-     * behavior — the recommended setting for S3-compatible providers,
-     * including R2.
-     */
-    requestChecksumCalculation: "WHEN_REQUIRED",
-    responseChecksumValidation: "WHEN_REQUIRED",
     credentials: {
       accessKeyId: env.S3_ACCESS_KEY_ID,
       secretAccessKey: env.S3_SECRET_ACCESS_KEY,

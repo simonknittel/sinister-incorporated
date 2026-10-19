@@ -3,7 +3,8 @@ import "server-only";
 import { getApplicationContext } from "@/modules/application";
 import {
   DiscordSyncOutcome,
-  syncEventDiscordPublication,
+  EventErrorMessage,
+  syncEventDiscordPublication as syncEventDiscordPublicationUseCase,
   type DiscordSyncResult,
 } from "@sam-monorepo/application";
 import {
@@ -12,22 +13,14 @@ import {
   GuildScheduledEventContentProblem,
 } from "@sam-monorepo/domain";
 import { EVENT_DESCRIPTION_MAX_LENGTH } from "./discordEventDescription";
-import { getEventUrl } from "./eventConstraints";
-import { EVENT_NOT_FOUND_TEXT } from "./lineupErrorTexts";
-
-/**
- * The location an external event falls back to: the event's own page, which
- * is what a guild member reading the Discord entry actually wants.
- */
-export const getDefaultExternalLocation = (eventId: string) =>
-  getEventUrl(eventId);
+import { EVENT_ERROR_TEXTS } from "./eventErrorTexts";
 
 /**
  * See `syncEventDiscordPublication()`. Only for the upload route of the
  * cover image, which checks that the user can manage the event before.
  */
-export const syncDiscordEventPublication = (eventId: string) =>
-  syncEventDiscordPublication(getApplicationContext(), eventId);
+export const syncEventDiscordPublication = (eventId: string) =>
+  syncEventDiscordPublicationUseCase(getApplicationContext(), eventId);
 
 const getProblemMessage = (problem: GuildScheduledEventContentProblem) => {
   switch (problem) {
@@ -93,7 +86,7 @@ export const getDiscordCoverImageWarning = (result: DiscordSyncResult) =>
 export const getDiscordPublishError = (result: DiscordSyncResult) => {
   switch (result.outcome) {
     case DiscordSyncOutcome.Skipped:
-      return EVENT_NOT_FOUND_TEXT;
+      return EVENT_ERROR_TEXTS[EventErrorMessage.NotFound];
 
     case DiscordSyncOutcome.Rejected:
       return getProblemMessage(result.problem);

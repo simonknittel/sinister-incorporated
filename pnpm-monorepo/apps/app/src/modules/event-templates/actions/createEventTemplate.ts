@@ -17,10 +17,6 @@ import {
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { getEventTemplatePath } from "../utils/eventTemplateConstraints";
-import { EVENT_TEMPLATE_ERROR_TEXTS } from "../utils/eventTemplateErrorTexts";
-
-/** The use case also throws the event errors of the description and the cover image */
-const ERROR_TEXTS = { ...EVENT_ERROR_TEXTS, ...EVENT_TEMPLATE_ERROR_TEXTS };
 
 /** The use case takes the details. The cover image is only in the app. */
 const schema = createEventTemplateInputSchema.extend({
@@ -43,7 +39,7 @@ export const createEventTemplate = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: ERROR_TEXTS,
+        texts: EVENT_ERROR_TEXTS,
       });
     }
 

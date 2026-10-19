@@ -11,7 +11,7 @@ import {
   renameLineupPositionInputSchema,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { LINEUP_ERROR_TEXTS } from "../utils/lineupErrorTexts";
+import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
 export const updateEventPositionName = createAuthenticatedAction(
   "updateEventPositionName",
@@ -27,7 +27,7 @@ export const updateEventPositionName = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: LINEUP_ERROR_TEXTS,
+        texts: EVENT_ERROR_TEXTS,
       });
     }
 

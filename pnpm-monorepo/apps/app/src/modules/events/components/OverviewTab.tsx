@@ -1,12 +1,10 @@
 import { requireAuthentication } from "@/modules/auth/server";
 import { Tile } from "@/modules/common/components/Tile";
-import type {
-  EventCitizenReference,
-  EventParticipantRow,
-} from "@/modules/events/queries/eventRelationSelects";
+import type { EventCitizenReference } from "@/modules/events/queries/eventRelationSelects";
 import type { VariantTagBadgeItem } from "@/modules/fleet/queries/shipQuery";
 import type { BadgeRole } from "@/modules/roles/queries/getRoles";
 import { getAssignedRoles } from "@/modules/roles/utils/getRoles";
+import type { EventParticipantRow } from "@sam-monorepo/application";
 import { EventSource, type Event } from "@sam-monorepo/database/client";
 import clsx from "clsx";
 import { getEventFleet } from "../utils/getEventFleet";

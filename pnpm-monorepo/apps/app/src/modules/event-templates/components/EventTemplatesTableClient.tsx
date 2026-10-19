@@ -6,10 +6,10 @@ import {
   TableTile,
   type TableColumn,
 } from "@/modules/common/components/TableTile";
+import type { EventTemplateListEntry } from "@sam-monorepo/application";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import type { EventTemplateListEntry } from "../queries/getEventTemplates";
 import { EventTemplateRow } from "./EventTemplateRow";
 
 /**

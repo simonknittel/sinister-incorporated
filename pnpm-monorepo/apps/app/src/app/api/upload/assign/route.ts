@@ -7,7 +7,7 @@ import { probeUploadImageDimensions } from "@/modules/common/utils/probeUploadIm
 import {
   getDiscordCoverImageWarning,
   getDiscordSyncWarning,
-  syncDiscordEventPublication,
+  syncEventDiscordPublication,
 } from "@/modules/events/utils/discordPublishing";
 import { isAllowedToManageEvent } from "@/modules/events/utils/isAllowedToManageEvent";
 import { isEventUpdatable } from "@/modules/events/utils/isEventUpdatable";
@@ -203,7 +203,7 @@ export async function PATCH(request: Request) {
        * already assigned above, so a Discord problem only travels back as a
        * warning the uploader sees.
        */
-      const discordResult = await syncDiscordEventPublication(event.id);
+      const discordResult = await syncEventDiscordPublication(event.id);
       const discordWarning =
         getDiscordSyncWarning(discordResult) ??
         getDiscordCoverImageWarning(discordResult);

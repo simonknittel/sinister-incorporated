@@ -4,8 +4,6 @@ import {
 } from "@sam-monorepo/application";
 import { parseAsString, parseAsStringEnum } from "nuqs/server";
 
-export { EventTemplateSharing, EventTemplateStatus };
-
 export const EVENT_TEMPLATE_STATUS_PARAM = "status";
 export const EVENT_TEMPLATE_SHARING_PARAM = "sharing";
 export const EVENT_TEMPLATE_OWNER_PARAM = "owner";

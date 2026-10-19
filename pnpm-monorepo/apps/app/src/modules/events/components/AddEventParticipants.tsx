@@ -8,6 +8,7 @@ import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { Textarea } from "@/modules/common/components/form/Textarea";
 import { api } from "@/trpc/react";
 import type { Event } from "@sam-monorepo/database/browser";
+import { EVENT_PARTICIPATION_TEXT_MAX_LENGTH } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useState } from "react";
 import { FaPlus, FaSave } from "react-icons/fa";
@@ -87,8 +88,8 @@ export const AddEventParticipants = ({ className, eventId }: Props) => {
             className="mt-4"
             name="comment"
             label="Kommentar"
-            hint="optional, max. 500 Zeichen"
-            maxLength={500}
+            hint={`optional, max. ${EVENT_PARTICIPATION_TEXT_MAX_LENGTH} Zeichen`}
+            maxLength={EVENT_PARTICIPATION_TEXT_MAX_LENGTH}
             classNameTextarea="h-20"
           />
 

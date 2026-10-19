@@ -15,10 +15,6 @@ import {
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { getEventTemplatePath } from "../utils/eventTemplateConstraints";
-import { EVENT_TEMPLATE_ERROR_TEXTS } from "../utils/eventTemplateErrorTexts";
-
-/** The use case also throws the event errors of the source event */
-const ERROR_TEXTS = { ...EVENT_ERROR_TEXTS, ...EVENT_TEMPLATE_ERROR_TEXTS };
 
 export const createEventTemplateFromEvent = createAuthenticatedAction(
   "createEventTemplateFromEvent",
@@ -35,7 +31,7 @@ export const createEventTemplateFromEvent = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: ERROR_TEXTS,
+        texts: EVENT_ERROR_TEXTS,
       });
     }
 

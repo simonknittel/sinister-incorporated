@@ -16,7 +16,7 @@ import {
   EVENT_CONTAINER_ID_FIELD,
   EVENT_CONTAINER_KIND_FIELD,
 } from "../utils/eventContainer";
-import { LINEUP_ERROR_TEXTS } from "../utils/lineupErrorTexts";
+import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
 /** The tree that the lineup editor sends */
 export interface MappedPosition {
@@ -53,7 +53,7 @@ export const updateEventLineupOrder = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: LINEUP_ERROR_TEXTS,
+        texts: EVENT_ERROR_TEXTS,
       });
     }
 

@@ -2,7 +2,6 @@
 
 import { formatDate } from "@/modules/common/utils/formatDate";
 import { underlineCharacters } from "@/modules/common/utils/underlineCharacters";
-import type { EventOption } from "@/modules/events/queries/getAllEvents";
 import { api } from "@/trpc/react";
 import {
   Combobox,
@@ -10,6 +9,7 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from "@headlessui/react";
+import type { EventOption } from "@sam-monorepo/application";
 import type { Event } from "@sam-monorepo/database/browser";
 import clsx from "clsx";
 import Fuse, { type FuseResult } from "fuse.js";

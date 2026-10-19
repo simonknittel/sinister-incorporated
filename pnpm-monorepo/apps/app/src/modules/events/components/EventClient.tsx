@@ -8,12 +8,10 @@ import { RelativeDate } from "@/modules/common/components/RelativeDate";
 import { UnreadEdge } from "@/modules/common/components/UnreadEdge";
 import { formatDate } from "@/modules/common/utils/formatDate";
 import { getPublicUploadUrl } from "@/modules/common/utils/getPublicUploadUrl";
-import type {
-  EventCoverImage,
-  EventParticipantRow,
-} from "@/modules/events/queries/eventRelationSelects";
+import type { EventCoverImage } from "@/modules/events/queries/eventRelationSelects";
 import { NewMarkerButton } from "@/modules/read-markers/components/NewMarkerButton";
 import { useMarkAsRead } from "@/modules/read-markers/hooks/useMarkAsRead";
+import type { EventParticipantRow } from "@sam-monorepo/application";
 import {
   EventSource,
   type Event as PrismaEvent,

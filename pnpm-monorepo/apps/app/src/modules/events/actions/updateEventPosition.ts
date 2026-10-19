@@ -11,7 +11,7 @@ import {
   updateLineupPosition,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { LINEUP_ERROR_TEXTS } from "../utils/lineupErrorTexts";
+import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
 /** The lineup editor also changes the positions of an event template */
 export const updateEventPosition = createAuthenticatedAction(
@@ -28,7 +28,7 @@ export const updateEventPosition = createAuthenticatedAction(
       return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-        texts: LINEUP_ERROR_TEXTS,
+        texts: EVENT_ERROR_TEXTS,
       });
     }
 

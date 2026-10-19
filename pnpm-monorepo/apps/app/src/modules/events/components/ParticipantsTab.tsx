@@ -14,11 +14,9 @@ import {
   sortAscWithAndNullLast,
   sortDescAndNullLast,
 } from "@/modules/common/utils/sorting";
-import type {
-  EventCitizenReference,
-  EventParticipantRow,
-} from "@/modules/events/queries/eventRelationSelects";
+import type { EventCitizenReference } from "@/modules/events/queries/eventRelationSelects";
 import { CreateOrUpdateSilcTransaction } from "@/modules/silc/components/CreateOrUpdateSilcTransaction";
+import type { EventParticipantRow } from "@sam-monorepo/application";
 import { EventSource, type Event } from "@sam-monorepo/database/client";
 import { DELETED_CITIZEN_LABEL } from "@sam-monorepo/domain";
 import clsx from "clsx";

@@ -1,8 +1,8 @@
 import {
   getBriefingPath,
-  getWikiPageContainer,
   type EventContainer,
 } from "@/modules/events/utils/eventContainer";
+import { getEventContainerOfRow } from "@sam-monorepo/domain";
 
 /**
  * The wiki UI serves three homes: the global wiki app, the briefing wikis of
@@ -149,7 +149,7 @@ export const getWikiPageRouteHref = (page: {
   readonly eventId: string | null;
   readonly templateId: string | null;
 }) => {
-  const container = getWikiPageContainer(page);
+  const container = getEventContainerOfRow(page);
 
   return container
     ? `${getBriefingPath(container)}/${page.id}/${page.slug}`

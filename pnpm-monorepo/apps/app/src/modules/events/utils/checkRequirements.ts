@@ -1,11 +1,11 @@
-import type { EventCitizenWithShips } from "@/modules/events/queries/eventRelationSelects";
+import type { EventLineupCitizen } from "@sam-monorepo/application";
 import type { Ship } from "@sam-monorepo/database/client";
 import type { PositionType } from "../components/Position";
 
 export const checkRequirements = (
   position: PositionType,
   myShips: readonly Pick<Ship, "variantId">[],
-  allEventCitizens: EventCitizenWithShips[],
+  allEventCitizens: EventLineupCitizen[],
 ) => {
   let doesCurrentUserSatisfyRequirements = true;
   if (

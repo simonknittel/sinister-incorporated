@@ -17,6 +17,10 @@ import type {
   EventPositionRequiredVariant,
   Variant,
 } from "@sam-monorepo/database/browser";
+import {
+  MAXIMUM_POSITION_DESCRIPTION_LENGTH,
+  MAXIMUM_POSITION_NAME_LENGTH,
+} from "@sam-monorepo/domain";
 import clsx from "clsx";
 import {
   useId,
@@ -183,7 +187,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
             autoFocus
             name="name"
             required
-            maxLength={256}
+            maxLength={MAXIMUM_POSITION_NAME_LENGTH}
             defaultValue={("position" in props && props.position?.name) || ""}
             id={nameInputId}
             ref={nameInputRef}
@@ -192,7 +196,7 @@ export const CreateOrUpdateEventPosition = (props: Props) => {
           <Textarea
             label="Beschreibung (optional)"
             name="description"
-            maxLength={512}
+            maxLength={MAXIMUM_POSITION_DESCRIPTION_LENGTH}
             defaultValue={
               ("position" in props && props.position.description) || ""
             }

@@ -1,4 +1,5 @@
 import { authenticate } from "@/modules/auth/server";
+import { EventTemplateStatus } from "@sam-monorepo/application";
 import { createLoader, type SearchParams } from "nuqs/server";
 import { getEventTemplates } from "../queries/getEventTemplates";
 import { getEventTemplateViewer } from "../queries/getEventTemplateViewer";
@@ -8,7 +9,6 @@ import {
   EVENT_TEMPLATE_SHARING_PARAM,
   EVENT_TEMPLATE_STATUS_PARAM,
   eventTemplateFilterParsers,
-  EventTemplateStatus,
 } from "../utils/eventTemplateFilterParams";
 import { EventTemplatesTableClient } from "./EventTemplatesTableClient";
 

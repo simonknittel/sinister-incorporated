@@ -5,6 +5,7 @@ import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import Button from "@/modules/common/components/Button";
 import { Tooltip } from "@/modules/common/components/Tooltip";
 import type { EventPosition } from "@sam-monorepo/database/browser";
+import { PastePlacement } from "@sam-monorepo/domain";
 import { FaClone } from "react-icons/fa";
 import { pasteEventPosition } from "../actions/pasteEventPosition";
 
@@ -29,7 +30,7 @@ export const DuplicateEventPositionButton = ({
     <form action={formAction} className={className}>
       <input type="hidden" name="sourcePositionId" value={position.id} />
       <input type="hidden" name="targetPositionId" value={position.id} />
-      <input type="hidden" name="placement" value="after" />
+      <input type="hidden" name="placement" value={PastePlacement.After} />
 
       <Tooltip
         asChild

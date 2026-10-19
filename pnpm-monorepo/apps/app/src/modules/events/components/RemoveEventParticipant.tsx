@@ -5,7 +5,10 @@ import { ConfirmActionButton } from "@/modules/common/components/ConfirmActionBu
 import { Textarea } from "@/modules/common/components/form/Textarea";
 import { api } from "@/trpc/react";
 import { type Citizen, type Event } from "@sam-monorepo/database/browser";
-import { getCitizenDisplayName } from "@sam-monorepo/domain";
+import {
+  EVENT_PARTICIPATION_TEXT_MAX_LENGTH,
+  getCitizenDisplayName,
+} from "@sam-monorepo/domain";
 import { FaTrash } from "react-icons/fa";
 import { removeEventParticipant } from "../actions/removeEventParticipant";
 
@@ -52,9 +55,9 @@ export const RemoveEventParticipant = ({
       <div>
         <Textarea
           label="Grund (optional)"
-          hint="max. 500 Zeichen"
+          hint={`max. ${EVENT_PARTICIPATION_TEXT_MAX_LENGTH} Zeichen`}
           name="reason"
-          maxLength={500}
+          maxLength={EVENT_PARTICIPATION_TEXT_MAX_LENGTH}
           classNameTextarea="h-20"
         />
       </div>

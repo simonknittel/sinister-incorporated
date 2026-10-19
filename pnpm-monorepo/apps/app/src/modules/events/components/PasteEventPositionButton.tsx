@@ -5,11 +5,16 @@ import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import Button from "@/modules/common/components/Button";
 import { Popover, usePopover } from "@/modules/common/components/Popover";
 import type { EventPosition } from "@sam-monorepo/database/browser";
-import { canPasteSubtree, LINEUP_MAX_DEPTH } from "@sam-monorepo/domain";
+import {
+  canPasteSubtree,
+  LINEUP_MAX_DEPTH,
+  PastePlacement,
+} from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { FaPaste } from "react-icons/fa";
 import { pasteEventPosition } from "../actions/pasteEventPosition";
 import { EventContainerKind } from "../utils/eventContainer";
+import { PASTE_TOO_DEEP_TEXT } from "../utils/lineupTexts";
 import {
   useLineupClipboard,
   type LineupClipboardEntry,
@@ -68,8 +73,6 @@ interface PasteMenuProps {
   readonly groupLevel: number;
 }
 
-const TOO_DEEP_TITLE = "Der Posten würde zu tief verschachtelt werden.";
-
 /** Names where a copied position came from when that isn't the lineup at hand */
 const getOriginHint = (
   source: LineupClipboardEntry["container"],
@@ -123,10 +126,10 @@ const PasteMenu = ({ clipboard, position, groupLevel }: PasteMenuProps) => {
       <Button
         type="submit"
         name="placement"
-        value="after"
+        value={PastePlacement.After}
         variant="tertiary"
         disabled={isPending || !canPasteAfter}
-        title={canPasteAfter ? undefined : TOO_DEEP_TITLE}
+        title={canPasteAfter ? undefined : PASTE_TOO_DEEP_TEXT}
         className="mt-2 justify-start"
       >
         {isPending ? <AsciiSpinner /> : <FaPaste />}
@@ -136,10 +139,10 @@ const PasteMenu = ({ clipboard, position, groupLevel }: PasteMenuProps) => {
       <Button
         type="submit"
         name="placement"
-        value="inside"
+        value={PastePlacement.Inside}
         variant="tertiary"
         disabled={isPending || !canPasteInside}
-        title={canPasteInside ? undefined : TOO_DEEP_TITLE}
+        title={canPasteInside ? undefined : PASTE_TOO_DEEP_TEXT}
         className="justify-start"
       >
         {isPending ? <AsciiSpinner /> : <FaPaste />}

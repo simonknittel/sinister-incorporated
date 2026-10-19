@@ -5,8 +5,8 @@ import { createAuthenticatedAction } from "@/modules/actions/utils/createAction"
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { getWikiPageContainer } from "@/modules/events/utils/eventContainer";
 import { findOrCreateWikiTags } from "@sam-monorepo/application";
+import { getEventContainerOfRow } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import {
@@ -63,7 +63,7 @@ export const updateWikiPageTags = createAuthenticatedAction(
       const requestedTags = await findOrCreateWikiTags(
         transaction,
         data.tagNames,
-        getWikiPageContainer(page),
+        getEventContainerOfRow(page),
         citizenId,
       );
       const currentAssignments = await transaction.wikiPageTag.findMany({

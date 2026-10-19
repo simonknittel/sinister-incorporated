@@ -5,7 +5,7 @@ import { Link } from "@/modules/common/components/Link";
 import { SmallBadge } from "@/modules/common/components/SmallBadge";
 import { TRow } from "@/modules/common/components/Table";
 import { formatDate } from "@/modules/common/utils/formatDate";
-import type { EventTemplateListEntry } from "../queries/getEventTemplates";
+import type { EventTemplateListEntry } from "@sam-monorepo/application";
 import { getEventTemplatePath } from "../utils/eventTemplateConstraints";
 import { DuplicateEventTemplateButton } from "./DuplicateEventTemplateButton";
 import { RestoreEventTemplateButton } from "./RestoreEventTemplateButton";

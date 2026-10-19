@@ -1,5 +1,5 @@
-import type { EventListItem } from "@/modules/events/queries/getEvents";
 import { canReadEventBriefing } from "@/modules/wiki/utils/canReadEventBriefing";
+import type { EventListRow } from "@sam-monorepo/application";
 import { isLineupVisible } from "../utils/isLineupVisible";
 import { EventClient } from "./EventClient";
 
@@ -13,7 +13,7 @@ import { EventClient } from "./EventClient";
 
 interface Props {
   readonly className?: string;
-  readonly event: EventListItem;
+  readonly event: EventListRow;
   readonly index: number;
   readonly hasCancelledParticipation?: boolean;
   readonly isNew: boolean;

@@ -1,13 +1,12 @@
 import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
+  EVENT_TEMPLATE_LIST_QUERY_MAXIMUM_LENGTH,
   findEventTemplateListRows,
   findEventTemplateOwners,
   type EventTemplateListFilters,
 } from "@sam-monorepo/application";
 import { cache } from "react";
-
-export type { EventTemplateListEntry } from "@sam-monorepo/application";
 
 /** The templates the current viewer may see, newest change first */
 export const getEventTemplates = cache(
@@ -15,7 +14,13 @@ export const getEventTemplates = cache(
     findEventTemplateListRows(
       getApplicationContext(),
       await getRequestActor(),
-      filters,
+      {
+        ...filters,
+        // The search term comes straight from the URL
+        query:
+          filters.query?.slice(0, EVENT_TEMPLATE_LIST_QUERY_MAXIMUM_LENGTH) ??
+          null,
+      },
     ),
   ),
 );

@@ -2,8 +2,8 @@
 
 import { useAuthentication } from "@/modules/auth/hooks/useAuthentication";
 import Note from "@/modules/common/components/Note";
-import type { EventCitizenWithShips } from "@/modules/events/queries/eventRelationSelects";
 import type { VariantCatalogManufacturer } from "@/modules/fleet/queries/getVariantCatalog";
+import type { EventLineupCitizen } from "@sam-monorepo/application";
 import {
   EventSource,
   type Event,
@@ -32,7 +32,7 @@ interface Props {
   readonly canManagePositions?: boolean;
   readonly variants: readonly VariantCatalogManufacturer[];
   readonly myShips: readonly Pick<Ship, "variantId">[];
-  readonly allEventCitizens: EventCitizenWithShips[];
+  readonly allEventCitizens: EventLineupCitizen[];
   readonly showActions?: boolean;
 }
 

@@ -1,10 +1,12 @@
 import { env } from "./scrape-discord-events/setup"; // must be first
 
-import { trace } from "@opentelemetry/api";
 import { syncDiscordEvents } from "@sam-monorepo/application";
 import { createDiscordGateway } from "@sam-monorepo/infrastructure";
 import type { ScheduledHandler } from "aws-lambda";
-import { createApplicationContext } from "./common/createApplicationContext";
+import {
+  createApplicationContext,
+  tracer,
+} from "./common/createApplicationContext";
 import { createJobFactory } from "./common/createJob";
 import { log } from "./common/logger";
 import { runJobsInIsolation } from "./common/runJobsInIsolation";
@@ -17,12 +19,13 @@ const context = createApplicationContext({
     apiBaseUrl: env.DISCORD_API_BASE_URL,
     botToken: env.DISCORD_BOT_TOKEN,
     guildId: env.DISCORD_GUILD_ID,
+    // Shorter than in the app: one run sends many requests in its 180 seconds
     requestTimeoutMilliseconds: 5_000,
     // Five attempts for each request. The wait limit protects the timeout of
     // the function (180 seconds).
     rateLimitRetry: { maximumRetryCount: 4, maximumWaitSeconds: 30 },
     log,
-    tracer: trace.getTracer("sam"),
+    tracer,
   }),
 });
 

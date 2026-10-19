@@ -1,8 +1,6 @@
 import { getApplicationContext, toActor } from "@/modules/application";
-import { log } from "@/modules/logging";
 import { findUsableEventTemplates } from "@sam-monorepo/application";
-import { TRPCError } from "@trpc/server";
-import { protectedProcedure } from "../../trpc";
+import { protectedProcedure, toTrpcError } from "../../trpc";
 
 /**
  * The templates the current viewer may create an event from, with everything
@@ -17,14 +15,7 @@ export const getUsableEventTemplates = protectedProcedure.query(
         await toActor(ctx.session),
       );
     } catch (error) {
-      log.error("Failed to fetch usable event templates", {
-        error,
-      });
-
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to fetch usable event templates",
-      });
+      throw toTrpcError(error, "Failed to fetch usable event templates");
     }
   },
 );

@@ -1,6 +1,10 @@
 import { RadioFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/RadioFilter";
 import { SingleSelectComboboxFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/SingleSelectComboboxFilter";
 import { TextSearchFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/TextSearchFilter";
+import {
+  EventTemplateSharing,
+  EventTemplateStatus,
+} from "@sam-monorepo/application";
 import { getEventTemplateOwners } from "../queries/getEventTemplates";
 import { getEventTemplateViewer } from "../queries/getEventTemplateViewer";
 import {
@@ -8,8 +12,6 @@ import {
   EVENT_TEMPLATE_QUERY_PARAM,
   EVENT_TEMPLATE_SHARING_PARAM,
   EVENT_TEMPLATE_STATUS_PARAM,
-  EventTemplateSharing,
-  EventTemplateStatus,
 } from "../utils/eventTemplateFilterParams";
 
 /**

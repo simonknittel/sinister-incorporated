@@ -11,6 +11,13 @@ import {
 import { emitEventsOrThrow } from "./eventbridge";
 import { log } from "./logger";
 
+/**
+ * The no-op tracer of OpenTelemetry, because the functions register no
+ * provider. X-Ray stays at the level of the handlers and the jobs, thus the
+ * spans of the use cases are lost in the Lambda functions.
+ */
+export const tracer = trace.getTracer("sam");
+
 interface ApplicationContextOptions {
   /** The `Source` of the notification events: the name of the function */
   readonly source: string;
@@ -25,10 +32,6 @@ interface ApplicationContextOptions {
 /**
  * The composition root of the Lambda functions. Each function builds its
  * context after its setup.
- *
- * The tracer is the no-op tracer of OpenTelemetry, because the functions
- * register no provider. X-Ray stays at the level of the handlers and the
- * jobs, thus the spans of the use cases are lost in the Lambda functions.
  */
 export const createApplicationContext = ({
   source,
@@ -43,7 +46,7 @@ export const createApplicationContext = ({
     source,
   }),
   log,
-  tracer: trace.getTracer("sam"),
+  tracer,
   now: () => new Date(),
   changelog: null,
   collab: null,

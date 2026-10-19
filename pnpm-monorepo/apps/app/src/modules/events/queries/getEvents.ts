@@ -11,14 +11,11 @@ import {
   EventTypeFilter,
   findEventListPage,
   UnknownCursorBehavior,
-  type EventListRow,
 } from "@sam-monorepo/application";
 import { CursorDirection } from "@sam-monorepo/domain";
 import { cache } from "react";
 
 const EVENTS_PAGE_SIZE = 10;
-
-export type EventListItem = EventListRow;
 
 /**
  * How many open events there are in total — for the dashboard tile, which

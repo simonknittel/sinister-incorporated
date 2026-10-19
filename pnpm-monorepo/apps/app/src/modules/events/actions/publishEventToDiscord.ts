@@ -54,15 +54,9 @@ export const publishEventToDiscord = createAuthenticatedAction(
     };
   },
   {
-    parseFormData: (formData) => {
-      const fields = parseDiscordPublishFields(formData);
-
-      return {
-        event_id: formData.get("eventId"),
-        target: fields.discordPublishTarget,
-        channel_id: fields.discordPublishChannelId,
-        location: fields.discordPublishLocation,
-      };
-    },
+    parseFormData: (formData) => ({
+      event_id: formData.get("eventId"),
+      ...parseDiscordPublishFields(formData),
+    }),
   },
 );

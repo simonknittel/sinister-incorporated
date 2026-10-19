@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { applicationContextEnvironmentShape } from "../common/applicationContextEnvironment";
 import { log } from "../common/logger";
 import { fetchParameters } from "../common/parameters";
 
@@ -24,12 +25,7 @@ const environmentSchema = z.object({
     .url()
     .default("postgresql://postgres:admin@localhost:5432/db"),
   AWS_EVENT_BUS_ARN: z.string().nullish(),
-  /**
-   * The URLs of the application context. No job reads them yet. Terraform sets
-   * them when a use case of this function needs a URL.
-   */
-  BASE_URL: z.url().default("http://localhost:3000"),
-  PUBLIC_UPLOAD_BASE_URL: z.url().default("http://localhost:9000/uploads"),
+  ...applicationContextEnvironmentShape,
   S3_ACCOUNT_ID: z.string().nullish(),
   S3_ACCESS_KEY_ID: z.string().nullish(),
   S3_SECRET_ACCESS_KEY: z.string().nullish(),

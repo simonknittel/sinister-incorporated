@@ -2,9 +2,9 @@ import { useAuthentication } from "@/modules/auth/hooks/useAuthentication";
 import { AccordeonToggle } from "@/modules/common/components/Accordeon";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import { EditableInput } from "@/modules/common/components/form/EditableInput";
-import type { EventCitizenWithShips } from "@/modules/events/queries/eventRelationSelects";
 import { VariantWithLogo } from "@/modules/fleet/components/VariantWithLogo";
 import type { VariantCatalogManufacturer } from "@/modules/fleet/queries/getVariantCatalog";
+import type { EventLineupCitizen } from "@sam-monorepo/application";
 import {
   type Citizen,
   type EventPosition,
@@ -62,7 +62,7 @@ interface Props {
   readonly showManage?: boolean;
   readonly variants: readonly VariantCatalogManufacturer[];
   readonly myShips: readonly Pick<Ship, "variantId">[];
-  readonly allEventCitizens: EventCitizenWithShips[];
+  readonly allEventCitizens: EventLineupCitizen[];
   readonly showActions?: boolean;
   readonly groupLevel: number;
   readonly parentPositions: PositionType["id"][];

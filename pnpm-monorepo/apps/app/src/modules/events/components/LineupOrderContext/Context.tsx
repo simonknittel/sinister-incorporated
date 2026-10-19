@@ -5,8 +5,8 @@ import {
   updateEventLineupOrder,
   type MappedPosition,
 } from "@/modules/events/actions/updateEventLineupOrder";
-import type { EventCitizenWithShips } from "@/modules/events/queries/eventRelationSelects";
 import type { VariantCatalogManufacturer } from "@/modules/fleet/queries/getVariantCatalog";
+import type { EventLineupCitizen } from "@sam-monorepo/application";
 import type { Ship } from "@sam-monorepo/database/browser";
 import clsx from "clsx";
 import type { MouseEvent } from "react";
@@ -48,7 +48,7 @@ interface Props {
   readonly showManage?: boolean;
   readonly variants: readonly VariantCatalogManufacturer[];
   readonly myShips: readonly Pick<Ship, "variantId">[];
-  readonly allEventCitizens: EventCitizenWithShips[];
+  readonly allEventCitizens: EventLineupCitizen[];
   readonly showActions?: boolean;
 }
 

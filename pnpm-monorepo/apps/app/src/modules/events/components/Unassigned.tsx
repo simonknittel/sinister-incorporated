@@ -1,7 +1,7 @@
 import { useAuthentication } from "@/modules/auth/hooks/useAuthentication";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import Note from "@/modules/common/components/Note";
-import type { EventCitizenWithShips } from "@/modules/events/queries/eventRelationSelects";
+import type { EventLineupCitizen } from "@sam-monorepo/application";
 import type { Citizen, EventPosition } from "@sam-monorepo/database/client";
 import clsx from "clsx";
 
@@ -13,7 +13,7 @@ type Position = EventPosition & {
 interface Props {
   readonly className?: string;
   readonly positions: Position[];
-  readonly allEventCitizens: EventCitizenWithShips[];
+  readonly allEventCitizens: EventLineupCitizen[];
 }
 
 export const Unassigned = ({

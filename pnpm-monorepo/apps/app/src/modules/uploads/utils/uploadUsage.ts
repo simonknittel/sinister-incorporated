@@ -1,11 +1,11 @@
 import { getEventTemplatePath } from "@/modules/event-templates/utils/eventTemplateConstraints";
-import { getWikiPageContainer } from "@/modules/events/utils/eventContainer";
 import {
   buildWikiPageSnapshotsHref,
   createEventWikiHrefMode,
   getWikiPageRouteHref,
   GLOBAL_WIKI_HREF_MODE,
 } from "@/modules/wiki/utils/wikiPageHref";
+import { getEventContainerOfRow } from "@sam-monorepo/domain";
 
 /**
  * Where an upload is referenced. `Unused` is not a usage but its absence —
@@ -91,7 +91,7 @@ const getSnapshotPages = (
 ];
 
 const getWikiPageSnapshotsRouteHref = (page: WikiPageReference) => {
-  const container = getWikiPageContainer(page);
+  const container = getEventContainerOfRow(page);
 
   return buildWikiPageSnapshotsHref(
     container

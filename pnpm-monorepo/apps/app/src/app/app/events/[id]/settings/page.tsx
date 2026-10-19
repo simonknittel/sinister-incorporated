@@ -9,7 +9,7 @@ import { SaveEventAsTemplateButton } from "@/modules/event-templates/components/
 import { EventDiscordSettings } from "@/modules/events/components/EventDiscordSettings";
 import { EventSettings } from "@/modules/events/components/EventSettings";
 import { getEventById } from "@/modules/events/queries/getEventById";
-import { getDefaultExternalLocation } from "@/modules/events/utils/discordPublishing";
+import { getEventUrl } from "@/modules/events/utils/eventConstraints";
 import { isAllowedToManageEvent } from "@/modules/events/utils/isAllowedToManageEvent";
 import { isEventUpdatable } from "@/modules/events/utils/isEventUpdatable";
 import { EventSource } from "@sam-monorepo/database/client";
@@ -116,7 +116,7 @@ const DiscordCard = async ({ event }: DiscordCardProps) => {
         discordPublishedLocation: event.discordPublishedLocation,
       }}
       channels={channels}
-      defaultLocation={getDefaultExternalLocation(event.id)}
+      defaultLocation={getEventUrl(event.id)}
       discordGuildId={env.DISCORD_GUILD_ID}
     />
   );

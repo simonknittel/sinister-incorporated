@@ -1,10 +1,8 @@
 import { requireAuthentication } from "@/modules/auth/server";
 import { Tile, TileVariant } from "@/modules/common/components/Tile";
-import type {
-  EventCitizenReference,
-  EventParticipantRow,
-} from "@/modules/events/queries/eventRelationSelects";
+import type { EventCitizenReference } from "@/modules/events/queries/eventRelationSelects";
 import { VariantWithLogo } from "@/modules/fleet/components/VariantWithLogo";
+import type { EventParticipantRow } from "@sam-monorepo/application";
 import { EventSource, type Event } from "@sam-monorepo/database/client";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { getOwnEventParticipation } from "../queries/getOwnEventParticipation";

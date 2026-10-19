@@ -13,11 +13,12 @@ import {
   EventErrorMessage,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { EVENT_ENDED_TEXT } from "../utils/lineupErrorTexts";
+import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
 /** A target that is gone gets the common not-found text */
 const COPY_LINEUP_ERROR_TEXTS: ApplicationErrorTexts = {
-  [EventErrorMessage.EventEnded]: EVENT_ENDED_TEXT,
+  [EventErrorMessage.EventEnded]:
+    EVENT_ERROR_TEXTS[EventErrorMessage.EventEnded],
 };
 
 export const copyLineupFromEvent = createAuthenticatedAction(

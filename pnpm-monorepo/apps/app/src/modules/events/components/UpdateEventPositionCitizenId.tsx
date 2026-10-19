@@ -1,7 +1,7 @@
 "use client";
 
 import { runAction } from "@/modules/actions/utils/runAction";
-import type { EventCitizenWithShips } from "@/modules/events/queries/eventRelationSelects";
+import type { EventLineupCitizen } from "@sam-monorepo/application";
 import type {
   Citizen,
   EventPosition,
@@ -28,8 +28,8 @@ interface Props {
   readonly position: EventPosition & {
     readonly citizen?: DisplayedCitizen | null;
   };
-  readonly citizensSatisfyingRequirements: EventCitizenWithShips[];
-  readonly citizensNotSatisfyingRequirements: EventCitizenWithShips[];
+  readonly citizensSatisfyingRequirements: EventLineupCitizen[];
+  readonly citizensNotSatisfyingRequirements: EventLineupCitizen[];
   readonly applicationsSatisfyingRequirements: (EventPositionApplication & {
     citizen: DisplayedCitizen;
   })[];
