@@ -1,10 +1,8 @@
 import "server-only";
 
-import { getApplicationContext } from "@/modules/application";
 import {
   DiscordSyncOutcome,
   EventErrorMessage,
-  syncEventDiscordPublication as syncEventDiscordPublicationUseCase,
   type DiscordSyncResult,
 } from "@sam-monorepo/application";
 import {
@@ -14,13 +12,6 @@ import {
 } from "@sam-monorepo/domain";
 import { EVENT_DESCRIPTION_MAX_LENGTH } from "./discordEventDescription";
 import { EVENT_ERROR_TEXTS } from "./eventErrorTexts";
-
-/**
- * See `syncEventDiscordPublication()`. Only for the upload route of the
- * cover image, which checks that the user can manage the event before.
- */
-export const syncEventDiscordPublication = (eventId: string) =>
-  syncEventDiscordPublicationUseCase(getApplicationContext(), eventId);
 
 const getProblemMessage = (problem: GuildScheduledEventContentProblem) => {
   switch (problem) {

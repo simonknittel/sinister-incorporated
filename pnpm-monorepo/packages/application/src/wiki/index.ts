@@ -214,7 +214,11 @@ export {
   type VariantWikiContext,
 } from "./variantWikiContext.js";
 export {
+  createWikiAttachmentDownloadUrl,
+  createWikiAttachmentDownloadUrlInputSchema,
   findWikiAttachmentDownload,
+  type CreateWikiAttachmentDownloadUrlInput,
+  type CreateWikiAttachmentDownloadUrlOutput,
   type WikiAttachmentDownload,
 } from "./wikiAttachments.js";
 export type { WikiCitizen } from "./wikiCitizen.js";

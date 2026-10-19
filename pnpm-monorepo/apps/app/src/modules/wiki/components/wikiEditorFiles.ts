@@ -1,6 +1,6 @@
 "use client";
 
-import { ATTACHMENT_APPLICATION_MIME_TYPES } from "@/modules/common/utils/uploadConstraints";
+import { ATTACHMENT_APPLICATION_MIME_TYPES } from "@sam-monorepo/domain";
 import type { Editor } from "@tiptap/core";
 import { FileHandler } from "@tiptap/extension-file-handler";
 import { NodeSelection } from "@tiptap/pm/state";

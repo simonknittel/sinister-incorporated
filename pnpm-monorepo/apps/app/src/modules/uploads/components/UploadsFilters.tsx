@@ -2,16 +2,16 @@ import { DateRangeFilter } from "@/modules/common/components/layouts/SidebarLayo
 import { MultiSelectComboboxFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/MultiSelectComboboxFilter";
 import { TextSearchFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/TextSearchFilter";
 import {
+  UPLOAD_USAGE_TYPE_LABELS,
+  UploadUsageType,
+} from "@sam-monorepo/domain";
+import {
   UPLOAD_AUTHOR_PARAM,
   UPLOAD_FROM_PARAM,
   UPLOAD_QUERY_PARAM,
   UPLOAD_TO_PARAM,
   UPLOAD_USAGE_PARAM,
 } from "../utils/uploadFilterParams";
-import {
-  UPLOAD_USAGE_TYPE_LABELS,
-  UploadUsageType,
-} from "../utils/uploadUsage";
 
 interface Author {
   readonly id: string;

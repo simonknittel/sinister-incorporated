@@ -1,5 +1,5 @@
+import { UploadUsageType } from "@sam-monorepo/domain";
 import { parseAsArrayOf, parseAsString, parseAsStringEnum } from "nuqs/server";
-import { UploadUsageType } from "./uploadUsage";
 
 export const UPLOAD_USAGE_PARAM = "usage";
 export const UPLOAD_FROM_PARAM = "from";

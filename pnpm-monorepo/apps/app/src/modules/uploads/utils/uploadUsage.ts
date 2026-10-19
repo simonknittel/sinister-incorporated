@@ -5,92 +5,26 @@ import {
   getWikiPageRouteHref,
   GLOBAL_WIKI_HREF_MODE,
 } from "@/modules/wiki/utils/wikiPageHref";
-import { getEventContainerOfRow } from "@sam-monorepo/domain";
+import {
+  getEventContainerOfRow,
+  listUploadUsages,
+  UploadUsageType,
+  type UploadUsageLocation,
+  type UploadUsageSource,
+  type UploadUsageWikiPage,
+} from "@sam-monorepo/domain";
 
-/**
- * Where an upload is referenced. `Unused` is not a usage but its absence —
- * it never comes out of `getUploadUsages`, only out of the usage filter and
- * the badge an upload without any reference gets.
- *
- * Each other kind is one usage relation of the `Upload` model. The rule of
- * upload usage is in `UPLOAD_USAGE_RELATIONS`
- * (packages/domain/src/uploadUsageRelations.ts).
- */
-export enum UploadUsageType {
-  RoleIcon = "roleIcon",
-  RoleThumbnail = "roleThumbnail",
-  ManufacturerLogo = "manufacturerLogo",
-  EventCover = "eventCover",
-  EventTemplateCover = "eventTemplateCover",
-  WikiPageIcon = "wikiPageIcon",
-  WikiPageAttachment = "wikiPageAttachment",
-  WikiPageSnapshot = "wikiPageSnapshot",
-  Unused = "unused",
-}
-
-export const UPLOAD_USAGE_TYPE_LABELS: Record<UploadUsageType, string> = {
-  [UploadUsageType.RoleIcon]: "Rollen-Icon",
-  [UploadUsageType.RoleThumbnail]: "Rollen-Thumbnail",
-  [UploadUsageType.ManufacturerLogo]: "Hersteller-Bild",
-  [UploadUsageType.EventCover]: "Event-Titelbild",
-  [UploadUsageType.EventTemplateCover]: "Vorlagen-Titelbild",
-  [UploadUsageType.WikiPageIcon]: "Wiki-Icon",
-  [UploadUsageType.WikiPageAttachment]: "Wiki-Bild/-Anhang",
-  [UploadUsageType.WikiPageSnapshot]: "Wiki-Snapshot",
-  [UploadUsageType.Unused]: "Unbenutzt",
-};
-
-/** A single place an upload is referenced, as one row of the usage cell. */
+/** A place where an upload is referenced, as one row of the usage cell */
 export interface UploadUsage {
   readonly type: UploadUsageType;
-  /** Stable across the references of one upload, for React keys. */
+  /** Unique in the usages of one upload, for the React keys */
   readonly key: string;
-  /** Name of the referencing resource, e.g. the role or wiki page name. */
+  /** The name of the resource, for example the name of the role */
   readonly label: string;
   readonly href: string;
 }
 
-interface NamedResource {
-  readonly id: string;
-  readonly name: string;
-}
-
-interface WikiPageReference {
-  readonly id: string;
-  readonly title: string;
-  readonly slug: string;
-  readonly eventId: string | null;
-  readonly templateId: string | null;
-}
-
-/** The usage relations of an upload, as `getUploads` selects them. */
-export interface UploadUsageSource {
-  readonly roleIcons: readonly NamedResource[];
-  readonly roleThumbnails: readonly NamedResource[];
-  readonly manufacturers: readonly NamedResource[];
-  readonly eventCovers: readonly NamedResource[];
-  readonly eventTemplateCovers: readonly NamedResource[];
-  readonly wikiPageIcons: readonly WikiPageReference[];
-  /** One link for each page, also when the page uses the upload two ways */
-  readonly wikiPageLinks: readonly { readonly page: WikiPageReference }[];
-  readonly wikiPageSnapshotLinks: readonly {
-    readonly snapshot: { readonly page: WikiPageReference };
-  }[];
-}
-
-/**
- * The snapshots of a page commonly use the same upload many times. The
- * usage is the page, one time.
- */
-const getSnapshotPages = (
-  links: UploadUsageSource["wikiPageSnapshotLinks"],
-) => [
-  ...new Map(
-    links.map(({ snapshot }) => [snapshot.page.id, snapshot.page]),
-  ).values(),
-];
-
-const getWikiPageSnapshotsRouteHref = (page: WikiPageReference) => {
+const getWikiPageSnapshotsRouteHref = (page: UploadUsageWikiPage) => {
   const container = getEventContainerOfRow(page);
 
   return buildWikiPageSnapshotsHref(
@@ -101,69 +35,45 @@ const getWikiPageSnapshotsRouteHref = (page: WikiPageReference) => {
   );
 };
 
+const getUsageHref = (usage: UploadUsageLocation) => {
+  switch (usage.type) {
+    case UploadUsageType.RoleIcon:
+    case UploadUsageType.RoleThumbnail:
+      return `/app/roles/${usage.resource.id}`;
+
+    case UploadUsageType.ManufacturerLogo:
+      return `/app/fleet/settings/manufacturer/${usage.resource.id}`;
+
+    case UploadUsageType.EventCover:
+      return `/app/events/${usage.resource.id}`;
+
+    case UploadUsageType.EventTemplateCover:
+      return getEventTemplatePath(usage.resource.id);
+
+    case UploadUsageType.WikiPageIcon:
+    case UploadUsageType.WikiPageAttachment:
+      return getWikiPageRouteHref(usage.resource);
+
+    case UploadUsageType.WikiPageSnapshot:
+      return getWikiPageSnapshotsRouteHref(usage.resource);
+
+    default:
+      throw new Error(`Unknown upload usage: ${usage satisfies never}`);
+  }
+};
+
 /**
- * Every place an upload is referenced, as links to the pages owning those
- * references. An empty result means the upload is unused and the nightly
- * cleanup will remove it.
+ * All places where an upload is referenced (see `listUploadUsages()`), as
+ * links to the pages of the referencing resources.
  *
- * The links are not permission-checked here — the target pages enforce
- * their own access, and an upload's own locations are no secret to whoever
- * may already see the upload.
+ * The links have no permission check: the target pages check their own
+ * access, and the locations of an upload are no secret for a user who can
+ * see the upload.
  */
-export const getUploadUsages = (upload: UploadUsageSource): UploadUsage[] => [
-  ...upload.roleIcons.map((role) => ({
-    type: UploadUsageType.RoleIcon,
-    key: `${UploadUsageType.RoleIcon}:${role.id}`,
-    label: role.name,
-    href: `/app/roles/${role.id}`,
-  })),
-
-  ...upload.roleThumbnails.map((role) => ({
-    type: UploadUsageType.RoleThumbnail,
-    key: `${UploadUsageType.RoleThumbnail}:${role.id}`,
-    label: role.name,
-    href: `/app/roles/${role.id}`,
-  })),
-
-  ...upload.manufacturers.map((manufacturer) => ({
-    type: UploadUsageType.ManufacturerLogo,
-    key: `${UploadUsageType.ManufacturerLogo}:${manufacturer.id}`,
-    label: manufacturer.name,
-    href: `/app/fleet/settings/manufacturer/${manufacturer.id}`,
-  })),
-
-  ...upload.eventCovers.map((event) => ({
-    type: UploadUsageType.EventCover,
-    key: `${UploadUsageType.EventCover}:${event.id}`,
-    label: event.name,
-    href: `/app/events/${event.id}`,
-  })),
-
-  ...upload.eventTemplateCovers.map((template) => ({
-    type: UploadUsageType.EventTemplateCover,
-    key: `${UploadUsageType.EventTemplateCover}:${template.id}`,
-    label: template.name,
-    href: getEventTemplatePath(template.id),
-  })),
-
-  ...upload.wikiPageIcons.map((page) => ({
-    type: UploadUsageType.WikiPageIcon,
-    key: `${UploadUsageType.WikiPageIcon}:${page.id}`,
-    label: page.title,
-    href: getWikiPageRouteHref(page),
-  })),
-
-  ...upload.wikiPageLinks.map(({ page }) => ({
-    type: UploadUsageType.WikiPageAttachment,
-    key: `${UploadUsageType.WikiPageAttachment}:${page.id}`,
-    label: page.title,
-    href: getWikiPageRouteHref(page),
-  })),
-
-  ...getSnapshotPages(upload.wikiPageSnapshotLinks).map((page) => ({
-    type: UploadUsageType.WikiPageSnapshot,
-    key: `${UploadUsageType.WikiPageSnapshot}:${page.id}`,
-    label: page.title,
-    href: getWikiPageSnapshotsRouteHref(page),
-  })),
-];
+export const getUploadUsages = (upload: UploadUsageSource): UploadUsage[] =>
+  listUploadUsages(upload).map((usage) => ({
+    type: usage.type,
+    key: usage.key,
+    label: usage.label,
+    href: getUsageHref(usage),
+  }));

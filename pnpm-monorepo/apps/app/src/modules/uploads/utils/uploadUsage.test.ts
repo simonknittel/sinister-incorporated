@@ -1,9 +1,6 @@
+import { UploadUsageType, type UploadUsageSource } from "@sam-monorepo/domain";
 import { describe, expect, test } from "vitest";
-import {
-  getUploadUsages,
-  UploadUsageType,
-  type UploadUsageSource,
-} from "./uploadUsage";
+import { getUploadUsages } from "./uploadUsage";
 
 const emptyUpload: UploadUsageSource = {
   roleIcons: [],

@@ -1,15 +1,7 @@
 import type { Prisma, Upload } from "@sam-monorepo/database/client";
 import type { ApplicationContext } from "../context.js";
 import { ConflictError } from "../errors.js";
-
-/**
- * The messages of the typed errors of the upload copy. They are the members
- * of an enum, thus the app can show its own text for each of them.
- */
-export enum UploadErrorMessage {
-  /** A `ConflictError`: the host has no file storage */
-  StorageNotConfigured = "The file storage is not configured",
-}
+import { UploadErrorMessage } from "./uploadErrors.js";
 
 /** Everything a copy needs from its source row */
 export type CopyableUpload = Pick<

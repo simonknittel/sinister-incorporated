@@ -2,9 +2,9 @@ import { createUploadResponseSchema } from "@/modules/common/utils/createUploadR
 import { getPublicUploadUrl } from "@/modules/common/utils/getPublicUploadUrl";
 import {
   isAttachmentMimeType,
-  MAX_ATTACHMENT_SIZE_BYTES,
-  MAX_IMAGE_SIZE_BYTES,
-} from "@/modules/common/utils/uploadConstraints";
+  MAXIMUM_ATTACHMENT_SIZE_BYTES,
+  MAXIMUM_IMAGE_SIZE_BYTES,
+} from "@sam-monorepo/domain";
 
 export enum WikiUploadKind {
   Image = "image",
@@ -64,13 +64,13 @@ export const uploadWikiPageFile = async (
   pageId: string,
   kind: WikiUploadKind,
 ): Promise<UploadedWikiPageFile> => {
-  const maxSizeBytes =
+  const maximumSizeBytes =
     kind === WikiUploadKind.Attachment
-      ? MAX_ATTACHMENT_SIZE_BYTES
-      : MAX_IMAGE_SIZE_BYTES;
-  if (file.size > maxSizeBytes)
+      ? MAXIMUM_ATTACHMENT_SIZE_BYTES
+      : MAXIMUM_IMAGE_SIZE_BYTES;
+  if (file.size > maximumSizeBytes)
     throw new Error(
-      `Die Datei ist zu groß (maximal ${maxSizeBytes / 1024 / 1024} MB).`,
+      `Die Datei ist zu groß (maximal ${maximumSizeBytes / 1024 / 1024} MB).`,
     );
 
   const mimeType = resolveWikiFileMimeType(file);

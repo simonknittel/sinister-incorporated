@@ -1,115 +1,36 @@
 "use server";
 
-import { prisma } from "@/db";
-import { env } from "@/env";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { createS3Client } from "@/modules/common/utils/createS3Client";
-import { log } from "@/modules/logging";
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { decodeUploadFileName } from "@sam-monorepo/domain";
-import { refresh } from "next/cache";
-import * as z from "zod";
-import { USAGE_SELECT } from "../queries/getUploads";
 import {
-  getUploadUsages,
-  UPLOAD_USAGE_TYPE_LABELS,
-} from "../utils/uploadUsage";
-
-/**
- * Locations kept in the audit payload. An upload embedded in hundreds of
- * wiki pages would otherwise write a huge entry; the count stays exact
- * either way.
- */
-const MAX_AUDITED_LOCATIONS = 20;
-
-const schema = z.object({
-  id: z.cuid(),
-});
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  deleteUploadInputSchema,
+  deleteUpload as deleteUploadUseCase,
+} from "@sam-monorepo/application";
+import { refresh } from "next/cache";
 
 export const deleteUpload = createAuthenticatedAction(
   "deleteUpload",
-  schema,
+  deleteUploadInputSchema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("upload", "manage")))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    const upload = await prisma.upload.findUnique({
-      where: { id: data.id },
-      select: {
-        id: true,
-        fileName: true,
-        mimeType: true,
-        createdBy: { select: { userId: true } },
-        ...USAGE_SELECT,
-      },
-    });
-    if (!upload) {
-      /**
-       * A different user deleted the upload before, and the page must show it
-       */
-      return rejectConflict(t("Common.notFound"), formData);
-    }
-
-    const usages = getUploadUsages(upload);
-    const locations = usages
-      .slice(0, MAX_AUDITED_LOCATIONS)
-      .map(
-        (usage) => `${UPLOAD_USAGE_TYPE_LABELS[usage.type]}: ${usage.label}`,
+    try {
+      await deleteUploadUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
       );
-    if (usages.length > locations.length)
-      locations.push(`… und ${usages.length - locations.length} weitere`);
-
-    /**
-     * The row goes first: its foreign keys are `SetNull` and its join rows
-     * disappear with it, so the references are gone either way. Should the
-     * object deletion below fail, the nightly bucket sweep collects the
-     * orphaned object — which is why the failure is only logged.
-     */
-    await prisma.upload.delete({ where: { id: upload.id } });
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, { formData, t });
+    }
 
     refresh();
 
-    try {
-      await createS3Client().send(
-        new DeleteObjectCommand({
-          Bucket: env.S3_BUCKET_NAME,
-          Key: upload.id,
-        }),
-      );
-    } catch (error) {
-      log.warn("Failed to delete an upload's object from the bucket", {
-        uploadId: upload.id,
-        error,
-      });
-    }
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.UPLOAD_DELETED_V2,
-        data: {
-          uploadId: upload.id,
-          fileName: decodeUploadFileName(upload.fileName),
-          mimeType: upload.mimeType,
-          /**
-           * The payload of this version holds the user of the author. The
-           * author of an upload is a citizen now, thus the user comes
-           * through the citizen.
-           */
-          uploadedById: upload.createdBy?.userId ?? null,
-          locations,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    return {
-      success: t("Common.successfullyDeleted"),
-    };
+    return { success: t("Common.successfullyDeleted") };
+  },
+  {
+    parseFormData: (formData) => ({ upload_id: formData.get("id") }),
   },
 );

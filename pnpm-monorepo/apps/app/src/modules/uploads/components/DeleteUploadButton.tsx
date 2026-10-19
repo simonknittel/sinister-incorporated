@@ -2,12 +2,10 @@
 
 import Button from "@/modules/common/components/Button";
 import { ConfirmActionButton } from "@/modules/common/components/ConfirmActionButton";
+import { UPLOAD_USAGE_TYPE_LABELS } from "@sam-monorepo/domain";
 import { FaTrash } from "react-icons/fa";
 import { deleteUpload } from "../actions/deleteUpload";
-import {
-  UPLOAD_USAGE_TYPE_LABELS,
-  type UploadUsage,
-} from "../utils/uploadUsage";
+import type { UploadUsage } from "../utils/uploadUsage";
 
 interface Props {
   readonly className?: string;

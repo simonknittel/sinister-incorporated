@@ -2,8 +2,8 @@ import { Link } from "@/modules/common/components/Link";
 import {
   UPLOAD_USAGE_TYPE_LABELS,
   UploadUsageType,
-  type UploadUsage,
-} from "../utils/uploadUsage";
+} from "@sam-monorepo/domain";
+import type { UploadUsage } from "../utils/uploadUsage";
 
 interface Props {
   readonly usages: readonly UploadUsage[];

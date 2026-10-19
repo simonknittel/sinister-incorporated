@@ -1,7 +1,7 @@
 "use client";
 
 import { createUploadResponseSchema } from "@/modules/common/utils/createUploadResponseSchema";
-import { MAX_IMAGE_SIZE_BYTES } from "@/modules/common/utils/uploadConstraints";
+import { MAXIMUM_IMAGE_SIZE_BYTES } from "@sam-monorepo/domain";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -44,9 +44,9 @@ export default function useUpload() {
   const setFile = (newFile: File | null): boolean => {
     if (!newFile) return false;
 
-    if (newFile.size > MAX_IMAGE_SIZE_BYTES) {
+    if (newFile.size > MAXIMUM_IMAGE_SIZE_BYTES) {
       toast.error(
-        `Die Datei ist zu groß (maximal ${MAX_IMAGE_SIZE_BYTES / 1024 / 1024} MB).`,
+        `Die Datei ist zu groß (maximal ${MAXIMUM_IMAGE_SIZE_BYTES / 1024 / 1024} MB).`,
       );
       return false;
     }
