@@ -1,6 +1,5 @@
-import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
-import { resolveWikiRoleCitizens } from "@/modules/wiki/utils/resolveWikiRoleCitizens";
-import { TRPCError } from "@trpc/server";
+import { getApplicationContext, toActor } from "@/modules/application";
+import { findWikiRoleCitizens } from "@sam-monorepo/application";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
@@ -12,16 +11,13 @@ import { protectedProcedure, toTrpcError } from "../../trpc";
  */
 export const getRoleCitizens = protectedProcedure
   .input(z.object({ roleId: z.string().min(1).max(64) }))
-  .query(async ({ input }) => {
+  .query(async ({ ctx, input }) => {
     try {
-      const context = await getWikiContext();
-      if (!context)
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Missing wiki permission",
-        });
-
-      return await resolveWikiRoleCitizens(input.roleId);
+      return await findWikiRoleCitizens(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        { roleId: input.roleId },
+      );
     } catch (error) {
       throw toTrpcError(error, "Failed to resolve wiki role citizens");
     }

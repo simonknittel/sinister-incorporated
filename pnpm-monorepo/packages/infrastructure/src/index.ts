@@ -7,6 +7,10 @@ export {
   type PrismaAuditWriterOptions,
 } from "./audit/createPrismaAuditWriter.js";
 export {
+  createCollabClient,
+  type CollabClientOptions,
+} from "./collab/createCollabClient.js";
+export {
   createDiscordGateway,
   type DiscordGatewayOptions,
 } from "./discord/createDiscordGateway.js";

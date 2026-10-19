@@ -10,38 +10,16 @@ import { getEmbedSigningKey } from "@/modules/embed-authentication/utils/getEmbe
 import { log } from "@/modules/logging";
 import { triggerNotifications } from "@/modules/notifications/utils/triggerNotification";
 import { getTracer } from "@/modules/tracing/utils/getTracer";
-import { replaceWikiPageContent } from "@/modules/wiki/utils/replaceWikiPageContent";
 import {
   createApplicationUrls,
   type ApplicationContext,
-  type WikiCollabSession,
 } from "@sam-monorepo/application";
 import {
+  createCollabClient,
   createDiscordGateway,
   createPrismaAuditWriter,
   createS3Storage,
 } from "@sam-monorepo/infrastructure";
-import type { WikiCollabSessionTokenPayload } from "@sam-monorepo/wiki-editor";
-import { SignJWT } from "jose";
-
-/**
- * The session token that `createWikiCollabToken` signs, until the collab
- * client of the infrastructure package replaces it
- */
-const createWikiCollabSessionToken =
-  (jwtSecret: string) =>
-  ({ userId, pageId, entityId, canEdit }: WikiCollabSession) =>
-    new SignJWT({
-      scope: "session",
-      pageId,
-      entityId,
-      canEdit,
-    } satisfies Omit<WikiCollabSessionTokenPayload, "sub">)
-      .setProtectedHeader({ alg: "HS256" })
-      .setSubject(userId)
-      .setIssuedAt()
-      .setExpirationTime("60s")
-      .sign(new TextEncoder().encode(jwtSecret));
 
 /** The S3 client needs one of the two. Without them, the app has no bucket. */
 const hasS3Endpoint = () =>
@@ -58,12 +36,13 @@ const createApplicationContext = (): ApplicationContext => ({
   // The condition of `getWikiCollabUrl()`
   collab:
     env.COLLAB_URL && env.COLLAB_JWT_SECRET
-      ? {
-          replaceContent: replaceWikiPageContent,
-          createSessionToken: createWikiCollabSessionToken(
-            env.COLLAB_JWT_SECRET,
-          ),
-        }
+      ? createCollabClient({
+          url: env.COLLAB_URL,
+          jwtSecret: env.COLLAB_JWT_SECRET,
+          // A replace runs in an interactive request, thus a hanging collab
+          // server must not hold the request open for long
+          replaceTimeoutMilliseconds: 15_000,
+        })
       : null,
   discord: createDiscordGateway({
     apiBaseUrl: env.DISCORD_API_BASE_URL,

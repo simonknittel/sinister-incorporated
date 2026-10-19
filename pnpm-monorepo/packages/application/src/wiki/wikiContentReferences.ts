@@ -8,9 +8,10 @@ import {
 import type { ApplicationContext } from "../context.js";
 
 /**
- * Resolvers for the references a page's content can carry (mentions, ship
- * links). Independent of the wiki scope — shared by the global and the event
- * wiki.
+ * Resolvers for the references that the content of a page can carry
+ * (mentions, ship links). They do not depend on the wiki scope: the static
+ * content of a page (`findWikiPageContent()`) and the MCP read
+ * (`getWikiPage()`) share them.
  */
 
 /**

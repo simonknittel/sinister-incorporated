@@ -3,7 +3,7 @@ import {
   WikiPageAccessTier,
 } from "@sam-monorepo/application";
 import { getVariantWikiContext } from "../queries/getVariantWikiContext";
-import { getVariantWikiPageStaticContent } from "../queries/getVariantWikiPageStaticContent";
+import { getWikiPageStaticContent } from "../queries/getWikiPageStaticContent";
 import { WikiPageContent } from "./WikiPageContent";
 
 interface Props {
@@ -27,7 +27,7 @@ export const VariantWikiPageContent = async ({ variantId, pageId }: Props) => {
   const permissions = context.permissions.get(page.id);
   if (!permissions) return null;
 
-  const staticContent = await getVariantWikiPageStaticContent(context, page.id);
+  const staticContent = await getWikiPageStaticContent(context, page.id);
 
   return (
     <WikiPageContent

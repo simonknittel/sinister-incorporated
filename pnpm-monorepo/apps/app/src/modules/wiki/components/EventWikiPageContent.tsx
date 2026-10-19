@@ -1,4 +1,3 @@
-import { prisma } from "@/db";
 import { Button2, Button2Variant } from "@/modules/common/components/Button2";
 import { EditableInput } from "@/modules/common/components/form/EditableInput";
 import { Link } from "@/modules/common/components/Link";
@@ -17,8 +16,9 @@ import {
   type EventWikiContext,
   type EventWikiContextPage,
 } from "../queries/getEventWikiContext";
-import { getEventWikiPageStaticContent } from "../queries/getEventWikiPageStaticContent";
 import { getWikiFavoritePageIds } from "../queries/getWikiFavorites";
+import { getWikiPageStaticContent } from "../queries/getWikiPageStaticContent";
+import { getWikiPageTags } from "../queries/getWikiPageTags";
 import { getEventWikiPositionOptions } from "../utils/getEventWikiPositionOptions";
 import { getWikiCollabUrl } from "../utils/getWikiCollabUrl";
 import { createEventWikiHrefMode } from "../utils/wikiPageHref";
@@ -57,13 +57,9 @@ export const EventWikiPageContent = async ({
   permissions,
 }: Props) => {
   const [staticContent, favoritePageIds, pageTags] = await Promise.all([
-    getEventWikiPageStaticContent(context, page.id),
+    getWikiPageStaticContent(context, page.id),
     getWikiFavoritePageIds(),
-    prisma.wikiPageTag.findMany({
-      where: { pageId: page.id },
-      select: { tag: { select: { id: true, name: true } } },
-      orderBy: { tag: { name: "asc" } },
-    }),
+    getWikiPageTags(context, page.id),
   ]);
 
   const hrefMode = createEventWikiHrefMode(
@@ -202,7 +198,7 @@ export const EventWikiPageContent = async ({
       <WikiPageTags
         className="mt-1"
         pageId={page.id}
-        tags={pageTags.map((entry) => entry.tag)}
+        tags={pageTags}
         canEdit={permissions.canEdit}
       />
 

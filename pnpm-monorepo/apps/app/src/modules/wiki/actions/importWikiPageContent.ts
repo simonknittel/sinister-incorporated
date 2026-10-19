@@ -1,145 +1,57 @@
 "use server";
 
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { log } from "@/modules/logging";
-import { WIKI_PAGE_CONTENT_JSON_MAX_LENGTH } from "@sam-monorepo/domain";
 import {
-  collectWikiIframeSrcs,
-  getWikiEditorSchema,
-  isWikiIframeSrcAllowed,
-} from "@sam-monorepo/wiki-editor";
-import { Node as ProseMirrorNode } from "@tiptap/pm/model";
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  DisallowedWikiIframesError,
+  importWikiPageContentInputSchema,
+  importWikiPageContent as importWikiPageContentUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import { unstable_rethrow } from "next/navigation";
-import * as z from "zod";
-import {
-  getWikiPageScopedContext,
-  isWikiScopeFrozen,
-  rejectFrozenWikiScope,
-} from "../queries/getWikiPageScopedContext";
-import { getWikiIframeAllowlist } from "../queries/getWikiSettings";
-import { createWikiPageSafetySnapshot } from "../utils/createWikiPageSafetySnapshot";
-import { replaceWikiPageContent } from "../utils/replaceWikiPageContent";
-import { WikiScope } from "../utils/wikiPageHref";
-
-const schema = z.object({
-  id: z.cuid2(),
-  /** Tiptap JSON document, stringified — the uploaded file's text */
-  content: z.string().max(WIKI_PAGE_CONTENT_JSON_MAX_LENGTH),
-});
+import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
 
 /**
- * Fully replaces a page's content with uploaded Tiptap JSON. An import
- * injects arbitrary node structures, bypassing the editor's insertion-time
- * validation, so it stays an admin tool: `wiki;manage` for the global wiki,
- * the event managers for event pages (the structures land only in their
- * own event wiki, which they control anyway). No merge semantics; the
- * automatic safety snapshot is the undo path.
+ * Replaces the content of a page with an uploaded Tiptap JSON file. A failed
+ * replace keeps the safety snapshot, thus the refresh of the error shows it
+ * in the snapshot list.
  */
 export const importWikiPageContent = createAuthenticatedAction(
   "importWikiPageContent",
-  schema,
+  importWikiPageContentInputSchema,
   async (formData, authentication, data, t) => {
-    const scoped = await getWikiPageScopedContext(data.id);
-    const page = scoped?.context.pagesById.get(data.id);
-    if (!scoped || !page || page.deletedAt) {
-      /**
-       * A different user or tab deleted the page before, and the page must
-       * show it. A context that the viewer cannot hold gets the same answer
-       * (see getWikiPageScopedContext).
-       */
-      return rejectConflict(t("Common.badRequest"), formData);
-    }
-    const context = scoped.context;
-    const allowed =
-      scoped.scope === WikiScope.Event
-        ? context.permissions.get(page.id)?.canAdmin === true
-        : await authentication.authorize("wiki", "manage");
-    if (!allowed)
-      return { error: t("Common.forbidden"), requestPayload: formData };
-    if (isWikiScopeFrozen(scoped)) return rejectFrozenWikiScope(formData);
-
-    /**
-     * Reject unknown node/mark types and invalid structures — the file may
-     * come from an older editor version or a foreign source.
-     */
-    let normalized: unknown;
     try {
-      const parsed: unknown = JSON.parse(data.content);
-      const documentNode = ProseMirrorNode.fromJSON(
-        getWikiEditorSchema(),
-        parsed,
+      await importWikiPageContentUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+        { safetySnapshotName: "Automatische Sicherung vor Import" },
       );
-      documentNode.check();
-      normalized = documentNode.toJSON();
-    } catch {
-      return {
-        error:
-          "Die Datei ist kein gültiges Wiki-Dokument (Tiptap JSON) oder enthält nicht unterstützte Inhalte.",
-        requestPayload: formData,
-      };
+    } catch (error) {
+      if (error instanceof DisallowedWikiIframesError)
+        return {
+          error: `Die Datei enthält iframes von nicht erlaubten Domains: ${error.sources.join(", ")}`,
+          requestPayload: formData,
+        };
+
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: WIKI_ERROR_TEXTS,
+      });
     }
 
-    /**
-     * Imports bypass the insertion-time iframe validation — re-check every
-     * generic iframe against the allowlist.
-     */
-    const iframeAllowlist = await getWikiIframeAllowlist();
-    const disallowedSrcs = collectWikiIframeSrcs(normalized).filter(
-      (src) => !isWikiIframeSrcAllowed(src, iframeAllowlist),
-    );
-    if (disallowedSrcs.length > 0)
-      return {
-        error: `Die Datei enthält iframes von nicht erlaubten Domains: ${disallowedSrcs.join(", ")}`,
-        requestPayload: formData,
-      };
-
-    const entityId = authentication.session.entity?.id ?? null;
-
-    await createWikiPageSafetySnapshot({
-      pageId: page.id,
-      name: "Automatische Sicherung vor Import",
-      createdById: entityId,
-    });
-
-    /**
-     * The safety snapshot is a committed write: the snapshot list must show
-     * it also when the collab replace below fails
-     */
     refresh();
 
-    try {
-      await replaceWikiPageContent({
-        pageId: page.id,
-        content: normalized as object,
-        updatedByEntityId: entityId,
-      });
-    } catch (error) {
-      unstable_rethrow(error);
-      log.error("Wiki content import failed", {
-        error,
-      });
-      return {
-        error:
-          "Import fehlgeschlagen — der Collaboration-Server ist nicht erreichbar. Bitte versuche es später erneut.",
-        requestPayload: formData,
-      };
-    }
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.WIKI_PAGE_CONTENT_IMPORTED,
-        data: {
-          pageId: page.id,
-          eventId: page.eventId ?? undefined,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
     return { success: "Inhalt importiert." };
+  },
+  {
+    parseFormData: (formData) => ({
+      page_id: formData.get("id"),
+      content: formData.get("content"),
+    }),
   },
 );

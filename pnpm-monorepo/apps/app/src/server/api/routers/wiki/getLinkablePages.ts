@@ -1,13 +1,10 @@
+import { getApplicationContext, toActor } from "@/modules/application";
 import { eventContainerSchema } from "@/modules/events/utils/eventContainerSchema";
 import {
-  getEventWikiContext,
-  hasReadableEventWikiRoot,
-} from "@/modules/wiki/queries/getEventWikiContext";
-import { getEventWikiLinkablePages } from "@/modules/wiki/queries/getEventWikiPageStaticContent";
-import { getVariantWikiContext } from "@/modules/wiki/queries/getVariantWikiContext";
-import { getVariantWikiLinkablePages } from "@/modules/wiki/queries/getVariantWikiPageStaticContent";
-import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
-import { getWikiLinkablePages } from "@/modules/wiki/queries/getWikiPageStaticContent";
+  findWikiLinkablePages,
+  idSchema,
+  toWikiScopeTarget,
+} from "@sam-monorepo/application";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
@@ -23,31 +20,20 @@ export const getLinkablePages = protectedProcedure
     z
       .object({
         container: eventContainerSchema.optional(),
-        variantId: z.cuid().optional(),
+        variantId: idSchema.optional(),
       })
       .refine((input) => !(input.container && input.variantId), {
         message: "container and variantId are mutually exclusive",
       })
       .optional(),
   )
-  .query(async ({ input }) => {
+  .query(async ({ ctx, input }) => {
     try {
-      if (input?.variantId) {
-        const variantContext = await getVariantWikiContext(input.variantId);
-        return variantContext
-          ? getVariantWikiLinkablePages(variantContext)
-          : {};
-      }
-
-      if (input?.container) {
-        const eventContext = await getEventWikiContext(input.container);
-        return eventContext && hasReadableEventWikiRoot(eventContext)
-          ? await getEventWikiLinkablePages(eventContext)
-          : {};
-      }
-
-      const context = await getWikiContext();
-      return context ? getWikiLinkablePages(context) : {};
+      return await findWikiLinkablePages(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        toWikiScopeTarget(input ?? {}),
+      );
     } catch (error) {
       throw toTrpcError(error, "Failed to load linkable wiki pages");
     }

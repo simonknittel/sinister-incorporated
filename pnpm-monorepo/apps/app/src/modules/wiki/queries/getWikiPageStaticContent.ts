@@ -1,233 +1,30 @@
-import { prisma } from "@/db";
 import {
-  getPublicUploadBaseUrl,
-  getPublicUploadUrl,
-} from "@/modules/common/utils/getPublicUploadUrl";
-import { withTrace } from "@/modules/tracing/utils/withTrace";
-import type { WikiPageTierPermissions } from "@sam-monorepo/domain";
-import {
-  collectWikiImageUploadIds,
-  collectWikiPageIndexConfigs,
-  collectWikiPageLinkIds,
-  type WikiLinkedPages,
-  type WikiLinkedVariant,
-  type WikiMentionedCitizen,
-  type WikiPageLinkedPage,
-} from "@sam-monorepo/wiki-editor";
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
+import { findWikiPageContent, type WikiScope } from "@sam-monorepo/application";
 import { cache } from "react";
-import type { WikiPageIndexEntry } from "../components/WikiPageIndexList";
-import type { WikiRoleCitizen } from "../components/WikiRoleCitizensList";
-import { resolveWikiPageIndex } from "../utils/resolveWikiPageIndex";
-import type { WikiImageDimensions } from "../utils/wikiImageRendering";
-import {
-  buildWikiPageHref,
-  GLOBAL_WIKI_HREF_MODE,
-  type WikiPageHrefMode,
-} from "../utils/wikiPageHref";
-import type { WikiContext, WikiSharedContext } from "./getWikiContext";
-import {
-  getWikiLinkedVariants,
-  getWikiMentionedCitizens,
-  getWikiRoleCitizensByRole,
-} from "./getWikiPageContentReferences";
-import { getWikiIframeAllowlist } from "./getWikiSettings";
 
-export interface WikiPageStaticContent {
-  /** Tiptap JSON of the page */
-  readonly content: unknown;
-  readonly iframeAllowlist: string[];
-  /**
-   * The pages the content links to, by id — null for the ones the viewer
-   * cannot see. Only these, not all linkable pages: the editor loads the
-   * others on demand (tRPC `wiki.getLinkablePages`).
-   */
-  readonly linkedPages: WikiLinkedPages;
-  readonly mentionedCitizens: Readonly<Record<string, WikiMentionedCitizen>>;
-  readonly linkedVariants: Readonly<Record<string, WikiLinkedVariant>>;
-  readonly pageIndexes: Readonly<Record<string, WikiPageIndexEntry[]>>;
-  readonly roleCitizens: Readonly<Record<string, WikiRoleCitizen[]>>;
-  readonly imageDimensions: Readonly<Record<string, WikiImageDimensions>>;
-}
+export type { WikiPageStaticContent } from "@sam-monorepo/application";
 
 /**
- * Both scopes send explicit hrefs, so the wiki-editor link node's hardcoded
- * `/app/wiki` fallback is dead safety only — the URL pattern lives in
- * wikiPageHref.ts alone.
- */
-const toWikiLinkedPage = (
-  mode: WikiPageHrefMode,
-  page: {
-    readonly id: string;
-    readonly title: string;
-    readonly slug: string;
-    readonly iconId: string | null;
-  },
-): WikiPageLinkedPage => ({
-  title: page.title,
-  slug: page.slug,
-  iconSrc: page.iconId ? getPublicUploadUrl(page.iconId) : undefined,
-  href: buildWikiPageHref(mode, page),
-});
-
-/**
- * Linkable-pages entries of one scope, for rendering internal page links
- * and the "[[" suggestion: the given pages this viewer can read, each
- * linked under the given mode. Invisible pages stay out so their titles
- * never leak. The scoped loaders spread several of these into one record,
- * later entries overriding earlier ones.
- */
-export const collectLinkableWikiPages = (
-  mode: WikiPageHrefMode,
-  pages: readonly {
-    readonly id: string;
-    readonly title: string;
-    readonly slug: string;
-    readonly iconId: string | null;
-  }[],
-  permissions: ReadonlyMap<string, WikiPageTierPermissions>,
-) =>
-  pages
-    .filter((candidate) => permissions.get(candidate.id)?.canRead)
-    .map(
-      (candidate) => [candidate.id, toWikiLinkedPage(mode, candidate)] as const,
-    );
-
-/**
- * All pages a global wiki page can link to, by id — see
- * `collectLinkableWikiPages`.
- */
-export const getWikiLinkablePages = (
-  context: WikiContext,
-): Record<string, WikiPageLinkedPage> =>
-  Object.fromEntries(
-    collectLinkableWikiPages(
-      GLOBAL_WIKI_HREF_MODE,
-      context.pages,
-      context.permissions,
-    ),
-  );
-
-/**
- * The scope-independent part of resolving a page's content for the current
- * viewer: content, iframe allowlist, page-index lists and the referenced
- * pages/citizens/variants/roles. Only the linkable-pages set differs between
- * the global wiki and the event wikis, so it comes in as a loader.
- */
-const assembleWikiPageStaticContent = async (
-  context: WikiSharedContext,
-  pageId: string,
-  loadLinkablePages: () => Promise<
-    Readonly<Record<string, WikiPageLinkedPage>>
-  >,
-  /** Scope the page-index entry links render under; global by default */
-  hrefMode: WikiPageHrefMode = GLOBAL_WIKI_HREF_MODE,
-): Promise<WikiPageStaticContent> => {
-  const [page, iframeAllowlist, linkablePages] = await Promise.all([
-    /**
-     * The content is intentionally not part of the context loaders (which
-     * load all pages on every wiki request) — it's only needed here.
-     */
-    prisma.wikiPage.findUnique({
-      where: { id: pageId },
-      select: { content: true },
-    }),
-    getWikiIframeAllowlist(),
-    loadLinkablePages(),
-  ]);
-
-  const content = page?.content;
-
-  const linkedPages = Object.fromEntries(
-    collectWikiPageLinkIds(content).map((linkedPageId) => [
-      linkedPageId,
-      Object.hasOwn(linkablePages, linkedPageId)
-        ? linkablePages[linkedPageId]
-        : null,
-    ]),
-  );
-
-  /**
-   * Page lists of the page-index nodes on this page, resolved for this
-   * viewer — for the static render and as the editor node views' initial
-   * data; the node views refetch so config changes show up without a
-   * reload.
-   */
-  const pageIndexes = Object.fromEntries(
-    await Promise.all(
-      collectWikiPageIndexConfigs(content).map(
-        async ({ key, config }) =>
-          [
-            key,
-            await resolveWikiPageIndex(context, pageId, config, hrefMode),
-          ] as const,
-      ),
-    ),
-  );
-
-  const [mentionedCitizens, linkedVariants, roleCitizens] = await Promise.all([
-    getWikiMentionedCitizens(content),
-    getWikiLinkedVariants(content),
-    getWikiRoleCitizensByRole(content),
-  ]);
-
-  /**
-   * Intrinsic dimensions of the uploaded images embedded in the
-   * content, for optimized rendering with the aspect-ratio box reserved
-   * from SSR. Uploads without probed dimensions are absent — those
-   * images render as a plain img.
-   */
-  const imageUploadIds = collectWikiImageUploadIds(
-    content,
-    getPublicUploadBaseUrl(),
-  );
-  const uploadsWithDimensions =
-    imageUploadIds.length > 0
-      ? await prisma.upload.findMany({
-          where: { id: { in: imageUploadIds }, width: { not: null } },
-          select: { id: true, width: true, height: true, mimeType: true },
-        })
-      : [];
-  const imageDimensions: Record<string, WikiImageDimensions> = {};
-  for (const upload of uploadsWithDimensions) {
-    if (upload.width === null || upload.height === null) continue;
-    imageDimensions[upload.id] = {
-      width: upload.width,
-      height: upload.height,
-      mimeType: upload.mimeType,
-    };
-  }
-
-  return {
-    content,
-    iframeAllowlist,
-    linkedPages,
-    mentionedCitizens,
-    linkedVariants,
-    pageIndexes,
-    roleCitizens,
-    imageDimensions,
-  };
-};
-
-export { assembleWikiPageStaticContent };
-
-/**
- * Everything `WikiPageStaticContent` (and the collab editor, which renders
- * the same nodes once connected) needs to render a page's content for the
- * current viewer. Shared by the wiki page route and the dashboard panel.
- *
- * Callers must have checked the viewer's read permission for the page —
- * this resolves content, not access.
+ * All that the static render of the content of a page (and the collab
+ * editor, which renders the same nodes) needs for the viewer. The scope
+ * comes from the context wrapper of the page view (for example
+ * `getWikiContext()`), thus it belongs to the actor of the request.
  */
 export const getWikiPageStaticContent = cache(
-  withTrace(
-    "getWikiPageStaticContent",
-    async (
-      context: WikiContext,
-      pageId: string,
-    ): Promise<WikiPageStaticContent> =>
-      assembleWikiPageStaticContent(context, pageId, () =>
-        Promise.resolve(getWikiLinkablePages(context)),
-      ),
-  ),
+  async (scope: WikiScope, pageId: string) => {
+    try {
+      return await findWikiPageContent(
+        getApplicationContext(),
+        await getRequestActor(),
+        scope,
+        pageId,
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  },
 );

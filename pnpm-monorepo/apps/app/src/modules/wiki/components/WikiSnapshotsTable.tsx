@@ -1,12 +1,13 @@
-import { prisma } from "@/db";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import { Link } from "@/modules/common/components/Link";
 import { Table, TBody, THead, TRow } from "@/modules/common/components/Table";
 import { formatDate } from "@/modules/common/utils/formatDate";
+import type { WikiPageSnapshotRow } from "@sam-monorepo/application";
 import { WikiPageSnapshotKind } from "@sam-monorepo/database/client";
 import clsx from "clsx";
 import { FaArrowLeft } from "react-icons/fa";
 import type { WikiSharedContextPage } from "../queries/getWikiContext";
+import { getWikiPageSnapshotRows } from "../queries/getWikiPageSnapshotRows";
 import { getWikiPageRouteHref } from "../utils/wikiPageHref";
 import { WikiPageIcon } from "./WikiPageIcon";
 import { WikiSnapshotRestoreButton } from "./WikiSnapshotRestoreButton";
@@ -33,17 +34,7 @@ export const WikiSnapshotsTable = async ({
   pageHref,
   canRestore,
 }: Props) => {
-  const snapshots = await prisma.wikiPageSnapshot.findMany({
-    where: { pageId: page.id },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      kind: true,
-      name: true,
-      createdAt: true,
-      createdBy: { select: { id: true, handle: true, deletedAt: true } },
-    },
-  });
+  const snapshots = await getWikiPageSnapshotRows(page.id);
 
   return (
     <section className={clsx("rounded-primary bg-secondary p-4", className)}>
@@ -99,17 +90,7 @@ export const WikiSnapshotsTable = async ({
 };
 
 interface SnapshotRowProps {
-  readonly snapshot: {
-    readonly id: string;
-    readonly kind: WikiPageSnapshotKind;
-    readonly name: string | null;
-    readonly createdAt: Date;
-    readonly createdBy: {
-      readonly id: string;
-      readonly handle: string | null;
-      readonly deletedAt: Date | null;
-    } | null;
-  };
+  readonly snapshot: WikiPageSnapshotRow;
   readonly canRestore: boolean;
 }
 
