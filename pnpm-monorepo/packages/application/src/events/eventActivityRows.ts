@@ -1,0 +1,185 @@
+import { EventActivityType } from "@sam-monorepo/database/browser";
+import type { Prisma } from "@sam-monorepo/database/client";
+import {
+  buildCursorConditions,
+  cursorOrderBy,
+  type MergedCursorSourceInput,
+} from "@sam-monorepo/domain";
+import * as z from "zod";
+import type { Actor } from "../actor.js";
+import type { ApplicationContext } from "../context.js";
+import { requireVisibleEvent } from "./findVisibleEvent.js";
+
+const EVENT_ACTIVITY_CITIZEN_SELECT = {
+  id: true,
+  handle: true,
+  deletedAt: true,
+} as const satisfies Prisma.CitizenSelect;
+
+/** A citizen as the activity table links it */
+export interface EventActivityCitizen {
+  readonly id: string;
+  readonly handle: string | null;
+  readonly deletedAt: Date | null;
+}
+
+/** One page request of the activity source of an event */
+export interface EventActivityRowsInput extends MergedCursorSourceInput {
+  readonly eventId: string;
+  /** The key of the source in the merged cursor */
+  readonly sourceKey: string;
+  /** Only these types. Null: all types. */
+  readonly types: readonly EventActivityType[] | null;
+  /** Only the entries of these citizens. Null or nothing: all citizens. */
+  readonly actorIds?: readonly string[] | null;
+  readonly createdAt?: { readonly gte?: Date; readonly lt?: Date };
+}
+
+export interface EventActivityRow {
+  readonly id: string;
+  readonly type: EventActivityType;
+  readonly createdAt: Date;
+  /** The stored payload. The renderer parses it for each type. */
+  readonly payload: Prisma.JsonValue;
+  /** Who caused the entry */
+  readonly actor: EventActivityCitizen | null;
+  /**
+   * The citizen that the payload names for the types of
+   * `TYPES_WITH_AFFECTED_CITIZEN`, or null when it does not exist (anymore)
+   */
+  readonly affectedCitizen: EventActivityCitizen | null;
+}
+
+/**
+ * The types whose payload names a citizen other than the row's own actor:
+ * the row's citizen column holds the acting manager
+ */
+const TYPES_WITH_AFFECTED_CITIZEN: ReadonlySet<EventActivityType> = new Set([
+  EventActivityType.PARTICIPATION_ADDED_BY_MANAGER,
+  EventActivityType.PARTICIPATION_REMOVED_BY_MANAGER,
+  EventActivityType.MANAGER_ADDED,
+  EventActivityType.MANAGER_REMOVED,
+]);
+
+const affectedCitizenPayloadSchema = z.object({ citizenId: z.string() });
+
+const getAffectedCitizenId = (activity: {
+  readonly type: EventActivityType;
+  readonly payload: Prisma.JsonValue;
+}): string | null =>
+  TYPES_WITH_AFFECTED_CITIZEN.has(activity.type)
+    ? (affectedCitizenPayloadSchema.safeParse(activity.payload).data
+        ?.citizenId ?? null)
+    : null;
+
+/**
+ * One page of the stored activity of an event that the actor can see. The
+ * activity is visible to everyone who can see the event.
+ *
+ * @throws ForbiddenError without `event;read`, NotFoundError when the actor
+ * cannot see the event
+ */
+export const findEventActivityRows = async (
+  context: ApplicationContext,
+  actor: Actor,
+  {
+    eventId,
+    sourceKey,
+    types,
+    actorIds,
+    createdAt,
+    position,
+    direction,
+    take,
+  }: EventActivityRowsInput,
+): Promise<EventActivityRow[]> => {
+  const event = await requireVisibleEvent(context, actor, eventId);
+
+  const activities = await context.prisma.eventActivity.findMany({
+    where: {
+      AND: [
+        {
+          eventId: event.id,
+          ...(types ? { type: { in: [...types] } } : {}),
+          ...(actorIds ? { citizenId: { in: [...actorIds] } } : {}),
+          ...(createdAt && Object.keys(createdAt).length > 0
+            ? { createdAt }
+            : {}),
+        },
+        ...buildCursorConditions(position, sourceKey, direction, "createdAt"),
+      ],
+    },
+    orderBy: cursorOrderBy(direction, "createdAt"),
+    take,
+    select: {
+      id: true,
+      type: true,
+      createdAt: true,
+      payload: true,
+      citizen: { select: EVENT_ACTIVITY_CITIZEN_SELECT },
+    },
+  });
+
+  const affectedCitizenIds = activities
+    .map(getAffectedCitizenId)
+    .filter((citizenId) => citizenId !== null);
+  const affectedCitizens =
+    affectedCitizenIds.length > 0
+      ? await context.prisma.citizen.findMany({
+          where: { id: { in: affectedCitizenIds } },
+          select: EVENT_ACTIVITY_CITIZEN_SELECT,
+        })
+      : [];
+  const affectedCitizenById = new Map(
+    affectedCitizens.map((citizen) => [citizen.id, citizen]),
+  );
+
+  return activities.map((activity) => {
+    const affectedCitizenId = getAffectedCitizenId(activity);
+
+    return {
+      id: activity.id,
+      type: activity.type,
+      createdAt: activity.createdAt,
+      payload: activity.payload,
+      actor: activity.citizen,
+      affectedCitizen: affectedCitizenId
+        ? (affectedCitizenById.get(affectedCitizenId) ?? null)
+        : null,
+    };
+  });
+};
+
+/**
+ * Everyone who caused activity on an event that the actor can see, for the
+ * actor filter
+ *
+ * @throws ForbiddenError without `event;read`, NotFoundError when the actor
+ * cannot see the event
+ */
+export const findEventActivityActors = async (
+  context: ApplicationContext,
+  actor: Actor,
+  { eventId }: { readonly eventId: string },
+): Promise<EventActivityCitizen[]> => {
+  const event = await requireVisibleEvent(context, actor, eventId);
+
+  const rows = await context.prisma.eventActivity.findMany({
+    where: {
+      eventId: event.id,
+      citizenId: {
+        not: null,
+      },
+    },
+    distinct: ["citizenId"],
+    select: {
+      citizen: { select: EVENT_ACTIVITY_CITIZEN_SELECT },
+    },
+  });
+
+  return rows
+    .flatMap((row) => (row.citizen ? [row.citizen] : []))
+    .toSorted((first, second) =>
+      (first.handle || first.id).localeCompare(second.handle || second.id),
+    );
+};

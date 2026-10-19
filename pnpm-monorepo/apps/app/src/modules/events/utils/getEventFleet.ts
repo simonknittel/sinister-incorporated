@@ -1,49 +1,27 @@
-import { prisma } from "@/db";
-import type { EventParticipantRow } from "@/modules/events/queries/eventRelationSelects";
-import { SHIP_VARIANT_SELECT } from "@/modules/fleet/queries/shipQuery";
-import { buildParticipantCitizenWhere } from "@sam-monorepo/application";
-import { VariantStatus, type Event } from "@sam-monorepo/database/client";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
+import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { findEventFleet } from "@sam-monorepo/application";
+import type { Event } from "@sam-monorepo/database/client";
 import { cache } from "react";
 
+/**
+ * See `findEventFleet()`. The pages give the event that `getEventById()`
+ * cached, thus `cache` dedupes the calls of one render by its reference.
+ */
 export const getEventFleet = cache(
-  async (
-    event: Event & {
-      participants: EventParticipantRow[];
-    },
-  ) => {
-    const ships = await prisma.ship.findMany({
-      where: {
-        deletedAt: null,
-        /** A fleet count is a statistic, thus deleted citizens do not count */
-        owner: {
-          AND: [
-            buildParticipantCitizenWhere(event.participants),
-            ACTIVE_CITIZEN_WHERE,
-          ],
-        },
-        variant: {
-          status: VariantStatus.FLIGHT_READY,
-        },
-      },
-      select: {
-        variant: {
-          select: SHIP_VARIANT_SELECT,
-        },
-      },
-    });
-
-    const groupedShips = Map.groupBy(ships, (ship) => ship.variant.id);
-
-    const countedShips = Array.from(groupedShips.values(), (ships) => {
-      const ship = ships[0];
-
-      return {
-        variant: ship.variant,
-        count: ships.length,
-      };
-    });
-
-    return countedShips;
-  },
+  withTrace("getEventFleet", async (event: Pick<Event, "id">) => {
+    try {
+      return await findEventFleet(
+        getApplicationContext(),
+        await getRequestActor(),
+        { eventId: event.id },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  }),
 );

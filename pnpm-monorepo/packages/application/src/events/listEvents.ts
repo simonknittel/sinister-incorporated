@@ -7,6 +7,7 @@ import type { ApplicationContext } from "../context.js";
 import {
   cursorSchema,
   pageLimitSchema,
+  paginateByDatabaseCursor,
   type PageOptions,
 } from "../pagination.js";
 import {
@@ -225,12 +226,15 @@ const getCancelledParticipationEventIds = async (
  * One page of the events that the actor can see, with the rows that the
  * event cards of the app render. The app pages in both directions, the
  * `listEvents` use case only forward.
+ *
+ * @throws ValidationError for a cursor of no event, unless the options give
+ * `UnknownCursorBehavior.FirstPage`
  */
 export const findEventListPage = (
   context: ApplicationContext,
   actor: Actor,
   input: ListEventsInput,
-  { direction = CursorDirection.Next }: PageOptions = {},
+  { direction = CursorDirection.Next, unknownCursor }: PageOptions = {},
 ): Promise<EventListPage> =>
   withSpan(context, "findEventListPage", async () => {
     requirePermission(actor, "event", "read");
@@ -261,46 +265,33 @@ export const findEventListPage = (
         ? "asc"
         : "desc";
 
-    // Fetch one extra to detect if there are more pages
-    const take =
-      direction === CursorDirection.Prev ? -(input.limit + 1) : input.limit + 1;
-
-    const rows = await context.prisma.event.findMany({
-      where: {
-        AND: [
-          statusWhere,
-          getSourceWhere(input.type),
-          input.participating === EventParticipationFilter.Me
-            ? { participants: { some: viewerParticipationWhere } }
-            : {},
-          buildVisibleEventsWhere(toEventViewer(actor)),
-        ],
+    const page = await paginateByDatabaseCursor(
+      {
+        cursor: input.cursor,
+        pageSize: input.limit,
+        direction,
+        unknownCursor,
       },
-      select: eventListSelect(viewerParticipationWhere),
-      orderBy: { startTime: orderDirection },
-      ...(input.cursor ? { cursor: { id: input.cursor }, skip: 1 } : {}),
-      take,
-    });
-
-    const hasMore = rows.length > input.limit;
-
-    let events = rows;
-    if (hasMore) {
-      events =
-        direction === CursorDirection.Prev
-          ? // The extra item is at the beginning
-            rows.slice(1)
-          : // The extra item is at the end
-            rows.slice(0, input.limit);
-    }
-
-    // A next page exists if we fetched forward and got an extra item, or we
-    // came from a backward navigation (there is a page ahead we already
-    // visited)
-    const hasNextPage =
-      direction === CursorDirection.Next ? hasMore : Boolean(input.cursor);
-    const hasPrevPage =
-      direction === CursorDirection.Prev ? hasMore : Boolean(input.cursor);
+      (cursorArguments) =>
+        context.prisma.event.findMany({
+          where: {
+            AND: [
+              statusWhere,
+              getSourceWhere(input.type),
+              input.participating === EventParticipationFilter.Me
+                ? { participants: { some: viewerParticipationWhere } }
+                : {},
+              buildVisibleEventsWhere(toEventViewer(actor)),
+            ],
+          },
+          select: eventListSelect(viewerParticipationWhere),
+          // Events with the same start keep one order on all pages
+          orderBy: [{ startTime: orderDirection }, { id: orderDirection }],
+          ...cursorArguments,
+        }),
+      async (id) => (await context.prisma.event.count({ where: { id } })) > 0,
+    );
+    const events = page.items;
 
     const eventIds = events.map((event) => event.id);
     const getNewEventIds = async () => {
@@ -320,8 +311,8 @@ export const findEventListPage = (
       events,
       cancelledParticipationEventIds,
       newEventIds: new Set(newEventIds),
-      nextCursor: hasNextPage ? (events.at(-1)?.id ?? null) : null,
-      prevCursor: hasPrevPage ? (events.at(0)?.id ?? null) : null,
+      nextCursor: page.nextCursor,
+      prevCursor: page.previousCursor,
     };
   });
 

@@ -1,81 +1,46 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { EVENT_MANAGE_GUARD_SELECT } from "@sam-monorepo/application";
 import {
-  EventDiscordPublishTarget,
-  EventSource,
-} from "@sam-monorepo/database/client";
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  publishEventToDiscordInputSchema,
+  publishEventToDiscord as publishEventToDiscordUseCase,
+  type DiscordSyncResult,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
+import { parseDiscordPublishFields } from "../utils/discordPublishFields";
 import {
-  discordPublishFieldsSchema,
-  parseDiscordPublishFields,
-} from "../utils/discordPublishFields";
-import {
-  createDiscordEventPublication,
   getDiscordCoverImageWarning,
   getDiscordPublishError,
-  resolveDiscordPublishTarget,
 } from "../utils/discordPublishing";
-import { isAllowedToManageEvent } from "../utils/isAllowedToManageEvent";
-import { isEventUpdatable } from "../utils/isEventUpdatable";
-
-/** Publishing always has a target, unlike the forms that merely offer one */
-const schema = discordPublishFieldsSchema.extend({
-  eventId: z.cuid(),
-  discordPublishTarget: z.enum(EventDiscordPublishTarget),
-});
+import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
 export const publishEventToDiscord = createAuthenticatedAction(
   "publishEventToDiscord",
-  schema,
+  publishEventToDiscordInputSchema,
   async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request. Publishing is part of managing an event, so it
-     * needs no permission of its own.
-     */
-    const event = await prisma.event.findUnique({
-      where: {
-        id: data.eventId,
-        source: EventSource.APP,
-        deletedAt: null,
-      },
-      select: {
-        ...EVENT_MANAGE_GUARD_SELECT,
-        discordPublishedId: true,
-      },
-    });
-    if (!event) return rejectConflict("Event nicht gefunden", formData);
-    if (!isEventUpdatable(event))
-      return rejectConflict("Das Event ist bereits vorbei.", formData);
-    if (!(await isAllowedToManageEvent(event)))
-      return { error: t("Common.forbidden"), requestPayload: formData };
-    /** A different tab or manager published the event before */
-    if (event.discordPublishedId)
-      return rejectConflict(
-        "Das Event ist bereits auf Discord veröffentlicht.",
-        formData,
+    let result: DiscordSyncResult;
+    try {
+      result = await publishEventToDiscordUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
       );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: EVENT_ERROR_TEXTS,
+      });
+    }
 
     /**
-     * Validate the request
+     * Nothing was saved, thus the page stays as it is
      */
-    const target = await resolveDiscordPublishTarget(data, event.id);
-    if (!target)
-      return {
-        error:
-          "Der ausgewählte Kanal steht nicht (mehr) zur Verfügung. Lade die Seite neu.",
-        requestPayload: formData,
-      };
-
-    const result = await createDiscordEventPublication(event.id, target, {
-      userId: authentication.session.user.id,
-      citizenId: authentication.session.entity?.id ?? null,
-    });
-
     const error = getDiscordPublishError(result);
     if (error) return { error, requestPayload: formData };
 
@@ -89,9 +54,15 @@ export const publishEventToDiscord = createAuthenticatedAction(
     };
   },
   {
-    parseFormData: (formData) => ({
-      ...parseDiscordPublishFields(formData),
-      eventId: formData.get("eventId"),
-    }),
+    parseFormData: (formData) => {
+      const fields = parseDiscordPublishFields(formData);
+
+      return {
+        event_id: formData.get("eventId"),
+        target: fields.discordPublishTarget,
+        channel_id: fields.discordPublishChannelId,
+        location: fields.discordPublishLocation,
+      };
+    },
   },
 );

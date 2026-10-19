@@ -1,8 +1,5 @@
 /** The use cases of the events, with the event rules that the app and the other groups share */
-export {
-  findAddableParticipantIds,
-  type AddableParticipantsEvent,
-} from "./addableParticipants.js";
+export { findAddableEventParticipantIds } from "./addableParticipants.js";
 export {
   addEventManagers,
   addEventManagersInputSchema,
@@ -25,7 +22,6 @@ export {
   type CreateEventInput,
   type CreateEventOptions,
   type CreateEventOutput,
-  type EventTemplateApplication,
 } from "./createEvent.js";
 export { createEventParticipation } from "./createEventParticipation.js";
 export {
@@ -35,6 +31,25 @@ export {
   type DeleteEventOptions,
   type DeleteEventOutput,
 } from "./deleteEvent.js";
+export {
+  findEventActivityActors,
+  findEventActivityRows,
+  type EventActivityCitizen,
+  type EventActivityRow,
+  type EventActivityRowsInput,
+} from "./eventActivityRows.js";
+export {
+  DiscordSyncOutcome,
+  publishEventToDiscord,
+  publishEventToDiscordInputSchema,
+  syncEventDiscordPublication,
+  unpublishEventFromDiscord,
+  unpublishEventFromDiscordInputSchema,
+  type DiscordSyncResult,
+  type EventDiscordPublishRequest,
+  type PublishEventToDiscordInput,
+  type UnpublishEventFromDiscordInput,
+} from "./eventDiscordPublication.js";
 export { EventErrorMessage } from "./eventErrors.js";
 export {
   EVENT_MANAGE_GUARD_SELECT,
@@ -52,6 +67,15 @@ export {
   EventVisibilityType,
   toEventVisibilityType,
 } from "./eventOutput.js";
+export {
+  countOpenEvents,
+  findEventFleet,
+  findEventOptions,
+  findResolvedEventParticipants,
+  type EventFleetEntry,
+  type EventOption,
+  type ResolvedEventParticipant,
+} from "./eventPageRows.js";
 export {
   EVENT_PAGE_RELATIONS_SELECT,
   type EventDetails,
@@ -86,11 +110,15 @@ export {
 } from "./listEvents.js";
 export { findNewEventIds, getOpenEventsWhere } from "./openEvents.js";
 export {
+  findOwnEventParticipation,
+  type AssignedEventPosition,
+  type OwnEventParticipation,
+} from "./ownEventParticipation.js";
+export {
   eventParticipationInputSchema,
   type EventParticipationInput,
 } from "./ownParticipation.js";
 export { buildParticipantCitizenWhere } from "./participantCitizenWhere.js";
-export { findParticipatableAppEvent } from "./participatableAppEvent.js";
 export {
   removeEventManager,
   removeEventManagerInputSchema,
@@ -107,6 +135,7 @@ export {
   EventChange,
   updateEvent,
   updateEventInputSchema,
+  type UpdateEventDiscordResult,
   type UpdateEventInput,
   type UpdateEventOptions,
   type UpdateEventOutput,

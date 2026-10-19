@@ -1,6 +1,5 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import {
   getApplicationContext,
@@ -8,39 +7,20 @@ import {
   toActor,
 } from "@/modules/application";
 import {
-  EventChange,
-  EventVisibilityType,
   updateEventInputSchema,
   updateEvent as updateEventUseCase,
+  type UpdateEventOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import {
-  getDiscordSyncWarning,
-  syncDiscordEventPublication,
-} from "../utils/discordPublishing";
+import { getDiscordSyncWarning } from "../utils/discordPublishing";
 import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 import { parseEventDetailsFormData } from "../utils/eventFormData";
-
-/** The changes that the Discord event shows */
-const DISCORD_CONTENT_CHANGES: ReadonlySet<EventChange> = new Set([
-  EventChange.Name,
-  EventChange.Description,
-  EventChange.Schedule,
-]);
-
-const isPublishedOnDiscord = async (eventId: string) =>
-  (
-    await prisma.event.findUnique({
-      where: { id: eventId },
-      select: { discordPublishedId: true },
-    })
-  )?.discordPublishedId != null;
 
 export const updateEvent = createAuthenticatedAction(
   "updateEvent",
   updateEventInputSchema,
   async (formData, authentication, data, t) => {
-    let result;
+    let result: UpdateEventOutput;
     try {
       result = await updateEventUseCase(
         getApplicationContext(),
@@ -63,29 +43,14 @@ export const updateEvent = createAuthenticatedAction(
     refresh();
 
     /**
-     * Carry the change over to Discord if the event is published there. A
-     * no-op otherwise, and never able to undo the save above — a Discord
-     * problem only comes back as a warning next to the success message.
+     * A Discord problem never undoes the save — it only comes back as a
+     * warning next to the success message. Narrowing a published event's
+     * visibility does not narrow it on Discord, thus that is said out loud.
      */
-    const discordSyncWarning = result.changes.some((change) =>
-      DISCORD_CONTENT_CHANGES.has(change),
-    )
-      ? getDiscordSyncWarning(await syncDiscordEventPublication(data.event_id))
-      : null;
-
-    /**
-     * Narrowing a published event's visibility does not narrow it on
-     * Discord — the guild keeps seeing it. Said out loud rather than
-     * silently unpublishing, which would be a surprise of its own.
-     */
-    const becameRestrictedWhilePublished =
-      result.changes.includes(EventChange.Visibility) &&
-      result.event.visibility === EventVisibilityType.Restricted &&
-      (await isPublishedOnDiscord(data.event_id));
-
+    const discordSync = result.discord?.sync;
     const warnings = [
-      discordSyncWarning ??
-        (becameRestrictedWhilePublished
+      (discordSync ? getDiscordSyncWarning(discordSync) : null) ??
+        (result.discord?.staysVisibleOnDiscord
           ? "Das Event bleibt auf Discord für alle Mitglieder des Servers sichtbar. Entferne es dort, wenn das nicht gewollt ist."
           : null),
       result.notifications_sent ? null : t("Common.notificationsFailed"),

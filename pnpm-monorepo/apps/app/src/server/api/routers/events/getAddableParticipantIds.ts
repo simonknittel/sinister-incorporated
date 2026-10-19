@@ -1,8 +1,11 @@
-import { requireAuthentication } from "@/modules/auth/server";
-import { getAddableParticipantIds as query } from "@/modules/events/queries/getAddableParticipantIds";
-import { getParticipatableAppEvent } from "@/modules/events/utils/getParticipatableAppEvent";
-import { isAllowedToManageEvent } from "@/modules/events/utils/isAllowedToManageEvent";
-import { isEventUpdatable } from "@/modules/events/utils/isEventUpdatable";
+import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  ConflictError,
+  findAddableEventParticipantIds,
+  ForbiddenError,
+  idSchema,
+  NotFoundError,
+} from "@sam-monorepo/application";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
@@ -14,27 +17,22 @@ import { protectedProcedure, toTrpcError } from "../../trpc";
  * action would refuse to act on.
  */
 export const getAddableParticipantIds = protectedProcedure
-  .input(z.object({ eventId: z.cuid() }))
-  .query(async ({ input }) => {
+  .input(z.object({ eventId: idSchema }))
+  .query(async ({ ctx, input }) => {
     try {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("event", "read")))
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Missing event read permission",
-        });
-
-      const event = await getParticipatableAppEvent(input.eventId);
-      if (!event || !isEventUpdatable(event))
-        throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
-      if (!(await isAllowedToManageEvent(event)))
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Missing event manage permission",
-        });
-
-      return await query(event);
+      return await findAddableEventParticipantIds(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        { eventId: input.eventId },
+      );
     } catch (error) {
+      if (error instanceof ForbiddenError)
+        throw new TRPCError({ code: "FORBIDDEN", message: error.message });
+
+      // An event that ended counts as gone for the picker
+      if (error instanceof NotFoundError || error instanceof ConflictError)
+        throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
+
       throw toTrpcError(error, "Failed to resolve addable event participants");
     }
   });

@@ -9,6 +9,7 @@ import {
 import {
   addEventParticipantsInputSchema,
   addEventParticipants as addEventParticipantsUseCase,
+  type AddEventParticipantsOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
@@ -17,7 +18,7 @@ export const addEventParticipants = createAuthenticatedAction(
   "addEventParticipants",
   addEventParticipantsInputSchema,
   async (formData, authentication, data, t) => {
-    let result;
+    let result: AddEventParticipantsOutput;
     try {
       result = await addEventParticipantsUseCase(
         getApplicationContext(),

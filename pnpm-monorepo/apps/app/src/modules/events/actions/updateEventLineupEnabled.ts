@@ -6,7 +6,11 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
-import { updateEvent, updateEventInputSchema } from "@sam-monorepo/application";
+import {
+  updateEvent,
+  updateEventInputSchema,
+  type UpdateEventOutput,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
@@ -14,7 +18,7 @@ export const updateEventLineupEnabled = createAuthenticatedAction(
   "updateEventLineupEnabled",
   updateEventInputSchema,
   async (formData, authentication, data, t) => {
-    let result;
+    let result: UpdateEventOutput;
     try {
       result = await updateEvent(
         getApplicationContext(),

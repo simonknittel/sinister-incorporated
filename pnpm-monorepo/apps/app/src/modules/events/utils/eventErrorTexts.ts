@@ -3,12 +3,11 @@ import { EventErrorMessage } from "@sam-monorepo/application";
 import { DESCRIPTION_TOO_LONG_TEXT } from "./discordEventDescription";
 import { EVENT_ENDED_TEXT, EVENT_NOT_FOUND_TEXT } from "./lineupErrorTexts";
 
-/** For the lineup actions that still import the texts from this module */
-
 /**
  * The texts of the event actions for the errors of the event use cases. The
  * other validation errors need a request that bypassed the forms: they get
- * the text of a bad request.
+ * the text of a bad request. The template actions merge this record with
+ * `EVENT_TEMPLATE_ERROR_TEXTS`.
  */
 export const EVENT_ERROR_TEXTS: ApplicationErrorTexts = {
   [EventErrorMessage.NotFound]: EVENT_NOT_FOUND_TEXT,
@@ -32,4 +31,8 @@ export const EVENT_ERROR_TEXTS: ApplicationErrorTexts = {
     "Bitte wähle mindestens einen Citizen aus.",
   [EventErrorMessage.CitizenCannotSeeEvent]:
     "Mindestens ein Citizen kann das Event nicht sehen.",
+  [EventErrorMessage.AlreadyPublishedOnDiscord]:
+    "Das Event ist bereits auf Discord veröffentlicht.",
+  [EventErrorMessage.DiscordChannelUnavailable]:
+    "Der ausgewählte Kanal steht nicht (mehr) zur Verfügung. Lade die Seite neu.",
 };

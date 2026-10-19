@@ -1,37 +1,24 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { findEventActivityActors } from "@sam-monorepo/application";
 import type { Event } from "@sam-monorepo/database/client";
 import { cache } from "react";
 
-/**
- * Everyone who caused activity on this event, for the actor filter. Callers
- * must have resolved the event through a visibility-checked path — the
- * activity is visible to everyone who can see the event.
- */
+/** Everyone who caused activity on this event, for the actor filter */
 export const getEventActivityActors = cache(
   withTrace("getEventActivityActors", async (eventId: Event["id"]) => {
-    const rows = await prisma.eventActivity.findMany({
-      where: {
-        eventId,
-        citizenId: {
-          not: null,
-        },
-      },
-      distinct: ["citizenId"],
-      select: {
-        citizen: {
-          select: {
-            id: true,
-            handle: true,
-            deletedAt: true,
-          },
-        },
-      },
-    });
-
-    return rows
-      .map((row) => row.citizen)
-      .filter((citizen): citizen is NonNullable<typeof citizen> => !!citizen)
-      .toSorted((a, b) => (a.handle || a.id).localeCompare(b.handle || b.id));
+    try {
+      return await findEventActivityActors(
+        getApplicationContext(),
+        await getRequestActor(),
+        { eventId },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
   }),
 );

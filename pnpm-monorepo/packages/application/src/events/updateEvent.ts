@@ -22,6 +22,10 @@ import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { createEventActivity } from "./eventActivity.js";
 import { requireDescriptionFitsDiscord } from "./eventDescription.js";
+import {
+  syncEventDiscordPublication,
+  type DiscordSyncResult,
+} from "./eventDiscordPublication.js";
 import { EventErrorMessage } from "./eventErrors.js";
 import {
   eventDescriptionSchema,
@@ -82,14 +86,25 @@ export type UpdateEventInput = z.infer<typeof updateEventInputSchema>;
 /** Options of the use case for the app, not fields of the input schema */
 export interface UpdateEventOptions {
   /**
-   * True when the caller carries a changed name, description or schedule
-   * over to the Discord event after the use case, and tells the user that a
-   * restricted event stays visible on Discord (only the app can reach
-   * Discord). Without it, such a change of an event that is published on
+   * True when the use case carries a changed name, description or schedule
+   * over to the Discord event after the save, and the caller tells the user
+   * that a restricted event stays visible on Discord (only the app can show
+   * the result). Without it, such a change of an event that is published on
    * Discord is refused: else the Discord event would show outdated data, or
    * the user would not know that the guild still sees the event.
    */
   readonly syncsDiscordPublication?: boolean;
+}
+
+/** The Discord step of an update. Only the app reads it (camelCase keys). */
+export interface UpdateEventDiscordResult {
+  /** Null when the name, the description and the schedule did not change */
+  readonly sync: DiscordSyncResult | null;
+  /**
+   * True when the update made the event restricted and the event is still
+   * published: the guild keeps seeing it
+   */
+  readonly staysVisibleOnDiscord: boolean;
 }
 
 export interface UpdateEventOutput {
@@ -101,7 +116,18 @@ export interface UpdateEventOutput {
    * changes stand, thus the caller must not save them again.
    */
   readonly notifications_sent: boolean;
+  /**
+   * Only with the option `syncsDiscordPublication`. The MCP tools parse the
+   * output with a strict schema, thus the key must not exist without the
+   * option.
+   */
+  readonly discord?: UpdateEventDiscordResult;
 }
+
+const NO_DISCORD_CHANGE: UpdateEventDiscordResult = {
+  sync: null,
+  staysVisibleOnDiscord: false,
+};
 
 const DETAIL_FIELDS = [
   "name",
@@ -232,6 +258,7 @@ export const updateEvent = (
         event: await loadEventOutput(context, actor, event.id),
         changes,
         notifications_sent: true,
+        ...(syncsDiscordPublication ? { discord: NO_DISCORD_CHANGE } : {}),
       };
 
     /**
@@ -370,9 +397,55 @@ export const updateEvent = (
         ? await triggerNotificationsAfterSave(context, notifications)
         : true;
 
+    /**
+     * Carry the change over to Discord if the event is published there. A
+     * no-op otherwise, and never able to undo the save above — a Discord
+     * problem only comes back as a warning next to the success message.
+     */
+    const discord = syncsDiscordPublication
+      ? await syncDiscordAfterUpdate(context, event.id, {
+          changesContent,
+          restrictsVisibility,
+        })
+      : null;
+
     return {
       event: await loadEventOutput(context, actor, event.id),
       changes,
       notifications_sent: notificationsSent,
+      ...(discord ? { discord } : {}),
     };
   });
+
+/**
+ * Narrowing a published event's visibility does not narrow it on Discord —
+ * the guild keeps seeing it. The caller says it out loud rather than
+ * silently unpublishing, which would be a surprise of its own. The publish
+ * state is read after the sync, because a sync can clear it.
+ */
+const syncDiscordAfterUpdate = async (
+  context: ApplicationContext,
+  eventId: string,
+  {
+    changesContent,
+    restrictsVisibility,
+  }: {
+    readonly changesContent: boolean;
+    readonly restrictsVisibility: boolean;
+  },
+): Promise<UpdateEventDiscordResult> => {
+  const sync = changesContent
+    ? await syncEventDiscordPublication(context, eventId)
+    : null;
+
+  const staysVisibleOnDiscord =
+    restrictsVisibility &&
+    (
+      await context.prisma.event.findUnique({
+        where: { id: eventId },
+        select: { discordPublishedId: true },
+      })
+    )?.discordPublishedId != null;
+
+  return { sync, staysVisibleOnDiscord };
+};

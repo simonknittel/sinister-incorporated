@@ -1,48 +1,38 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { EVENT_MANAGE_GUARD_SELECT } from "@sam-monorepo/application";
-import { EventSource } from "@sam-monorepo/database/client";
-import { refresh } from "next/cache";
-import * as z from "zod";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import {
   DiscordSyncOutcome,
-  removeDiscordEventPublication,
-} from "../utils/discordPublishing";
-import { isAllowedToManageEvent } from "../utils/isAllowedToManageEvent";
-import { isEventUpdatable } from "../utils/isEventUpdatable";
-
-const schema = z.object({
-  eventId: z.cuid(),
-});
+  unpublishEventFromDiscordInputSchema,
+  unpublishEventFromDiscord as unpublishEventFromDiscordUseCase,
+  type DiscordSyncResult,
+} from "@sam-monorepo/application";
+import { refresh } from "next/cache";
+import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
 export const unpublishEventFromDiscord = createAuthenticatedAction(
   "unpublishEventFromDiscord",
-  schema,
+  unpublishEventFromDiscordInputSchema,
   async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    const event = await prisma.event.findUnique({
-      where: {
-        id: data.eventId,
-        source: EventSource.APP,
-        deletedAt: null,
-      },
-      select: EVENT_MANAGE_GUARD_SELECT,
-    });
-    if (!event) return rejectConflict("Event nicht gefunden", formData);
-    if (!isEventUpdatable(event))
-      return rejectConflict("Das Event ist bereits vorbei.", formData);
-    if (!(await isAllowedToManageEvent(event)))
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    const result = await removeDiscordEventPublication(event.id, {
-      userId: authentication.session.user.id,
-      citizenId: authentication.session.entity?.id ?? null,
-    });
+    let result: DiscordSyncResult;
+    try {
+      result = await unpublishEventFromDiscordUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: EVENT_ERROR_TEXTS,
+      });
+    }
 
     if (result.outcome === DiscordSyncOutcome.Failed)
       return {
@@ -59,5 +49,8 @@ export const unpublishEventFromDiscord = createAuthenticatedAction(
           ? "Das Event war auf Discord bereits gelöscht und gilt hier wieder als nicht veröffentlicht."
           : "Das Event wurde von Discord entfernt.",
     };
+  },
+  {
+    parseFormData: (formData) => ({ event_id: formData.get("eventId") }),
   },
 );

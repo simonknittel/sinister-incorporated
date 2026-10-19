@@ -1,9 +1,16 @@
-import { EventActivityType, EventSource } from "@sam-monorepo/database/browser";
-import type { Prisma } from "@sam-monorepo/database/client";
+import {
+  EventActivityType,
+  EventSource,
+  WikiPageEventScope,
+} from "@sam-monorepo/database/browser";
 import type { AuditEventInput } from "@sam-monorepo/domain";
 import {
   AuditEventType,
   buildBriefingRootPageSeed,
+  buildPositionTree,
+  eventContainerColumns,
+  toEventContainer,
+  toTemplateContainer,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
@@ -13,11 +20,31 @@ import {
   dateTimeInputSchema,
 } from "../dateTime.js";
 import { ValidationError } from "../errors.js";
+import { requireReadableEventTemplate } from "../eventTemplates/eventTemplateAccess.js";
+import {
+  clonePositions,
+  findClonablePositions,
+} from "../lineup/lineupClone.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
+import {
+  COPYABLE_UPLOAD_SELECT,
+  copyUploadInTransaction,
+} from "../uploads/uploadCopy.js";
+import {
+  copyBriefingTree,
+  findBriefingCopySource,
+} from "../wiki/briefingCopy.js";
 import { withSpan } from "../withSpan.js";
 import { requireOwnCoverImage } from "./coverImage.js";
 import { createEventActivity } from "./eventActivity.js";
 import { requireDescriptionFitsDiscord } from "./eventDescription.js";
+import {
+  createDiscordEventPublication,
+  DiscordSyncOutcome,
+  resolveDiscordPublishTarget,
+  type DiscordSyncResult,
+  type EventDiscordPublishRequest,
+} from "./eventDiscordPublication.js";
 import { EventErrorMessage } from "./eventErrors.js";
 import {
   eventDescriptionSchema,
@@ -46,50 +73,30 @@ export const createEventInputSchema = z.object({
 export type CreateEventInput = z.infer<typeof createEventInputSchema>;
 
 /**
- * A template that the app applies to the new event, in the transaction of
- * the event. The event templates are not part of this package yet, thus the
- * app loads the template and copies its content.
- */
-export interface EventTemplateApplication {
-  readonly id: string;
-  /** For the audit event: the name at the time of the creation */
-  readonly name: string;
-  /**
-   * True when the template brings its own briefing. Then the event does not
-   * get the empty briefing root page.
-   */
-  readonly copiesBriefing: boolean;
-  /**
-   * True when the copied briefing is readable for more than the managers
-   * from the first second. The publication is recorded with the creation,
-   * thus a later scope change does not send the one-time "briefing
-   * published" notification: the creation notification already announced it.
-   */
-  readonly isBriefingPublished: boolean;
-  /**
-   * Runs before the event exists. Gives the id of the copy of the cover image
-   * of the template, or null.
-   */
-  readonly copyCoverImage: (
-    transaction: Prisma.TransactionClient,
-    citizenId: string,
-  ) => Promise<string | null>;
-  /** Runs after the event exists: copies the lineup and the briefing */
-  readonly copyContent: (
-    transaction: Prisma.TransactionClient,
-    eventId: string,
-    citizenId: string,
-  ) => Promise<void>;
-}
-
-/**
  * The parts of a new event that only the app gives, not fields of the input
- * schema: the MCP server has no uploads and no templates
+ * schema: the MCP server has no uploads, no templates and no Discord
  */
 export interface CreateEventOptions {
   /** An image that the actor uploaded. The use case checks it. */
   readonly coverImageId?: string;
-  readonly template?: EventTemplateApplication;
+  /**
+   * The template that the form was prefilled from. The new event gets a copy
+   * of its lineup and its briefing.
+   */
+  readonly template?: {
+    readonly templateId: string;
+    /**
+     * True when the new event gets a copy of the cover image of the
+     * template. The template's cover is not an upload of the actor, thus it
+     * cannot come as `coverImageId`.
+     */
+    readonly copiesCover: boolean;
+  };
+  /**
+   * Publishes the new event to Discord after the creation. A failed
+   * publication does not undo the creation.
+   */
+  readonly discordPublication?: EventDiscordPublishRequest;
 }
 
 export interface CreateEventOutput {
@@ -99,7 +106,80 @@ export interface CreateEventOutput {
    * stands, thus the caller must not create it again.
    */
   readonly notifications_sent: boolean;
+  /**
+   * Only with the option `discordPublication`. The MCP tools parse the
+   * output with a strict schema, thus the key must not exist without the
+   * option.
+   */
+  readonly discord?: DiscordSyncResult;
 }
+
+/**
+ * The template and everything that the new event copies from it. A
+ * template whose root page was trashed has pages but no briefing to copy.
+ *
+ * @throws NotFoundError when the actor cannot read the template or it is
+ * deleted: it can be deleted or unshared after the form loaded, and the id
+ * is client input
+ */
+const loadTemplateCopySource = async (
+  context: ApplicationContext,
+  actor: Actor,
+  { templateId, copiesCover }: NonNullable<CreateEventOptions["template"]>,
+) => {
+  const { template } = await requireReadableEventTemplate(
+    context,
+    actor,
+    templateId,
+    {
+      select: {
+        name: true,
+        coverImage: { select: COPYABLE_UPLOAD_SELECT },
+      },
+    },
+  );
+
+  const columns = eventContainerColumns(toTemplateContainer(template.id));
+  const [positions, briefing] = await Promise.all([
+    findClonablePositions(context.prisma, columns),
+    findBriefingCopySource(context.prisma, columns),
+  ]);
+
+  return {
+    id: template.id,
+    name: template.name,
+    coverImage: copiesCover ? template.coverImage : null,
+    positionTree: buildPositionTree(positions),
+    briefingPages: briefing.rootPage ? briefing.pages : null,
+    /**
+     * True when the copied briefing is readable for more than the managers
+     * from the first second. The publication is recorded with the creation,
+     * thus a later scope change does not send the one-time "briefing
+     * published" notification: the creation notification already announced
+     * it.
+     */
+    isBriefingPublished:
+      briefing.rootPage !== null &&
+      briefing.rootPage.eventReadScope !== WikiPageEventScope.MANAGERS &&
+      briefing.rootPage.eventReadScope !== WikiPageEventScope.INHERIT,
+  };
+};
+
+/**
+ * A channel that is gone counts as a failed publication: the event stands,
+ * and the manager can publish it again from its settings.
+ */
+const publishCreatedEvent = async (
+  context: ApplicationContext,
+  actor: Actor,
+  eventId: string,
+  request: EventDiscordPublishRequest,
+): Promise<DiscordSyncResult> => {
+  const target = await resolveDiscordPublishTarget(context, request, eventId);
+  if (!target) return { outcome: DiscordSyncOutcome.Failed };
+
+  return createDiscordEventPublication(context, eventId, target, actor);
+};
 
 /**
  * Creates an app event with its briefing root page (or the briefing of the
@@ -109,7 +189,7 @@ export const createEvent = (
   context: ApplicationContext,
   actor: Actor,
   input: CreateEventInput,
-  { coverImageId, template }: CreateEventOptions = {},
+  { coverImageId, template, discordPublication }: CreateEventOptions = {},
 ): Promise<CreateEventOutput> =>
   withSpan(context, "createEvent", async () => {
     requirePermission(actor, "event", "create");
@@ -132,6 +212,10 @@ export const createEvent = (
     if (coverImageId)
       await requireOwnCoverImage(context, citizenId, coverImageId);
 
+    const templateSource = template
+      ? await loadTemplateCopySource(context, actor, template)
+      : null;
+
     /**
      * Create the event with its briefing and activity entry
      */
@@ -141,8 +225,13 @@ export const createEvent = (
          * The event gets its own copy of the template's cover, so editing or
          * deleting one never touches the other.
          */
-        const copiedCoverImageId = template
-          ? await template.copyCoverImage(transaction, citizenId)
+        const copiedCoverImage = templateSource?.coverImage
+          ? await copyUploadInTransaction(
+              context,
+              transaction,
+              templateSource.coverImage,
+              citizenId,
+            )
           : null;
 
         const event = await transaction.event.create({
@@ -157,15 +246,15 @@ export const createEvent = (
               create: visibilityRoleIds.map((roleId) => ({ roleId })),
             },
             createdById: citizenId,
-            coverImageId: coverImageId ?? copiedCoverImageId ?? null,
-            briefingPublishedAt: template?.isBriefingPublished
+            coverImageId: coverImageId ?? copiedCoverImage?.id ?? null,
+            briefingPublishedAt: templateSource?.isBriefingPublished
               ? context.now()
               : null,
             /**
              * A template brings its own briefing, copied below. An event
              * without a root page has no briefing and no way back to one.
              */
-            ...(template?.copiesBriefing
+            ...(templateSource?.briefingPages
               ? {}
               : {
                   wikiPages: { create: buildBriefingRootPageSeed(citizenId) },
@@ -177,8 +266,30 @@ export const createEvent = (
           },
         });
 
-        if (template)
-          await template.copyContent(transaction, event.id, citizenId);
+        if (templateSource) {
+          const eventContainer = toEventContainer(event.id);
+          const positionIdBySourceId = await clonePositions(
+            transaction,
+            templateSource.positionTree,
+            {
+              columns: eventContainerColumns(eventContainer),
+              parentPositionId: null,
+              startOrder: 0,
+            },
+          );
+
+          /**
+           * Copied after the lineup, so the pages' POSITION scopes can be
+           * remapped onto the event's own positions.
+           */
+          if (templateSource.briefingPages)
+            await copyBriefingTree(transaction, {
+              sourcePages: templateSource.briefingPages,
+              targetContainer: eventContainer,
+              createdByEntityId: citizenId,
+              positionIdBySourceId,
+            });
+        }
 
         await createEventActivity(transaction, {
           eventId: event.id,
@@ -202,13 +313,13 @@ export const createEvent = (
         createdById: actor.userId,
       },
     ];
-    if (template)
+    if (templateSource)
       auditEvents.push({
         type: AuditEventType.EVENT_CREATED_FROM_TEMPLATE,
         data: {
           eventId: createdEvent.id,
-          templateId: template.id,
-          templateName: template.name,
+          templateId: templateSource.id,
+          templateName: templateSource.name,
         },
         createdById: actor.userId,
       });
@@ -218,8 +329,22 @@ export const createEvent = (
       { type: "EventCreated", payload: { eventId: createdEvent.id } },
     ]);
 
+    /**
+     * Outside the transaction: a Discord problem never undoes the created
+     * event
+     */
+    const discord = discordPublication
+      ? await publishCreatedEvent(
+          context,
+          actor,
+          createdEvent.id,
+          discordPublication,
+        )
+      : null;
+
     return {
       event: await loadEventOutput(context, actor, createdEvent.id),
       notifications_sent: notificationsSent,
+      ...(discord ? { discord } : {}),
     };
   });

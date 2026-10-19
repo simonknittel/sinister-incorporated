@@ -1,11 +1,15 @@
-import { getAllEvents as query } from "@/modules/events/queries/getAllEvents";
+import { getApplicationContext, toActor } from "@/modules/application";
 import { log } from "@/modules/logging";
+import { findEventOptions } from "@sam-monorepo/application";
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure } from "../../trpc";
 
-export const getAllEvents = protectedProcedure.query(async () => {
+export const getAllEvents = protectedProcedure.query(async ({ ctx }) => {
   try {
-    return await query();
+    return await findEventOptions(
+      getApplicationContext(),
+      await toActor(ctx.session),
+    );
   } catch (error) {
     log.error("Failed to fetch all events", {
       error,

@@ -9,6 +9,7 @@ import {
 import {
   removeEventParticipantInputSchema,
   removeEventParticipant as removeEventParticipantUseCase,
+  type RemoveEventParticipantOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
@@ -17,7 +18,7 @@ export const removeEventParticipant = createAuthenticatedAction(
   "removeEventParticipant",
   removeEventParticipantInputSchema,
   async (formData, authentication, data, t) => {
-    let result;
+    let result: RemoveEventParticipantOutput;
     try {
       result = await removeEventParticipantUseCase(
         getApplicationContext(),

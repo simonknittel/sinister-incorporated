@@ -1,4 +1,3 @@
-import { prisma } from "@/db";
 import { requireAuthentication } from "@/modules/auth/server";
 import { Tile, TileVariant } from "@/modules/common/components/Tile";
 import type {
@@ -8,7 +7,7 @@ import type {
 import { VariantWithLogo } from "@/modules/fleet/components/VariantWithLogo";
 import { EventSource, type Event } from "@sam-monorepo/database/client";
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { isLineupVisible } from "../utils/isLineupVisible";
+import { getOwnEventParticipation } from "../queries/getOwnEventParticipation";
 import { EventParticipationControls } from "./EventParticipationControls";
 
 interface Props {
@@ -37,61 +36,14 @@ export const PersonalBriefing = async ({ className, event }: Props) => {
           participant.discordUserId === discordUserId),
     ) ?? null;
 
+  const { assignedPositions, ...ownParticipation } =
+    await getOwnEventParticipation(event.id);
   /**
    * Only the viewer's own state distinguishes "cancelled" from "never
    * signed up" — the loaded event carries active rows only.
    */
   const hasCancelledParticipation =
-    activeParticipation === null && citizenId !== null
-      ? (await prisma.eventParticipant.findFirst({
-          where: {
-            eventId: event.id,
-            citizenId,
-            cancelledAt: { not: null },
-          },
-          select: { id: true },
-        })) !== null
-      : false;
-
-  const showLineup = await isLineupVisible(event);
-  const assignedPositions =
-    citizenId !== null && showLineup
-      ? await prisma.eventPosition.findMany({
-          where: {
-            eventId: event.id,
-            citizenId,
-          },
-          orderBy: { order: "asc" },
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            requiredVariants: {
-              orderBy: { order: "asc" },
-              select: {
-                id: true,
-                variant: {
-                  select: {
-                    id: true,
-                    name: true,
-                    series: {
-                      select: {
-                        manufacturer: {
-                          select: {
-                            id: true,
-                            name: true,
-                            image: { select: { id: true, mimeType: true } },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        })
-      : [];
+    activeParticipation === null && ownParticipation.hasCancelledParticipation;
 
   return (
     <Tile

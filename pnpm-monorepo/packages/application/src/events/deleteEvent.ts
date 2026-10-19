@@ -7,6 +7,11 @@ import { ConflictError, NotFoundError } from "../errors.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import {
+  DiscordSyncOutcome,
+  removeEventDiscordPublication,
+  type DiscordSyncResult,
+} from "./eventDiscordPublication.js";
 import { EventErrorMessage } from "./eventErrors.js";
 import {
   requireManageableEvent,
@@ -23,11 +28,11 @@ export type DeleteEventInput = z.infer<typeof deleteEventInputSchema>;
 /** Options of the use case for the app, not fields of the input schema */
 export interface DeleteEventOptions {
   /**
-   * True when the caller removes the Discord event after the use case (only
-   * the app can reach Discord). Without it, the deletion of an event that is
-   * published on Discord is refused: the deleted event is not shown anywhere
-   * in the app, thus nobody could remove the Discord event later from the
-   * app.
+   * True when the use case removes the Discord event after the deletion, and
+   * the caller tells the user when that failed (only the app can show the
+   * result). Without it, the deletion of an event that is published on
+   * Discord is refused: the deleted event is not shown anywhere in the app,
+   * thus nobody could remove the Discord event later from the app.
    */
   readonly removesDiscordPublication?: boolean;
 }
@@ -39,7 +44,32 @@ export interface DeleteEventOutput {
    * deletion stands.
    */
   readonly notifications_sent: boolean;
+  /**
+   * Only with the option `removesDiscordPublication`. Failed means that the
+   * Discord event must be deleted by hand. The MCP tools parse the output
+   * with a strict schema, thus the key must not exist without the option.
+   */
+  readonly discord?: DiscordSyncResult;
 }
+
+/**
+ * A failure cannot undo the deletion, thus a thrown error becomes Failed:
+ * the manager then deletes the Discord event by hand
+ */
+const removeDeletedEventFromDiscord = (
+  context: ApplicationContext,
+  eventId: string,
+  actor: Actor,
+): Promise<DiscordSyncResult> =>
+  removeEventDiscordPublication(context, eventId, actor).catch(
+    (error: unknown) => {
+      context.log.error("Failed to remove a deleted event from Discord", {
+        eventId,
+        error,
+      });
+      return { outcome: DiscordSyncOutcome.Failed };
+    },
+  );
 
 /** Soft-deletes an app event and notifies its participants */
 export const deleteEvent = (
@@ -105,5 +135,17 @@ export const deleteEvent = (
       { type: "EventDeleted", payload: { eventId: event.id } },
     ]);
 
-    return { event_id: event.id, notifications_sent: notificationsSent };
+    /**
+     * Take the event off Discord: the deleted event is not shown anywhere in
+     * the app, thus the manager cannot do it later from the app
+     */
+    const discord = removesDiscordPublication
+      ? await removeDeletedEventFromDiscord(context, event.id, actor)
+      : null;
+
+    return {
+      event_id: event.id,
+      notifications_sent: notificationsSent,
+      ...(discord ? { discord } : {}),
+    };
   });

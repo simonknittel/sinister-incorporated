@@ -1,23 +1,20 @@
-import { prisma } from "@/db";
 import type {
   ActivityEntry,
   ActivitySource,
 } from "@/modules/activity/utils/activityEntry";
 import type { ActivityFilters } from "@/modules/activity/utils/activityFilterParams";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { CursorDirection } from "@/modules/common/CursorPagination/cursorPaginationParsers";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import { formatDate } from "@/modules/common/utils/formatDate";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
-  EventActivityType,
-  type Citizen,
-  type Event,
-  type Prisma,
-} from "@sam-monorepo/database/client";
+  findEventActivityRows,
+  type EventActivityRow,
+} from "@sam-monorepo/application";
+import { EventActivityType, type Event } from "@sam-monorepo/database/client";
 import {
-  buildCursorConditions,
   compareMergedCursorEntries,
-  cursorOrderBy,
   isBeyondCursorPosition,
   type MergedCursorSourceInput,
 } from "@sam-monorepo/domain";
@@ -57,24 +54,7 @@ const participantRemovedPayloadSchema = z.object({
   reason: z.string().nullable(),
 });
 
-/** The types whose payload names a citizen other than the row's own actor */
-const TYPES_WITH_AFFECTED_CITIZEN: ReadonlySet<EventActivityType> = new Set([
-  EventActivityType.PARTICIPATION_ADDED_BY_MANAGER,
-  EventActivityType.PARTICIPATION_REMOVED_BY_MANAGER,
-  EventActivityType.MANAGER_ADDED,
-  EventActivityType.MANAGER_REMOVED,
-]);
-
 const affectedCitizenPayloadSchema = z.object({ citizenId: z.string() });
-
-const getAffectedCitizenId = (activity: {
-  type: EventActivityType;
-  payload: Prisma.JsonValue;
-}): string | null =>
-  TYPES_WITH_AFFECTED_CITIZEN.has(activity.type)
-    ? (affectedCitizenPayloadSchema.safeParse(activity.payload).data
-        ?.citizenId ?? null)
-    : null;
 
 interface Input {
   readonly eventId: Event["id"];
@@ -87,72 +67,26 @@ export const createEventActivitySource = ({
 }: Input): ActivitySource =>
   withTrace(
     "eventActivitySource",
-    async ({ position, direction, take }: MergedCursorSourceInput) => {
+    async (sourceInput: MergedCursorSourceInput) => {
       const storedTypes = getSelectedStoredTypes(filters);
       if (storedTypes?.length === 0) return [];
 
-      const activities = await prisma.eventActivity.findMany({
-        where: {
-          AND: [
-            {
-              eventId,
-              ...(storedTypes ? { type: { in: storedTypes } } : {}),
-              ...(filters?.actorIds
-                ? { citizenId: { in: filters.actorIds } }
-                : {}),
-              ...(filters && Object.keys(filters.createdAt).length > 0
-                ? { createdAt: filters.createdAt }
-                : {}),
-            },
-            ...buildCursorConditions(
-              position,
-              EventActivitySourceKey.Activity,
-              direction,
-              "createdAt",
-            ),
-          ],
+      const activities = await findEventActivityRows(
+        getApplicationContext(),
+        await getRequestActor(),
+        {
+          ...sourceInput,
+          eventId,
+          sourceKey: EventActivitySourceKey.Activity,
+          types: storedTypes,
+          actorIds: filters?.actorIds,
+          createdAt: filters?.createdAt,
         },
-        orderBy: cursorOrderBy(direction, "createdAt"),
-        take,
-        include: {
-          citizen: {
-            select: {
-              id: true,
-              handle: true,
-              deletedAt: true,
-            },
-          },
-        },
-      });
-
-      const affectedCitizens = await resolveAffectedCitizens(activities);
-
-      return activities.map((activity) =>
-        buildActivityEntry(activity, affectedCitizens),
       );
+
+      return activities.map(buildActivityEntry);
     },
   );
-
-type CitizenById = ReadonlyMap<
-  string,
-  Pick<Citizen, "id" | "handle" | "deletedAt">
->;
-
-const resolveAffectedCitizens = async (
-  activities: readonly ActivityRow[],
-): Promise<CitizenById> => {
-  const citizenIds = activities
-    .map(getAffectedCitizenId)
-    .filter((citizenId): citizenId is string => citizenId !== null);
-  if (citizenIds.length <= 0) return new Map();
-
-  const citizens = await prisma.citizen.findMany({
-    where: { id: { in: citizenIds } },
-    select: { id: true, handle: true, deletedAt: true },
-  });
-
-  return new Map(citizens.map((citizen) => [citizen.id, citizen]));
-};
 
 interface ScheduleInput {
   readonly event: Pick<Event, "startTime" | "endTime">;
@@ -219,19 +153,12 @@ const getSelectedStoredTypes = (filters?: ActivityFilters) => {
   );
 };
 
-type ActivityRow = Prisma.EventActivityGetPayload<{
-  include: { citizen: { select: { id: true; handle: true; deletedAt: true } } };
-}>;
-
-const buildActivityEntry = (
-  activity: ActivityRow,
-  affectedCitizens: CitizenById,
-): ActivityEntry => {
+const buildActivityEntry = (activity: EventActivityRow): ActivityEntry => {
   const base = {
     sourceKey: EventActivitySourceKey.Activity,
     id: activity.id,
     date: activity.createdAt,
-    actor: activity.citizen,
+    actor: activity.actor,
   };
 
   /**
@@ -241,7 +168,7 @@ const buildActivityEntry = (
    */
   const affectedCitizenTarget = (citizenId?: string) => (
     <CitizenLink
-      citizen={citizenId ? affectedCitizens.get(citizenId) : null}
+      citizen={citizenId ? activity.affectedCitizen : null}
       className="truncate"
     />
   );

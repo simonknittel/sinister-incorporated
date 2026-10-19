@@ -46,4 +46,14 @@ export enum EventErrorMessage {
   CitizenCannotSeeEvent = "At least one citizen cannot see the event, cannot log in or gets no event notifications",
   /** A `ValidationError` */
   UnknownCitizen = "At least one citizen does not exist",
+  /**
+   * A `ConflictError`: a different tab or manager published the event
+   * before
+   */
+  AlreadyPublishedOnDiscord = "The event is already published on Discord",
+  /**
+   * A `ValidationError`: the selected channel is not a voice or stage
+   * channel of the guild (anymore), or Discord cannot be reached to check it
+   */
+  DiscordChannelUnavailable = "The Discord channel does not exist or cannot hold an event",
 }
