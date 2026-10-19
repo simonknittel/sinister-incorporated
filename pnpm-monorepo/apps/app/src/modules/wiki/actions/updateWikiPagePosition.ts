@@ -1,148 +1,52 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { isEventWikiRootPage } from "@sam-monorepo/domain";
-import { compareWikiPagesByOrder } from "@sam-monorepo/wiki-editor/helpers";
-import { refresh } from "next/cache";
-import * as z from "zod";
-import { lockWikiPageTree } from "../utils/lockWikiPageTree";
 import {
-  buildWikiPageReparentAuditEvents,
-  buildWikiPageReparentReset,
-  isWikiPageReparentRefused,
-  rejectChangedWikiPageTree,
-  validateWikiPageReparent,
-} from "../utils/reparentWikiPage";
-import { requireAdminableWikiPage } from "../utils/requireAdminableWikiPage";
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  updateWikiPagePositionInputSchema,
+  updateWikiPagePosition as updateWikiPagePositionUseCase,
+  type UpdateWikiPagePositionOutput,
+} from "@sam-monorepo/application";
+import { refresh } from "next/cache";
+import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
 
-const schema = z.object({
-  id: z.cuid2(),
-  referenceId: z.cuid2(),
-  position: z.enum(["before", "after", "inside"]),
-});
-
-/**
- * Drops the page at a new position in the sidebar tree: before/after the
- * reference page (adopting the reference's parent) or as the reference's
- * first subpage. The siblings of the target parent are renumbered
- * sequentially so pages with identical sortOrder (e.g. after a move) become
- * distinct. Reordering within the same parent is deliberately unaudited
- * (cosmetic change, no audit event by design); adopting a different parent
- * creates the same audit event as moveWikiPage.
- */
+/** Drops the page at a new place in the sidebar tree (see the use case) */
 export const updateWikiPagePosition = createAuthenticatedAction(
   "updateWikiPagePosition",
-  schema,
+  updateWikiPagePositionInputSchema,
   async (formData, authentication, data, t) => {
-    const { scoped, page, failure } = await requireAdminableWikiPage(
-      data.id,
-      formData,
-      t,
-    );
-    if (failure) return failure;
-    const context = scoped.context;
-    /** The event wiki's locked root page can never be moved */
-    if (isEventWikiRootPage(page))
-      return { error: t("Common.badRequest"), requestPayload: formData };
-
-    if (data.referenceId === page.id)
-      return { error: t("Common.badRequest"), requestPayload: formData };
-    /**
-     * A different user moved the reference page into the trash or deleted it
-     * after the sidebar showed it
-     */
-    const reference = context.pagesById.get(data.referenceId);
-    if (!reference || reference.deletedAt)
-      return rejectChangedWikiPageTree(formData);
-
-    const newParentId =
-      data.position === "inside" ? reference.id : reference.parentId;
-    const changesParent = newParentId !== page.parentId;
-
-    if (changesParent) {
-      const reparentFailure = await validateWikiPageReparent(
-        scoped,
-        page,
-        newParentId,
-        authentication,
+    let result: UpdateWikiPagePositionOutput;
+    try {
+      result = await updateWikiPagePositionUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
         formData,
         t,
-      );
-      if (reparentFailure) return reparentFailure;
-    }
-
-    const newSiblings = context.pages
-      .filter(
-        (sibling) => sibling.parentId === newParentId && sibling.id !== page.id,
-      )
-      .toSorted(compareWikiPagesByOrder);
-    if (data.position === "inside") {
-      newSiblings.unshift(page);
-    } else {
-      const index = newSiblings.findIndex(
-        (sibling) => sibling.id === reference.id,
-      );
-      newSiblings.splice(
-        data.position === "before" ? index : index + 1,
-        0,
-        page,
-      );
-    }
-
-    const updatedById = authentication.session.entity?.id ?? null;
-    const updates = newSiblings.flatMap((sibling, index) => {
-      const changed =
-        sibling.sortOrder !== index ||
-        (sibling.id === page.id && changesParent);
-      if (!changed) return [];
-      return [
-        prisma.wikiPage.update({
-          where: { id: sibling.id },
-          data:
-            sibling.id === page.id
-              ? { parentId: newParentId, sortOrder: index, updatedById }
-              : { sortOrder: index, updatedById },
-        }),
-      ];
-    });
-    /** Same permission reset as moveWikiPage, see buildWikiPageReparentReset */
-    const reset = changesParent
-      ? buildWikiPageReparentReset(scoped, page, newParentId, updatedById)
-      : null;
-
-    if (updates.length > 0 || reset) {
-      try {
-        await prisma.$transaction([
-          lockWikiPageTree(),
-          ...(reset?.statements ?? []),
-          ...updates,
-        ]);
-      } catch (error) {
-        /** A different move changed the tree before */
-        if (isWikiPageReparentRefused(error))
-          return rejectChangedWikiPageTree(formData);
-        throw error;
-      }
+        texts: WIKI_ERROR_TEXTS,
+      });
     }
 
     refresh();
 
-    if (reset)
-      await createAuditEvents(
-        buildWikiPageReparentAuditEvents(
-          page,
-          newParentId,
-          reset.subtreeIds,
-          authentication.session.user.id,
-        ),
-      );
-
     return {
-      success: reset
+      success: result.moved_to_new_parent
         ? "Erfolgreich verschoben. Die Seite und ihre Unterseiten übernehmen jetzt die Berechtigungen des neuen Elternteils."
         : t("Common.successfullySaved"),
     };
+  },
+  {
+    parseFormData: (formData) => ({
+      page_id: formData.get("id"),
+      reference_page_id: formData.get("referenceId"),
+      position: formData.get("position"),
+    }),
   },
 );

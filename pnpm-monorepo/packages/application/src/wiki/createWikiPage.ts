@@ -115,10 +115,12 @@ const prepareContent = (
 
 /**
  * Creates a page below the parent, or at the top of the global wiki without
- * a parent, in the scope that the caller loaded for the actor: the app also
- * loads the briefings of the event templates, which the MCP tools do not
- * show. With Markdown, the content goes through the collab server, thus open
- * editors get it.
+ * a parent, in the scope that the caller loaded for the actor: the page tree
+ * of the app also loads the briefings of the event templates, which the MCP
+ * tools do not show (see `createWikiPageInTree()`). With Markdown, the
+ * content goes through the collab server, thus open editors get it.
+ *
+ * Not a use case: only the use cases of this package call it.
  *
  * @param scope The scope of the parent (see `requireWikiPagePlacement()`)
  */
@@ -130,11 +132,7 @@ export const createWikiPageInScope = (
 ): Promise<CreatedWikiPage> =>
   withSpan(context, "createWikiPageInScope", async () => {
     const citizen = requireCitizen(actor);
-    const { context: wiki } = requireWikiPagePlacement(
-      actor,
-      scope,
-      input.parent_id,
-    );
+    const wiki = requireWikiPagePlacement(actor, scope, input.parent_id);
     const prepared =
       input.markdown === undefined
         ? null
@@ -286,7 +284,7 @@ export const createWikiPage = (
       context,
       actor,
       { title: input.title, parent_id: parentId, markdown: input.markdown },
-      scope,
+      scope.context,
     );
 
     return getWikiPage(context, actor, { page_id: page.id });

@@ -1,58 +1,44 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import {
-  slugifyWikiPageTitle,
-  WIKI_PAGE_TITLE_MAX_LENGTH,
-} from "@sam-monorepo/domain";
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  renameWikiPageInputSchema,
+  renameWikiPage as renameWikiPageUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { requireAdminableWikiPage } from "../utils/requireAdminableWikiPage";
-
-const schema = z.object({
-  id: z.cuid2(),
-  title: z.string().trim().min(1).max(WIKI_PAGE_TITLE_MAX_LENGTH),
-});
+import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
 
 export const renameWikiPage = createAuthenticatedAction(
   "renameWikiPage",
-  schema,
+  renameWikiPageInputSchema,
   async (formData, authentication, data, t) => {
-    const { page, failure } = await requireAdminableWikiPage(
-      data.id,
-      formData,
-      t,
-      { rejectEventWikiRootPage: true },
-    );
-    if (failure) return failure;
-
-    await prisma.wikiPage.update({
-      where: { id: page.id },
-      data: {
-        title: data.title,
-        slug: slugifyWikiPageTitle(data.title),
-        updatedById: authentication.session.entity?.id ?? null,
-      },
-    });
+    try {
+      await renameWikiPageUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: WIKI_ERROR_TEXTS,
+      });
+    }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.WIKI_PAGE_RENAMED,
-        data: {
-          pageId: page.id,
-          eventId: page.eventId ?? undefined,
-          previousTitle: page.title,
-          newTitle: data.title,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
     return { success: t("Common.successfullySaved") };
+  },
+  {
+    parseFormData: (formData) => ({
+      page_id: formData.get("id"),
+      title: formData.get("title"),
+    }),
   },
 );

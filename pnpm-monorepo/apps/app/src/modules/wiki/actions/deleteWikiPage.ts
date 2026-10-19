@@ -1,86 +1,79 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { collectWikiPageDescendants } from "@sam-monorepo/domain";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import { getBriefingPath } from "@/modules/events/utils/eventContainer";
+import {
+  deleteWikiPageInputSchema,
+  deleteWikiPage as deleteWikiPageUseCase,
+  idSchema,
+  type DeleteWikiPageOutput,
+} from "@sam-monorepo/application";
+import { getEventContainerOfRow } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
-import * as z from "zod";
-import { getWikiScopeHomePath } from "../queries/getWikiPageScopedContext";
-import { requireAdminableWikiPage } from "../utils/requireAdminableWikiPage";
-import { resolveVariantWikiRedirectHref } from "../utils/resolveVariantWikiRedirectHref";
-import { getVariantWikiRootPath } from "../utils/wikiPageHref";
-
-const schema = z.object({
-  id: z.cuid2(),
-  /** Set when deleting from inside a variant embed, for the redirect */
-  variantId: z.cuid().optional(),
-});
+import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
+import {
+  GLOBAL_WIKI_HREF_MODE,
+  getVariantWikiRootPath,
+} from "../utils/wikiPageHref";
 
 /**
- * Soft-deletes the page including its whole subtree (like deleting a
- * directory). Restorable from the trash for 30 days.
+ * The use case takes the page. The variant is only for the redirect back to
+ * the variant.
  */
+const schema = deleteWikiPageInputSchema.extend({
+  variant_id: idSchema.optional(),
+});
+
+/** Moves the page with its subtree into the trash (see the use case) */
 export const deleteWikiPage = createAuthenticatedAction(
   "deleteWikiPage",
   schema,
   async (formData, authentication, data, t) => {
-    const { scoped, page, failure } = await requireAdminableWikiPage(
-      data.id,
-      formData,
-      t,
-      { rejectEventWikiRootPage: true },
-    );
-    if (failure) return failure;
-    const context = scoped.context;
+    const { variant_id: variantId, ...input } = data;
 
-    const subtreeIds = [
-      page.id,
-      ...collectWikiPageDescendants(context.pages, page.id),
-    ];
-
-    await prisma.wikiPage.updateMany({
-      where: { id: { in: subtreeIds }, deletedAt: null },
-      data: {
-        deletedAt: new Date(),
-        deletedById: authentication.session.entity?.id ?? null,
-      },
-    });
+    let result: DeleteWikiPageOutput;
+    try {
+      result = await deleteWikiPageUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        input,
+        { variantId },
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: WIKI_ERROR_TEXTS,
+      });
+    }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.WIKI_PAGE_DELETED,
-        data: {
-          pageId: page.id,
-          eventId: page.eventId ?? undefined,
-          title: page.title,
-          subtreePageIds: subtreeIds,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
     /**
-     * Deleting from inside a variant embed leads back to the variant page —
-     * validated like the create/paste redirects (the page must have been
-     * inside the variant's linked subtree); a stale or foreign variant id
-     * silently falls back to the scope's home. The resolver's page URL is
-     * unusable here (the page is gone), only its validation matters.
+     * A deletion inside the embed of a variant goes back to the variant. The
+     * page is gone, thus the root of the embed, not the page.
      */
-    if (data.variantId) {
-      const variantHref = await resolveVariantWikiRedirectHref(
-        scoped,
-        data.variantId,
-        page,
-        page.parentId,
-      );
-      if (variantHref) redirect(getVariantWikiRootPath(data.variantId));
-    }
+    if (variantId && result.variant_wiki_page_id)
+      redirect(getVariantWikiRootPath(variantId));
 
-    redirect(getWikiScopeHomePath(scoped));
+    const container = getEventContainerOfRow({
+      eventId: result.event_id,
+      templateId: result.template_id,
+    });
+    redirect(
+      container ? getBriefingPath(container) : GLOBAL_WIKI_HREF_MODE.basePath,
+    );
+  },
+  {
+    parseFormData: (formData) => ({
+      page_id: formData.get("id"),
+      variant_id: formData.get("variantId") || undefined,
+    }),
   },
 );

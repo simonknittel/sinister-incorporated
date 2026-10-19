@@ -1,66 +1,45 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { WikiPageSidebarMode } from "@sam-monorepo/database/client";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  updateWikiPageSidebarModeInputSchema,
+  updateWikiPageSidebarMode as updateWikiPageSidebarModeUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { requireAdminableWikiPage } from "../utils/requireAdminableWikiPage";
+import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
 
-const schema = z.object({
-  id: z.cuid2(),
-  sidebarMode: z.enum(WikiPageSidebarMode),
-});
-
-/**
- * Changes how a page shows up in the tree sidebar (see WikiPageSidebarMode).
- * Purely cosmetic — never a permission — but structural for everyone's
- * navigation, therefore page-admin-gated like move/rename/delete.
- */
 export const updateWikiPageSidebarMode = createAuthenticatedAction(
   "updateWikiPageSidebarMode",
-  schema,
+  updateWikiPageSidebarModeInputSchema,
   async (formData, authentication, data, t) => {
-    const { page, failure } = await requireAdminableWikiPage(
-      data.id,
-      formData,
-      t,
-      { rejectEventWikiRootPage: true },
-    );
-    if (failure) return failure;
-
-    if (page.sidebarMode === data.sidebarMode) {
-      /** A different user or tab can have set the mode before */
-      refresh();
-
-      return { success: t("Common.successfullySaved") };
+    try {
+      await updateWikiPageSidebarModeUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: WIKI_ERROR_TEXTS,
+      });
     }
 
-    await prisma.wikiPage.update({
-      where: { id: page.id },
-      data: {
-        sidebarMode: data.sidebarMode,
-        updatedById: authentication.session.entity?.id ?? null,
-      },
-    });
-
+    /** Also when a different user or tab set the mode before */
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.WIKI_PAGE_SIDEBAR_MODE_UPDATED,
-        data: {
-          pageId: page.id,
-          eventId: page.eventId ?? undefined,
-          previousSidebarMode: page.sidebarMode,
-          newSidebarMode: data.sidebarMode,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
     return { success: t("Common.successfullySaved") };
+  },
+  {
+    parseFormData: (formData) => ({
+      page_id: formData.get("id"),
+      sidebar_mode: formData.get("sidebarMode"),
+    }),
   },
 );

@@ -1,5 +1,13 @@
 import { requirePermission, type Actor } from "../actor.js";
+import type { ApplicationContext } from "../context.js";
 import { ConflictError, ForbiddenError, NotFoundError } from "../errors.js";
+import { WikiErrorMessage } from "./wikiErrors.js";
+import {
+  loadWikiScope,
+  loadWikiScopeOfPage,
+  type WikiPageScope,
+} from "./wikiScope.js";
+import { WikiScopeKind } from "./wikiScopeKind.js";
 
 export enum WikiPagePlacement {
   Allowed = "allowed",
@@ -62,21 +70,18 @@ export interface WikiPlacementPage {
 }
 
 /**
- * The wiki of a new page: the global wiki, the briefing of an event or the
+ * The scope of a new page: the global wiki, the briefing of an event or the
  * briefing of an event template, with the permissions of the actor. The
- * global and the event wiki contexts of this package agree with it, and so
- * do the scoped contexts of the app.
+ * scopes of `wikiScope.ts` agree with it.
  */
 export interface WikiPlacementScope {
-  readonly context: {
-    /** Pages that are not in the trash */
-    readonly pages: readonly WikiPlacementPage[];
-    /** All pages, also the pages in the trash */
-    readonly pagesById: ReadonlyMap<string, WikiPlacementPage>;
-    readonly permissions: ReadonlyMap<string, { readonly canAdmin: boolean }>;
-    /** True for the briefing of an event that is over: it refuses all changes */
-    readonly frozen?: boolean;
-  };
+  /** Pages that are not in the trash */
+  readonly pages: readonly WikiPlacementPage[];
+  /** All pages, also the pages in the trash */
+  readonly pagesById: ReadonlyMap<string, WikiPlacementPage>;
+  readonly permissions: ReadonlyMap<string, { readonly canAdmin: boolean }>;
+  /** True for the briefing of an event that is over: it refuses all changes */
+  readonly frozen?: boolean;
 }
 
 /**
@@ -97,17 +102,17 @@ export const requireWikiPagePlacement = <Scope extends WikiPlacementScope>(
   scope: Scope | null,
   parentId: string | undefined,
 ): Scope => {
-  if (!scope) throw new NotFoundError("The parent page does not exist");
+  if (!scope) throw new NotFoundError(WikiErrorMessage.ParentPageNotFound);
 
   if (parentId === undefined) {
     requirePermission(actor, "wiki", "create");
     return scope;
   }
 
-  const placement = resolveWikiPagePlacement(scope.context, parentId);
+  const placement = resolveWikiPagePlacement(scope, parentId);
   switch (placement) {
     case WikiPagePlacement.Missing:
-      throw new NotFoundError("The parent page does not exist");
+      throw new NotFoundError(WikiErrorMessage.ParentPageNotFound);
 
     case WikiPagePlacement.Forbidden:
       throw new ForbiddenError("The user does not manage the parent page");
@@ -121,8 +126,21 @@ export const requireWikiPagePlacement = <Scope extends WikiPlacementScope>(
       );
   }
 
-  if (scope.context.frozen)
-    throw new ConflictError("The event of the briefing is over");
+  if (scope.frozen) throw new ConflictError(WikiErrorMessage.BriefingFrozen);
 
   return scope;
 };
+
+/**
+ * The scope of the parent, or the global wiki without a parent. A briefing
+ * has only one top-level page (its root), thus a page without a parent goes
+ * to the global wiki.
+ */
+export const loadWikiScopeOfParent = (
+  context: ApplicationContext,
+  actor: Actor,
+  parentId: string | undefined,
+): Promise<WikiPageScope | null> =>
+  parentId === undefined
+    ? loadWikiScope(context, actor, { kind: WikiScopeKind.Wiki })
+    : loadWikiScopeOfPage(context, actor, parentId);
