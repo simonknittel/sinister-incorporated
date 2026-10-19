@@ -1,37 +1,25 @@
-import { prisma } from "@/db";
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
 import { WikiTagPageContent } from "@/modules/wiki/components/WikiTagPageContent";
 import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
-import { buildVisibleWikiBreadcrumb } from "@/modules/wiki/utils/buildVisibleWikiBreadcrumb";
-import {
-  buildWikiPageHref,
-  GLOBAL_WIKI_HREF_MODE,
-} from "@/modules/wiki/utils/wikiPageHref";
-import {
-  getAccessibleWikiPage,
-  WikiPageAccessTier,
-} from "@sam-monorepo/application";
+import { getWikiTagPages } from "@/modules/wiki/queries/getWikiTagPages";
 import type { Metadata } from "next";
 import { forbidden, notFound } from "next/navigation";
 
 type Params = PageProps<"/app/wiki/tags/[tagId]">["params"];
 
-const getTag = async (params: Params) => {
-  const { tagId } = await params;
-  return prisma.wikiTag.findFirst({
-    /** Both container columns NULL is what makes a tag global */
-    where: { id: tagId, eventId: null, templateId: null },
-    select: { id: true, name: true, pages: { select: { pageId: true } } },
-  });
-};
-
 export const generateMetadata = async (
   props: PageProps<"/app/wiki/tags/[tagId]">,
 ): Promise<Metadata> => {
-  const tag = await getTag(props.params);
-  if (!tag) return {};
-  return { title: `Tag: ${tag.name}` };
+  const [context, { tagId }] = await Promise.all([
+    getWikiContext(),
+    props.params,
+  ]);
+  if (!context) return {};
+
+  const tagPages = await getWikiTagPages(context, tagId);
+  if (!tagPages) return {};
+  return { title: `Tag: ${tagPages.name}` };
 };
 
 export default async function Page(props: PageProps<"/app/wiki/tags/[tagId]">) {
@@ -49,31 +37,11 @@ interface TagPageListProps {
 }
 
 const TagPageList = async ({ params }: TagPageListProps) => {
-  const [context, tag] = await Promise.all([getWikiContext(), getTag(params)]);
+  const [context, { tagId }] = await Promise.all([getWikiContext(), params]);
   if (!context) forbidden();
-  if (!tag) notFound();
 
-  /**
-   * Tag names themselves are not permission-gated (they also appear in the
-   * autocomplete), but the page list is: invisible and deleted pages are
-   * silently omitted.
-   */
-  const pages = tag.pages
-    .map((assignment) =>
-      getAccessibleWikiPage(
-        context,
-        assignment.pageId,
-        WikiPageAccessTier.Read,
-      ),
-    )
-    .filter((page) => page !== null)
-    .toSorted((a, b) => a.title.localeCompare(b.title))
-    .map((page) => ({
-      href: buildWikiPageHref(GLOBAL_WIKI_HREF_MODE, page),
-      title: page.title,
-      iconId: page.iconId,
-      breadcrumb: buildVisibleWikiBreadcrumb(context, page),
-    }));
+  const tagPages = await getWikiTagPages(context, tagId);
+  if (!tagPages) notFound();
 
-  return <WikiTagPageContent tagName={tag.name} pages={pages} />;
+  return <WikiTagPageContent tagName={tagPages.name} pages={tagPages.pages} />;
 };

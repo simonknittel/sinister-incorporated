@@ -1,6 +1,9 @@
-import { prisma } from "@/db";
-import { authenticate } from "@/modules/auth/server";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  findOwnRecentWikiPageIds,
+  findOwnWikiFavoritePageIds,
+} from "@sam-monorepo/application";
 import { cache } from "react";
 
 /**
@@ -11,18 +14,16 @@ import { cache } from "react";
  * sidebar calls this without ever touching the global context.
  */
 export const getWikiFavoritePageIds = cache(
-  withTrace("getWikiFavoritePageIds", async (): Promise<Set<string>> => {
-    const authentication = await authenticate();
-    const citizenId = authentication ? authentication.session.entity?.id : null;
-    if (!citizenId) return new Set();
-
-    const favorites = await prisma.wikiPageFavorite.findMany({
-      where: { citizenId },
-      select: { pageId: true },
-    });
-
-    return new Set(favorites.map((favorite) => favorite.pageId));
-  }),
+  withTrace(
+    "getWikiFavoritePageIds",
+    async (): Promise<Set<string>> =>
+      new Set(
+        await findOwnWikiFavoritePageIds(
+          getApplicationContext(),
+          await getRequestActor(),
+        ),
+      ),
+  ),
 );
 
 /**
@@ -30,18 +31,7 @@ export const getWikiFavoritePageIds = cache(
  * Unfiltered like the favorites above.
  */
 export const getWikiRecentVisitPageIds = cache(
-  withTrace("getWikiRecentVisitPageIds", async (): Promise<string[]> => {
-    const authentication = await authenticate();
-    const citizenId = authentication ? authentication.session.entity?.id : null;
-    if (!citizenId) return [];
-
-    const visits = await prisma.wikiPageVisit.findMany({
-      where: { citizenId },
-      orderBy: { lastVisitedAt: "desc" },
-      take: 20,
-      select: { pageId: true },
-    });
-
-    return visits.map((visit) => visit.pageId);
-  }),
+  withTrace("getWikiRecentVisitPageIds", async (): Promise<string[]> =>
+    findOwnRecentWikiPageIds(getApplicationContext(), await getRequestActor()),
+  ),
 );

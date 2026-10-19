@@ -1,51 +1,31 @@
-import { prisma } from "@/db";
-import { eventContainerColumns } from "@/modules/events/utils/eventContainer";
 import { eventContainerSchema } from "@/modules/events/utils/eventContainerSchema";
+import { getApplicationContext, toActor } from "@/modules/application";
 import {
-  getEventWikiContext,
-  hasReadableEventWikiRoot,
-} from "@/modules/wiki/queries/getEventWikiContext";
-import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
+  findWikiScopeTags,
+  ForbiddenError,
+  toWikiScopeTarget,
+} from "@sam-monorepo/application";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
 /**
  * The tags of one scope — the global wiki by default, a briefing with a
- * container — for the tag input's autocomplete. Within a scope deliberately
- * not filtered by page visibility: consistent tag naming beats hiding the
- * names of tags that are only used on invisible pages (name-only leak, the
- * tag list pages themselves are permission-filtered). The briefing branch
- * gates on the briefing gate, matching the layout and the briefing search.
+ * container — for the tag input's autocomplete (see `findWikiScopeTags()`).
  */
 export const getTags = protectedProcedure
   .input(z.object({ container: eventContainerSchema.optional() }).optional())
-  .query(async ({ input }) => {
+  .query(async ({ ctx, input }) => {
     try {
-      if (input?.container) {
-        const context = await getEventWikiContext(input.container);
-        if (!context || !hasReadableEventWikiRoot(context))
-          throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "Missing event wiki permission",
-          });
-      } else {
-        const context = await getWikiContext();
-        if (!context)
-          throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "Missing wiki permission",
-          });
-      }
-
-      return await prisma.wikiTag.findMany({
-        where: input?.container
-          ? eventContainerColumns(input.container)
-          : { eventId: null, templateId: null },
-        select: { id: true, name: true },
-        orderBy: { name: "asc" },
-      });
+      return await findWikiScopeTags(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        toWikiScopeTarget(input ?? {}),
+      );
     } catch (error) {
+      if (error instanceof ForbiddenError)
+        throw new TRPCError({ code: "FORBIDDEN", message: error.message });
+
       throw toTrpcError(error, "Failed to load wiki tags");
     }
   });

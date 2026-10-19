@@ -1,20 +1,22 @@
-import { prisma } from "@/db";
 import { env } from "@/env";
+import {
+  getApplicationContext,
+  toActor,
+} from "@/modules/application";
 import { requireAuthenticationApi } from "@/modules/auth/server";
 import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
 import { createS3Client } from "@/modules/common/utils/createS3Client";
-import type { WikiSharedContextPage } from "@/modules/wiki/queries/getWikiContext";
-import { getWikiPageScopedContext } from "@/modules/wiki/queries/getWikiPageScopedContext";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
-  getAccessibleWikiPage,
-  WikiPageAccessTier,
+  findWikiAttachmentDownload,
+  idSchema,
+  NotFoundError,
 } from "@sam-monorepo/application";
 import { NextResponse } from "next/server";
 import * as z from "zod";
 
-const paramsSchema = z.object({ uploadId: z.cuid() });
+const paramsSchema = z.object({ uploadId: idSchema });
 
 const PRESIGNED_GET_EXPIRY_SECONDS = 5 * 60;
 
@@ -22,66 +24,37 @@ const PRESIGNED_GET_EXPIRY_SECONDS = 5 * 60;
  * Permission-checked download of a wiki page attachment. Unlike images
  * (public by unguessable URL), attachments are only served to users who can
  * see a page containing the upload — via a redirect to a short-lived
- * presigned URL.
- *
- * Uploads can be linked to multiple pages (Upload.wikiPageLinks, e.g. after
- * a page duplication or a cross-page copy-paste); any readable linked page
- * grants the download. A link of each kind counts, as with the former link
- * table, which also held the images.
+ * presigned URL (see `findWikiAttachmentDownload()`).
  */
 export async function GET(
   _request: Request,
   context: RouteContext<"/api/wiki/attachment/[uploadId]">,
 ) {
   try {
-    await requireAuthenticationApi("/api/wiki/attachment/[uploadId]", "GET");
+    const authentication = await requireAuthenticationApi(
+      "/api/wiki/attachment/[uploadId]",
+      "GET",
+    );
 
     const paramsData = paramsSchema.parse(await context.params);
 
-    const upload = await prisma.upload.findUnique({
-      where: { id: paramsData.uploadId },
-      select: {
-        id: true,
-        fileName: true,
-        mimeType: true,
-        wikiPageLinks: { select: { pageId: true }, distinct: ["pageId"] },
-      },
-    });
-
-    /**
-     * Invisible pages (and uploads outside the wiki) 404 instead of 403 to
-     * avoid leaking their existence.
-     */
-    if (!upload)
-      return NextResponse.json({ error: "Not Found" }, { status: 404 });
-
-    /**
-     * The linked pages can span scopes (global wiki and event pages), so
-     * each check loads the page's own context — request-cached, and uploads
-     * rarely link more than one page.
-     */
-    let allowed = false;
-    for (const { pageId } of upload.wikiPageLinks) {
-      const scoped = await getWikiPageScopedContext(pageId);
-      if (
-        scoped &&
-        getAccessibleWikiPage<WikiSharedContextPage>(
-          scoped.context,
-          pageId,
-          WikiPageAccessTier.Read,
-        ) !== null
-      ) {
-        allowed = true;
-        break;
-      }
-    }
-    if (!allowed)
-      return NextResponse.json({ error: "Not Found" }, { status: 404 });
+    const upload = await findWikiAttachmentDownload(
+      getApplicationContext(),
+      await toActor(authentication.session),
+      { upload_id: paramsData.uploadId },
+    );
 
     const presignedUrl = await getPresignedDownloadUrl(upload);
 
     return NextResponse.redirect(presignedUrl, 307);
   } catch (error) {
+    /**
+     * Invisible pages (and uploads outside the wiki) 404 instead of 403 to
+     * avoid leaking their existence.
+     */
+    if (error instanceof NotFoundError)
+      return NextResponse.json({ error: "Not Found" }, { status: 404 });
+
     return apiErrorHandler(error);
   }
 }

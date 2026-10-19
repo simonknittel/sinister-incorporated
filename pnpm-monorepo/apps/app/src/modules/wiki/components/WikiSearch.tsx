@@ -4,14 +4,14 @@ import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import { Link } from "@/modules/common/components/Link";
 import { api } from "@/trpc/react";
 import { Autocomplete } from "@base-ui/react/autocomplete";
+import type {
+  WikiSearchPageResult,
+  WikiSearchTagResult,
+} from "@sam-monorepo/application";
 import { useDebounce } from "@uidotdev/usehooks";
 import clsx from "clsx";
 import { Fragment, useState, type ReactNode } from "react";
 import { FaSearch, FaTag } from "react-icons/fa";
-import type {
-  WikiSearchPageResult,
-  WikiSearchTagResult,
-} from "../queries/searchWiki";
 import { buildWikiPageHref, buildWikiTagHref } from "../utils/wikiPageHref";
 import { parseWikiSearchSnippet } from "../utils/wikiSearchSnippet";
 import { useWikiPageHrefMode } from "./WikiPageHrefModeProvider";

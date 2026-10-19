@@ -1,91 +1,52 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import {
-  getAccessibleWikiPage,
-  WikiPageAccessTier,
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  updateWikiPageFavoriteInputSchema,
+  updateWikiPageFavorite as updateWikiPageFavoriteUseCase,
+  type UpdateWikiPageFavoriteOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import type { WikiSharedContextPage } from "../queries/getWikiContext";
-import { getWikiPageScopedContext } from "../queries/getWikiPageScopedContext";
+import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
 
-const schema = z.object({
-  pageId: z.cuid2(),
-  /** Absent removes the page from the favorites */
-  isFavorite: z
-    .literal("1")
-    .optional()
-    .transform((value) => value === "1"),
-});
-
-/**
- * Sets the state that the button showed as the new state, not the opposite
- * of the stored state: a different tab can have changed the state before.
- */
 export const updateWikiPageFavorite = createAuthenticatedAction(
   "updateWikiPageFavorite",
-  schema,
+  updateWikiPageFavoriteInputSchema,
   async (formData, authentication, data, t) => {
-    const citizenId = authentication.session.entity?.id;
-    if (!citizenId)
-      return { error: t("Common.notFound"), requestPayload: formData };
-
-    const scoped = await getWikiPageScopedContext(data.pageId);
-    const page = scoped
-      ? getAccessibleWikiPage<WikiSharedContextPage>(
-          scoped.context,
-          data.pageId,
-          WikiPageAccessTier.Read,
-        )
-      : null;
-    if (!page) {
-      /**
-       * A different user deleted the page or took the read access away
-       * before, and the page must show it
-       */
-      return rejectConflict(t("Common.notFound"), formData);
+    let result: UpdateWikiPageFavoriteOutput;
+    try {
+      result = await updateWikiPageFavoriteUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: WIKI_ERROR_TEXTS,
+      });
     }
-
-    /**
-     * No change when the page is already in the requested state: the writes
-     * do not fail, and the count tells if they changed something
-     */
-    const { count } = data.isFavorite
-      ? await prisma.wikiPageFavorite.createMany({
-          data: [{ citizenId, pageId: page.id }],
-          skipDuplicates: true,
-        })
-      : await prisma.wikiPageFavorite.deleteMany({
-          where: { citizenId, pageId: page.id },
-        });
 
     /** Also without a change: a different tab can have set the state before */
     refresh();
 
-    if (count > 0)
-      await createAuditEvents([
-        {
-          type: data.isFavorite
-            ? AuditEventType.WIKI_PAGE_FAVORITE_ADDED
-            : AuditEventType.WIKI_PAGE_FAVORITE_REMOVED,
-          data: {
-            pageId: page.id,
-            eventId: page.eventId ?? undefined,
-            citizenId,
-          },
-          createdById: authentication.session.user.id,
-        },
-      ]);
-
     return {
-      success: data.isFavorite
+      success: result.is_favorite
         ? "Als Favorit gespeichert."
         : "Favorit entfernt.",
     };
+  },
+  {
+    parseFormData: (formData) => ({
+      page_id: formData.get("pageId"),
+      /** Absent removes the page from the favorites */
+      is_favorite: formData.get("isFavorite") === "1",
+    }),
   },
 );

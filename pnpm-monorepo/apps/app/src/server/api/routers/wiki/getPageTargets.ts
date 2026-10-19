@@ -1,18 +1,17 @@
+import { getApplicationContext, toActor } from "@/modules/application";
 import { eventContainerSchema } from "@/modules/events/utils/eventContainerSchema";
-import { log } from "@/modules/logging";
-import {
-  getEventWikiContext,
-  hasReadableEventWikiRoot,
-} from "@/modules/wiki/queries/getEventWikiContext";
-import { getVariantWikiContext } from "@/modules/wiki/queries/getVariantWikiContext";
-import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
 import {
   getManageableWikiPageTargets,
   getReadableWikiPageTargets,
 } from "@/modules/wiki/utils/getWikiPageTargets";
-import { TRPCError } from "@trpc/server";
+import {
+  findReadableWikiScope,
+  idSchema,
+  toWikiScopeTarget,
+  WikiScopeKind,
+} from "@sam-monorepo/application";
 import * as z from "zod";
-import { protectedProcedure } from "../../trpc";
+import { protectedProcedure, toTrpcError } from "../../trpc";
 
 /**
  * Pages in depth-first tree order for hierarchy selects: managed ones for
@@ -29,53 +28,36 @@ export const getPageTargets = protectedProcedure
       .object({
         permission: z.enum(["manage", "read"]),
         container: eventContainerSchema.optional(),
-        variantId: z.cuid().optional(),
+        variantId: idSchema.optional(),
         /** The page to move — it and its subtree are no valid new parents */
-        excludeSubtreeOf: z.cuid2().optional(),
+        excludeSubtreeOf: idSchema.optional(),
       })
       .refine((input) => !(input.container && input.variantId), {
         message: "container and variantId are mutually exclusive",
       })
       .optional(),
   )
-  .query(async ({ input }) => {
+  .query(async ({ ctx, input }) => {
     try {
-      if (input?.variantId) {
-        const variantContext = await getVariantWikiContext(input.variantId);
-        if (!variantContext) return [];
+      const scope = await findReadableWikiScope(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        toWikiScopeTarget(input ?? {}),
+      );
+      if (!scope) return [];
 
-        return input.permission === "read"
-          ? getReadableWikiPageTargets(
-              variantContext,
-              variantContext.rootPage.id,
-            )
-          : getManageableWikiPageTargets(
-              variantContext,
-              input.excludeSubtreeOf,
-              variantContext.rootPage.id,
-            );
-      }
-
-      const context = input?.container
-        ? await getEventWikiContext(input.container).then((eventContext) =>
-            eventContext && hasReadableEventWikiRoot(eventContext)
-              ? eventContext
-              : null,
-          )
-        : await getWikiContext();
-      if (!context) return [];
+      /** The embed of a variant has its linked page as its root */
+      const rootPageId =
+        scope.kind === WikiScopeKind.Variant ? scope.rootPage.id : undefined;
 
       return input?.permission === "read"
-        ? getReadableWikiPageTargets(context)
-        : getManageableWikiPageTargets(context, input?.excludeSubtreeOf);
+        ? getReadableWikiPageTargets(scope, rootPageId)
+        : getManageableWikiPageTargets(
+            scope,
+            input?.excludeSubtreeOf,
+            rootPageId,
+          );
     } catch (error) {
-      log.error("Failed to fetch wiki page targets", {
-        error,
-      });
-
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to fetch wiki page targets",
-      });
+      throw toTrpcError(error, "Failed to fetch wiki page targets");
     }
   });

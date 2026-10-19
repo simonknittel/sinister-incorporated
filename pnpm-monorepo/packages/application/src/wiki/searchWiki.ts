@@ -1,3 +1,7 @@
+import {
+  WIKI_SEARCH_MARK_END,
+  WIKI_SEARCH_MARK_START,
+} from "@sam-monorepo/domain";
 import { buildWikiPageHref } from "@sam-monorepo/wiki-editor/helpers";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
@@ -15,16 +19,6 @@ import {
   queryWikiSearch,
   WikiSearchContainerColumn,
 } from "./wikiSearchQuery.js";
-
-/** The search returns at most this number of tags */
-const TAG_RESULT_LIMIT = 5;
-
-/**
- * Control characters cannot occur in the extracted page text, thus the
- * markers of the matches cannot collide with the content. The use case
- * replaces them with the Markdown markers of bold text.
- */
-const SNIPPET_MARKERS = { start: "\u0001", end: "\u0002" } as const;
 
 export const searchWikiInputSchema = z.object({
   query: z.string().trim().min(2).max(200),
@@ -88,9 +82,7 @@ export const searchWiki = (
       query: input.query,
       readablePageIds,
       filters: toSearchFilters(scope),
-      snippetMarkers: SNIPPET_MARKERS,
       pageLimit: input.limit,
-      tagLimit: TAG_RESULT_LIMIT,
     });
 
     const pages = result.pages.flatMap((match) => {
@@ -103,8 +95,8 @@ export const searchWiki = (
           title: page.title,
           path: buildWikiPageHref(scope.hrefBase, page),
           snippet: match.snippet
-            .replaceAll(SNIPPET_MARKERS.start, "**")
-            .replaceAll(SNIPPET_MARKERS.end, "**"),
+            .replaceAll(WIKI_SEARCH_MARK_START, "**")
+            .replaceAll(WIKI_SEARCH_MARK_END, "**"),
           matched_tags: match.matchedTags,
         },
       ];
