@@ -10,7 +10,7 @@ Each use case has this signature:
 (context: ApplicationContext, actor: Actor, input: Input) => Promise<Output>;
 ```
 
-- `context` gives the services of the app that runs the use case (the ports, `src/context.ts`): `prisma`, `audit`, `notifications`, `log`, `tracer`, `now`, `changelog`, `collab`, `urls`, `signingKey` and `allowInsecureLoopbackClientIds`. `changelog` and `collab` can be null: then a use case that needs the port throws a `ConflictError`. The shared implementations of the ports are in [`packages/infrastructure`](../infrastructure/README.md).
+- `context` gives the services of the app that runs the use case (the ports, `src/context.ts`): `prisma`, `audit`, `notifications`, `log`, `tracer`, `now`, `changelog`, `collab`, `discord`, `storage`, `urls`, `signingKey` and `allowInsecureLoopbackClientIds`. `changelog`, `collab`, `discord` and `storage` can be null. A use case that needs `changelog`, `collab` or the copy of `storage` then throws a `ConflictError`. A null `discord` behaves like a Discord that cannot be reached: the result of the Discord step is Failed. The shared implementations of the ports are in [`packages/infrastructure`](../infrastructure/README.md).
 - `actor` is the user for whom the use case runs (`src/actor.ts`). The Next.js app builds it from the session, the MCP server from the access token.
 - A use case without a user, for example the public token endpoint of the OAuth server, takes `(context, input)`.
 - The use cases of a feature live in `src/<feature>/` with a barrel `index.ts` that the package index re-exports.
@@ -84,13 +84,16 @@ src/
 
 These exports are not use cases. No MCP tool calls them:
 
-- The `find…` row helpers (for example `findEventListPage`, `findVisibleTask`, `findEventPositionTree`, `findManagedRole`, `findRoleTableRows`, `findSpynetCitizen`, `findNoteTablePage`, `findUserListPage`, `findSilcTransactionTablePage`, `findRoleSalaryRows`, `findProfitDistributionCycleDetails` and `findOwnOpenTaskRows`) give rows only to the renderers of the app.
+- The `find…` row helpers (for example `findEventListPage`, `findEventOptions`, `findResolvedEventParticipants`, `findOwnEventParticipation`, `findEventActivityRows`, `findAddableEventParticipantIds`, `findEventPositionTree`, `findEventLineupCitizens`, `findEventTemplateDetails`, `findEventTemplatePositionTree`, `findVisibleTask`, `findManagedRole`, `findRoleTableRows`, `findSpynetCitizen`, `findNoteTablePage`, `findUserListPage`, `findSilcTransactionTablePage`, `findRoleSalaryRows`, `findProfitDistributionCycleDetails` and `findOwnOpenTaskRows`) give rows only to the renderers of the app.
 - `findAllRoleBadges` has no permission check. Its callers check the permission.
 - `findRolesForSalaries` and `getAuecConversionRate` take no actor and check no permission. The settings page and the SILC dashboard check the permission, and the conversion rate is not personal. `findRolesForSalaries` keeps a known gap: its tRPC procedure checks only the clearance, and its output holds roles that the caller cannot see. Whether to close the gap is an open decision.
 - `filterLeaderboardMembers` takes the ranks of the leaderboard of the Roberts Space Industries website as host data (the interface `LeaderboardRank`, no schema). The host reads and validates the ranks.
 - `linkCitizenOfSignedInUser` and `hasBirthdayTodaySafely` (the Spynet) are helpers for the auth zone; `deletePermissionStringsReferencing` (the roles) is a helper for the settings of the Spynet. They carry no permission check: the caller checks it.
-- The writes of the positions that the lineup of an event and the lineup of an event template share (`insertLineupPosition`, `updateLineupPosition`, `deleteLineupPosition`, `writeLineupOrder`, `findLineupPositionContainer`) carry no permission check. The use cases of the event lineup check the event first, the app checks the template first.
 - `createWikiPageInScope` takes the wiki scope from its caller: the app also loads the briefings of the event templates.
+- `canAccessEventTemplates` is a boolean check for the pages of the event templates, not a read of a template.
+- `findPublishableDiscordChannels` takes no actor and checks no permission. The callers check it. It gives null when Discord cannot be reached.
+- `syncEventDiscordPublication` checks no permission until the upload route of the cover image becomes a use case. The route checks that the actor can manage the event.
+- `publishEventToDiscord` and `unpublishEventFromDiscord` are for the app only: their output `DiscordSyncResult` tells which Discord step failed. `createEvent`, `updateEvent` and `deleteEvent` give such a result in the optional output field `discord`, only when the caller gives their app-only option. Without the option the key does not exist, because the MCP tools parse the output with a strict schema.
 
 These use cases run without an actor. No MCP tool calls them:
 
