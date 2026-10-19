@@ -1,16 +1,18 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { forbidden } from "next/navigation";
+import {
+  findVariantShipCountRows,
+  type VariantShipCountRow,
+} from "@sam-monorepo/application";
 import { cache } from "react";
 import { buildChartData, normalizeOptions } from "../utils/chartData";
 
 export const getVariantShipStatisticChart = cache(
   withTrace("getVariantShipStatisticChart", async () => {
-    const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("globalStatistics", "read")))
-      forbidden();
-
     const configuration = {
       top: 15,
       filterEmpty: true,
@@ -18,30 +20,20 @@ export const getVariantShipStatisticChart = cache(
 
     const options = normalizeOptions();
 
-    const rows = await prisma.variantShipCount.findMany({
-      where: {
-        day: {
-          gte: options.fromDateColumnValue,
-        },
-      },
-      select: {
-        variantId: true,
-        day: true,
-        count: true,
-        variant: {
-          select: {
-            name: true,
-          },
-        },
-      },
-      orderBy: {
-        day: "asc",
-      },
-    });
+    let rows: VariantShipCountRow[];
+    try {
+      rows = await findVariantShipCountRows(
+        getApplicationContext(),
+        await getRequestActor(),
+        { fromDay: options.fromDateColumnValue },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
 
     const records = rows.map((row) => ({
       id: row.variantId,
-      name: row.variant.name,
+      name: row.variantName,
       createdAt: row.day,
       count: row.count,
     }));

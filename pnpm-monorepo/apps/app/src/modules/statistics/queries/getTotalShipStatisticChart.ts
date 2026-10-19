@@ -1,51 +1,34 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { forbidden } from "next/navigation";
+import {
+  findTotalShipCountRows,
+  type TotalShipCountRow,
+} from "@sam-monorepo/application";
 import { cache } from "react";
 import { buildTotalAndDeltaChart, normalizeOptions } from "../utils/chartData";
 
 export const getTotalShipStatisticChart = cache(
   withTrace("getTotalShipStatisticChart", async () => {
-    const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("globalStatistics", "read")))
-      forbidden();
-
     const options = normalizeOptions();
 
-    // The change of the first chart day compares with the last day before it
-    const previousDay = await prisma.variantShipCount.findFirst({
-      where: {
-        day: {
-          lt: options.fromDateColumnValue,
-        },
-      },
-      orderBy: {
-        day: "desc",
-      },
-      select: {
-        day: true,
-      },
-    });
-
-    const rows = await prisma.variantShipCount.groupBy({
-      by: ["day"],
-      where: {
-        day: {
-          gte: previousDay?.day ?? options.fromDateColumnValue,
-        },
-      },
-      _sum: {
-        count: true,
-      },
-      orderBy: {
-        day: "asc",
-      },
-    });
+    let rows: TotalShipCountRow[];
+    try {
+      rows = await findTotalShipCountRows(
+        getApplicationContext(),
+        await getRequestActor(),
+        { fromDay: options.fromDateColumnValue },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
 
     const orderedTotals = rows.map((row) => ({
       createdAt: row.day,
-      count: row._sum.count ?? 0,
+      count: row.count,
     }));
 
     const configuration = {};

@@ -1,6 +1,7 @@
 "use client";
 
 import { useStoredValue } from "@/modules/common/utils/useStoredValue";
+import { LogAnalyzerEntryType } from "@sam-monorepo/domain";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import type {
   Dispatch,
@@ -9,13 +10,9 @@ import type {
   TransitionStartFunction,
 } from "react";
 import { createContext, useContext, useState, useTransition } from "react";
-import {
-  createEntryTypeRecord,
-  EntryType,
-  type IEntry,
-} from "../utils/PATTERNS";
+import { createEntryTypeRecord, type IEntry } from "../utils/PATTERNS";
 
-type EntryTypeRecord = Record<EntryType, boolean>;
+type EntryTypeRecord = Record<LogAnalyzerEntryType, boolean>;
 
 interface Context {
   /**
@@ -32,15 +29,24 @@ interface Context {
   readonly daysToLoad: number;
   /** The types whose own entries the table shows. */
   readonly ownEntryTypes: EntryTypeRecord;
-  readonly setOwnEntryType: (type: EntryType, value: boolean) => void;
+  readonly setOwnEntryType: (
+    type: LogAnalyzerEntryType,
+    value: boolean,
+  ) => void;
   /** The types whose own entries the upload sends to the server. */
   readonly sharingEntryTypes: EntryTypeRecord;
-  readonly setSharingEntryType: (type: EntryType, value: boolean) => void;
+  readonly setSharingEntryType: (
+    type: LogAnalyzerEntryType,
+    value: boolean,
+  ) => void;
   /** True while the upload sends at least one type. */
   readonly isSharingEnabled: boolean;
   /** The types whose entries of the other citizens the table shows. */
   readonly othersEntryTypes: EntryTypeRecord;
-  readonly setOthersEntryType: (type: EntryType, value: boolean) => void;
+  readonly setOthersEntryType: (
+    type: LogAnalyzerEntryType,
+    value: boolean,
+  ) => void;
   /** True while the table shows at least one type of the other citizens. */
   readonly isSharedViewEnabled: boolean;
   /** The citizens whose shared entries the table hides. Empty shows all. */
@@ -70,7 +76,7 @@ const useStoredEntryTypes = (key: string, defaultValue: EntryTypeRecord) => {
 
   const value = { ...defaultValue, ...storedValue };
 
-  const setType = (type: EntryType, isEnabled: boolean) => {
+  const setType = (type: LogAnalyzerEntryType, isEnabled: boolean) => {
     setStoredValue((previous) => ({ ...previous, [type]: isEnabled }));
   };
 
@@ -129,11 +135,14 @@ export const LogAnalyzerContext = ({ children, isSharingAvailable }: Props) => {
 
   const [entries, setEntries] = useState<Map<string, IEntry>>(new Map());
 
-  const setOthersEntryType = (type: EntryType, isEnabled: boolean) => {
+  const setOthersEntryType = (
+    type: LogAnalyzerEntryType,
+    isEnabled: boolean,
+  ) => {
     setStoredOthersEntryType(type, isEnabled);
 
     /** The entries of the other citizens leave the table with the last type */
-    const isAnotherTypeEnabled = Object.values(EntryType).some(
+    const isAnotherTypeEnabled = Object.values(LogAnalyzerEntryType).some(
       (otherType) => otherType !== type && othersEntryTypes[otherType],
     );
     if (isEnabled || isAnotherTypeEnabled) return;

@@ -7,6 +7,7 @@ import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import Button from "@/modules/common/components/Button";
 import { Button2 } from "@/modules/common/components/Button2";
 import { track } from "@plausible-analytics/tracker";
+import { LogAnalyzerEntryType } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { get, set } from "idb-keyval";
 import { useEffect, useEffectEvent, useRef, type MouseEvent } from "react";
@@ -20,7 +21,6 @@ import { LIVE_MODE_PARSE_INTERVAL_MS } from "../utils/liveMode";
 import {
   createEntryKey,
   deriveEntryFields,
-  EntryType,
   type IEntry,
 } from "../utils/PATTERNS";
 import type { LogFile } from "../utils/types";
@@ -82,7 +82,7 @@ export const LogAnalyzer = ({ className }: Props) => {
 
       try {
         const filterProps = Object.fromEntries(
-          Object.values(EntryType).map((type) => [
+          Object.values(LogAnalyzerEntryType).map((type) => [
             `log_analyzer_filter_${type}`,
             ownEntryTypes[type],
           ]),

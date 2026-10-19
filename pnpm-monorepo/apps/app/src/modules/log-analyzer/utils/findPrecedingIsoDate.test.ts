@@ -1,12 +1,12 @@
+import { LogAnalyzerEntryType } from "@sam-monorepo/domain";
 import { describe, expect, test } from "vitest";
 import { findPrecedingIsoDate } from "./findPrecedingIsoDate";
-import { EntryType } from "./PATTERNS";
 import { SAMPLE_CRASH_FILE_END, SAMPLE_LINES } from "./sampleLines";
 
 describe("findPrecedingIsoDate", () => {
   test("gives the time of the last timestamped line before a crash", () => {
     const position = SAMPLE_CRASH_FILE_END.indexOf(
-      SAMPLE_LINES[EntryType.GameCrash],
+      SAMPLE_LINES[LogAnalyzerEntryType.GameCrash],
     );
 
     expect(findPrecedingIsoDate(SAMPLE_CRASH_FILE_END, position)).toBe(

@@ -1,7 +1,7 @@
-import type { EntryType } from "./PATTERNS";
+import type { LogAnalyzerEntryType } from "@sam-monorepo/domain";
 
 export interface RawMatch {
-  readonly type: EntryType;
+  readonly type: LogAnalyzerEntryType;
   readonly isoDate: string;
   readonly fullMatch: string;
   readonly groups: Record<string, string>;

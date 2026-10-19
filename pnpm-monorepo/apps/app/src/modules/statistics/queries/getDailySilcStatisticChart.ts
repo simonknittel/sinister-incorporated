@@ -1,39 +1,32 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  findPositiveSilcTransactionRows,
+  type PositiveSilcTransactionRow,
+} from "@sam-monorepo/application";
 import { getLocalDateKey, ORGANIZATION_TIMEZONE } from "@sam-monorepo/domain";
-import { forbidden } from "next/navigation";
 import { cache } from "react";
 import { buildTotalAndDeltaChart, normalizeOptions } from "../utils/chartData";
 
 export const getDailySilcStatisticChart = cache(
   withTrace("getDailySilcStatisticChart", async () => {
-    const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("globalStatistics", "read")))
-      forbidden();
-
     const configuration = {};
     const options = normalizeOptions();
 
-    const transactions = await prisma.silcTransaction.findMany({
-      where: {
-        deletedAt: null,
-        value: {
-          gt: 0,
-        },
-        createdAt: {
-          gte: options.fromDate,
-          lt: options.toDate,
-        },
-      },
-      select: {
-        createdAt: true,
-        value: true,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-    });
+    let transactions: PositiveSilcTransactionRow[];
+    try {
+      transactions = await findPositiveSilcTransactionRows(
+        getApplicationContext(),
+        await getRequestActor(),
+        { fromDate: options.fromDate, toDate: options.toDate },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
 
     const totalsByDate = new Map<string, number>();
 

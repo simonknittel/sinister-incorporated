@@ -1,6 +1,6 @@
 import { isBirthdayToday } from "@sam-monorepo/domain";
 import { describe, expect, test } from "vitest";
-import { shouldGreetCitizen } from "./birthdayMatching";
+import { shouldGreetOnBirthday } from "./birthdayGreetingRule.js";
 
 const candidate = (overrides: {
   timezone?: string | null;
@@ -15,25 +15,25 @@ const candidate = (overrides: {
   ...overrides,
 });
 
-describe("shouldGreetCitizen", () => {
+describe("shouldGreetOnBirthday", () => {
   test("greets on the birthday", () => {
     // 2026-12-24 01:00 in Europe/Berlin
     const now = new Date("2026-12-24T00:00:00Z");
 
-    expect(shouldGreetCitizen(candidate({}), now)).toBe(true);
+    expect(shouldGreetOnBirthday(candidate({}), now)).toBe(true);
   });
 
   test("stays silent on any other day", () => {
     const now = new Date("2026-12-23T12:00:00Z");
 
-    expect(shouldGreetCitizen(candidate({}), now)).toBe(false);
+    expect(shouldGreetOnBirthday(candidate({}), now)).toBe(false);
   });
 
   test("stays silent for a citizen without a birthday", () => {
     const now = new Date("2026-12-24T00:00:00Z");
 
     expect(
-      shouldGreetCitizen(
+      shouldGreetOnBirthday(
         candidate({ birthdayDay: null, birthdayMonth: null }),
         now,
       ),
@@ -44,24 +44,24 @@ describe("shouldGreetCitizen", () => {
     // 2026-12-24 09:00 in Asia/Tokyo and 2026-12-24 01:00 in Europe/Berlin
     const now = new Date("2026-12-24T00:00:00Z");
 
-    expect(shouldGreetCitizen(candidate({ timezone: "Asia/Tokyo" }), now)).toBe(
-      true,
-    );
     expect(
-      shouldGreetCitizen(candidate({ timezone: "Europe/Berlin" }), now),
+      shouldGreetOnBirthday(candidate({ timezone: "Asia/Tokyo" }), now),
+    ).toBe(true);
+    expect(
+      shouldGreetOnBirthday(candidate({ timezone: "Europe/Berlin" }), now),
     ).toBe(true);
 
     // 2026-12-23 18:00 in America/New_York, already 2026-12-24 in Berlin
     const berlinMidnight = new Date("2026-12-24T00:00:00+01:00");
 
     expect(
-      shouldGreetCitizen(
+      shouldGreetOnBirthday(
         candidate({ timezone: "America/New_York" }),
         berlinMidnight,
       ),
     ).toBe(false);
     expect(
-      shouldGreetCitizen(
+      shouldGreetOnBirthday(
         candidate({ timezone: "Europe/Berlin" }),
         berlinMidnight,
       ),
@@ -72,9 +72,11 @@ describe("shouldGreetCitizen", () => {
     // 2026-12-23 23:30 in Europe/Berlin
     const beforeBerlinMidnight = new Date("2026-12-23T22:30:00Z");
 
-    expect(shouldGreetCitizen(candidate({}), beforeBerlinMidnight)).toBe(false);
+    expect(shouldGreetOnBirthday(candidate({}), beforeBerlinMidnight)).toBe(
+      false,
+    );
     expect(
-      shouldGreetCitizen(
+      shouldGreetOnBirthday(
         candidate({ timezone: "Europe/Berlin" }),
         beforeBerlinMidnight,
       ),
@@ -85,7 +87,7 @@ describe("shouldGreetCitizen", () => {
     const leapDay = new Date("2028-02-29T12:00:00Z");
 
     expect(
-      shouldGreetCitizen(
+      shouldGreetOnBirthday(
         candidate({ birthdayDay: 29, birthdayMonth: 2 }),
         leapDay,
       ),
@@ -96,16 +98,16 @@ describe("shouldGreetCitizen", () => {
     const leapBirthday = candidate({ birthdayDay: 29, birthdayMonth: 2 });
 
     expect(
-      shouldGreetCitizen(leapBirthday, new Date("2027-02-28T12:00:00Z")),
+      shouldGreetOnBirthday(leapBirthday, new Date("2027-02-28T12:00:00Z")),
     ).toBe(false);
     expect(
-      shouldGreetCitizen(leapBirthday, new Date("2027-03-01T12:00:00Z")),
+      shouldGreetOnBirthday(leapBirthday, new Date("2027-03-01T12:00:00Z")),
     ).toBe(true);
   });
 
   test("does not move a February 29 birthday in a leap year", () => {
     expect(
-      shouldGreetCitizen(
+      shouldGreetOnBirthday(
         candidate({ birthdayDay: 29, birthdayMonth: 2 }),
         new Date("2028-03-01T12:00:00Z"),
       ),
@@ -116,14 +118,14 @@ describe("shouldGreetCitizen", () => {
     const now = new Date("2026-12-24T12:00:00Z");
 
     expect(
-      shouldGreetCitizen(
+      shouldGreetOnBirthday(
         candidate({ birthdayGreetingSentAt: new Date("2026-12-24T00:10:00Z") }),
         now,
       ),
     ).toBe(false);
 
     expect(
-      shouldGreetCitizen(
+      shouldGreetOnBirthday(
         candidate({ birthdayGreetingSentAt: new Date("2025-12-24T00:10:00Z") }),
         now,
       ),
@@ -141,7 +143,7 @@ describe("shouldGreetCitizen", () => {
 
     // … and the marker still falls into 2025 after a move to Europe/Berlin
     expect(
-      shouldGreetCitizen(
+      shouldGreetOnBirthday(
         { ...greeted, timezone: "Europe/Berlin" },
         new Date("2026-01-01T09:00:00Z"),
       ),
@@ -149,7 +151,7 @@ describe("shouldGreetCitizen", () => {
 
     // The next birthday is a year away and is greeted again
     expect(
-      shouldGreetCitizen(
+      shouldGreetOnBirthday(
         { ...greeted, timezone: "Europe/Berlin" },
         new Date("2027-01-01T09:00:00Z"),
       ),
@@ -158,7 +160,7 @@ describe("shouldGreetCitizen", () => {
 
   test("throws for a time zone the runtime does not know", () => {
     expect(() =>
-      shouldGreetCitizen(
+      shouldGreetOnBirthday(
         candidate({ timezone: "Mars/Olympus_Mons" }),
         new Date("2026-12-24T12:00:00Z"),
       ),
@@ -167,9 +169,9 @@ describe("shouldGreetCitizen", () => {
 });
 
 /**
- * The shared rule behind both the greeting of this Lambda and the party hat
- * of the app. The domain package has no test runner of its own, thus its
- * cases live next to the job which was the first consumer of the rule.
+ * The shared rule behind both the birthday greeting and the party hat of the
+ * app. Its cases live next to the greeting rule, which was its first
+ * consumer.
  */
 describe("isBirthdayToday", () => {
   test("celebrates the birthday on the local day of the citizen", () => {

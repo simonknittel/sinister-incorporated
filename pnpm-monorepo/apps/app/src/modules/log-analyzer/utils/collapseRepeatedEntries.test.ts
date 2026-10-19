@@ -1,9 +1,10 @@
+import { LogAnalyzerEntryType } from "@sam-monorepo/domain";
 import { describe, expect, test } from "vitest";
 import { collapseRepeatedEntries } from "./collapseRepeatedEntries";
-import { EntryType, type IEntry } from "./PATTERNS";
+import type { IEntry } from "./PATTERNS";
 
 interface EntryOptions {
-  readonly type?: EntryType;
+  readonly type?: LogAnalyzerEntryType;
   readonly collapseKey?: string | null;
   readonly citizenId?: string;
 }
@@ -12,7 +13,7 @@ interface EntryOptions {
 const entry = (
   second: number,
   {
-    type = EntryType.ArmisticeZoneNotification,
+    type = LogAnalyzerEntryType.ArmisticeZoneNotification,
     collapseKey = null,
     citizenId = "own",
   }: EntryOptions = {},
@@ -51,7 +52,7 @@ describe("collapseRepeatedEntries", () => {
     const own = entry(1, { collapseKey: "Entering" });
     const other = entry(2, { collapseKey: "Entering", citizenId: "other" });
     const otherType = entry(3, {
-      type: EntryType.MonitoredSpaceNotification,
+      type: LogAnalyzerEntryType.MonitoredSpaceNotification,
       collapseKey: "Entering",
     });
 
@@ -61,8 +62,8 @@ describe("collapseRepeatedEntries", () => {
   });
 
   test("keeps every entry without a collapse key", () => {
-    const first = entry(1, { type: EntryType.JoinPu });
-    const second = entry(2, { type: EntryType.JoinPu });
+    const first = entry(1, { type: LogAnalyzerEntryType.JoinPu });
+    const second = entry(2, { type: LogAnalyzerEntryType.JoinPu });
 
     expect(collapseRepeatedEntries(newestFirst(first, second))).toEqual(
       newestFirst(first, second),

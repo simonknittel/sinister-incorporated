@@ -1,24 +1,18 @@
-import type { EntryType } from "./PATTERNS";
-
-/**
- * How many entries one upload request carries. The client splits a larger
- * backfill into more requests.
- */
-export const MAXIMUM_UPLOAD_ENTRIES = 100;
-
-/** Longer than the longest known log line, which is a disconnection line. */
-export const MAXIMUM_RAW_LINE_LENGTH = 4000;
+import {
+  MAXIMUM_LOG_ANALYZER_UPLOAD_ENTRIES,
+  type LogAnalyzerEntryType,
+} from "@sam-monorepo/domain";
 
 const TYPE_FIELD = "type";
 const RAW_LINE_FIELD = "rawLine";
 const EVENT_AT_FIELD = "eventAt";
 
 export interface UploadEntry {
-  readonly type: EntryType;
+  readonly type: LogAnalyzerEntryType;
   readonly rawLine: string;
   /**
    * The time of the event, only for a type whose lines carry no time of
-   * their own. See `Pattern.takesTimeOfPrecedingLine`.
+   * their own. See `takesTimeOfPrecedingLine` of the domain package.
    */
   readonly eventAt?: string;
 }
@@ -49,14 +43,14 @@ export const parseUploadFormData = (formData: FormData) => {
    */
   const length = Math.min(
     Math.max(types.length, rawLines.length),
-    MAXIMUM_UPLOAD_ENTRIES + 1,
+    MAXIMUM_LOG_ANALYZER_UPLOAD_ENTRIES + 1,
   );
 
   return {
     entries: Array.from({ length }, (unused, index) => ({
       type: types[index],
-      rawLine: rawLines[index],
-      eventAt: eventAts[index] || undefined,
+      raw_line: rawLines[index],
+      event_at: eventAts[index] || undefined,
     })),
   };
 };

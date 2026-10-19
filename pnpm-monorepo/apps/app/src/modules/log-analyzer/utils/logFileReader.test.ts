@@ -1,7 +1,10 @@
+import {
+  LOG_ANALYZER_ENTRY_PATTERNS,
+  LogAnalyzerEntryType,
+} from "@sam-monorepo/domain";
 import { describe, expect, test } from "vitest";
 import { findPrecedingIsoDate } from "./findPrecedingIsoDate";
 import { createLogFileReader } from "./logFileReader";
-import { EntryType, PATTERNS } from "./PATTERNS";
 import { SAMPLE_CRASH_FILE_END, SAMPLE_LINES } from "./sampleLines";
 import type { RawMatch } from "./types";
 
@@ -25,8 +28,9 @@ const LOG_CONTENT = [
 const matchWholeText = (text: string) => {
   const matches: RawMatch[] = [];
 
-  for (const type of Object.values(EntryType)) {
-    const { regex, takesTimeOfPrecedingLine } = PATTERNS[type];
+  for (const type of Object.values(LogAnalyzerEntryType)) {
+    const { regex, takesTimeOfPrecedingLine } =
+      LOG_ANALYZER_ENTRY_PATTERNS[type];
 
     for (const match of text.matchAll(regex)) {
       if (!match.groups) continue;
@@ -86,7 +90,7 @@ describe("createLogFileReader", () => {
       }
 
       expect(foundMatchKeys.size).toBeGreaterThanOrEqual(
-        Object.values(EntryType).length,
+        Object.values(LogAnalyzerEntryType).length,
       );
     },
     WHOLE_FILE_WALK_TIMEOUT_MS,
@@ -94,7 +98,7 @@ describe("createLogFileReader", () => {
 
   test("reads only the lines which were added since the last read", async () => {
     const readLogFiles = createLogFileReader();
-    const newLine = SAMPLE_LINES[EntryType.JoinPu].replace(
+    const newLine = SAMPLE_LINES[LogAnalyzerEntryType.JoinPu].replace(
       "2025-06-22",
       "2026-09-02",
     );

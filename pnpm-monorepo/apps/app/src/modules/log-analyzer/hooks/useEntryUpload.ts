@@ -3,22 +3,18 @@
 import { runAction } from "@/modules/actions/utils/runAction";
 import { useHasLinkedCitizen } from "@/modules/auth/hooks/useHasLinkedCitizen";
 import { api } from "@/trpc/react";
+import {
+  clampLogAnalyzerDaysToLoad,
+  createLogAnalyzerEntryHash,
+  MAXIMUM_LOG_ANALYZER_UPLOAD_ENTRIES,
+  takesTimeOfPrecedingLine,
+} from "@sam-monorepo/domain";
 import { useRef } from "react";
 import { uploadLogAnalyzerEntries } from "../actions/uploadLogAnalyzerEntries";
 import { useLogAnalyzerContext } from "../components/LogAnalyzerContext";
-import { createEntryHash } from "../utils/createEntryHash";
-import {
-  createEntryKey,
-  takesTimeOfPrecedingLine,
-  type IEntry,
-} from "../utils/PATTERNS";
-import { clampDaysToLoad } from "../utils/sharedEntries";
+import { createEntryKey, type IEntry } from "../utils/PATTERNS";
 import type { RawMatch } from "../utils/types";
-import {
-  createUploadFormData,
-  MAXIMUM_UPLOAD_ENTRIES,
-  type UploadEntry,
-} from "../utils/uploadEntries";
+import { createUploadFormData, type UploadEntry } from "../utils/uploadEntries";
 
 interface PendingEntry extends UploadEntry {
   readonly key: string;
@@ -79,7 +75,7 @@ export const useEntryUpload = () => {
         do {
           /** The vanilla client keeps no copy of the pages in the query cache */
           const page = await utils.client.logAnalyzer.getOwnEntryHashes.query({
-            daysToLoad: clampDaysToLoad(daysToLoad),
+            daysToLoad: clampLogAnalyzerDaysToLoad(daysToLoad),
             cursorHash,
           });
 
@@ -151,7 +147,10 @@ export const useEntryUpload = () => {
       Array.from(newMatchesByKey, async ([key, rawMatch]) => ({
         key,
         rawMatch,
-        hash: await createEntryHash(rawMatch.type, rawMatch.fullMatch),
+        hash: await createLogAnalyzerEntryHash(
+          rawMatch.type,
+          rawMatch.fullMatch,
+        ),
       })),
     );
 
@@ -182,9 +181,12 @@ export const useEntryUpload = () => {
     for (
       let index = 0;
       index < pendingEntries.length;
-      index += MAXIMUM_UPLOAD_ENTRIES
+      index += MAXIMUM_LOG_ANALYZER_UPLOAD_ENTRIES
     ) {
-      const chunk = pendingEntries.slice(index, index + MAXIMUM_UPLOAD_ENTRIES);
+      const chunk = pendingEntries.slice(
+        index,
+        index + MAXIMUM_LOG_ANALYZER_UPLOAD_ENTRIES,
+      );
 
       const succeeded = await runAction(
         uploadLogAnalyzerEntries,

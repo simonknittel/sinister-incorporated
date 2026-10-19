@@ -1,5 +1,8 @@
+import {
+  LOG_ANALYZER_ENTRY_PATTERNS,
+  LogAnalyzerEntryType,
+} from "@sam-monorepo/domain";
 import { findPrecedingIsoDate } from "./findPrecedingIsoDate";
-import { EntryType, PATTERNS } from "./PATTERNS";
 import type { LogFile, RawMatch } from "./types";
 
 const LINE_FEED = 0x0a;
@@ -84,8 +87,9 @@ const collectMatches = (
   isoDateBeforeText: string | null,
   matches: RawMatch[],
 ) => {
-  for (const type of Object.values(EntryType)) {
-    const { regex, takesTimeOfPrecedingLine } = PATTERNS[type];
+  for (const type of Object.values(LogAnalyzerEntryType)) {
+    const { regex, takesTimeOfPrecedingLine } =
+      LOG_ANALYZER_ENTRY_PATTERNS[type];
 
     for (const match of text.matchAll(regex)) {
       if (!match.groups) continue;

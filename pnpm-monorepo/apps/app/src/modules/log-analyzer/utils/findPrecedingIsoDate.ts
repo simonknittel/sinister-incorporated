@@ -5,7 +5,8 @@ const TIMESTAMP_PREFIX_LENGTH = 40;
 
 /**
  * The time of the last timestamped line before the given position of the
- * file. Null when no such line exists. See `Pattern.takesTimeOfPrecedingLine`.
+ * file. Null when no such line exists. See `takesTimeOfPrecedingLine` of the
+ * domain package.
  */
 export const findPrecedingIsoDate = (
   fileContent: string,

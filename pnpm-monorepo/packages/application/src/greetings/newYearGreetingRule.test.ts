@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { shouldGreetCitizen } from "./newYearMatching";
+import { shouldGreetForNewYear } from "./newYearGreetingRule.js";
 
 const candidate = (overrides: {
   timezone?: string | null;
@@ -10,10 +10,10 @@ const candidate = (overrides: {
   ...overrides,
 });
 
-describe("shouldGreetCitizen", () => {
+describe("shouldGreetForNewYear", () => {
   test("stays silent on an ordinary day", () => {
     expect(
-      shouldGreetCitizen(candidate({}), new Date("2026-09-02T12:00:00Z")),
+      shouldGreetForNewYear(candidate({}), new Date("2026-09-02T12:00:00Z")),
     ).toBe(false);
   });
 
@@ -21,7 +21,7 @@ describe("shouldGreetCitizen", () => {
     // 2027-01-01 01:00 in Europe/Berlin
     const now = new Date("2027-01-01T00:00:00Z");
 
-    expect(shouldGreetCitizen(candidate({}), now)).toBe(true);
+    expect(shouldGreetForNewYear(candidate({}), now)).toBe(true);
   });
 
   /**
@@ -31,11 +31,11 @@ describe("shouldGreetCitizen", () => {
   test("stays silent on the theme days before January 1", () => {
     // 2026-12-27 12:00 in Europe/Berlin
     expect(
-      shouldGreetCitizen(candidate({}), new Date("2026-12-27T11:00:00Z")),
+      shouldGreetForNewYear(candidate({}), new Date("2026-12-27T11:00:00Z")),
     ).toBe(false);
     // 2026-12-29 12:00 in Europe/Berlin
     expect(
-      shouldGreetCitizen(candidate({}), new Date("2026-12-29T11:00:00Z")),
+      shouldGreetForNewYear(candidate({}), new Date("2026-12-29T11:00:00Z")),
     ).toBe(false);
   });
 
@@ -43,9 +43,11 @@ describe("shouldGreetCitizen", () => {
     // 2026-12-31 23:30 in Europe/Berlin
     const beforeBerlinMidnight = new Date("2026-12-31T22:30:00Z");
 
-    expect(shouldGreetCitizen(candidate({}), beforeBerlinMidnight)).toBe(false);
+    expect(shouldGreetForNewYear(candidate({}), beforeBerlinMidnight)).toBe(
+      false,
+    );
     expect(
-      shouldGreetCitizen(
+      shouldGreetForNewYear(
         candidate({ timezone: "Europe/Berlin" }),
         beforeBerlinMidnight,
       ),
@@ -57,10 +59,13 @@ describe("shouldGreetCitizen", () => {
     const tokyoMidnight = new Date("2026-12-31T15:00:00Z");
 
     expect(
-      shouldGreetCitizen(candidate({ timezone: "Asia/Tokyo" }), tokyoMidnight),
+      shouldGreetForNewYear(
+        candidate({ timezone: "Asia/Tokyo" }),
+        tokyoMidnight,
+      ),
     ).toBe(true);
     expect(
-      shouldGreetCitizen(
+      shouldGreetForNewYear(
         candidate({ timezone: "Europe/Berlin" }),
         tokyoMidnight,
       ),
@@ -70,13 +75,13 @@ describe("shouldGreetCitizen", () => {
     const berlinMidnight = new Date("2026-12-31T23:00:00Z");
 
     expect(
-      shouldGreetCitizen(
+      shouldGreetForNewYear(
         candidate({ timezone: "America/New_York" }),
         berlinMidnight,
       ),
     ).toBe(false);
     expect(
-      shouldGreetCitizen(
+      shouldGreetForNewYear(
         candidate({ timezone: "Europe/Berlin" }),
         berlinMidnight,
       ),
@@ -87,10 +92,10 @@ describe("shouldGreetCitizen", () => {
     // 2027-01-01 00:00 in Europe/Berlin
     const berlinMidnight = new Date("2026-12-31T23:00:00Z");
 
-    expect(shouldGreetCitizen(candidate({}), berlinMidnight)).toBe(true);
+    expect(shouldGreetForNewYear(candidate({}), berlinMidnight)).toBe(true);
     // 2026-12-31 23:00 in Europe/Berlin, already 2027 in Asia/Tokyo
     expect(
-      shouldGreetCitizen(candidate({}), new Date("2026-12-31T22:00:00Z")),
+      shouldGreetForNewYear(candidate({}), new Date("2026-12-31T22:00:00Z")),
     ).toBe(false);
   });
 
@@ -99,14 +104,14 @@ describe("shouldGreetCitizen", () => {
     const now = new Date("2027-01-01T12:00:00Z");
 
     expect(
-      shouldGreetCitizen(
+      shouldGreetForNewYear(
         candidate({ newYearGreetingSentAt: new Date("2027-01-01T00:10:00Z") }),
         now,
       ),
     ).toBe(false);
 
     expect(
-      shouldGreetCitizen(
+      shouldGreetForNewYear(
         candidate({ newYearGreetingSentAt: new Date("2026-01-01T00:10:00Z") }),
         now,
       ),
@@ -122,7 +127,7 @@ describe("shouldGreetCitizen", () => {
 
     // … and the marker still falls into 2026 after a move to Europe/Berlin
     expect(
-      shouldGreetCitizen(
+      shouldGreetForNewYear(
         { ...greeted, timezone: "Europe/Berlin" },
         new Date("2027-01-01T09:00:00Z"),
       ),
@@ -130,7 +135,7 @@ describe("shouldGreetCitizen", () => {
 
     // The next turn of the year is a year away and is greeted again
     expect(
-      shouldGreetCitizen(
+      shouldGreetForNewYear(
         { ...greeted, timezone: "Europe/Berlin" },
         new Date("2028-01-01T09:00:00Z"),
       ),
@@ -147,17 +152,17 @@ describe("shouldGreetCitizen", () => {
     // … and it is still January 1 in Pacific/Niue (UTC-11) 48 hours later,
     // where the marker falls into 2026. This is the widest gap the allowlist
     // of the app can produce.
-    expect(shouldGreetCitizen(greeted, new Date("2027-01-02T10:00:00Z"))).toBe(
-      false,
-    );
-    expect(shouldGreetCitizen(greeted, new Date("2027-01-02T10:45:00Z"))).toBe(
-      false,
-    );
+    expect(
+      shouldGreetForNewYear(greeted, new Date("2027-01-02T10:00:00Z")),
+    ).toBe(false);
+    expect(
+      shouldGreetForNewYear(greeted, new Date("2027-01-02T10:45:00Z")),
+    ).toBe(false);
   });
 
   test("throws for a time zone the runtime does not know", () => {
     expect(() =>
-      shouldGreetCitizen(
+      shouldGreetForNewYear(
         candidate({ timezone: "Mars/Olympus_Mons" }),
         new Date("2027-01-01T12:00:00Z"),
       ),
@@ -176,26 +181,26 @@ describe("the runs around the turn of the year", () => {
   test("greets the first time zone 14 hours before Berlin", () => {
     const now = new Date("2026-12-31T10:00:00Z");
 
-    expect(shouldGreetCitizen(inZone("Pacific/Kiritimati"), now)).toBe(true);
-    expect(shouldGreetCitizen(inZone("Asia/Tokyo"), now)).toBe(false);
-    expect(shouldGreetCitizen(inZone("Europe/Berlin"), now)).toBe(false);
-    expect(shouldGreetCitizen(inZone(null), now)).toBe(false);
-    expect(shouldGreetCitizen(inZone("Pacific/Honolulu"), now)).toBe(false);
+    expect(shouldGreetForNewYear(inZone("Pacific/Kiritimati"), now)).toBe(true);
+    expect(shouldGreetForNewYear(inZone("Asia/Tokyo"), now)).toBe(false);
+    expect(shouldGreetForNewYear(inZone("Europe/Berlin"), now)).toBe(false);
+    expect(shouldGreetForNewYear(inZone(null), now)).toBe(false);
+    expect(shouldGreetForNewYear(inZone("Pacific/Honolulu"), now)).toBe(false);
   });
 
   test("greets Berlin and the citizens without a time zone at their midnight", () => {
     const now = new Date("2026-12-31T23:05:00Z");
 
-    expect(shouldGreetCitizen(inZone("Europe/Berlin"), now)).toBe(true);
-    expect(shouldGreetCitizen(inZone(null), now)).toBe(true);
-    expect(shouldGreetCitizen(inZone("America/New_York"), now)).toBe(false);
-    expect(shouldGreetCitizen(inZone("Pacific/Honolulu"), now)).toBe(false);
+    expect(shouldGreetForNewYear(inZone("Europe/Berlin"), now)).toBe(true);
+    expect(shouldGreetForNewYear(inZone(null), now)).toBe(true);
+    expect(shouldGreetForNewYear(inZone("America/New_York"), now)).toBe(false);
+    expect(shouldGreetForNewYear(inZone("Pacific/Honolulu"), now)).toBe(false);
   });
 
   test("greets the last time zone 10 hours after Berlin", () => {
     const now = new Date("2027-01-01T10:05:00Z");
 
-    expect(shouldGreetCitizen(inZone("Pacific/Honolulu"), now)).toBe(true);
+    expect(shouldGreetForNewYear(inZone("Pacific/Honolulu"), now)).toBe(true);
   });
 
   test("greets nobody a second time on the same local day", () => {
@@ -205,11 +210,11 @@ describe("the runs around the turn of the year", () => {
     });
 
     expect(
-      shouldGreetCitizen(berlinCitizen, new Date("2026-12-31T23:20:00Z")),
+      shouldGreetForNewYear(berlinCitizen, new Date("2026-12-31T23:20:00Z")),
     ).toBe(false);
     // 2027-01-01 23:50 in Europe/Berlin, the last run of the local day
     expect(
-      shouldGreetCitizen(berlinCitizen, new Date("2027-01-01T22:50:00Z")),
+      shouldGreetForNewYear(berlinCitizen, new Date("2027-01-01T22:50:00Z")),
     ).toBe(false);
   });
 });

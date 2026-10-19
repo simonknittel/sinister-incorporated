@@ -1,6 +1,11 @@
 "use client";
 
 import { api, type RouterOutputs } from "@/trpc/react";
+import {
+  clampLogAnalyzerDaysToLoad,
+  matchLogAnalyzerEntryLine,
+  toLogAnalyzerEntryType,
+} from "@sam-monorepo/domain";
 import { useEffect, useEffectEvent, useRef } from "react";
 import { useLogAnalyzerContext } from "../components/LogAnalyzerContext";
 import { deleteEntriesBefore, getWindowStart } from "../utils/entryWindow";
@@ -8,11 +13,8 @@ import { LIVE_MODE_DOWNLOAD_INTERVAL_MS } from "../utils/liveMode";
 import {
   createEntryKey,
   deriveEntryFields,
-  matchEntryLine,
-  toEntryType,
   type IEntry,
 } from "../utils/PATTERNS";
-import { clampDaysToLoad } from "../utils/sharedEntries";
 
 type SharedEntriesResponse = RouterOutputs["logAnalyzer"]["getSharedEntries"];
 type SharedEntry = SharedEntriesResponse["entries"][number];
@@ -23,10 +25,10 @@ type SharedEntry = SharedEntriesResponse["entries"][number];
  * dropped — which happens when a pattern changes after the entry was shared.
  */
 const toEntry = (row: SharedEntry, isNew: boolean): IEntry | null => {
-  const type = toEntryType(row.type);
+  const type = toLogAnalyzerEntryType(row.type);
   if (!type) return null;
 
-  const groups = matchEntryLine(type, row.rawLine)?.groups;
+  const groups = matchLogAnalyzerEntryLine(type, row.rawLine)?.groups;
   if (!groups) return null;
 
   return {
@@ -103,7 +105,7 @@ export const useSharedEntries = () => {
     try {
       /** The vanilla client keeps no copy of the response in the query cache */
       const data = await utils.client.logAnalyzer.getSharedEntries.query({
-        daysToLoad: clampDaysToLoad(daysToLoad),
+        daysToLoad: clampLogAnalyzerDaysToLoad(daysToLoad),
         cursorId: cursorRef.current,
       });
 

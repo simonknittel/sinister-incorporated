@@ -1,71 +1,41 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
 import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
 import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
-import { withTrace } from "@/modules/tracing/utils/withTrace";
+import {
+  shareLogAnalyzerEntries,
+  shareLogAnalyzerEntriesInputSchema,
+} from "@sam-monorepo/application";
 import { parseUploadFormData } from "../utils/uploadEntries";
-import { uploadEntriesSchema } from "../utils/uploadEntriesSchema";
-import { validateUploadEntries } from "../utils/validateUploadEntries";
-
-const validateEntries = withTrace(
-  "validateLogAnalyzerUploadEntries",
-  validateUploadEntries,
-);
 
 /**
  * Stores the matched log lines a citizen shares with the other citizens. The
- * unique index on the citizen and the hash absorbs the entries the client
- * sends a second time, for example after a page reload or from a second
- * device.
- *
- * The raw lines hold data of other players, thus neither they nor their
- * hashes are ever written to the logs.
+ * kill switch stops the uploads of every client.
  */
 export const uploadLogAnalyzerEntries = createAuthenticatedAction(
   "uploadLogAnalyzerEntries",
-  uploadEntriesSchema,
+  shareLogAnalyzerEntriesInputSchema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("logAnalyzer", "read")))
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    /** The kill switch stops the uploads of every client */
-    if (await getUnleashFlag(UNLEASH_FLAG.DisableLogAnalyzerSharing))
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    const citizenId = authentication.session.entity?.id;
-    if (!citizenId)
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    const entries = await validateEntries(data.entries);
-    if (!entries)
-      return { error: t("Common.badRequest"), requestPayload: formData };
-
-    const { count: newEntryCount } = await prisma.logAnalyzerEntry.createMany({
-      data: entries.map((entry) => ({
-        type: entry.type,
-        rawLine: entry.rawLine,
-        eventAt: entry.eventAt,
-        hash: entry.hash,
-        createdById: citizenId,
-      })),
-      skipDuplicates: true,
-    });
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.LOG_ANALYZER_ENTRIES_UPLOADED,
-        data: {
-          citizenId,
-          entryCount: entries.length,
-          newEntryCount,
+    try {
+      await shareLogAnalyzerEntries(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+        {
+          isSharingDisabled: await getUnleashFlag(
+            UNLEASH_FLAG.DisableLogAnalyzerSharing,
+          ),
         },
-        createdById: authentication.session.user.id,
-      },
-    ]);
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, { formData, t });
+    }
 
     return { success: "Einträge geteilt." };
   },

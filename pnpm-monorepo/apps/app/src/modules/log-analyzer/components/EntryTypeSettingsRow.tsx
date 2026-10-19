@@ -2,11 +2,12 @@
 
 import { YesNoCheckbox } from "@/modules/common/components/form/YesNoCheckbox";
 import { TRow } from "@/modules/common/components/Table";
-import { PATTERNS, type EntryType } from "../utils/PATTERNS";
+import type { LogAnalyzerEntryType } from "@sam-monorepo/domain";
+import { PATTERNS } from "../utils/PATTERNS";
 import { useLogAnalyzerContext } from "./LogAnalyzerContext";
 
 interface Props {
-  readonly type: EntryType;
+  readonly type: LogAnalyzerEntryType;
   readonly showSharingColumns: boolean;
   /** False while the user cannot share, for example without a citizen */
   readonly canShare: boolean;
