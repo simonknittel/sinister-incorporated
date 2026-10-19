@@ -2,9 +2,11 @@ import { trace } from "@opentelemetry/api";
 import {
   createApplicationUrls,
   type ApplicationContext,
+  type FileStorage,
 } from "@sam-monorepo/application";
 import { prisma } from "@sam-monorepo/database";
 import {
+  createEventBridgeEmailRequester,
   createEventBridgeNotificationTrigger,
   createPrismaAuditWriter,
 } from "@sam-monorepo/infrastructure";
@@ -19,7 +21,10 @@ import { log } from "./logger";
 export const tracer = trace.getTracer("sam");
 
 interface ApplicationContextOptions {
-  /** The `Source` of the notification events: the name of the function */
+  /**
+   * The `Source` of the notification and email events: the name of the
+   * function
+   */
   readonly source: string;
   /** The base URL of the app */
   readonly baseUrl: string;
@@ -27,21 +32,29 @@ interface ApplicationContextOptions {
   readonly publicUploadBaseUrl: string;
   /** Only the functions with a bot token give the gateway */
   readonly discord?: ApplicationContext["discord"];
+  /** Only the functions with access to the bucket give the storage */
+  readonly storage?: FileStorage | null;
 }
 
 /**
  * The composition root of the Lambda functions. Each function builds its
- * context after its setup.
+ * context after its setup. The functions cannot decode images (`images` is
+ * null): `sharp` stays out of the bundles.
  */
 export const createApplicationContext = ({
   source,
   baseUrl,
   publicUploadBaseUrl,
   discord = null,
+  storage = null,
 }: ApplicationContextOptions): ApplicationContext => ({
   prisma,
   audit: createPrismaAuditWriter({ prisma, log }),
   notifications: createEventBridgeNotificationTrigger({
+    emitEvents: emitEventsOrThrow,
+    source,
+  }),
+  email: createEventBridgeEmailRequester({
     emitEvents: emitEventsOrThrow,
     source,
   }),
@@ -51,7 +64,8 @@ export const createApplicationContext = ({
   changelog: null,
   collab: null,
   discord,
-  storage: null,
+  storage,
+  images: null,
   urls: createApplicationUrls({ baseUrl, publicUploadBaseUrl }),
   signingKey: async () => null,
   allowInsecureLoopbackClientIds: false,

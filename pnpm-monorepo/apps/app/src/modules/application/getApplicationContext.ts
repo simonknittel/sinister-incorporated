@@ -3,13 +3,16 @@ import "server-only";
 import { prisma } from "@/db";
 import { env } from "@/env";
 import { listChangelogEntriesAsMarkdown } from "@/modules/changelog/utils/listChangelogEntriesAsMarkdown";
+import { listTrackedChangelogEntries } from "@/modules/changelog/utils/listTrackedChangelogEntries";
 import { createS3Client } from "@/modules/common/utils/createS3Client";
 import { getPublicUploadBaseUrl } from "@/modules/common/utils/getPublicUploadUrl";
 import { EMBED_TOKEN_ALGORITHM } from "@/modules/embed-authentication/utils/constants";
 import { getEmbedSigningKey } from "@/modules/embed-authentication/utils/getEmbedSigningKey";
+import { emitEvents } from "@/modules/eventbridge/utils";
 import { log } from "@/modules/logging";
 import { triggerNotifications } from "@/modules/notifications/utils/triggerNotification";
 import { getTracer } from "@/modules/tracing/utils/getTracer";
+import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
   createApplicationUrls,
   type ApplicationContext,
@@ -17,9 +20,11 @@ import {
 import {
   createCollabClient,
   createDiscordGateway,
+  createEventBridgeEmailRequester,
   createPrismaAuditWriter,
   createS3Storage,
 } from "@sam-monorepo/infrastructure";
+import { sharpImageReader } from "./sharpImageReader";
 
 /** The S3 client needs one of the two. Without them, the app has no bucket. */
 const hasS3Endpoint = () =>
@@ -29,10 +34,19 @@ const createApplicationContext = (): ApplicationContext => ({
   prisma,
   audit: createPrismaAuditWriter({ prisma, log }),
   notifications: { trigger: triggerNotifications },
+  email: {
+    request: withTrace(
+      "requestEmail",
+      createEventBridgeEmailRequester({ emitEvents, source: "App" }).request,
+    ),
+  },
   log,
   tracer: getTracer(),
   now: () => new Date(),
-  changelog: { list: listChangelogEntriesAsMarkdown },
+  changelog: {
+    list: listChangelogEntriesAsMarkdown,
+    listTrackedEntries: listTrackedChangelogEntries,
+  },
   // The condition of `getWikiCollabUrl()`
   collab:
     env.COLLAB_URL && env.COLLAB_JWT_SECRET
@@ -64,6 +78,7 @@ const createApplicationContext = (): ApplicationContext => ({
         bucketName: env.S3_BUCKET_NAME,
       })
     : null,
+  images: sharpImageReader,
   urls: createApplicationUrls({
     baseUrl: env.NEXT_PUBLIC_BASE_URL,
     publicUploadBaseUrl: getPublicUploadBaseUrl(),

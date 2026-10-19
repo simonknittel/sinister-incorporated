@@ -1,10 +1,8 @@
+import { FIRST_IMAGE_BYTES_LENGTH } from "@sam-monorepo/application";
 import { randomBytes } from "node:crypto";
 import sharp from "sharp";
 import { describe, expect, test, vi } from "vitest";
-import {
-  FIRST_BYTES_LENGTH,
-  readImageDimensions,
-} from "./probeUploadImageDimensions";
+import { readImageDimensions } from "./sharpImageReader";
 
 /** Rotates the displayed image by 90°, thus width and height swap */
 const ROTATED_ORIENTATION = 6;
@@ -75,19 +73,19 @@ describe("read image dimensions", () => {
     "gives the same displayed dimensions from the first bytes of a $format as from all bytes",
     async ({ create, isReadFromFirstBytes }) => {
       const image = await create().toBuffer();
-      expect(image.length).toBeGreaterThan(FIRST_BYTES_LENGTH);
+      expect(image.length).toBeGreaterThan(FIRST_IMAGE_BYTES_LENGTH);
 
-      const getAllBytes = vi.fn(() => Promise.resolve(new Uint8Array(image)));
+      const readAllBytes = vi.fn(() => Promise.resolve(new Uint8Array(image)));
       const fromFirstBytes = await readImageDimensions(
-        image.subarray(0, FIRST_BYTES_LENGTH),
-        getAllBytes,
+        image.subarray(0, FIRST_IMAGE_BYTES_LENGTH),
+        readAllBytes,
       );
 
       expect(fromFirstBytes).toEqual({ width: 300, height: 400 });
       expect(fromFirstBytes).toEqual(await readImageDimensions(image));
       // Only the fast path is a promise; which other formats sharp can read
       // from a part of the file depends on its version
-      if (isReadFromFirstBytes) expect(getAllBytes).not.toHaveBeenCalled();
+      if (isReadFromFirstBytes) expect(readAllBytes).not.toHaveBeenCalled();
     },
   );
 
@@ -95,7 +93,7 @@ describe("read image dimensions", () => {
     const image = await createNoise().gif().toBuffer();
 
     await expect(
-      readImageDimensions(image.subarray(0, FIRST_BYTES_LENGTH), () =>
+      readImageDimensions(image.subarray(0, FIRST_IMAGE_BYTES_LENGTH), () =>
         Promise.resolve(null),
       ),
     ).resolves.toBeNull();

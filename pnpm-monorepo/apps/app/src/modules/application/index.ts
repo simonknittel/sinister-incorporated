@@ -1,9 +1,13 @@
 export { getApplicationContext } from "./getApplicationContext";
-export { getRequestActor } from "./getRequestActor";
+export { getOptionalRequestActor, getRequestActor } from "./getRequestActor";
 export {
   isApplicationError,
   mapApplicationErrorToActionResponse,
   type ApplicationErrorTexts,
 } from "./mapApplicationErrorToActionResponse";
+export {
+  RouteNotFoundResponse,
+  mapApplicationErrorToRouteResponse,
+} from "./mapApplicationErrorToRouteResponse";
 export { throwApplicationErrorForPage } from "./throwApplicationErrorForPage";
 export { toActor } from "./toActor";

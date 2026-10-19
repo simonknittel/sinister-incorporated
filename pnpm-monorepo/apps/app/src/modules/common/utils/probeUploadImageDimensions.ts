@@ -1,11 +1,13 @@
 import { prisma } from "@/db";
 import { env } from "@/env";
+import { readImageDimensions } from "@/modules/application/sharpImageReader";
 import { log } from "@/modules/logging";
 import {
   GetObjectCommand,
   HeadObjectCommand,
   type S3Client,
 } from "@aws-sdk/client-s3";
+import { FIRST_IMAGE_BYTES_LENGTH } from "@sam-monorepo/application";
 import { after } from "next/server";
 import { createS3Client } from "./createS3Client";
 import { MAX_IMAGE_SIZE_BYTES } from "./uploadConstraints";
@@ -19,55 +21,11 @@ const MAX_DIMENSION_PX = 100_000;
 /** Same bound the backfill script uses for its fetches */
 const S3_REQUEST_TIMEOUT_MS = 30_000;
 
-/**
- * PNG, JPEG and AVIF usually keep their dimensions in the first bytes of the
- * file, thus the probe reads only this part first. sharp can't read WebP,
- * GIF, TIFF, an AVIF with EXIF data or a JPEG with large metadata segments
- * (EXIF, ICC, XMP) from a part of the file. For these, the probe falls back
- * to the full object.
- */
-export const FIRST_BYTES_LENGTH = 64 * 1024;
-
 const isPlausibleDimension = (value: number | undefined): value is number =>
   value !== undefined &&
   Number.isInteger(value) &&
   value > 0 &&
   value <= MAX_DIMENSION_PX;
-
-/**
- * Browsers apply the EXIF orientation when displaying
- * (`image-orientation: from-image`), so the persisted dimensions must be the
- * displayed ones (`autoOrient`), not the stored ones.
- */
-const readDisplayedDimensions = async (bytes: Uint8Array) => {
-  /** Loaded on demand: only this background task needs the large module */
-  const { default: sharp } = await import("sharp");
-
-  const metadata = await sharp(bytes).metadata();
-  return metadata.autoOrient;
-};
-
-/**
- * Reads the displayed dimensions from the first bytes of an image. If sharp
- * can't read them from this part, it reads them from all bytes. Without
- * `getAllBytes`, the first bytes must be the full image.
- *
- * Exported for tests
- */
-export const readImageDimensions = async (
-  firstBytes: Uint8Array,
-  getAllBytes?: () => Promise<Uint8Array | null>,
-) => {
-  if (!getAllBytes) return readDisplayedDimensions(firstBytes);
-
-  try {
-    return await readDisplayedDimensions(firstBytes);
-  } catch {
-    const allBytes = await getAllBytes();
-    if (!allBytes) return null;
-    return readDisplayedDimensions(allBytes);
-  }
-};
 
 /**
  * The size of the whole object. For a range request, `ContentLength` is the
@@ -164,7 +122,7 @@ export const probeUploadImageDimensions = (uploadId: string) => {
       const firstBytes = await getObjectBytes(
         client,
         uploadId,
-        `bytes=0-${FIRST_BYTES_LENGTH - 1}`,
+        `bytes=0-${FIRST_IMAGE_BYTES_LENGTH - 1}`,
       );
       if (!firstBytes) return;
 
