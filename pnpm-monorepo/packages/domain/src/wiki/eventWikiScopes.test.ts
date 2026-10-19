@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 import {
   isEventWikiScopeSubset,
   type EventWikiScopeSelection,
-} from "./isEventWikiScopeSubset";
+} from "./eventWikiScopes.js";
 
 const selection = (
   scope: WikiPageEventScope,

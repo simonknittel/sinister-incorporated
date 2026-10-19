@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { collectVisibleWikiSubtree } from "./collectVisibleWikiSubtree";
+import { collectVisibleWikiSubtree } from "./wikiPageTree.js";
 
 const page = (id: string, parentId: string | null) => ({ id, parentId });
 

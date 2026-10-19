@@ -289,6 +289,7 @@ export {
   wallTimeToInstant,
   type LocalDate,
 } from "./timeZone.js";
+export { decodeUploadFileName } from "./uploads/uploadFileName.js";
 export {
   UNUSED_UPLOAD_WHERE,
   UPLOAD_USAGE_RELATIONS,
@@ -296,9 +297,35 @@ export {
 export { ASSUMABLE_USER_WHERE } from "./users/assumableUser.js";
 export { BAN_REASON_MAXIMUM_LENGTH } from "./users/userLimits.js";
 export {
+  EventWikiScopeTier,
+  getEffectiveEventWikiScope,
+  isEventWikiScopeSubset,
+  type EventWikiScopeSelection,
+} from "./wiki/eventWikiScopes.js";
+export {
+  MAXIMUM_WIKI_PAGE_TAGS,
   WIKI_PAGE_CONTENT_JSON_MAX_LENGTH,
   WIKI_PAGE_TITLE_MAX_LENGTH,
+  WIKI_REPORT_TEXT_MAXIMUM_LENGTH,
+  WIKI_TAG_NAME_MAXIMUM_LENGTH,
 } from "./wiki/wikiLimits.js";
+export { WikiPageDropPosition, WikiPasteMode } from "./wiki/wikiPageMoves.js";
+export {
+  collectVisibleWikiSubtree,
+  collectWikiPageDescendants,
+  isEventWikiRootPage,
+  type VisibleWikiSubtreeEntry,
+} from "./wiki/wikiPageTree.js";
+export {
+  WIKI_SEARCH_MARK_END,
+  WIKI_SEARCH_MARK_START,
+} from "./wiki/wikiSearch.js";
+export {
+  MAXIMUM_WIKI_FEATURED_PAGES,
+  WIKI_HOSTNAME_PATTERN,
+  WikiPageLinkKey,
+  getWikiPageLinkSettingKey,
+} from "./wiki/wikiSettings.js";
 export {
   createWikiPageSnapshotUploadLinks,
   replaceWikiPageUploadLinks,

@@ -1,8 +1,18 @@
 import { WikiPageEventScope } from "@sam-monorepo/database/browser";
+import type {
+  EventWikiPagePermissionSource,
+  ResolvedEventWikiPagePermissions,
+} from "../permissions/resolveEventWikiPagePermissions.js";
 
 export interface EventWikiScopeSelection {
   readonly scope: WikiPageEventScope;
   readonly positionId: string | null;
+}
+
+/** The two scopes of a briefing page */
+export enum EventWikiScopeTier {
+  Read = "read",
+  Edit = "edit",
 }
 
 interface FlatPosition {
@@ -60,4 +70,61 @@ export const isEventWikiScopeSubset = (
   }
 
   return false;
+};
+
+/** The parts of a briefing that the effective scope of a page needs */
+interface EventWikiScopeContext {
+  readonly permissions: ReadonlyMap<
+    string,
+    Pick<
+      ResolvedEventWikiPagePermissions,
+      "readScopeSourceId" | "editScopeSourceId"
+    >
+  >;
+  readonly pagesById: ReadonlyMap<
+    string,
+    Pick<
+      EventWikiPagePermissionSource,
+      | "eventReadScope"
+      | "eventReadScopePositionId"
+      | "eventEditScope"
+      | "eventEditScopePositionId"
+    >
+  >;
+}
+
+/**
+ * A page's effective read or edit scope after INHERIT resolution, via the
+ * resolver's source ids. The fallback source of a fully-inheriting chain
+ * keeps INHERIT, which reads as managers-only — matching the resolver.
+ * Used to validate and display scope selections against what an INHERIT
+ * actually means here.
+ */
+export const getEffectiveEventWikiScope = (
+  context: EventWikiScopeContext,
+  pageId: string,
+  tier: EventWikiScopeTier,
+): EventWikiScopeSelection => {
+  const permissions = context.permissions.get(pageId);
+  const sourceId =
+    tier === EventWikiScopeTier.Read
+      ? permissions?.readScopeSourceId
+      : permissions?.editScopeSourceId;
+  const source = sourceId ? context.pagesById.get(sourceId) : undefined;
+  if (!source) return { scope: WikiPageEventScope.MANAGERS, positionId: null };
+
+  const { scope, positionId } =
+    tier === EventWikiScopeTier.Read
+      ? {
+          scope: source.eventReadScope,
+          positionId: source.eventReadScopePositionId,
+        }
+      : {
+          scope: source.eventEditScope,
+          positionId: source.eventEditScopePositionId,
+        };
+
+  return scope === WikiPageEventScope.INHERIT
+    ? { scope: WikiPageEventScope.MANAGERS, positionId: null }
+    : { scope, positionId };
 };
