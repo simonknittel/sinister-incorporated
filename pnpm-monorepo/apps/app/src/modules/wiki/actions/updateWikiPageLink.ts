@@ -1,74 +1,45 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import {
-  WikiPageLinkKey,
-  getWikiPageLinkSettingKey,
-} from "@sam-monorepo/domain";
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  updateWikiPageLink as updateWikiPageLinkUseCase,
+  updateWikiPageLinkInputSchema,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { getWikiContext } from "../queries/getWikiContext";
-
-const schema = z.object({
-  key: z.enum(WikiPageLinkKey),
-  /** Empty string unsets the link */
-  pageId: z.union([z.cuid2(), z.literal("")]),
-});
+import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
 
 export const updateWikiPageLink = createAuthenticatedAction(
   "updateWikiPageLink",
-  schema,
+  updateWikiPageLinkInputSchema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("wiki", "manage")))
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    if (data.pageId) {
-      const context = await getWikiContext();
-      const page = context?.pagesById.get(data.pageId);
-      if (!page || page.deletedAt) {
-        /**
-         * A different user or tab deleted the selected page before, and the
-         * options must show it
-         */
-        return rejectConflict(t("Common.badRequest"), formData);
-      }
-    }
-
-    const settingKey = getWikiPageLinkSettingKey(data.key);
-    const updatedById = authentication.session.entity?.id ?? null;
-    if (data.pageId) {
-      await prisma.wikiSetting.upsert({
-        where: { key: settingKey },
-        update: { value: data.pageId, updatedById },
-        create: {
-          key: settingKey,
-          value: data.pageId,
-          updatedById,
-        },
-      });
-    } else {
-      await prisma.wikiSetting.deleteMany({
-        where: { key: settingKey },
+    try {
+      await updateWikiPageLinkUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: WIKI_ERROR_TEXTS,
       });
     }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.WIKI_SETTINGS_UPDATED,
-        data: {
-          setting: settingKey,
-          value: data.pageId,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
     return { success: t("Common.successfullySaved") };
+  },
+  {
+    parseFormData: (formData) => ({
+      key: formData.get("key"),
+      /** An empty value removes the link */
+      page_id: formData.get("pageId") || null,
+    }),
   },
 );

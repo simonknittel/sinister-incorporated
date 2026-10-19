@@ -1,79 +1,48 @@
-import { prisma } from "@/db";
+import { getApplicationContext } from "@/modules/application";
 import { authenticate } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { loadWikiIframeAllowlist } from "@sam-monorepo/application";
 import {
-  MAXIMUM_WIKI_FEATURED_PAGES,
-  getWikiPageLinkSettingKey,
-  type WikiPageLinkKey,
-} from "@sam-monorepo/domain";
-import { cache } from "react";
-import * as z from "zod";
-
-export {
-  MAXIMUM_WIKI_IFRAME_ALLOWLIST_ENTRIES,
-  WIKI_SETTING_IFRAME_ALLOWLIST,
+  findWikiPageLinkTarget,
+  findWikiSettings,
 } from "@sam-monorepo/application";
-
-/** See `loadWikiIframeAllowlist()` */
-export const getWikiIframeAllowlist = cache(
-  withTrace("getWikiIframeAllowlist", () => loadWikiIframeAllowlist(prisma)),
-);
-
-export const WIKI_SETTING_FEATURED_PAGES = "featuredPages";
-
-const featuredPagesSchema = z.array(z.cuid2()).max(MAXIMUM_WIKI_FEATURED_PAGES);
+import type { WikiPageLinkKey } from "@sam-monorepo/domain";
+import { cache } from "react";
 
 /**
- * Ids of the pages highlighted on the wiki landing page, in the order the
- * wiki admins arranged them. Pages that have been deleted since stay in the
- * list until it is saved again — `resolveWikiFeaturedPages()` drops them.
+ * The stored values of the wiki settings, one read for each request (see
+ * `findWikiSettings()`)
  */
-export const getWikiFeaturedPageIds = cache(
-  withTrace("getWikiFeaturedPageIds", async (): Promise<string[]> => {
-    const setting = await prisma.wikiSetting.findUnique({
-      where: { key: WIKI_SETTING_FEATURED_PAGES },
-    });
-    const parsed = featuredPagesSchema.safeParse(setting?.value);
-    return parsed.success ? parsed.data : [];
-  }),
+export const getWikiSettings = cache(
+  withTrace("getWikiSettings", () => findWikiSettings(getApplicationContext())),
 );
+
+/** The hostnames that the generic iframes can embed */
+export const getWikiIframeAllowlist = async () =>
+  (await getWikiSettings()).iframeAllowlist;
 
 /**
- * Id of the page configured for a page link (see `WIKI_PAGE_LINKS`), or
- * null if unset. Raw setting value without permission checks — for the
- * settings UI; link consumers use `getWikiPageLinkTarget`.
+ * The ids of the pages on the landing page of the wiki. The pages that a
+ * user deleted after the save stay in the list: `resolveWikiFeaturedPages()`
+ * removes them.
  */
-export const getWikiPageLinkPageId = cache(
-  withTrace(
-    "getWikiPageLinkPageId",
-    async (key: WikiPageLinkKey): Promise<string | null> => {
-      const setting = await prisma.wikiSetting.findUnique({
-        where: { key: getWikiPageLinkSettingKey(key) },
-      });
-      const parsed = z.string().min(1).safeParse(setting?.value);
-      return parsed.success ? parsed.data : null;
-    },
-  ),
-);
-
-export const WIKI_SETTING_DASHBOARD_PAGE = "dashboardPage";
+export const getWikiFeaturedPageIds = async () =>
+  (await getWikiSettings()).featuredPageIds;
 
 /**
- * Id of the page whose content is shown on the app dashboard, or null if
- * unset. Raw setting value without permission checks — the dashboard panel
- * resolves the viewer's read permission itself. An id of a page deleted
- * since is dropped there and for good on the next save.
+ * The id of the page that the dashboard shows, or null. The raw value
+ * without a permission check: the dashboard tile checks the read permission
+ * of the viewer.
  */
-export const getWikiDashboardPageId = cache(
-  withTrace("getWikiDashboardPageId", async (): Promise<string | null> => {
-    const setting = await prisma.wikiSetting.findUnique({
-      where: { key: WIKI_SETTING_DASHBOARD_PAGE },
-    });
-    const parsed = z.cuid2().safeParse(setting?.value);
-    return parsed.success ? parsed.data : null;
-  }),
-);
+export const getWikiDashboardPageId = async () =>
+  (await getWikiSettings()).dashboardPageId;
+
+/**
+ * The id of the page of a page link, or null. The raw value without a
+ * permission check, for the settings: the consumers of the link use
+ * `getWikiPageLinkTarget()`.
+ */
+export const getWikiPageLinkPageId = async (key: WikiPageLinkKey) =>
+  (await getWikiSettings()).pageLinkPageIds[key];
 
 interface WikiPageLinkTarget {
   readonly pageId: string;
@@ -82,10 +51,9 @@ interface WikiPageLinkTarget {
 }
 
 /**
- * Resolves a page link to the configured page, or null when the link is
- * unset or the page is deleted. Cheap enough for the root layout (topbar),
- * so it deliberately skips the per-page permission resolution — the page
- * itself enforces that on navigation.
+ * The page of a page link, or null when the link is not set or the page is
+ * in the trash. Also null without a session: the top bar and the error pages
+ * call it. The page checks the permissions when the user opens it.
  */
 export const getWikiPageLinkTarget = cache(
   withTrace(
@@ -94,19 +62,15 @@ export const getWikiPageLinkTarget = cache(
       const authentication = await authenticate();
       if (!authentication) return null;
 
-      const pageId = await getWikiPageLinkPageId(key);
-      if (!pageId) return null;
-
-      const page = await prisma.wikiPage.findUnique({
-        where: { id: pageId },
-        select: { id: true, title: true, slug: true, deletedAt: true },
+      const target = await findWikiPageLinkTarget(getApplicationContext(), {
+        key,
       });
-      if (!page || page.deletedAt) return null;
+      if (!target) return null;
 
       return {
-        pageId: page.id,
-        title: page.title,
-        href: `/app/wiki/${page.id}/${page.slug}`,
+        pageId: target.pageId,
+        title: target.title,
+        href: `/app/wiki/${target.pageId}/${target.slug}`,
       };
     },
   ),

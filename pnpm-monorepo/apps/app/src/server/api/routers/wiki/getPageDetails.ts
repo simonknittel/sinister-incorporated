@@ -1,71 +1,30 @@
-import { prisma } from "@/db";
-import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
+import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  findWikiPageDetails,
+  idSchema,
+  NotFoundError,
+} from "@sam-monorepo/application";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
 /**
- * Metadata for the page header's details popover, loaded on demand rather
- * than with the page: creator and last editor are not part of the wiki
- * context, whose select runs for every page of the tree.
+ * The details for the popover in the header of a page, loaded when the
+ * popover opens (see `findWikiPageDetails()`)
  */
 export const getPageDetails = protectedProcedure
-  .input(z.object({ pageId: z.cuid2() }))
-  .query(async ({ input }) => {
+  .input(z.object({ pageId: idSchema }))
+  .query(async ({ ctx, input }) => {
     try {
-      const context = await getWikiContext();
-      if (!context)
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Missing wiki permission",
-        });
-
-      const page = context.pagesById.get(input.pageId);
-      const permissions = context.permissions.get(input.pageId);
-      if (!page || page.deletedAt || !permissions?.canRead)
+      return await findWikiPageDetails(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        { pageId: input.pageId },
+      );
+    } catch (error) {
+      if (error instanceof NotFoundError)
         throw new TRPCError({ code: "NOT_FOUND", message: "Unknown page" });
 
-      const [authors, owner] = await Promise.all([
-        prisma.wikiPage.findUnique({
-          where: { id: page.id },
-          select: {
-            createdBy: { select: { id: true, handle: true, deletedAt: true } },
-            updatedBy: { select: { id: true, handle: true, deletedAt: true } },
-          },
-        }),
-        permissions.effectiveOwnerId
-          ? prisma.citizen.findUnique({
-              where: { id: permissions.effectiveOwnerId },
-              select: { id: true, handle: true, deletedAt: true },
-            })
-          : Promise.resolve(null),
-      ]);
-
-      /**
-       * Read access is bounded by the parent's, so the ancestor supplying an
-       * inherited owner is readable for everyone who can read this page.
-       */
-      const ownerSource =
-        permissions.ownerSourceId === page.id
-          ? null
-          : (context.pagesById.get(permissions.ownerSourceId) ?? null);
-
-      return {
-        title: page.title,
-        owner,
-        ownerInheritedFrom: ownerSource
-          ? {
-              id: ownerSource.id,
-              title: ownerSource.title,
-              slug: ownerSource.slug,
-            }
-          : null,
-        createdBy: authors?.createdBy ?? null,
-        createdAt: page.createdAt,
-        updatedBy: authors?.updatedBy ?? null,
-        updatedAt: page.updatedAt,
-      };
-    } catch (error) {
       throw toTrpcError(error, "Failed to load wiki page details");
     }
   });

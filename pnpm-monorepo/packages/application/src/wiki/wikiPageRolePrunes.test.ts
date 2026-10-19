@@ -9,7 +9,7 @@ import type {
   WikiPermissionRole,
 } from "@sam-monorepo/domain";
 import { describe, expect, test } from "vitest";
-import { collectWikiPageRolePrunes } from "./collectWikiPageRolePrunes";
+import { collectWikiPageRolePrunes } from "./wikiPageRolePrunes.js";
 
 const page = (
   overrides: Partial<WikiPagePermissionSource> & { id: string },

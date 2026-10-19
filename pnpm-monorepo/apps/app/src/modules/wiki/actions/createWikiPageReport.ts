@@ -1,123 +1,53 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { triggerNotificationsAfterSave } from "@/modules/notifications/utils/triggerNotification";
-import { decodeUploadFileName } from "@sam-monorepo/domain";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  createWikiPageReport as createWikiPageReportUseCase,
+  createWikiPageReportInputSchema,
+  type CreateWikiPageReportOutput,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { getWikiPageScopedContext } from "../queries/getWikiPageScopedContext";
-
-/** Simple abuse guard: at most this many unresolved reports per user */
-const MAX_OPEN_REPORTS_PER_USER = 5;
-
-const schema = z.object({
-  pageId: z.cuid2(),
-  /** Set when the report targets a file attachment instead of the page */
-  uploadId: z.cuid().optional(),
-  message: z.string().trim().min(1).max(2048),
-});
+import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
 
 export const createWikiPageReport = createAuthenticatedAction(
   "createWikiPageReport",
-  schema,
+  createWikiPageReportInputSchema,
   async (formData, authentication, data, t) => {
-    const citizenId = authentication.session.entity?.id;
-    if (!citizenId)
-      return { error: t("Common.notFound"), requestPayload: formData };
-
-    const scoped = await getWikiPageScopedContext(data.pageId);
-    const page = scoped?.context.pagesById.get(data.pageId);
-    if (
-      !scoped ||
-      !page ||
-      page.deletedAt ||
-      !scoped.context.permissions.get(page.id)?.canRead
-    ) {
-      /**
-       * A different user or tab deleted the page or took the read access
-       * away before, and the page must show it. A context that the viewer
-       * cannot hold gets the same answer (see getWikiPageScopedContext).
-       */
-      return rejectConflict(t("Common.notFound"), formData);
-    }
-
-    /**
-     * Only uploads linked to the reported page can be reported — the link
-     * also scopes what the reporter could actually see (same check as the
-     * attachment download route).
-     */
-    let upload: { id: string; fileName: string } | null = null;
-    if (data.uploadId) {
-      upload = await prisma.upload.findFirst({
-        where: {
-          id: data.uploadId,
-          wikiPageLinks: { some: { pageId: page.id } },
-        },
-        select: { id: true, fileName: true },
+    let result: CreateWikiPageReportOutput;
+    try {
+      result = await createWikiPageReportUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: WIKI_ERROR_TEXTS,
       });
-      if (!upload) {
-        /**
-         * A different user removed the attachment from the page before, and
-         * the page must show it
-         */
-        return rejectConflict(t("Common.notFound"), formData);
-      }
     }
-
-    const openReports = await prisma.wikiPageReport.count({
-      where: { createdById: citizenId, resolvedAt: null },
-    });
-    if (openReports >= MAX_OPEN_REPORTS_PER_USER)
-      return {
-        error:
-          "Du hast bereits zu viele offene Meldungen. Bitte warte, bis diese bearbeitet wurden.",
-        requestPayload: formData,
-      };
-
-    const report = await prisma.wikiPageReport.create({
-      data: {
-        pageId: page.id,
-        message: data.message,
-        createdById: citizenId,
-        ...(upload && {
-          uploadId: upload.id,
-          uploadFileName: decodeUploadFileName(upload.fileName),
-        }),
-      },
-      select: { id: true },
-    });
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.WIKI_PAGE_REPORTED,
-        data: {
-          reportId: report.id,
-          pageId: page.id,
-          eventId: page.eventId ?? undefined,
-          ...(upload && { uploadId: upload.id }),
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    const notified = await triggerNotificationsAfterSave([
-      {
-        type: "WikiPageReported",
-        payload: {
-          reportId: report.id,
-        },
-      },
-    ]);
-
     return {
       success: "Meldung gesendet.",
-      ...(notified ? {} : { warning: t("Common.notificationsFailed") }),
+      ...(result.notifications_sent
+        ? {}
+        : { warning: t("Common.notificationsFailed") }),
     };
+  },
+  {
+    parseFormData: (formData) => ({
+      page_id: formData.get("pageId"),
+      /** Only the form of an attachment sends the field */
+      upload_id: formData.get("uploadId") ?? undefined,
+      message: formData.get("message"),
+    }),
   },
 );

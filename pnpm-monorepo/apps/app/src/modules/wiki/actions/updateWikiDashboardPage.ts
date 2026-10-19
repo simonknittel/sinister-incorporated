@@ -1,74 +1,42 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  updateWikiDashboardPage as updateWikiDashboardPageUseCase,
+  updateWikiDashboardPageInputSchema,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { getWikiContext } from "../queries/getWikiContext";
-import { WIKI_SETTING_DASHBOARD_PAGE } from "../queries/getWikiSettings";
+import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
 
-const schema = z.object({
-  /** Empty string unsets the dashboard page */
-  pageId: z.union([z.cuid2(), z.literal("")]),
-});
-
-/**
- * Picks the single wiki page rendered on the app dashboard. Global
- * curation, so it stays with `wiki;manage` — page admins manage their own
- * pages, not what the dashboard promotes.
- */
 export const updateWikiDashboardPage = createAuthenticatedAction(
   "updateWikiDashboardPage",
-  schema,
+  updateWikiDashboardPageInputSchema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("wiki", "manage")))
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    if (data.pageId) {
-      const context = await getWikiContext();
-      const page = context?.pagesById.get(data.pageId);
-      if (!page || page.deletedAt) {
-        /**
-         * A different user or tab deleted the selected page before, and the
-         * options must show it
-         */
-        return rejectConflict(t("Common.badRequest"), formData);
-      }
-    }
-
-    const updatedById = authentication.session.entity?.id ?? null;
-    if (data.pageId) {
-      await prisma.wikiSetting.upsert({
-        where: { key: WIKI_SETTING_DASHBOARD_PAGE },
-        update: { value: data.pageId, updatedById },
-        create: {
-          key: WIKI_SETTING_DASHBOARD_PAGE,
-          value: data.pageId,
-          updatedById,
-        },
-      });
-    } else {
-      await prisma.wikiSetting.deleteMany({
-        where: { key: WIKI_SETTING_DASHBOARD_PAGE },
+    try {
+      await updateWikiDashboardPageUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: WIKI_ERROR_TEXTS,
       });
     }
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.WIKI_SETTINGS_UPDATED,
-        data: {
-          setting: WIKI_SETTING_DASHBOARD_PAGE,
-          value: data.pageId,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
     return { success: t("Common.successfullySaved") };
+  },
+  {
+    /** An empty value removes the page from the dashboard */
+    parseFormData: (formData) => ({ page_id: formData.get("pageId") || null }),
   },
 );

@@ -4,24 +4,23 @@ import {
   type WikiPermissionRole,
 } from "@sam-monorepo/domain";
 
-interface WikiPageRolePrune {
+export interface WikiPageRolePrune {
   readonly pageId: string;
   readonly roleIds: string[];
 }
 
 /**
- * Finds role access entries that grant nothing because the role cannot read
- * the page's parent — a page never hands out more than the page above it, so
- * such entries are dead weight that would silently come back to life if the
- * parent ever widened again. Callers delete them and report what they
- * removed. Read, edit and manage entries share the same criterion, so a
- * pruned role loses all of its entries on that page.
+ * Finds the role access entries that give nothing, because the role cannot
+ * read the parent of the page. A page never gives more than the page above
+ * it. Such entries would come back to life when the parent widens again,
+ * thus the callers delete them and report what they removed. The read, edit
+ * and manage entries have the same criterion, thus a pruned role loses all
+ * of its entries on that page.
  *
- * Pass the page data as it will be AFTER the change that triggered this
- * (permission update, duplication) — the prunes are derived from it. A single
- * pass is enough even for deep subtrees: the resolver already requires the
- * whole ancestor chain to grant read, so an entry below a pruned one is
- * recognized as dead in the same pass.
+ * Give the page data as it is AFTER the change (for example a permission
+ * update): the prunes come from it. One pass is sufficient also for deep
+ * subtrees: the resolver requires read access on all ancestors, thus the
+ * same pass finds an entry below a pruned entry.
  */
 export const collectWikiPageRolePrunes = (
   pages: readonly WikiPagePermissionSource[],
@@ -38,8 +37,8 @@ export const collectWikiPageRolePrunes = (
     if (!page?.parentId) continue;
 
     /**
-     * A page whose parent is missing from the data counts as top-level in
-     * the resolver, so there is nothing to narrow it against here either.
+     * The resolver counts a page whose parent is not in the data as a
+     * top-level page, thus there is nothing to narrow it against
      */
     const parent = pagesById.get(page.parentId);
     if (!parent) continue;

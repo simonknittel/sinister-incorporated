@@ -1,53 +1,42 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import type { Prisma } from "@sam-monorepo/database/client";
+import {
+  findWikiPageReport,
+  findWikiPageReportRows,
+} from "@sam-monorepo/application";
 import { cache } from "react";
 
-const wikiPageReportSelect = {
-  id: true,
-  message: true,
-  uploadId: true,
-  uploadFileName: true,
-  createdAt: true,
-  createdBy: { select: { id: true, handle: true, deletedAt: true } },
-  resolvedAt: true,
-  resolvedBy: { select: { id: true, handle: true, deletedAt: true } },
-  resolutionComment: true,
-  page: {
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      iconId: true,
-      deletedAt: true,
-      eventId: true,
-      templateId: true,
-    },
-  },
-} satisfies Prisma.WikiPageReportSelect;
+export type { WikiPageReportRow } from "@sam-monorepo/application";
 
-export type WikiPageReportRow = Prisma.WikiPageReportGetPayload<{
-  select: typeof wikiPageReportSelect;
-}>;
-
-/** All reports for the `wiki;manage`-gated triage table. */
+/** All reports for the table of the reports (`wiki;manage`) */
 export const getWikiPageReports = cache(
-  withTrace("getWikiPageReports", async (): Promise<WikiPageReportRow[]> => {
-    return prisma.wikiPageReport.findMany({
-      orderBy: { createdAt: "desc" },
-      select: wikiPageReportSelect,
-    });
+  withTrace("getWikiPageReports", async () => {
+    try {
+      return await findWikiPageReportRows(
+        getApplicationContext(),
+        await getRequestActor(),
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
   }),
 );
 
+/** The report, or null when it does not exist (`wiki;manage`) */
 export const getWikiPageReportById = cache(
-  withTrace(
-    "getWikiPageReportById",
-    async (reportId: string): Promise<WikiPageReportRow | null> => {
-      return prisma.wikiPageReport.findUnique({
-        where: { id: reportId },
-        select: wikiPageReportSelect,
-      });
-    },
-  ),
+  withTrace("getWikiPageReportById", async (reportId: string) => {
+    try {
+      return await findWikiPageReport(
+        getApplicationContext(),
+        await getRequestActor(),
+        { reportId },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  }),
 );

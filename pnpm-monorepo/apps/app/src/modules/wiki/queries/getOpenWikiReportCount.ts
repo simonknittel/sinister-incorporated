@@ -1,18 +1,14 @@
-import { prisma } from "@/db";
-import { authenticate } from "@/modules/auth/server";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { countOpenWikiReports } from "@sam-monorepo/application";
 import { cache } from "react";
 
 /**
- * Number of unresolved page reports, for the wiki app-tile dot badge and
- * the "Meldungen" navigation entry. 0 for users without `wiki;manage`.
+ * The number of the reports that are not resolved, for the badge of the
+ * wiki tile and the navigation entry "Meldungen". 0 without `wiki;manage`.
  */
 export const getOpenWikiReportCount = cache(
-  withTrace("getOpenWikiReportCount", async (): Promise<number> => {
-    const authentication = await authenticate();
-    if (!authentication) return 0;
-    if (!(await authentication.authorize("wiki", "manage"))) return 0;
-
-    return prisma.wikiPageReport.count({ where: { resolvedAt: null } });
-  }),
+  withTrace("getOpenWikiReportCount", async () =>
+    countOpenWikiReports(getApplicationContext(), await getRequestActor()),
+  ),
 );

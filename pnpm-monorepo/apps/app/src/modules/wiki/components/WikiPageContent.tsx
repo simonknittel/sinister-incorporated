@@ -1,4 +1,3 @@
-import { prisma } from "@/db";
 import { authenticate } from "@/modules/auth/server";
 import { Button2, Button2Variant } from "@/modules/common/components/Button2";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
@@ -18,8 +17,10 @@ import { FaExternalLinkAlt, FaHistory } from "react-icons/fa";
 import { renameWikiPage } from "../actions/renameWikiPage";
 import type { WikiContext, WikiContextPage } from "../queries/getWikiContext";
 import { getWikiFavoritePageIds } from "../queries/getWikiFavorites";
+import { getWikiPageOwner } from "../queries/getWikiPageOwner";
 import type { WikiPageStaticContent } from "../queries/getWikiPageStaticContent";
 import { getWikiPageStaticContent } from "../queries/getWikiPageStaticContent";
+import { getWikiPageTags } from "../queries/getWikiPageTags";
 import { getWikiPermissionRoles } from "../queries/getWikiPermissionRoles";
 import { getWikiCollabUrl } from "../utils/getWikiCollabUrl";
 import {
@@ -99,19 +100,10 @@ export const WikiPageContent = async ({
      */
     permissionRoles,
   ] = await Promise.all([
-    permissions.effectiveOwnerId
-      ? prisma.citizen.findUnique({
-          where: { id: permissions.effectiveOwnerId },
-          select: { id: true, handle: true, deletedAt: true },
-        })
-      : Promise.resolve(null),
+    getWikiPageOwner(context, page.id),
     staticContent ?? getWikiPageStaticContent(context, page.id),
     getWikiFavoritePageIds(),
-    prisma.wikiPageTag.findMany({
-      where: { pageId: page.id },
-      select: { tag: { select: { id: true, name: true } } },
-      orderBy: { tag: { name: "asc" } },
-    }),
+    getWikiPageTags(context, page.id),
     getWikiPermissionRoles(),
   ]);
 
@@ -299,7 +291,7 @@ export const WikiPageContent = async ({
       <WikiPageTags
         className="mt-1"
         pageId={page.id}
-        tags={pageTags.map((entry) => entry.tag)}
+        tags={pageTags}
         canEdit={permissions.canEdit}
       />
 

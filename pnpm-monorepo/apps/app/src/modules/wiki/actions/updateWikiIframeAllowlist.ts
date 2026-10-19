@@ -1,69 +1,42 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { WIKI_HOSTNAME_PATTERN } from "@sam-monorepo/domain";
-import { refresh } from "next/cache";
-import * as z from "zod";
 import {
-  MAXIMUM_WIKI_IFRAME_ALLOWLIST_ENTRIES,
-  WIKI_SETTING_IFRAME_ALLOWLIST,
-} from "../queries/getWikiSettings";
-
-const schema = z.object({
-  /** One `domain` form field per hostname */
-  domains: z
-    .array(z.string().max(255))
-    .max(1_000)
-    .transform((values) =>
-      [
-        ...new Set(values.map((value) => value.trim().toLowerCase())),
-      ].toSorted(),
-    )
-    .refine(
-      (domains) =>
-        domains.length <= MAXIMUM_WIKI_IFRAME_ALLOWLIST_ENTRIES &&
-        domains.every((domain) => WIKI_HOSTNAME_PATTERN.test(domain)),
-      { message: "Invalid hostname" },
-    ),
-});
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  updateWikiIframeAllowlist as updateWikiIframeAllowlistUseCase,
+  updateWikiIframeAllowlistInputSchema,
+} from "@sam-monorepo/application";
+import { refresh } from "next/cache";
+import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
 
 export const updateWikiIframeAllowlist = createAuthenticatedAction(
   "updateWikiIframeAllowlist",
-  schema,
+  updateWikiIframeAllowlistInputSchema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("wiki", "manage")))
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    const updatedById = authentication.session.entity?.id ?? null;
-    await prisma.wikiSetting.upsert({
-      where: { key: WIKI_SETTING_IFRAME_ALLOWLIST },
-      update: { value: data.domains, updatedById },
-      create: {
-        key: WIKI_SETTING_IFRAME_ALLOWLIST,
-        value: data.domains,
-        updatedById,
-      },
-    });
+    try {
+      await updateWikiIframeAllowlistUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: WIKI_ERROR_TEXTS,
+      });
+    }
 
     refresh();
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.WIKI_SETTINGS_UPDATED,
-        data: {
-          setting: WIKI_SETTING_IFRAME_ALLOWLIST,
-          value: data.domains,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
 
     return { success: t("Common.successfullySaved") };
   },
   {
+    /** One `domain` field for each hostname */
     parseFormData: (formData) => ({ domains: formData.getAll("domain") }),
   },
 );
