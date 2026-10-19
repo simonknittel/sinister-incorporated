@@ -27,7 +27,7 @@ A host is a deployable program. It owns its runtime, its configuration and its e
 | `emails` | domain | The email templates | — |
 | `wiki-editor` | domain | The Tiptap schema of the wiki content, text extraction, the Markdown renderer and parser | — |
 | `application` | use cases | The use cases: one read or one write of a feature, with the permission checks, the audit events and the notifications inside. The actor, the application context and the typed errors. The OAuth use cases. See the [package README](../pnpm-monorepo/packages/application/README.md). | `database`, `domain`, `wiki-editor`. Never `infrastructure` or `mcp`. |
-| `infrastructure` | infrastructure | The shared implementations of the ports of `application`: the Prisma audit writer, the EventBridge client, emitter and notification trigger, the Discord gateway and the S3 storage. See the [package README](../pnpm-monorepo/packages/infrastructure/README.md). | `application` (the port types), `database`, the AWS SDK |
+| `infrastructure` | infrastructure | The shared implementations of the ports of `application`: the Prisma audit writer, the EventBridge client, emitter and notification trigger, the Discord gateway and the S3 storage. See the [package README](../pnpm-monorepo/packages/infrastructure/README.md). | `application` (the port types), `domain` (types), `database`, the AWS SDK |
 | `mcp` | interface adapter | The MCP server: the tool registry, the tools, the request handler with the bearer verification. See [mcp-server.md](./mcp-server.md). | `application`, `domain`, `database` |
 
 ### Inside the Next.js app
@@ -47,7 +47,7 @@ Where a feature already has use cases, the module keeps a thin wrapper per query
 
 ### Inside the Lambda functions
 
-The composition root is `apps/lambda/src/common/createApplicationContext.ts`. It uses the audit writer and the EventBridge adapters of `infrastructure`. The context has the no-op tracer of OpenTelemetry, because the functions register no tracer provider: X-Ray stays at the level of the handlers and the jobs, and the spans of the use cases are lost. The context has no changelog, no collab server, no file storage and no signing key. `midnight-automations` calls the composition root: it runs the use cases of its role, login and economy jobs through one small job helper that keeps the X-Ray segment of each job. `scrape-discord-events` and `frequent-automations` build the context too (`scrape-discord-events` with the Discord gateway); `email-function` and `notification-router` do not.
+The composition root is `apps/lambda/src/common/createApplicationContext.ts`. It uses the audit writer and the EventBridge adapters of `infrastructure`. The context has the no-op tracer of OpenTelemetry, because the functions register no tracer provider: X-Ray stays at the level of the handlers and the jobs, and the spans of the use cases are lost. The context has no changelog, no collab server, no file storage and no signing key. `midnight-automations`, `frequent-automations` and `scrape-discord-events` call the composition root (`scrape-discord-events` with the Discord gateway) and run their use cases through `createJobFactory`, which keeps the X-Ray segment of each job. `email-function` and `notification-router` do not call it.
 
 ### Tests
 
@@ -98,13 +98,14 @@ flowchart TB
   app --> infrastructurePackage
   lambda --> infrastructurePackage
   infrastructurePackage -. port types .-> application
+  infrastructurePackage -. types .-> domainPackages
   infrastructurePackage --> database
   application --> domainPackages
   application --> database
   domainPackages --> database
 ```
 
-Dependencies point downwards only. The one exception is the dotted edge: `infrastructure` imports the port types of `application`, so that each host can pass the implementations to the use cases. A package never imports a host. `application` never imports `infrastructure`, `mcp` or `next`. `domain` never imports `application`.
+Dependencies point downwards only. The exceptions are the dotted edges: `infrastructure` imports the port types of `application` and the types of `domain`, so that each host can pass the implementations to the use cases. A package never imports a host. `application` never imports `infrastructure`, `mcp` or `next`. `domain` never imports `application`.
 
 ### The layers
 
