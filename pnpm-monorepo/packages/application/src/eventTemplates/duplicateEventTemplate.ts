@@ -8,6 +8,7 @@ import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { eventNameSchema } from "../events/eventInputSchemas.js";
 import { idSchema } from "../pagination.js";
+import { COPYABLE_UPLOAD_SELECT } from "../uploads/uploadCopy.js";
 import { withSpan } from "../withSpan.js";
 import { requireReadableEventTemplate } from "./eventTemplateAccess.js";
 import { createEventTemplateCopy } from "./eventTemplateCopy.js";
@@ -52,7 +53,7 @@ export const duplicateEventTemplate = (
         select: {
           name: true,
           description: true,
-          coverImageId: true,
+          coverImage: { select: COPYABLE_UPLOAD_SELECT },
           visibility: true,
           visibilityRoles: { select: { roleId: true } },
           discordPublishTarget: true,
@@ -72,7 +73,7 @@ export const duplicateEventTemplate = (
         citizenId,
         {
           columns: eventContainerColumns(toTemplateContainer(source.id)),
-          coverImageId: source.coverImageId,
+          coverImage: source.coverImage,
           seedsMissingBriefingRoot: false,
         },
         {

@@ -1,8 +1,4 @@
-/**
- * The cap of Discord for the description of a guild scheduled event:
- * https://discord.com/developers/docs/resources/guild-scheduled-event
- */
-export const DISCORD_EVENT_DESCRIPTION_MAX_LENGTH = 1000;
+import { DISCORD_EVENT_DESCRIPTION_MAX_LENGTH } from "../discord/guildScheduledEvent.js";
 
 /**
  * The note below every description the app sends to Discord. Discord's own

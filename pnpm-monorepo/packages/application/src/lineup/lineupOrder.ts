@@ -1,25 +1,19 @@
 import {
+  getPositionLevels,
   LINEUP_MAX_DEPTH,
   LINEUP_MAX_POSITIONS,
   LINEUP_MAX_POSITIONS_PER_LEVEL,
+  type EventContainerColumns,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { ApplicationContext } from "../context.js";
 import { ConflictError, ValidationError } from "../errors.js";
+import { LONG_TRANSACTION_TIMEOUT_IN_MILLISECONDS } from "../eventTemplates/containerContentCopy.js";
 import { idSchema } from "../pagination.js";
 import { LineupErrorMessage } from "./lineupErrors.js";
-import { getPositionLevels } from "./lineupTree.js";
-import type { LineupContainerColumns } from "./lineupWrites.js";
 
 /** The largest value of the integer column of the database */
 const MAXIMUM_ORDER_VALUE = 2_147_483_647;
-
-/**
- * A new order writes one row for each of up to `LINEUP_MAX_POSITIONS`
- * positions, one after the other. The default of an interactive transaction
- * (5 seconds) is possibly too short for this (an assumption, not measured).
- */
-const TRANSACTION_TIMEOUT_MS = 30_000;
 
 /** A position of a new order of the lineup, with its children */
 export interface LineupOrderNode {
@@ -119,7 +113,7 @@ const toOrderUpdates = (
  */
 export const writeLineupOrder = async (
   context: ApplicationContext,
-  container: LineupContainerColumns,
+  container: EventContainerColumns,
   positions: readonly LineupOrderNode[],
 ) => {
   await context.prisma.$transaction(
@@ -155,6 +149,6 @@ export const writeLineupOrder = async (
       if ([...levels.values()].some((level) => level > LINEUP_MAX_DEPTH))
         throw new ValidationError(LineupErrorMessage.LineupTooDeep);
     },
-    { timeout: TRANSACTION_TIMEOUT_MS },
+    { timeout: LONG_TRANSACTION_TIMEOUT_IN_MILLISECONDS },
   );
 };

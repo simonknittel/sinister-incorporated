@@ -65,6 +65,7 @@ export * from "./roles/index.js";
 export * from "./silc/index.js";
 export * from "./spynet/index.js";
 export * from "./tasks/index.js";
+export { UploadErrorMessage } from "./uploads/uploadCopy.js";
 export * from "./users/index.js";
 export * from "./wiki/index.js";
 export { withSpan } from "./withSpan.js";

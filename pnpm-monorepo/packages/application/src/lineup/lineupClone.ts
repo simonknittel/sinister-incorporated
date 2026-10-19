@@ -1,6 +1,6 @@
-import type { PrismaClientType } from "@sam-monorepo/database";
 import type { EventPosition, Prisma } from "@sam-monorepo/database/client";
 import type { EventContainerColumns } from "@sam-monorepo/domain";
+import type { ApplicationContext } from "../context.js";
 
 /**
  * Loads exactly the columns a clone carries over, plus the id and parent the
@@ -26,10 +26,10 @@ export const CLONABLE_POSITION_SELECT = {
  * lineup. `buildPositionTree()` of the domain makes the tree of them.
  */
 export const findClonablePositions = (
-  client: Pick<PrismaClientType, "eventPosition">,
+  context: Pick<ApplicationContext, "prisma">,
   columns: EventContainerColumns,
 ) =>
-  client.eventPosition.findMany({
+  context.prisma.eventPosition.findMany({
     where: columns,
     orderBy: { order: "asc" },
     select: CLONABLE_POSITION_SELECT,

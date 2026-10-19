@@ -3,7 +3,7 @@ import {
   type PublishableGuildChannel,
 } from "@sam-monorepo/domain";
 import { DiscordOutcome, type ApplicationContext } from "../context.js";
-import { callDiscord } from "./discordGateway.js";
+import { callDiscord } from "./callDiscord.js";
 
 /**
  * The voice and stage channels of the guild — the only ones Discord accepts

@@ -11,13 +11,17 @@ import {
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ForbiddenError, NotFoundError } from "../errors.js";
+import { NotFoundError } from "../errors.js";
 import { EventErrorMessage } from "../events/eventErrors.js";
 import { eventNameSchema } from "../events/eventInputSchemas.js";
-import { EVENT_MANAGE_GUARD_SELECT } from "../events/eventManageGuard.js";
+import {
+  requireManageableEvent,
+  VISIBLE_EVENT_MANAGE_GUARD_SELECT,
+} from "../events/eventManageGuard.js";
 import { isAllowedToManageEvent } from "../events/eventManageRules.js";
 import { getEventPageUrl } from "../events/eventUrl.js";
 import { idSchema } from "../pagination.js";
+import { COPYABLE_UPLOAD_SELECT } from "../uploads/uploadCopy.js";
 import { withSpan } from "../withSpan.js";
 import {
   createEventTemplateCopy,
@@ -121,19 +125,24 @@ export const createEventTemplateFromEvent = (
         deletedAt: null,
       },
       select: {
-        ...EVENT_MANAGE_GUARD_SELECT,
+        ...VISIBLE_EVENT_MANAGE_GUARD_SELECT,
         name: true,
         description: true,
-        coverImageId: true,
-        visibility: true,
-        visibilityRoles: { select: { roleId: true } },
+        coverImage: { select: COPYABLE_UPLOAD_SELECT },
         discordPublishedChannelId: true,
         discordPublishedLocation: true,
       },
     });
     if (!sourceEvent) throw new NotFoundError(EventErrorMessage.NotFound);
-    if (!isAllowedToManageEvent(actor, sourceEvent))
-      throw new ForbiddenError("The user cannot manage the event");
+    requireManageableEvent(
+      context,
+      actor,
+      sourceEvent,
+      isAllowedToManageEvent,
+      {
+        ignoreFreeze: true,
+      },
+    );
 
     const { template, positionCount, pageCount } =
       await createEventTemplateCopy(
@@ -141,7 +150,7 @@ export const createEventTemplateFromEvent = (
         citizenId,
         {
           columns: eventContainerColumns(toEventContainer(sourceEvent.id)),
-          coverImageId: sourceEvent.coverImageId,
+          coverImage: sourceEvent.coverImage,
           seedsMissingBriefingRoot: true,
         },
         {

@@ -18,7 +18,7 @@ import {
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import { DiscordOutcome, type ApplicationContext } from "../context.js";
-import { callDiscord } from "../discord/discordGateway.js";
+import { callDiscord } from "../discord/callDiscord.js";
 import { findPublishableDiscordChannels } from "../discord/publishableChannels.js";
 import { ConflictError, NotFoundError, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
@@ -67,6 +67,25 @@ export type DiscordSyncResult =
     }
   | { readonly outcome: DiscordSyncOutcome.Failed };
 
+/**
+ * The Discord target fields of the inputs that carry them: the publish, the
+ * template and the form of a new event. An absent target means "do not
+ * publish"; the publish narrows it to required.
+ */
+export const discordPublishFieldsShape = {
+  discord_publish_target: z.enum(EventDiscordPublishTarget).optional(),
+  /** The use case finds it in the channels of the guild */
+  discord_publish_channel_id: z
+    .string()
+    .max(DISCORD_CHANNEL_ID_MAX_LENGTH)
+    .optional(),
+  discord_publish_location: z
+    .string()
+    .trim()
+    .max(DISCORD_EVENT_LOCATION_MAX_LENGTH)
+    .optional(),
+};
+
 /** Where the manager wants the Discord event, as the forms of the app give it */
 export interface EventDiscordPublishRequest {
   readonly target: EventDiscordPublishTarget;
@@ -81,9 +100,8 @@ export interface EventDiscordPublishRequest {
 
 export const publishEventToDiscordInputSchema = z.object({
   event_id: idSchema,
-  target: z.enum(EventDiscordPublishTarget),
-  channel_id: z.string().max(DISCORD_CHANNEL_ID_MAX_LENGTH).optional(),
-  location: z.string().trim().max(DISCORD_EVENT_LOCATION_MAX_LENGTH).optional(),
+  ...discordPublishFieldsShape,
+  discord_publish_target: z.enum(EventDiscordPublishTarget),
 });
 
 export type PublishEventToDiscordInput = z.infer<
@@ -257,12 +275,13 @@ export const createDiscordEventPublication = async (
     target.entityType !== DiscordScheduledEventEntityType.External;
 
   /**
-   * Conditional on the event still being unpublished: two managers hitting
-   * publish at the same time would otherwise leave the loser's guild
-   * scheduled event behind on Discord with nothing referencing it.
+   * Conditional on the event still being unpublished and not deleted: two
+   * managers hitting publish at the same time, or a delete during the
+   * publish, would otherwise leave the guild scheduled event behind on
+   * Discord with nothing referencing it.
    */
   const { count } = await context.prisma.event.updateMany({
-    where: { id: eventId, discordPublishedId: null },
+    where: { id: eventId, discordPublishedId: null, deletedAt: null },
     data: {
       discordPublishedId: discordScheduledEventId,
       discordPublishedAt: context.now(),
@@ -274,7 +293,7 @@ export const createDiscordEventPublication = async (
 
   if (count === 0) {
     context.log.warn(
-      "Discarded a concurrently published guild scheduled event",
+      "Discarded a guild scheduled event of a concurrently published or deleted event",
       { eventId, discordScheduledEventId },
     );
     await callDiscord(context, (gateway) =>
@@ -450,9 +469,9 @@ export const publishEventToDiscord = (
     const target = await resolveDiscordPublishTarget(
       context,
       {
-        target: input.target,
-        channelId: input.channel_id,
-        location: input.location,
+        target: input.discord_publish_target,
+        channelId: input.discord_publish_channel_id,
+        location: input.discord_publish_location,
       },
       event.id,
     );

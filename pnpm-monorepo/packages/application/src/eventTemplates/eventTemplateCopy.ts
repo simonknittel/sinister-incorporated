@@ -4,27 +4,19 @@ import type {
 } from "@sam-monorepo/database/client";
 import {
   buildBriefingRootPageSeed,
-  buildPositionTree,
-  eventContainerColumns,
   toTemplateContainer,
   type EventContainerColumns,
 } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
 import {
-  clonePositions,
-  findClonablePositions,
-} from "../lineup/lineupClone.js";
-import {
-  COPYABLE_UPLOAD_SELECT,
   copyUploadInTransaction,
+  type CopyableUpload,
 } from "../uploads/uploadCopy.js";
 import {
-  copyBriefingTree,
-  findBriefingCopySource,
-} from "../wiki/briefingCopy.js";
-
-/** The briefing copy dominates the runtime — same bound the wiki copy uses */
-const TRANSACTION_TIMEOUT_MILLISECONDS = 30_000;
+  copyContainerContent,
+  loadContainerCopySource,
+  LONG_TRANSACTION_TIMEOUT_IN_MILLISECONDS,
+} from "./containerContentCopy.js";
 
 /** The fields of the new template */
 export interface EventTemplateCopyFields {
@@ -40,7 +32,8 @@ export interface EventTemplateCopyFields {
 export interface EventTemplateCopySource {
   /** The event or the template whose lineup, briefing and cover the copy takes */
   readonly columns: EventContainerColumns;
-  readonly coverImageId: string | null;
+  /** Selected with `COPYABLE_UPLOAD_SELECT` */
+  readonly coverImage: CopyableUpload | null;
   /**
    * True when the copy of a source without a briefing root page gets the
    * empty root page, like a new template. False copies the pages of the
@@ -66,16 +59,7 @@ export const createEventTemplateCopy = async (
   source: EventTemplateCopySource,
   fields: EventTemplateCopyFields,
 ): Promise<EventTemplateCopyResult> => {
-  const [sourcePositions, sourceBriefing, sourceCover] = await Promise.all([
-    findClonablePositions(context.prisma, source.columns),
-    findBriefingCopySource(context.prisma, source.columns),
-    source.coverImageId
-      ? context.prisma.upload.findUnique({
-          where: { id: source.coverImageId },
-          select: COPYABLE_UPLOAD_SELECT,
-        })
-      : null,
-  ]);
+  const content = await loadContainerCopySource(context, source.columns);
 
   /**
    * Keyed on the root page, like the creation of an event: an event
@@ -83,7 +67,7 @@ export const createEventTemplateCopy = async (
    * template without a root page has no briefing and no way back to one.
    */
   const copiesBriefing =
-    !source.seedsMissingBriefingRoot || sourceBriefing.rootPage !== null;
+    !source.seedsMissingBriefingRoot || content.rootPage !== null;
 
   return context.prisma.$transaction(
     async (transaction) => {
@@ -91,11 +75,11 @@ export const createEventTemplateCopy = async (
        * The template gets its own cover object, so editing or deleting one
        * never touches the other.
        */
-      const coverImage = sourceCover
+      const coverImage = source.coverImage
         ? await copyUploadInTransaction(
             context,
             transaction,
-            sourceCover,
+            source.coverImage,
             citizenId,
           )
         : null;
@@ -122,37 +106,15 @@ export const createEventTemplateCopy = async (
         select: { id: true, name: true },
       });
 
-      const targetContainer = toTemplateContainer(template.id);
-
-      const positionIdBySourceId = await clonePositions(
+      const { positionCount, pageCount } = await copyContainerContent(
         transaction,
-        buildPositionTree(sourcePositions),
-        {
-          columns: eventContainerColumns(targetContainer),
-          parentPositionId: null,
-          startOrder: 0,
-        },
+        copiesBriefing ? content : { ...content, briefingPages: [] },
+        toTemplateContainer(template.id),
+        citizenId,
       );
 
-      /**
-       * Copied after the lineup, so the pages' POSITION scopes can be
-       * remapped onto the template's own positions.
-       */
-      const briefing = copiesBriefing
-        ? await copyBriefingTree(transaction, {
-            sourcePages: sourceBriefing.pages,
-            targetContainer,
-            createdByEntityId: citizenId,
-            positionIdBySourceId,
-          })
-        : { pageCount: 0 };
-
-      return {
-        template,
-        positionCount: positionIdBySourceId.size,
-        pageCount: briefing.pageCount,
-      };
+      return { template, positionCount, pageCount };
     },
-    { timeout: TRANSACTION_TIMEOUT_MILLISECONDS },
+    { timeout: LONG_TRANSACTION_TIMEOUT_IN_MILLISECONDS },
   );
 };

@@ -9,7 +9,7 @@ import {
   type ApplicationContext,
   type DiscordScheduledEvent,
 } from "../context.js";
-import { callDiscord } from "../discord/discordGateway.js";
+import { callDiscord } from "../discord/callDiscord.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { withSpan } from "../withSpan.js";
 import { deleteCancelledDiscordEvents } from "./deleteCancelledDiscordEvents.js";

@@ -4,7 +4,7 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
-import { requireManageableEventTemplate } from "./eventTemplateGuards.js";
+import { requireManageableEventTemplate } from "./eventTemplateAccess.js";
 
 export const restoreEventTemplateInputSchema = z.object({
   template_id: idSchema,

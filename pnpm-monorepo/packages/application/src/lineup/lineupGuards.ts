@@ -15,6 +15,7 @@ import {
 } from "../events/eventManageRules.js";
 import { canActorSeeEvent } from "../events/eventVisibility.js";
 import { LineupErrorMessage } from "./lineupErrors.js";
+import { LINEUP_POSITION_SELECT } from "./lineupWrites.js";
 
 /**
  * What the guards of the lineup decide on (the visibility, the freeze, the
@@ -26,17 +27,6 @@ export const LINEUP_EVENT_SELECT = {
   name: true,
   lineupEnabled: true,
 } as const satisfies Prisma.EventSelect;
-
-/** What the use cases of the positions read of a position before a change */
-const LINEUP_POSITION_SELECT = {
-  id: true,
-  name: true,
-  eventId: true,
-  citizenId: true,
-  fontSize: true,
-  backgroundColor: true,
-  textColor: true,
-} as const satisfies Prisma.EventPositionSelect;
 
 /**
  * The guard of each change of the lineup of an event: the event exists, is

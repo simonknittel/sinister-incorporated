@@ -90,6 +90,7 @@ These exports are not use cases. No MCP tool calls them:
 - `filterLeaderboardMembers` takes the ranks of the leaderboard of the Roberts Space Industries website as host data (the interface `LeaderboardRank`, no schema). The host reads and validates the ranks.
 - `linkCitizenOfSignedInUser` and `hasBirthdayTodaySafely` (the Spynet) are helpers for the auth zone; `deletePermissionStringsReferencing` (the roles) is a helper for the settings of the Spynet. They carry no permission check: the caller checks it.
 - `createWikiPageInScope` takes the wiki scope from its caller: the app also loads the briefings of the event templates.
+- `copyWikiPagesIntoContainer`, `INHERITED_PERMISSIONS` and `findOrCreateWikiTags` serve the wiki module of the app until the wiki moves to use cases. The two functions take a transaction and carry no permission check: the caller checks it.
 - `canAccessEventTemplates` is a boolean check for the pages of the event templates, not a read of a template.
 - `findPublishableDiscordChannels` takes no actor and checks no permission. The callers check it. It gives null when Discord cannot be reached.
 - `syncEventDiscordPublication` checks no permission until the upload route of the cover image becomes a use case. The route checks that the actor can manage the event.

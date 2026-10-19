@@ -1,9 +1,10 @@
 import {
   canPasteSubtree,
-  getPositionLevel,
+  getPositionLevels,
   getPositionSubtree,
   getSubtreeDepth,
   LINEUP_MAX_POSITIONS_PER_LEVEL,
+  PastePlacement,
   type EventContainer,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
@@ -18,14 +19,6 @@ import { requireEditableLineupContainer } from "./lineupContainerGuard.js";
 import { LineupErrorMessage } from "./lineupErrors.js";
 import type { LineupCopyOutput } from "./lineupOutput.js";
 import { findLineupPosition } from "./lineupWrites.js";
-
-/** Where a paste puts the copy, relative to the target position */
-export enum PastePlacement {
-  /** Below the target, on the same level */
-  After = "after",
-  /** As the last children of the target */
-  Inside = "inside",
-}
 
 export const pasteLineupPositionInputSchema = z.object({
   source_position_id: idSchema,
@@ -73,10 +66,7 @@ export const pasteLineupPosition = (
       target.container,
     );
 
-    const sourcePositions = await findClonablePositions(
-      context.prisma,
-      sourceColumns,
-    );
+    const sourcePositions = await findClonablePositions(context, sourceColumns);
     const subtree = getPositionSubtree(sourcePositions, source.position.id);
     if (!subtree) throw new NotFoundError(LineupErrorMessage.PositionNotFound);
 
@@ -89,7 +79,11 @@ export const pasteLineupPosition = (
 
     const isInside = input.placement === PastePlacement.Inside;
 
-    const targetLevel = getPositionLevel(targetPositions, target.position.id);
+    const targetLevel = getPositionLevels(targetPositions).get(
+      target.position.id,
+    );
+    if (targetLevel === undefined)
+      throw new NotFoundError(LineupErrorMessage.PositionNotFound);
     const parentLevel = isInside ? targetLevel : targetLevel - 1;
     if (!canPasteSubtree(parentLevel, getSubtreeDepth(subtree)))
       throw new ValidationError(LineupErrorMessage.PasteTooDeep);

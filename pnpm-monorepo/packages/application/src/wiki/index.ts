@@ -2,7 +2,6 @@
  * The use cases of the wiki group, and the wiki contexts and helpers that
  * the app shares with them.
  */
-export { copyBriefingTree, findBriefingCopySource } from "./briefingCopy.js";
 export {
   createWikiPage,
   createWikiPageInScope,
@@ -62,7 +61,6 @@ export {
 export {
   INHERITED_PERMISSIONS,
   copyWikiPagesIntoContainer,
-  remapBriefingScopePositions,
   type CopiedWikiPage,
   type WikiPageCopyEntry,
 } from "./wikiPageCopy.js";

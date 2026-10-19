@@ -19,3 +19,7 @@ export const LINEUP_MAX_POSITIONS_PER_LEVEL = 50;
  * position in one transaction.
  */
 export const LINEUP_MAX_POSITIONS = 500;
+
+/** The lengths of the name and the description of a position */
+export const MAXIMUM_POSITION_NAME_LENGTH = 256;
+export const MAXIMUM_POSITION_DESCRIPTION_LENGTH = 512;

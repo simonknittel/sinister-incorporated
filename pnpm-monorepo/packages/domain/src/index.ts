@@ -37,9 +37,9 @@ export {
 } from "./citizen/timezones.js";
 export {
   DISCORD_CHANNEL_ID_MAX_LENGTH,
+  DISCORD_EVENT_DESCRIPTION_MAX_LENGTH,
   DISCORD_EVENT_LOCATION_MAX_LENGTH,
   DISCORD_EVENT_NAME_MAX_LENGTH,
-  DiscordChannelType,
   DiscordScheduledEventEntityType,
   GuildScheduledEventContentProblem,
   findContentProblem,
@@ -55,8 +55,7 @@ export {
 export {
   EventContainerKind,
   eventContainerColumns,
-  getPositionContainer,
-  getWikiPageContainer,
+  getEventContainerOfRow,
   toEventContainer,
   toTemplateContainer,
   wikiContainerColumns,
@@ -64,7 +63,6 @@ export {
   type EventContainerColumns,
 } from "./events/eventContainer.js";
 export {
-  DISCORD_EVENT_DESCRIPTION_MAX_LENGTH,
   buildDiscordEventDescription,
   getDiscordEventDescriptionFooter,
   getEventDescriptionMaxLength,
@@ -86,11 +84,14 @@ export {
   LINEUP_MAX_DEPTH,
   LINEUP_MAX_POSITIONS,
   LINEUP_MAX_POSITIONS_PER_LEVEL,
+  MAXIMUM_POSITION_DESCRIPTION_LENGTH,
+  MAXIMUM_POSITION_NAME_LENGTH,
 } from "./events/lineupLimits.js";
 export {
+  PastePlacement,
   buildPositionTree,
   canPasteSubtree,
-  getPositionLevel,
+  getPositionLevels,
   getPositionSubtree,
   getSubtreeDepth,
   getSubtreeSize,

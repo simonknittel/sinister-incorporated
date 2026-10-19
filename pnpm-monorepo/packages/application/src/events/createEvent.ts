@@ -7,7 +7,6 @@ import type { AuditEventInput } from "@sam-monorepo/domain";
 import {
   AuditEventType,
   buildBriefingRootPageSeed,
-  buildPositionTree,
   eventContainerColumns,
   toEventContainer,
   toTemplateContainer,
@@ -20,20 +19,17 @@ import {
   dateTimeInputSchema,
 } from "../dateTime.js";
 import { ValidationError } from "../errors.js";
-import { requireReadableEventTemplate } from "../eventTemplates/eventTemplateAccess.js";
 import {
-  clonePositions,
-  findClonablePositions,
-} from "../lineup/lineupClone.js";
+  copyContainerContent,
+  loadContainerCopySource,
+  LONG_TRANSACTION_TIMEOUT_IN_MILLISECONDS,
+} from "../eventTemplates/containerContentCopy.js";
+import { requireReadableEventTemplate } from "../eventTemplates/eventTemplateAccess.js";
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import {
   COPYABLE_UPLOAD_SELECT,
   copyUploadInTransaction,
 } from "../uploads/uploadCopy.js";
-import {
-  copyBriefingTree,
-  findBriefingCopySource,
-} from "../wiki/briefingCopy.js";
 import { withSpan } from "../withSpan.js";
 import { requireOwnCoverImage } from "./coverImage.js";
 import { createEventActivity } from "./eventActivity.js";
@@ -55,9 +51,6 @@ import {
 import { toEventVisibility } from "./eventOutput.js";
 import { resolveVisibilityRoleIds } from "./eventVisibilityRoles.js";
 import { loadEventOutput, type GetEventOutput } from "./getEvent.js";
-
-/** The briefing copy of a template dominates the runtime — same bound the wiki copy uses */
-const TRANSACTION_TIMEOUT_MS = 30_000;
 
 export const createEventInputSchema = z.object({
   name: eventNameSchema,
@@ -139,18 +132,18 @@ const loadTemplateCopySource = async (
     },
   );
 
-  const columns = eventContainerColumns(toTemplateContainer(template.id));
-  const [positions, briefing] = await Promise.all([
-    findClonablePositions(context.prisma, columns),
-    findBriefingCopySource(context.prisma, columns),
-  ]);
+  const content = await loadContainerCopySource(
+    context,
+    eventContainerColumns(toTemplateContainer(template.id)),
+  );
+  const copiesBriefing = content.rootPage !== null;
 
   return {
     id: template.id,
     name: template.name,
     coverImage: copiesCover ? template.coverImage : null,
-    positionTree: buildPositionTree(positions),
-    briefingPages: briefing.rootPage ? briefing.pages : null,
+    content: copiesBriefing ? content : { ...content, briefingPages: [] },
+    copiesBriefing,
     /**
      * True when the copied briefing is readable for more than the managers
      * from the first second. The publication is recorded with the creation,
@@ -159,15 +152,17 @@ const loadTemplateCopySource = async (
      * it.
      */
     isBriefingPublished:
-      briefing.rootPage !== null &&
-      briefing.rootPage.eventReadScope !== WikiPageEventScope.MANAGERS &&
-      briefing.rootPage.eventReadScope !== WikiPageEventScope.INHERIT,
+      content.rootPage !== null &&
+      content.rootPage.eventReadScope !== WikiPageEventScope.MANAGERS &&
+      content.rootPage.eventReadScope !== WikiPageEventScope.INHERIT,
   };
 };
 
 /**
  * A channel that is gone counts as a failed publication: the event stands,
- * and the manager can publish it again from its settings.
+ * and the manager can publish it again from its settings. A failure cannot
+ * undo the creation, thus a thrown error becomes Failed too: else the user
+ * would create the event again.
  */
 const publishCreatedEvent = async (
   context: ApplicationContext,
@@ -175,10 +170,18 @@ const publishCreatedEvent = async (
   eventId: string,
   request: EventDiscordPublishRequest,
 ): Promise<DiscordSyncResult> => {
-  const target = await resolveDiscordPublishTarget(context, request, eventId);
-  if (!target) return { outcome: DiscordSyncOutcome.Failed };
+  try {
+    const target = await resolveDiscordPublishTarget(context, request, eventId);
+    if (!target) return { outcome: DiscordSyncOutcome.Failed };
 
-  return createDiscordEventPublication(context, eventId, target, actor);
+    return await createDiscordEventPublication(context, eventId, target, actor);
+  } catch (error) {
+    context.log.error("Failed to publish a created event to Discord", {
+      eventId,
+      error,
+    });
+    return { outcome: DiscordSyncOutcome.Failed };
+  }
 };
 
 /**
@@ -254,7 +257,7 @@ export const createEvent = (
              * A template brings its own briefing, copied below. An event
              * without a root page has no briefing and no way back to one.
              */
-            ...(templateSource?.briefingPages
+            ...(templateSource?.copiesBriefing
               ? {}
               : {
                   wikiPages: { create: buildBriefingRootPageSeed(citizenId) },
@@ -266,30 +269,13 @@ export const createEvent = (
           },
         });
 
-        if (templateSource) {
-          const eventContainer = toEventContainer(event.id);
-          const positionIdBySourceId = await clonePositions(
+        if (templateSource)
+          await copyContainerContent(
             transaction,
-            templateSource.positionTree,
-            {
-              columns: eventContainerColumns(eventContainer),
-              parentPositionId: null,
-              startOrder: 0,
-            },
+            templateSource.content,
+            toEventContainer(event.id),
+            citizenId,
           );
-
-          /**
-           * Copied after the lineup, so the pages' POSITION scopes can be
-           * remapped onto the event's own positions.
-           */
-          if (templateSource.briefingPages)
-            await copyBriefingTree(transaction, {
-              sourcePages: templateSource.briefingPages,
-              targetContainer: eventContainer,
-              createdByEntityId: citizenId,
-              positionIdBySourceId,
-            });
-        }
 
         await createEventActivity(transaction, {
           eventId: event.id,
@@ -300,7 +286,7 @@ export const createEvent = (
 
         return event;
       },
-      { timeout: TRANSACTION_TIMEOUT_MS },
+      { timeout: LONG_TRANSACTION_TIMEOUT_IN_MILLISECONDS },
     );
 
     const auditEvents: AuditEventInput[] = [

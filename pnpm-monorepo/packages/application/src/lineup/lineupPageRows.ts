@@ -4,7 +4,8 @@ import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ForbiddenError } from "../errors.js";
 import { isLineupVisible } from "../events/eventManageRules.js";
-import { findVisibleEvent } from "../events/findVisibleEvent.js";
+import { EVENT_PAGE_RELATIONS_SELECT } from "../events/eventSelects.js";
+import { requireVisibleEvent } from "../events/findVisibleEvent.js";
 import { buildParticipantCitizenWhere } from "../events/participantCitizenWhere.js";
 
 /**
@@ -76,7 +77,10 @@ export const findEventLineupCitizens = async (
   actor: Actor,
   { eventId }: LineupPageRowsInput,
 ): Promise<EventLineupCitizen[]> => {
-  const event = await findVisibleEvent(context, actor, eventId);
+  const event = await requireVisibleEvent(context, actor, eventId, {
+    lineupEnabled: true,
+    participants: EVENT_PAGE_RELATIONS_SELECT.participants,
+  });
 
   if (!isLineupVisible(actor, event))
     throw new ForbiddenError("The lineup of the event is not enabled");

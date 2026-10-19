@@ -11,7 +11,7 @@ export enum EventTemplateErrorMessage {
   /** A `ConflictError` */
   Deleted = "The event template is deleted",
   /** A `ValidationError`: the new owner does not exist */
-  OwnerNotFound = "The citizen does not exist",
+  OwnerNotFound = "The new owner does not exist",
   /** A `ValidationError` */
   UnknownRole = "At least one role does not exist",
   /** A `ValidationError` */

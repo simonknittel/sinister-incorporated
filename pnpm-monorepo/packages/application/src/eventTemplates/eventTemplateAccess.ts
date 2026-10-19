@@ -89,12 +89,12 @@ export interface EventTemplateAccess<
  * actors who can restore it.
  */
 export const findEventTemplateAccess = async <
-  const Select extends Prisma.EventTemplateSelect,
+  const Select extends Prisma.EventTemplateSelect = Record<never, never>,
 >(
   context: ApplicationContext,
   actor: Actor,
   templateId: string,
-  select: Select,
+  select: Select = {} as Select,
 ): Promise<EventTemplateAccess<Select> | null> => {
   const viewer = toEventTemplateViewer(actor);
 
@@ -124,6 +124,47 @@ interface EventTemplateGuardOptions<Select extends Prisma.EventTemplateSelect> {
   readonly select?: Select;
 }
 
+interface EventTemplateRequirement {
+  /** Without it, a deleted template gives a ConflictError */
+  readonly allowDeleted: boolean;
+  readonly permission: keyof ResolvedEventTemplatePermissions;
+  readonly forbiddenMessage: string;
+}
+
+/**
+ * The guard of the four template guards
+ *
+ * @throws NotFoundError when the actor cannot read the template,
+ *   ConflictError when it is deleted (except with `allowDeleted`),
+ *   ForbiddenError when the actor does not have the permission
+ */
+const requireEventTemplateAccess = async <
+  const Select extends Prisma.EventTemplateSelect,
+>(
+  context: ApplicationContext,
+  actor: Actor,
+  templateId: string,
+  select: Select | undefined,
+  { allowDeleted, permission, forbiddenMessage }: EventTemplateRequirement,
+): Promise<EventTemplateAccess<Select>> => {
+  const access = await findEventTemplateAccess(
+    context,
+    actor,
+    templateId,
+    select,
+  );
+
+  if (!access) throw new NotFoundError(EventTemplateErrorMessage.NotFound);
+
+  if (!allowDeleted && access.template.deletedAt !== null)
+    throw new ConflictError(EventTemplateErrorMessage.Deleted);
+
+  if (!access.permissions[permission])
+    throw new ForbiddenError(forbiddenMessage);
+
+  return access;
+};
+
 /**
  * A template that the actor can read and use.
  *
@@ -144,14 +185,20 @@ export const requireReadableEventTemplate = async <
     readonly allowDeleted?: boolean;
   } = {},
 ): Promise<EventTemplateAccess<Select>> => {
-  const access = await findEventTemplateAccess(
+  const access = await requireEventTemplateAccess(
     context,
     actor,
     templateId,
-    select ?? ({} as Select),
+    select,
+    {
+      allowDeleted: true,
+      permission: "canRead",
+      forbiddenMessage: "The user cannot read the event template",
+    },
   );
 
-  if (!access || (!allowDeleted && access.template.deletedAt !== null))
+  /** For a reader, a deleted template does not exist */
+  if (!allowDeleted && access.template.deletedAt !== null)
     throw new NotFoundError(EventTemplateErrorMessage.NotFound);
 
   return access;
@@ -165,28 +212,58 @@ export const requireReadableEventTemplate = async <
  *   ConflictError when it is deleted, ForbiddenError when the actor cannot
  *   edit it
  */
-export const requireEditableEventTemplate = async <
+export const requireEditableEventTemplate = <
   const Select extends Prisma.EventTemplateSelect = Record<never, never>,
 >(
   context: ApplicationContext,
   actor: Actor,
   templateId: string,
   { select }: EventTemplateGuardOptions<Select> = {},
-): Promise<EventTemplateAccess<Select>> => {
-  const access = await findEventTemplateAccess(
-    context,
-    actor,
-    templateId,
-    select ?? ({} as Select),
-  );
+): Promise<EventTemplateAccess<Select>> =>
+  requireEventTemplateAccess(context, actor, templateId, select, {
+    allowDeleted: false,
+    permission: "canEdit",
+    forbiddenMessage: "The user cannot edit the event template",
+  });
 
-  if (!access) throw new NotFoundError(EventTemplateErrorMessage.NotFound);
+/**
+ * A template that the actor can delete and restore. A deleted template is in
+ * the result: the restore needs it.
+ *
+ * @throws NotFoundError when the actor cannot read the template,
+ *   ForbiddenError when the actor cannot manage it
+ */
+export const requireManageableEventTemplate = <
+  const Select extends Prisma.EventTemplateSelect = Record<never, never>,
+>(
+  context: ApplicationContext,
+  actor: Actor,
+  templateId: string,
+  { select }: EventTemplateGuardOptions<Select> = {},
+): Promise<EventTemplateAccess<Select>> =>
+  requireEventTemplateAccess(context, actor, templateId, select, {
+    allowDeleted: true,
+    permission: "canManage",
+    forbiddenMessage: "The user cannot manage the event template",
+  });
 
-  if (access.template.deletedAt !== null)
-    throw new ConflictError(EventTemplateErrorMessage.Deleted);
-
-  if (!access.permissions.canEdit)
-    throw new ForbiddenError("The user cannot edit the event template");
-
-  return access;
-};
+/**
+ * A template whose role shares and owner the actor can change.
+ *
+ * @throws NotFoundError when the actor cannot read the template,
+ *   ConflictError when it is deleted, ForbiddenError when the actor cannot
+ *   change its shares
+ */
+export const requireShareableEventTemplate = <
+  const Select extends Prisma.EventTemplateSelect = Record<never, never>,
+>(
+  context: ApplicationContext,
+  actor: Actor,
+  templateId: string,
+  { select }: EventTemplateGuardOptions<Select> = {},
+): Promise<EventTemplateAccess<Select>> =>
+  requireEventTemplateAccess(context, actor, templateId, select, {
+    allowDeleted: false,
+    permission: "canManageShares",
+    forbiddenMessage: "The user cannot change the shares of the event template",
+  });

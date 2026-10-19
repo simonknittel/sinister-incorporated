@@ -1,5 +1,4 @@
 /** The use cases of the event templates and the rows of the template pages */
-export type { EventTemplateViewer } from "@sam-monorepo/domain";
 export {
   createEventTemplate,
   createEventTemplateInputSchema,
@@ -32,6 +31,7 @@ export {
   EventTemplateStatus,
 } from "./eventTemplateFilters.js";
 export {
+  EVENT_TEMPLATE_LIST_QUERY_MAXIMUM_LENGTH,
   canAccessEventTemplates,
   findEventTemplateDetails,
   findEventTemplateListRows,

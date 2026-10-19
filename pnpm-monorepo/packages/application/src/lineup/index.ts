@@ -36,8 +36,7 @@ export {
   type GetEventLineupInput,
 } from "./getEventLineup.js";
 export { LineupErrorMessage } from "./lineupErrors.js";
-export { requireManageableEventLineup } from "./lineupGuards.js";
-export { lineupOrderSchema, type LineupOrderNode } from "./lineupOrder.js";
+export type { LineupOrderNode } from "./lineupOrder.js";
 export {
   findEventPositionTree,
   type EventPositionTreeRow,
@@ -51,18 +50,11 @@ export {
   findOwnShipsOfRequiredVariants,
   type EventLineupCitizen,
 } from "./lineupPageRows.js";
-export type { LineupContainerColumns } from "./lineupWrites.js";
 export {
-  PastePlacement,
   pasteLineupPosition,
   pasteLineupPositionInputSchema,
   type PasteLineupPositionInput,
 } from "./pasteLineupPosition.js";
-export {
-  newPositionFieldsSchema,
-  type NewPositionFields,
-  type PositionChange,
-} from "./positionFields.js";
 export {
   renameLineupPosition,
   renameLineupPositionInputSchema,

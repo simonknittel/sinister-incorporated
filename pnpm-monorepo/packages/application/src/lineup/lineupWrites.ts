@@ -1,15 +1,20 @@
 import type { EventPosition, Prisma } from "@sam-monorepo/database/client";
 import {
-  getPositionContainer,
+  getEventContainerOfRow,
+  getPositionLevels,
   LINEUP_MAX_DEPTH,
   LINEUP_MAX_POSITIONS,
   LINEUP_MAX_POSITIONS_PER_LEVEL,
   type EventContainerColumns,
 } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
-import { ConflictError, NotFoundError, ValidationError } from "../errors.js";
+import {
+  ConflictError,
+  NotFoundError,
+  rethrowRecordNotFound,
+  ValidationError,
+} from "../errors.js";
 import { LineupErrorMessage } from "./lineupErrors.js";
-import { getPositionLevels } from "./lineupTree.js";
 import {
   toStoredFontSize,
   type NewPositionFields,
@@ -22,15 +27,13 @@ import {
  * each use case checks the container first.
  */
 
-/** The container of a position: an event or an event template */
-export type LineupContainerColumns = EventContainerColumns;
-
 /** What the use cases read of a position before they change or copy it */
-const LINEUP_POSITION_ROW_SELECT = {
+export const LINEUP_POSITION_SELECT = {
   id: true,
   name: true,
   eventId: true,
   templateId: true,
+  citizenId: true,
   order: true,
   parentPositionId: true,
   fontSize: true,
@@ -50,10 +53,10 @@ export const findLineupPosition = async (
 ) => {
   const position = await context.prisma.eventPosition.findUnique({
     where: { id: positionId },
-    select: LINEUP_POSITION_ROW_SELECT,
+    select: LINEUP_POSITION_SELECT,
   });
 
-  const container = position ? getPositionContainer(position) : null;
+  const container = position ? getEventContainerOfRow(position) : null;
   if (!position || !container)
     throw new NotFoundError(LineupErrorMessage.PositionNotFound);
 
@@ -137,7 +140,7 @@ export interface CreatedLineupPosition {
 /** Adds the position as the last position of its parent */
 export const insertLineupPosition = async (
   context: ApplicationContext,
-  container: LineupContainerColumns,
+  container: EventContainerColumns,
   fields: NewPositionFields,
 ): Promise<CreatedLineupPosition> => {
   const containerPositions = await context.prisma.eventPosition.findMany({
@@ -200,6 +203,10 @@ export interface UpdatedLineupPosition {
 const changedValue = <Value>(change: Value | undefined, current: Value) =>
   change === undefined ? current : change;
 
+/**
+ * @throws NotFoundError when a different request deleted the position after
+ * the guard read it
+ */
 export const writeLineupPositionChange = async (
   context: ApplicationContext,
   position: Pick<
@@ -216,11 +223,18 @@ export const writeLineupPositionChange = async (
     textColor: change.text_color,
   };
 
-  if (change.required_variant_ids) {
-    const variantIds = await requireVariants(
-      context,
-      change.required_variant_ids,
-    );
+  const variantIds = change.required_variant_ids
+    ? await requireVariants(context, change.required_variant_ids)
+    : null;
+
+  await rethrowRecordNotFound(async () => {
+    if (!variantIds) {
+      await context.prisma.eventPosition.update({
+        where: { id: position.id },
+        data: fields,
+      });
+      return;
+    }
 
     await context.prisma.$transaction([
       context.prisma.eventPositionRequiredVariant.deleteMany({
@@ -236,12 +250,7 @@ export const writeLineupPositionChange = async (
         },
       }),
     ]);
-  } else {
-    await context.prisma.eventPosition.update({
-      where: { id: position.id },
-      data: fields,
-    });
-  }
+  }, LineupErrorMessage.PositionNotFound);
 
   return {
     positionId: position.id,
@@ -257,10 +266,18 @@ export const writeLineupPositionChange = async (
   };
 };
 
-/** Deletes the position. Its children go with it (a cascade of the database). */
+/**
+ * Deletes the position. Its children go with it (a cascade of the database).
+ *
+ * @throws NotFoundError when a different request deleted the position after
+ * the guard read it
+ */
 export const removeLineupPosition = async (
   context: ApplicationContext,
   positionId: string,
 ) => {
-  await context.prisma.eventPosition.delete({ where: { id: positionId } });
+  await rethrowRecordNotFound(
+    () => context.prisma.eventPosition.delete({ where: { id: positionId } }),
+    LineupErrorMessage.PositionNotFound,
+  );
 };

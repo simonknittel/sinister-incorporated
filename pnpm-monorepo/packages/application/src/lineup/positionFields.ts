@@ -1,3 +1,7 @@
+import {
+  MAXIMUM_POSITION_DESCRIPTION_LENGTH,
+  MAXIMUM_POSITION_NAME_LENGTH,
+} from "@sam-monorepo/domain";
 import * as z from "zod";
 import { idSchema } from "../pagination.js";
 
@@ -24,10 +28,6 @@ export const toStoredFontSize = (
  * position has far fewer. The limit stops requests that are too large.
  */
 const MAXIMUM_REQUIRED_VARIANTS = 250;
-
-/** The lengths of the inputs of the lineup form */
-export const MAXIMUM_POSITION_NAME_LENGTH = 256;
-const MAXIMUM_POSITION_DESCRIPTION_LENGTH = 512;
 
 /**
  * The color input of the app sends `#rrggbb`. The lineup puts the value into

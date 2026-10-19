@@ -1,4 +1,3 @@
-import type { PrismaClientType } from "@sam-monorepo/database";
 import {
   WikiPageEditability,
   WikiPageNamespace,
@@ -11,6 +10,7 @@ import type {
   EventContainerColumns,
 } from "@sam-monorepo/domain";
 import { compareWikiPagesByOrder } from "@sam-monorepo/wiki-editor/helpers";
+import type { ApplicationContext } from "../context.js";
 import {
   EVENT_WIKI_PAGE_SELECT,
   pickEventWikiRootPage,
@@ -28,13 +28,13 @@ import {
  * container.
  */
 export const findBriefingCopySource = async (
-  client: Pick<PrismaClientType, "wikiPage">,
+  context: Pick<ApplicationContext, "prisma">,
   columns: EventContainerColumns,
 ): Promise<{
   readonly pages: EventWikiContextPage[];
   readonly rootPage: EventWikiContextPage | null;
 }> => {
-  const pages = await client.wikiPage.findMany({
+  const pages = await context.prisma.wikiPage.findMany({
     where: {
       namespace: WikiPageNamespace.EVENT,
       ...columns,

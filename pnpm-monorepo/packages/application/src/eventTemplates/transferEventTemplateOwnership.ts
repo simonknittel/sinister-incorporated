@@ -5,8 +5,8 @@ import type { ApplicationContext } from "../context.js";
 import { rethrowRecordNotFound, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { requireShareableEventTemplate } from "./eventTemplateAccess.js";
 import { EventTemplateErrorMessage } from "./eventTemplateErrors.js";
-import { requireShareableEventTemplate } from "./eventTemplateGuards.js";
 
 export const transferEventTemplateOwnershipInputSchema = z.object({
   template_id: idSchema,

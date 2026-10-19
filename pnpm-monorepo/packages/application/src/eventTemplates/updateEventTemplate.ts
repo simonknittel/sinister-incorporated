@@ -1,18 +1,12 @@
-import {
-  EventDiscordPublishTarget,
-  EventVisibility,
-} from "@sam-monorepo/database/browser";
-import {
-  AuditEventType,
-  DISCORD_CHANNEL_ID_MAX_LENGTH,
-  DISCORD_EVENT_LOCATION_MAX_LENGTH,
-} from "@sam-monorepo/domain";
+import { EventDiscordPublishTarget } from "@sam-monorepo/database/browser";
+import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { rethrowRecordNotFound, ValidationError } from "../errors.js";
 import { requireOwnCoverImage } from "../events/coverImage.js";
 import { requireDescriptionFitsDiscord } from "../events/eventDescription.js";
+import { discordPublishFieldsShape } from "../events/eventDiscordPublication.js";
 import { EventErrorMessage } from "../events/eventErrors.js";
 import {
   eventDescriptionSchema,
@@ -21,6 +15,7 @@ import {
   visibilityRoleIdsSchema,
 } from "../events/eventInputSchemas.js";
 import { toEventVisibility } from "../events/eventOutput.js";
+import { resolveVisibilityRoleIds } from "../events/eventVisibilityRoles.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { requireEditableEventTemplate } from "./eventTemplateAccess.js";
@@ -33,20 +28,8 @@ export const updateEventTemplateInputSchema = z.object({
   /** The visibility of the events that the template creates */
   visibility: eventVisibilitySchema,
   visibility_role_ids: visibilityRoleIdsSchema.optional(),
-  /**
-   * The Discord publishing an event created from this template starts with.
-   * Absent means "do not publish".
-   */
-  discord_publish_target: z.enum(EventDiscordPublishTarget).optional(),
-  discord_publish_channel_id: z
-    .string()
-    .max(DISCORD_CHANNEL_ID_MAX_LENGTH)
-    .optional(),
-  discord_publish_location: z
-    .string()
-    .trim()
-    .max(DISCORD_EVENT_LOCATION_MAX_LENGTH)
-    .optional(),
+  /** The Discord publishing an event created from this template starts with */
+  ...discordPublishFieldsShape,
 });
 
 export type UpdateEventTemplateInput = z.infer<
@@ -88,26 +71,29 @@ export const updateEventTemplate = (
       context,
       actor,
       input.template_id,
-      { select: { name: true, coverImageId: true } },
+      {
+        select: {
+          name: true,
+          coverImageId: true,
+          visibilityRoles: { select: { roleId: true } },
+        },
+      },
     );
     const citizenId = actor.citizen?.id ?? null;
 
     requireDescriptionFitsDiscord(context, input.description);
 
     /**
-     * Validate the request. The roles themselves are not checked (a known
-     * defect).
+     * Validate the request
      */
     const visibility = toEventVisibility(input.visibility);
-    const visibilityRoleIds =
-      visibility === EventVisibility.RESTRICTED
-        ? (input.visibility_role_ids ?? [])
-        : [];
-    if (
-      visibility === EventVisibility.RESTRICTED &&
-      visibilityRoleIds.length === 0
-    )
-      throw new ValidationError(EventErrorMessage.NoVisibilityRole);
+    const visibilityRoleIds = await resolveVisibilityRoleIds(
+      context,
+      actor,
+      visibility,
+      input.visibility_role_ids ?? [],
+      template.visibilityRoles.map((visibilityRole) => visibilityRole.roleId),
+    );
 
     /**
      * A newly picked cover must be the actor's own image so nobody can

@@ -28,6 +28,11 @@ export const DISCORD_ERROR_UNKNOWN_GUILD_SCHEDULED_EVENT = 10070;
  * output of a schema is the type of the port.
  */
 
+/** Discord sends ISO 8601 timestamps with an offset */
+const timestampSchema = z.iso
+  .datetime({ offset: true })
+  .transform((value) => new Date(value));
+
 /**
  * https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object
  */
@@ -37,8 +42,8 @@ const scheduledEventSchema = z
     guild_id: z.string(),
     name: z.string(),
     image: z.string().nullish(),
-    scheduled_start_time: z.coerce.date(),
-    scheduled_end_time: z.coerce.date().nullish(),
+    scheduled_start_time: timestampSchema,
+    scheduled_end_time: timestampSchema.nullish(),
     description: z.string().nullish(),
     creator_id: z.string().nullish(),
     entity_metadata: z.object({ location: z.string().nullish() }).nullish(),

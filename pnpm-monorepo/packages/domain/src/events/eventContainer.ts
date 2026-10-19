@@ -1,11 +1,9 @@
-import type { EventPosition } from "@sam-monorepo/database/client";
-
 /**
  * A lineup and a briefing hang off either a real event or an event template
  * blueprint of one. Both store their positions and wiki pages in the same
- * tables (see EventPosition.eventId and WikiPage.templateId), so one editor
- * and one set of server actions serve both — the container is what decides
- * who may edit it and where the audit entry points.
+ * tables (see EventPosition.eventId and WikiPage.templateId), so the same
+ * lineup and briefing code serves both — the container is what decides who
+ * may edit it and where the audit entry points.
  */
 export enum EventContainerKind {
   Event = "event",
@@ -36,15 +34,17 @@ export const toTemplateContainer = (templateId: string): EventContainer => ({
 });
 
 /**
- * The container a stored position belongs to. Returns null for a row with
- * neither column set, which the CHECK constraint rules out — callers treat
+ * The container of a stored position, wiki page or tag, or null for a row
+ * with neither column set. A wiki page or tag without them belongs to the
+ * global wiki. The CHECK constraint of a position rules it out: callers treat
  * it like a missing position.
  */
-export const getPositionContainer = (
-  position: Pick<EventPosition, "eventId" | "templateId">,
-): EventContainer | null => {
-  if (position.eventId) return toEventContainer(position.eventId);
-  if (position.templateId) return toTemplateContainer(position.templateId);
+export const getEventContainerOfRow = (row: {
+  readonly eventId: string | null;
+  readonly templateId: string | null;
+}): EventContainer | null => {
+  if (row.eventId) return toEventContainer(row.eventId);
+  if (row.templateId) return toTemplateContainer(row.templateId);
   return null;
 };
 
@@ -64,7 +64,7 @@ export const eventContainerColumns = (
 
     default:
       throw new Error(
-        `Unknown lineup container kind: ${container.kind satisfies never}`,
+        `Unknown event container kind: ${container.kind satisfies never}`,
       );
   }
 };
@@ -77,16 +77,3 @@ export const wikiContainerColumns = (container: EventContainer | null) =>
   container
     ? eventContainerColumns(container)
     : { eventId: null, templateId: null };
-
-/**
- * The container a stored wiki page or tag belongs to. Both columns are NULL
- * for the global wiki, where the caller falls back to the global paths.
- */
-export const getWikiPageContainer = (page: {
-  readonly eventId: string | null;
-  readonly templateId: string | null;
-}): EventContainer | null => {
-  if (page.eventId) return toEventContainer(page.eventId);
-  if (page.templateId) return toTemplateContainer(page.templateId);
-  return null;
-};

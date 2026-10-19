@@ -1,6 +1,14 @@
 import type { EventPosition } from "@sam-monorepo/database/client";
 import { LINEUP_MAX_DEPTH } from "./lineupLimits.js";
 
+/** Where a paste puts the copy, relative to the target position */
+export enum PastePlacement {
+  /** Below the target, on the same level */
+  After = "after",
+  /** As the last children of the target */
+  Inside = "inside",
+}
+
 interface PositionNode {
   childPositions?: PositionNode[];
 }
@@ -39,8 +47,8 @@ export const canPasteSubtree = (parentLevel: number, subtreeDepth: number) =>
   parentLevel + subtreeDepth <= LINEUP_MAX_DEPTH;
 
 interface FlatPosition {
-  id: EventPosition["id"];
-  parentPositionId: EventPosition["parentPositionId"];
+  readonly id: EventPosition["id"];
+  readonly parentPositionId: EventPosition["parentPositionId"];
 }
 
 export type PositionSubtree<TPosition> = TPosition & {
@@ -91,26 +99,32 @@ export const getPositionSubtree = <TPosition extends FlatPosition>(
   buildNodesById(positions).get(positionId) ?? null;
 
 /**
- * @returns `1` for a top level position, `2` for its child positions, ...
+ * The level of each position: 1 for a position on the top level, 2 for its
+ * children and so on. A position in a cycle gets `Infinity`, thus it is
+ * deeper than each limit.
  */
-export const getPositionLevel = (
-  positions: FlatPosition[],
-  positionId: EventPosition["id"],
-): number => {
-  const parentPositionIds = new Map(
+export const getPositionLevels = (
+  positions: readonly FlatPosition[],
+): Map<string, number> => {
+  const parentIds = new Map(
     positions.map((position) => [position.id, position.parentPositionId]),
   );
 
-  const visitedPositionIds = new Set<string>([positionId]);
-  let level = 1;
-  let parentPositionId = parentPositionIds.get(positionId);
+  return new Map(
+    positions.map((position) => {
+      const visitedIds = new Set([position.id]);
+      let level = 1;
+      let parentId = position.parentPositionId;
 
-  // The `visitedPositionIds` check keeps a corrupted lineup from looping forever
-  while (parentPositionId && !visitedPositionIds.has(parentPositionId)) {
-    visitedPositionIds.add(parentPositionId);
-    level += 1;
-    parentPositionId = parentPositionIds.get(parentPositionId);
-  }
+      while (parentId !== null && parentIds.has(parentId)) {
+        if (visitedIds.has(parentId)) return [position.id, Infinity];
 
-  return level;
+        visitedIds.add(parentId);
+        level += 1;
+        parentId = parentIds.get(parentId) ?? null;
+      }
+
+      return [position.id, level];
+    }),
+  );
 };

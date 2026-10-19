@@ -274,8 +274,6 @@ describe("syncDiscordEvents", () => {
       deletedEventCount: 1,
       createdEventCount: 0,
     });
-    expect(discord.calls.map((call) => call.operation)).toEqual([
-      "listScheduledEvents",
-    ]);
+    expect(discord.calls).toEqual(["listScheduledEvents"]);
   });
 });

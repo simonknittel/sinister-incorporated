@@ -9,8 +9,8 @@ import type { ApplicationContext } from "../context.js";
 import { rethrowRecordNotFound, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { requireShareableEventTemplate } from "./eventTemplateAccess.js";
 import { EventTemplateErrorMessage } from "./eventTemplateErrors.js";
-import { requireShareableEventTemplate } from "./eventTemplateGuards.js";
 
 /** A template shares with at most as many roles as an event is visible to */
 const roleIdsSchema = z.array(idSchema).max(EVENT_MAX_VISIBILITY_ROLES);

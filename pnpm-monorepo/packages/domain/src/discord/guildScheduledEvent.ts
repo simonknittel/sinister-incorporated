@@ -1,10 +1,7 @@
-import { DISCORD_EVENT_DESCRIPTION_MAX_LENGTH } from "../events/eventDescription.js";
-
 /*
- * The rules of a guild scheduled event on Discord. The client components of
- * the app use the limits, the types and the path, the use cases use the
- * problems and the modify rule, and the Discord gateway uses the types. The
- * wire format (the payload builders and the privacy level) is not here.
+ * The rules of a guild scheduled event on Discord: the limits, the types, the
+ * path, the problems and the modify rule. The wire format (the payload
+ * builders and the privacy level) is in the Discord gateway.
  */
 
 /**
@@ -26,11 +23,9 @@ export enum DiscordScheduledEventEntityType {
   External = 3,
 }
 
-/**
- * https://discord.com/developers/docs/resources/guild-scheduled-event. The
- * cap of the description is `DISCORD_EVENT_DESCRIPTION_MAX_LENGTH`.
- */
+/** The caps of Discord: https://discord.com/developers/docs/resources/guild-scheduled-event */
 export const DISCORD_EVENT_NAME_MAX_LENGTH = 100;
+export const DISCORD_EVENT_DESCRIPTION_MAX_LENGTH = 1000;
 export const DISCORD_EVENT_LOCATION_MAX_LENGTH = 100;
 
 /**
@@ -40,9 +35,8 @@ export const DISCORD_EVENT_LOCATION_MAX_LENGTH = 100;
 export const DISCORD_CHANNEL_ID_MAX_LENGTH = 64;
 
 /**
- * The guild scheduled event's page on Discord, as a path for `DiscordButton`.
- * The event overview (a Server Component) and the settings card (a Client
- * Component) link there.
+ * The page of the guild scheduled event on Discord, as a path below the
+ * address of Discord
  */
 export const getGuildScheduledEventPath = (
   guildId: string,
@@ -145,7 +139,8 @@ export interface GuildScheduledEventChange {
  * have it validated against the start Discord still holds — a manager who
  * moves a running event's times would then get the whole change rejected,
  * losing the title and description edits in the same save. The times on
- * Discord are left as they are instead (the plan accepts drift).
+ * Discord are left as they are instead, thus they can differ from the times
+ * of the app.
  */
 export const toGuildScheduledEventChange = (
   content: GuildScheduledEventContent,

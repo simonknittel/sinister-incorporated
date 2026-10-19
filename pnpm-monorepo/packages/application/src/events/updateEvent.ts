@@ -23,6 +23,7 @@ import { withSpan } from "../withSpan.js";
 import { createEventActivity } from "./eventActivity.js";
 import { requireDescriptionFitsDiscord } from "./eventDescription.js";
 import {
+  DiscordSyncOutcome,
   syncEventDiscordPublication,
   type DiscordSyncResult,
 } from "./eventDiscordPublication.js";
@@ -422,6 +423,9 @@ export const updateEvent = (
  * the guild keeps seeing it. The caller says it out loud rather than
  * silently unpublishing, which would be a surprise of its own. The publish
  * state is read after the sync, because a sync can clear it.
+ *
+ * A failure cannot undo the save, thus a thrown error becomes Failed: else
+ * the user would save the change again.
  */
 const syncDiscordAfterUpdate = async (
   context: ApplicationContext,
@@ -434,18 +438,29 @@ const syncDiscordAfterUpdate = async (
     readonly restrictsVisibility: boolean;
   },
 ): Promise<UpdateEventDiscordResult> => {
-  const sync = changesContent
-    ? await syncEventDiscordPublication(context, eventId)
-    : null;
+  try {
+    const sync = changesContent
+      ? await syncEventDiscordPublication(context, eventId)
+      : null;
 
-  const staysVisibleOnDiscord =
-    restrictsVisibility &&
-    (
-      await context.prisma.event.findUnique({
-        where: { id: eventId },
-        select: { discordPublishedId: true },
-      })
-    )?.discordPublishedId != null;
+    const staysVisibleOnDiscord =
+      restrictsVisibility &&
+      (
+        await context.prisma.event.findUnique({
+          where: { id: eventId },
+          select: { discordPublishedId: true },
+        })
+      )?.discordPublishedId != null;
 
-  return { sync, staysVisibleOnDiscord };
+    return { sync, staysVisibleOnDiscord };
+  } catch (error) {
+    context.log.error("Failed to carry an event change over to Discord", {
+      eventId,
+      error,
+    });
+    return {
+      sync: { outcome: DiscordSyncOutcome.Failed },
+      staysVisibleOnDiscord: false,
+    };
+  }
 };

@@ -31,10 +31,14 @@ const USER_PAGE_SIZE = 100;
 const MAXIMUM_USER_PAGE_COUNT = 100;
 
 /**
- * The one error that means this event is gone from the guild, as opposed to
- * the guild itself being out of reach.
+ * The gateway sends the bot token to these hosts also without TLS: the
+ * traffic does not leave the machine. The environment of the app has the
+ * same rule.
  */
-const NOT_FOUND_ERROR_CODES = [DISCORD_ERROR_UNKNOWN_GUILD_SCHEDULED_EVENT];
+const LOOPBACK_HOSTNAMES: readonly string[] = ["localhost", "127.0.0.1", "::1"];
+
+/** The characters that a header value can carry without an escape */
+const VISIBLE_ASCII_PATTERN = /^[\x21-\x7e]+$/;
 
 export interface DiscordGatewayOptions {
   /** With its path, for example `https://discord.com/api/v10` */
@@ -84,12 +88,6 @@ interface DiscordRequest<Schema extends z.ZodType | undefined> {
    * fully described by what the gateway just sent.
    */
   readonly responseSchema?: Schema;
-  /**
-   * Discord JSON error codes that mean "the resource this call addresses no
-   * longer exists" and nothing broader. Without them, every error is a plain
-   * failure.
-   */
-  readonly notFoundErrorCodes?: readonly number[];
 }
 
 type ResponseData<Schema extends z.ZodType | undefined> =
@@ -112,6 +110,41 @@ const getRetryAfterSeconds = (
   return Number.isFinite(seconds) ? seconds : null;
 };
 
+/**
+ * The problem of the options that prevents every request, or null. The text
+ * never contains the token, because the log line shows it.
+ */
+const findOptionsProblem = ({
+  apiBaseUrl,
+  botToken,
+}: DiscordGatewayOptions) => {
+  if (!VISIBLE_ASCII_PATTERN.test(botToken))
+    return "The bot token is empty or contains a character that a header cannot carry";
+
+  if (!URL.canParse(apiBaseUrl)) return "The API base URL is not a URL";
+
+  const { protocol, hostname } = new URL(apiBaseUrl);
+  if (
+    protocol !== "https:" &&
+    !LOOPBACK_HOSTNAMES.includes(hostname.replace(/^\[|\]$/g, ""))
+  )
+    return "The API base URL must use https unless it is loopback";
+
+  return null;
+};
+
+/**
+ * Only the name and the cause of an error from `fetch`: the message of an
+ * invalid header contains the value of the header, thus the token.
+ */
+const describeFetchError = (error: unknown) =>
+  error instanceof Error
+    ? {
+        errorName: error.name,
+        ...(error.cause === undefined ? {} : { errorCause: error.cause }),
+      }
+    : { errorName: typeof error };
+
 const readErrorBody = async (response: Response) => {
   try {
     const body: unknown = await response.json();
@@ -133,6 +166,12 @@ export const createDiscordGateway = (
 ): DiscordGateway => {
   const { log } = options;
 
+  const optionsProblem = findOptionsProblem(options);
+  if (optionsProblem !== null)
+    log.error("The Discord gateway cannot send requests", {
+      problem: optionsProblem,
+    });
+
   const guildPath = `/guilds/${encodeURIComponent(options.guildId)}`;
   const scheduledEventsPath = `${guildPath}/scheduled-events`;
   const getScheduledEventPath = (scheduledEventId: string) =>
@@ -151,8 +190,16 @@ export const createDiscordGateway = (
   const sendRequest = async <Schema extends z.ZodType | undefined = undefined>(
     request: DiscordRequest<Schema>,
   ): Promise<DiscordResult<ResponseData<Schema>>> => {
-    const { method, path, query, body, responseSchema, notFoundErrorCodes } =
-      request;
+    const { method, path, query, body, responseSchema } = request;
+
+    if (optionsProblem !== null) {
+      log.warn("Discord API request not sent", {
+        path,
+        method,
+        problem: optionsProblem,
+      });
+      return { outcome: DiscordOutcome.Failed };
+    }
 
     for (let retryCount = 0; ; retryCount++) {
       let response: Response;
@@ -175,7 +222,11 @@ export const createDiscordGateway = (
           cache: "no-store",
         });
       } catch (error) {
-        log.error("Discord API request failed", { path, method, error });
+        log.error("Discord API request failed", {
+          path,
+          method,
+          ...describeFetchError(error),
+        });
         return { outcome: DiscordOutcome.Failed };
       }
 
@@ -185,12 +236,10 @@ export const createDiscordGateway = (
         /**
          * Keyed on the error code of Discord rather than on the status: a 404
          * alone can just as well mean that the bot lost the guild, and
-         * callers act destructively on this outcome.
+         * callers act destructively on this outcome. Discord gives this code
+         * only for a request that addresses one scheduled event.
          */
-        if (
-          errorBody?.code !== undefined &&
-          notFoundErrorCodes?.includes(errorBody.code)
-        ) {
+        if (errorBody?.code === DISCORD_ERROR_UNKNOWN_GUILD_SCHEDULED_EVENT) {
           log.warn("Discord API reported the resource as gone", {
             path,
             method,
@@ -324,14 +373,12 @@ export const createDiscordGateway = (
         method: DiscordRequestMethod.Patch,
         path: getScheduledEventPath(scheduledEventId),
         body: buildModifyGuildScheduledEventPayload(change),
-        notFoundErrorCodes: NOT_FOUND_ERROR_CODES,
       }),
 
     deleteScheduledEvent: (scheduledEventId) =>
       send({
         method: DiscordRequestMethod.Delete,
         path: getScheduledEventPath(scheduledEventId),
-        notFoundErrorCodes: NOT_FOUND_ERROR_CODES,
       }),
   };
 };

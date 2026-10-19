@@ -40,6 +40,7 @@ export {
 } from "./eventActivityRows.js";
 export {
   DiscordSyncOutcome,
+  discordPublishFieldsShape,
   publishEventToDiscord,
   publishEventToDiscordInputSchema,
   syncEventDiscordPublication,
@@ -51,10 +52,7 @@ export {
   type UnpublishEventFromDiscordInput,
 } from "./eventDiscordPublication.js";
 export { EventErrorMessage } from "./eventErrors.js";
-export {
-  EVENT_MANAGE_GUARD_SELECT,
-  type ManageableEventOptions,
-} from "./eventManageGuard.js";
+export { EVENT_MANAGE_GUARD_SELECT } from "./eventManageGuard.js";
 export {
   isAllowedToManageEvent,
   isAllowedToManagePositions,
@@ -74,6 +72,7 @@ export {
   findResolvedEventParticipants,
   type EventFleetEntry,
   type EventOption,
+  type EventParticipantRow,
   type ResolvedEventParticipant,
 } from "./eventPageRows.js";
 export {
@@ -122,7 +121,6 @@ export {
   eventParticipationInputSchema,
   type EventParticipationInput,
 } from "./ownParticipation.js";
-export { buildParticipantCitizenWhere } from "./participantCitizenWhere.js";
 export {
   removeEventManager,
   removeEventManagerInputSchema,

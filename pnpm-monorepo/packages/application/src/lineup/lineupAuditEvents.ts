@@ -4,8 +4,8 @@ import {
   EventContainerKind,
   type AuditEventInput,
   type EventContainer,
+  type PastePlacement,
 } from "@sam-monorepo/domain";
-import type { PastePlacement } from "./pasteLineupPosition.js";
 
 /*
  * The system log is immutable, thus a change of the lineup of an event

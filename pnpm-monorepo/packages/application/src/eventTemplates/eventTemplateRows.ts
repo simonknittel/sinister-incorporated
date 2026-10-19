@@ -116,11 +116,15 @@ export interface EventTemplateListFilters {
   readonly sharing: EventTemplateSharing;
   /** Only applied for `event;manage` holders, so it can never widen a view */
   readonly ownerId: string | null;
+  /** The host bounds it with `EVENT_TEMPLATE_LIST_QUERY_MAXIMUM_LENGTH` */
   readonly query: string | null;
 }
 
-/** Longer terms are pointless: the name has at most 128 characters */
-const MAXIMUM_QUERY_LENGTH = 255;
+/**
+ * The bound of the search term of the list, which comes from the URL. Longer
+ * terms are pointless: the name has at most 128 characters.
+ */
+export const EVENT_TEMPLATE_LIST_QUERY_MAXIMUM_LENGTH = 255;
 
 /**
  * The templates the actor may see, newest change first, with their resolved
@@ -134,9 +138,7 @@ export const findEventTemplateListRows = async (
   filters: EventTemplateListFilters,
 ): Promise<EventTemplateListEntry[]> => {
   const viewer = toEventTemplateViewer(actor);
-
-  /** The search term comes straight from the URL */
-  const query = filters.query?.slice(0, MAXIMUM_QUERY_LENGTH);
+  const { query } = filters;
 
   const templates = await context.prisma.eventTemplate.findMany({
     where: {

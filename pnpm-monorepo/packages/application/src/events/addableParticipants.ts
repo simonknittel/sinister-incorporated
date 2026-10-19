@@ -6,17 +6,13 @@ import {
 } from "@sam-monorepo/domain";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ConflictError, ForbiddenError, NotFoundError } from "../errors.js";
-import { EventErrorMessage } from "./eventErrors.js";
-import {
-  isAllowedToManageEvent,
-  isEventUpdatable,
-} from "./eventManageRules.js";
+import { requireManageableEvent } from "./eventManageGuard.js";
+import { isAllowedToManageEvent } from "./eventManageRules.js";
 import {
   resolveEventVisibility,
   type EventVisibilityInput,
 } from "./eventVisibility.js";
-import { findParticipatableAppEvent } from "./participatableAppEvent.js";
+import { requireParticipatableAppEvent } from "./participatableAppEvent.js";
 
 type AddableParticipantsEvent = EventVisibilityInput & {
   readonly id: string;
@@ -145,12 +141,8 @@ export const findAddableEventParticipantIds = async (
 ): Promise<string[]> => {
   requirePermission(actor, "event", "read");
 
-  const event = await findParticipatableAppEvent(context, actor, eventId);
-  if (!event) throw new NotFoundError(EventErrorMessage.NotFound);
-  if (!isEventUpdatable(event, context.now()))
-    throw new ConflictError(EventErrorMessage.EventEnded);
-  if (!isAllowedToManageEvent(actor, event))
-    throw new ForbiddenError("The user cannot manage the event");
+  const event = await requireParticipatableAppEvent(context, actor, eventId);
+  requireManageableEvent(context, actor, event, isAllowedToManageEvent);
 
   return findAddableParticipantIds(context.prisma, event);
 };

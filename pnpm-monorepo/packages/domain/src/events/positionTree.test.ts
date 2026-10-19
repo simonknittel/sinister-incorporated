@@ -3,7 +3,7 @@ import { LINEUP_MAX_DEPTH } from "./lineupLimits.js";
 import {
   buildPositionTree,
   canPasteSubtree,
-  getPositionLevel,
+  getPositionLevels,
   getPositionSubtree,
   getSubtreeDepth,
   getSubtreeSize,
@@ -101,19 +101,25 @@ describe("getPositionSubtree", () => {
   });
 });
 
-describe("getPositionLevel", () => {
-  it("returns the number of levels above the position", () => {
-    expect(getPositionLevel(positions, "alpha")).toBe(1);
-    expect(getPositionLevel(positions, "alphaOne")).toBe(2);
-    expect(getPositionLevel(positions, "alphaOneDeep")).toBe(3);
+describe("getPositionLevels", () => {
+  it("returns the level of each position", () => {
+    expect(getPositionLevels(positions)).toEqual(
+      new Map([
+        ["alpha", 1],
+        ["alphaOne", 2],
+        ["alphaOneDeep", 3],
+        ["alphaTwo", 2],
+        ["bravo", 1],
+      ]),
+    );
   });
 
-  it("terminates on a cyclic parent chain", () => {
+  it("puts a position of a cyclic parent chain deeper than each limit", () => {
     const cyclicPositions = [
       { id: "alpha", parentPositionId: "bravo" },
       { id: "bravo", parentPositionId: "alpha" },
     ];
 
-    expect(getPositionLevel(cyclicPositions, "alpha")).toBe(2);
+    expect(getPositionLevels(cyclicPositions).get("alpha")).toBe(Infinity);
   });
 });

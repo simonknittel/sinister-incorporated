@@ -14,7 +14,7 @@ const SUPPORTED_MIME_TYPES: readonly string[] = [
  * Caps what one publish buffers into memory and keeps the request body
  * within what Discord accepts — base64 inflates these bytes by a third.
  */
-const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const MAXIMUM_COVER_IMAGE_BYTES = 8 * 1024 * 1024;
 
 interface CoverImage {
   readonly id: string;
@@ -51,7 +51,7 @@ export const readDiscordCoverImage = async (
 
   try {
     const bytes = await context.storage.readObject(upload.id, {
-      maximumBytes: MAX_IMAGE_BYTES,
+      maximumBytes: MAXIMUM_COVER_IMAGE_BYTES,
     });
     if (!bytes) {
       context.log.info("Skipped an empty or oversized Discord cover image", {

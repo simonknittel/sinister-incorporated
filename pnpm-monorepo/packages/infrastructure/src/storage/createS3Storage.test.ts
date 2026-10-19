@@ -12,20 +12,21 @@ const createBody = (bytes: Uint8Array): Body => ({
   transformToByteArray: vi.fn(async () => bytes),
 });
 
+interface Output {
+  readonly Body?: Body;
+  readonly ContentLength?: number;
+}
+
 /** A client that answers each command with the given output */
-const createStorage = (
-  output: { Body?: Body; ContentLength?: number } = {},
-) => {
-  const send = vi.fn(
-    async (
-      command: GetObjectCommand | CopyObjectCommand,
-      options: { readonly abortSignal: AbortSignal },
-    ) => {
-      void command;
-      void options;
-      return output;
-    },
-  );
+const createStorage = (output: Output = {}) => {
+  const send =
+    vi.fn<
+      (
+        command: GetObjectCommand | CopyObjectCommand,
+        options: { readonly abortSignal: AbortSignal },
+      ) => Promise<Output>
+    >();
+  send.mockResolvedValue(output);
   const storage = createS3Storage({
     client: { send } as unknown as S3StorageOptions["client"],
     bucketName: BUCKET_NAME,

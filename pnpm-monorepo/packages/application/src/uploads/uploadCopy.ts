@@ -2,6 +2,15 @@ import type { Prisma, Upload } from "@sam-monorepo/database/client";
 import type { ApplicationContext } from "../context.js";
 import { ConflictError } from "../errors.js";
 
+/**
+ * The messages of the typed errors of the upload copy. They are the members
+ * of an enum, thus the app can show its own text for each of them.
+ */
+export enum UploadErrorMessage {
+  /** A `ConflictError`: the host has no file storage */
+  StorageNotConfigured = "The file storage is not configured",
+}
+
 /** Everything a copy needs from its source row */
 export type CopyableUpload = Pick<
   Upload,
@@ -34,7 +43,7 @@ export const COPYABLE_UPLOAD_SELECT = {
  * itself cannot be rolled back, but an object without a row is exactly what
  * the nightly upload cleanup removes.
  *
- * @throws ConflictError when the host has no file storage
+ * @throws ConflictError `UploadErrorMessage.StorageNotConfigured`
  */
 export const copyUploadInTransaction = async (
   context: Pick<ApplicationContext, "storage">,
@@ -43,7 +52,7 @@ export const copyUploadInTransaction = async (
   createdById: string | null,
 ): Promise<{ readonly id: string }> => {
   if (!context.storage)
-    throw new ConflictError("The file storage is not configured");
+    throw new ConflictError(UploadErrorMessage.StorageNotConfigured);
 
   const copy = await transaction.upload.create({
     data: {

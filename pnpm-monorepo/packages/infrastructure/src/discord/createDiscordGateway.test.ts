@@ -1,4 +1,8 @@
-import { DiscordOutcome } from "@sam-monorepo/application";
+import {
+  DiscordOutcome,
+  type DiscordGateway,
+  type DiscordResult,
+} from "@sam-monorepo/application";
 import {
   DiscordScheduledEventEntityType,
   toGuildScheduledEventChange,
@@ -13,7 +17,6 @@ import {
 import {
   buildCreateGuildScheduledEventPayload,
   buildModifyGuildScheduledEventPayload,
-  DiscordScheduledEventPrivacyLevel,
 } from "./guildScheduledEventPayload.js";
 
 const API_BASE_URL = "https://discord.example/api/v10";
@@ -35,6 +38,7 @@ const getRequest = (index = 0) => {
     method: init?.method,
     headers: new Headers(init?.headers),
     body: init?.body,
+    signal: init?.signal,
   };
 };
 
@@ -92,6 +96,30 @@ const createGateway = (overrides: Partial<DiscordGatewayOptions> = {}) => {
 
   return { gateway, log, startedSpanNames };
 };
+
+type TestLog = ReturnType<typeof createGateway>["log"];
+
+const getLogCalls = (log: TestLog) =>
+  [log.info, log.warn, log.error].flatMap(
+    (logFunction) => logFunction.mock.calls,
+  );
+
+/** The text of all log calls, with the message and the cause of each error */
+const getLoggedText = (log: TestLog) =>
+  JSON.stringify(getLogCalls(log), (key, value: unknown) =>
+    value instanceof Error
+      ? { name: value.name, message: value.message, cause: value.cause }
+      : value,
+  );
+
+interface FailureCase {
+  readonly name: string;
+  readonly options?: Partial<DiscordGatewayOptions>;
+  readonly stubFetch?: () => void;
+  readonly call: (gateway: DiscordGateway) => Promise<DiscordResult<unknown>>;
+  /** How often the gateway calls `fetch` before it gives up */
+  readonly fetchCount: number;
+}
 
 /** Discord user IDs are snowflakes: numbers as strings */
 const createDiscordUserIds = (count: number) =>
@@ -166,6 +194,7 @@ describe("the request", () => {
     expect(request.headers.get("Authorization")).toBe(`Bot ${BOT_TOKEN}`);
     expect(request.headers.get("User-Agent")).toBe(USER_AGENT);
     expect(request.headers.get("Content-Type")).toBe("application/json");
+    expect(request.signal).toBeInstanceOf(AbortSignal);
     expect(request.body).toBe(
       JSON.stringify(
         buildCreateGuildScheduledEventPayload(content(), CHANNEL_TARGET),
@@ -174,9 +203,9 @@ describe("the request", () => {
     expect(startedSpanNames).toEqual(["discord POST"]);
   });
 
-  test("sends no User-Agent without the option, and encodes the IDs of a path", async () => {
+  test("sends no User-Agent without the option, permits a loopback base URL and encodes the IDs of a path", async () => {
     const { gateway } = createGateway({
-      apiBaseUrl: `${API_BASE_URL}/`,
+      apiBaseUrl: "http://127.0.0.1:4010/api/v10/",
       guildId: "guild/1",
       userAgent: undefined,
     });
@@ -185,13 +214,13 @@ describe("the request", () => {
     await gateway.deleteScheduledEvent("../2");
 
     const request = getRequest();
-    expect(request.path).toBe(
-      "/api/v10/guilds/guild%2F1/scheduled-events/..%2F2",
+    expect(request.url).toBe(
+      "http://127.0.0.1:4010/api/v10/guilds/guild%2F1/scheduled-events/..%2F2",
     );
     expect(request.headers.has("User-Agent")).toBe(false);
   });
 
-  test("reports a named not-found error code as its own outcome so callers can self-heal", async () => {
+  test("reports an unknown scheduled event as its own outcome so callers can self-heal", async () => {
     const { gateway } = createGateway();
     // 10070 = Unknown Guild Scheduled Event
     fetchMock.mockImplementation(() =>
@@ -213,64 +242,114 @@ describe("the request", () => {
     expect(getRequest(1).method).toBe("DELETE");
   });
 
-  /**
-   * The self-heal is destructive, so it must not fire on a 404 that means
-   * the bot lost the guild rather than the event being gone.
-   */
-  test("reports a 404 with a different error code as a plain failure", async () => {
-    const { gateway } = createGateway();
-    // 10004 = Unknown Guild
-    fetchMock.mockResolvedValue(jsonResponse(404, { code: 10004 }));
+  test.each<FailureCase>([
+    {
+      /**
+       * The self-heal is destructive, so it must not fire on a 404 that
+       * means the bot lost the guild rather than the event being gone.
+       */
+      name: "a 404 with a different error code",
+      stubFetch: () =>
+        // 10004 = Unknown Guild
+        fetchMock.mockResolvedValue(jsonResponse(404, { code: 10004 })),
+      call: (gateway) =>
+        gateway.modifyScheduledEvent(
+          "2",
+          toGuildScheduledEventChange(content(), NOW),
+        ),
+      fetchCount: 1,
+    },
+    {
+      name: "any other rejection",
+      stubFetch: () =>
+        fetchMock.mockResolvedValue(
+          jsonResponse(403, { code: 50013, message: "Missing Permissions" }),
+        ),
+      call: (gateway) =>
+        gateway.createScheduledEvent(content(), CHANNEL_TARGET),
+      fetchCount: 1,
+    },
+    {
+      name: "an unreachable Discord",
+      stubFetch: () => fetchMock.mockRejectedValue(new Error("network down")),
+      call: (gateway) => gateway.listChannels(),
+      fetchCount: 1,
+    },
+    {
+      name: "a request that times out",
+      stubFetch: () =>
+        fetchMock.mockRejectedValue(
+          new DOMException("The operation timed out.", "TimeoutError"),
+        ),
+      call: (gateway) => gateway.listChannels(),
+      fetchCount: 1,
+    },
+    {
+      name: "a base URL that is not a URL",
+      options: { apiBaseUrl: "not a URL" },
+      call: (gateway) => gateway.listChannels(),
+      fetchCount: 0,
+    },
+    {
+      name: "a base URL without TLS on a host that is not loopback",
+      options: { apiBaseUrl: "http://discord.example/api/v10" },
+      call: (gateway) => gateway.listChannels(),
+      fetchCount: 0,
+    },
+    {
+      name: "a token that a header cannot carry",
+      options: { botToken: `${BOT_TOKEN}\nX-Injected: 1` },
+      call: (gateway) => gateway.listChannels(),
+      fetchCount: 0,
+    },
+    {
+      name: "a rate limit after the maximum retry count",
+      options: {
+        rateLimitRetry: { maximumRetryCount: 2, maximumWaitSeconds: 5 },
+      },
+      stubFetch: () =>
+        fetchMock.mockImplementation(() =>
+          Promise.resolve(jsonResponse(429, { retry_after: 0 })),
+        ),
+      call: (gateway) => gateway.listChannels(),
+      fetchCount: 3,
+    },
+    {
+      name: "a rate limit that asks for a long wait",
+      stubFetch: () =>
+        fetchMock.mockResolvedValue(jsonResponse(429, { retry_after: 120 })),
+      call: (gateway) =>
+        gateway.createScheduledEvent(content(), CHANNEL_TARGET),
+      fetchCount: 1,
+    },
+    {
+      name: "a rate limit that names no wait at all",
+      stubFetch: () =>
+        fetchMock.mockResolvedValue(new Response("nope", { status: 429 })),
+      call: (gateway) =>
+        gateway.createScheduledEvent(content(), CHANNEL_TARGET),
+      fetchCount: 1,
+    },
+    {
+      name: "a response that does not match the schema",
+      stubFetch: () =>
+        fetchMock.mockResolvedValue(jsonResponse(200, { unexpected: true })),
+      call: (gateway) =>
+        gateway.createScheduledEvent(content(), CHANNEL_TARGET),
+      fetchCount: 1,
+    },
+  ])(
+    "reports $name as a failure instead of throwing",
+    async ({ options, stubFetch, call, fetchCount }) => {
+      const { gateway } = createGateway(options);
+      stubFetch?.();
 
-    const result = await gateway.modifyScheduledEvent(
-      "2",
-      toGuildScheduledEventChange(content(), NOW),
-    );
+      const result = await call(gateway);
 
-    expect(result).toEqual({ outcome: DiscordOutcome.Failed });
-  });
-
-  test("reports a 404 as a plain failure when the operation names no codes", async () => {
-    const { gateway } = createGateway();
-    fetchMock.mockResolvedValue(jsonResponse(404, { code: 10070 }));
-
-    const result = await gateway.listChannels();
-
-    expect(result).toEqual({ outcome: DiscordOutcome.Failed });
-  });
-
-  test("reports any other rejection as a plain failure", async () => {
-    const { gateway } = createGateway();
-    fetchMock.mockResolvedValue(
-      jsonResponse(403, { code: 50013, message: "Missing Permissions" }),
-    );
-
-    const result = await gateway.createScheduledEvent(
-      content(),
-      CHANNEL_TARGET,
-    );
-
-    expect(result).toEqual({ outcome: DiscordOutcome.Failed });
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-  });
-
-  test("reports an unreachable Discord as a failure instead of throwing", async () => {
-    const { gateway } = createGateway();
-    fetchMock.mockRejectedValue(new Error("network down"));
-
-    const result = await gateway.listChannels();
-
-    expect(result).toEqual({ outcome: DiscordOutcome.Failed });
-  });
-
-  test("reports an invalid base URL as a failure instead of throwing", async () => {
-    const { gateway } = createGateway({ apiBaseUrl: "not a URL" });
-
-    const result = await gateway.listChannels();
-
-    expect(result).toEqual({ outcome: DiscordOutcome.Failed });
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
+      expect(result).toEqual({ outcome: DiscordOutcome.Failed });
+      expect(fetchMock).toHaveBeenCalledTimes(fetchCount);
+    },
+  );
 
   test("retries a short rate limit once and then succeeds", async () => {
     const { gateway } = createGateway();
@@ -307,58 +386,6 @@ describe("the request", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
-  test("stops after the maximum retry count", async () => {
-    const { gateway } = createGateway({
-      rateLimitRetry: { maximumRetryCount: 2, maximumWaitSeconds: 5 },
-    });
-    fetchMock.mockImplementation(() =>
-      Promise.resolve(jsonResponse(429, { retry_after: 0 })),
-    );
-
-    const result = await gateway.listChannels();
-
-    expect(result).toEqual({ outcome: DiscordOutcome.Failed });
-    expect(fetchMock).toHaveBeenCalledTimes(3);
-  });
-
-  test("gives up on a rate limit that asks for a long wait", async () => {
-    const { gateway } = createGateway();
-    fetchMock.mockResolvedValue(jsonResponse(429, { retry_after: 120 }));
-
-    const result = await gateway.createScheduledEvent(
-      content(),
-      CHANNEL_TARGET,
-    );
-
-    expect(result).toEqual({ outcome: DiscordOutcome.Failed });
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-  });
-
-  test("gives up on a rate limit that names no wait at all", async () => {
-    const { gateway } = createGateway();
-    fetchMock.mockResolvedValue(new Response("nope", { status: 429 }));
-
-    const result = await gateway.createScheduledEvent(
-      content(),
-      CHANNEL_TARGET,
-    );
-
-    expect(result).toEqual({ outcome: DiscordOutcome.Failed });
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-  });
-
-  test("treats a response that does not match the schema as a failure", async () => {
-    const { gateway } = createGateway();
-    fetchMock.mockResolvedValue(jsonResponse(200, { unexpected: true }));
-
-    const result = await gateway.createScheduledEvent(
-      content(),
-      CHANNEL_TARGET,
-    );
-
-    expect(result).toEqual({ outcome: DiscordOutcome.Failed });
-  });
-
   test("sends no body and no content type for a delete", async () => {
     const { gateway } = createGateway();
     fetchMock.mockResolvedValue(new Response(null, { status: 204 }));
@@ -373,22 +400,40 @@ describe("the request", () => {
     expect(request.headers.get("Content-Type")).toBeNull();
   });
 
-  test("never writes the token to a log", async () => {
-    const { gateway, log } = createGateway();
-    fetchMock
-      .mockRejectedValueOnce(new Error("network down"))
-      .mockResolvedValueOnce(jsonResponse(403, { message: "Missing Access" }))
-      .mockResolvedValueOnce(jsonResponse(200, { unexpected: true }));
+  describe("never writes the token to a log", () => {
+    test("for a failed request, a rejection or an unexpected body", async () => {
+      const { gateway, log } = createGateway();
+      fetchMock
+        .mockRejectedValueOnce(
+          new TypeError(`"Bot ${BOT_TOKEN}" is an invalid header value.`),
+        )
+        .mockResolvedValueOnce(jsonResponse(403, { message: "Missing Access" }))
+        .mockResolvedValueOnce(jsonResponse(200, { unexpected: true }));
 
-    await gateway.listChannels();
-    await gateway.listChannels();
-    await gateway.createScheduledEvent(content(), CHANNEL_TARGET);
+      await gateway.listChannels();
+      await gateway.listChannels();
+      await gateway.createScheduledEvent(content(), CHANNEL_TARGET);
 
-    const loggedCalls = [log.info, log.warn, log.error].flatMap(
-      (logFunction) => logFunction.mock.calls,
-    );
-    expect(loggedCalls.length).toBeGreaterThanOrEqual(3);
-    expect(JSON.stringify(loggedCalls)).not.toContain(BOT_TOKEN);
+      expect(getLogCalls(log).length).toBeGreaterThanOrEqual(3);
+      expect(getLoggedText(log)).not.toContain(BOT_TOKEN);
+    });
+
+    test("for a token that a header cannot carry", async () => {
+      const { gateway, log } = createGateway({
+        botToken: `${BOT_TOKEN}\nX-Injected: 1`,
+      });
+      // Like the fetch of Node, which names the invalid value in its error
+      fetchMock.mockImplementation((input, init) => {
+        new Headers(init?.headers);
+        return Promise.resolve(jsonResponse(200, []));
+      });
+
+      const result = await gateway.listChannels();
+
+      expect(result).toEqual({ outcome: DiscordOutcome.Failed });
+      expect(getLogCalls(log).length).toBeGreaterThanOrEqual(1);
+      expect(getLoggedText(log)).not.toContain(BOT_TOKEN);
+    });
   });
 });
 
@@ -586,11 +631,10 @@ describe("buildCreateGuildScheduledEventPayload", () => {
       scheduled_start_time: "2027-03-05T19:00:00.000Z",
       scheduled_end_time: "2027-03-05T21:00:00.000Z",
       image: null,
-      privacy_level: DiscordScheduledEventPrivacyLevel.GuildOnly,
+      privacy_level: 2,
       entity_type: DiscordScheduledEventEntityType.Voice,
       channel_id: "1234567890",
     });
-    expect(DiscordScheduledEventPrivacyLevel.GuildOnly).toBe(2);
   });
 
   test("sends entity_metadata and no channel_id for an external event", () => {
@@ -617,23 +661,6 @@ describe("buildCreateGuildScheduledEventPayload", () => {
 });
 
 describe("buildModifyGuildScheduledEventPayload", () => {
-  test("re-asserts name, description, schedule and cover", () => {
-    const payload = buildModifyGuildScheduledEventPayload(
-      toGuildScheduledEventChange(
-        content({ imageDataUri: "data:image/png;base64,AAA" }),
-        NOW,
-      ),
-    );
-
-    expect(payload).toEqual({
-      name: "Operation Nachtwache",
-      description: "Wir treffen uns am Sammelpunkt.",
-      scheduled_start_time: "2027-03-05T19:00:00.000Z",
-      scheduled_end_time: "2027-03-05T21:00:00.000Z",
-      image: "data:image/png;base64,AAA",
-    });
-  });
-
   test("clears the cover on Discord when the app has none", () => {
     const payload = buildModifyGuildScheduledEventPayload(
       toGuildScheduledEventChange(content(), NOW),

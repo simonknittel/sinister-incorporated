@@ -5,7 +5,7 @@ import {
   type ApplicationContext,
   type DiscordScheduledEvent,
 } from "../context.js";
-import { callDiscord } from "../discord/discordGateway.js";
+import { callDiscord } from "../discord/callDiscord.js";
 import { diffParticipants } from "./discordEventReconciliation.js";
 
 export interface SyncDiscordParticipantsOutput {

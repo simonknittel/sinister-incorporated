@@ -9,7 +9,7 @@ import type {
  * events.
  * https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-privacy-level
  */
-export enum DiscordScheduledEventPrivacyLevel {
+enum DiscordScheduledEventPrivacyLevel {
   GuildOnly = 2,
 }
 

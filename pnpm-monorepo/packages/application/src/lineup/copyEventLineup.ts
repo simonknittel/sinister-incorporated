@@ -56,7 +56,7 @@ export const copyEventLineup = (
     if (!isLineupVisible(actor, sourceEvent))
       throw new ForbiddenError("The lineup of the source event is not enabled");
 
-    const sourcePositions = await findClonablePositions(context.prisma, {
+    const sourcePositions = await findClonablePositions(context, {
       eventId: sourceEvent.id,
       templateId: null,
     });

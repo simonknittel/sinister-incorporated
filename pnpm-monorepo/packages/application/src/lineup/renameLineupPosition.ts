@@ -1,3 +1,4 @@
+import { MAXIMUM_POSITION_NAME_LENGTH } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
@@ -8,7 +9,6 @@ import { buildPositionNameUpdatedAuditEvent } from "./lineupAuditEvents.js";
 import { requireEditableLineupContainer } from "./lineupContainerGuard.js";
 import { LineupErrorMessage } from "./lineupErrors.js";
 import { findLineupPosition } from "./lineupWrites.js";
-import { MAXIMUM_POSITION_NAME_LENGTH } from "./positionFields.js";
 
 /**
  * Different from `newPositionFieldsSchema`, an empty name passes. This is a
