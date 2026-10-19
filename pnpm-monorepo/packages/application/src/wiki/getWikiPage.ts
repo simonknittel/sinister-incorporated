@@ -21,7 +21,6 @@ import {
   WikiPageAccessTier,
 } from "./getAccessibleWikiPage.js";
 import {
-  loadWikiIframeAllowlist,
   loadWikiLinkedVariants,
   loadWikiMentionedCitizens,
 } from "./wikiContentReferences.js";
@@ -30,6 +29,7 @@ import {
   type WikiSharedContext,
   type WikiSharedContextPage,
 } from "./wikiContext.js";
+import { loadWikiIframeAllowlist } from "./wikiIframeAllowlist.js";
 import {
   createEventWikiHrefBase,
   GLOBAL_WIKI_HREF_BASE,

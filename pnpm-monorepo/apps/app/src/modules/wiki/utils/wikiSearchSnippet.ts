@@ -1,10 +1,7 @@
-/**
- * Markers `ts_headline` wraps around matched words in search snippets.
- * Control characters cannot occur in extracted page text, so splitting on
- * them is unambiguous (unlike HTML tags, which could appear literally).
- */
-export const WIKI_SEARCH_MARK_START = "\u0001";
-export const WIKI_SEARCH_MARK_END = "\u0002";
+import {
+  WIKI_SEARCH_MARK_END,
+  WIKI_SEARCH_MARK_START,
+} from "@sam-monorepo/domain";
 
 interface WikiSearchSnippetSegment {
   readonly text: string;

@@ -6,9 +6,12 @@ import {
 import {
   collectPositionScopeIdsForCitizen,
   resolveEventWikiPagePermissions,
+  toEventContainer,
+  type EventContainer,
   type EventWikiViewer,
   type ResolvedEventWikiPagePermissions,
 } from "@sam-monorepo/domain";
+import type { WikiPageHrefBase } from "@sam-monorepo/wiki-editor/helpers";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import {
@@ -18,6 +21,8 @@ import {
 import { canActorSeeEvent } from "../events/eventVisibility.js";
 import { withSpan } from "../withSpan.js";
 import type { WikiSharedContextPage } from "./wikiContext.js";
+import { createBriefingWikiHrefBase } from "./wikiPagePath.js";
+import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * The shared page shape (so the tree, breadcrumb and sidebar utilities work
@@ -42,10 +47,15 @@ export interface EventWikiContextPosition {
 }
 
 /**
- * The briefing of an event or of an event template. The app adds the
- * container (event or template) to it.
+ * The briefing of an event or of an event template: one of the wiki scopes
+ * (see `wikiScope.ts`)
  */
 export interface EventWikiContext {
+  readonly kind: WikiScopeKind.Briefing;
+  /** The event or the event template that the briefing belongs to */
+  readonly container: EventContainer;
+  /** The routes of the pages */
+  readonly hrefBase: WikiPageHrefBase;
   /** Name of the container, for headings and page titles */
   name: string;
   /**
@@ -226,8 +236,13 @@ export const buildEventWikiContext = (
       frozen,
     });
     const pages = allPages.filter((page) => page.deletedAt === null);
+    const rootPage = pickEventWikiRootPage(pages);
+    const container = toEventContainer(event.id);
 
     return {
+      kind: WikiScopeKind.Briefing,
+      container,
+      hrefBase: createBriefingWikiHrefBase(container, rootPage?.id ?? null),
       name: event.name,
       event: {
         id: event.id,
@@ -243,7 +258,7 @@ export const buildEventWikiContext = (
       allPages,
       pages,
       pagesById: new Map(allPages.map((page) => [page.id, page])),
-      rootPage: pickEventWikiRootPage(pages),
+      rootPage,
       permissions,
     };
   });

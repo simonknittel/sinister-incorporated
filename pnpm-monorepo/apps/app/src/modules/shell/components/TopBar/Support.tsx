@@ -1,9 +1,10 @@
 import { Link } from "@/modules/common/components/Link";
 import { getWikiPageLinkTarget } from "@/modules/wiki/queries/getWikiSettings";
+import { WikiPageLinkKey } from "@sam-monorepo/domain";
 import { FaQuestionCircle } from "react-icons/fa";
 
 export const Support = async () => {
-  const target = await getWikiPageLinkTarget("support");
+  const target = await getWikiPageLinkTarget(WikiPageLinkKey.Support);
   if (!target) return null;
 
   return (

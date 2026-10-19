@@ -1,14 +1,10 @@
-import { prisma } from "@/db";
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { getBriefingPath } from "@/modules/events/utils/eventContainer";
-import { WikiPageNamespace } from "@sam-monorepo/database/client";
-import { getEventContainerOfRow } from "@sam-monorepo/domain";
+import { loadWikiScopeOfPage, WikiScopeKind } from "@sam-monorepo/application";
 import { WikiScope } from "../utils/wikiPageHref";
-import {
-  getEventWikiContext,
-  type EventWikiContext,
-} from "./getEventWikiContext";
-import { getWikiContext, type WikiContext } from "./getWikiContext";
+import type { EventWikiContext } from "./getEventWikiContext";
+import type { WikiContext } from "./getWikiContext";
 
 export type WikiPageScopedContext =
   | { readonly scope: WikiScope.Wiki; readonly context: WikiContext }
@@ -17,44 +13,32 @@ export type WikiPageScopedContext =
 /**
  * Loads the context matching a page's namespace — the seam that lets one
  * server action serve the global wiki, the event briefings and the briefing
- * blueprints of event templates. An unknown page id resolves to the global
- * context, whose lookups then produce the action's usual not-found handling.
- * Returns null when the viewer cannot hold the page's context
- * (unauthenticated, missing `event;read` for an event page, or no access to
- * the template). Caller contract: answer null with the SAME error the action
- * uses for a page missing from the context — that keeps an existing but
- * inaccessible page indistinguishable from an unknown id.
+ * blueprints of event templates (see `loadWikiScopeOfPage()`). An unknown
+ * page id resolves to the global context, whose lookups then produce the
+ * action's usual not-found handling. Returns null when the viewer cannot
+ * hold the page's context. Caller contract: answer null with the SAME error
+ * the action uses for a page missing from the context — that keeps an
+ * existing but inaccessible page indistinguishable from an unknown id.
  */
 export const getWikiPageScopedContext = async (
   pageId: string,
 ): Promise<WikiPageScopedContext | null> => {
-  const record = await prisma.wikiPage.findUnique({
-    where: { id: pageId },
-    select: { namespace: true, eventId: true, templateId: true },
-  });
-  if (!record) {
-    const context = await getWikiContext();
-    return context ? { scope: WikiScope.Wiki, context } : null;
-  }
+  const scope = await loadWikiScopeOfPage(
+    getApplicationContext(),
+    await getRequestActor(),
+    pageId,
+  );
+  if (!scope) return null;
 
-  switch (record.namespace) {
-    case WikiPageNamespace.EVENT: {
-      /** The CHECK constraint guarantees one container on EVENT rows */
-      const container = getEventContainerOfRow(record);
-      if (!container) return null;
-      const context = await getEventWikiContext(container);
-      return context ? { scope: WikiScope.Event, context } : null;
-    }
+  switch (scope.kind) {
+    case WikiScopeKind.Wiki:
+      return { scope: WikiScope.Wiki, context: scope };
 
-    case WikiPageNamespace.WIKI: {
-      const context = await getWikiContext();
-      return context ? { scope: WikiScope.Wiki, context } : null;
-    }
+    case WikiScopeKind.Briefing:
+      return { scope: WikiScope.Event, context: scope };
 
     default:
-      throw new Error(
-        `Unknown wiki page namespace: ${record.namespace satisfies never}`,
-      );
+      throw new Error(`Unknown wiki page scope: ${scope satisfies never}`);
   }
 };
 

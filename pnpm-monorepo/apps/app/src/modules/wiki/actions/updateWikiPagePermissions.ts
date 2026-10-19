@@ -12,6 +12,7 @@ import {
   WikiPageVisibility,
 } from "@sam-monorepo/database/client";
 import {
+  collectWikiPageDescendants,
   createWikiPagePermissionResolver,
   resolveWikiPageReadRoleIds,
 } from "@sam-monorepo/domain";
@@ -23,7 +24,6 @@ import {
 } from "../queries/getWikiContext";
 import { getWikiPermissionRoles } from "../queries/getWikiPermissionRoles";
 import { getWikiViewerForCitizen } from "../queries/getWikiViewerForCitizen";
-import { collectWikiPageDescendants } from "../utils/collectWikiPageDescendants";
 import { collectWikiPageRolePrunes } from "../utils/collectWikiPageRolePrunes";
 
 const schema = z.object({

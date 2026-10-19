@@ -1,6 +1,7 @@
 "use client";
 
 import { wikiPageLinkHref } from "@/modules/wiki/utils/wikiPageLinks";
+import { WikiPageLinkKey } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { catchError, type ErrorInfo } from "next/error";
@@ -49,7 +50,7 @@ const Fallback = ({ className }: Props, { error, retry }: ErrorInfo) => {
           {t.rich("Common.internalServerError", {
             link: (chunks) => (
               <Link
-                href={wikiPageLinkHref("support")}
+                href={wikiPageLinkHref(WikiPageLinkKey.Support)}
                 className="text-interaction-500 underline hover:text-interaction-300 focus-visible:text-interaction-300"
               >
                 {chunks}

@@ -1,18 +1,15 @@
+import { toEventContainer } from "@sam-monorepo/domain";
 import type { WikiPageHrefBase } from "@sam-monorepo/wiki-editor/helpers";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
-import {
-  buildEventWikiContext,
-  hasReadableEventWikiRoot,
-  type EventWikiContext,
-  type EventWikiContextPage,
+import type {
+  EventWikiContext,
+  EventWikiContextPage,
 } from "./eventWikiContext.js";
 import { buildWikiContext, type WikiContext } from "./wikiContext.js";
-import {
-  createEventWikiHrefBase,
-  GLOBAL_WIKI_HREF_BASE,
-} from "./wikiPagePath.js";
+import { findReadableWikiScope } from "./wikiScope.js";
+import { WikiScopeKind } from "./wikiScopeKind.js";
 
 export enum ReadableWikiScopeKind {
   Wiki = "wiki",
@@ -37,7 +34,8 @@ export type ReadableWikiScope =
 /**
  * The global wiki, or the briefing of an event with the gate of the
  * briefing layout: an event without a briefing, or with a briefing that the
- * actor cannot read, does not exist for the actor.
+ * actor cannot read, does not exist for the actor. The briefings of the
+ * event templates are not available.
  *
  * @throws ForbiddenError when the actor does not have `event;read`
  * @throws NotFoundError when the event or its briefing is not visible
@@ -47,25 +45,29 @@ export const loadReadableWikiScope = async (
   actor: Actor,
   eventId: string | undefined,
 ): Promise<ReadableWikiScope> => {
-  if (eventId === undefined)
+  if (eventId === undefined) {
+    const wiki = await buildWikiContext(context, actor);
+
     return {
       kind: ReadableWikiScopeKind.Wiki,
-      context: await buildWikiContext(context, actor),
-      hrefBase: GLOBAL_WIKI_HREF_BASE,
+      context: wiki,
+      hrefBase: wiki.hrefBase,
     };
+  }
 
   requirePermission(actor, "event", "read");
 
-  const eventContext = await buildEventWikiContext(context, actor, {
-    event_id: eventId,
+  const briefing = await findReadableWikiScope(context, actor, {
+    kind: WikiScopeKind.Briefing,
+    container: toEventContainer(eventId),
   });
-  if (!eventContext || !hasReadableEventWikiRoot(eventContext))
+  if (!briefing)
     throw new NotFoundError("The event or its briefing does not exist");
 
   return {
     kind: ReadableWikiScopeKind.Event,
     eventId,
-    context: eventContext,
-    hrefBase: createEventWikiHrefBase(eventId, eventContext.rootPage.id),
+    context: briefing,
+    hrefBase: briefing.hrefBase,
   };
 };

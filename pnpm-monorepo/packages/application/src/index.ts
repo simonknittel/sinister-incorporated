@@ -29,6 +29,7 @@ export {
   type Logger,
   type Notification,
   type SigningKey,
+  type WikiCollabSession,
   type WikiPageContentReplacement,
 } from "./context.js";
 export * from "./discord/index.js";

@@ -6,6 +6,7 @@ import { Textarea } from "@/modules/common/components/form/Textarea";
 import Modal from "@/modules/common/components/Modal";
 import Note from "@/modules/common/components/Note";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
+import { WIKI_REPORT_TEXT_MAXIMUM_LENGTH } from "@sam-monorepo/domain";
 import { useState } from "react";
 import { FaFlag } from "react-icons/fa";
 import { createWikiPageReport } from "../actions/createWikiPageReport";
@@ -60,7 +61,7 @@ export const ReportWikiAttachmentModal = ({
             name="message"
             label="Grund"
             required
-            maxLength={2048}
+            maxLength={WIKI_REPORT_TEXT_MAXIMUM_LENGTH}
             className="mt-4"
             autoFocus
           />

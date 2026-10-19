@@ -4,7 +4,7 @@ import {
   WikiPageUploadability,
   WikiPageVisibility,
 } from "@sam-monorepo/database/client";
-import { collectWikiPageDescendants } from "./collectWikiPageDescendants";
+import { collectWikiPageDescendants } from "@sam-monorepo/domain";
 
 interface MovedPage {
   readonly id: string;

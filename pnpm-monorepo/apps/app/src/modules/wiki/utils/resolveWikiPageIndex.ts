@@ -4,6 +4,7 @@ import {
   getAccessibleWikiPage,
   WikiPageAccessTier,
 } from "@sam-monorepo/application";
+import { collectWikiPageDescendants } from "@sam-monorepo/domain";
 import type { WikiPageIndexConfig } from "@sam-monorepo/wiki-editor";
 import {
   buildVisibleWikiTree,
@@ -11,7 +12,6 @@ import {
 } from "@sam-monorepo/wiki-editor/helpers";
 import type { WikiPageIndexEntry } from "../components/WikiPageIndexList";
 import type { WikiSharedContext } from "../queries/getWikiContext";
-import { collectWikiPageDescendants } from "./collectWikiPageDescendants";
 import {
   buildWikiPageHref,
   GLOBAL_WIKI_HREF_MODE,

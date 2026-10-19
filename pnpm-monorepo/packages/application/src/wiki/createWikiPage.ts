@@ -10,10 +10,6 @@ import {
   WIKI_PAGE_CONTENT_JSON_MAX_LENGTH,
   WIKI_PAGE_TITLE_MAX_LENGTH,
 } from "@sam-monorepo/domain";
-import {
-  collectWikiIframeSrcs,
-  isWikiIframeSrcAllowed,
-} from "@sam-monorepo/wiki-editor";
 import { parseMarkdownToWikiContent } from "@sam-monorepo/wiki-editor/markdown";
 import * as z from "zod";
 import { requireCitizen, type Actor } from "../actor.js";
@@ -26,7 +22,8 @@ import {
   loadReadableWikiScope,
   ReadableWikiScopeKind,
 } from "./readableWikiScope.js";
-import { loadWikiIframeAllowlist } from "./wikiContentReferences.js";
+import { DisallowedWikiIframesError, WikiErrorMessage } from "./wikiErrors.js";
+import { findDisallowedWikiIframeSources } from "./wikiIframeAllowlist.js";
 import {
   requireWikiPagePlacement,
   type WikiPlacementScope,
@@ -89,7 +86,7 @@ const prepareContent = (
   withSpan(context, "prepareWikiPageContent", async () => {
     // The content of a page changes only through the collab server
     if (!context.collab)
-      throw new ConflictError("The collab server is not configured");
+      throw new ConflictError(WikiErrorMessage.CollabNotConfigured);
 
     let content: object;
     try {
@@ -106,14 +103,12 @@ const prepareContent = (
       throw new ValidationError("The content is too large");
 
     // Like the content import of the app
-    const iframeAllowlist = await loadWikiIframeAllowlist(context.prisma);
-    const disallowedSources = collectWikiIframeSrcs(content).filter(
-      (source) => !isWikiIframeSrcAllowed(source, iframeAllowlist),
+    const disallowedSources = await findDisallowedWikiIframeSources(
+      context.prisma,
+      content,
     );
     if (disallowedSources.length > 0)
-      throw new ValidationError(
-        `The content embeds iframes of hosts that the wiki does not allow: ${disallowedSources.join(", ")}`,
-      );
+      throw new DisallowedWikiIframesError(disallowedSources);
 
     return { collab: context.collab, content };
   });
@@ -258,7 +253,7 @@ const loadEventIdOfParent = async (
     (parent.namespace === WikiPageNamespace.EVENT && !parent.eventId) ||
     (eventId !== undefined && parent.eventId !== eventId)
   )
-    throw new NotFoundError("The parent page does not exist");
+    throw new NotFoundError(WikiErrorMessage.ParentPageNotFound);
 
   return parent.eventId ?? undefined;
 };

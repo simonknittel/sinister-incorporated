@@ -10,6 +10,12 @@ import {
   WikiPageEventScope,
   WikiPageUploadability,
 } from "@sam-monorepo/database/client";
+import {
+  EventWikiScopeTier,
+  getEffectiveEventWikiScope,
+  isEventWikiRootPage,
+  isEventWikiScopeSubset,
+} from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import {
@@ -17,9 +23,6 @@ import {
   isWikiScopeFrozen,
   rejectFrozenWikiScope,
 } from "../queries/getWikiPageScopedContext";
-import { getEffectiveEventWikiScope } from "../utils/getEffectiveEventWikiScope";
-import { isEventWikiRootPage } from "../utils/isEventWikiRootPage";
-import { isEventWikiScopeSubset } from "../utils/isEventWikiScopeSubset";
 import { WikiScope } from "../utils/wikiPageHref";
 
 const scopeSchema = z.enum(WikiPageEventScope);
@@ -118,7 +121,7 @@ export const updateEventWikiPagePermissions = createAuthenticatedAction(
     const submittedOrParent = (
       scope: WikiPageEventScope,
       positionId: string | null,
-      tier: "read" | "edit",
+      tier: EventWikiScopeTier,
     ) =>
       scope !== WikiPageEventScope.INHERIT
         ? { scope, positionId }
@@ -129,7 +132,7 @@ export const updateEventWikiPagePermissions = createAuthenticatedAction(
     const effectiveRead = submittedOrParent(
       data.readScope,
       readScopePositionId,
-      "read",
+      EventWikiScopeTier.Read,
     );
 
     /**
@@ -149,7 +152,7 @@ export const updateEventWikiPagePermissions = createAuthenticatedAction(
     const effectiveEdit = submittedOrParent(
       data.editScope,
       editPositionId,
-      "edit",
+      EventWikiScopeTier.Edit,
     );
     if (
       !isEventWikiScopeSubset(effectiveEdit, effectiveRead, context.positions)

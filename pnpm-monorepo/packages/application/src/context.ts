@@ -48,6 +48,20 @@ export interface WikiPageContentReplacement {
   readonly updatedByEntityId: string | null;
 }
 
+/** One editor connection to one wiki page */
+export interface WikiCollabSession {
+  /**
+   * The user: the collab server writes its audit events for this user (the
+   * subject of the token)
+   */
+  readonly userId: string;
+  readonly pageId: string;
+  /** The citizen that the collab server records as the editor */
+  readonly entityId: string | null;
+  /** False gives a read-only connection */
+  readonly canEdit: boolean;
+}
+
 /** The key that signs the access tokens. Its public key is in the JWKS. */
 export interface SigningKey {
   readonly privateKey: KeyObject;
@@ -157,14 +171,25 @@ export interface ApplicationContext {
     readonly list: () => Promise<ChangelogEntrySource[]>;
   } | null;
   /**
-   * Replaces the content of a wiki page through the collab server, thus the
-   * open editors get the new content. Null when the collab server is not
-   * configured: then the wiki content is read-only.
+   * The collab server of the wiki editor. Null when the collab server is not
+   * configured: then the wiki content is read-only and the app does not
+   * offer the editor.
    */
   readonly collab: {
+    /**
+     * Replaces the content of a wiki page through the collab server, thus
+     * the open editors get the new content
+     */
     readonly replaceContent: (
       replacement: WikiPageContentReplacement,
     ) => Promise<void>;
+    /**
+     * A short-lived token for one editor connection, signed with the secret
+     * that the host shares with the collab server
+     */
+    readonly createSessionToken: (
+      session: WikiCollabSession,
+    ) => Promise<string>;
   } | null;
   /**
    * Null when the host has no bot token. Then a use case behaves as if

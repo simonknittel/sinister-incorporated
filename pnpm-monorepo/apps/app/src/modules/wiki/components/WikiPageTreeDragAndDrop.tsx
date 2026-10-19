@@ -1,6 +1,7 @@
 "use client";
 
 import { runAction } from "@/modules/actions/utils/runAction";
+import { WikiPageDropPosition } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import {
   createContext,
@@ -17,8 +18,6 @@ import { MdDragIndicator } from "react-icons/md";
 import { updateWikiPagePosition } from "../actions/updateWikiPagePosition";
 import { useWikiPageHrefMode } from "./WikiPageHrefModeProvider";
 
-type DropPosition = "before" | "after" | "inside";
-
 interface WikiPageDndContextValue {
   draggedPageId: string | null;
   isPending: boolean;
@@ -26,11 +25,11 @@ interface WikiPageDndContextValue {
     event: MouseEvent<HTMLButtonElement>,
     pageId: string,
   ) => void;
-  handleDrop: (referenceId: string, position: DropPosition) => void;
+  handleDrop: (referenceId: string, position: WikiPageDropPosition) => void;
   submitPosition: (
     pageId: string,
     referenceId: string,
-    position: DropPosition,
+    position: WikiPageDropPosition,
   ) => void;
 }
 
@@ -70,7 +69,7 @@ export const WikiPageDndProvider = ({ children }: ProviderProps) => {
   const submitPosition = (
     pageId: string,
     referenceId: string,
-    position: DropPosition,
+    position: WikiPageDropPosition,
   ) => {
     startTransition(async () => {
       const formData = new FormData();
@@ -84,7 +83,7 @@ export const WikiPageDndProvider = ({ children }: ProviderProps) => {
     });
   };
 
-  const handleDrop = (referenceId: string, position: DropPosition) => {
+  const handleDrop = (referenceId: string, position: WikiPageDropPosition) => {
     if (!draggedPageId || draggedPageId === referenceId) return;
     setDraggedPageId(null);
     submitPosition(draggedPageId, referenceId, position);
@@ -130,10 +129,10 @@ export const WikiPageDragHandle = ({
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === "ArrowUp" && previousSiblingId) {
       event.preventDefault();
-      submitPosition(pageId, previousSiblingId, "before");
+      submitPosition(pageId, previousSiblingId, WikiPageDropPosition.Before);
     } else if (event.key === "ArrowDown" && nextSiblingId) {
       event.preventDefault();
-      submitPosition(pageId, nextSiblingId, "after");
+      submitPosition(pageId, nextSiblingId, WikiPageDropPosition.After);
     }
   };
 
@@ -246,7 +245,7 @@ export const WikiPageDropTargets = ({
       {!suppressEdgeBands && (
         <span
           className={clsx("group/band relative", edgeBandHeight)}
-          onMouseUp={() => handleDrop(pageId, "before")}
+          onMouseUp={() => handleDrop(pageId, WikiPageDropPosition.Before)}
         >
           {isRootLevel && (
             // Half of RootList's gap-4, so this meets the band above it
@@ -269,7 +268,7 @@ export const WikiPageDropTargets = ({
             cancelSpringOpen();
             // Without this the page would seem to vanish into a closed row
             onRequestExpand();
-            handleDrop(pageId, "inside");
+            handleDrop(pageId, WikiPageDropPosition.Inside);
           }}
         >
           {/*
@@ -283,7 +282,7 @@ export const WikiPageDropTargets = ({
       {!showsChildren && !suppressEdgeBands && (
         <span
           className={clsx("group/band relative", edgeBandHeight)}
-          onMouseUp={() => handleDrop(pageId, "after")}
+          onMouseUp={() => handleDrop(pageId, WikiPageDropPosition.After)}
         >
           {isRootLevel && (
             // Half of RootList's gap-4, so this meets the band below it
@@ -326,7 +325,7 @@ export const WikiPageTreeEndDropTarget = ({
   return (
     <li
       className="group/band absolute inset-x-0 top-full z-10 h-6 cursor-grabbing"
-      onMouseUp={() => handleDrop(lastRootPageId, "after")}
+      onMouseUp={() => handleDrop(lastRootPageId, WikiPageDropPosition.After)}
     >
       {/* At the same height as the after band line of a childless last row */}
       <DropIndicatorLine className="top-2 -translate-y-1/2" />

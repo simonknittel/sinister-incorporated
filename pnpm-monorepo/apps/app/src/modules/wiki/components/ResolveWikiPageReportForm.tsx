@@ -3,6 +3,7 @@
 import { useAction } from "@/modules/actions/utils/useAction";
 import { Textarea } from "@/modules/common/components/form/Textarea";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
+import { WIKI_REPORT_TEXT_MAXIMUM_LENGTH } from "@sam-monorepo/domain";
 import { FaCheck } from "react-icons/fa";
 import { resolveWikiPageReport } from "../actions/resolveWikiPageReport";
 
@@ -26,7 +27,7 @@ export const ResolveWikiPageReportForm = ({ className, reportId }: Props) => {
       <Textarea
         name="resolutionComment"
         label="Kommentar (optional)"
-        maxLength={2048}
+        maxLength={WIKI_REPORT_TEXT_MAXIMUM_LENGTH}
       />
 
       <p className="mt-2 text-sm text-neutral-400">

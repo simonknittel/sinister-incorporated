@@ -1,15 +1,4 @@
 /**
- * The pages highlighted on the wiki landing page, curated in the wiki
- * settings (see `WIKI_SETTING_FEATURED_PAGES`).
- *
- * This module must stay importable from client components (pure data, no
- * server-only imports).
- */
-
-/** Fills four rows of the landing page's three-column card grid */
-export const MAX_WIKI_FEATURED_PAGES = 12;
-
-/**
  * The pages of the stored featured list, in the order the wiki admins
  * arranged them. Ids the viewer must not see anything of are skipped:
  * unknown pages, pages in the trash and pages the viewer cannot read. The

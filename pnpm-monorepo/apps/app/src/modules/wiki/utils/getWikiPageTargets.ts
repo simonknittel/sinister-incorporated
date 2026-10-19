@@ -1,6 +1,6 @@
+import { collectWikiPageDescendants } from "@sam-monorepo/domain";
 import { compareWikiPagesByOrder } from "@sam-monorepo/wiki-editor/helpers";
 import type { WikiSharedContext } from "../queries/getWikiContext";
-import { collectWikiPageDescendants } from "./collectWikiPageDescendants";
 
 export interface WikiPageTargetOption {
   readonly id: string;

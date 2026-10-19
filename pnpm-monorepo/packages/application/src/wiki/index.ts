@@ -1,6 +1,6 @@
 /**
  * The use cases of the wiki group, and the wiki contexts and helpers that
- * the app shares with them.
+ * the app shares with them. Each area has its own barrel.
  */
 export {
   createWikiPage,
@@ -31,6 +31,10 @@ export {
   type GetWikiPageOutput,
   type WikiPageReference,
 } from "./getWikiPage.js";
+export * from "./indexContent.js";
+export * from "./indexFeatures.js";
+export * from "./indexPageTree.js";
+export * from "./indexPermissions.js";
 export {
   listWikiPages,
   listWikiPagesInputSchema,
@@ -45,9 +49,10 @@ export {
   type SearchWikiOutput,
 } from "./searchWiki.js";
 export {
-  MAX_WIKI_IFRAME_ALLOWLIST_ENTRIES,
-  WIKI_SETTING_IFRAME_ALLOWLIST,
-  loadWikiIframeAllowlist,
+  buildVariantWikiContext,
+  type VariantWikiContext,
+} from "./variantWikiContext.js";
+export {
   loadWikiLinkedVariants,
   loadWikiMentionedCitizens,
 } from "./wikiContentReferences.js";
@@ -58,6 +63,18 @@ export {
   type WikiSharedContext,
   type WikiSharedContextPage,
 } from "./wikiContext.js";
+export {
+  DisallowedWikiIframesError,
+  WikiErrorMessage,
+  WikiRolesCannotReadParentError,
+} from "./wikiErrors.js";
+export {
+  MAXIMUM_WIKI_IFRAME_ALLOWLIST_ENTRIES,
+  WIKI_SETTING_IFRAME_ALLOWLIST,
+  findDisallowedWikiIframeSources,
+  loadWikiIframeAllowlist,
+  parseWikiIframeAllowlist,
+} from "./wikiIframeAllowlist.js";
 export {
   INHERITED_PERMISSIONS,
   copyWikiPagesIntoContainer,
@@ -71,6 +88,22 @@ export {
   type WikiPlacementPage,
   type WikiPlacementScope,
 } from "./wikiPagePlacement.js";
+export { findWikiPageTags } from "./wikiPageTags.js";
+export {
+  buildBriefingWikiContext,
+  findReadableWikiScope,
+  isWikiScopeFrozen,
+  loadWikiScope,
+  loadWikiScopeOfPage,
+  requireAccessibleWikiPage,
+  toWikiScopeTarget,
+  type ReadableWikiScopeOf,
+  type WikiPageScope,
+  type WikiScope,
+  type WikiScopeOf,
+  type WikiScopeTarget,
+} from "./wikiScope.js";
+export { WikiScopeKind } from "./wikiScopeKind.js";
 export {
   GLOBAL_WIKI_SEARCH_FILTERS,
   WikiSearchContainerColumn,

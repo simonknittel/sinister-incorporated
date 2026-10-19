@@ -3,7 +3,7 @@ import {
   WikiPageEventScope,
   WikiPageUploadability,
 } from "@sam-monorepo/database/client";
-import { collectWikiPageDescendants } from "./collectWikiPageDescendants";
+import { collectWikiPageDescendants } from "@sam-monorepo/domain";
 
 /**
  * The event-mode counterpart of `buildWikiPageMoveReset`: a moved page and

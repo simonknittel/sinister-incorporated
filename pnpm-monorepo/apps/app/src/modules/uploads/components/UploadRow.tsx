@@ -1,11 +1,13 @@
 import { TRow, TableRowAlignment } from "@/modules/common/components/Table";
 import { formatDate } from "@/modules/common/utils/formatDate";
 import { getPublicUploadUrl } from "@/modules/common/utils/getPublicUploadUrl";
-import { getCitizenDisplayName } from "@sam-monorepo/domain";
+import {
+  decodeUploadFileName,
+  getCitizenDisplayName,
+} from "@sam-monorepo/domain";
 import { formatWikiAttachmentSize } from "@sam-monorepo/wiki-editor";
 import clsx from "clsx";
 import type { getUploads } from "../queries/getUploads";
-import { decodeUploadFileName } from "../utils/decodeUploadFileName";
 import { getUploadUsages } from "../utils/uploadUsage";
 import { DeleteUploadButton } from "./DeleteUploadButton";
 import { UploadLocations } from "./UploadLocations";

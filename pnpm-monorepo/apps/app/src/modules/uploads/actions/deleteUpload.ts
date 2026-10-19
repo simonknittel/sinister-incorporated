@@ -9,10 +9,10 @@ import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { createS3Client } from "@/modules/common/utils/createS3Client";
 import { log } from "@/modules/logging";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { decodeUploadFileName } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import { USAGE_SELECT } from "../queries/getUploads";
-import { decodeUploadFileName } from "../utils/decodeUploadFileName";
 import {
   getUploadUsages,
   UPLOAD_USAGE_TYPE_LABELS,

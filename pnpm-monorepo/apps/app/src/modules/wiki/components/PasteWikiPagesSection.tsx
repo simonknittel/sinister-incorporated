@@ -5,6 +5,7 @@ import { useAction } from "@/modules/actions/utils/useAction";
 import { Button2, Button2Variant } from "@/modules/common/components/Button2";
 import { RadioGroup } from "@/modules/common/components/form/RadioGroup";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
+import { WikiPasteMode } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useState } from "react";
 import { FaPaste, FaTrashAlt } from "react-icons/fa";
@@ -15,11 +16,6 @@ import type { WikiClipboardEntry } from "../utils/wikiClipboardCookie";
 import { useWikiPageHrefMode } from "./WikiPageHrefModeProvider";
 import { WikiPageSelect } from "./WikiPageSelect";
 import { useReloadWikiPageTargetsAfterError } from "./WikiPageTargetsLoader";
-
-enum PasteMode {
-  Child = "child",
-  Replace = "replace",
-}
 
 interface Props {
   readonly className?: string;
@@ -52,7 +48,7 @@ export const PasteWikiPagesSection = ({
 }: Props) => {
   /** Inside a variant embed the action redirects back into the embed */
   const { variantId } = useWikiPageHrefMode();
-  const [mode, setMode] = useState(PasteMode.Child);
+  const [mode, setMode] = useState(WikiPasteMode.Child);
   const [chosenParentId, setParentId] = useState(() =>
     chooseWikiParentId(targets, allowTopLevel, defaultParentId),
   );
@@ -62,7 +58,7 @@ export const PasteWikiPagesSection = ({
    */
   const parentId = chooseWikiParentId(
     targets,
-    mode === PasteMode.Child && allowTopLevel,
+    mode === WikiPasteMode.Child && allowTopLevel,
     chosenParentId,
   );
 
@@ -106,16 +102,16 @@ export const PasteWikiPagesSection = ({
           className="mt-4"
           name="mode"
           value={mode}
-          onChange={(value) => setMode(value as PasteMode)}
+          onChange={(value) => setMode(value as WikiPasteMode)}
           equalWidth
           items={[
-            { value: PasteMode.Child, label: "Als Unterseite" },
-            { value: PasteMode.Replace, label: "Seite ersetzen" },
+            { value: WikiPasteMode.Child, label: "Als Unterseite" },
+            { value: WikiPasteMode.Replace, label: "Seite ersetzen" },
           ]}
         />
 
         <label className="mt-4 mb-1 block">
-          {mode === PasteMode.Replace
+          {mode === WikiPasteMode.Replace
             ? "Zu ersetzende Seite"
             : "Einfügen unter"}
         </label>
@@ -123,17 +119,17 @@ export const PasteWikiPagesSection = ({
           name="parentId"
           value={parentId}
           onChange={(event) => setParentId(event.target.value)}
-          required={mode === PasteMode.Replace || !allowTopLevel}
+          required={mode === WikiPasteMode.Replace || !allowTopLevel}
           targets={targets}
           emptyOptionLabel={
-            mode === PasteMode.Child && allowTopLevel
+            mode === WikiPasteMode.Child && allowTopLevel
               ? "Oberste Ebene"
               : undefined
           }
         />
 
         <p className="mt-2 text-sm text-neutral-400">
-          {mode === PasteMode.Replace
+          {mode === WikiPasteMode.Replace
             ? "Icon, Tags und Seitenleisten-Einstellung werden übernommen; Titel, Berechtigungen, Unterseiten bleiben erhalten, kopierte werden daneben eingefügt."
             : "Die eingefügten Seiten übernehmen die Berechtigungen des neuen Orts."}
         </p>

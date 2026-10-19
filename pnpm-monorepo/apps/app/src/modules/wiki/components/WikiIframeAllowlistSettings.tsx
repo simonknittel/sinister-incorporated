@@ -6,11 +6,11 @@ import { Button2, Button2Variant } from "@/modules/common/components/Button2";
 import Note from "@/modules/common/components/Note";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { TextInput } from "@/modules/common/components/form/TextInput";
+import { WIKI_HOSTNAME_PATTERN } from "@sam-monorepo/domain";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaSave, FaTrash } from "react-icons/fa";
 import { updateWikiIframeAllowlist } from "../actions/updateWikiIframeAllowlist";
-import { WIKI_HOSTNAME_PATTERN } from "../utils/wikiHostnamePattern";
 
 interface Props {
   readonly initialDomains: readonly string[];

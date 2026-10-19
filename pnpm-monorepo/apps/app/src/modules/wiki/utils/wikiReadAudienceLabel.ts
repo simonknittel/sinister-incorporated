@@ -1,5 +1,5 @@
 import { WikiPageEventScope } from "@sam-monorepo/database/browser";
-import type { EventWikiScopeSelection } from "./isEventWikiScopeSubset";
+import type { EventWikiScopeSelection } from "@sam-monorepo/domain";
 
 /**
  * Who may read a page of the global wiki, condensed for the header badge.

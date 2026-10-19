@@ -3,11 +3,12 @@
 import { ActionErrorNote } from "@/modules/actions/components/ActionErrorNote";
 import { useAction } from "@/modules/actions/utils/useAction";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
+import type { WikiPageLinkKey } from "@sam-monorepo/domain";
 import { useId } from "react";
 import { FaSave } from "react-icons/fa";
 import { updateWikiPageLink } from "../actions/updateWikiPageLink";
 import type { WikiPageTargetOption } from "../utils/getWikiPageTargets";
-import { WIKI_PAGE_LINKS, type WikiPageLinkKey } from "../utils/wikiPageLinks";
+import { WIKI_PAGE_LINKS } from "../utils/wikiPageLinks";
 import { WikiPageSelect } from "./WikiPageSelect";
 
 interface Props {

@@ -5,16 +5,16 @@ import { createAuthenticatedAction } from "@/modules/actions/utils/createAction"
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  WikiPageLinkKey,
+  getWikiPageLinkSettingKey,
+} from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import { getWikiContext } from "../queries/getWikiContext";
-import {
-  WIKI_PAGE_LINK_KEYS,
-  wikiPageLinkSettingKey,
-} from "../utils/wikiPageLinks";
 
 const schema = z.object({
-  key: z.enum(WIKI_PAGE_LINK_KEYS),
+  key: z.enum(WikiPageLinkKey),
   /** Empty string unsets the link */
   pageId: z.union([z.cuid2(), z.literal("")]),
 });
@@ -38,7 +38,7 @@ export const updateWikiPageLink = createAuthenticatedAction(
       }
     }
 
-    const settingKey = wikiPageLinkSettingKey(data.key);
+    const settingKey = getWikiPageLinkSettingKey(data.key);
     const updatedById = authentication.session.entity?.id ?? null;
     if (data.pageId) {
       await prisma.wikiSetting.upsert({

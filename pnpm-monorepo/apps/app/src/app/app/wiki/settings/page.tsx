@@ -14,7 +14,7 @@ import {
 } from "@/modules/wiki/queries/getWikiSettings";
 import { getManageableWikiPageTargets } from "@/modules/wiki/utils/getWikiPageTargets";
 import { resolveWikiFeaturedPages } from "@/modules/wiki/utils/wikiFeaturedPages";
-import { WIKI_PAGE_LINK_KEYS } from "@/modules/wiki/utils/wikiPageLinks";
+import { WikiPageLinkKey } from "@sam-monorepo/domain";
 import { forbidden } from "next/navigation";
 
 export const metadata = {
@@ -45,7 +45,7 @@ const Settings = async () => {
     getWikiFeaturedPageIds(),
     getWikiDashboardPageId(),
     Promise.all(
-      WIKI_PAGE_LINK_KEYS.map(
+      Object.values(WikiPageLinkKey).map(
         async (key) => [key, await getWikiPageLinkPageId(key)] as const,
       ),
     ).then((entries) => new Map(entries)),
@@ -108,7 +108,7 @@ const Settings = async () => {
           verwiesen.
         </p>
         <div className="flex flex-col gap-8">
-          {WIKI_PAGE_LINK_KEYS.map((key) => (
+          {Object.values(WikiPageLinkKey).map((key) => (
             <WikiPageLinkSetting
               key={key}
               linkKey={key}

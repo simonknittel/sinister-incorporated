@@ -1,3 +1,4 @@
+import { isEventWikiRootPage } from "@sam-monorepo/domain";
 import type { getTranslations } from "next-intl/server";
 import { refresh } from "next/cache";
 import {
@@ -5,7 +6,6 @@ import {
   isWikiScopeFrozen,
   rejectFrozenWikiScope,
 } from "../queries/getWikiPageScopedContext";
-import { isEventWikiRootPage } from "./isEventWikiRootPage";
 
 export type ScopedContext = NonNullable<
   Awaited<ReturnType<typeof getWikiPageScopedContext>>

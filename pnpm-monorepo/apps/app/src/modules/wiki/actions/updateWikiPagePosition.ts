@@ -3,10 +3,10 @@
 import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import { isEventWikiRootPage } from "@sam-monorepo/domain";
 import { compareWikiPagesByOrder } from "@sam-monorepo/wiki-editor/helpers";
 import { refresh } from "next/cache";
 import * as z from "zod";
-import { isEventWikiRootPage } from "../utils/isEventWikiRootPage";
 import { lockWikiPageTree } from "../utils/lockWikiPageTree";
 import {
   buildWikiPageReparentAuditEvents,

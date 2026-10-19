@@ -13,11 +13,11 @@ import {
 } from "@sam-monorepo/application";
 import type { Variant } from "@sam-monorepo/database/client";
 import { Prisma } from "@sam-monorepo/database/client";
-import { buildVisibleWikiBreadcrumb } from "../utils/buildVisibleWikiBreadcrumb";
 import {
   WIKI_SEARCH_MARK_END,
   WIKI_SEARCH_MARK_START,
-} from "../utils/wikiSearchSnippet";
+} from "@sam-monorepo/domain";
+import { buildVisibleWikiBreadcrumb } from "../utils/buildVisibleWikiBreadcrumb";
 import {
   getEventWikiContext,
   hasReadableEventWikiRoot,

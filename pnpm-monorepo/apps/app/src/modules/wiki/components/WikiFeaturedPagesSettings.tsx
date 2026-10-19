@@ -26,13 +26,13 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { MAXIMUM_WIKI_FEATURED_PAGES } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useId, useState } from "react";
 import { FaSave, FaTrash } from "react-icons/fa";
 import { MdDragIndicator } from "react-icons/md";
 import { updateWikiFeaturedPages } from "../actions/updateWikiFeaturedPages";
 import type { WikiPageTargetOption } from "../utils/getWikiPageTargets";
-import { MAX_WIKI_FEATURED_PAGES } from "../utils/wikiFeaturedPages";
 import { WikiPageSelect } from "./WikiPageSelect";
 
 interface WikiFeaturedPage {
@@ -63,7 +63,7 @@ export const WikiFeaturedPagesSettings = ({ initialPages, targets }: Props) => {
   const availableTargets = targets.filter(
     (target) => !pages.some((page) => page.id === target.id),
   );
-  const hasReachedLimit = pages.length >= MAX_WIKI_FEATURED_PAGES;
+  const hasReachedLimit = pages.length >= MAXIMUM_WIKI_FEATURED_PAGES;
 
   const addPage = () => {
     const target = availableTargets.find(
@@ -157,8 +157,8 @@ export const WikiFeaturedPagesSettings = ({ initialPages, targets }: Props) => {
 
       {hasReachedLimit && (
         <p className="mt-1 text-xs text-white/40">
-          Mehr als {MAX_WIKI_FEATURED_PAGES} Featured Seiten sind nicht möglich.
-          Entferne zuerst eine Seite.
+          Mehr als {MAXIMUM_WIKI_FEATURED_PAGES} Featured Seiten sind nicht
+          möglich. Entferne zuerst eine Seite.
         </p>
       )}
 

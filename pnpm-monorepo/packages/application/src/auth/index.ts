@@ -16,6 +16,7 @@ export {
   type DeleteOwnSessionOptions,
   type DeleteOwnSessionOutput,
 } from "./deleteOwnSession.js";
+export { loadEffectivePermissionsOfCitizens } from "./effectivePermissionsOfCitizens.js";
 export {
   findDevelopmentLoginUser,
   findDevelopmentLoginUserInputSchema,

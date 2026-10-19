@@ -7,6 +7,10 @@ import Modal from "@/modules/common/components/Modal";
 import Note from "@/modules/common/components/Note";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { api } from "@/trpc/react";
+import {
+  MAXIMUM_WIKI_PAGE_TAGS,
+  WIKI_TAG_NAME_MAXIMUM_LENGTH,
+} from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { useId, useState } from "react";
 import { FaPen, FaSave, FaTag, FaTrash } from "react-icons/fa";
@@ -14,8 +18,6 @@ import { updateWikiPageTags } from "../actions/updateWikiPageTags";
 import { buildWikiTagHref } from "../utils/wikiPageHref";
 import { useWikiPageHrefMode } from "./WikiPageHrefModeProvider";
 
-const MAX_TAGS_PER_PAGE = 20;
-const MAX_TAG_NAME_LENGTH = 50;
 const SUGGESTION_LIMIT = 10;
 
 interface Tag {
@@ -137,7 +139,7 @@ const TagsModal = ({
     )
     .slice(0, SUGGESTION_LIMIT);
 
-  const limitReached = selectedNames.length >= MAX_TAGS_PER_PAGE;
+  const limitReached = selectedNames.length >= MAXIMUM_WIKI_PAGE_TAGS;
 
   const addTag = (name: string) => {
     if (name.length <= 0 || limitReached || isSelected(name)) return;
@@ -175,7 +177,7 @@ const TagsModal = ({
             event.preventDefault();
             addTag(normalizedQuery);
           }}
-          maxLength={MAX_TAG_NAME_LENGTH}
+          maxLength={WIKI_TAG_NAME_MAXIMUM_LENGTH}
           disabled={limitReached}
           placeholder="z.B. Datenbank"
           className="h-9 w-full rounded-secondary border border-neutral-700 bg-transparent px-3 text-sm focus-visible:border-neutral-500 focus-visible:outline-none disabled:opacity-50"
@@ -220,7 +222,7 @@ const TagsModal = ({
           <Note
             type="info"
             className="mt-2"
-            message={`Maximal ${MAX_TAGS_PER_PAGE} Tags pro Seite.`}
+            message={`Maximal ${MAXIMUM_WIKI_PAGE_TAGS} Tags pro Seite.`}
           />
         )}
 

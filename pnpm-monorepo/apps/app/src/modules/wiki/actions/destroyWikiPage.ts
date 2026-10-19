@@ -6,9 +6,9 @@ import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
+import { collectWikiPageDescendants } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
-import { collectWikiPageDescendants } from "../utils/collectWikiPageDescendants";
 import { requireAdminableWikiPage } from "../utils/requireAdminableWikiPage";
 
 const schema = z.object({

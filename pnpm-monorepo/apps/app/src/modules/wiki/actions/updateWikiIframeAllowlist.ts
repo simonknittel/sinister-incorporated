@@ -4,13 +4,13 @@ import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import { WIKI_HOSTNAME_PATTERN } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import {
-  MAX_WIKI_IFRAME_ALLOWLIST_ENTRIES,
+  MAXIMUM_WIKI_IFRAME_ALLOWLIST_ENTRIES,
   WIKI_SETTING_IFRAME_ALLOWLIST,
 } from "../queries/getWikiSettings";
-import { WIKI_HOSTNAME_PATTERN } from "../utils/wikiHostnamePattern";
 
 const schema = z.object({
   /** One `domain` form field per hostname */
@@ -24,7 +24,7 @@ const schema = z.object({
     )
     .refine(
       (domains) =>
-        domains.length <= MAX_WIKI_IFRAME_ALLOWLIST_ENTRIES &&
+        domains.length <= MAXIMUM_WIKI_IFRAME_ALLOWLIST_ENTRIES &&
         domains.every((domain) => WIKI_HOSTNAME_PATTERN.test(domain)),
       { message: "Invalid hostname" },
     ),

@@ -5,6 +5,7 @@ import { Link } from "@/modules/common/components/Link";
 import { RichText } from "@/modules/common/components/RichText";
 import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMetadataWithTryCatch";
 import { getWikiPageLinkTarget } from "@/modules/wiki/queries/getWikiSettings";
+import { WikiPageLinkKey } from "@sam-monorepo/domain";
 import { notFound } from "next/navigation";
 
 export const generateMetadata = generateMetadataWithTryCatch(
@@ -28,7 +29,7 @@ export default async function Page({
   const { appSlug } = await params;
   const [app, supportTarget] = await Promise.all([
     getExternalAppBySlug(appSlug),
-    getWikiPageLinkTarget("support"),
+    getWikiPageLinkTarget(WikiPageLinkKey.Support),
   ]);
   if (!app) notFound();
 

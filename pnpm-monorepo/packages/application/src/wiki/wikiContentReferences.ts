@@ -5,36 +5,13 @@ import {
   type WikiLinkedVariant,
   type WikiMentionedCitizen,
 } from "@sam-monorepo/wiki-editor";
-import * as z from "zod";
 import type { ApplicationContext } from "../context.js";
 
 /**
  * Resolvers for the references a page's content can carry (mentions, ship
- * links) and for the settings that change how the content renders.
- * Independent of the wiki scope — shared by the global and the event wiki.
+ * links). Independent of the wiki scope — shared by the global and the event
+ * wiki.
  */
-
-export const WIKI_SETTING_IFRAME_ALLOWLIST = "iframeAllowlist";
-
-export const MAX_WIKI_IFRAME_ALLOWLIST_ENTRIES = 100;
-
-const iframeAllowlistSchema = z
-  .array(z.string())
-  .max(MAX_WIKI_IFRAME_ALLOWLIST_ENTRIES);
-
-/**
- * Hostnames generic iframes may embed. Used by the insertion-time
- * validation and passed to the renderers for the render-time re-check.
- */
-export const loadWikiIframeAllowlist = async (
-  prisma: ApplicationContext["prisma"],
-): Promise<string[]> => {
-  const setting = await prisma.wikiSetting.findUnique({
-    where: { key: WIKI_SETTING_IFRAME_ALLOWLIST },
-  });
-  const parsed = iframeAllowlistSchema.safeParse(setting?.value);
-  return parsed.success ? parsed.data : [];
-};
 
 /**
  * Current handles of the citizens mentioned in the content, so mentions

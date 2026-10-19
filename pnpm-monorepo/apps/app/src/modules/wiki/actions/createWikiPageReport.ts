@@ -6,7 +6,7 @@ import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { triggerNotificationsAfterSave } from "@/modules/notifications/utils/triggerNotification";
-import { decodeUploadFileName } from "@/modules/uploads/utils/decodeUploadFileName";
+import { decodeUploadFileName } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import { getWikiPageScopedContext } from "../queries/getWikiPageScopedContext";

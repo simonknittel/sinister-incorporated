@@ -11,11 +11,13 @@ import {
   WikiPageUploadability,
   WikiPageVisibility,
 } from "@sam-monorepo/database/client";
-import { slugifyWikiPageTitle } from "@sam-monorepo/domain";
+import {
+  collectVisibleWikiSubtree,
+  slugifyWikiPageTitle,
+} from "@sam-monorepo/domain";
 import { compareWikiPagesByOrder } from "@sam-monorepo/wiki-editor/helpers";
 import type { WikiSharedContextPage } from "../queries/getWikiContext";
 import type { WikiPageScopedContext } from "../queries/getWikiPageScopedContext";
-import { collectVisibleWikiSubtree } from "./collectVisibleWikiSubtree";
 import { WikiScope } from "./wikiPageHref";
 
 const TRANSACTION_TIMEOUT_MS = 30_000;

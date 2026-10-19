@@ -9,9 +9,12 @@ import {
   type WikiPageTierPermissions,
   type WikiPageViewer,
 } from "@sam-monorepo/domain";
+import type { WikiPageHrefBase } from "@sam-monorepo/wiki-editor/helpers";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
+import { GLOBAL_WIKI_HREF_BASE } from "./wikiPagePath.js";
+import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * Page fields both context flavors load — everything the shared
@@ -55,7 +58,11 @@ export interface WikiSharedContext {
   permissions: Map<string, WikiPageTierPermissions>;
 }
 
+/** The global wiki: one of the wiki scopes (see `wikiScope.ts`) */
 export interface WikiContext {
+  readonly kind: WikiScopeKind.Wiki;
+  /** The routes of the pages */
+  readonly hrefBase: WikiPageHrefBase;
   viewer: WikiPageViewer;
   /** All pages of the WIKI namespace, including soft-deleted ones */
   allPages: WikiContextPage[];
@@ -116,6 +123,8 @@ export const buildWikiContext = (
     const pages = allPages.filter((page) => page.deletedAt === null);
 
     return {
+      kind: WikiScopeKind.Wiki,
+      hrefBase: GLOBAL_WIKI_HREF_BASE,
       viewer,
       allPages,
       pages,

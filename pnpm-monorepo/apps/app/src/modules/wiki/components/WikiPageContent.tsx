@@ -7,6 +7,8 @@ import { Link } from "@/modules/common/components/Link";
 import { formatDate } from "@/modules/common/utils/formatDate";
 import { WikiPageAccessType } from "@sam-monorepo/database/client";
 import {
+  collectVisibleWikiSubtree,
+  collectWikiPageDescendants,
   getCitizenDisplayName,
   resolveWikiPageReadRoleIds,
   type ResolvedWikiPagePermissions,
@@ -19,8 +21,6 @@ import { getWikiFavoritePageIds } from "../queries/getWikiFavorites";
 import type { WikiPageStaticContent } from "../queries/getWikiPageStaticContent";
 import { getWikiPageStaticContent } from "../queries/getWikiPageStaticContent";
 import { getWikiPermissionRoles } from "../queries/getWikiPermissionRoles";
-import { collectVisibleWikiSubtree } from "../utils/collectVisibleWikiSubtree";
-import { collectWikiPageDescendants } from "../utils/collectWikiPageDescendants";
 import { getWikiCollabUrl } from "../utils/getWikiCollabUrl";
 import {
   resolveWikiPageEffectivePermissions,

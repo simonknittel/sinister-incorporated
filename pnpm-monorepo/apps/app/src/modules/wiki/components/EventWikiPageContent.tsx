@@ -3,7 +3,14 @@ import { Button2, Button2Variant } from "@/modules/common/components/Button2";
 import { EditableInput } from "@/modules/common/components/form/EditableInput";
 import { Link } from "@/modules/common/components/Link";
 import { formatDate } from "@/modules/common/utils/formatDate";
-import type { ResolvedEventWikiPagePermissions } from "@sam-monorepo/domain";
+import {
+  EventWikiScopeTier,
+  collectVisibleWikiSubtree,
+  collectWikiPageDescendants,
+  getEffectiveEventWikiScope,
+  isEventWikiRootPage,
+  type ResolvedEventWikiPagePermissions,
+} from "@sam-monorepo/domain";
 import { FaHistory } from "react-icons/fa";
 import { renameWikiPage } from "../actions/renameWikiPage";
 import {
@@ -12,12 +19,8 @@ import {
 } from "../queries/getEventWikiContext";
 import { getEventWikiPageStaticContent } from "../queries/getEventWikiPageStaticContent";
 import { getWikiFavoritePageIds } from "../queries/getWikiFavorites";
-import { collectVisibleWikiSubtree } from "../utils/collectVisibleWikiSubtree";
-import { collectWikiPageDescendants } from "../utils/collectWikiPageDescendants";
-import { getEffectiveEventWikiScope } from "../utils/getEffectiveEventWikiScope";
 import { getEventWikiPositionOptions } from "../utils/getEventWikiPositionOptions";
 import { getWikiCollabUrl } from "../utils/getWikiCollabUrl";
-import { isEventWikiRootPage } from "../utils/isEventWikiRootPage";
 import { createEventWikiHrefMode } from "../utils/wikiPageHref";
 import { getEventWikiReadAudienceLabel } from "../utils/wikiReadAudienceLabel";
 import { CopyWikiPageModal } from "./CopyWikiPageModal";
@@ -78,7 +81,7 @@ export const EventWikiPageContent = async ({
   const canManagePermissions = canAdministrate && !context.frozen;
 
   const readAudienceLabel = getEventWikiReadAudienceLabel(
-    getEffectiveEventWikiScope(context, page.id, "read"),
+    getEffectiveEventWikiScope(context, page.id, EventWikiScopeTier.Read),
     (positionId) =>
       context.positions.find((position) => position.id === positionId)?.name,
   );
@@ -253,12 +256,20 @@ export const EventWikiPageContent = async ({
           }}
           parentReadScope={
             page.parentId
-              ? getEffectiveEventWikiScope(context, page.parentId, "read")
+              ? getEffectiveEventWikiScope(
+                  context,
+                  page.parentId,
+                  EventWikiScopeTier.Read,
+                )
               : null
           }
           parentEditScope={
             page.parentId
-              ? getEffectiveEventWikiScope(context, page.parentId, "edit")
+              ? getEffectiveEventWikiScope(
+                  context,
+                  page.parentId,
+                  EventWikiScopeTier.Edit,
+                )
               : null
           }
         >

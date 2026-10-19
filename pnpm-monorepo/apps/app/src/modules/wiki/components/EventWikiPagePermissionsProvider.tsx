@@ -9,6 +9,10 @@ import {
   WikiPageEventScope,
   WikiPageUploadability,
 } from "@sam-monorepo/database/browser";
+import {
+  isEventWikiScopeSubset,
+  type EventWikiScopeSelection,
+} from "@sam-monorepo/domain";
 import { useState, type ReactNode } from "react";
 import {
   FaGlobe,
@@ -21,10 +25,6 @@ import {
 import { MdWorkspaces } from "react-icons/md";
 import { updateEventWikiPagePermissions } from "../actions/updateEventWikiPagePermissions";
 import type { WikiPageTargetOption } from "../utils/getWikiPageTargets";
-import {
-  isEventWikiScopeSubset,
-  type EventWikiScopeSelection,
-} from "../utils/isEventWikiScopeSubset";
 import { WikiPagePermissionsOpenerProvider } from "./WikiPagePermissionsOpener";
 import { WikiPageSelect } from "./WikiPageSelect";
 

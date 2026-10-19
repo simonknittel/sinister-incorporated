@@ -6,11 +6,11 @@ import {
   WikiPagePlacement,
 } from "@sam-monorepo/application";
 import { Prisma } from "@sam-monorepo/database/client";
+import { collectWikiPageDescendants } from "@sam-monorepo/domain";
 import type { getTranslations } from "next-intl/server";
 import * as z from "zod";
 import { buildEventWikiPageMoveReset } from "./buildEventWikiPageMoveReset";
 import { buildWikiPageMoveReset } from "./buildWikiPageMoveReset";
-import { collectWikiPageDescendants } from "./collectWikiPageDescendants";
 import type { ScopedContext, ScopedWikiPage } from "./requireAdminableWikiPage";
 import { WikiScope } from "./wikiPageHref";
 

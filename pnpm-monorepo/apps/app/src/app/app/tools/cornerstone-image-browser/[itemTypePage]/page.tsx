@@ -5,6 +5,7 @@ import { generateMetadataWithTryCatch } from "@/modules/common/utils/generateMet
 import { cornerstoneImageBrowserItemTypes } from "@/modules/cornerstone-image-browser/utils/config";
 import { log } from "@/modules/logging";
 import { wikiPageLinkHref } from "@/modules/wiki/utils/wikiPageLinks";
+import { WikiPageLinkKey } from "@sam-monorepo/domain";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import * as z from "zod";
@@ -133,7 +134,7 @@ export default async function Page({
           message={t.rich("Common.internalServerError", {
             link: (chunks) => (
               <Link
-                href={wikiPageLinkHref("support")}
+                href={wikiPageLinkHref(WikiPageLinkKey.Support)}
                 className="text-interaction-500 underline hover:text-interaction-300 focus-visible:text-interaction-300 active:text-interaction-300"
               >
                 {chunks}

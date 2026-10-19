@@ -5,17 +5,17 @@ import { createAuthenticatedAction } from "@/modules/actions/utils/createAction"
 import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
 import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import { MAXIMUM_WIKI_FEATURED_PAGES } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import * as z from "zod";
 import { getWikiContext } from "../queries/getWikiContext";
 import { WIKI_SETTING_FEATURED_PAGES } from "../queries/getWikiSettings";
-import { MAX_WIKI_FEATURED_PAGES } from "../utils/wikiFeaturedPages";
 
 const schema = z.object({
   /** One `pageId` form field per page, in the order they are featured */
   pageIds: z
     .array(z.cuid2())
-    .max(MAX_WIKI_FEATURED_PAGES)
+    .max(MAXIMUM_WIKI_FEATURED_PAGES)
     .transform((values) => [...new Set(values)]),
 });
 

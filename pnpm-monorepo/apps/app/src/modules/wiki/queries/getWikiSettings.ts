@@ -2,16 +2,16 @@ import { prisma } from "@/db";
 import { authenticate } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import { loadWikiIframeAllowlist } from "@sam-monorepo/application";
+import {
+  MAXIMUM_WIKI_FEATURED_PAGES,
+  getWikiPageLinkSettingKey,
+  type WikiPageLinkKey,
+} from "@sam-monorepo/domain";
 import { cache } from "react";
 import * as z from "zod";
-import { MAX_WIKI_FEATURED_PAGES } from "../utils/wikiFeaturedPages";
-import {
-  wikiPageLinkSettingKey,
-  type WikiPageLinkKey,
-} from "../utils/wikiPageLinks";
 
 export {
-  MAX_WIKI_IFRAME_ALLOWLIST_ENTRIES,
+  MAXIMUM_WIKI_IFRAME_ALLOWLIST_ENTRIES,
   WIKI_SETTING_IFRAME_ALLOWLIST,
 } from "@sam-monorepo/application";
 
@@ -22,7 +22,7 @@ export const getWikiIframeAllowlist = cache(
 
 export const WIKI_SETTING_FEATURED_PAGES = "featuredPages";
 
-const featuredPagesSchema = z.array(z.cuid2()).max(MAX_WIKI_FEATURED_PAGES);
+const featuredPagesSchema = z.array(z.cuid2()).max(MAXIMUM_WIKI_FEATURED_PAGES);
 
 /**
  * Ids of the pages highlighted on the wiki landing page, in the order the
@@ -49,7 +49,7 @@ export const getWikiPageLinkPageId = cache(
     "getWikiPageLinkPageId",
     async (key: WikiPageLinkKey): Promise<string | null> => {
       const setting = await prisma.wikiSetting.findUnique({
-        where: { key: wikiPageLinkSettingKey(key) },
+        where: { key: getWikiPageLinkSettingKey(key) },
       });
       const parsed = z.string().min(1).safeParse(setting?.value);
       return parsed.success ? parsed.data : null;
