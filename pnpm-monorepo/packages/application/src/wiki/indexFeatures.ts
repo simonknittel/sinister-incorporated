@@ -18,7 +18,6 @@ export {
 export {
   updateWikiPageTags,
   updateWikiPageTagsInputSchema,
-  wikiTagNameSchema,
   type UpdateWikiPageTagsInput,
   type UpdateWikiPageTagsOutput,
 } from "./updateWikiPageTags.js";

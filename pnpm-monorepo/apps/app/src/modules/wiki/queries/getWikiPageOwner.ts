@@ -12,14 +12,11 @@ import { cache } from "react";
  * request.
  */
 export const getWikiPageOwner = cache(
-  withTrace(
-    "getWikiPageOwner",
-    async (scope: WikiContext, pageId: string) => {
-      try {
-        return await findWikiPageOwner(getApplicationContext(), scope, pageId);
-      } catch (error) {
-        return throwApplicationErrorForPage(error);
-      }
-    },
-  ),
+  withTrace("getWikiPageOwner", async (scope: WikiContext, pageId: string) => {
+    try {
+      return await findWikiPageOwner(getApplicationContext(), scope, pageId);
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  }),
 );

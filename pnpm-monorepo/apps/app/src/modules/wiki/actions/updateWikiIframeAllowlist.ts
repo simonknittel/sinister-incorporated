@@ -7,8 +7,8 @@ import {
   toActor,
 } from "@/modules/application";
 import {
-  updateWikiIframeAllowlist as updateWikiIframeAllowlistUseCase,
   updateWikiIframeAllowlistInputSchema,
+  updateWikiIframeAllowlist as updateWikiIframeAllowlistUseCase,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";

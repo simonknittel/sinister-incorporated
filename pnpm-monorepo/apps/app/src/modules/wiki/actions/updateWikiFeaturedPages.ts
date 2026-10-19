@@ -7,8 +7,8 @@ import {
   toActor,
 } from "@/modules/application";
 import {
-  updateWikiFeaturedPages as updateWikiFeaturedPagesUseCase,
   updateWikiFeaturedPagesInputSchema,
+  updateWikiFeaturedPages as updateWikiFeaturedPagesUseCase,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";

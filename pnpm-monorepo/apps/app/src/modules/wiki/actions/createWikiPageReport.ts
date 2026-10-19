@@ -7,8 +7,8 @@ import {
   toActor,
 } from "@/modules/application";
 import {
-  createWikiPageReport as createWikiPageReportUseCase,
   createWikiPageReportInputSchema,
+  createWikiPageReport as createWikiPageReportUseCase,
   type CreateWikiPageReportOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";

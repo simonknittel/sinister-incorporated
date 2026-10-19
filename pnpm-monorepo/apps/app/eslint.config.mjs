@@ -200,15 +200,12 @@ const eslintConfig = defineConfig([
       "src/modules/discord/**",
       "src/server/api/routers/events/**",
       "src/app/app/events/**",
+      "src/modules/wiki/**",
+      "src/app/app/wiki/**",
+      "src/app/api/wiki/**",
+      "src/server/api/routers/wiki/**",
     ],
-    ignores: [
-      "src/modules/auth/server/**",
-      // The two briefing tag pages still use Prisma. They move with the wiki.
-      // `*` matches the folder of the event or of the template, because the
-      // brackets of the real names are a character class in minimatch.
-      "src/app/app/events/*/briefing/tags/**",
-      "src/app/app/events/templates/*/briefing/tags/**",
-    ],
+    ignores: ["src/modules/auth/server/**"],
     rules: {
       "no-restricted-imports": [
         "error",

@@ -3,16 +3,13 @@ import {
   getOptimizedImageProps,
   type OptimizedImageProps,
 } from "@/modules/common/utils/imageOptimizer";
+import type { WikiImageDimensions } from "@sam-monorepo/application";
 import {
   getWikiImageUploadId,
   WIKI_FULL_WIDTH,
 } from "@sam-monorepo/wiki-editor";
 
-export interface WikiImageDimensions {
-  readonly width: number;
-  readonly height: number;
-  readonly mimeType: string;
-}
+export type { WikiImageDimensions };
 
 /**
  * Formats without a meaningful raster to optimize: SVG is resolution

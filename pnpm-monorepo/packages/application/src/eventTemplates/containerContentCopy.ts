@@ -17,9 +17,10 @@ import {
 
 /**
  * The timeout of an interactive transaction that writes many rows one after
- * the other: the copy of a lineup with its briefing (the same bound as the
- * wiki copy), or a new order of a lineup. The default of Prisma (5 seconds)
- * is possibly too short for this (an assumption, not measured).
+ * the other: the copy of a lineup with its briefing, the copy of a wiki page
+ * subtree (`wikiPageSubtreeCopy.ts`), or a new order of a lineup. The default
+ * of Prisma (5 seconds) is possibly too short for this (an assumption, not
+ * measured).
  */
 export const LONG_TRANSACTION_TIMEOUT_IN_MILLISECONDS = 30_000;
 

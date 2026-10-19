@@ -3,13 +3,10 @@
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import { useRolesContext } from "@/modules/roles/components/RolesContext";
 import { SingleRoleBadge } from "@/modules/roles/components/SingleRoleBadge";
+import type { WikiRoleCitizen } from "@sam-monorepo/application";
 import type { CSSProperties } from "react";
 
-export interface WikiRoleCitizen {
-  readonly id: string;
-  readonly handle: string | null;
-  readonly deletedAt: Date | null;
-}
+export type { WikiRoleCitizen };
 
 interface Props {
   readonly roleId: string | null;

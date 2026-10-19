@@ -7,8 +7,8 @@ import {
   toActor,
 } from "@/modules/application";
 import {
-  updateWikiDashboardPage as updateWikiDashboardPageUseCase,
   updateWikiDashboardPageInputSchema,
+  updateWikiDashboardPage as updateWikiDashboardPageUseCase,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";

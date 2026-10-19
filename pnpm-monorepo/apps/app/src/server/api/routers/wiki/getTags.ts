@@ -1,5 +1,5 @@
-import { eventContainerSchema } from "@/modules/events/utils/eventContainerSchema";
 import { getApplicationContext, toActor } from "@/modules/application";
+import { eventContainerSchema } from "@/modules/events/utils/eventContainerSchema";
 import {
   findWikiScopeTags,
   ForbiddenError,

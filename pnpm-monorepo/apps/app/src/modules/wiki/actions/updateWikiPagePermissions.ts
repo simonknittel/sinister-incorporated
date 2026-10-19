@@ -8,8 +8,8 @@ import {
   toActor,
 } from "@/modules/application";
 import {
-  updateWikiPagePermissions as updateWikiPagePermissionsUseCase,
   updateWikiPagePermissionsInputSchema,
+  updateWikiPagePermissions as updateWikiPagePermissionsUseCase,
   WikiRolesCannotReadParentError,
   type UpdateWikiPagePermissionsOutput,
 } from "@sam-monorepo/application";

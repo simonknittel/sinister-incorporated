@@ -211,8 +211,9 @@ const renderWikiPageContent = (
           />
         ),
         /**
-         * Renders the members pre-resolved by the server for this viewer
-         * (see resolveWikiRoleCitizens) instead of the node's placeholder.
+         * Renders the members pre-resolved by the server for this viewer (see
+         * `loadWikiRoleCitizensByRole()` of the application package) instead
+         * of the node's placeholder.
          */
         wikiRoleCitizens: ({ node }) => {
           const { roleId } = normalizeWikiRoleCitizensConfig(node.attrs);

@@ -1,8 +1,5 @@
 import { env } from "@/env";
-import {
-  getApplicationContext,
-  toActor,
-} from "@/modules/application";
+import { getApplicationContext, toActor } from "@/modules/application";
 import { requireAuthenticationApi } from "@/modules/auth/server";
 import apiErrorHandler from "@/modules/common/utils/apiErrorHandler";
 import { createS3Client } from "@/modules/common/utils/createS3Client";

@@ -31,4 +31,3 @@ export {
   type ShipVariantOutput,
   type VariantTagOutput,
 } from "./shipVariant.js";
-export { canViewVariantPages } from "./variantPageAccess.js";

@@ -1,6 +1,4 @@
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
 import { getApplicationContext, getRequestActor } from "@/modules/application";
-import { getBriefingPath } from "@/modules/events/utils/eventContainer";
 import { loadWikiScopeOfPage, WikiScopeKind } from "@sam-monorepo/application";
 import { WikiScope } from "../utils/wikiPageHref";
 import type { EventWikiContext } from "./getEventWikiContext";
@@ -43,34 +41,9 @@ export const getWikiPageScopedContext = async (
 };
 
 /**
- * The home of the scope: the global wiki, or the briefing of the event or
- * the event template
- */
-export const getWikiScopeHomePath = (scoped: WikiPageScopedContext) => {
-  switch (scoped.scope) {
-    case WikiScope.Event:
-      return getBriefingPath(scoped.context.container);
-
-    case WikiScope.Wiki:
-      return "/app/wiki";
-
-    default:
-      throw new Error(`Unknown wiki scope: ${scoped satisfies never}`);
-  }
-};
-
-/**
  * Whether the scope rejects mutations: an event briefing freezes entirely
  * once its event is over. A template blueprint never freezes. Per-user
  * metadata (favourites, visits) stays writable.
  */
 export const isWikiScopeFrozen = (scoped: WikiPageScopedContext) =>
   scoped.scope === WikiScope.Event && scoped.context.frozen;
-
-/**
- * The answer to a mutation in a frozen scope. The event can end while the
- * page is open, and the page must then show the frozen state. Only for
- * server actions (see rejectConflict).
- */
-export const rejectFrozenWikiScope = (formData: FormData) =>
-  rejectConflict("Das Event ist bereits vorbei.", formData);

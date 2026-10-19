@@ -7,8 +7,8 @@ import {
   toActor,
 } from "@/modules/application";
 import {
-  updateEventWikiPagePermissions as updateEventWikiPagePermissionsUseCase,
   updateEventWikiPagePermissionsInputSchema,
+  updateEventWikiPagePermissions as updateEventWikiPagePermissionsUseCase,
   type UpdateEventWikiPagePermissionsOutput,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";

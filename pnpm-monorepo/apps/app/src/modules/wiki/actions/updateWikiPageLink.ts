@@ -7,8 +7,8 @@ import {
   toActor,
 } from "@/modules/application";
 import {
-  updateWikiPageLink as updateWikiPageLinkUseCase,
   updateWikiPageLinkInputSchema,
+  updateWikiPageLink as updateWikiPageLinkUseCase,
 } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
