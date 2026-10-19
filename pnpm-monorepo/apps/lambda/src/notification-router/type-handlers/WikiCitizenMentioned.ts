@@ -1,5 +1,8 @@
-import { prisma, type WikiPageCitizenMention } from "@sam-monorepo/database";
-import { getCitizenDisplayName } from "@sam-monorepo/domain";
+import {
+  findWikiCitizenMentionedRecipient,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
+import { type WikiPageCitizenMention } from "@sam-monorepo/database";
 import { publishNotifications } from "../publish";
 
 interface Payload {
@@ -7,48 +10,40 @@ interface Payload {
 }
 
 /**
- * Sends the notification for one pending mention link. The
- * wikiCitizenMentioned automation has already read-permission-gated the
- * mention; this handler only resolves the display data and publishes. A
- * row deleted in the meantime means the mention was removed — nothing to
- * send.
+ * Sends the notification for one pending mention link (see
+ * `findWikiCitizenMentionedRecipient()` for the recipient)
  */
-export const WikiCitizenMentionedHandler = async (payload: Payload) => {
-  const mention = await prisma.wikiPageCitizenMention.findUnique({
-    where: { id: payload.mentionId },
-    select: {
-      citizenId: true,
-      createdBy: { select: { id: true, handle: true, deletedAt: true } },
-      page: {
-        select: { id: true, title: true, eventId: true, deletedAt: true },
-      },
-    },
+export const WikiCitizenMentionedHandler = async (
+  context: ApplicationContext,
+  payload: Payload,
+) => {
+  const result = await findWikiCitizenMentionedRecipient(context, {
+    mentionId: payload.mentionId,
   });
-  if (!mention || mention.page.deletedAt) return;
+  if (!result) return;
 
-  const mentionedByName = mention.createdBy
-    ? getCitizenDisplayName(mention.createdBy)
-    : null;
+  const { mention } = result;
 
-  await publishNotifications([
-    {
-      receiverId: mention.citizenId,
+  await publishNotifications(
+    context,
+    result.recipients.map((recipient) => ({
+      receiverId: recipient.citizenId,
       notificationType: "wiki_citizen_mentioned" as const,
       payload: {
-        pageId: mention.page.id,
-        pageTitle: mention.page.title,
+        pageId: mention.pageId,
+        pageTitle: mention.pageTitle,
         // The app shows this value in the on-site text, thus it holds the
         // label of a deleted citizen.
-        mentionedByHandle: mentionedByName,
-        eventId: mention.page.eventId,
+        mentionedByHandle: mention.mentionedByName,
+        eventId: mention.eventId,
       },
       title: "Du wurdest im Wiki erwähnt",
-      body: mentionedByName
-        ? `${mentionedByName} hat dich auf der Seite "${mention.page.title}" erwähnt`
-        : `Du wurdest auf der Seite "${mention.page.title}" erwähnt`,
-      url: mention.page.eventId
-        ? `/app/events/${mention.page.eventId}/briefing/${mention.page.id}`
-        : `/app/wiki/${mention.page.id}`,
-    },
-  ]);
+      body: mention.mentionedByName
+        ? `${mention.mentionedByName} hat dich auf der Seite "${mention.pageTitle}" erwähnt`
+        : `Du wurdest auf der Seite "${mention.pageTitle}" erwähnt`,
+      url: mention.eventId
+        ? `/app/events/${mention.eventId}/briefing/${mention.pageId}`
+        : `/app/wiki/${mention.pageId}`,
+    })),
+  );
 };

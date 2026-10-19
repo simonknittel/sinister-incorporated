@@ -1,12 +1,19 @@
-import "./notification-router/setup"; // must be first
+import { env } from "./notification-router/setup"; // must be first
 
 import type { SQSBatchItemFailure, SQSHandler } from "aws-lambda";
+import { createApplicationContext } from "./common/createApplicationContext";
 import { isRequestProcessed, setRequestProcessed } from "./common/dynamodb";
 import { log } from "./common/logger";
 import {
   bodySchema,
   notificationRouterHandler,
 } from "./notification-router/handler";
+
+const context = createApplicationContext({
+  source: "notification-router",
+  baseUrl: env.BASE_URL,
+  publicUploadBaseUrl: env.PUBLIC_UPLOAD_BASE_URL,
+});
 
 export const handler: SQSHandler = async (event) => {
   // https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#services-sqs-batchfailurereporting
@@ -21,7 +28,7 @@ export const handler: SQSHandler = async (event) => {
 
       if (await isRequestProcessed(body.requestId)) continue;
 
-      await notificationRouterHandler(body);
+      await notificationRouterHandler(context, body);
 
       await setRequestProcessed(body.requestId);
     } catch (error) {

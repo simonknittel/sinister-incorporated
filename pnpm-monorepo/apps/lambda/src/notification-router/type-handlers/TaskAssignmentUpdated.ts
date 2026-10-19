@@ -1,49 +1,32 @@
-import { prisma, type Task } from "@sam-monorepo/database";
-import { findCitizenIdsWithPermissions } from "../../common/effectivePermissions";
+import {
+  findTaskAssignmentRecipients,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
+import { type Task } from "@sam-monorepo/database";
 import { publishNotifications } from "../publish";
-import { TASK_RECEIVER_PERMISSION_SETS } from "../taskReceiverPermissionSets";
 
 interface Payload {
   taskId: Task["id"];
 }
 
-export const TaskAssignmentUpdatedHandler = async (payload: Payload) => {
-  // TODO: Only notify newly assigned citizens
-
-  const task = await prisma.task.findUnique({
-    where: { id: payload.taskId },
-    select: {
-      id: true,
-      title: true,
-      assignments: {
-        select: {
-          citizenId: true,
-        },
-      },
-    },
+export const TaskAssignmentUpdatedHandler = async (
+  context: ApplicationContext,
+  payload: Payload,
+) => {
+  const result = await findTaskAssignmentRecipients(context, {
+    taskId: payload.taskId,
   });
-  if (!task || task.assignments.length <= 0) return;
+  if (!result) return;
 
-  const recipientIds = await findCitizenIdsWithPermissions(
-    {
-      id: {
-        in: task.assignments.map((assignment) => assignment.citizenId),
-      },
-    },
-    TASK_RECEIVER_PERMISSION_SETS,
-  );
-
-  /**
-   * Publish notifications
-   */
   await publishNotifications(
-    Array.from(recipientIds, (recipientId) => ({
-      receiverId: recipientId,
+    context,
+    result.recipients.map((recipient) => ({
+      receiverId: recipient.citizenId,
       notificationType: "task_assignment_updated" as const,
-      payload: { taskId: task.id, taskTitle: task.title },
+      payload: { taskId: result.task.id, taskTitle: result.task.title },
       title: "Neuer Task",
-      body: `Dir wurde ein Task zugewiesen: ${task.title}`,
-      url: `/app/tasks/${task.id}`,
+      body: `Dir wurde ein Task zugewiesen: ${result.task.title}`,
+      url: `/app/tasks/${result.task.id}`,
     })),
   );
 };

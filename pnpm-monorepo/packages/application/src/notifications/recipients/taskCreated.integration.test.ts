@@ -1,19 +1,21 @@
-import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import {
   prisma,
   TaskRewardType,
   TaskVisibility,
   type Prisma,
 } from "@sam-monorepo/database";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
+import { createTestApplicationContext } from "../../../test/applicationContext.js";
 import {
   createCitizenWithPermissions,
   MAXIMUM_LEVEL,
-} from "../../common/effectivePermissions.fixtures";
-import { publishNotifications } from "../publish";
-import { TaskCreatedHandler } from "./TaskCreated";
-
-vi.mock("../publish", () => ({ publishNotifications: vi.fn() }));
+} from "../../../test/citizensWithPermissions.js";
+import { truncateAllTables } from "../../../test/database.js";
+import {
+  findTaskCreatedRecipients,
+  TaskCreatedRecipientKind,
+  type TaskCreatedRecipientGroup,
+} from "./taskCreated.js";
 
 const RECEIVER_PERMISSION_STRINGS = ["login;manage", "task;read"];
 
@@ -28,11 +30,10 @@ const createTask = (data: Partial<Prisma.TaskUncheckedCreateInput> = {}) =>
     },
   });
 
-const getSortedReceiverIds = () =>
-  vi
-    .mocked(publishNotifications)
-    .mock.calls.flatMap(([notifications]) =>
-      notifications.map((notification) => notification.receiverId),
+const getSortedRecipientIds = (groups: readonly TaskCreatedRecipientGroup[]) =>
+  groups
+    .flatMap((group) =>
+      group.recipients.map((recipient) => recipient.citizenId),
     )
     .toSorted();
 
@@ -40,7 +41,7 @@ beforeEach(async () => {
   await truncateAllTables();
 });
 
-describe("TaskCreatedHandler", () => {
+describe("findTaskCreatedRecipients", () => {
   test("a public task notifies each citizen who can log in and open tasks, except its creator", async () => {
     const creator = await createCitizenWithPermissions(
       "creator",
@@ -53,17 +54,17 @@ describe("TaskCreatedHandler", () => {
     await createCitizenWithPermissions("without-task-read", ["login;manage"]);
     await createCitizenWithPermissions("without-login", ["task;read"]);
     const task = await createTask({ createdById: creator.id });
+    const { context } = createTestApplicationContext();
 
-    await TaskCreatedHandler({ taskIds: [task.id] });
+    const groups = await findTaskCreatedRecipients(context, {
+      taskIds: [task.id],
+    });
 
-    expect(publishNotifications).toHaveBeenCalledExactlyOnceWith([
+    expect(groups).toEqual([
       {
-        receiverId: reader.id,
-        notificationType: "task_created",
-        payload: { taskId: task.id, taskTitle: task.title },
-        title: "Neuer Task",
-        body: task.title,
-        url: `/app/tasks/${task.id}`,
+        task: { id: task.id, title: task.title },
+        kind: TaskCreatedRecipientKind.PublicTask,
+        recipients: [{ citizenId: reader.id }],
       },
     ]);
   });
@@ -120,10 +121,13 @@ describe("TaskCreatedHandler", () => {
           connect: [{ id: requiredRole.id }, { id: leveledRequiredRole.id }],
         },
       });
+      const { context } = createTestApplicationContext();
 
-      await TaskCreatedHandler({ taskIds: [task.id] });
+      const groups = await findTaskCreatedRecipients(context, {
+        taskIds: [task.id],
+      });
 
-      expect(getSortedReceiverIds()).toEqual(
+      expect(getSortedRecipientIds(groups)).toEqual(
         [directHolder.id, inheritedHolder.id].toSorted(),
       );
     },
@@ -148,13 +152,16 @@ describe("TaskCreatedHandler", () => {
         ],
       },
     });
+    const { context } = createTestApplicationContext();
 
-    await TaskCreatedHandler({ taskIds: [task.id] });
+    const groups = await findTaskCreatedRecipients(context, {
+      taskIds: [task.id],
+    });
 
-    expect(publishNotifications).toHaveBeenCalledExactlyOnceWith([
+    expect(groups).toEqual([
       expect.objectContaining({
-        receiverId: assignee.id,
-        notificationType: "task_assignment_updated",
+        kind: TaskCreatedRecipientKind.Assignee,
+        recipients: [{ citizenId: assignee.id }],
       }),
     ]);
   });

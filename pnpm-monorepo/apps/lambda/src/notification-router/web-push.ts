@@ -1,8 +1,9 @@
-import { NotificationChannel, prisma } from "@sam-monorepo/database";
 import {
-  AuditEventType,
-  isAllowedWebPushEndpointUrl,
-} from "@sam-monorepo/domain";
+  findWebPushDeliveries,
+  pruneWebPushSubscriptions,
+  WebPushPruneReason,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
 import { setTimeout } from "node:timers/promises";
 import {
   sendNotification,
@@ -10,7 +11,6 @@ import {
   WebPushError,
   type RequestOptions,
 } from "web-push";
-import { createAuditEvents } from "../common/audit";
 import { log } from "../common/logger";
 import { type Notification } from "./notification";
 import { env } from "./setup";
@@ -43,93 +43,39 @@ const getRetryAfterDelayMs = (error: WebPushError) => {
 };
 
 export const publishWebPushNotifications = async (
+  context: ApplicationContext,
   notifications: Notification[],
   options?: RequestOptions,
 ) => {
-  const citizens = await prisma.citizen.findMany({
-    where: {
-      id: {
-        in: notifications.map((n) => n.receiverId),
-      },
-    },
-    select: {
-      id: true,
-      notificationSettings: {
-        where: {
-          channel: NotificationChannel.WEB_PUSH,
-        },
-        select: {
-          notificationType: true,
-        },
-      },
-      // The keys are omitted globally, so the send path selects them back in.
-      webPushSubscriptions: {
-        select: {
-          id: true,
-          endpoint: true,
-          p256dh: true,
-          auth: true,
-        },
-      },
-    },
-  });
-  if (citizens.length <= 0) return;
+  const deliveries = await findWebPushDeliveries(context, notifications);
 
   log.info("Sending Web Push notifications (before filter)", {
     count: notifications.length,
   });
-
-  const filteredNotifications = notifications
-    .filter((notification) => {
-      const citizen = citizens.find((c) => c.id === notification.receiverId);
-      if (!citizen) return false;
-
-      // Opt-out model: a NotificationSetting row means the citizen disabled
-      // this notification type for web push.
-      const disabledSetting = citizen.notificationSettings.find(
-        (setting) => setting.notificationType === notification.notificationType,
-      );
-      if (disabledSetting) return false;
-
-      if (citizen.webPushSubscriptions.length <= 0) return false;
-
-      return true;
-    })
-    .flatMap((notification) => {
-      const citizen = citizens.find((c) => c.id === notification.receiverId)!;
-
-      return citizen.webPushSubscriptions
-        .filter((sub) => isAllowedWebPushEndpointUrl(sub.endpoint))
-        .map((sub) => ({
-          id: sub.id,
-          subscription: {
-            endpoint: sub.endpoint,
-            keys: {
-              p256dh: sub.p256dh,
-              auth: sub.auth,
-            },
-          },
-          payload: JSON.stringify({
-            title: `${notification.title} | SAM`,
-            body: notification.body,
-            url: notification.url,
-          }),
-        }));
-    });
-  if (filteredNotifications.length <= 0) return;
+  if (deliveries.length <= 0) return;
 
   log.info("Sending Web Push notifications (after filter)", {
-    count: filteredNotifications.length,
+    count: deliveries.length,
   });
 
   const subscriptionsToRemove: string[] = [];
-  for (const { id, subscription, payload } of filteredNotifications) {
+  for (const { draft, subscription } of deliveries) {
+    const payload = JSON.stringify({
+      title: `${draft.title} | SAM`,
+      body: draft.body,
+      url: draft.url,
+    });
+
     for (let attempt = 0; attempt <= RATE_LIMIT_MAX_RETRIES; attempt += 1) {
       try {
-        await sendNotification(subscription, payload, {
-          TTL: options?.TTL ?? 60 * 60 * 24, // 1 day
-          urgency: options?.urgency,
-        });
+        await sendNotification(
+          { endpoint: subscription.endpoint, keys: subscription.keys },
+          payload,
+          {
+            TTL: options?.TTL ?? 60 * 60 * 24, // 1 day
+            urgency: options?.urgency,
+          },
+        );
         break;
       } catch (error) {
         if (
@@ -145,7 +91,7 @@ export const publishWebPushNotifications = async (
             const retryDelayMs =
               getRetryAfterDelayMs(error) ?? RATE_LIMIT_DEFAULT_DELAY_MS;
             log.warn("Rate limited sending web push notification, retrying", {
-              subscriptionId: id,
+              subscriptionId: subscription.id,
               retryDelayMs,
               attempt: attempt + 1,
             });
@@ -156,7 +102,7 @@ export const publishWebPushNotifications = async (
           log.error(
             "Exceeded retries after rate limit for web push notification",
             {
-              subscriptionId: id,
+              subscriptionId: subscription.id,
               statusCode: error.statusCode,
               attempts: attempt + 1,
             },
@@ -166,7 +112,7 @@ export const publishWebPushNotifications = async (
 
         log.error("Error sending web push notification", {
           error: toLoggableWebPushError(error),
-          subscriptionId: id,
+          subscriptionId: subscription.id,
         });
         break;
       }
@@ -176,18 +122,8 @@ export const publishWebPushNotifications = async (
   log.info("Deleting Web Push subscriptions", {
     count: subscriptionsToRemove.length,
   });
-  const { count } = await prisma.webPushSubscription.deleteMany({
-    where: {
-      endpoint: {
-        in: subscriptionsToRemove,
-      },
-    },
+  await pruneWebPushSubscriptions(context, {
+    endpoints: subscriptionsToRemove,
+    reason: WebPushPruneReason.Expired,
   });
-
-  await createAuditEvents([
-    {
-      type: AuditEventType.WEB_PUSH_SUBSCRIPTIONS_PRUNED,
-      data: { count, reason: "expired" },
-    },
-  ]);
 };

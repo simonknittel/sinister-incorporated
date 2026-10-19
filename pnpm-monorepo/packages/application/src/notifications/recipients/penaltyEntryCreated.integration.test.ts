@@ -1,15 +1,17 @@
-import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
+import {
+  createTestApplicationContext,
+  TEST_NOW,
+} from "../../../test/applicationContext.js";
 import {
   createCitizenWithInheritedPermissions,
   createCitizenWithLeveledRole,
   MAXIMUM_LEVEL,
-} from "../../common/effectivePermissions.fixtures";
-import { publishNotifications } from "../publish";
-import { PenaltyEntryCreatedHandler } from "./PenaltyEntryCreated";
-
-vi.mock("../publish", () => ({ publishNotifications: vi.fn() }));
+} from "../../../test/citizensWithPermissions.js";
+import { truncateAllTables } from "../../../test/database.js";
+import { findPenaltyEntryRecipient } from "./penaltyEntryCreated.js";
+import type { Recipient } from "./recipient.js";
 
 const PERMISSION_STRINGS = ["login;manage", "ownPenaltyEntry;read"];
 
@@ -22,22 +24,23 @@ beforeEach(async () => {
   await truncateAllTables();
 });
 
-describe("PenaltyEntryCreatedHandler", () => {
+describe("findPenaltyEntryRecipient", () => {
   test("notifies a citizen with the permissions only through an inherited role", async () => {
     const citizen = await createCitizenWithInheritedPermissions(
       "inherited",
       PERMISSION_STRINGS,
     );
     const penaltyEntry = await createPenaltyEntry(citizen.id);
+    const { context } = createTestApplicationContext();
 
-    await PenaltyEntryCreatedHandler({ penaltyEntryId: penaltyEntry.id });
+    const result = await findPenaltyEntryRecipient(context, {
+      penaltyEntryId: penaltyEntry.id,
+    });
 
-    expect(publishNotifications).toHaveBeenCalledExactlyOnceWith([
-      expect.objectContaining({
-        receiverId: citizen.id,
-        notificationType: "penalty_entry_created",
-      }),
-    ]);
+    expect(result).toEqual({
+      penaltyEntry: { points: 3, reason: "Test" },
+      recipients: [{ citizenId: citizen.id }],
+    });
   });
 
   test("notifies only the citizen at the maximum level of the role", async () => {
@@ -55,13 +58,17 @@ describe("PenaltyEntryCreatedHandler", () => {
       createPenaltyEntry(atMaximumLevel.id),
       createPenaltyEntry(belowMaximumLevel.id),
     ]);
+    const { context } = createTestApplicationContext();
 
-    for (const penaltyEntry of penaltyEntries)
-      await PenaltyEntryCreatedHandler({ penaltyEntryId: penaltyEntry.id });
+    const recipients: Recipient[] = [];
+    for (const penaltyEntry of penaltyEntries) {
+      const result = await findPenaltyEntryRecipient(context, {
+        penaltyEntryId: penaltyEntry.id,
+      });
+      recipients.push(...(result?.recipients ?? []));
+    }
 
-    expect(publishNotifications).toHaveBeenCalledExactlyOnceWith([
-      expect.objectContaining({ receiverId: atMaximumLevel.id }),
-    ]);
+    expect(recipients).toEqual([{ citizenId: atMaximumLevel.id }]);
   });
 
   test("does not notify a deleted citizen", async () => {
@@ -71,20 +78,20 @@ describe("PenaltyEntryCreatedHandler", () => {
       MAXIMUM_LEVEL,
     );
     const penaltyEntry = await createPenaltyEntry(citizen.id);
+    const { context } = createTestApplicationContext();
+    const input = { penaltyEntryId: penaltyEntry.id };
 
-    await PenaltyEntryCreatedHandler({ penaltyEntryId: penaltyEntry.id });
-
-    expect(publishNotifications).toHaveBeenCalledExactlyOnceWith([
-      expect.objectContaining({ receiverId: citizen.id }),
-    ]);
+    expect(
+      (await findPenaltyEntryRecipient(context, input))?.recipients,
+    ).toEqual([{ citizenId: citizen.id }]);
 
     await prisma.citizen.update({
       where: { id: citizen.id },
-      data: { deletedAt: new Date() },
+      data: { deletedAt: TEST_NOW },
     });
 
-    await PenaltyEntryCreatedHandler({ penaltyEntryId: penaltyEntry.id });
-
-    expect(publishNotifications).toHaveBeenCalledTimes(1);
+    expect(
+      (await findPenaltyEntryRecipient(context, input))?.recipients,
+    ).toEqual([]);
   });
 });

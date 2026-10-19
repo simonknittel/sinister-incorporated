@@ -1,6 +1,9 @@
+import {
+  findWelcomeGreetingRecipient,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
 import { type Citizen } from "@sam-monorepo/database";
 import { ONBOARDING_POPOVER_PATH } from "@sam-monorepo/domain";
-import { findCitizenIdsWithPermissions } from "../../common/effectivePermissions";
 import { publishNotifications } from "../publish";
 
 interface Payload {
@@ -59,32 +62,28 @@ const pickWording = () =>
   WORDINGS[Math.floor(Math.random() * WORDINGS.length)] ?? WORDINGS[0];
 
 /**
- * A personal welcome to the citizen on the first day they can open the app.
- * The app sends the request once for each citizen (see `Citizen.welcomedAt`).
- * Time can pass between the request and this handler, thus the permission is
- * checked again here.
- *
- * The check uses the effective roles of the citizen (inherited roles, level
- * gate and negation), the same rule as the session of the app that sets the
- * marker. A different rule could set the marker without a notification, and
- * the citizen gets no second welcome.
+ * A personal welcome to the citizen on the first day they can open the app
+ * (see `findWelcomeGreetingRecipient()` for the condition). The app sends the
+ * request once for each citizen (see `Citizen.welcomedAt`).
  *
  * The picked wording travels in the payload as well, so that the on-site row
  * carries the same text as the web push notification. Both link to the
  * dashboard, where the "Erste Schritte" popover opens.
  */
-export const WelcomeGreetingHandler = async (payload: Payload) => {
-  const recipientIds = await findCitizenIdsWithPermissions(
-    { id: payload.citizenId },
-    [{ resource: "login", operation: "manage" }],
-  );
-  if (!recipientIds.has(payload.citizenId)) return;
+export const WelcomeGreetingHandler = async (
+  context: ApplicationContext,
+  payload: Payload,
+) => {
+  const recipient = await findWelcomeGreetingRecipient(context, {
+    citizenId: payload.citizenId,
+  });
+  if (!recipient) return;
 
   const wording = pickWording();
 
-  await publishNotifications([
+  await publishNotifications(context, [
     {
-      receiverId: payload.citizenId,
+      receiverId: recipient.citizenId,
       notificationType: "welcome" as const,
       payload: { title: wording.title, body: wording.body },
       title: wording.title,

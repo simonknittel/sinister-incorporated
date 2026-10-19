@@ -1,5 +1,8 @@
-import { prisma, type Citizen, type Role } from "@sam-monorepo/database";
-import { findCitizenIdsWithPermissions } from "../../common/effectivePermissions";
+import {
+  findRoleAddedRecipient,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
+import { type Citizen, type Role } from "@sam-monorepo/database";
 import { publishNotifications } from "../publish";
 
 interface Payload {
@@ -7,39 +10,24 @@ interface Payload {
   roleId: Role["id"];
 }
 
-export const RoleAddedHandler = async (payload: Payload) => {
-  /**
-   * Calculate recipients: the citizen must be able to log in and to read the
-   * added role (`otherRole;manage` includes the read)
-   */
-  const [role, recipientIds] = await Promise.all([
-    prisma.role.findUnique({
-      where: { id: payload.roleId },
-      select: {
-        name: true,
-      },
-    }),
-    findCitizenIdsWithPermissions({ id: payload.citizenId }, [
-      { resource: "login", operation: "manage" },
-      {
-        resource: "otherRole",
-        operation: "read",
-        attributes: [{ key: "roleId", value: payload.roleId }],
-      },
-    ]),
-  ]);
-  if (!role || !recipientIds.has(payload.citizenId)) return;
+export const RoleAddedHandler = async (
+  context: ApplicationContext,
+  payload: Payload,
+) => {
+  const result = await findRoleAddedRecipient(context, {
+    citizenId: payload.citizenId,
+    roleId: payload.roleId,
+  });
+  if (!result) return;
 
-  /**
-   * Publish notifications
-   */
-  await publishNotifications([
-    {
-      receiverId: payload.citizenId,
+  await publishNotifications(
+    context,
+    result.recipients.map((recipient) => ({
+      receiverId: recipient.citizenId,
       notificationType: "role_added" as const,
-      payload: { roleId: payload.roleId, roleName: role.name },
+      payload: { roleId: result.role.id, roleName: result.role.name },
       title: "Neue Rolle",
-      body: `Dir wurde eine neue Rolle zugewiesen: ${role.name}`,
-    },
-  ]);
+      body: `Dir wurde eine neue Rolle zugewiesen: ${result.role.name}`,
+    })),
+  );
 };

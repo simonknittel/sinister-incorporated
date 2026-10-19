@@ -1,4 +1,8 @@
-import { prisma, type Citizen, type Event } from "@sam-monorepo/database";
+import {
+  findEventParticipationRecipient,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
+import { type Citizen, type Event } from "@sam-monorepo/database";
 import { publishNotifications } from "../publish.js";
 
 type Payload = {
@@ -11,27 +15,31 @@ type Payload = {
  * Removal leaves the citizen's view of the event untouched, so the message
  * still links to the event page.
  */
-export const EventParticipationRemovedHandler = async (payload: Payload) => {
-  const event = await prisma.event.findUnique({
-    where: { id: payload.eventId },
-    select: { id: true, name: true },
+export const EventParticipationRemovedHandler = async (
+  context: ApplicationContext,
+  payload: Payload,
+) => {
+  const result = await findEventParticipationRecipient(context, {
+    eventId: payload.eventId,
+    citizenId: payload.citizenId,
   });
-  if (!event) return;
+  if (!result) return;
 
-  const body = `Du wurdest vom Event "${event.name}" entfernt.`;
+  const body = `Du wurdest vom Event "${result.event.name}" entfernt.`;
 
-  await publishNotifications([
-    {
-      receiverId: payload.citizenId,
+  await publishNotifications(
+    context,
+    result.recipients.map((recipient) => ({
+      receiverId: recipient.citizenId,
       notificationType: "event_participation_removed" as const,
       payload: {
-        eventId: event.id,
-        eventName: event.name,
+        eventId: result.event.id,
+        eventName: result.event.name,
         reason: payload.reason,
       },
       title: "Vom Event entfernt",
       body: payload.reason ? `${body} Grund: ${payload.reason}` : body,
-      url: `/app/events/${event.id}`,
-    },
-  ]);
+      url: `/app/events/${result.event.id}`,
+    })),
+  );
 };

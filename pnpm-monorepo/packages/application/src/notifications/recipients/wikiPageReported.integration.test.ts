@@ -1,15 +1,16 @@
-import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import { prisma } from "@sam-monorepo/database";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
+import {
+  createTestApplicationContext,
+  TEST_NOW,
+} from "../../../test/applicationContext.js";
 import {
   createCitizenWithInheritedPermissions,
   createCitizenWithLeveledRole,
   MAXIMUM_LEVEL,
-} from "../../common/effectivePermissions.fixtures";
-import { publishNotifications } from "../publish";
-import { WikiPageReportedHandler } from "./WikiPageReported";
-
-vi.mock("../publish", () => ({ publishNotifications: vi.fn() }));
+} from "../../../test/citizensWithPermissions.js";
+import { truncateAllTables } from "../../../test/database.js";
+import { findWikiPageReportedRecipients } from "./wikiPageReported.js";
 
 const PERMISSION_STRINGS = ["wiki;manage"];
 
@@ -25,22 +26,28 @@ beforeEach(async () => {
   await truncateAllTables();
 });
 
-describe("WikiPageReportedHandler", () => {
+describe("findWikiPageReportedRecipients", () => {
   test("notifies a citizen with the permission only through an inherited role", async () => {
     const citizen = await createCitizenWithInheritedPermissions(
       "inherited",
       PERMISSION_STRINGS,
     );
     const report = await createReport();
+    const { context } = createTestApplicationContext();
 
-    await WikiPageReportedHandler({ reportId: report.id });
+    const result = await findWikiPageReportedRecipients(context, {
+      reportId: report.id,
+    });
 
-    expect(publishNotifications).toHaveBeenCalledExactlyOnceWith([
-      expect.objectContaining({
-        receiverId: citizen.id,
-        notificationType: "wiki_page_reported",
-      }),
-    ]);
+    expect(result).toEqual({
+      report: {
+        id: report.id,
+        pageTitle: "Reported page",
+        uploadFileName: null,
+        reportedByName: null,
+      },
+      recipients: [{ citizenId: citizen.id }],
+    });
   });
 
   test("notifies only the citizen at the maximum level of the role", async () => {
@@ -55,12 +62,13 @@ describe("WikiPageReportedHandler", () => {
       MAXIMUM_LEVEL - 1,
     );
     const report = await createReport();
+    const { context } = createTestApplicationContext();
 
-    await WikiPageReportedHandler({ reportId: report.id });
+    const result = await findWikiPageReportedRecipients(context, {
+      reportId: report.id,
+    });
 
-    expect(publishNotifications).toHaveBeenCalledExactlyOnceWith([
-      expect.objectContaining({ receiverId: atMaximumLevel.id }),
-    ]);
+    expect(result?.recipients).toEqual([{ citizenId: atMaximumLevel.id }]);
   });
 
   test("names a deleted reporter with the label, not with the handle", async () => {
@@ -73,20 +81,16 @@ describe("WikiPageReportedHandler", () => {
         page: { create: { title: "Reported page", slug: "reported-page" } },
         message: "Test",
         createdBy: {
-          create: { handle: "deleted-reporter", deletedAt: new Date() },
+          create: { handle: "deleted-reporter", deletedAt: TEST_NOW },
         },
       },
     });
+    const { context } = createTestApplicationContext();
 
-    await WikiPageReportedHandler({ reportId: report.id });
+    const result = await findWikiPageReportedRecipients(context, {
+      reportId: report.id,
+    });
 
-    expect(publishNotifications).toHaveBeenCalledExactlyOnceWith([
-      expect.objectContaining({
-        payload: expect.objectContaining({
-          reportedByHandle: "Gelöschter Citizen",
-        }),
-        body: 'Gelöschter Citizen hat die Seite "Reported page" gemeldet',
-      }),
-    ]);
+    expect(result?.report.reportedByName).toBe("Gelöschter Citizen");
   });
 });

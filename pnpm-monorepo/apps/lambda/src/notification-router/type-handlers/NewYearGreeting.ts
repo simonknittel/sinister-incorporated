@@ -1,5 +1,8 @@
-import { prisma, type Citizen } from "@sam-monorepo/database";
-import { CAN_LOGIN_CITIZEN_WHERE } from "@sam-monorepo/domain";
+import {
+  findGreetingRecipient,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
+import { type Citizen } from "@sam-monorepo/database";
 import { publishNotifications } from "../publish";
 import { pickWording } from "./newYearWordings";
 
@@ -9,27 +12,23 @@ interface Payload {
 }
 
 /**
- * A personal greeting to the citizen who enters the new year. Nobody else is
- * told about it, thus the only condition is that the citizen can open the
- * app and read the greeting. Minutes can pass between the job and this
- * handler, thus the permission is checked again here.
+ * A personal greeting to the citizen who enters the new year (see
+ * `findGreetingRecipient()` for the condition).
  */
-export const NewYearGreetingHandler = async (payload: Payload) => {
-  const citizen = await prisma.citizen.findFirst({
-    where: {
-      AND: [{ id: payload.citizenId }, CAN_LOGIN_CITIZEN_WHERE],
-    },
-    select: {
-      id: true,
-    },
+export const NewYearGreetingHandler = async (
+  context: ApplicationContext,
+  payload: Payload,
+) => {
+  const recipient = await findGreetingRecipient(context, {
+    citizenId: payload.citizenId,
   });
-  if (!citizen) return;
+  if (!recipient) return;
 
   const wording = pickWording(payload.year);
 
-  await publishNotifications([
+  await publishNotifications(context, [
     {
-      receiverId: citizen.id,
+      receiverId: recipient.citizenId,
       notificationType: "new_year" as const,
       payload: { title: wording.title, body: wording.body },
       title: wording.title,

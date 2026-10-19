@@ -1,9 +1,11 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import {
   ACTIVE_CITIZEN_WHERE,
+  comparePermissionSets,
   EFFECTIVE_ROLE_PERMISSIONS_SELECT,
   getPermissionSetsByRoles,
   resolveEffectiveRoles,
+  type PermissionSet,
 } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
 import type { EffectiveRoles } from "./getEffectiveRolesOfCitizen.js";
@@ -43,3 +45,41 @@ export const loadEffectivePermissionsOfCitizens = async (
     }),
   );
 };
+
+/**
+ * The effective permissions of the citizens that match `where`, are not
+ * deleted and have each of the required permission sets through their
+ * effective roles (see `loadEffectivePermissionsOfCitizens()`). No permission
+ * check: the recipient rules of the notification router use it to find the
+ * receivers.
+ */
+export const findCitizensWithPermissions = async (
+  context: Pick<ApplicationContext, "prisma">,
+  where: Prisma.CitizenWhereInput,
+  requiredPermissionSets: readonly PermissionSet[],
+): Promise<Map<string, Pick<EffectiveRoles, "roleIds" | "permissionSets">>> => {
+  const permissionsByCitizenId = await loadEffectivePermissionsOfCitizens(
+    context,
+    where,
+  );
+
+  return new Map(
+    Array.from(permissionsByCitizenId).filter(([, { permissionSets }]) =>
+      requiredPermissionSets.every((requiredPermissionSet) =>
+        comparePermissionSets(requiredPermissionSet, permissionSets),
+      ),
+    ),
+  );
+};
+
+/** The ids of the citizens of `findCitizensWithPermissions()` */
+export const findCitizenIdsWithPermissions = async (
+  context: Pick<ApplicationContext, "prisma">,
+  where: Prisma.CitizenWhereInput,
+  requiredPermissionSets: readonly PermissionSet[],
+): Promise<Set<string>> =>
+  new Set(
+    (
+      await findCitizensWithPermissions(context, where, requiredPermissionSets)
+    ).keys(),
+  );

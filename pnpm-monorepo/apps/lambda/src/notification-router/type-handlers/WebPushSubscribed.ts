@@ -1,7 +1,11 @@
-import { prisma, type WebPushSubscription } from "@sam-monorepo/database";
-import { AuditEventType } from "@sam-monorepo/domain";
+import {
+  findWebPushSubscription,
+  pruneWebPushSubscriptions,
+  WebPushPruneReason,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
+import { type WebPushSubscription } from "@sam-monorepo/database";
 import { sendNotification, setVapidDetails, WebPushError } from "web-push";
-import { createAuditEvents } from "../../common/audit";
 import { log } from "../../common/logger";
 import { env } from "../setup";
 import { toLoggableWebPushError } from "../toLoggableWebPushError";
@@ -12,21 +16,12 @@ interface Payload {
   subscriptionId: WebPushSubscription["id"];
 }
 
-export const WebPushSubscribedHandler = async (payload: Payload) => {
-  /**
-   * Fetch subscription from database
-   */
-  const subscription = await prisma.webPushSubscription.findUnique({
-    where: {
-      id: payload.subscriptionId,
-    },
-    select: {
-      id: true,
-      citizenId: true,
-      endpoint: true,
-      p256dh: true,
-      auth: true,
-    },
+export const WebPushSubscribedHandler = async (
+  context: ApplicationContext,
+  payload: Payload,
+) => {
+  const subscription = await findWebPushSubscription(context, {
+    subscriptionId: payload.subscriptionId,
   });
 
   if (!subscription) {
@@ -50,8 +45,8 @@ export const WebPushSubscribedHandler = async (payload: Payload) => {
       {
         endpoint: subscription.endpoint,
         keys: {
-          p256dh: subscription.p256dh,
-          auth: subscription.auth,
+          p256dh: subscription.keys.p256dh,
+          auth: subscription.keys.auth,
         },
       },
       notificationPayload,
@@ -74,19 +69,10 @@ export const WebPushSubscribedHandler = async (payload: Payload) => {
         statusCode: error.statusCode,
       });
 
-      await prisma.webPushSubscription.delete({
-        where: {
-          id: subscription.id,
-        },
+      await pruneWebPushSubscriptions(context, {
+        subscriptionIds: [subscription.id],
+        reason: WebPushPruneReason.Invalid,
       });
-
-      await createAuditEvents([
-        {
-          type: AuditEventType.WEB_PUSH_SUBSCRIPTIONS_PRUNED,
-          data: { count: 1, reason: "invalid" },
-          createdById: null,
-        },
-      ]);
     } else {
       log.error("Error sending test notification", {
         error: toLoggableWebPushError(error),

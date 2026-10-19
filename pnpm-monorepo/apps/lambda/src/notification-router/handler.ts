@@ -1,3 +1,4 @@
+import type { ApplicationContext } from "@sam-monorepo/application";
 import * as z from "zod";
 import { log } from "../common/logger";
 import { BirthdayGreetingHandler } from "./type-handlers/BirthdayGreeting";
@@ -24,6 +25,7 @@ import { WikiCitizenMentionedHandler } from "./type-handlers/WikiCitizenMentione
 import { WikiPageReportedHandler } from "./type-handlers/WikiPageReported";
 
 export const notificationRouterHandler = async (
+  context: ApplicationContext,
   body: z.infer<typeof bodySchema>,
 ) => {
   log.info("Routing notification", {
@@ -32,70 +34,70 @@ export const notificationRouterHandler = async (
   });
   switch (body.type) {
     case "EventCreated":
-      await EventCreatedHandler(body.payload);
+      await EventCreatedHandler(context, body.payload);
       break;
     case "EventUpdated":
-      await EventUpdatedHandler(body.payload);
+      await EventUpdatedHandler(context, body.payload);
       break;
     case "EventDeleted":
-      await EventDeletedHandler(body.payload);
+      await EventDeletedHandler(context, body.payload);
       break;
     case "EventLineupEnabled":
-      await EventLineupEnabledHandler(body.payload);
+      await EventLineupEnabledHandler(context, body.payload);
       break;
     case "EventBriefingPublished":
-      await EventBriefingPublishedHandler(body.payload);
+      await EventBriefingPublishedHandler(context, body.payload);
       break;
     case "EventStarting":
-      await EventStartingHandler(body.payload);
+      await EventStartingHandler(context, body.payload);
       break;
     case "EventParticipationAdded":
-      await EventParticipationAddedHandler(body.payload);
+      await EventParticipationAddedHandler(context, body.payload);
       break;
     case "EventParticipationRemoved":
-      await EventParticipationRemovedHandler(body.payload);
+      await EventParticipationRemovedHandler(context, body.payload);
       break;
     case "TaskCreated":
-      await TaskCreatedHandler(body.payload);
+      await TaskCreatedHandler(context, body.payload);
       break;
     case "TaskAssignmentUpdated":
-      await TaskAssignmentUpdatedHandler(body.payload);
+      await TaskAssignmentUpdatedHandler(context, body.payload);
       break;
     case "TaskDeleted":
-      await TaskDeletedHandler(body.payload);
+      await TaskDeletedHandler(context, body.payload);
       break;
     case "ProfitDistributionPayoutStarted":
-      await ProfitDistributionPayoutStartedHandler(body.payload);
+      await ProfitDistributionPayoutStartedHandler(context, body.payload);
       break;
     case "ProfitDistributionPayoutDisbursed":
-      await ProfitDistributionPayoutDisbursedHandler(body.payload);
+      await ProfitDistributionPayoutDisbursedHandler(context, body.payload);
       break;
     case "SilcTransactionsCreated":
-      await SilcTransactionsCreatedHandler(body.payload);
+      await SilcTransactionsCreatedHandler(context, body.payload);
       break;
     case "RoleAdded":
-      await RoleAddedHandler(body.payload);
+      await RoleAddedHandler(context, body.payload);
       break;
     case "PenaltyEntryCreated":
-      await PenaltyEntryCreatedHandler(body.payload);
+      await PenaltyEntryCreatedHandler(context, body.payload);
       break;
     case "WebPushSubscribed":
-      await WebPushSubscribedHandler(body.payload);
+      await WebPushSubscribedHandler(context, body.payload);
       break;
     case "WikiPageReported":
-      await WikiPageReportedHandler(body.payload);
+      await WikiPageReportedHandler(context, body.payload);
       break;
     case "WikiCitizenMentioned":
-      await WikiCitizenMentionedHandler(body.payload);
+      await WikiCitizenMentionedHandler(context, body.payload);
       break;
     case "BirthdayGreeting":
-      await BirthdayGreetingHandler(body.payload);
+      await BirthdayGreetingHandler(context, body.payload);
       break;
     case "NewYearGreeting":
-      await NewYearGreetingHandler(body.payload);
+      await NewYearGreetingHandler(context, body.payload);
       break;
     case "WelcomeGreeting":
-      await WelcomeGreetingHandler(body.payload);
+      await WelcomeGreetingHandler(context, body.payload);
       break;
     default:
       throw new Error(`Unknown notification type: ${body satisfies never}`);

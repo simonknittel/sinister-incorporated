@@ -1,16 +1,17 @@
-import { truncateAllTables } from "@sam-monorepo/application/test/database";
 import {
   prisma,
   TaskRewardType,
   TaskVisibility,
   type Prisma,
 } from "@sam-monorepo/database";
-import { beforeEach, describe, expect, test, vi } from "vitest";
-import { createCitizenWithPermissions } from "../../common/effectivePermissions.fixtures";
-import { publishNotifications } from "../publish";
-import { TaskDeletedHandler } from "./TaskDeleted";
-
-vi.mock("../publish", () => ({ publishNotifications: vi.fn() }));
+import { beforeEach, describe, expect, test } from "vitest";
+import {
+  createTestApplicationContext,
+  TEST_NOW,
+} from "../../../test/applicationContext.js";
+import { createCitizenWithPermissions } from "../../../test/citizensWithPermissions.js";
+import { truncateAllTables } from "../../../test/database.js";
+import { findTaskDeletedRecipients } from "./taskDeleted.js";
 
 const RECEIVER_PERMISSION_STRINGS = ["login;manage", "task;read"];
 
@@ -26,7 +27,7 @@ const createDeletedTask = (
       visibility: TaskVisibility.GROUP,
       rewardType: TaskRewardType.TEXT,
       rewardTypeTextValue: "Ruhm und Ehre",
-      deletedAt: new Date(),
+      deletedAt: TEST_NOW,
       assignments: {
         create: assigneeIds.map((citizenId) => ({ citizenId })),
       },
@@ -38,7 +39,7 @@ beforeEach(async () => {
   await truncateAllTables();
 });
 
-describe("TaskDeletedHandler", () => {
+describe("findTaskDeletedRecipients", () => {
   test("notifies the assignees who can log in and open tasks, except the citizen who deleted the task", async () => {
     const deleter = await createCitizenWithPermissions("deleter", [
       ...RECEIVER_PERMISSION_STRINGS,
@@ -57,29 +58,29 @@ describe("TaskDeletedHandler", () => {
       [deleter.id, assignee.id, assigneeWithoutLogin.id],
       { deletedById: deleter.id },
     );
+    const { context } = createTestApplicationContext();
 
-    await TaskDeletedHandler({ taskId: task.id });
+    const result = await findTaskDeletedRecipients(context, {
+      taskId: task.id,
+    });
 
-    expect(publishNotifications).toHaveBeenCalledExactlyOnceWith([
-      {
-        receiverId: assignee.id,
-        notificationType: "task_deleted",
-        payload: { taskTitle: task.title },
-        title: "Task gelöscht",
-        body: task.title,
-      },
-    ]);
+    expect(result).toEqual({
+      task: { title: task.title },
+      recipients: [{ citizenId: assignee.id }],
+    });
   });
 
   test.each<{
     state: string;
     data: Partial<Prisma.TaskUncheckedCreateInput>;
   }>([
-    { state: "completed", data: { completedAt: new Date() } },
-    { state: "cancelled", data: { cancelledAt: new Date() } },
+    { state: "completed", data: { completedAt: TEST_NOW } },
+    { state: "cancelled", data: { cancelledAt: TEST_NOW } },
     {
       state: "expired",
-      data: { expiresAt: new Date(Date.now() - ONE_HOUR_IN_MILLISECONDS) },
+      data: {
+        expiresAt: new Date(TEST_NOW.getTime() - ONE_HOUR_IN_MILLISECONDS),
+      },
     },
   ])(
     "notifies nobody for a task that was $state before the deletion",
@@ -89,10 +90,11 @@ describe("TaskDeletedHandler", () => {
         RECEIVER_PERMISSION_STRINGS,
       );
       const task = await createDeletedTask([assignee.id], data);
+      const { context } = createTestApplicationContext();
 
-      await TaskDeletedHandler({ taskId: task.id });
-
-      expect(publishNotifications).not.toHaveBeenCalled();
+      expect(
+        await findTaskDeletedRecipients(context, { taskId: task.id }),
+      ).toBeNull();
     },
   );
 });

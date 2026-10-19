@@ -1,4 +1,4 @@
-import { type OnSiteNotification } from "@sam-monorepo/database";
+import type { StoredOnSiteNotification } from "@sam-monorepo/application";
 import {
   getCitizenChannelName,
   ON_SITE_NOTIFICATION_CREATED_EVENT,
@@ -45,7 +45,7 @@ if (
  * prepend it without a refetch.
  */
 export const publishOnSiteNotificationEvents = async (
-  rows: OnSiteNotification[],
+  rows: readonly StoredOnSiteNotification[],
 ) => {
   if (!channelsClient) {
     log.info("Soketi client not configured, skipping realtime events");

@@ -1,8 +1,9 @@
-import { prisma, type Citizen } from "@sam-monorepo/database";
 import {
-  BIRTHDAY_FALLBACK_WORDING,
-  CAN_LOGIN_CITIZEN_WHERE,
-} from "@sam-monorepo/domain";
+  findGreetingRecipient,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
+import { type Citizen } from "@sam-monorepo/database";
+import { BIRTHDAY_FALLBACK_WORDING } from "@sam-monorepo/domain";
 import { publishNotifications } from "../publish";
 
 interface Payload {
@@ -99,29 +100,26 @@ const pickWording = () =>
   BIRTHDAY_FALLBACK_WORDING;
 
 /**
- * A personal greeting to the citizen who has their birthday. Nobody else is
- * told about it, thus the only condition is that the citizen can open the
- * app and read the greeting.
+ * A personal greeting to the citizen who has their birthday (see
+ * `findGreetingRecipient()` for the condition).
  *
  * The picked wording travels in the payload as well, so that the on-site row
  * carries the same text as the web push notification.
  */
-export const BirthdayGreetingHandler = async (payload: Payload) => {
-  const citizen = await prisma.citizen.findFirst({
-    where: {
-      AND: [{ id: payload.citizenId }, CAN_LOGIN_CITIZEN_WHERE],
-    },
-    select: {
-      id: true,
-    },
+export const BirthdayGreetingHandler = async (
+  context: ApplicationContext,
+  payload: Payload,
+) => {
+  const recipient = await findGreetingRecipient(context, {
+    citizenId: payload.citizenId,
   });
-  if (!citizen) return;
+  if (!recipient) return;
 
   const wording = pickWording();
 
-  await publishNotifications([
+  await publishNotifications(context, [
     {
-      receiverId: citizen.id,
+      receiverId: recipient.citizenId,
       notificationType: "birthday" as const,
       payload: { title: wording.title, body: wording.body },
       title: wording.title,

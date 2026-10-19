@@ -1,67 +1,42 @@
-import { prisma, type WikiPageReport } from "@sam-monorepo/database";
-import { getCitizenDisplayName } from "@sam-monorepo/domain";
-import { findCitizenIdsWithPermissions } from "../../common/effectivePermissions";
+import {
+  findWikiPageReportedRecipients,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
+import { type WikiPageReport } from "@sam-monorepo/database";
 import { publishNotifications } from "../publish";
 
 interface Payload {
   reportId: WikiPageReport["id"];
 }
 
-export const WikiPageReportedHandler = async (payload: Payload) => {
-  /**
-   * Calculate recipients: everyone whose roles grant `wiki;manage`
-   */
-  const report = await prisma.wikiPageReport.findUnique({
-    where: {
-      id: payload.reportId,
-    },
-    select: {
-      id: true,
-      uploadFileName: true,
-      page: {
-        select: {
-          title: true,
-        },
-      },
-      createdBy: {
-        select: {
-          id: true,
-          handle: true,
-          deletedAt: true,
-        },
-      },
-    },
+export const WikiPageReportedHandler = async (
+  context: ApplicationContext,
+  payload: Payload,
+) => {
+  const result = await findWikiPageReportedRecipients(context, {
+    reportId: payload.reportId,
   });
-  if (!report) return;
+  if (!result) return;
 
-  const reportedByName = report.createdBy
-    ? getCitizenDisplayName(report.createdBy)
-    : null;
+  const { report } = result;
 
-  const recipientIds = await findCitizenIdsWithPermissions({}, [
-    { resource: "wiki", operation: "manage" },
-  ]);
-  if (recipientIds.size === 0) return;
-
-  /**
-   * Publish notifications
-   */
   await publishNotifications(
-    Array.from(recipientIds, (recipientId) => ({
-      receiverId: recipientId,
+    context,
+    result.recipients.map((recipient) => ({
+      receiverId: recipient.citizenId,
       notificationType: "wiki_page_reported" as const,
       payload: {
         reportId: report.id,
-        pageTitle: report.page.title,
+        pageTitle: report.pageTitle,
         uploadFileName: report.uploadFileName,
         // The app shows this value in the on-site text, thus it holds the
         // label of a deleted citizen.
-        reportedByHandle: reportedByName,
+        reportedByHandle: report.reportedByName,
       },
       title: "Neue Meldung im Wiki",
       body: report.uploadFileName
-        ? `${reportedByName ?? "Unbekannt"} hat den Dateianhang "${report.uploadFileName}" auf der Seite "${report.page.title}" gemeldet`
-        : `${reportedByName ?? "Unbekannt"} hat die Seite "${report.page.title}" gemeldet`,
+        ? `${report.reportedByName ?? "Unbekannt"} hat den Dateianhang "${report.uploadFileName}" auf der Seite "${report.pageTitle}" gemeldet`
+        : `${report.reportedByName ?? "Unbekannt"} hat die Seite "${report.pageTitle}" gemeldet`,
       url: "/app/wiki/reports",
     })),
   );

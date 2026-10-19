@@ -1,4 +1,8 @@
-import { prisma, type Citizen, type Event } from "@sam-monorepo/database";
+import {
+  findEventParticipationRecipient,
+  type ApplicationContext,
+} from "@sam-monorepo/application";
+import { type Citizen, type Event } from "@sam-monorepo/database";
 import { publishNotifications } from "../publish.js";
 
 type Payload = {
@@ -6,25 +10,25 @@ type Payload = {
   citizenId: Citizen["id"];
 };
 
-/**
- * The app only lets a manager add citizens who can see the event, so the
- * single receiver needs no further reachability check here.
- */
-export const EventParticipationAddedHandler = async (payload: Payload) => {
-  const event = await prisma.event.findUnique({
-    where: { id: payload.eventId },
-    select: { id: true, name: true },
+export const EventParticipationAddedHandler = async (
+  context: ApplicationContext,
+  payload: Payload,
+) => {
+  const result = await findEventParticipationRecipient(context, {
+    eventId: payload.eventId,
+    citizenId: payload.citizenId,
   });
-  if (!event) return;
+  if (!result) return;
 
-  await publishNotifications([
-    {
-      receiverId: payload.citizenId,
+  await publishNotifications(
+    context,
+    result.recipients.map((recipient) => ({
+      receiverId: recipient.citizenId,
       notificationType: "event_participation_added" as const,
-      payload: { eventId: event.id, eventName: event.name },
+      payload: { eventId: result.event.id, eventName: result.event.name },
       title: "Zum Event hinzugefügt",
-      body: `Du wurdest zum Event "${event.name}" hinzugefügt.`,
-      url: `/app/events/${event.id}`,
-    },
-  ]);
+      body: `Du wurdest zum Event "${result.event.name}" hinzugefügt.`,
+      url: `/app/events/${result.event.id}`,
+    })),
+  );
 };

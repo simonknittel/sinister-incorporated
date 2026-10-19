@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { applicationContextEnvironmentShape } from "../common/applicationContextEnvironment";
 import { fetchOptionalParameters, fetchParameters } from "../common/parameters";
 
 const parameterMap = {
@@ -33,7 +34,7 @@ const environmentSchema = z.object({
   DATABASE_URL: z
     .url()
     .default("postgresql://postgres:admin@localhost:5432/db"),
-  BASE_URL: z.url().default("http://localhost:3000"),
+  ...applicationContextEnvironmentShape,
   PUBLIC_VAPID_KEY: z.string(),
   PRIVATE_VAPID_KEY: z.string(),
   /**
