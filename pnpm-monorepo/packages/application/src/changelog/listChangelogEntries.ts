@@ -7,6 +7,7 @@ import {
   pageLimitSchema,
   paginateByCursor,
 } from "../pagination.js";
+import { ChangelogErrorMessage } from "./changelogErrors.js";
 import { isChangelogEntryReadable } from "./isChangelogEntryReadable.js";
 import { CHANGELOG_QUARTER_SLUG_PATTERN, getQuarterOfDate } from "./quarter.js";
 
@@ -65,7 +66,7 @@ export const listChangelogEntries = async (
   input: ListChangelogEntriesInput,
 ): Promise<ListChangelogEntriesOutput> => {
   if (!context.changelog)
-    throw new ConflictError("The changelog is not available");
+    throw new ConflictError(ChangelogErrorMessage.NotAvailable);
 
   const entries = (await context.changelog.list())
     .filter(

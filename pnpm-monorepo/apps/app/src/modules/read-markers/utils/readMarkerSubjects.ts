@@ -1,112 +1,13 @@
-import { prisma } from "@/db";
-import { getRequestActor } from "@/modules/application";
-import { getVisibleEventsWhere } from "@/modules/events/utils/eventVisibility";
-import {
-  findNewEventIds,
-  findNewTaskIds,
-  getOpenEventsWhere,
-  getOpenTasksWhere,
-  getVisibleTasksWhere,
-  type UnreadWhere,
-} from "@sam-monorepo/application";
-import type { Prisma } from "@sam-monorepo/database/client";
-import { ReadMarkerSubject, type PermissionSet } from "@sam-monorepo/domain";
-
-interface ReadMarkerSubjectDefinition {
-  /** The app whose dot badge counts the new items */
-  readonly appSlug: string;
-  /** The resource of the permission to read the items at all */
-  readonly readResource: PermissionSet["resource"];
-  /** The marker column which points at the item */
-  readonly markerData: (
-    subjectId: string,
-  ) => Omit<
-    Prisma.ReadMarkerUncheckedCreateInput,
-    "id" | "citizenId" | "readAt"
-  >;
-  /** Whether the item exists and the viewer can see it */
-  readonly canRead: (subjectId: string) => Promise<boolean>;
-  /**
-   * Of the given items, the ones which are new. The visibility is not
-   * checked again: the ids come from queries which already applied it.
-   */
-  readonly findNewIds: (
-    subjectIds: string[],
-    unreadWhere: UnreadWhere,
-  ) => Promise<string[]>;
-  /** How many of the items which the viewer can see are new */
-  readonly countNew: (unreadWhere: UnreadWhere) => Promise<number>;
-}
+import { ReadMarkerSubject } from "@sam-monorepo/domain";
 
 /**
- * Everything the generic read markers need to know about a subject type. An
- * item is new when it is "open" in the sense of its subject and matches
- * `UnreadWhere`.
- *
- * To add a subject type:
- * 1. In the database: see the comment of the `ReadMarker` model.
- * 2. Add a value to the `ReadMarkerSubject` enum of the domain package.
- * 3. Add its start of the tracking to `READ_MARKER_TRACKED_SINCE` of the
- *    application package.
- * 4. Add an entry here. The subject model must have `createdAt`,
- *    `createdById` and the relation `readMarkers`, thus `UnreadWhere` fits
- *    it. Subjects of one app share its dot badge; the counts add up.
- * 5. In the lists: get the new items of each page with `getNewIds()`, and
- *    show them with `useMarkAsRead()`, `<UnreadEdge>` and
- *    `<NewMarkerButton>`.
- * 6. On the details: add `<MarkAsReadOnMount>`.
+ * The app whose dot badge counts the new items of each subject type. The
+ * rules of the subject types are in the application package
+ * (`READ_MARKER_SUBJECT_RULES`, with the steps to add a subject type).
  */
-export const READ_MARKER_SUBJECTS: Record<
-  ReadMarkerSubject,
-  ReadMarkerSubjectDefinition
+export const READ_MARKER_APP_SLUGS: Readonly<
+  Record<ReadMarkerSubject, string>
 > = {
-  [ReadMarkerSubject.Task]: {
-    appSlug: "tasks",
-    readResource: "task",
-    markerData: (subjectId) => ({ taskId: subjectId }),
-    canRead: async (subjectId) =>
-      (await prisma.task.count({
-        where: {
-          AND: [
-            { id: subjectId },
-            getVisibleTasksWhere(await getRequestActor()),
-          ],
-          deletedAt: null,
-        },
-      })) > 0,
-    findNewIds: (subjectIds, unreadWhere) =>
-      findNewTaskIds(prisma, subjectIds, unreadWhere, new Date()),
-    countNew: async (unreadWhere) =>
-      prisma.task.count({
-        where: {
-          AND: [
-            getVisibleTasksWhere(await getRequestActor()),
-            getOpenTasksWhere(new Date()),
-            unreadWhere,
-          ],
-        },
-      }),
-  },
-
-  [ReadMarkerSubject.Event]: {
-    appSlug: "events",
-    readResource: "event",
-    markerData: (subjectId) => ({ eventId: subjectId }),
-    canRead: async (subjectId) =>
-      (await prisma.event.count({
-        where: { AND: [{ id: subjectId }, await getVisibleEventsWhere()] },
-      })) > 0,
-    findNewIds: (subjectIds, unreadWhere) =>
-      findNewEventIds(prisma, subjectIds, unreadWhere, new Date()),
-    countNew: async (unreadWhere) =>
-      prisma.event.count({
-        where: {
-          AND: [
-            await getVisibleEventsWhere(),
-            getOpenEventsWhere(new Date()),
-            unreadWhere,
-          ],
-        },
-      }),
-  },
+  [ReadMarkerSubject.Task]: "tasks",
+  [ReadMarkerSubject.Event]: "events",
 };

@@ -2,13 +2,11 @@
 
 import { Button2, Button2Variant } from "@/modules/common/components/Button2";
 import { usePopoverBaseUI } from "@/modules/common/components/PopoverBaseUI";
+import { encodeOnboardingStepProgressKey } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { FaCheckCircle } from "react-icons/fa";
 import { getOnboardingTaskByKey } from "../utils/config";
-import {
-  encodeOnboardingStepProgressKey,
-  type EligibleOnboardingTask,
-} from "../utils/types";
+import type { EligibleOnboardingTask } from "../utils/types";
 import { useOnboarding } from "./OnboardingProvider";
 
 interface Props {

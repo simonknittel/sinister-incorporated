@@ -1,13 +1,5 @@
+import { AppKeyNamespace } from "@sam-monorepo/domain";
 import type { App } from "./types";
-
-/**
- * Integrated and external apps have separate slug namespaces which can collide,
- * so a key is only unique together with its namespace.
- */
-export enum AppKeyNamespace {
-  Integrated = "integrated",
-  External = "external",
-}
 
 /**
  * Stable identifier of an app, e.g. `integrated:dashboard`. Redacted apps carry

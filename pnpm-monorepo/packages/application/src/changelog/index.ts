@@ -1,4 +1,6 @@
 /** The use cases of the changelog, with the quarter helpers that the app shares */
+export { ChangelogErrorMessage } from "./changelogErrors.js";
+export { findUnseenChangelogEntryKeys } from "./findUnseenChangelogEntryKeys.js";
 export {
   listChangelogEntries,
   listChangelogEntriesInputSchema,
@@ -6,4 +8,10 @@ export {
   type ListChangelogEntriesInput,
   type ListChangelogEntriesOutput,
 } from "./listChangelogEntries.js";
+export {
+  markChangelogEntriesSeen,
+  markChangelogEntriesSeenInputSchema,
+  type MarkChangelogEntriesSeenInput,
+  type MarkChangelogEntriesSeenOutput,
+} from "./markChangelogEntriesSeen.js";
 export { Quarter, getQuarterOfDate, type ChangelogQuarter } from "./quarter.js";

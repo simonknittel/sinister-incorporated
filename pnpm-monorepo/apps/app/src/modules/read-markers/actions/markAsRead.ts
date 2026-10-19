@@ -1,23 +1,17 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { ReadMarkerSubject } from "@sam-monorepo/domain";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  markItemAsReadInputSchema,
+  markItemAsRead as markItemAsReadUseCase,
+  type MarkItemAsReadOutput,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import * as z from "zod";
-import { getNewIds } from "../queries/getNewIds";
-import { READ_MARKER_SUBJECTS } from "../utils/readMarkerSubjects";
-
-/** The ids of all subjects (cuid and cuid2) are shorter than this */
-const SUBJECT_ID_MAX_LENGTH = 64;
-
-const schema = z.object({
-  subject: z.enum(ReadMarkerSubject),
-  subjectId: z.string().min(1).max(SUBJECT_ID_MAX_LENGTH),
-});
 
 /**
  * Marks one item as read by the viewer: from its details once they mounted
@@ -26,55 +20,34 @@ const schema = z.object({
  */
 export const markAsRead = createAuthenticatedAction(
   "markAsRead",
-  schema,
+  markItemAsReadInputSchema,
   async (formData, authentication, data, t) => {
-    const citizenId = authentication.session.entity?.id;
-    if (!citizenId)
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    const definition = READ_MARKER_SUBJECTS[data.subject];
-
-    if (!(await authentication.authorize(definition.readResource, "read")))
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    /**
-     * An item which the viewer cannot see is indistinguishable from one
-     * which does not exist. A different user deleted the item or took the
-     * read access away after the page showed it, and the page must show it.
-     */
-    if (!(await definition.canRead(data.subjectId))) {
-      return rejectConflict(t("Common.notFound"), formData);
+    let result: MarkItemAsReadOutput;
+    try {
+      result = await markItemAsReadUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, { formData, t });
     }
-
-    const wasNew = (await getNewIds(data.subject, [data.subjectId])).size > 0;
-
-    const { count } = await prisma.readMarker.createMany({
-      data: [{ citizenId, ...definition.markerData(data.subjectId) }],
-      skipDuplicates: true,
-    });
 
     /**
      * The "new" state shows in lists, tiles and the dot badges of the app
-     * layout. Only a change of that state is worth the render. `wasNew` comes
-     * from before the write: a marker that a different tab wrote between the
-     * read and the write does not stop the render, but a marker that it wrote
-     * before the read does.
+     * layout. Only a change of that state is worth the render. `was_new`
+     * comes from before the write: a marker that a different tab wrote
+     * between the read and the write does not stop the render, but a marker
+     * that it wrote before the read does.
      */
-    if (wasNew) refresh();
-
-    if (count > 0)
-      await createAuditEvents([
-        {
-          type: AuditEventType.READ_MARKER_CREATED,
-          data: {
-            citizenId,
-            subject: data.subject,
-            subjectId: data.subjectId,
-          },
-          createdById: authentication.session.user.id,
-        },
-      ]);
+    if (result.was_new) refresh();
 
     return { success: "Als gelesen markiert" };
+  },
+  {
+    parseFormData: (formData) => ({
+      subject: formData.get("subject"),
+      subject_id: formData.get("subjectId"),
+    }),
   },
 );

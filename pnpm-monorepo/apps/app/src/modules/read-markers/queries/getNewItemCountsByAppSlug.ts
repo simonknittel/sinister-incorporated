@@ -1,10 +1,13 @@
+import {
+  getApplicationContext,
+  getOptionalRequestActor,
+} from "@/modules/application";
 import { addCountsByAppSlug } from "@/modules/apps/utils/addCountsByAppSlug";
-import { authenticate } from "@/modules/auth/server";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { countNewItemsBySubject } from "@sam-monorepo/application";
 import { ReadMarkerSubject } from "@sam-monorepo/domain";
 import { cache } from "react";
-import { READ_MARKER_SUBJECTS } from "../utils/readMarkerSubjects";
-import { getUnreadWhere } from "./getUnreadWhere";
+import { READ_MARKER_APP_SLUGS } from "../utils/readMarkerSubjects";
 
 /**
  * The number of new items of each subject type, keyed by the app whose dot
@@ -14,29 +17,20 @@ export const getNewItemCountsByAppSlug = cache(
   withTrace(
     "getNewItemCountsByAppSlug",
     async (): Promise<Record<string, number>> => {
-      const authentication = await authenticate();
-      if (!authentication) return {};
+      const actor = await getOptionalRequestActor();
+      if (!actor) return {};
 
-      const counts = await Promise.all(
-        Object.values(ReadMarkerSubject).map(async (subject) => {
-          const definition = READ_MARKER_SUBJECTS[subject];
-
-          if (
-            !(await authentication.authorize(definition.readResource, "read"))
-          )
-            return { [definition.appSlug]: 0 };
-
-          const unreadWhere = await getUnreadWhere(subject);
-          if (!unreadWhere) return { [definition.appSlug]: 0 };
-
-          return {
-            [definition.appSlug]: await definition.countNew(unreadWhere),
-          };
-        }),
+      const counts = await countNewItemsBySubject(
+        getApplicationContext(),
+        actor,
       );
 
       // Subjects of the same app share its dot badge
-      return addCountsByAppSlug(...counts);
+      return addCountsByAppSlug(
+        ...Object.values(ReadMarkerSubject).map((subject) => ({
+          [READ_MARKER_APP_SLUGS[subject]]: counts[subject],
+        })),
+      );
     },
   ),
 );

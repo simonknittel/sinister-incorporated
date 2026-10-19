@@ -3,10 +3,8 @@ import { SeasonalEventKey } from "@sam-monorepo/domain";
 import { getMySeasonalThemeSettings } from "../queries/getMySeasonalThemeSettings";
 import { formatSeasonalThemeRangeLabel } from "../utils/formatSeasonalThemeRangeLabel";
 import { SEASONAL_THEMES } from "../utils/SEASONAL_THEMES";
-import {
-  SeasonalThemeSettingsForm,
-  type SeasonalThemeSettingRow,
-} from "./SeasonalThemeSettingsForm";
+import type { SeasonalThemeSettingRow } from "./SeasonalThemeSettingsForm";
+import { SeasonalThemeSettingsForm } from "./SeasonalThemeSettingsForm";
 
 interface Props {
   readonly className?: string;

@@ -1,6 +1,9 @@
-import { prisma } from "@/db";
-import { authenticate } from "@/modules/auth/server";
+import {
+  getApplicationContext,
+  getOptionalRequestActor,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { findOwnAppFavoriteKeys } from "@sam-monorepo/application";
 import { cache } from "react";
 
 /**
@@ -11,15 +14,11 @@ import { cache } from "react";
  */
 export const getAppFavoriteKeys = cache(
   withTrace("getAppFavoriteKeys", async (): Promise<Set<string>> => {
-    const authentication = await authenticate();
-    const citizenId = authentication ? authentication.session.entity?.id : null;
-    if (!citizenId) return new Set();
+    const actor = await getOptionalRequestActor();
+    if (!actor) return new Set();
 
-    const favorites = await prisma.citizenAppFavorite.findMany({
-      where: { citizenId },
-      select: { appKey: true },
-    });
-
-    return new Set(favorites.map((favorite) => favorite.appKey));
+    return new Set(
+      await findOwnAppFavoriteKeys(getApplicationContext(), actor),
+    );
   }),
 );

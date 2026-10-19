@@ -1,8 +1,8 @@
 import "server-only";
 
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { findOwnSeasonalThemeSettings } from "@sam-monorepo/application";
 import { cache } from "react";
 
 /**
@@ -12,14 +12,10 @@ import { cache } from "react";
  * nothing.
  */
 export const getMySeasonalThemeSettings = cache(
-  withTrace("getMySeasonalThemeSettings", async () => {
-    const authentication = await requireAuthentication();
-    if (!authentication.session.entity) return null;
-
-    return prisma.seasonalThemeSetting.findMany({
-      where: {
-        citizenId: authentication.session.entity.id,
-      },
-    });
-  }),
+  withTrace("getMySeasonalThemeSettings", async () =>
+    findOwnSeasonalThemeSettings(
+      getApplicationContext(),
+      await getRequestActor(),
+    ),
+  ),
 );

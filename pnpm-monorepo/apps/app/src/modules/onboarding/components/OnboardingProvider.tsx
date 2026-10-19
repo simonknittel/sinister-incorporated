@@ -2,16 +2,15 @@
 
 import { runAction } from "@/modules/actions/utils/runAction";
 import { OnboardingTaskCompletionMethod } from "@sam-monorepo/database/browser";
+import {
+  encodeOnboardingStepProgressKey,
+  type OnboardingTaskKey,
+} from "@sam-monorepo/domain";
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { completeOnboardingStep } from "../actions/completeOnboardingStep";
 import { completeOnboardingTask } from "../actions/completeOnboardingTask";
 import { skipAllOnboardingTasks } from "../actions/skipAllOnboardingTasks";
-import type { OnboardingTaskKey } from "../utils/config";
-import {
-  encodeOnboardingStepProgressKey,
-  type EligibleOnboardingTask,
-  type OnboardingState,
-} from "../utils/types";
+import type { EligibleOnboardingTask, OnboardingState } from "../utils/types";
 
 export interface ActiveOnboardingTour {
   readonly taskKey: OnboardingTaskKey;

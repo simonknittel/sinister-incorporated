@@ -1,63 +1,41 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { satisfiesAnyPermissionString } from "@/modules/auth/utils/satisfiesAnyPermissionString";
-import * as z from "zod";
 import {
-  getOnboardingTaskByKey,
-  OnboardingStepKey,
-  OnboardingTaskKey,
-} from "../utils/config";
-
-const schema = z.object({
-  taskKey: z.enum(OnboardingTaskKey),
-  stepKey: z.enum(OnboardingStepKey),
-});
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  completeOnboardingStepInputSchema,
+  completeOnboardingStep as completeOnboardingStepUseCase,
+} from "@sam-monorepo/application";
 
 export const completeOnboardingStep = createAuthenticatedAction(
   "completeOnboardingStep",
-  schema,
+  completeOnboardingStepInputSchema,
   async (formData, authentication, data, t) => {
-    const citizenId = authentication.session.entity?.id;
-    if (!citizenId)
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    const task = getOnboardingTaskByKey(data.taskKey);
-    const step = task?.steps.find(
-      (stepCandidate) => stepCandidate.key === data.stepKey,
-    );
-    if (!task || !step)
-      return { error: t("Common.notFound"), requestPayload: formData };
-
-    if (
-      !(await satisfiesAnyPermissionString(
-        authentication,
-        task.requiredPermissionStrings,
-      )) ||
-      !(await satisfiesAnyPermissionString(
-        authentication,
-        step.requiredPermissionStrings,
-      ))
-    )
-      return { error: t("Common.forbidden"), requestPayload: formData };
+    try {
+      await completeOnboardingStepUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, { formData, t });
+    }
 
     /**
-     * A replay updates the timestamp of the existing row, so the progress
-     * always reflects the most recent pass through the tour.
+     * Deliberately no `refresh()` on success, see `completeOnboardingTask`.
+     * A not-found answer refreshes (the error mapper): only a crafted request
+     * names a task or a step that does not exist.
      */
-    await prisma.onboardingStepProgress.upsert({
-      where: {
-        citizenId_taskKey_stepKey: {
-          citizenId,
-          taskKey: data.taskKey,
-          stepKey: data.stepKey,
-        },
-      },
-      update: { completedAt: new Date() },
-      create: { citizenId, taskKey: data.taskKey, stepKey: data.stepKey },
-    });
-
     return { success: "Fortschritt gespeichert." };
+  },
+  {
+    parseFormData: (formData) => ({
+      task_key: formData.get("taskKey"),
+      step_key: formData.get("stepKey"),
+    }),
   },
 );
