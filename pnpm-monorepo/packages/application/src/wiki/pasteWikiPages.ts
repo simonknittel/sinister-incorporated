@@ -1,16 +1,17 @@
 import {
-  WIKI_PAGE_TITLE_MAX_LENGTH,
+  isEventWikiRootPage,
+  WIKI_PAGE_TITLE_MAXIMUM_LENGTH,
   wikiContainerColumns,
   WikiPasteMode,
-  type EventContainer,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, type Actor, type ActorCitizen } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ConflictError, NotFoundError, ValidationError } from "../errors.js";
+import { NotFoundError, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { findVariantWikiRootPageId } from "./variantWikiRedirect.js";
+import { EMPTY_WIKI_DOCUMENT } from "./wikiContentNormalization.js";
 import type { WikiSharedContextPage } from "./wikiContext.js";
 import { WikiErrorMessage } from "./wikiErrors.js";
 import type { CopiedWikiPage } from "./wikiPageCopy.js";
@@ -18,19 +19,18 @@ import {
   loadWikiScopeOfParent,
   requireWikiPagePlacement,
 } from "./wikiPagePlacement.js";
-import { createWikiPageSafetySnapshot } from "./wikiPageSafetySnapshot.js";
+import {
+  replaceWikiPageContentWithSafetySnapshot,
+  requireCollab,
+} from "./wikiPageSafetySnapshot.js";
 import {
   buildWikiPageCopiedAuditEvents,
   copyWikiPageSubtree,
-  getWikiPageScopeContainer,
   requireWikiPageCopySource,
   WikiPageCopyDestinationKind,
 } from "./wikiPageSubtreeCopy.js";
-import type { WikiPageScope } from "./wikiScope.js";
-import { findOrCreateWikiTags } from "./wikiTags.js";
-
-/** The content of a page that was never saved */
-const EMPTY_WIKI_DOCUMENT = { type: "doc", content: [] };
+import { getWikiPageScopeContainer, type WikiPageScope } from "./wikiScope.js";
+import { setWikiPageTags } from "./wikiTags.js";
 
 export const pasteWikiPagesInputSchema = z.object({
   /** A page that the actor can read */
@@ -93,7 +93,6 @@ interface ReplaceParameters {
   readonly sourceScope: WikiPageScope;
   readonly sourcePage: WikiSharedContextPage;
   readonly targetScope: WikiPageScope;
-  readonly targetContainer: EventContainer | null;
   readonly targetPage: WikiSharedContextPage;
   readonly includeChildren: boolean;
   readonly safetySnapshotName: string;
@@ -115,7 +114,6 @@ const replaceWikiPageWithCopy = async (
     sourceScope,
     sourcePage,
     targetScope,
-    targetContainer,
     targetPage,
     includeChildren,
     safetySnapshotName,
@@ -124,86 +122,40 @@ const replaceWikiPageWithCopy = async (
   if (targetPage.id === sourcePage.id)
     throw new ValidationError(WikiErrorMessage.CannotReplaceWithItself);
 
-  // The content of a page changes only through the collab server
-  const { collab } = context;
-  if (!collab) throw new ConflictError(WikiErrorMessage.CollabNotConfigured);
+  requireCollab(context);
 
-  const [sourceRow, sourceTagAssignments, targetTagAssignments] =
-    await Promise.all([
-      context.prisma.wikiPage.findUnique({
-        where: { id: sourcePage.id },
-        select: { content: true },
-      }),
-      context.prisma.wikiPageTag.findMany({
-        where: { pageId: sourcePage.id },
-        select: { tag: { select: { name: true } } },
-      }),
-      context.prisma.wikiPageTag.findMany({
-        where: { pageId: targetPage.id },
-        select: { tagId: true },
-      }),
-    ]);
+  const [sourceRow, sourceTagAssignments] = await Promise.all([
+    context.prisma.wikiPage.findUnique({
+      where: { id: sourcePage.id },
+      select: { content: true },
+    }),
+    context.prisma.wikiPageTag.findMany({
+      where: { pageId: sourcePage.id },
+      select: { tag: { select: { name: true } } },
+    }),
+  ]);
   if (!sourceRow) throw new NotFoundError(WikiErrorMessage.SourcePageNotFound);
 
-  await createWikiPageSafetySnapshot(context, {
+  await replaceWikiPageContentWithSafetySnapshot(context, {
     pageId: targetPage.id,
-    name: safetySnapshotName,
-    createdById: citizen.id,
+    content: (sourceRow.content as object | null) ?? EMPTY_WIKI_DOCUMENT,
+    updatedByEntityId: citizen.id,
+    safetySnapshotName,
+    failureMessage: WikiErrorMessage.ReplaceFailed,
   });
 
-  try {
-    await collab.replaceContent({
-      pageId: targetPage.id,
-      content: (sourceRow.content as object | null) ?? EMPTY_WIKI_DOCUMENT,
-      updatedByEntityId: citizen.id,
-    });
-  } catch (error) {
-    context.log.error("Wiki paste-replace failed", { error });
-    throw new ConflictError(WikiErrorMessage.ReplaceFailed, { cause: error });
-  }
-
-  /**
-   * The tags of the copied page replace the tags of the target page. A tag
-   * that loses its last page goes away, like in `updateWikiPageTags`.
-   */
   await context.prisma.$transaction(async (transaction) => {
-    const tags = await findOrCreateWikiTags(
-      transaction,
-      sourceTagAssignments.map((assignment) => assignment.tag.name),
-      targetContainer,
-      citizen.id,
-    );
-
-    await transaction.wikiPageTag.deleteMany({
-      where: { pageId: targetPage.id },
+    await setWikiPageTags(transaction, {
+      pageId: targetPage.id,
+      names: sourceTagAssignments.map((assignment) => assignment.tag.name),
+      container: getWikiPageScopeContainer(targetScope),
+      createdById: citizen.id,
     });
-    if (tags.length > 0)
-      await transaction.wikiPageTag.createMany({
-        data: tags.map((tag) => ({
-          pageId: targetPage.id,
-          tagId: tag.id,
-          createdById: citizen.id,
-        })),
-        skipDuplicates: true,
-      });
-    await transaction.wikiTag.deleteMany({
-      where: {
-        id: {
-          in: targetTagAssignments.map((assignment) => assignment.tagId),
-        },
-        pages: { none: {} },
-      },
-    });
-
     await transaction.wikiPage.update({
       where: { id: targetPage.id },
       data: {
         iconId: sourcePage.iconId,
         sidebarMode: sourcePage.sidebarMode,
-        tagsText: tags
-          .map((tag) => tag.name)
-          .toSorted((first, second) => first.localeCompare(second))
-          .join(" "),
         updatedById: citizen.id,
       },
       select: { id: true },
@@ -286,8 +238,9 @@ export const pasteWikiPages = (
       await loadWikiScopeOfParent(context, actor, input.target_page_id),
       input.target_page_id,
     );
-    const targetContainer = getWikiPageScopeContainer(targetScope);
-    const targetColumns = wikiContainerColumns(targetContainer);
+    const targetColumns = wikiContainerColumns(
+      getWikiPageScopeContainer(targetScope),
+    );
 
     let result: PasteResult;
     let isBriefingRoot = false;
@@ -296,7 +249,7 @@ export const pasteWikiPages = (
         const rootTitle =
           sourcePage.title.slice(
             0,
-            WIKI_PAGE_TITLE_MAX_LENGTH - copyTitleSuffix.length,
+            WIKI_PAGE_TITLE_MAXIMUM_LENGTH - copyTitleSuffix.length,
           ) + copyTitleSuffix;
         const { root, copiedPages } = await copyWikiPageSubtree(context, {
           sourceScope,
@@ -330,13 +283,11 @@ export const pasteWikiPages = (
           sourceScope,
           sourcePage,
           targetScope,
-          targetContainer,
           targetPage,
           includeChildren: input.include_children,
           safetySnapshotName,
         });
-        isBriefingRoot =
-          targetContainer !== null && targetPage.parentId === null;
+        isBriefingRoot = isEventWikiRootPage(targetPage);
         break;
       }
 

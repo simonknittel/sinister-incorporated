@@ -1,14 +1,8 @@
-import type {
-  Citizen,
-  WikiPageSnapshotKind,
-} from "@sam-monorepo/database/client";
-import type { Actor } from "../actor.js";
+import type { WikiPageSnapshotKind } from "@sam-monorepo/database/client";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
 import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
-import type { WikiSharedContextPage } from "./wikiContext.js";
-import { WikiErrorMessage } from "./wikiErrors.js";
-import { loadWikiScopeOfPage, requireAccessibleWikiPage } from "./wikiScope.js";
+import { WIKI_CITIZEN_SELECT, type WikiCitizen } from "./wikiCitizen.js";
+import { requireAccessibleWikiPage, type WikiScope } from "./wikiScope.js";
 
 /** A row of the snapshot list of a page */
 export interface WikiPageSnapshotRow {
@@ -17,31 +11,27 @@ export interface WikiPageSnapshotRow {
   /** Null for an automatic snapshot */
   readonly name: string | null;
   readonly createdAt: Date;
-  readonly createdBy: Pick<Citizen, "id" | "handle" | "deletedAt"> | null;
+  readonly createdBy: WikiCitizen | null;
 }
 
 /**
  * The snapshots of a page, the newest first: the automatic snapshots of the
  * editor and the safety snapshots before a restore, an import or a paste
- * that replaces the page. Only for the administrators of the page.
+ * that replaces the page. Only for the administrators of the page. A scope
+ * helper: the scope comes from a scope builder of this package for the same
+ * actor.
  *
- * @throws NotFoundError when the page does not exist, is in the trash or
- * the actor cannot administrate it
+ * @throws NotFoundError when the page is not in the scope, is in the trash
+ * or the actor cannot administrate it
  */
-export const findWikiPageSnapshotRows = async (
-  context: ApplicationContext,
-  actor: Actor,
-  { pageId }: { readonly pageId: string },
+export const findWikiPageSnapshotRows = (
+  context: Pick<ApplicationContext, "prisma">,
+  scope: WikiScope,
+  pageId: string,
 ): Promise<WikiPageSnapshotRow[]> => {
-  const scope = await loadWikiScopeOfPage(context, actor, pageId);
-  if (!scope) throw new NotFoundError(WikiErrorMessage.PageNotFound);
-  requireAccessibleWikiPage<WikiSharedContextPage>(
-    scope,
-    pageId,
-    WikiPageAccessTier.Admin,
-  );
+  requireAccessibleWikiPage(scope, pageId, WikiPageAccessTier.Admin);
 
-  const snapshots = await context.prisma.wikiPageSnapshot.findMany({
+  return context.prisma.wikiPageSnapshot.findMany({
     where: { pageId },
     orderBy: { createdAt: "desc" },
     select: {
@@ -49,19 +39,7 @@ export const findWikiPageSnapshotRows = async (
       kind: true,
       name: true,
       createdAt: true,
-      createdBy: { select: { id: true, handle: true, deletedAt: true } },
+      createdBy: { select: WIKI_CITIZEN_SELECT },
     },
   });
-
-  return snapshots.map((snapshot) => ({
-    id: snapshot.id,
-    kind: snapshot.kind,
-    name: snapshot.name,
-    createdAt: snapshot.createdAt,
-    createdBy: snapshot.createdBy && {
-      id: snapshot.createdBy.id,
-      handle: snapshot.createdBy.handle,
-      deletedAt: snapshot.createdBy.deletedAt,
-    },
-  }));
 };

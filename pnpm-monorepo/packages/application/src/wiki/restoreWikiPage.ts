@@ -1,5 +1,6 @@
 import {
   AuditEventType,
+  collectWikiPageAncestors,
   collectWikiPageDescendants,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
@@ -7,7 +8,6 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
-import type { WikiSharedContextPage } from "./wikiContext.js";
 import { requireAdministrableWikiPage } from "./wikiPageAdminGuard.js";
 
 export const restoreWikiPageInputSchema = z.object({
@@ -21,26 +21,6 @@ export interface RestoreWikiPageOutput {
   /** The page, its ancestors in the trash and its descendants */
   readonly restored_page_ids: string[];
 }
-
-/**
- * The ancestors of the page that are in the trash: a page cannot be live
- * below a parent in the trash
- */
-const collectDeletedAncestorIds = (
-  pagesById: ReadonlyMap<string, WikiSharedContextPage>,
-  page: WikiSharedContextPage,
-) => {
-  const deletedAncestorIds: string[] = [];
-  const visited = new Set<string>([page.id]);
-  let current = page.parentId ? pagesById.get(page.parentId) : undefined;
-  while (current && !visited.has(current.id)) {
-    visited.add(current.id);
-    if (current.deletedAt) deletedAncestorIds.push(current.id);
-    current = current.parentId ? pagesById.get(current.parentId) : undefined;
-  }
-
-  return deletedAncestorIds;
-};
 
 /**
  * Takes the page out of the trash together with its subtree and its
@@ -68,7 +48,10 @@ export const restoreWikiPage = (
 
     const restoredIds = [
       page.id,
-      ...collectDeletedAncestorIds(scope.pagesById, page),
+      /** A page cannot be live below a parent in the trash */
+      ...collectWikiPageAncestors(scope.pagesById, page).filter(
+        (ancestorId) => scope.pagesById.get(ancestorId)?.deletedAt,
+      ),
       ...collectWikiPageDescendants(scope.allPages, page.id),
     ];
 

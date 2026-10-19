@@ -2,7 +2,7 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 
 /** The list of recent pages shows at most this number of visits */
-export const MAXIMUM_RECENT_WIKI_VISITS = 20;
+const MAXIMUM_RECENT_WIKI_VISITS = 20;
 
 /**
  * The ids of the favorite pages of the actor. The ids are not filtered: the

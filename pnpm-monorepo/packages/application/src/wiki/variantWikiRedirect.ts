@@ -1,3 +1,4 @@
+import { collectWikiPageAncestors } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
 import type { WikiPageScope } from "./wikiScope.js";
 import { WikiScopeKind } from "./wikiScopeKind.js";
@@ -31,15 +32,10 @@ export const findVariantWikiRootPageId = async (
   /** A paste that replaces a page can replace the linked page itself */
   if (pageId === rootPageId) return rootPageId;
 
-  const visited = new Set<string>();
-  let currentId = parentId;
-  while (currentId) {
-    if (currentId === rootPageId) return rootPageId;
-    if (visited.has(currentId)) return null;
-
-    visited.add(currentId);
-    currentId = scope.pagesById.get(currentId)?.parentId ?? null;
-  }
-
-  return null;
+  return collectWikiPageAncestors(scope.pagesById, {
+    id: pageId,
+    parentId,
+  }).includes(rootPageId)
+    ? rootPageId
+    : null;
 };

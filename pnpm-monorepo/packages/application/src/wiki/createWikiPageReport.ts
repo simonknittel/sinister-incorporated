@@ -11,9 +11,8 @@ import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
-import type { WikiSharedContextPage } from "./wikiContext.js";
 import { WikiErrorMessage } from "./wikiErrors.js";
-import { loadWikiScopeOfPage, requireAccessibleWikiPage } from "./wikiScope.js";
+import { requireWikiPageOfScope } from "./wikiScope.js";
 
 /** A simple guard against abuse: the most open reports of one citizen */
 const MAXIMUM_OPEN_WIKI_REPORTS_PER_CITIZEN = 5;
@@ -51,10 +50,9 @@ export const createWikiPageReport = (
   withSpan(context, "createWikiPageReport", async () => {
     const citizen = requireCitizen(actor);
 
-    const scope = await loadWikiScopeOfPage(context, actor, input.page_id);
-    if (!scope) throw new NotFoundError(WikiErrorMessage.PageNotFound);
-    const page = requireAccessibleWikiPage<WikiSharedContextPage>(
-      scope,
+    const { page } = await requireWikiPageOfScope(
+      context,
+      actor,
       input.page_id,
       WikiPageAccessTier.Read,
     );

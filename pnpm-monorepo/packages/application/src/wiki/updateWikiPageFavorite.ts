@@ -2,13 +2,10 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
-import type { WikiSharedContextPage } from "./wikiContext.js";
-import { WikiErrorMessage } from "./wikiErrors.js";
-import { loadWikiScopeOfPage, requireAccessibleWikiPage } from "./wikiScope.js";
+import { requireWikiPageOfScope } from "./wikiScope.js";
 
 export const updateWikiPageFavoriteInputSchema = z.object({
   page_id: idSchema,
@@ -45,11 +42,9 @@ export const updateWikiPageFavorite = (
   withSpan(context, "updateWikiPageFavorite", async () => {
     const citizenId = requireCitizen(actor).id;
 
-    const scope = await loadWikiScopeOfPage(context, actor, input.page_id);
-    if (!scope) throw new NotFoundError(WikiErrorMessage.PageNotFound);
-
-    const page = requireAccessibleWikiPage<WikiSharedContextPage>(
-      scope,
+    const { page } = await requireWikiPageOfScope(
+      context,
+      actor,
       input.page_id,
       WikiPageAccessTier.Read,
     );

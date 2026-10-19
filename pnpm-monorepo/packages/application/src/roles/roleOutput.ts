@@ -1,6 +1,6 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import type { Actor } from "../actor.js";
-import type { ApplicationContext } from "../context.js";
+import { getPublicUploadUrl, type ApplicationContext } from "../context.js";
 import { isRoleVisible } from "./roleVisibility.js";
 
 /** The fields of a role in the role list */
@@ -32,16 +32,6 @@ export interface RoleOutput {
   readonly inherited_role_ids: string[];
 }
 
-/** The same URL as `getPublicUploadUrl()` of the app */
-const getPublicUploadUrl = (
-  context: Pick<ApplicationContext, "urls">,
-  uploadId: string,
-) =>
-  new URL(
-    encodeURIComponent(uploadId),
-    `${context.urls.publicUploadBaseUrl}/`,
-  ).toString();
-
 export const toRoleOutput = (
   context: Pick<ApplicationContext, "urls">,
   actor: Pick<Actor, "authorize">,
@@ -50,7 +40,7 @@ export const toRoleOutput = (
   id: role.id,
   name: role.name,
   description: role.description,
-  icon_url: role.iconId ? getPublicUploadUrl(context, role.iconId) : null,
+  icon_url: role.iconId ? getPublicUploadUrl(context.urls, role.iconId) : null,
   max_level: role.maxLevel,
   inherited_role_ids: role.inherits
     .map((inheritedRole) => inheritedRole.id)

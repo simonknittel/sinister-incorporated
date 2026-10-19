@@ -73,9 +73,7 @@ export const updateWikiPagePosition = (
      * A different user moved the reference page into the trash or deleted it
      * after the sidebar showed it
      */
-    const pagesById: ReadonlyMap<string, WikiSharedContextPage> =
-      scope.pagesById;
-    const reference = pagesById.get(input.reference_page_id);
+    const reference = scope.pagesById.get(input.reference_page_id);
     if (!reference || reference.deletedAt)
       throw new ConflictError(WikiErrorMessage.PageTreeChanged);
 
@@ -86,8 +84,7 @@ export const updateWikiPagePosition = (
     const changesParent = newParentId !== page.parentId;
     if (changesParent) requireWikiPageReparent(actor, scope, page, newParentId);
 
-    const pages: readonly WikiSharedContextPage[] = scope.pages;
-    const newSiblings = pages
+    const newSiblings: WikiSharedContextPage[] = scope.pages
       .filter(
         (sibling) => sibling.parentId === newParentId && sibling.id !== page.id,
       )
@@ -122,7 +119,9 @@ export const updateWikiPagePosition = (
 
       return [
         context.prisma.wikiPage.update({
-          where: { id: sibling.id },
+          where: isMovedPage
+            ? { id: sibling.id, deletedAt: null }
+            : { id: sibling.id },
           data: isMovedPage
             ? { parentId: newParentId, sortOrder: index, updatedById }
             : { sortOrder: index, updatedById },

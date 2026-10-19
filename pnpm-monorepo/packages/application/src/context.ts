@@ -240,3 +240,16 @@ export const createApplicationUrls = ({
     publicUploadBaseUrl: publicUploadBaseUrl.replace(/\/+$/, ""),
   };
 };
+
+/**
+ * The public URL of an upload in the uploads bucket. The app has the same
+ * URL in `getPublicUploadUrl()` of its common module.
+ */
+export const getPublicUploadUrl = (
+  urls: Pick<ApplicationContext["urls"], "publicUploadBaseUrl">,
+  uploadId: string,
+) =>
+  new URL(
+    encodeURIComponent(uploadId),
+    `${urls.publicUploadBaseUrl}/`,
+  ).toString();

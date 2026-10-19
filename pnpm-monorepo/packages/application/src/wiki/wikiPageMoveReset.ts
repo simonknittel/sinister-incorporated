@@ -1,12 +1,16 @@
 import type { PrismaClientType } from "@sam-monorepo/database";
 import {
-  WikiPageEditability,
   WikiPageEventScope,
   WikiPageUploadability,
-  WikiPageVisibility,
   type Prisma,
 } from "@sam-monorepo/database/client";
 import { collectWikiPageDescendants } from "@sam-monorepo/domain";
+import type { EventWikiContextPage } from "./eventWikiContext.js";
+import type { WikiContextPage } from "./wikiContext.js";
+import {
+  getTopLevelWikiPagePermissions,
+  INHERITED_WIKI_PAGE_PERMISSIONS,
+} from "./wikiPageDefaults.js";
 import type { WikiPageScope } from "./wikiScope.js";
 import { WikiScopeKind } from "./wikiScopeKind.js";
 
@@ -14,11 +18,6 @@ type MoveResetClient = Pick<
   PrismaClientType,
   "wikiPage" | "wikiPageRoleAccess"
 >;
-
-interface WikiTreePage {
-  readonly id: string;
-  readonly parentId: string | null;
-}
 
 interface WikiPageMoveReset {
   /** The moved page and its descendants, also the descendants in the trash */
@@ -28,32 +27,25 @@ interface WikiPageMoveReset {
 }
 
 /**
- * A moved page and its subtree take the permissions of their new place: all
- * tiers go back to inherited and the role lists are dropped. Carrying the old
- * settings over would either leak the page into its new surroundings or
- * quietly strip access from roles that cannot read the new parent — and the
- * page's own owner would keep rights the new location may not grant.
+ * A moved page of the global wiki and its subtree take the permissions of
+ * their new place: all tiers go back to INHERIT and the role lists go away.
+ * With the old settings, the page could become visible to the readers of
+ * its new place, or roles that cannot read the new parent could lose their
+ * access without a sign.
  *
- * A page moved to the top level has nothing to inherit from, so it gets the
- * defaults of a newly created top-level page: restricted, without roles and
- * owned by whoever moved it (unless it already has an explicit owner).
+ * A page that goes to the top level has nothing to inherit from. Thus it
+ * gets the permissions of a new page at the top level: only the owner can
+ * see it. The owner is its own owner, or the actor that moved it.
  */
-export const buildWikiPageMoveReset = (
+const buildGlobalWikiPageMoveReset = (
   prisma: MoveResetClient,
-  pages: readonly WikiTreePage[],
-  page: { readonly id: string; readonly ownerId: string | null },
+  pages: readonly WikiContextPage[],
+  page: WikiContextPage,
   newParentId: string | null,
   movedById: string | null,
 ): WikiPageMoveReset => {
   const subtreeIds = [page.id, ...collectWikiPageDescendants(pages, page.id)];
   const descendantIds = subtreeIds.filter((id) => id !== page.id);
-
-  const inherited = {
-    visibility: WikiPageVisibility.INHERIT,
-    editability: WikiPageEditability.INHERIT,
-    imageUploadability: WikiPageUploadability.INHERIT,
-    attachmentUploadability: WikiPageUploadability.INHERIT,
-  };
 
   return {
     subtreeIds,
@@ -61,21 +53,15 @@ export const buildWikiPageMoveReset = (
       prisma.wikiPage.update({
         where: { id: page.id },
         data: newParentId
-          ? inherited
-          : {
-              visibility: WikiPageVisibility.RESTRICTED,
-              editability: WikiPageEditability.RESTRICTED,
-              imageUploadability: WikiPageUploadability.RESTRICTED,
-              attachmentUploadability: WikiPageUploadability.RESTRICTED,
-              ownerId: page.ownerId ?? movedById,
-            },
+          ? INHERITED_WIKI_PAGE_PERMISSIONS
+          : getTopLevelWikiPagePermissions(page.ownerId ?? movedById),
         select: { id: true },
       }),
       ...(descendantIds.length > 0
         ? [
             prisma.wikiPage.updateMany({
               where: { id: { in: descendantIds } },
-              data: inherited,
+              data: INHERITED_WIKI_PAGE_PERMISSIONS,
             }),
           ]
         : []),
@@ -87,17 +73,16 @@ export const buildWikiPageMoveReset = (
 };
 
 /**
- * The briefing counterpart of `buildWikiPageMoveReset()`: a moved page and
- * its subtree take the scopes and uploadability tiers of their new place.
- * Unlike the role model this is about predictability, not security — the
- * parent-read gate already bounds a child's effective access — but the move
- * dialogs promise "takes on the new parent's permissions" and both scopes
- * should keep it. A briefing has no top level to move to (the locked root is
- * its only top-level page), so there is no defaults branch.
+ * A moved page of a briefing and its subtree take the scopes and the upload
+ * tiers of their new place. Here the reason is a result that the user can
+ * predict, not the security: the gate of the parent already limits the
+ * access of a child. But the move dialogs tell that the page takes the
+ * permissions of the new parent, in both scopes. A briefing has no top level
+ * to move to (the locked root page is its only top-level page).
  */
-export const buildEventWikiPageMoveReset = (
+const buildBriefingPageMoveReset = (
   prisma: MoveResetClient,
-  pages: readonly WikiTreePage[],
+  pages: readonly EventWikiContextPage[],
   pageId: string,
 ): WikiPageMoveReset => {
   const subtreeIds = [pageId, ...collectWikiPageDescendants(pages, pageId)];
@@ -141,7 +126,7 @@ export const buildWikiPageReparentReset = (
       const page = scope.pagesById.get(pageId);
       if (!page) throw new Error("The moved page is missing from its scope");
 
-      return buildWikiPageMoveReset(
+      return buildGlobalWikiPageMoveReset(
         prisma,
         scope.allPages,
         page,
@@ -151,7 +136,7 @@ export const buildWikiPageReparentReset = (
     }
 
     case WikiScopeKind.Briefing:
-      return buildEventWikiPageMoveReset(prisma, scope.allPages, pageId);
+      return buildBriefingPageMoveReset(prisma, scope.allPages, pageId);
 
     default:
       throw new Error(`Unknown wiki page scope: ${scope satisfies never}`);

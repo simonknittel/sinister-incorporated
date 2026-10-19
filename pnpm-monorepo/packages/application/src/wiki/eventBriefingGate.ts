@@ -26,19 +26,21 @@ export type EventBriefingGateEvent = EventManageInput &
   };
 
 /**
- * Whether the actor may read the briefing of an event — the same rule that
- * gates the Briefing tab, evaluated from the root page alone (it has no
- * parent to inherit from or be gated by). Built for event tiles, which render
- * several events per page: one indexed root-page lookup per event, plus the
- * lineup only when a POSITION scope asks for it. Callers must have checked
- * `event;read`, like every event list does.
+ * Whether the actor can read the briefing of an event: the rule of the gate
+ * of the briefing tab, from the root page alone (the root page has no parent
+ * to inherit from or to be gated by). It is for the event tiles, which show
+ * many events on one page: one indexed query of the root page for each
+ * event, and the lineup only for a POSITION scope. The callers must check
+ * `event;read` first, like each list of events.
  *
- * Deliberately ignores the edit scope although the resolver's "may edit ⇒
- * may read" implication could widen reading: this stays equivalent only
- * because `updateEventWikiPagePermissions` enforces edit ⊆ read on every
- * root update (and the seed starts at MANAGERS/MANAGERS). Relaxing that
- * subset rule would silently desync tab and tile visibility from actual
- * readability.
+ * The check ignores the edit scope. The resolver gives the read access to
+ * each actor that can edit, thus the edit scope could make the read access
+ * wider. The result stays the same only because
+ * `updateEventWikiPagePermissions()` keeps the edit scope a subset of the
+ * read scope on each update of the root page (and the seed starts with
+ * MANAGERS for both scopes). Without this rule, the tab and the tile could
+ * show a briefing that the actor cannot read, or hide one that the actor
+ * can read.
  */
 export const canReadEventBriefing = async (
   context: ApplicationContext,
@@ -88,7 +90,10 @@ export const canReadEventBriefing = async (
     case WikiPageEventScope.MANAGERS:
       return false;
 
-    /** Not allowed on root pages; the resolver's fallback is managers-only */
+    /**
+     * A root page cannot have this scope. The resolver then gives the access
+     * only to the managers.
+     */
     case WikiPageEventScope.INHERIT:
       return false;
 

@@ -2,13 +2,10 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
-import type { WikiSharedContextPage } from "./wikiContext.js";
-import { WikiErrorMessage } from "./wikiErrors.js";
-import { loadWikiScopeOfPage, requireAccessibleWikiPage } from "./wikiScope.js";
+import { requireWikiPageOfScope } from "./wikiScope.js";
 
 /** One hour: a page records at most one visit in this time */
 const WIKI_VISIT_THROTTLE_MILLISECONDS = 60 * 60 * 1000;
@@ -28,18 +25,18 @@ export interface TrackWikiPageVisitOutput {
 }
 
 /**
- * Records a page view for the list of recent pages. The app calls it from the
- * browser after the page mounted, not during the server render: a prefetch
- * renders pages that the user never opens, and a navigation from the prefetch
- * cache renders nothing. Throttled to one write per page and hour — the audit
- * event follows the same throttle and therefore counts visiting sessions, not
- * requests. Works in a briefing that is over, because a visit is personal
- * data.
+ * Records a visit of a page for the list of the recent pages. The app calls
+ * it from the browser after the page shows, not during the render on the
+ * server: a prefetch renders pages that the user never opens, and a
+ * navigation from the prefetch cache renders nothing. The throttle writes
+ * one time for each page and hour. The audit event has the same throttle,
+ * thus it counts sessions, not requests. The use case also works in a
+ * briefing that is over, because a visit is personal data.
  *
  * @throws ForbiddenError for a user without a citizen
  * @throws NotFoundError when a different user deleted the page or took the
- * read access away after the browser got the page, for example from its
- * back/forward cache
+ * read access away after the browser got the page, for example from the
+ * cache of the browser for the back and forward buttons
  */
 export const trackWikiPageVisit = (
   context: ApplicationContext,
@@ -51,8 +48,9 @@ export const trackWikiPageVisit = (
     const now = context.now();
 
     /**
-     * The throttle only reads the own rows of the actor, so it runs before the
-     * permission check — repeat visits then skip loading the scope.
+     * The throttle reads only the rows of the actor, thus it runs before the
+     * permission check: a visit again in the same hour does not load the
+     * scope
      */
     const existing = await context.prisma.wikiPageVisit.findUnique({
       where: { citizenId_pageId: { citizenId, pageId: input.page_id } },
@@ -65,11 +63,9 @@ export const trackWikiPageVisit = (
     )
       return { page_id: input.page_id, recorded: false };
 
-    const scope = await loadWikiScopeOfPage(context, actor, input.page_id);
-    if (!scope) throw new NotFoundError(WikiErrorMessage.PageNotFound);
-
-    const page = requireAccessibleWikiPage<WikiSharedContextPage>(
-      scope,
+    const { page } = await requireWikiPageOfScope(
+      context,
+      actor,
       input.page_id,
       WikiPageAccessTier.Read,
     );

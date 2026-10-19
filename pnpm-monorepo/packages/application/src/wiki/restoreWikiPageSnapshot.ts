@@ -2,18 +2,13 @@ import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import {
-  ConflictError,
-  ForbiddenError,
-  NotFoundError,
-  ValidationError,
-} from "../errors.js";
+import { NotFoundError, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { normalizeWikiContent } from "./wikiContentNormalization.js";
 import { WikiErrorMessage } from "./wikiErrors.js";
-import { createWikiPageSafetySnapshot } from "./wikiPageSafetySnapshot.js";
-import { isWikiScopeFrozen, loadWikiScopeOfPage } from "./wikiScope.js";
+import { requireAdministrableWikiPage } from "./wikiPageAdminGuard.js";
+import { replaceWikiPageContentWithSafetySnapshot } from "./wikiPageSafetySnapshot.js";
 
 export const restoreWikiPageSnapshotInputSchema = z.object({
   snapshot_id: idSchema,
@@ -42,6 +37,7 @@ export interface RestoreWikiPageSnapshotOutput {
  * @throws NotFoundError when the snapshot or its page does not exist, or the
  * page is in the trash: the retention of the automatic snapshots, a
  * permanent delete or a different tab removed it before
+ * @throws ForbiddenError when the actor does not manage the page
  * @throws ValidationError when the current schema of the editor cannot hold
  * the snapshot
  * @throws ConflictError when the briefing is frozen, the collab server is
@@ -60,13 +56,11 @@ export const restoreWikiPageSnapshot = (
     });
     if (!snapshot) throw new NotFoundError(WikiErrorMessage.SnapshotNotFound);
 
-    const scope = await loadWikiScopeOfPage(context, actor, snapshot.pageId);
-    const page = scope?.pagesById.get(snapshot.pageId);
-    if (!scope || !page || page.deletedAt)
-      throw new NotFoundError(WikiErrorMessage.PageNotFound);
-    if (!scope.permissions.get(page.id)?.canAdmin) throw new ForbiddenError();
-    if (isWikiScopeFrozen(scope))
-      throw new ConflictError(WikiErrorMessage.BriefingFrozen);
+    const { page } = await requireAdministrableWikiPage(
+      context,
+      actor,
+      snapshot.pageId,
+    );
 
     /** A snapshot can be older than a change of the schema of the editor */
     let content: object;
@@ -78,28 +72,13 @@ export const restoreWikiPageSnapshot = (
       });
     }
 
-    const { collab } = context;
-    if (!collab) throw new ConflictError(WikiErrorMessage.CollabNotConfigured);
-
-    const updatedByEntityId = actor.citizen?.id ?? null;
-    await createWikiPageSafetySnapshot(context, {
+    await replaceWikiPageContentWithSafetySnapshot(context, {
       pageId: page.id,
-      name: options.safetySnapshotName,
-      createdById: updatedByEntityId,
+      content,
+      updatedByEntityId: actor.citizen?.id ?? null,
+      safetySnapshotName: options.safetySnapshotName,
+      failureMessage: WikiErrorMessage.SnapshotRestoreFailed,
     });
-
-    try {
-      await collab.replaceContent({
-        pageId: page.id,
-        content,
-        updatedByEntityId,
-      });
-    } catch (error) {
-      context.log.error("Wiki snapshot restore failed", { error });
-      throw new ConflictError(WikiErrorMessage.SnapshotRestoreFailed, {
-        cause: error,
-      });
-    }
 
     await context.audit.create([
       {

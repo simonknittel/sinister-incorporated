@@ -304,14 +304,15 @@ export {
 } from "./wiki/eventWikiScopes.js";
 export {
   MAXIMUM_WIKI_PAGE_TAGS,
-  WIKI_PAGE_CONTENT_JSON_MAX_LENGTH,
-  WIKI_PAGE_TITLE_MAX_LENGTH,
+  WIKI_PAGE_CONTENT_JSON_MAXIMUM_LENGTH,
+  WIKI_PAGE_TITLE_MAXIMUM_LENGTH,
   WIKI_REPORT_TEXT_MAXIMUM_LENGTH,
   WIKI_TAG_NAME_MAXIMUM_LENGTH,
 } from "./wiki/wikiLimits.js";
 export { WikiPageDropPosition, WikiPasteMode } from "./wiki/wikiPageMoves.js";
 export {
   collectVisibleWikiSubtree,
+  collectWikiPageAncestors,
   collectWikiPageDescendants,
   isEventWikiRootPage,
   type VisibleWikiSubtreeEntry,

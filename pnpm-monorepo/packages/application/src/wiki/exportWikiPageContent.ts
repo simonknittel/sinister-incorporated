@@ -4,9 +4,10 @@ import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { EMPTY_WIKI_DOCUMENT } from "./wikiContentNormalization.js";
 import { WikiErrorMessage } from "./wikiErrors.js";
-import { loadWikiScopeOfPage, type WikiPageScope } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
+import { canTransferWikiPageContent } from "./wikiPageAdminGuard.js";
+import { loadWikiScopeOfPage } from "./wikiScope.js";
 
 export const exportWikiPageContentInputSchema = z.object({
   page_id: idSchema,
@@ -22,31 +23,6 @@ export interface ExportWikiPageContentOutput {
   /** Tiptap JSON: the file that `importWikiPageContent` takes */
   readonly content: unknown;
 }
-
-/** The content of a page without stored content */
-const EMPTY_WIKI_DOCUMENT = { type: "doc", content: [] };
-
-/**
- * An import puts any node structure into the page, thus the import and its
- * counterpart, the export, are tools of the administrators: `wiki;manage`
- * in the global wiki, the administrators of the page in a briefing.
- */
-export const canTransferWikiPageContent = (
-  actor: Pick<Actor, "authorize">,
-  scope: WikiPageScope,
-  pageId: string,
-) => {
-  switch (scope.kind) {
-    case WikiScopeKind.Wiki:
-      return actor.authorize("wiki", "manage");
-
-    case WikiScopeKind.Briefing:
-      return scope.permissions.get(pageId)?.canAdmin === true;
-
-    default:
-      throw new Error(`Unknown wiki page scope: ${scope satisfies never}`);
-  }
-};
 
 /**
  * The content of a page as Tiptap JSON, for a download. A read without an

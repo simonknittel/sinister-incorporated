@@ -71,6 +71,11 @@ export const createCollabClient = ({
         body: JSON.stringify({ content }),
         signal: AbortSignal.timeout(replaceTimeoutMilliseconds),
       });
+      /**
+       * The client uses only the status. It cancels the body, thus the
+       * connection does not wait for a read of the body.
+       */
+      await response.body?.cancel();
       if (!response.ok)
         throw new Error(
           `Collab replace request failed with status ${response.status}`,

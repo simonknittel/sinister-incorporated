@@ -3,8 +3,8 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
-import type { WikiSharedContextPage } from "./wikiContext.js";
 import { requireAdministrableWikiPage } from "./wikiPageAdminGuard.js";
+import { getNextWikiPageSortOrder } from "./wikiPageDefaults.js";
 import { buildWikiPageReparentReset } from "./wikiPageMoveReset.js";
 import {
   buildWikiPageReparentAuditEvents,
@@ -58,15 +58,6 @@ export const moveWikiPage = (
     const newParentId = input.parent_id;
     requireWikiPageReparent(actor, scope, page, newParentId);
 
-    const pages: readonly WikiSharedContextPage[] = scope.pages;
-    const siblings = pages.filter(
-      (sibling) => sibling.parentId === newParentId && sibling.id !== page.id,
-    );
-    const sortOrder =
-      siblings.length > 0
-        ? Math.max(...siblings.map((sibling) => sibling.sortOrder)) + 1
-        : 0;
-
     const updatedById = actor.citizen?.id ?? null;
     const reset = buildWikiPageReparentReset(
       context.prisma,
@@ -79,8 +70,15 @@ export const moveWikiPage = (
     await runWikiPageTreeBatch(context, [
       ...reset.statements,
       context.prisma.wikiPage.update({
-        where: { id: page.id },
-        data: { parentId: newParentId, sortOrder, updatedById },
+        where: { id: page.id, deletedAt: null },
+        data: {
+          parentId: newParentId,
+          sortOrder: getNextWikiPageSortOrder(
+            scope.pages.filter((sibling) => sibling.id !== page.id),
+            newParentId,
+          ),
+          updatedById,
+        },
         select: { id: true },
       }),
     ]);

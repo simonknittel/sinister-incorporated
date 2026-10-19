@@ -8,6 +8,11 @@ import type { ApplicationContext } from "../context.js";
 /** `WikiSetting.key` of the hostnames that generic iframes may embed */
 export const WIKI_SETTING_IFRAME_ALLOWLIST = "iframeAllowlist";
 
+/**
+ * The most hostnames of the allowlist. The renders compare each iframe with
+ * each hostname, and the settings page shows one field for each hostname:
+ * 100 is much more than the organization needs, and it keeps both small.
+ */
 export const MAXIMUM_WIKI_IFRAME_ALLOWLIST_ENTRIES = 100;
 
 const iframeAllowlistSchema = z
@@ -21,8 +26,9 @@ export const parseWikiIframeAllowlist = (value: unknown): string[] => {
 };
 
 /**
- * Hostnames generic iframes may embed. Used by the insertion-time
- * validation and passed to the renderers for the render-time re-check.
+ * The hostnames that generic iframes can embed. The check when a user adds
+ * an iframe uses them, and the renders get them for the check on each
+ * render.
  */
 export const loadWikiIframeAllowlist = async (
   prisma: ApplicationContext["prisma"],

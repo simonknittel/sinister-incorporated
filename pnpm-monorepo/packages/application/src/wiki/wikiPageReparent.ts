@@ -18,7 +18,6 @@ import {
   resolveWikiPagePlacement,
   WikiPagePlacement,
 } from "./wikiPagePlacement.js";
-import { lockWikiPageTree } from "./wikiPageTreeLock.js";
 import type { WikiPageScope } from "./wikiScope.js";
 import { WikiScopeKind } from "./wikiScopeKind.js";
 
@@ -102,8 +101,12 @@ const isWikiPageReparentRefused = (error: unknown) =>
 
 /**
  * Runs the statements of a change of the page tree (a move or a new sort
- * order of siblings) in one batch, after the lock of the tree (see
- * `lockWikiPageTree()`)
+ * order of siblings) in one batch. The first statement takes the transaction
+ * lock of the page tree. The trigger `WikiPage_check_parent` takes the same
+ * lock when a page gets a new parent: when the lock comes only from the
+ * trigger after the first updates of the siblings, two moves can wait for
+ * each other. An insert (a new, a copied or a pasted page) does not take the
+ * lock: the trigger checks the parent of a new row without it.
  *
  * @throws NotFoundError when a page of the statements is gone
  * @throws ConflictError when the database refused a reparent
@@ -115,7 +118,8 @@ export const runWikiPageTreeBatch = (
   rethrowRecordNotFound(async () => {
     try {
       await context.prisma.$transaction([
-        lockWikiPageTree(context.prisma),
+        context.prisma
+          .$executeRaw`SELECT pg_advisory_xact_lock(hashtext('WikiPage_hierarchy'))`,
         ...statements,
       ]);
     } catch (error) {

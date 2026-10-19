@@ -13,3 +13,6 @@ export const normalizeWikiContent = (content: unknown): object => {
 
   return documentNode.toJSON() as object;
 };
+
+/** The content of a page that was never saved */
+export const EMPTY_WIKI_DOCUMENT = { type: "doc", content: [] };

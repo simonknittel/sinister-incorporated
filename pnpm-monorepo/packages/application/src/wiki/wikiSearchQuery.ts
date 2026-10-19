@@ -1,70 +1,104 @@
 import { Prisma } from "@sam-monorepo/database/client";
 import {
+  EventContainerKind,
   WIKI_SEARCH_MARK_END,
   WIKI_SEARCH_MARK_START,
+  type EventContainer,
 } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
+import type { WikiSharedContextPage } from "./wikiContext.js";
+import type { WikiScope } from "./wikiScope.js";
+import { WikiScopeKind } from "./wikiScopeKind.js";
 
-export interface WikiSearchScopeFilters {
-  /** WHERE fragment limiting WikiTag rows to the scope */
+interface WikiSearchScopeFilters {
+  /** The part of the WHERE clause that limits the WikiTag rows to the scope */
   readonly tagsFilter: Prisma.Sql;
-  /** WHERE fragment limiting WikiPage rows to the scope */
+  /** The part of the WHERE clause that limits the WikiPage rows to the scope */
   readonly pagesFilter: Prisma.Sql;
 }
 
 /** The global wiki, without the briefings of the events and the templates */
-export const GLOBAL_WIKI_SEARCH_FILTERS: WikiSearchScopeFilters = {
+const GLOBAL_WIKI_SEARCH_FILTERS: WikiSearchScopeFilters = {
   tagsFilter: Prisma.sql`"eventId" IS NULL AND "templateId" IS NULL`,
   /**
-   * The namespace alone excludes briefing pages (a CHECK constraint ties
-   * namespace EVENT to exactly one container); the container filters make
-   * the exclusion explicit and index-friendly regardless.
+   * The namespace alone excludes the pages of the briefings (a CHECK
+   * constraint ties the namespace EVENT to exactly one container). The
+   * container filters make the exclusion explicit, and the index can use
+   * them.
    */
   pagesFilter: Prisma.sql`"namespace" = 'WIKI' AND "eventId" IS NULL AND "templateId" IS NULL`,
 };
 
-export enum WikiSearchContainerColumn {
-  EventId = "eventId",
-  TemplateId = "templateId",
-}
+const buildContainerColumnFilter = (container: EventContainer): Prisma.Sql => {
+  switch (container.kind) {
+    case EventContainerKind.Event:
+      return Prisma.sql`"eventId" = ${container.id}`;
+
+    case EventContainerKind.Template:
+      return Prisma.sql`"templateId" = ${container.id}`;
+
+    default:
+      throw new Error(
+        `Unknown event container kind: ${container.kind satisfies never}`,
+      );
+  }
+};
 
 /** The briefing of one event or of one event template */
-export const buildContainerWikiSearchFilters = (
-  column: WikiSearchContainerColumn,
-  containerId: string,
+const buildContainerWikiSearchFilters = (
+  container: EventContainer,
 ): WikiSearchScopeFilters => {
-  const containerColumn = Prisma.raw(`"${column}"`);
+  const containerFilter = buildContainerColumnFilter(container);
 
   return {
-    tagsFilter: Prisma.sql`${containerColumn} = ${containerId}`,
-    pagesFilter: Prisma.sql`"namespace" = 'EVENT' AND ${containerColumn} = ${containerId}`,
+    tagsFilter: containerFilter,
+    pagesFilter: Prisma.sql`"namespace" = 'EVENT' AND ${containerFilter}`,
   };
 };
 
 /**
- * The subtree of the global wiki that a fleet variant embeds. The restriction
- * happens inside the SQL (before the candidate limit), so global matches never
- * crowd out subtree hits, and the extra `AND` leaves the indexed tsvector
- * expression untouched. Tag results are limited to tags used inside the
- * subtree — they link out to the global wiki, whose tag pages then show
- * everything readable.
+ * The subtree of the global wiki that a fleet variant embeds. The limit to
+ * the subtree is part of the SQL (before the limit of the candidates), thus
+ * the global matches do not push the matches of the subtree out of the
+ * result. The additional `AND` does not change the indexed tsvector
+ * expression. The tag results are only the tags that the pages of the
+ * subtree use: they link to the global wiki, whose tag pages show all
+ * readable pages.
  *
  * @param subtreePageIds Never empty: the subtree always contains the root
  * page. Each id is one parameter of the SQL statement.
  */
-export const buildVariantWikiSearchFilters = (
+const buildVariantWikiSearchFilters = (
   subtreePageIds: readonly string[],
 ): WikiSearchScopeFilters => ({
   tagsFilter: Prisma.sql`"eventId" IS NULL AND "templateId" IS NULL AND "id" IN (SELECT "tagId" FROM "WikiPageTag" WHERE "pageId" IN (${Prisma.join(subtreePageIds)}))`,
   pagesFilter: Prisma.sql`"namespace" = 'WIKI' AND "eventId" IS NULL AND "templateId" IS NULL AND "id" IN (${Prisma.join(subtreePageIds)})`,
 });
 
+/** The filters that limit the search to the pages and the tags of the scope */
+const toWikiSearchFilters = (scope: WikiScope): WikiSearchScopeFilters => {
+  switch (scope.kind) {
+    case WikiScopeKind.Wiki:
+      return GLOBAL_WIKI_SEARCH_FILTERS;
+
+    case WikiScopeKind.Briefing:
+      return buildContainerWikiSearchFilters(scope.container);
+
+    case WikiScopeKind.Variant:
+      return buildVariantWikiSearchFilters([...scope.subtreePageIds]);
+
+    default:
+      throw new Error(`Unknown wiki scope: ${scope satisfies never}`);
+  }
+};
+
 /**
- * `websearch_to_tsquery` safely handles arbitrary user input; the last word
- * additionally matches as a prefix so search-as-you-type finds partially
- * typed words. The prefix term replaces (rather than ANDs with) the last
- * websearch word: a partial word often stems differently than the full
- * words it is a prefix of, and requiring both would drop those matches.
+ * `websearch_to_tsquery` accepts all user input. The last word also matches
+ * as a prefix, thus a search while the user types finds the words that are
+ * not complete. The prefix term replaces the last websearch word (it is not
+ * an additional AND term): the stem of a part of a word is often different
+ * from the stem of the full word, and with both terms these matches would
+ * not be found.
  */
 const buildTsquery = (query: string): Prisma.Sql => {
   const terms = query.split(/\s+/).filter(Boolean);
@@ -84,9 +118,8 @@ const MAXIMUM_WIKI_SEARCH_TAGS = 5;
 
 export interface WikiSearchQueryOptions {
   readonly query: string;
-  /** The search returns only these pages: the pages the viewer can read */
-  readonly readablePageIds: readonly string[];
-  readonly filters: WikiSearchScopeFilters;
+  /** The search returns only the pages of the scope that the actor can read */
+  readonly scope: WikiScope;
   readonly pageLimit: number;
 }
 
@@ -94,31 +127,35 @@ export interface WikiSearchQueryResult {
   readonly tags: { readonly id: string; readonly name: string }[];
   /** The matching pages, the best match first */
   readonly pages: {
-    readonly id: string;
+    readonly page: WikiSharedContextPage;
     /**
-     * Plain-text snippet with the matches wrapped in `WIKI_SEARCH_MARK_START`
-     * and `WIKI_SEARCH_MARK_END`
+     * Plain text around the matches, with the matches in
+     * `WIKI_SEARCH_MARK_START` and `WIKI_SEARCH_MARK_END`
      */
     readonly snippet: string;
-    /** Names of the page's tags matching the query */
+    /** The names of the tags of the page that match the query */
     readonly matchedTags: string[];
   }[];
 }
 
 /**
- * Full-text search over one scope's pages and tags. The query gets the ids
- * of the pages that the viewer may read and limits there, so invisible pages
- * never leak and a viewer with narrow access still gets a full result list.
- * Tag results are deliberately not permission-filtered — tag names are
- * shared within their scope, like the autocomplete in getTags — and the
- * tag's list page permission-filters its content itself. Tags match
- * through the same tsquery as pages, so a returned tag row and the tag
- * chips on page results always agree.
+ * Full-text search over the pages and the tags of one scope. The query gets
+ * the ids of the pages that the actor can read and applies the limit to
+ * them, thus the pages that the actor cannot see never leak, and an actor
+ * with narrow access still gets a full list. The tag results have no
+ * permission filter: the names of the tags are shared in their scope, like
+ * in the autocomplete of the tag input, and the page of a tag filters its
+ * pages itself. The tags match through the same tsquery as the pages, thus
+ * a tag result and the tags on the page results always agree.
  */
 export const queryWikiSearch = async (
   prisma: ApplicationContext["prisma"],
-  { query, readablePageIds, filters, pageLimit }: WikiSearchQueryOptions,
+  { query, scope, pageLimit }: WikiSearchQueryOptions,
 ): Promise<WikiSearchQueryResult> => {
+  const filters = toWikiSearchFilters(scope);
+  const readablePageIds = [...scope.permissions]
+    .filter(([, permissions]) => permissions.canRead)
+    .map(([pageId]) => pageId);
   const tsquery = buildTsquery(query.trim());
   const headlineOptions = `StartSel=${WIKI_SEARCH_MARK_START}, StopSel=${WIKI_SEARCH_MARK_END}, MaxWords=25, MinWords=10, ShortWord=2, MaxFragments=2`;
 
@@ -134,19 +171,25 @@ export const queryWikiSearch = async (
   if (readablePageIds.length === 0) return { tags, pages: [] };
 
   /**
-   * The expression inside to_tsvector must match the expression GIN index
-   * on WikiPage exactly, otherwise the index is not used.
+   * The expression in to_tsvector must be the same as the expression of the
+   * GIN index on WikiPage, else the index is not used.
    *
-   * The snippet deliberately excludes tagsText — tag matches are shown as
-   * chips instead, so a tag name never poses as page content. A tag only
-   * counts as matched when it satisfies the whole tsquery by itself: with
-   * a multi-word query, a tag contributing just one of the words keeps
-   * the page in the results (via tagsText) but is not returned as a chip.
+   * The snippet does not use tagsText: the page results show the matching
+   * tags as chips, thus a tag name never looks like the content of the page.
+   * A tag matches only when it agrees with the full tsquery: with a query of
+   * many words, a tag that has only one of the words keeps the page in the
+   * results (through tagsText), but it is not a chip.
    *
    * The tag name is cast to text: the driver adapter does not know the
-   * array type of `citext` and returns such an array as one string.
+   * array type of `citext` and gives such an array as one string.
    */
-  const pages = await prisma.$queryRaw<WikiSearchQueryResult["pages"]>`
+  const matches = await prisma.$queryRaw<
+    {
+      readonly id: string;
+      readonly snippet: string;
+      readonly matchedTags: string[];
+    }[]
+  >`
     SELECT
       "id",
       ts_headline('german', "title" || ' ' || "searchText", ${tsquery}, ${headlineOptions}) AS "snippet",
@@ -167,5 +210,12 @@ export const queryWikiSearch = async (
     LIMIT ${pageLimit}
   `;
 
-  return { tags, pages };
+  return {
+    tags,
+    pages: matches.flatMap(({ id, snippet, matchedTags }) => {
+      const page = scope.pagesById.get(id);
+
+      return page ? [{ page, snippet, matchedTags }] : [];
+    }),
+  };
 };

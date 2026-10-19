@@ -3,19 +3,10 @@ import { collectWikiRoleCitizensRoleIds } from "@sam-monorepo/wiki-editor";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { findVisibleRoleBadges, type RoleBadge } from "../roles/roleBadges.js";
-
-/** A citizen in the list of a role-members node */
-export interface WikiRoleCitizen {
-  readonly id: string;
-  readonly handle: string | null;
-  readonly deletedAt: Date | null;
-}
+import { WIKI_CITIZEN_SELECT, type WikiCitizen } from "./wikiCitizen.js";
 
 /** Citizens without a handle go last: the citizen link shows their id */
-const compareWikiRoleCitizens = (
-  first: WikiRoleCitizen,
-  second: WikiRoleCitizen,
-) => {
+const compareWikiRoleCitizens = (first: WikiCitizen, second: WikiCitizen) => {
   if (first.handle && second.handle)
     return first.handle.localeCompare(second.handle);
   if (first.handle) return -1;
@@ -32,7 +23,7 @@ const resolveWikiRoleCitizens = async (
   context: Pick<ApplicationContext, "prisma">,
   visibleRoles: readonly Pick<RoleBadge, "id" | "maxLevel">[],
   roleId: string,
-): Promise<WikiRoleCitizen[]> => {
+): Promise<WikiCitizen[]> => {
   const role = visibleRoles.find((candidate) => candidate.id === roleId);
   if (!role) return [];
 
@@ -55,7 +46,7 @@ const resolveWikiRoleCitizens = async (
         },
       },
     },
-    select: { id: true, handle: true, deletedAt: true },
+    select: WIKI_CITIZEN_SELECT,
   });
 
   return citizens.toSorted(compareWikiRoleCitizens);
@@ -70,7 +61,7 @@ export const findWikiRoleCitizens = async (
   context: Pick<ApplicationContext, "prisma">,
   actor: Pick<Actor, "authorize">,
   { roleId }: { readonly roleId: string },
-): Promise<WikiRoleCitizen[]> =>
+): Promise<WikiCitizen[]> =>
   resolveWikiRoleCitizens(
     context,
     await findVisibleRoleBadges(context, actor),
@@ -86,7 +77,7 @@ export const loadWikiRoleCitizensByRole = async (
   context: Pick<ApplicationContext, "prisma">,
   actor: Pick<Actor, "authorize">,
   content: unknown,
-): Promise<Record<string, WikiRoleCitizen[]>> => {
+): Promise<Record<string, WikiCitizen[]>> => {
   const roleIds = collectWikiRoleCitizensRoleIds(content);
   if (roleIds.length === 0) return {};
 

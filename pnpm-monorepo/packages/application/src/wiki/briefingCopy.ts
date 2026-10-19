@@ -1,10 +1,4 @@
-import {
-  WikiPageEditability,
-  WikiPageNamespace,
-  WikiPageUploadability,
-  WikiPageVisibility,
-  type Prisma,
-} from "@sam-monorepo/database/client";
+import { WikiPageNamespace, type Prisma } from "@sam-monorepo/database/client";
 import type {
   EventContainer,
   EventContainerColumns,
@@ -20,6 +14,7 @@ import {
   copyWikiPagesIntoContainer,
   type WikiPageCopyEntry,
 } from "./wikiPageCopy.js";
+import { INHERITED_WIKI_PAGE_PERMISSIONS } from "./wikiPageDefaults.js";
 
 /**
  * The briefing of a container that a copy reads: the pages that are not
@@ -45,18 +40,6 @@ export const findBriefingCopySource = async (
 
   return { pages, rootPage: pickEventWikiRootPage(pages) };
 };
-
-/**
- * Briefing pages carry no role-based tiers — the container's manage set
- * replaces the owner concept (see WikiPage.ownerId).
- */
-const BRIEFING_PERMISSIONS = {
-  visibility: WikiPageVisibility.INHERIT,
-  editability: WikiPageEditability.INHERIT,
-  imageUploadability: WikiPageUploadability.INHERIT,
-  attachmentUploadability: WikiPageUploadability.INHERIT,
-  ownerId: null,
-} as const;
 
 /** Depth-first, siblings in their rendered order — parents before children */
 const orderDepthFirst = (
@@ -111,7 +94,11 @@ export const copyBriefingTree = async (
     slug: page.slug,
     parentSourceId: page.parentId,
     sortOrder: page.sortOrder,
-    permissions: BRIEFING_PERMISSIONS,
+    /**
+     * The pages of a briefing have no role-based tiers and no owner: the
+     * managers of the container manage them (see WikiPage.ownerId)
+     */
+    permissions: { ...INHERITED_WIKI_PAGE_PERMISSIONS, ownerId: null },
   }));
 
   const { copiedPages } = await copyWikiPagesIntoContainer(transaction, {

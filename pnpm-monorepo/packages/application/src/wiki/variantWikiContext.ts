@@ -23,39 +23,46 @@ import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * The subtree of the global wiki that a fleet variant embeds: one of the
- * wiki scopes (see `wikiScope.ts`). Structurally a `WikiSharedContext`
- * (pages/pagesById/permissions), so the shared tree/breadcrumb/target/search
- * utilities work on the slice with the embed's semantics: the ancestor walks
- * dead-end at the linked root (its parent is outside the sliced map), page
- * lookups miss for out-of-subtree ids, and `buildVisibleWikiTree`
- * re-parents the root to the top level. The permission map is deliberately
- * the global superset — every lookup goes through `pagesById` first, so it
- * never widens the slice.
+ * wiki scopes (see `wikiScope.ts`). It has the same fields as the other
+ * scopes, thus the tree, breadcrumb, target and search helpers work on it
+ * with the rules of the embed. The walk to the ancestors stops at the linked
+ * root page, because its parent is not in the map. A page outside of the
+ * subtree is not in the map. `buildVisibleWikiTree()` puts the root page at
+ * the top level. The permission map is the map of the global wiki: each
+ * lookup goes through `pagesById` first, thus the map does not make the
+ * subtree wider.
  */
 export interface VariantWikiContext {
   readonly kind: WikiScopeKind.Variant;
   /** The routes of the pages */
   readonly hrefBase: WikiPageHrefBase;
   variant: Pick<Variant, "id" | "name">;
-  /** The global context the slice derives from, e.g. for page content */
+  /** The global wiki that the subtree comes from, for the content of a page */
   globalContext: WikiContext;
   viewer: WikiPageViewer;
-  /** The linked page, readable by the viewer — the embed's locked root */
+  /**
+   * The linked page: the locked root page of the embed. The actor can read
+   * it.
+   */
   rootPage: WikiContextPage;
-  /** The root and its not-deleted descendants */
+  /** The root page and its descendants that are not in the trash */
   subtreePageIds: ReadonlySet<string>;
-  /** Not-deleted pages of the subtree, in global context order */
+  /**
+   * The pages of the subtree that are not in the trash, in the order of the
+   * global wiki
+   */
   pages: WikiContextPage[];
   pagesById: Map<string, WikiContextPage>;
   permissions: Map<string, ResolvedWikiPagePermissions>;
 }
 
 /**
- * The single gate of a variant's embedded wiki. Returns null when the actor
- * fails the fleet gate of the variant page, the variant is unknown or
- * unlinked, or the linked page is trashed or not readable — "a context
- * exists" is exactly "the embed exists", so callers hide the section or 404
- * on null without leaking why.
+ * The one gate of the embedded wiki of a variant. Returns null when the actor
+ * does not pass the fleet gate of the variant page, when the variant is
+ * unknown or has no linked page, or when the linked page is in the trash or
+ * the actor cannot read it. A scope exists only when the embed exists, thus
+ * the callers hide the section or answer 404 on null, and the reason does
+ * not leak.
  */
 export const buildVariantWikiContext = (
   context: ApplicationContext,

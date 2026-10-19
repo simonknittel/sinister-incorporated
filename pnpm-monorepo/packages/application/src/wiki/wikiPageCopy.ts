@@ -1,9 +1,6 @@
 import {
-  WikiPageEditability,
   WikiPageEventScope,
   WikiPageNamespace,
-  WikiPageUploadability,
-  WikiPageVisibility,
   type Prisma,
 } from "@sam-monorepo/database/client";
 import {
@@ -11,21 +8,14 @@ import {
   type EventContainer,
 } from "@sam-monorepo/domain";
 import type { WikiSharedContextPage } from "./wikiContext.js";
-import { findOrCreateWikiTags } from "./wikiTags.js";
+import type { WikiPagePermissionColumns } from "./wikiPageDefaults.js";
+import { findOrCreateWikiTags, toWikiPageTagsText } from "./wikiTags.js";
 
 export interface CopiedWikiPage {
   readonly id: string;
   readonly sourcePageId: string;
   readonly title: string;
   readonly parentId: string | null;
-}
-
-interface CopyPermissionColumns {
-  readonly visibility: WikiPageVisibility;
-  readonly editability: WikiPageEditability;
-  readonly imageUploadability: WikiPageUploadability;
-  readonly attachmentUploadability: WikiPageUploadability;
-  readonly ownerId: string | null;
 }
 
 /** One page to create, in depth-first order (parents before their children) */
@@ -46,7 +36,7 @@ export interface WikiPageCopyEntry {
    */
   readonly parentSourceId: string | null;
   readonly sortOrder: number;
-  readonly permissions: CopyPermissionColumns;
+  readonly permissions: WikiPagePermissionColumns;
 }
 
 interface CopyWikiPagesParams {
@@ -80,14 +70,6 @@ interface CopyWikiPagesResult {
   /** Slug of each copy, keyed by source id */
   readonly slugBySourceId: Map<string, string>;
 }
-
-export const INHERITED_PERMISSIONS: CopyPermissionColumns = {
-  visibility: WikiPageVisibility.INHERIT,
-  editability: WikiPageEditability.INHERIT,
-  imageUploadability: WikiPageUploadability.INHERIT,
-  attachmentUploadability: WikiPageUploadability.INHERIT,
-  ownerId: null,
-};
 
 /**
  * Remaps one page's POSITION scope references onto the copied lineup. A
@@ -193,11 +175,7 @@ export const copyWikiPagesIntoContainer = async (
     );
     return {
       tagIds: tags.map((tag) => tag.id),
-      /** Denormalized for the full-text search (see WikiPage.tagsText) */
-      tagsText: tags
-        .map((tag) => tag.name)
-        .toSorted((first, second) => first.localeCompare(second))
-        .join(" "),
+      tagsText: toWikiPageTagsText(tags.map((tag) => tag.name)),
     };
   };
 

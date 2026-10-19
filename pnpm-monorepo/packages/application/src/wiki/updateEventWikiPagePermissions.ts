@@ -15,7 +15,6 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import {
   ConflictError,
-  ForbiddenError,
   NotFoundError,
   ValidationError,
   rethrowRecordNotFound,
@@ -23,8 +22,9 @@ import {
 import { triggerNotificationsAfterSave } from "../notifications.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
 import { WikiErrorMessage } from "./wikiErrors.js";
-import { isWikiScopeFrozen, loadWikiScopeOfPage } from "./wikiScope.js";
+import { isWikiScopeFrozen, requireWikiPageOfScope } from "./wikiScope.js";
 import { WikiScopeKind } from "./wikiScopeKind.js";
 
 export const updateEventWikiPagePermissionsInputSchema = z.object({
@@ -77,23 +77,18 @@ export const updateEventWikiPagePermissions = (
   input: UpdateEventWikiPagePermissionsInput,
 ): Promise<UpdateEventWikiPagePermissionsOutput> =>
   withSpan(context, "updateEventWikiPagePermissions", async () => {
-    /**
-     * A page that a different user deleted permanently gives the global
-     * wiki, thus the kind of the scope gives the same answer as a missing
-     * page
-     */
-    const loadedScope = await loadWikiScopeOfPage(
+    const { scope, page } = await requireWikiPageOfScope(
       context,
       actor,
       input.page_id,
+      WikiPageAccessTier.Admin,
     );
-    const scope =
-      loadedScope?.kind === WikiScopeKind.Briefing ? loadedScope : null;
-    const page = scope?.pagesById.get(input.page_id);
-    if (!scope || !page || page.deletedAt)
+    /**
+     * A page that a different user deleted permanently gives the global
+     * wiki, thus a page of the global wiki gets the answer of a missing page
+     */
+    if (scope.kind !== WikiScopeKind.Briefing)
       throw new NotFoundError(WikiErrorMessage.PageNotFound);
-    if (!scope.permissions.get(page.id)?.canAdmin)
-      throw new ForbiddenError("The actor cannot manage the wiki page");
     if (isWikiScopeFrozen(scope))
       throw new ConflictError(WikiErrorMessage.BriefingFrozen);
 
@@ -189,11 +184,12 @@ export const updateEventWikiPagePermissions = (
      * warning), loses the notification. This is better than the opposite
      * (a notification without a change of the scope).
      */
+    const previousReadScope = scope.pagesById.get(page.id)?.eventReadScope;
     const leavesManagers =
       isRootPage &&
       input.read_scope !== WikiPageEventScope.MANAGERS &&
-      (page.eventReadScope === WikiPageEventScope.MANAGERS ||
-        page.eventReadScope === WikiPageEventScope.INHERIT);
+      (previousReadScope === WikiPageEventScope.MANAGERS ||
+        previousReadScope === WikiPageEventScope.INHERIT);
 
     const scopeUpdate = context.prisma.wikiPage.update({
       where: { id: page.id },

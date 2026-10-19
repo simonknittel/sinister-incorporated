@@ -2,6 +2,8 @@ import { WikiPageSnapshotKind } from "@sam-monorepo/database/client";
 import { createWikiPageSnapshotUploadLinks } from "@sam-monorepo/domain";
 import { collectWikiUploadReferences } from "@sam-monorepo/wiki-editor";
 import type { ApplicationContext } from "../context.js";
+import { ConflictError } from "../errors.js";
+import { WikiErrorMessage } from "./wikiErrors.js";
 
 interface WikiPageSafetySnapshot {
   readonly pageId: string;
@@ -17,7 +19,7 @@ interface WikiPageSafetySnapshot {
  * transaction, so that the nightly upload cleanup keeps them. A page without
  * stored content gets no snapshot.
  */
-export const createWikiPageSafetySnapshot = async (
+const createWikiPageSafetySnapshot = async (
   context: Pick<ApplicationContext, "prisma">,
   { pageId, name, createdById }: WikiPageSafetySnapshot,
 ) => {
@@ -45,4 +47,65 @@ export const createWikiPageSafetySnapshot = async (
       collectWikiUploadReferences(content),
     );
   });
+};
+
+/**
+ * The collab server. The content of a page changes only through the collab
+ * server, thus the open editors get the new content.
+ *
+ * @throws ConflictError when the collab server is not configured
+ */
+export const requireCollab = (
+  context: Pick<ApplicationContext, "collab">,
+): NonNullable<ApplicationContext["collab"]> => {
+  if (!context.collab)
+    throw new ConflictError(WikiErrorMessage.CollabNotConfigured);
+
+  return context.collab;
+};
+
+interface WikiPageContentReplacementWithSafetySnapshot {
+  readonly pageId: string;
+  /** Tiptap JSON that agrees with the schema of the editor */
+  readonly content: object;
+  /** The citizen that the collab server records as the last editor */
+  readonly updatedByEntityId: string | null;
+  /** Tells in the snapshot list which write replaced the content */
+  readonly safetySnapshotName: string;
+  /** The message of the `ConflictError` when the collab server fails */
+  readonly failureMessage: WikiErrorMessage;
+}
+
+/**
+ * Replaces the content of a page through the collab server after a safety
+ * snapshot of the current content (see `createWikiPageSafetySnapshot()`).
+ * When the collab server fails, the safety snapshot stays.
+ *
+ * @throws ConflictError when the collab server is not configured, or with
+ * the failure message when it does not take the content
+ */
+export const replaceWikiPageContentWithSafetySnapshot = async (
+  context: Pick<ApplicationContext, "prisma" | "collab" | "log">,
+  {
+    pageId,
+    content,
+    updatedByEntityId,
+    safetySnapshotName,
+    failureMessage,
+  }: WikiPageContentReplacementWithSafetySnapshot,
+) => {
+  const collab = requireCollab(context);
+
+  await createWikiPageSafetySnapshot(context, {
+    pageId,
+    name: safetySnapshotName,
+    createdById: updatedByEntityId,
+  });
+
+  try {
+    await collab.replaceContent({ pageId, content, updatedByEntityId });
+  } catch (error) {
+    context.log.error(failureMessage, { pageId, error });
+    throw new ConflictError(failureMessage, { cause: error });
+  }
 };

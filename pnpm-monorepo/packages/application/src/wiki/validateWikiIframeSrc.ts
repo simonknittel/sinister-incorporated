@@ -6,7 +6,8 @@ import { ValidationError } from "../errors.js";
 import { WikiErrorMessage } from "./wikiErrors.js";
 import { loadWikiIframeAllowlist } from "./wikiIframeAllowlist.js";
 
-export const MAXIMUM_WIKI_IFRAME_SOURCE_LENGTH = 2_000;
+/** The URLs of real embeds are much shorter: the limit keeps the check small */
+const MAXIMUM_WIKI_IFRAME_SOURCE_LENGTH = 2_000;
 
 export const validateWikiIframeSrcInputSchema = z.object({
   src: z.url().max(MAXIMUM_WIKI_IFRAME_SOURCE_LENGTH),
@@ -21,10 +22,11 @@ export interface ValidateWikiIframeSrcOutput {
 }
 
 /**
- * Insertion-time check of a generic iframe URL against the current allowlist.
- * The static renderer and the editor re-validate on every render, so this is
- * UX (fail early with a clear message), not the only line of defense. Needs
- * no permission beyond the clearance that the caller checks.
+ * Checks the URL of a generic iframe against the current allowlist when the
+ * user adds the iframe. The static render and the editor check the URL
+ * again on each render, thus this check only gives the user a clear message
+ * early. It is not the only check. The use case needs no permission other
+ * than the clearance that the caller checks.
  *
  * @throws ValidationError when the URL is not one of the dedicated providers
  * and its host is not on the allowlist

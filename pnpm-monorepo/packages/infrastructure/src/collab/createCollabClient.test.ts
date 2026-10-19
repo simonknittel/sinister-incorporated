@@ -47,7 +47,8 @@ const REPLACEMENT = {
 
 beforeEach(() => {
   fetchMock.mockReset();
-  fetchMock.mockResolvedValue(Response.json({ ok: true }));
+  /** A new response for each call: a response body can be read one time */
+  fetchMock.mockImplementation(async () => Response.json({ ok: true }));
   vi.stubGlobal("fetch", fetchMock);
 });
 

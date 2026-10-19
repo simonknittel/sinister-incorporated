@@ -7,24 +7,19 @@ import {
 } from "@sam-monorepo/domain";
 
 /**
- * Effective role ids and permission sets per citizen, with the same rule as
- * the session of the app (see `loadEffectivePermissionsOfCitizens()`). The
- * result has only the citizens that match `where`, are not deleted and have
- * role assignments.
- */
-export const loadEffectivePermissions = (where: Prisma.CitizenWhereInput) =>
-  loadEffectivePermissionsOfCitizens({ prisma }, where);
-
-/**
  * The effective permissions of the citizens that match `where`, are not
  * deleted and have each of the required permission sets through their
- * effective roles.
+ * effective roles. The effective roles follow the rule of the session of the
+ * app (see `loadEffectivePermissionsOfCitizens()`).
  */
 export const findCitizensWithPermissions = async (
   where: Prisma.CitizenWhereInput,
   requiredPermissionSets: readonly PermissionSet[],
 ) => {
-  const permissionsByCitizenId = await loadEffectivePermissions(where);
+  const permissionsByCitizenId = await loadEffectivePermissionsOfCitizens(
+    { prisma },
+    where,
+  );
 
   return new Map(
     Array.from(permissionsByCitizenId).filter(([, { permissionSets }]) =>

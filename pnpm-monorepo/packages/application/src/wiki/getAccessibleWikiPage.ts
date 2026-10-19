@@ -1,4 +1,15 @@
 import type { WikiPageTierPermissions } from "@sam-monorepo/domain";
+import type {
+  EventWikiContext,
+  EventWikiContextPage,
+} from "./eventWikiContext.js";
+import type { VariantWikiContext } from "./variantWikiContext.js";
+import type {
+  WikiContext,
+  WikiContextPage,
+  WikiSharedContextPage,
+} from "./wikiContext.js";
+import type { WikiScope } from "./wikiScope.js";
 
 /** The permission tiers of a wiki page */
 export enum WikiPageAccessTier {
@@ -7,33 +18,20 @@ export enum WikiPageAccessTier {
   Admin = "admin",
 }
 
-interface AccessiblePage {
-  readonly id: string;
-  readonly deletedAt: Date | null;
-}
-
-/**
- * Generic over the page type so the global and the event wiki context both
- * get their own page shape back.
- */
-interface AccessibleWikiPageContext<TPage extends AccessiblePage> {
-  readonly pagesById: ReadonlyMap<string, TPage>;
-  readonly permissions: ReadonlyMap<string, WikiPageTierPermissions>;
-}
-
-const hasTier = (
+/** Whether the permissions of a page give the tier */
+export const hasWikiPageTier = (
   permissions: WikiPageTierPermissions | undefined,
   tier: WikiPageAccessTier,
 ) => {
   switch (tier) {
     case WikiPageAccessTier.Read:
-      return permissions?.canRead;
+      return permissions?.canRead === true;
 
     case WikiPageAccessTier.Edit:
-      return permissions?.canEdit;
+      return permissions?.canEdit === true;
 
     case WikiPageAccessTier.Admin:
-      return permissions?.canAdmin;
+      return permissions?.canAdmin === true;
 
     default:
       throw new Error(`Unknown wiki page access tier: ${tier satisfies never}`);
@@ -41,20 +39,35 @@ const hasTier = (
 };
 
 /**
- * The page if it exists, is not trashed and the viewer holds the tier —
- * NULL otherwise, without distinguishing why: an unknown, trashed and
- * invisible page all look the same, so existence never leaks. Callers
- * needing separate missing-vs-forbidden responses keep their explicit
- * checks instead.
+ * The page if it exists, is not in the trash and the actor holds the tier,
+ * else null. The reason is not given: an unknown page, a page in the trash
+ * and a page that the actor cannot see look the same, thus the existence of
+ * a page never leaks. A scope of one kind gives the page type of that kind.
  */
-export const getAccessibleWikiPage = <TPage extends AccessiblePage>(
-  context: AccessibleWikiPageContext<TPage>,
+export function getAccessibleWikiPage(
+  scope: WikiContext | VariantWikiContext,
   pageId: string | null | undefined,
   tier: WikiPageAccessTier,
-): TPage | null => {
+): WikiContextPage | null;
+export function getAccessibleWikiPage(
+  scope: EventWikiContext,
+  pageId: string | null | undefined,
+  tier: WikiPageAccessTier,
+): EventWikiContextPage | null;
+export function getAccessibleWikiPage(
+  scope: WikiScope,
+  pageId: string | null | undefined,
+  tier: WikiPageAccessTier,
+): WikiSharedContextPage | null;
+export function getAccessibleWikiPage(
+  scope: WikiScope,
+  pageId: string | null | undefined,
+  tier: WikiPageAccessTier,
+): WikiSharedContextPage | null {
   if (!pageId) return null;
-  const page = context.pagesById.get(pageId);
+
+  const page = scope.pagesById.get(pageId);
   if (!page || page.deletedAt) return null;
 
-  return hasTier(context.permissions.get(page.id), tier) ? page : null;
-};
+  return hasWikiPageTier(scope.permissions.get(page.id), tier) ? page : null;
+}

@@ -2,8 +2,8 @@ import { prisma } from "@sam-monorepo/database";
 
 /**
  * Test fixtures for citizens with permissions, also for the two parts of the
- * effective-role rule (see `loadEffectivePermissions()`): the inherited roles
- * and the level gate.
+ * effective-role rule (see `findCitizensWithPermissions()`): the inherited
+ * roles and the level gate.
  */
 
 /** Each value above 1 is possible. It keeps level 1 below the maximum. */

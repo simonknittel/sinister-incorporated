@@ -14,10 +14,8 @@ import {
   paginateByCursor,
 } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
-import {
-  loadReadableWikiScope,
-  ReadableWikiScopeKind,
-} from "./readableWikiScope.js";
+import { loadReadableWikiScope } from "./readableWikiScope.js";
+import { WikiErrorMessage } from "./wikiErrors.js";
 import { canAddWikiChildren } from "./wikiPagePlacement.js";
 
 export const listWikiPagesInputSchema = z.object({
@@ -99,18 +97,12 @@ export const listWikiPages = (
 ): Promise<ListWikiPagesOutput> =>
   withSpan(context, "listWikiPages", async () => {
     const scope = await loadReadableWikiScope(context, actor, input.event_id);
-    const tree = buildVisibleWikiTree(
-      scope.context.pages,
-      scope.context.permissions,
-    );
+    const tree = buildVisibleWikiTree(scope.pages, scope.permissions);
 
-    const frozen =
-      scope.kind === ReadableWikiScopeKind.Event && scope.context.frozen;
-
-    let topNodes = tree;
+    let topNodes: readonly WikiTreeNode[] = tree;
     if (input.parent_id !== undefined) {
       const parent = findWikiTreeNode(tree, input.parent_id);
-      if (!parent) throw new NotFoundError("The parent page does not exist");
+      if (!parent) throw new NotFoundError(WikiErrorMessage.ParentPageNotFound);
       topNodes = parent.children;
     }
 
@@ -133,7 +125,7 @@ export const listWikiPages = (
         parent_id: parentId,
         depth,
         child_count: node.children.length,
-        can_add_children: canAddWikiChildren(scope.context, node.id, frozen),
+        can_add_children: canAddWikiChildren(scope, node.id),
       })),
       next_cursor: page.nextCursor,
     };

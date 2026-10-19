@@ -1,9 +1,8 @@
-import { WikiPageNamespace } from "@sam-monorepo/database/client";
+import { EventContainerKind } from "@sam-monorepo/domain";
 import { collectWikiPageLinkIds } from "@sam-monorepo/wiki-editor";
 import {
   buildWikiPageHref,
-  type WikiPageHrefBase,
-  type WikiPageLinkedPage,
+  type WikiLinkedPages,
 } from "@sam-monorepo/wiki-editor/helpers";
 import { renderWikiContentToMarkdown } from "@sam-monorepo/wiki-editor/markdown";
 import * as z from "zod";
@@ -13,10 +12,6 @@ import { NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import {
-  buildEventWikiContext,
-  hasReadableEventWikiRoot,
-} from "./eventWikiContext.js";
-import {
   getAccessibleWikiPage,
   WikiPageAccessTier,
 } from "./getAccessibleWikiPage.js";
@@ -24,17 +19,17 @@ import {
   loadWikiLinkedVariants,
   loadWikiMentionedCitizens,
 } from "./wikiContentReferences.js";
-import {
-  buildWikiContext,
-  type WikiSharedContext,
-  type WikiSharedContextPage,
-} from "./wikiContext.js";
+import { WikiErrorMessage } from "./wikiErrors.js";
 import { loadWikiIframeAllowlist } from "./wikiIframeAllowlist.js";
-import {
-  createEventWikiHrefBase,
-  GLOBAL_WIKI_HREF_BASE,
-} from "./wikiPagePath.js";
+import { loadWikiLinkablePages } from "./wikiPageContent.js";
 import { canAddWikiChildren } from "./wikiPagePlacement.js";
+import { findWikiPageTags } from "./wikiPageTags.js";
+import {
+  isHiddenBriefing,
+  loadWikiScopeOfPage,
+  type WikiPageScope,
+} from "./wikiScope.js";
+import { WikiScopeKind } from "./wikiScopeKind.js";
 
 export const getWikiPageInputSchema = z.object({
   page_id: idSchema,
@@ -69,84 +64,24 @@ export interface GetWikiPageOutput extends WikiPageReference {
   readonly can_add_children: boolean;
 }
 
-/** A wiki scope that the actor can read, with the routes of its pages */
-interface ReadableScope {
-  readonly context: WikiSharedContext;
-  readonly hrefBase: WikiPageHrefBase;
-  /** True for the briefing of an event that is over: it refuses all changes */
-  readonly frozen: boolean;
-}
-
 /**
- * The scopes whose pages the content of a page can link to, the scope of the
- * page first: an event page may link into the global wiki, never the other
- * way around.
+ * The scope of the page with the gate of the briefing layout. The
+ * briefings of the event templates are not available to the MCP tools.
  */
-const loadScopesOfPage = async (
+const loadReadableScopeOfPage = async (
   context: ApplicationContext,
   actor: Actor,
   pageId: string,
-): Promise<ReadableScope[]> => {
-  const record = await context.prisma.wikiPage.findUnique({
-    where: { id: pageId },
-    select: { namespace: true, eventId: true },
-  });
-  if (!record) throw new NotFoundError("The wiki page does not exist");
+): Promise<WikiPageScope | null> => {
+  const scope = await loadWikiScopeOfPage(context, actor, pageId);
+  if (!scope || isHiddenBriefing(scope)) return null;
+  if (
+    scope.kind === WikiScopeKind.Briefing &&
+    scope.container.kind !== EventContainerKind.Event
+  )
+    return null;
 
-  const globalScope = async (): Promise<ReadableScope> => ({
-    context: await buildWikiContext(context, actor),
-    hrefBase: GLOBAL_WIKI_HREF_BASE,
-    frozen: false,
-  });
-
-  switch (record.namespace) {
-    case WikiPageNamespace.WIKI:
-      return [await globalScope()];
-
-    case WikiPageNamespace.EVENT: {
-      // The briefing blueprints of the event templates are not available
-      const eventId = record.eventId;
-      if (!eventId) throw new NotFoundError("The wiki page does not exist");
-
-      const [eventContext, global] = await Promise.all([
-        buildEventWikiContext(context, actor, { event_id: eventId }),
-        globalScope(),
-      ]);
-      // The gate of the briefing layout
-      if (!eventContext || !hasReadableEventWikiRoot(eventContext))
-        throw new NotFoundError("The wiki page does not exist");
-
-      return [
-        {
-          context: eventContext,
-          hrefBase: createEventWikiHrefBase(eventId, eventContext.rootPage.id),
-          frozen: eventContext.frozen,
-        },
-        global,
-      ];
-    }
-
-    default:
-      throw new Error(
-        `Unknown wiki page namespace: ${record.namespace satisfies never}`,
-      );
-  }
-};
-
-const findReadablePage = (
-  scopes: readonly ReadableScope[],
-  pageId: string,
-): { page: WikiSharedContextPage; path: string } | null => {
-  for (const scope of scopes) {
-    const page = getAccessibleWikiPage(
-      scope.context,
-      pageId,
-      WikiPageAccessTier.Read,
-    );
-    if (page) return { page, path: buildWikiPageHref(scope.hrefBase, page) };
-  }
-
-  return null;
+  return scope;
 };
 
 /**
@@ -160,29 +95,20 @@ export const getWikiPage = (
   input: GetWikiPageInput,
 ): Promise<GetWikiPageOutput> =>
   withSpan(context, "getWikiPage", async () => {
-    const scopes = await loadScopesOfPage(context, actor, input.page_id);
-    const [ownScope] = scopes;
+    const scope = await loadReadableScopeOfPage(context, actor, input.page_id);
     const page =
-      ownScope &&
-      getAccessibleWikiPage(
-        ownScope.context,
-        input.page_id,
-        WikiPageAccessTier.Read,
-      );
-    if (!ownScope || !page)
-      throw new NotFoundError("The wiki page does not exist");
+      scope &&
+      getAccessibleWikiPage(scope, input.page_id, WikiPageAccessTier.Read);
+    if (!scope || !page) throw new NotFoundError(WikiErrorMessage.PageNotFound);
 
-    const [record, pageTags, iframeAllowlist] = await Promise.all([
+    const [record, tags, iframeAllowlist, linkablePages] = await Promise.all([
       context.prisma.wikiPage.findUnique({
         where: { id: page.id },
         select: { content: true },
       }),
-      context.prisma.wikiPageTag.findMany({
-        where: { pageId: page.id },
-        select: { tag: { select: { id: true, name: true } } },
-        orderBy: { tag: { name: "asc" } },
-      }),
+      findWikiPageTags(context, scope, page.id),
       loadWikiIframeAllowlist(context.prisma),
+      loadWikiLinkablePages(context, actor, scope),
     ]);
     const content = record?.content ?? null;
 
@@ -192,46 +118,35 @@ export const getWikiPage = (
         actor.authorize("citizen", "read"),
         content,
       ),
-      loadWikiLinkedVariants(
-        context.prisma,
-        content,
-        context.urls.publicUploadBaseUrl,
-      ),
+      loadWikiLinkedVariants(context, content),
     ]);
 
-    const linkedPages: Record<string, WikiPageLinkedPage | null> = {};
-    const linkedPageReferences: WikiPageReference[] = [];
-    for (const linkedPageId of collectWikiPageLinkIds(content)) {
-      const linked = findReadablePage(scopes, linkedPageId);
-      linkedPages[linkedPageId] = linked && {
-        title: linked.page.title,
-        slug: linked.page.slug,
-        href: linked.path,
-      };
-      if (linked)
-        linkedPageReferences.push({
-          id: linked.page.id,
-          title: linked.page.title,
-          path: linked.path,
-        });
-    }
-
-    const parent = getAccessibleWikiPage(
-      ownScope.context,
-      page.parentId,
-      WikiPageAccessTier.Read,
+    const linkedPageIds = collectWikiPageLinkIds(content);
+    const linkedPages: WikiLinkedPages = Object.fromEntries(
+      linkedPageIds.map((linkedPageId) => [
+        linkedPageId,
+        linkablePages.get(linkedPageId) ?? null,
+      ]),
     );
 
     return {
       id: page.id,
       title: page.title,
       slug: page.slug,
-      path: buildWikiPageHref(ownScope.hrefBase, page),
+      path: buildWikiPageHref(scope.hrefBase, page),
       icon_id: page.iconId,
-      parent_id: parent?.id ?? null,
+      parent_id:
+        getAccessibleWikiPage(scope, page.parentId, WikiPageAccessTier.Read)
+          ?.id ?? null,
       event_id: page.eventId,
-      tags: pageTags.map(({ tag }) => ({ id: tag.id, name: tag.name })),
-      linked_pages: linkedPageReferences,
+      tags,
+      linked_pages: linkedPageIds.flatMap((linkedPageId) => {
+        const linked = linkablePages.get(linkedPageId);
+
+        return linked
+          ? [{ id: linkedPageId, title: linked.title, path: linked.href }]
+          : [];
+      }),
       created_at: page.createdAt.toISOString(),
       updated_at: page.updatedAt.toISOString(),
       markdown: renderWikiContentToMarkdown(content, {
@@ -241,10 +156,6 @@ export const getWikiPage = (
         variants,
         iframeAllowlist,
       }),
-      can_add_children: canAddWikiChildren(
-        ownScope.context,
-        page.id,
-        ownScope.frozen,
-      ),
+      can_add_children: canAddWikiChildren(scope, page.id),
     };
   });

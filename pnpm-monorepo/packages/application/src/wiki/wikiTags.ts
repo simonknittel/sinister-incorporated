@@ -3,6 +3,8 @@ import {
   wikiContainerColumns,
   type EventContainer,
 } from "@sam-monorepo/domain";
+import { rethrowRecordNotFound } from "../errors.js";
+import { WikiErrorMessage } from "./wikiErrors.js";
 
 /**
  * Finds the tags of the given names in one scope and creates the missing
@@ -48,4 +50,92 @@ export const findOrCreateWikiTags = async (
     where: { name: { in: [...names] }, ...scopeColumns },
     select: { id: true, name: true },
   });
+};
+
+/**
+ * The copy of the tag names of a page for the full-text search (see
+ * `WikiPage.tagsText`)
+ */
+export const toWikiPageTagsText = (names: readonly string[]) =>
+  names.toSorted((first, second) => first.localeCompare(second)).join(" ");
+
+interface WikiPageTags {
+  readonly pageId: string;
+  /** The complete set of tags. A tag that is not in it is removed. */
+  readonly names: readonly string[];
+  /** The scope of the tags: the container of the page, or null */
+  readonly container: EventContainer | null;
+  /** The citizen that creates the tags and the assignments */
+  readonly createdById: string | null;
+}
+
+/**
+ * Replaces the tags of a page with the tags of the names, on the transaction
+ * of the caller. The tags are found or created in the scope of the page
+ * (see `findOrCreateWikiTags()`). A tag whose last assignment goes away here
+ * is deleted at once, thus the autocomplete stays clean. The page gets the
+ * new `tagsText`. Without a change, nothing is written.
+ *
+ * @returns the names of the added and of the removed tags
+ * @throws NotFoundError when the page is gone or in the trash
+ */
+export const setWikiPageTags = async (
+  transaction: Prisma.TransactionClient,
+  { pageId, names, container, createdById }: WikiPageTags,
+): Promise<{ readonly added: string[]; readonly removed: string[] }> => {
+  const requestedTags = await findOrCreateWikiTags(
+    transaction,
+    names,
+    container,
+    createdById,
+  );
+  const currentAssignments = await transaction.wikiPageTag.findMany({
+    where: { pageId },
+    select: { id: true, tagId: true, tag: { select: { name: true } } },
+  });
+
+  const requestedTagIds = new Set(requestedTags.map((tag) => tag.id));
+  const currentTagIds = new Set(
+    currentAssignments.map((assignment) => assignment.tagId),
+  );
+  const removedAssignments = currentAssignments.filter(
+    (assignment) => !requestedTagIds.has(assignment.tagId),
+  );
+  const addedTags = requestedTags.filter((tag) => !currentTagIds.has(tag.id));
+  if (removedAssignments.length === 0 && addedTags.length === 0)
+    return { added: [], removed: [] };
+
+  await transaction.wikiPageTag.deleteMany({
+    where: {
+      id: { in: removedAssignments.map((assignment) => assignment.id) },
+    },
+  });
+  await transaction.wikiPageTag.createMany({
+    data: addedTags.map((tag) => ({ pageId, tagId: tag.id, createdById })),
+    skipDuplicates: true,
+  });
+  /** After the delete of the assignments: else the tags are not orphans yet */
+  await transaction.wikiTag.deleteMany({
+    where: {
+      id: { in: removedAssignments.map((assignment) => assignment.tagId) },
+      pages: { none: {} },
+    },
+  });
+  await rethrowRecordNotFound(
+    () =>
+      transaction.wikiPage.update({
+        where: { id: pageId, deletedAt: null },
+        data: {
+          tagsText: toWikiPageTagsText(requestedTags.map((tag) => tag.name)),
+          updatedById: createdById,
+        },
+        select: { id: true },
+      }),
+    WikiErrorMessage.PageNotFound,
+  );
+
+  return {
+    added: addedTags.map((tag) => tag.name),
+    removed: removedAssignments.map((assignment) => assignment.tag.name),
+  };
 };

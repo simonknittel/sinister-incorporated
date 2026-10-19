@@ -5,7 +5,7 @@ import {
   type WikiLinkedVariant,
   type WikiMentionedCitizen,
 } from "@sam-monorepo/wiki-editor";
-import type { ApplicationContext } from "../context.js";
+import { getPublicUploadUrl, type ApplicationContext } from "../context.js";
 
 /**
  * Resolvers for the references that the content of a page can carry
@@ -52,23 +52,19 @@ export const loadWikiMentionedCitizens = async (
 };
 
 /**
- * Current names and manufacturer logos of the variants linked in the
- * content, so links follow renames. Deliberately not permission-filtered:
- * the wiki shows every reader which ship is meant — only the variant page
- * itself stays gated.
- *
- * @param publicUploadBaseUrl The public base URL of the uploads, for the
- * logos
+ * The current names and manufacturer logos of the variants that the content
+ * links to, thus the links follow a rename. There is no permission filter:
+ * the wiki shows each reader which ship the content means. Only the page of
+ * the variant has a gate.
  */
 export const loadWikiLinkedVariants = async (
-  prisma: ApplicationContext["prisma"],
+  context: Pick<ApplicationContext, "prisma" | "urls">,
   content: unknown,
-  publicUploadBaseUrl: string,
 ): Promise<Record<string, WikiLinkedVariant>> => {
   const linkedVariantIds = collectWikiVariantLinkIds(content);
   if (linkedVariantIds.length === 0) return {};
 
-  const variants = await prisma.variant.findMany({
+  const variants = await context.prisma.variant.findMany({
     where: { id: { in: linkedVariantIds } },
     select: {
       id: true,
@@ -97,7 +93,7 @@ export const loadWikiLinkedVariants = async (
           manufacturerName: manufacturer.name,
           logo: manufacturer.image
             ? {
-                src: `${publicUploadBaseUrl}/${manufacturer.image.id}`,
+                src: getPublicUploadUrl(context.urls, manufacturer.image.id),
                 mimeType: manufacturer.image.mimeType,
               }
             : undefined,

@@ -1,4 +1,3 @@
-import type { WikiPageTierPermissions } from "@sam-monorepo/domain";
 import {
   collectWikiImageUploadIds,
   collectWikiPageIndexConfigs,
@@ -9,27 +8,24 @@ import {
   type WikiLinkedPages,
   type WikiLinkedVariant,
   type WikiMentionedCitizen,
-  type WikiPageHrefBase,
   type WikiPageLinkedPage,
 } from "@sam-monorepo/wiki-editor/helpers";
 import type { Actor } from "../actor.js";
-import type { ApplicationContext } from "../context.js";
+import { getPublicUploadUrl, type ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
 import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
+import type { WikiCitizen } from "./wikiCitizen.js";
 import {
   loadWikiLinkedVariants,
   loadWikiMentionedCitizens,
 } from "./wikiContentReferences.js";
-import { buildWikiContext, type WikiSharedContextPage } from "./wikiContext.js";
+import { buildWikiContext } from "./wikiContext.js";
 import { loadWikiIframeAllowlist } from "./wikiIframeAllowlist.js";
 import {
   resolveWikiPageIndex,
   type WikiPageIndexEntry,
 } from "./wikiPageIndex.js";
-import {
-  loadWikiRoleCitizensByRole,
-  type WikiRoleCitizen,
-} from "./wikiRoleCitizens.js";
+import { loadWikiRoleCitizensByRole } from "./wikiRoleCitizens.js";
 import {
   findReadableWikiScope,
   requireAccessibleWikiPage,
@@ -65,7 +61,7 @@ export interface WikiPageStaticContent {
   /** The pages of each page-index node, by the key of its config */
   readonly pageIndexes: Readonly<Record<string, WikiPageIndexEntry[]>>;
   /** The citizens of each role-members node, by role */
-  readonly roleCitizens: Readonly<Record<string, WikiRoleCitizen[]>>;
+  readonly roleCitizens: Readonly<Record<string, WikiCitizen[]>>;
   /**
    * The sizes of the uploaded images of the content, by upload. An upload
    * without a known size is not in the record: its image renders as a plain
@@ -74,48 +70,10 @@ export interface WikiPageStaticContent {
   readonly imageDimensions: Readonly<Record<string, WikiImageDimensions>>;
 }
 
-/** The part of a wiki scope that gives linkable pages */
-interface LinkableWikiScope {
-  readonly hrefBase: WikiPageHrefBase;
-  /** Pages that are not in the trash */
-  readonly pages: readonly WikiSharedContextPage[];
-  readonly permissions: ReadonlyMap<string, WikiPageTierPermissions>;
+/** A page that a link can point to, with its route */
+interface WikiLinkablePage extends WikiPageLinkedPage {
+  href: string;
 }
-
-/** The same URL as `getPublicUploadUrl()` of the app */
-const getPublicUploadUrl = (publicUploadBaseUrl: string, uploadId: string) =>
-  new URL(encodeURIComponent(uploadId), `${publicUploadBaseUrl}/`).toString();
-
-/**
- * The pages that the pages of the scopes can link to, by id: the pages that
- * the actor can read, each with the route of its scope. A later scope
- * replaces the entry of an earlier scope. The pages that the actor cannot
- * read are not in the map, thus their titles do not leak.
- */
-const collectWikiLinkablePages = (
-  publicUploadBaseUrl: string,
-  scopes: readonly LinkableWikiScope[],
-): Map<string, WikiPageLinkedPage> =>
-  new Map(
-    scopes.flatMap((scope) =>
-      scope.pages
-        .filter((page) => scope.permissions.get(page.id)?.canRead)
-        .map(
-          (page) =>
-            [
-              page.id,
-              {
-                title: page.title,
-                slug: page.slug,
-                iconSrc: page.iconId
-                  ? getPublicUploadUrl(publicUploadBaseUrl, page.iconId)
-                  : undefined,
-                href: buildWikiPageHref(scope.hrefBase, page),
-              },
-            ] as const,
-        ),
-    ),
-  );
 
 /**
  * The scopes whose pages a page of the scope can link to, the scope itself
@@ -128,7 +86,7 @@ const loadLinkableWikiScopes = async (
   context: ApplicationContext,
   actor: Actor,
   scope: WikiScope,
-): Promise<LinkableWikiScope[]> => {
+): Promise<WikiScope[]> => {
   switch (scope.kind) {
     case WikiScopeKind.Wiki:
       return [scope];
@@ -145,6 +103,40 @@ const loadLinkableWikiScopes = async (
 };
 
 /**
+ * The pages that a page of the scope can link to, by id: the pages that the
+ * actor can read, each with the route of its scope (see
+ * `loadLinkableWikiScopes()`). A later scope replaces the entry of an
+ * earlier scope. The pages that the actor cannot read are not in the map,
+ * thus their titles do not leak.
+ */
+export const loadWikiLinkablePages = async (
+  context: ApplicationContext,
+  actor: Actor,
+  scope: WikiScope,
+): Promise<Map<string, WikiLinkablePage>> =>
+  new Map(
+    (await loadLinkableWikiScopes(context, actor, scope)).flatMap(
+      (linkableScope) =>
+        linkableScope.pages
+          .filter((page) => linkableScope.permissions.get(page.id)?.canRead)
+          .map(
+            (page) =>
+              [
+                page.id,
+                {
+                  title: page.title,
+                  slug: page.slug,
+                  iconSrc: page.iconId
+                    ? getPublicUploadUrl(context.urls, page.iconId)
+                    : undefined,
+                  href: buildWikiPageHref(linkableScope.hrefBase, page),
+                },
+              ] as const,
+          ),
+    ),
+  );
+
+/**
  * All pages that a page of the scope can link to, by id, for the "[["
  * suggestion of the editor and for the links that the editor adds after the
  * render. A scope that the actor cannot hold gives no pages.
@@ -157,12 +149,7 @@ export const findWikiLinkablePages = async (
   const scope = await findReadableWikiScope(context, actor, target);
   if (!scope) return {};
 
-  return Object.fromEntries(
-    collectWikiLinkablePages(
-      context.urls.publicUploadBaseUrl,
-      await loadLinkableWikiScopes(context, actor, scope),
-    ),
-  );
+  return Object.fromEntries(await loadWikiLinkablePages(context, actor, scope));
 };
 
 /** The sizes of the uploaded images of the content that have a known size */
@@ -211,13 +198,9 @@ export const findWikiPageContent = (
   pageId: string,
 ): Promise<WikiPageStaticContent> =>
   withSpan(context, "findWikiPageContent", async () => {
-    requireAccessibleWikiPage<WikiSharedContextPage>(
-      scope,
-      pageId,
-      WikiPageAccessTier.Read,
-    );
+    requireAccessibleWikiPage(scope, pageId, WikiPageAccessTier.Read);
 
-    const [page, iframeAllowlist, linkableScopes] = await Promise.all([
+    const [page, iframeAllowlist, linkablePages] = await Promise.all([
       /**
        * The scopes do not hold the content: they load all pages on each
        * request of the wiki
@@ -227,14 +210,10 @@ export const findWikiPageContent = (
         select: { content: true },
       }),
       loadWikiIframeAllowlist(context.prisma),
-      loadLinkableWikiScopes(context, actor, scope),
+      loadWikiLinkablePages(context, actor, scope),
     ]);
     const content = page?.content;
 
-    const linkablePages = collectWikiLinkablePages(
-      context.urls.publicUploadBaseUrl,
-      linkableScopes,
-    );
     const linkedPages: WikiLinkedPages = Object.fromEntries(
       collectWikiPageLinkIds(content).map((linkedPageId) => [
         linkedPageId,
@@ -263,11 +242,7 @@ export const findWikiPageContent = (
         actor.authorize("citizen", "read"),
         content,
       ),
-      loadWikiLinkedVariants(
-        context.prisma,
-        content,
-        context.urls.publicUploadBaseUrl,
-      ),
+      loadWikiLinkedVariants(context, content),
       loadWikiRoleCitizensByRole(context, actor, content),
       loadWikiImageDimensions(context, content),
     ]);

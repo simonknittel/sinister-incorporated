@@ -1,21 +1,9 @@
-import type { Citizen } from "@sam-monorepo/database/client";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
 import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
-import type { WikiContext } from "./wikiContext.js";
-import { WikiErrorMessage } from "./wikiErrors.js";
-import { loadWikiScope, requireAccessibleWikiPage } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
-
-/** A citizen in the header and in the details of a wiki page */
-export type WikiPageCitizen = Pick<Citizen, "id" | "handle" | "deletedAt">;
-
-const WIKI_PAGE_CITIZEN_SELECT = {
-  id: true,
-  handle: true,
-  deletedAt: true,
-} as const;
+import { WIKI_CITIZEN_SELECT, type WikiCitizen } from "./wikiCitizen.js";
+import { buildWikiContext, type WikiContext } from "./wikiContext.js";
+import { requireAccessibleWikiPage } from "./wikiScope.js";
 
 /**
  * The effective owner of the page: its own owner or the owner that it
@@ -29,7 +17,7 @@ export const findWikiPageOwner = async (
   context: Pick<ApplicationContext, "prisma">,
   scope: WikiContext,
   pageId: string,
-): Promise<WikiPageCitizen | null> => {
+): Promise<WikiCitizen | null> => {
   requireAccessibleWikiPage(scope, pageId, WikiPageAccessTier.Read);
 
   const effectiveOwnerId = scope.permissions.get(pageId)?.effectiveOwnerId;
@@ -37,22 +25,22 @@ export const findWikiPageOwner = async (
 
   return context.prisma.citizen.findUnique({
     where: { id: effectiveOwnerId },
-    select: WIKI_PAGE_CITIZEN_SELECT,
+    select: WIKI_CITIZEN_SELECT,
   });
 };
 
 export interface WikiPageDetails {
   readonly title: string;
-  readonly owner: WikiPageCitizen | null;
+  readonly owner: WikiCitizen | null;
   /** The ancestor that gives the owner, or null for an own owner */
   readonly ownerInheritedFrom: {
     readonly id: string;
     readonly title: string;
     readonly slug: string;
   } | null;
-  readonly createdBy: WikiPageCitizen | null;
+  readonly createdBy: WikiCitizen | null;
   readonly createdAt: Date;
-  readonly updatedBy: WikiPageCitizen | null;
+  readonly updatedBy: WikiCitizen | null;
   readonly updatedAt: Date;
 }
 
@@ -69,25 +57,19 @@ export const findWikiPageDetails = async (
   actor: Actor,
   { pageId }: { readonly pageId: string },
 ): Promise<WikiPageDetails> => {
-  const scope = await loadWikiScope(context, actor, {
-    kind: WikiScopeKind.Wiki,
-  });
-  if (!scope) throw new NotFoundError(WikiErrorMessage.PageNotFound);
-
+  const scope = await buildWikiContext(context, actor);
   const page = requireAccessibleWikiPage(
     scope,
     pageId,
     WikiPageAccessTier.Read,
   );
-  const permissions = scope.permissions.get(page.id);
-  if (!permissions) throw new NotFoundError(WikiErrorMessage.PageNotFound);
 
   const [authors, owner] = await Promise.all([
     context.prisma.wikiPage.findUnique({
       where: { id: page.id },
       select: {
-        createdBy: { select: WIKI_PAGE_CITIZEN_SELECT },
-        updatedBy: { select: WIKI_PAGE_CITIZEN_SELECT },
+        createdBy: { select: WIKI_CITIZEN_SELECT },
+        updatedBy: { select: WIKI_CITIZEN_SELECT },
       },
     }),
     findWikiPageOwner(context, scope, page.id),
@@ -98,10 +80,12 @@ export const findWikiPageDetails = async (
    * parent, thus each reader of the page can also read the ancestor that
    * gives the owner
    */
+  const ownerSourceId =
+    scope.permissions.get(page.id)?.ownerSourceId ?? page.id;
   const ownerSource =
-    permissions.ownerSourceId === page.id
+    ownerSourceId === page.id
       ? null
-      : (scope.pagesById.get(permissions.ownerSourceId) ?? null);
+      : (scope.pagesById.get(ownerSourceId) ?? null);
 
   return {
     title: page.title,

@@ -8,17 +8,8 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { idSchema, pageLimitSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
-import {
-  loadReadableWikiScope,
-  ReadableWikiScopeKind,
-  type ReadableWikiScope,
-} from "./readableWikiScope.js";
-import {
-  buildContainerWikiSearchFilters,
-  GLOBAL_WIKI_SEARCH_FILTERS,
-  queryWikiSearch,
-  WikiSearchContainerColumn,
-} from "./wikiSearchQuery.js";
+import { loadReadableWikiScope } from "./readableWikiScope.js";
+import { queryWikiSearch } from "./wikiSearchQuery.js";
 
 export const searchWikiInputSchema = z.object({
   query: z.string().trim().min(2).max(200),
@@ -46,22 +37,6 @@ export interface SearchWikiOutput {
   readonly tags: { readonly id: string; readonly name: string }[];
 }
 
-const toSearchFilters = (scope: ReadableWikiScope) => {
-  switch (scope.kind) {
-    case ReadableWikiScopeKind.Wiki:
-      return GLOBAL_WIKI_SEARCH_FILTERS;
-
-    case ReadableWikiScopeKind.Event:
-      return buildContainerWikiSearchFilters(
-        WikiSearchContainerColumn.EventId,
-        scope.eventId,
-      );
-
-    default:
-      throw new Error(`Unknown wiki scope: ${scope satisfies never}`);
-  }
-};
-
 /**
  * Full-text search over the pages that the actor can read and over the tags
  * of the global wiki or of the briefing of an event
@@ -73,34 +48,21 @@ export const searchWiki = (
 ): Promise<SearchWikiOutput> =>
   withSpan(context, "searchWiki", async () => {
     const scope = await loadReadableWikiScope(context, actor, input.event_id);
-
-    const readablePageIds = [...scope.context.permissions]
-      .filter(([, permissions]) => permissions.canRead)
-      .map(([pageId]) => pageId);
-
     const result = await queryWikiSearch(context.prisma, {
       query: input.query,
-      readablePageIds,
-      filters: toSearchFilters(scope),
+      scope,
       pageLimit: input.limit,
     });
 
-    const pages = result.pages.flatMap((match) => {
-      const page = scope.context.pagesById.get(match.id);
-      if (!page) return [];
-
-      return [
-        {
-          id: page.id,
-          title: page.title,
-          path: buildWikiPageHref(scope.hrefBase, page),
-          snippet: match.snippet
-            .replaceAll(WIKI_SEARCH_MARK_START, "**")
-            .replaceAll(WIKI_SEARCH_MARK_END, "**"),
-          matched_tags: match.matchedTags,
-        },
-      ];
-    });
+    const pages = result.pages.map(({ page, snippet, matchedTags }) => ({
+      id: page.id,
+      title: page.title,
+      path: buildWikiPageHref(scope.hrefBase, page),
+      snippet: snippet
+        .replaceAll(WIKI_SEARCH_MARK_START, "**")
+        .replaceAll(WIKI_SEARCH_MARK_END, "**"),
+      matched_tags: matchedTags,
+    }));
 
     return {
       pages,

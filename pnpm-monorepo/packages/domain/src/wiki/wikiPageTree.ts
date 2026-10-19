@@ -30,6 +30,30 @@ export const collectWikiPageDescendants = (
   return descendants;
 };
 
+/**
+ * Collects the ancestor ids of a page, the direct parent first, up to the
+ * top of the tree. The map gives the parents: an ancestor that is not in the
+ * map ends the walk. Cycle-safe.
+ */
+export const collectWikiPageAncestors = (
+  pagesById: ReadonlyMap<string, WikiTreePage>,
+  page: WikiTreePage,
+): string[] => {
+  const ancestors: string[] = [];
+  const visited = new Set<string>([page.id]);
+  let current =
+    page.parentId === null ? undefined : pagesById.get(page.parentId);
+
+  while (current && !visited.has(current.id)) {
+    visited.add(current.id);
+    ancestors.push(current.id);
+    current =
+      current.parentId === null ? undefined : pagesById.get(current.parentId);
+  }
+
+  return ancestors;
+};
+
 export interface VisibleWikiSubtreeEntry<Page extends WikiTreePage> {
   readonly page: Page;
   /** The subtree page it hangs under, always emitted before the page itself */

@@ -1,8 +1,4 @@
-import {
-  EventContainerKind,
-  toEventContainer,
-  type EventContainer,
-} from "@sam-monorepo/domain";
+import { EventContainerKind, type EventContainer } from "@sam-monorepo/domain";
 import type { WikiPageHrefBase } from "@sam-monorepo/wiki-editor/helpers";
 
 /**
@@ -45,13 +41,6 @@ export const createBriefingWikiHrefBase = (
   rootPageId,
   rootHref: null,
 });
-
-/** The briefing of an event */
-export const createEventWikiHrefBase = (
-  eventId: string,
-  rootPageId: string | null,
-): WikiPageHrefBase =>
-  createBriefingWikiHrefBase(toEventContainer(eventId), rootPageId);
 
 /**
  * The subtree of the global wiki that a fleet variant embeds: its root page

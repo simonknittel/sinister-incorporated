@@ -1,6 +1,6 @@
 import {
   AuditEventType,
-  WIKI_PAGE_CONTENT_JSON_MAX_LENGTH,
+  WIKI_PAGE_CONTENT_JSON_MAXIMUM_LENGTH,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
@@ -13,17 +13,17 @@ import {
 } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
-import { canTransferWikiPageContent } from "./exportWikiPageContent.js";
 import { normalizeWikiContent } from "./wikiContentNormalization.js";
 import { DisallowedWikiIframesError, WikiErrorMessage } from "./wikiErrors.js";
 import { findDisallowedWikiIframeSources } from "./wikiIframeAllowlist.js";
-import { createWikiPageSafetySnapshot } from "./wikiPageSafetySnapshot.js";
+import { canTransferWikiPageContent } from "./wikiPageAdminGuard.js";
+import { replaceWikiPageContentWithSafetySnapshot } from "./wikiPageSafetySnapshot.js";
 import { isWikiScopeFrozen, loadWikiScopeOfPage } from "./wikiScope.js";
 
 export const importWikiPageContentInputSchema = z.object({
   page_id: idSchema,
   /** The text of the file: a Tiptap JSON document */
-  content: z.string().max(WIKI_PAGE_CONTENT_JSON_MAX_LENGTH),
+  content: z.string().max(WIKI_PAGE_CONTENT_JSON_MAXIMUM_LENGTH),
 });
 
 export type ImportWikiPageContentInput = z.output<
@@ -90,26 +90,13 @@ export const importWikiPageContent = (
     if (disallowedSources.length > 0)
       throw new DisallowedWikiIframesError(disallowedSources);
 
-    const { collab } = context;
-    if (!collab) throw new ConflictError(WikiErrorMessage.CollabNotConfigured);
-
-    const updatedByEntityId = actor.citizen?.id ?? null;
-    await createWikiPageSafetySnapshot(context, {
+    await replaceWikiPageContentWithSafetySnapshot(context, {
       pageId: page.id,
-      name: options.safetySnapshotName,
-      createdById: updatedByEntityId,
+      content,
+      updatedByEntityId: actor.citizen?.id ?? null,
+      safetySnapshotName: options.safetySnapshotName,
+      failureMessage: WikiErrorMessage.ImportFailed,
     });
-
-    try {
-      await collab.replaceContent({
-        pageId: page.id,
-        content,
-        updatedByEntityId,
-      });
-    } catch (error) {
-      context.log.error("Wiki content import failed", { error });
-      throw new ConflictError(WikiErrorMessage.ImportFailed, { cause: error });
-    }
 
     await context.audit.create([
       {

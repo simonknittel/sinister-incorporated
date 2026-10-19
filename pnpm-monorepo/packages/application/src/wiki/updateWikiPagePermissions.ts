@@ -5,34 +5,33 @@ import {
   WikiPageVisibility,
 } from "@sam-monorepo/database/client";
 import {
-  AuditEventType,
   collectWikiPageDescendants,
   createWikiPagePermissionResolver,
   resolveWikiPageReadRoleIds,
-  type AuditEventInput,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import {
-  ForbiddenError,
-  NotFoundError,
-  ValidationError,
-  rethrowRecordNotFound,
-} from "../errors.js";
+import { NotFoundError, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
 import type { WikiContextPage } from "./wikiContext.js";
 import {
   WikiErrorMessage,
   WikiRolesCannotReadParentError,
 } from "./wikiErrors.js";
+import {
+  buildWikiPagePermissionsAuditEvents,
+  runWikiPagePermissionsBatch,
+  type WikiPagePermissionsWrite,
+} from "./wikiPagePermissionsWrite.js";
 import { collectWikiPageRolePrunes } from "./wikiPageRolePrunes.js";
 import {
   findWikiPermissionRoles,
   toWikiPageViewerOfCitizen,
 } from "./wikiPermissionRoles.js";
-import { loadWikiScope } from "./wikiScope.js";
+import { requireWikiPageOfScope } from "./wikiScope.js";
 import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /** Where the owner of a page comes from */
@@ -89,9 +88,6 @@ export interface UpdateWikiPagePermissionsOutput {
   readonly pruned_page_count: number;
 }
 
-/** The audit value of a tier that a cascade does not change */
-const UNCHANGED_TIER = "unchanged";
-
 /**
  * Updates the permissions and the owner of a page of the global wiki, and
  * optionally of all its descendants
@@ -109,14 +105,15 @@ export const updateWikiPagePermissions = (
   input: UpdateWikiPagePermissionsInput,
 ): Promise<UpdateWikiPagePermissionsOutput> =>
   withSpan(context, "updateWikiPagePermissions", async () => {
-    const scope = await loadWikiScope(context, actor, {
-      kind: WikiScopeKind.Wiki,
-    });
-    const page = scope?.pagesById.get(input.page_id);
-    if (!scope || !page || page.deletedAt)
+    const { scope, page } = await requireWikiPageOfScope(
+      context,
+      actor,
+      input.page_id,
+      WikiPageAccessTier.Admin,
+    );
+    /** A page of a briefing has its own use case */
+    if (scope.kind !== WikiScopeKind.Wiki)
       throw new NotFoundError(WikiErrorMessage.PageNotFound);
-    if (!scope.permissions.get(page.id)?.canAdmin)
-      throw new ForbiddenError("The actor cannot manage the wiki page");
 
     /**
      * A top-level page cannot inherit: there is nothing to inherit from. A
@@ -236,13 +233,6 @@ export const updateWikiPagePermissions = (
      */
     const descendantIds = collectWikiPageDescendants(scope.pages, page.id);
 
-    const anyCascade =
-      input.cascade_visibility ||
-      input.cascade_editability ||
-      input.cascade_admin_roles ||
-      input.cascade_image_uploadability ||
-      input.cascade_attachment_uploadability;
-
     const ownerCascadeIds = input.cascade_owner
       ? descendantIds.filter((id) => scope.pagesById.get(id)?.ownerId !== null)
       : [];
@@ -308,186 +298,25 @@ export const updateWikiPagePermissions = (
       collectWikiPageDescendants(scope.allPages, page.id),
     );
 
-    const { prisma } = context;
-    const hasDescendants = descendantIds.length > 0;
-    await rethrowRecordNotFound(
-      () =>
-        prisma.$transaction([
-          prisma.wikiPage.update({
-            where: { id: page.id },
-            data: {
-              visibility: input.visibility,
-              editability: input.editability,
-              imageUploadability: input.image_uploadability,
-              attachmentUploadability: input.attachment_uploadability,
-              ownerId: newOwnerId,
-              updatedById: actor.citizen?.id ?? null,
-            },
-          }),
-          ...(ownerCascadeIds.length > 0
-            ? [
-                prisma.wikiPage.updateMany({
-                  where: { id: { in: ownerCascadeIds } },
-                  data: { ownerId: null },
-                }),
-              ]
-            : []),
-          prisma.wikiPageRoleAccess.deleteMany({ where: { pageId: page.id } }),
-          prisma.wikiPageRoleAccess.createMany({ data: roleAccess }),
-          ...(hasDescendants && input.cascade_visibility
-            ? [
-                prisma.wikiPage.updateMany({
-                  where: { id: { in: descendantIds } },
-                  data: { visibility: WikiPageVisibility.INHERIT },
-                }),
-                prisma.wikiPageRoleAccess.deleteMany({
-                  where: {
-                    pageId: { in: descendantIds },
-                    type: WikiPageAccessType.READ,
-                  },
-                }),
-              ]
-            : []),
-          ...(hasDescendants && input.cascade_editability
-            ? [
-                prisma.wikiPage.updateMany({
-                  where: { id: { in: descendantIds } },
-                  data: { editability: WikiPageEditability.INHERIT },
-                }),
-                prisma.wikiPageRoleAccess.deleteMany({
-                  where: {
-                    pageId: { in: descendantIds },
-                    type: WikiPageAccessType.EDIT,
-                  },
-                }),
-              ]
-            : []),
-          /** Manage has no tier to reset, only the additional manager roles */
-          ...(hasDescendants && input.cascade_admin_roles
-            ? [
-                prisma.wikiPageRoleAccess.deleteMany({
-                  where: {
-                    pageId: { in: descendantIds },
-                    type: WikiPageAccessType.ADMIN,
-                  },
-                }),
-              ]
-            : []),
-          /** The upload tiers have no role lists to remove */
-          ...(hasDescendants && input.cascade_image_uploadability
-            ? [
-                prisma.wikiPage.updateMany({
-                  where: { id: { in: descendantIds } },
-                  data: { imageUploadability: WikiPageUploadability.INHERIT },
-                }),
-              ]
-            : []),
-          ...(hasDescendants && input.cascade_attachment_uploadability
-            ? [
-                prisma.wikiPage.updateMany({
-                  where: { id: { in: descendantIds } },
-                  data: {
-                    attachmentUploadability: WikiPageUploadability.INHERIT,
-                  },
-                }),
-              ]
-            : []),
-          ...(prunes.length > 0
-            ? [
-                prisma.wikiPageRoleAccess.deleteMany({
-                  where: {
-                    OR: prunes.map((prune) => ({
-                      pageId: prune.pageId,
-                      roleId: { in: prune.roleIds },
-                    })),
-                  },
-                }),
-              ]
-            : []),
-        ]),
-      WikiErrorMessage.PageNotFound,
+    const write: WikiPagePermissionsWrite = {
+      input,
+      pageId: page.id,
+      pagesById: scope.pagesById,
+      readRoleIds,
+      roleAccess,
+      newOwnerId,
+      descendantIds,
+      ownerCascadeIds,
+      prunes,
+    };
+    await runWikiPagePermissionsBatch(
+      context,
+      write,
+      actor.citizen?.id ?? null,
     );
-
-    const auditEvents: AuditEventInput[] = [
-      {
-        type: AuditEventType.WIKI_PAGE_PERMISSIONS_UPDATED,
-        data: {
-          pageId: page.id,
-          visibility: input.visibility,
-          editability: input.editability,
-          imageUploadability: input.image_uploadability,
-          attachmentUploadability: input.attachment_uploadability,
-          readRoleIds,
-          /**
-           * The system log keeps these two lists as the form sent them,
-           * with duplicates
-           */
-          editRoleIds: input.edit_role_ids,
-          adminRoleIds: input.admin_role_ids,
-          cascaded: false,
-        },
-        createdById: actor.userId,
-      },
-      ...(anyCascade
-        ? descendantIds.map((id): AuditEventInput => ({
-            type: AuditEventType.WIKI_PAGE_PERMISSIONS_UPDATED,
-            data: {
-              pageId: id,
-              visibility: input.cascade_visibility
-                ? WikiPageVisibility.INHERIT
-                : UNCHANGED_TIER,
-              editability: input.cascade_editability
-                ? WikiPageEditability.INHERIT
-                : UNCHANGED_TIER,
-              imageUploadability: input.cascade_image_uploadability
-                ? WikiPageUploadability.INHERIT
-                : UNCHANGED_TIER,
-              attachmentUploadability: input.cascade_attachment_uploadability
-                ? WikiPageUploadability.INHERIT
-                : UNCHANGED_TIER,
-              readRoleIds: [],
-              editRoleIds: [],
-              adminRoleIds: [],
-              cascaded: true,
-            },
-            createdById: actor.userId,
-          }))
-        : []),
-      ...prunes.map((prune): AuditEventInput => ({
-        type: AuditEventType.WIKI_PAGE_ROLE_ACCESS_PRUNED,
-        data: {
-          pageId: prune.pageId,
-          removedRoleIds: prune.roleIds,
-          trigger: "PERMISSIONS_UPDATED",
-        },
-        createdById: actor.userId,
-      })),
-      ...(newOwnerId !== page.ownerId
-        ? [
-            {
-              type: AuditEventType.WIKI_PAGE_OWNERSHIP_TRANSFERRED,
-              data: {
-                pageId: page.id,
-                previousOwnerId: page.ownerId,
-                newOwnerId,
-                cascaded: false,
-              },
-              createdById: actor.userId,
-            } satisfies AuditEventInput,
-          ]
-        : []),
-      ...ownerCascadeIds.map((id): AuditEventInput => ({
-        type: AuditEventType.WIKI_PAGE_OWNERSHIP_TRANSFERRED,
-        data: {
-          pageId: id,
-          previousOwnerId: scope.pagesById.get(id)?.ownerId ?? null,
-          newOwnerId: null,
-          cascaded: true,
-        },
-        createdById: actor.userId,
-      })),
-    ];
-    await context.audit.create(auditEvents);
+    await context.audit.create(
+      buildWikiPagePermissionsAuditEvents(write, actor.userId),
+    );
 
     return { page_id: page.id, pruned_page_count: prunes.length };
   });

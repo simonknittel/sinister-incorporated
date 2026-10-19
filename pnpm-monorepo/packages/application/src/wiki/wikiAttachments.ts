@@ -5,7 +5,6 @@ import {
   getAccessibleWikiPage,
   WikiPageAccessTier,
 } from "./getAccessibleWikiPage.js";
-import type { WikiSharedContextPage } from "./wikiContext.js";
 import { WikiErrorMessage } from "./wikiErrors.js";
 import { loadWikiScopeOfPage } from "./wikiScope.js";
 
@@ -34,7 +33,7 @@ export interface WikiAttachmentDownload {
 export const findWikiAttachmentDownload = async (
   context: ApplicationContext,
   actor: Actor,
-  { upload_id: uploadId }: { readonly upload_id: string },
+  { uploadId }: { readonly uploadId: string },
 ): Promise<WikiAttachmentDownload> => {
   const upload = await context.prisma.upload.findUnique({
     where: { id: uploadId },
@@ -55,11 +54,7 @@ export const findWikiAttachmentDownload = async (
     const scope = await loadWikiScopeOfPage(context, actor, pageId);
     if (
       scope &&
-      getAccessibleWikiPage<WikiSharedContextPage>(
-        scope,
-        pageId,
-        WikiPageAccessTier.Read,
-      ) !== null
+      getAccessibleWikiPage(scope, pageId, WikiPageAccessTier.Read) !== null
     )
       return {
         id: upload.id,

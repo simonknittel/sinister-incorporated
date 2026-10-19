@@ -1,7 +1,4 @@
-import {
-  collectWikiPageDescendants,
-  type WikiPageTierPermissions,
-} from "@sam-monorepo/domain";
+import { collectWikiPageDescendants } from "@sam-monorepo/domain";
 import type { WikiPageIndexConfig } from "@sam-monorepo/wiki-editor";
 import {
   buildVisibleWikiTree,
@@ -16,9 +13,9 @@ import {
   getAccessibleWikiPage,
   WikiPageAccessTier,
 } from "./getAccessibleWikiPage.js";
-import { buildWikiContext, type WikiSharedContextPage } from "./wikiContext.js";
-import { loadWikiScope, requireAccessibleWikiPage } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
+import { buildVariantWikiContext } from "./variantWikiContext.js";
+import { buildWikiContext } from "./wikiContext.js";
+import { requireAccessibleWikiPage, type WikiScope } from "./wikiScope.js";
 
 /** A page in the list of a page-index node, with its subpages */
 export interface WikiPageIndexEntry {
@@ -29,15 +26,6 @@ export interface WikiPageIndexEntry {
   /** The route of the page in the scope of the list */
   readonly href: string;
   readonly children: readonly WikiPageIndexEntry[];
-}
-
-/** The part of a wiki scope that a page index reads */
-interface WikiPageIndexScope {
-  readonly hrefBase: WikiPageHrefBase;
-  /** Pages that are not in the trash */
-  readonly pages: readonly WikiSharedContextPage[];
-  readonly pagesById: ReadonlyMap<string, WikiSharedContextPage>;
-  readonly permissions: ReadonlyMap<string, WikiPageTierPermissions>;
 }
 
 const toEntries = (
@@ -76,7 +64,7 @@ const trimToDepth = (
  */
 export const resolveWikiPageIndex = (
   context: Pick<ApplicationContext, "prisma" | "tracer">,
-  scope: WikiPageIndexScope,
+  scope: WikiScope,
   currentPageId: string,
   config: WikiPageIndexConfig,
 ): Promise<WikiPageIndexEntry[]> =>
@@ -179,10 +167,7 @@ export const findWikiPageIndex = async (
    * gives the global resolution and not an error
    */
   const variantScope = variantId
-    ? await loadWikiScope(context, actor, {
-        kind: WikiScopeKind.Variant,
-        variantId,
-      })
+    ? await buildVariantWikiContext(context, actor, variantId)
     : null;
   const globalScope =
     variantScope?.globalContext ?? (await buildWikiContext(context, actor));

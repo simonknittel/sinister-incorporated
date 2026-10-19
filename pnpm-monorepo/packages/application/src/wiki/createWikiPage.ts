@@ -1,14 +1,9 @@
-import {
-  WikiPageEditability,
-  WikiPageNamespace,
-  WikiPageUploadability,
-  WikiPageVisibility,
-} from "@sam-monorepo/database/client";
+import { WikiPageNamespace } from "@sam-monorepo/database/client";
 import {
   AuditEventType,
   slugifyWikiPageTitle,
-  WIKI_PAGE_CONTENT_JSON_MAX_LENGTH,
-  WIKI_PAGE_TITLE_MAX_LENGTH,
+  WIKI_PAGE_CONTENT_JSON_MAXIMUM_LENGTH,
+  WIKI_PAGE_TITLE_MAXIMUM_LENGTH,
 } from "@sam-monorepo/domain";
 import { parseMarkdownToWikiContent } from "@sam-monorepo/wiki-editor/markdown";
 import * as z from "zod";
@@ -17,17 +12,20 @@ import type { ApplicationContext } from "../context.js";
 import { ConflictError, NotFoundError, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { hasReadableEventWikiRoot } from "./eventWikiContext.js";
 import { getWikiPage, type GetWikiPageOutput } from "./getWikiPage.js";
-import {
-  loadReadableWikiScope,
-  ReadableWikiScopeKind,
-} from "./readableWikiScope.js";
+import { loadReadableWikiScope } from "./readableWikiScope.js";
 import { DisallowedWikiIframesError, WikiErrorMessage } from "./wikiErrors.js";
 import { findDisallowedWikiIframeSources } from "./wikiIframeAllowlist.js";
 import {
-  requireWikiPagePlacement,
-  type WikiPlacementScope,
-} from "./wikiPagePlacement.js";
+  getNextWikiPageSortOrder,
+  getTopLevelWikiPagePermissions,
+  INHERITED_WIKI_PAGE_PERMISSIONS,
+} from "./wikiPageDefaults.js";
+import { requireWikiPagePlacement } from "./wikiPagePlacement.js";
+import { requireCollab } from "./wikiPageSafetySnapshot.js";
+import type { WikiPageScope } from "./wikiScope.js";
+import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * About 3,000 words. The parser (marked) needs time that grows with the
@@ -39,7 +37,7 @@ import {
 const MAX_MARKDOWN_LENGTH = 20_000;
 
 export const createWikiPageInputSchema = z.object({
-  title: z.string().trim().min(1).max(WIKI_PAGE_TITLE_MAX_LENGTH),
+  title: z.string().trim().min(1).max(WIKI_PAGE_TITLE_MAXIMUM_LENGTH),
   parent_id: idSchema
     .optional()
     .describe(
@@ -84,9 +82,7 @@ const prepareContent = (
   markdown: string,
 ): Promise<PreparedContent> =>
   withSpan(context, "prepareWikiPageContent", async () => {
-    // The content of a page changes only through the collab server
-    if (!context.collab)
-      throw new ConflictError(WikiErrorMessage.CollabNotConfigured);
+    const collab = requireCollab(context);
 
     let content: object;
     try {
@@ -99,7 +95,7 @@ const prepareContent = (
         { cause: error },
       );
     }
-    if (JSON.stringify(content).length > WIKI_PAGE_CONTENT_JSON_MAX_LENGTH)
+    if (JSON.stringify(content).length > WIKI_PAGE_CONTENT_JSON_MAXIMUM_LENGTH)
       throw new ValidationError("The content is too large");
 
     // Like the content import of the app
@@ -110,7 +106,7 @@ const prepareContent = (
     if (disallowedSources.length > 0)
       throw new DisallowedWikiIframesError(disallowedSources);
 
-    return { collab: context.collab, content };
+    return { collab, content };
   });
 
 /**
@@ -128,7 +124,7 @@ export const createWikiPageInScope = (
   context: ApplicationContext,
   actor: Actor,
   input: Omit<CreateWikiPageInput, "event_id">,
-  scope: WikiPlacementScope | null,
+  scope: WikiPageScope | null,
 ): Promise<CreatedWikiPage> =>
   withSpan(context, "createWikiPageInScope", async () => {
     const citizen = requireCitizen(actor);
@@ -142,18 +138,12 @@ export const createWikiPageInScope = (
     const parent = parentId === null ? null : wiki.pagesById.get(parentId);
     const eventId = parent?.eventId ?? null;
     const templateId = parent?.templateId ?? null;
-    const siblings = wiki.pages.filter((page) => page.parentId === parentId);
-    const sortOrder =
-      siblings.length > 0
-        ? Math.max(...siblings.map((page) => page.sortOrder)) + 1
-        : 0;
 
     /**
-     * Defaults: top-level pages are "private" (RESTRICTED without roles) and
-     * owned by their creator; child pages inherit everything including the
-     * owner. Briefing pages always have a parent: they inherit their scopes
-     * (the column defaults) and use no owner — the fixed manage tier
-     * replaces it.
+     * A page below a parent inherits all tiers and the owner. The pages of a
+     * briefing always have a parent: they inherit their scopes (the column
+     * defaults) and have no owner, because the managers of the container
+     * manage them.
      */
     const page = await context.prisma.wikiPage.create({
       data: {
@@ -166,20 +156,10 @@ export const createWikiPageInScope = (
             : WikiPageNamespace.WIKI,
         eventId,
         templateId,
-        sortOrder,
-        visibility: parent
-          ? WikiPageVisibility.INHERIT
-          : WikiPageVisibility.RESTRICTED,
-        editability: parent
-          ? WikiPageEditability.INHERIT
-          : WikiPageEditability.RESTRICTED,
-        imageUploadability: parent
-          ? WikiPageUploadability.INHERIT
-          : WikiPageUploadability.RESTRICTED,
-        attachmentUploadability: parent
-          ? WikiPageUploadability.INHERIT
-          : WikiPageUploadability.RESTRICTED,
-        ownerId: parent ? null : citizen.id,
+        sortOrder: getNextWikiPageSortOrder(wiki.pages, parentId),
+        ...(parent
+          ? { ...INHERITED_WIKI_PAGE_PERMISSIONS, ownerId: null }
+          : getTopLevelWikiPagePermissions(citizen.id)),
         createdById: citizen.id,
       },
       select: { id: true, slug: true },
@@ -276,15 +256,15 @@ export const createWikiPage = (
     const scope = await loadReadableWikiScope(context, actor, eventId);
     const parentId =
       input.parent_id ??
-      (scope.kind === ReadableWikiScopeKind.Event
-        ? scope.context.rootPage.id
+      (scope.kind === WikiScopeKind.Briefing && hasReadableEventWikiRoot(scope)
+        ? scope.rootPage.id
         : undefined);
 
     const page = await createWikiPageInScope(
       context,
       actor,
       { title: input.title, parent_id: parentId, markdown: input.markdown },
-      scope.context,
+      scope,
     );
 
     return getWikiPage(context, actor, { page_id: page.id });

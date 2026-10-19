@@ -3,35 +3,40 @@ import {
   EventContainerKind,
   getEventContainerOfRow,
   type EventContainer,
-  type WikiPageTierPermissions,
 } from "@sam-monorepo/domain";
+import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
+import { ForbiddenError, NotFoundError } from "../errors.js";
+import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import {
   buildEventWikiContext,
   hasReadableEventWikiRoot,
   type EventWikiContext,
-  type EventWikiContextPage,
 } from "./eventWikiContext.js";
 import {
   getAccessibleWikiPage,
-  type WikiPageAccessTier,
+  hasWikiPageTier,
+  WikiPageAccessTier,
 } from "./getAccessibleWikiPage.js";
 import { buildTemplateWikiContext } from "./templateWikiContext.js";
 import {
   buildVariantWikiContext,
   type VariantWikiContext,
 } from "./variantWikiContext.js";
-import { buildWikiContext, type WikiContext } from "./wikiContext.js";
+import {
+  buildWikiContext,
+  type WikiContext,
+  type WikiSharedContextPage,
+} from "./wikiContext.js";
 import { WikiErrorMessage } from "./wikiErrors.js";
 import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * The pages that a request works on, with the permissions of the actor and
  * the routes of the pages. The `kind` tells which scope it is. A request
- * loads its scope once and gives it to the helpers that render the page.
+ * loads its scope one time and gives it to the helpers that render the page.
  */
 export type WikiScope = WikiContext | EventWikiContext | VariantWikiContext;
 
@@ -47,25 +52,6 @@ export type WikiScopeTarget =
     }
   | { readonly kind: WikiScopeKind.Variant; readonly variantId: string };
 
-/** The scope of the target, or the union of all scopes for a union target */
-export type WikiScopeOf<Target extends WikiScopeTarget> = Target extends {
-  readonly kind: WikiScopeKind.Wiki;
-}
-  ? WikiContext
-  : Target extends { readonly kind: WikiScopeKind.Briefing }
-    ? EventWikiContext
-    : VariantWikiContext;
-
-/**
- * A scope of `findReadableWikiScope()`: there a briefing has a root page that
- * the actor can read
- */
-export type ReadableWikiScopeOf<Target extends WikiScopeTarget> =
-  WikiScopeOf<Target> &
-    (Target extends { readonly kind: WikiScopeKind.Briefing }
-      ? { readonly rootPage: EventWikiContextPage }
-      : unknown);
-
 /**
  * The briefing of an event or of an event template. Returns null when the
  * actor cannot hold it (see `buildEventWikiContext()` and
@@ -75,62 +61,50 @@ export const buildBriefingWikiContext = (
   context: ApplicationContext,
   actor: Actor,
   container: EventContainer,
-): Promise<EventWikiContext | null> =>
-  withSpan(context, "buildBriefingWikiContext", () => {
-    switch (container.kind) {
-      case EventContainerKind.Event:
-        return buildEventWikiContext(context, actor, {
-          event_id: container.id,
-        });
+): Promise<EventWikiContext | null> => {
+  switch (container.kind) {
+    case EventContainerKind.Event:
+      return buildEventWikiContext(context, actor, { event_id: container.id });
 
-      case EventContainerKind.Template:
-        return buildTemplateWikiContext(context, actor, container.id);
-
-      default:
-        throw new Error(
-          `Unknown event container kind: ${container.kind satisfies never}`,
-        );
-    }
-  });
-
-const loadScope = (
-  context: ApplicationContext,
-  actor: Actor,
-  target: WikiScopeTarget,
-): Promise<WikiScope | null> => {
-  switch (target.kind) {
-    case WikiScopeKind.Wiki:
-      return buildWikiContext(context, actor);
-
-    case WikiScopeKind.Briefing:
-      return buildBriefingWikiContext(context, actor, target.container);
-
-    case WikiScopeKind.Variant:
-      return buildVariantWikiContext(context, actor, target.variantId);
+    case EventContainerKind.Template:
+      return buildTemplateWikiContext(context, actor, container.id);
 
     default:
-      throw new Error(`Unknown wiki scope: ${target satisfies never}`);
+      throw new Error(
+        `Unknown event container kind: ${container.kind satisfies never}`,
+      );
   }
 };
 
 /**
- * The one entry to the wiki scopes. Returns null when the actor cannot hold
- * the scope: a briefing without `event;read`, of an event that the actor
- * cannot see or of a template that the actor cannot read; a variant without
- * the fleet gate, without a linked page or with a linked page that the
- * actor cannot read. The global wiki is never null.
+ * The scope of a target that the caller knows only at runtime, for example
+ * the input of a tRPC procedure. A caller with a fixed kind calls the
+ * builder of the kind directly. Returns null when the actor cannot hold the
+ * scope: a briefing without `event;read`, of an event that the actor cannot
+ * see or of a template that the actor cannot read; a variant without the
+ * fleet gate, without a linked page or with a linked page that the actor
+ * cannot read. The global wiki is never null.
  */
-export const loadWikiScope = <const Target extends WikiScopeTarget>(
+const loadWikiScope = (
   context: ApplicationContext,
   actor: Actor,
-  target: Target,
-): Promise<WikiScopeOf<Target> | null> =>
-  withSpan(
-    context,
-    "loadWikiScope",
-    () =>
-      loadScope(context, actor, target) as Promise<WikiScopeOf<Target> | null>,
-  );
+  target: WikiScopeTarget,
+): Promise<WikiScope | null> =>
+  withSpan(context, "loadWikiScope", (): Promise<WikiScope | null> => {
+    switch (target.kind) {
+      case WikiScopeKind.Wiki:
+        return buildWikiContext(context, actor);
+
+      case WikiScopeKind.Briefing:
+        return buildBriefingWikiContext(context, actor, target.container);
+
+      case WikiScopeKind.Variant:
+        return buildVariantWikiContext(context, actor, target.variantId);
+
+      default:
+        throw new Error(`Unknown wiki scope: ${target satisfies never}`);
+    }
+  });
 
 /**
  * The scope of the page: the briefing of its event or event template, or
@@ -175,40 +149,65 @@ export const loadWikiScopeOfPage = (
  * A briefing without a root page that the actor can read does not exist for
  * the actor (see `hasReadableEventWikiRoot()`)
  */
-const isHiddenBriefing = (scope: WikiScope | null) =>
-  scope?.kind === WikiScopeKind.Briefing && !hasReadableEventWikiRoot(scope);
+export const isHiddenBriefing = (scope: WikiScope) =>
+  scope.kind === WikiScopeKind.Briefing && !hasReadableEventWikiRoot(scope);
 
 /**
  * `loadWikiScope()` with the gate of the briefing layout: the gate of the
  * reads that do not render a page of the briefing, for example the search
  * and the tags
  */
-export const findReadableWikiScope = async <
-  const Target extends WikiScopeTarget,
->(
+export const findReadableWikiScope = async (
   context: ApplicationContext,
   actor: Actor,
-  target: Target,
-): Promise<ReadableWikiScopeOf<Target> | null> => {
+  target: WikiScopeTarget,
+): Promise<WikiScope | null> => {
   const scope = await loadWikiScope(context, actor, target);
-  if (isHiddenBriefing(scope)) return null;
+  if (!scope || isHiddenBriefing(scope)) return null;
 
-  return scope as ReadableWikiScopeOf<Target> | null;
+  return scope;
 };
 
-/** The target of the scope inputs of the tRPC procedures */
+/**
+ * The scope input of the tRPC procedures of the app: the briefing of a
+ * container, the embed of a variant, or the global wiki without both. A
+ * procedure with more fields adds them with `safeExtend()`, which keeps the
+ * check.
+ */
+export const wikiScopeInputSchema = z
+  .object({
+    container: z
+      .object({
+        kind: z.enum(EventContainerKind),
+        /**
+         * The ids are opaque. The limit keeps a hostile client from sending
+         * megabytes.
+         */
+        id: z.string().min(1).max(64),
+      })
+      .optional(),
+    variantId: idSchema.optional(),
+  })
+  .refine((input) => !(input.container && input.variantId), {
+    message: "container and variantId are mutually exclusive",
+  });
+
+/** The target of the scope input of the tRPC procedures */
 export const toWikiScopeTarget = ({
   container,
   variantId,
-}: {
-  readonly container?: EventContainer;
-  readonly variantId?: string;
-}): WikiScopeTarget => {
+}: z.output<typeof wikiScopeInputSchema>): WikiScopeTarget => {
   if (container) return { kind: WikiScopeKind.Briefing, container };
   if (variantId) return { kind: WikiScopeKind.Variant, variantId };
 
   return { kind: WikiScopeKind.Wiki };
 };
+
+/** The container of the briefing, or null for the global wiki and a variant */
+export const getWikiPageScopeContainer = (
+  scope: WikiScope,
+): EventContainer | null =>
+  scope.kind === WikiScopeKind.Briefing ? scope.container : null;
 
 /**
  * Whether the scope refuses all changes: the briefing of an event that is
@@ -225,18 +224,79 @@ export const isWikiScopeFrozen = (scope: WikiScope) =>
  * @throws NotFoundError otherwise, without a difference between the cases,
  * thus the existence of a page never leaks
  */
-export const requireAccessibleWikiPage = <
-  Page extends { readonly id: string; readonly deletedAt: Date | null },
->(
-  scope: {
-    readonly pagesById: ReadonlyMap<string, Page>;
-    readonly permissions: ReadonlyMap<string, WikiPageTierPermissions>;
-  },
+export const requireAccessibleWikiPage = (
+  scope: WikiScope,
   pageId: string,
   tier: WikiPageAccessTier,
-): Page => {
+): WikiSharedContextPage => {
   const page = getAccessibleWikiPage(scope, pageId, tier);
   if (!page) throw new NotFoundError(WikiErrorMessage.PageNotFound);
 
   return page;
+};
+
+interface WikiPageOfScopeOptions {
+  /** The message of the `NotFoundError` */
+  readonly notFoundMessage?: WikiErrorMessage;
+  /** Restore and destroy work on a page in the trash, not on a live page */
+  readonly expectDeleted?: boolean;
+}
+
+/**
+ * A page that the actor cannot read does not exist for the actor. The edit
+ * and the admin tier give a `ForbiddenError`.
+ */
+const throwMissingWikiPageTier = (
+  tier: WikiPageAccessTier,
+  notFoundMessage: WikiErrorMessage,
+): never => {
+  switch (tier) {
+    case WikiPageAccessTier.Read:
+      throw new NotFoundError(notFoundMessage);
+
+    case WikiPageAccessTier.Edit:
+      throw new ForbiddenError("The user cannot edit the page");
+
+    case WikiPageAccessTier.Admin:
+      throw new ForbiddenError("The user does not manage the page");
+
+    default:
+      throw new Error(`Unknown wiki page access tier: ${tier satisfies never}`);
+  }
+};
+
+/**
+ * The guard of the operations on one page: loads the scope of the page and
+ * checks the trash state and the tier of the actor. Gives the scope with the
+ * page.
+ *
+ * @throws NotFoundError when the scope or the page does not exist for the
+ * actor, when the page is not in the expected trash state (a different user
+ * or tab changed the page before), or when the actor cannot read the page
+ * for the read tier
+ * @throws ForbiddenError when the actor does not hold the edit or the admin
+ * tier
+ */
+export const requireWikiPageOfScope = async (
+  context: ApplicationContext,
+  actor: Actor,
+  pageId: string,
+  tier: WikiPageAccessTier,
+  {
+    notFoundMessage = WikiErrorMessage.PageNotFound,
+    expectDeleted = false,
+  }: WikiPageOfScopeOptions = {},
+): Promise<{
+  readonly scope: WikiPageScope;
+  readonly page: WikiSharedContextPage;
+}> => {
+  const scope = await loadWikiScopeOfPage(context, actor, pageId);
+  const page = scope?.pagesById.get(pageId);
+  if (!scope || !page || (page.deletedAt !== null) !== expectDeleted)
+    throw new NotFoundError(notFoundMessage);
+
+  if (!hasWikiPageTier(scope.permissions.get(page.id), tier))
+    throwMissingWikiPageTier(tier, notFoundMessage);
+
+  return { scope, page };
 };

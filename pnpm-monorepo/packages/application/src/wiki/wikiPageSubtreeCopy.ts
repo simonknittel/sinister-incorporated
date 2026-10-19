@@ -1,34 +1,31 @@
 import {
-  WikiPageEditability,
-  WikiPageUploadability,
-  WikiPageVisibility,
-} from "@sam-monorepo/database/client";
-import {
   AuditEventType,
   collectVisibleWikiSubtree,
   slugifyWikiPageTitle,
   type AuditEventInput,
-  type EventContainer,
 } from "@sam-monorepo/domain";
 import { compareWikiPagesByOrder } from "@sam-monorepo/wiki-editor/helpers";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { NotFoundError } from "../errors.js";
 import { LONG_TRANSACTION_TIMEOUT_IN_MILLISECONDS } from "../eventTemplates/containerContentCopy.js";
-import {
-  getAccessibleWikiPage,
-  WikiPageAccessTier,
-} from "./getAccessibleWikiPage.js";
+import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
 import type { WikiSharedContextPage } from "./wikiContext.js";
 import { WikiErrorMessage } from "./wikiErrors.js";
 import {
   copyWikiPagesIntoContainer,
-  INHERITED_PERMISSIONS,
   type CopiedWikiPage,
   type WikiPageCopyEntry,
 } from "./wikiPageCopy.js";
-import { loadWikiScopeOfPage, type WikiPageScope } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
+import {
+  getNextWikiPageSortOrder,
+  getTopLevelWikiPagePermissions,
+  INHERITED_WIKI_PAGE_PERMISSIONS,
+} from "./wikiPageDefaults.js";
+import {
+  getWikiPageScopeContainer,
+  requireWikiPageOfScope,
+  type WikiPageScope,
+} from "./wikiScope.js";
 
 export enum WikiPageCopyDestinationKind {
   /** The copied root becomes a new page below the parent */
@@ -41,7 +38,7 @@ export enum WikiPageCopyDestinationKind {
   IntoExistingPage = "intoExistingPage",
 }
 
-export type WikiPageCopyDestination =
+type WikiPageCopyDestination =
   | {
       readonly kind: WikiPageCopyDestinationKind.NewPage;
       /** Undefined copies to the top level, which only the global wiki has */
@@ -76,25 +73,9 @@ interface CopyWikiPageSubtreeResult {
   readonly copiedPages: CopiedWikiPage[];
 }
 
-/** The briefing of the scope, or null for the global wiki */
-export const getWikiPageScopeContainer = (
-  scope: WikiPageScope,
-): EventContainer | null => {
-  switch (scope.kind) {
-    case WikiScopeKind.Wiki:
-      return null;
-
-    case WikiScopeKind.Briefing:
-      return scope.container;
-
-    default:
-      throw new Error(`Unknown wiki page scope: ${scope satisfies never}`);
-  }
-};
-
 /**
- * The page that a copy reads, in its own scope: a copy needs only read
- * access to its source
+ * The page that a copy reads, in its own scope: a copy needs only the read
+ * tier of its source
  *
  * @throws NotFoundError when the page does not exist for the actor
  */
@@ -106,161 +87,157 @@ export const requireWikiPageCopySource = async (
   readonly sourceScope: WikiPageScope;
   readonly sourcePage: WikiSharedContextPage;
 }> => {
-  const sourceScope = await loadWikiScopeOfPage(context, actor, pageId);
-  const sourcePage = sourceScope
-    ? getAccessibleWikiPage<WikiSharedContextPage>(
-        sourceScope,
-        pageId,
-        WikiPageAccessTier.Read,
-      )
-    : null;
-  if (!sourceScope || !sourcePage)
-    throw new NotFoundError(WikiErrorMessage.SourcePageNotFound);
+  const { scope, page } = await requireWikiPageOfScope(
+    context,
+    actor,
+    pageId,
+    WikiPageAccessTier.Read,
+    { notFoundMessage: WikiErrorMessage.SourcePageNotFound },
+  );
 
-  return { sourceScope, sourcePage };
+  return { sourceScope: scope, sourcePage: page };
+};
+
+/** Where the copies go */
+interface WikiPageCopyPlacement {
+  /** The parent of the copied root, or of the copied children */
+  readonly rootParentId: string | null;
+  /** The copy of the source page itself, or null for a copy into a page */
+  readonly rootEntry: WikiPageCopyEntry | null;
+  /** The existing page that takes the copied children */
+  readonly existingPage: WikiSharedContextPage | null;
+  /**
+   * The sort order of the first copied child below the existing page. Null:
+   * the children keep their sort order, because their parent is a new copy.
+   */
+  readonly firstChildSortOrder: number | null;
+}
+
+const resolveWikiPageCopyPlacement = ({
+  sourcePage,
+  targetScope,
+  destination,
+  createdByEntityId,
+}: CopyWikiPageSubtreeOptions): WikiPageCopyPlacement => {
+  switch (destination.kind) {
+    case WikiPageCopyDestinationKind.NewPage: {
+      const parentId = destination.parentId ?? null;
+      if (parentId === null && getWikiPageScopeContainer(targetScope))
+        throw new Error("Briefings have no top level to copy to");
+
+      return {
+        rootParentId: parentId,
+        rootEntry: {
+          source: sourcePage,
+          title: destination.rootTitle,
+          slug: slugifyWikiPageTitle(destination.rootTitle),
+          parentSourceId: null,
+          /** The new page goes after the existing children of the parent */
+          sortOrder: getNextWikiPageSortOrder(targetScope.pages, parentId),
+          permissions:
+            parentId === null
+              ? getTopLevelWikiPagePermissions(createdByEntityId)
+              : { ...INHERITED_WIKI_PAGE_PERMISSIONS, ownerId: null },
+        },
+        existingPage: null,
+        firstChildSortOrder: null,
+      };
+    }
+
+    case WikiPageCopyDestinationKind.IntoExistingPage: {
+      const existingPage = targetScope.pagesById.get(destination.pageId);
+      if (!existingPage)
+        throw new Error("The destination page is missing from its scope");
+
+      return {
+        rootParentId: existingPage.id,
+        rootEntry: null,
+        existingPage,
+        /** The copied children go after the existing children of the page */
+        firstChildSortOrder: getNextWikiPageSortOrder(
+          targetScope.pages,
+          existingPage.id,
+        ),
+      };
+    }
+
+    default:
+      throw new Error(
+        `Unknown wiki page copy destination: ${destination satisfies never}`,
+      );
+  }
 };
 
 /**
- * Creates copies of a page — optionally with the subtree the viewer can see
- * (an unreadable page hides its whole subtree, so neither it nor anything
- * below it is copied) — at the destination, which may live in a different
- * scope than the source: unlike moving, copying may cross the namespace
- * boundary because the copies are new rows that take namespace and
- * container from their new place.
+ * Creates copies of a page at the destination, optionally with the subtree
+ * that the actor can read. A page that the actor cannot read hides its full
+ * subtree: the copy does not include it or a page below it. The destination
+ * can be in a different scope than the source: a move cannot cross the
+ * border of the namespace, but a copy can, because the copies are new rows
+ * that take the namespace and the container of their new place.
  *
- * No copy carries the source's permissions over: like a moved page they
- * take the permissions of their new place, so all tiers are INHERIT (the
- * briefing scope columns keep their INHERIT defaults for the same reason)
- * and a top-level copy gets the defaults of a newly created top-level page.
- * A copy can thereby reach a wider audience than its source. Placing it
- * takes managing the target, so that is the target's manager to decide,
- * and the dialogs say so.
+ * No copy takes the permissions of its source. Like a moved page, a copy
+ * takes the permissions of its new place: all tiers are INHERIT (the scope
+ * columns of a briefing keep their INHERIT defaults for the same reason),
+ * and a copy at the top level gets the permissions of a new page at the top
+ * level. Thus a copy can get a wider audience than its source. The placement
+ * needs the admin tier of the target, thus the manager of the target
+ * decides, and the dialogs tell it.
  */
 export const copyWikiPageSubtree = async (
   context: Pick<ApplicationContext, "prisma">,
-  {
-    sourceScope,
-    sourcePage,
-    includeChildren,
-    targetScope,
-    destination,
-    createdByEntityId,
-  }: CopyWikiPageSubtreeOptions,
+  options: CopyWikiPageSubtreeOptions,
 ): Promise<CopyWikiPageSubtreeResult> => {
-  const sourcePages: readonly WikiSharedContextPage[] = sourceScope.pages;
-  const targetPages: readonly WikiSharedContextPage[] = targetScope.pages;
-  const targetPagesById: ReadonlyMap<string, WikiSharedContextPage> =
-    targetScope.pagesById;
-  const targetContainer = getWikiPageScopeContainer(targetScope);
-  if (
-    destination.kind === WikiPageCopyDestinationKind.NewPage &&
-    !destination.parentId &&
-    targetContainer
-  )
-    throw new Error("Briefings have no top level to copy to");
+  const { sourceScope, sourcePage, includeChildren, targetScope } = options;
+  const { rootParentId, rootEntry, existingPage, firstChildSortOrder } =
+    resolveWikiPageCopyPlacement(options);
 
   const subtree = includeChildren
-    ? collectVisibleWikiSubtree(
-        sourcePages,
+    ? collectVisibleWikiSubtree<WikiSharedContextPage>(
+        sourceScope.pages,
         sourcePage.id,
         (id) => sourceScope.permissions.get(id)?.canRead === true,
       )
     : [];
 
-  /**
-   * New pages append after the existing children of their landing spot:
-   * the copied root after the parent's children, or — into an existing
-   * page — the copied top-level children after that page's own. Deeper
-   * copies keep their source sortOrder (their parent is a fresh copy).
-   */
-  const appendUnderId =
-    destination.kind === WikiPageCopyDestinationKind.NewPage
-      ? (destination.parentId ?? null)
-      : destination.pageId;
-  const existingChildren = targetPages.filter(
-    (page) => page.parentId === appendUnderId,
+  const childSortOrders = new Map(
+    firstChildSortOrder === null
+      ? []
+      : subtree
+          .filter((entry) => entry.visibleParentId === sourcePage.id)
+          .map((entry) => entry.page)
+          .toSorted(compareWikiPagesByOrder)
+          .map((page, index) => [page.id, firstChildSortOrder + index]),
   );
-  const appendBase =
-    existingChildren.length > 0
-      ? Math.max(...existingChildren.map((page) => page.sortOrder)) + 1
-      : 0;
-  const rebasedSortOrders = new Map<string, number>();
-  if (destination.kind === WikiPageCopyDestinationKind.IntoExistingPage) {
-    const directChildren = subtree
-      .filter((entry) => entry.visibleParentId === sourcePage.id)
-      .map((entry) => entry.page)
-      .toSorted(compareWikiPagesByOrder);
-    directChildren.forEach((page, index) =>
-      rebasedSortOrders.set(page.id, appendBase + index),
-    );
-  }
 
-  const rootPermissions: WikiPageCopyEntry["permissions"] =
-    destination.kind === WikiPageCopyDestinationKind.NewPage &&
-    !destination.parentId
-      ? {
-          visibility: WikiPageVisibility.RESTRICTED,
-          editability: WikiPageEditability.RESTRICTED,
-          imageUploadability: WikiPageUploadability.RESTRICTED,
-          attachmentUploadability: WikiPageUploadability.RESTRICTED,
-          ownerId: createdByEntityId,
-        }
-      : INHERITED_PERMISSIONS;
-
-  /**
-   * The existing page a replace-paste copies into. Its children get created
-   * underneath it, the page itself is left to the caller.
-   */
-  const destinationPage =
-    destination.kind === WikiPageCopyDestinationKind.IntoExistingPage
-      ? targetPagesById.get(destination.pageId)
-      : undefined;
-  if (
-    destination.kind === WikiPageCopyDestinationKind.IntoExistingPage &&
-    !destinationPage
-  )
-    throw new Error("The destination page is missing from its scope");
-
-  const entries: WikiPageCopyEntry[] =
-    destination.kind === WikiPageCopyDestinationKind.NewPage
-      ? [
-          {
-            source: sourcePage,
-            title: destination.rootTitle,
-            slug: slugifyWikiPageTitle(destination.rootTitle),
-            parentSourceId: null,
-            sortOrder: appendBase,
-            permissions: rootPermissions,
-          },
-        ]
-      : [];
-
-  /** Subtree entries are depth-first: parents always precede children */
-  for (const { page, visibleParentId } of subtree)
-    entries.push({
+  /** Depth-first: the parents come before their children */
+  const entries: WikiPageCopyEntry[] = [
+    ...(rootEntry ? [rootEntry] : []),
+    ...subtree.map(({ page, visibleParentId }) => ({
       source: page,
       title: page.title,
       slug: page.slug,
       parentSourceId: visibleParentId,
-      sortOrder: rebasedSortOrders.get(page.id) ?? page.sortOrder,
-      permissions: INHERITED_PERMISSIONS,
-    });
+      sortOrder: childSortOrders.get(page.id) ?? page.sortOrder,
+      permissions: { ...INHERITED_WIKI_PAGE_PERMISSIONS, ownerId: null },
+    })),
+  ];
 
   return context.prisma.$transaction(
     async (transaction) => {
       const { copiedPages, newIdBySourceId, slugBySourceId } =
         await copyWikiPagesIntoContainer(transaction, {
           entries,
-          targetContainer,
-          rootParentId: appendUnderId,
-          initialIdBySourceId: destinationPage
-            ? new Map([[sourcePage.id, destinationPage.id]])
+          targetContainer: getWikiPageScopeContainer(targetScope),
+          rootParentId,
+          initialIdBySourceId: existingPage
+            ? new Map([[sourcePage.id, existingPage.id]])
             : undefined,
-          createdByEntityId,
+          createdByEntityId: options.createdByEntityId,
         });
 
-      const root = destinationPage
-        ? { id: destinationPage.id, slug: destinationPage.slug }
+      const root = existingPage
+        ? { id: existingPage.id, slug: existingPage.slug }
         : {
             id: newIdBySourceId.get(sourcePage.id)!,
             slug: slugBySourceId.get(sourcePage.id)!,
