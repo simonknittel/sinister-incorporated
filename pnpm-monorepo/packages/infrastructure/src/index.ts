@@ -15,6 +15,10 @@ export {
   type DiscordGatewayOptions,
 } from "./discord/createDiscordGateway.js";
 export {
+  createEventBridgeEmailRequester,
+  type EventBridgeEmailRequesterOptions,
+} from "./email/createEventBridgeEmailRequester.js";
+export {
   createEventBridgeClient,
   type EventBridgeClientOptions,
 } from "./eventbridge/createEventBridgeClient.js";

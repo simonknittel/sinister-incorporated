@@ -9,6 +9,7 @@ import { createActor, type Actor, type ActorCitizen } from "../src/actor.js";
 import {
   createApplicationUrls,
   type ApplicationContext,
+  type EmailRequest,
   type Notification,
 } from "../src/context.js";
 
@@ -31,9 +32,9 @@ type TestApplicationContextOptions = Partial<
 /**
  * The context of the integration tests. It uses the database of the
  * testcontainer (`test/databaseUrl.ts` sets the URL before the test files
- * load). The audit writer and the notification trigger only record, thus a
- * test can examine `auditEvents` and `notifications`. An override replaces
- * the port of the same name.
+ * load). The audit writer, the notification trigger and the email requester
+ * only record, thus a test can examine `auditEvents`, `notifications` and
+ * `emailRequests`. An override replaces the port of the same name.
  */
 export const createTestApplicationContext = ({
   now = TEST_NOW,
@@ -41,6 +42,7 @@ export const createTestApplicationContext = ({
 }: TestApplicationContextOptions = {}) => {
   const auditEvents: AuditEventInput[] = [];
   const notifications: Notification[] = [];
+  const emailRequests: EmailRequest[] = [];
 
   const context: ApplicationContext = {
     prisma,
@@ -54,6 +56,11 @@ export const createTestApplicationContext = ({
         notifications.push(...requestedNotifications);
       },
     },
+    email: {
+      request: async (request) => {
+        emailRequests.push(request);
+      },
+    },
     log: SILENT_LOGGER,
     tracer: trace.getTracer("test"),
     // A copy, thus a use case that changes the date does not change the clock
@@ -62,6 +69,7 @@ export const createTestApplicationContext = ({
     collab: null,
     discord: null,
     storage: null,
+    images: null,
     urls: createApplicationUrls({
       baseUrl: "https://sam.example.com",
       publicUploadBaseUrl: "https://uploads.example.com",
@@ -71,7 +79,7 @@ export const createTestApplicationContext = ({
     ...overrides,
   };
 
-  return { context, auditEvents, notifications };
+  return { context, auditEvents, notifications, emailRequests };
 };
 
 interface TestActorOptions {

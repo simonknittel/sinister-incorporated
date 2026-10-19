@@ -18,6 +18,7 @@
   "dependencies": {
     "@aws-sdk/client-eventbridge": "3.1150.0",
     "@aws-sdk/client-s3": "3.1150.0",
+    "@aws-sdk/s3-request-presigner": "3.1150.0",
     "@paralleldrive/cuid2": "3.3.0",
     "@sam-monorepo/application": "workspace:*",
     "@sam-monorepo/database": "workspace:*",

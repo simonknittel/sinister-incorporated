@@ -4,16 +4,17 @@ This package holds the shared implementations of the ports of the use cases. The
 
 ## Exports
 
-| Export                                 | Port                                                                       |
-| -------------------------------------- | -------------------------------------------------------------------------- |
-| `createPrismaAuditWriter`              | `audit`                                                                    |
-| `createEventBridgeNotificationTrigger` | `notifications`                                                            |
-| `createEventBridgeEmitter`             | none: it sends the events of the trigger and the other events of the hosts |
-| `createEventBridgeClient`              | none: the client of the emitter, with timeouts                             |
-| `createDiscordGateway`                 | `discord`                                                                  |
-| `createCollabClient`                   | `collab`                                                                   |
-| `createS3Storage`                      | `storage`                                                                  |
-| `createS3Client`                       | none: the client of the storage, with timeouts                             |
+| Export                                 | Port                                                                                                                      |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `createPrismaAuditWriter`              | `audit`                                                                                                                   |
+| `createEventBridgeNotificationTrigger` | `notifications`                                                                                                           |
+| `createEventBridgeEmailRequester`      | `email`                                                                                                                   |
+| `createEventBridgeEmitter`             | none: it sends the events of the trigger and the other events of the hosts                                                |
+| `createEventBridgeClient`              | none: the client of the emitter, with timeouts                                                                            |
+| `createDiscordGateway`                 | `discord`                                                                                                                 |
+| `createCollabClient`                   | `collab`                                                                                                                  |
+| `createS3Storage`                      | `storage`: the reads (also a byte range), the copy, the size, the list, the delete of many objects and the presigned URLs |
+| `createS3Client`                       | none: the client of the storage, with timeouts                                                                            |
 
 ## Rules
 

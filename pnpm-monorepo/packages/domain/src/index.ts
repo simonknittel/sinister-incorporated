@@ -5,6 +5,7 @@
  * client or the transaction of its caller. Sharing these definitions
  * replaces the former copy-mirrored files in both apps.
  */
+export * from "./apps/appKeys.js";
 export {
   AuditEventType,
   type AuditEventDataByType,
@@ -100,11 +101,13 @@ export {
 export { HIGH_VOLUME_AUDIT_EVENT_TYPES } from "./highVolumeAuditEventTypes.js";
 export { MAX_HUMAN_RESOURCES_ROLES } from "./iam/humanResourcesRoles.js";
 export { isAllowedWebPushEndpointUrl } from "./isAllowedWebPushEndpointUrl.js";
+export * from "./logAnalyzer/logAnalyzerEntries.js";
 export {
   CITIZEN_CHANNEL_PREFIX,
   ON_SITE_NOTIFICATION_CREATED_EVENT,
   getCitizenChannelName,
 } from "./notifications/channels.js";
+export * from "./notifications/notificationSettings.js";
 export {
   BIRTHDAY_FALLBACK_WORDING,
   ONBOARDING_POPOVER_PATH,
@@ -138,6 +141,8 @@ export {
   type OnSiteNotificationType,
   type ParsedOnSiteNotificationPayload,
 } from "./notifications/onSiteNotificationPayloads.js";
+export * from "./notifications/onSiteNotificationTab.js";
+export * from "./onboarding/onboardingTasks.js";
 export { ORG_ID } from "./ORG_ID.js";
 export { getOrganizationLogoUrl } from "./organization/organizationLogoUrl.js";
 export { CursorDirection } from "./pagination/CursorDirection.js";
@@ -289,7 +294,9 @@ export {
   wallTimeToInstant,
   type LocalDate,
 } from "./timeZone.js";
+export * from "./uploads/uploadConstraints.js";
 export { decodeUploadFileName } from "./uploads/uploadFileName.js";
+export * from "./uploads/uploadUsage.js";
 export {
   UNUSED_UPLOAD_WHERE,
   UPLOAD_USAGE_RELATIONS,
