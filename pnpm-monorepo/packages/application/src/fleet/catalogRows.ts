@@ -63,6 +63,19 @@ export const findVariantCatalog = (
 ): Promise<VariantCatalogManufacturer[]> =>
   context.prisma.manufacturer.findMany({ select: VARIANT_CATALOG_SELECT });
 
+/** The name of a variant and the name and the logo of its manufacturer */
+export const VARIANT_LINK_SELECT = {
+  id: true,
+  name: true,
+  series: {
+    select: {
+      manufacturer: {
+        select: { name: true, image: { select: UPLOAD_IMAGE_SELECT } },
+      },
+    },
+  },
+} as const satisfies Prisma.VariantSelect;
+
 /** A variant that a wiki page can link to */
 export interface VariantLinkOption {
   readonly id: string;
@@ -85,17 +98,7 @@ export const findVariantLinkOptions = async (
   context: Pick<ApplicationContext, "prisma">,
 ): Promise<VariantLinkOption[]> => {
   const variants = await context.prisma.variant.findMany({
-    select: {
-      id: true,
-      name: true,
-      series: {
-        select: {
-          manufacturer: {
-            select: { name: true, image: { select: UPLOAD_IMAGE_SELECT } },
-          },
-        },
-      },
-    },
+    select: VARIANT_LINK_SELECT,
     orderBy: { name: "asc" },
   });
 

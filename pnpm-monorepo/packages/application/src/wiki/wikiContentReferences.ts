@@ -6,6 +6,7 @@ import {
   type WikiMentionedCitizen,
 } from "@sam-monorepo/wiki-editor";
 import { getPublicUploadUrl, type ApplicationContext } from "../context.js";
+import { VARIANT_LINK_SELECT } from "../fleet/catalogRows.js";
 
 /**
  * Resolvers for the references that the content of a page can carry
@@ -66,20 +67,7 @@ export const loadWikiLinkedVariants = async (
 
   const variants = await context.prisma.variant.findMany({
     where: { id: { in: linkedVariantIds } },
-    select: {
-      id: true,
-      name: true,
-      series: {
-        select: {
-          manufacturer: {
-            select: {
-              name: true,
-              image: { select: { id: true, mimeType: true } },
-            },
-          },
-        },
-      },
-    },
+    select: VARIANT_LINK_SELECT,
   });
 
   return Object.fromEntries(
