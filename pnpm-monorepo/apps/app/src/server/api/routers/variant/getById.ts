@@ -1,39 +1,27 @@
-import { authorize } from "@/modules/auth/server";
+import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  findManagedVariant,
+  ForbiddenError,
+  idSchema,
+} from "@sam-monorepo/application";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
-import { protectedProcedure } from "../../trpc";
+import { protectedProcedure, toTrpcError } from "../../trpc";
 
+/** For the update modal of a variant, see `findManagedVariant()` */
 export const getById = protectedProcedure
-  .input(
-    z.object({
-      id: z.cuid(),
-    }),
-  )
+  .input(z.object({ id: idSchema }))
   .query(async ({ ctx, input }) => {
-    /**
-     * Only the update variant modal consumes this route; without the gate
-     * every authenticated user could read variant internals like the
-     * linked wiki page id.
-     */
-    if (
-      !(await authorize(
-        ctx.session,
-        "manufacturersSeriesAndVariants",
-        "manage",
-      ))
-    )
-      throw new TRPCError({ code: "FORBIDDEN" });
+    try {
+      return await findManagedVariant(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        { variantId: input.id },
+      );
+    } catch (error) {
+      if (error instanceof ForbiddenError)
+        throw new TRPCError({ code: "FORBIDDEN", message: error.message });
 
-    const variant = await ctx.prisma.variant.findUnique({
-      where: {
-        id: input.id,
-      },
-      include: {
-        externalLinks: {
-          select: { id: true, serviceName: true, url: true },
-        },
-      },
-    });
-
-    return variant;
+      throw toTrpcError(error, "Failed to load the variant");
+    }
   });

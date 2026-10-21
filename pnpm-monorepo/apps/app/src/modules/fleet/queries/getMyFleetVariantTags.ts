@@ -1,17 +1,22 @@
-import { requireAuthentication } from "@/modules/auth/server";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { forbidden } from "next/navigation";
+import { findOwnFleetVariantTags } from "@sam-monorepo/application";
 import { cache } from "react";
-import { getOwnerFleetVariantTags } from "./ownerFleet";
 
+/** See `findOwnFleetVariantTags()` */
 export const getMyFleetVariantTags = cache(
   withTrace("getMyFleetVariantTags", async () => {
-    const authentication = await requireAuthentication();
-    if (!(await authentication.authorize("ship", "read"))) forbidden();
-
-    const citizenId = authentication.session.entity?.id;
-    if (!citizenId) return [];
-
-    return getOwnerFleetVariantTags(citizenId);
+    try {
+      return await findOwnFleetVariantTags(
+        getApplicationContext(),
+        await getRequestActor(),
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
   }),
 );

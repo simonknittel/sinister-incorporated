@@ -4,11 +4,7 @@ import { runAction } from "@/modules/actions/utils/runAction";
 import Modal from "@/modules/common/components/Modal";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import { api } from "@/trpc/react";
-import {
-  type Variant,
-  type VariantExternalLink,
-  type VariantTag,
-} from "@sam-monorepo/database/browser";
+import type { SeriesVariantRow } from "@sam-monorepo/application";
 import { useId } from "react";
 import { FaSave } from "react-icons/fa";
 import { updateVariant } from "../actions/updateVariant";
@@ -18,10 +14,7 @@ import { VariantWikiPageField } from "./VariantWikiPageField";
 
 interface Props {
   readonly onRequestClose: () => void;
-  readonly variant: Pick<
-    Variant & { tags: VariantTag[]; externalLinks: VariantExternalLink[] },
-    "id" | "tags" | "externalLinks"
-  >;
+  readonly variant: Pick<SeriesVariantRow, "id" | "tags" | "externalLinks">;
 }
 
 export const UpdateVariantModal = ({ onRequestClose, variant }: Props) => {

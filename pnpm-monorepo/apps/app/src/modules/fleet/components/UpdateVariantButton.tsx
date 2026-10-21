@@ -3,11 +3,7 @@
 import { AsciiSpinner } from "@/modules/common/components/AsciiSpinner";
 import Button from "@/modules/common/components/Button";
 import { usePopoverBaseUI } from "@/modules/common/components/PopoverBaseUI";
-import {
-  type Variant,
-  type VariantExternalLink,
-  type VariantTag,
-} from "@sam-monorepo/database/browser";
+import type { SeriesVariantRow } from "@sam-monorepo/application";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { Suspense, useState } from "react";
@@ -19,10 +15,7 @@ const UpdateVariantModal = dynamic(() =>
 
 interface Props {
   readonly className?: string;
-  readonly variant: Pick<
-    Variant & { tags: VariantTag[]; externalLinks: VariantExternalLink[] },
-    "id" | "tags" | "externalLinks"
-  >;
+  readonly variant: Pick<SeriesVariantRow, "id" | "tags" | "externalLinks">;
 }
 
 export const UpdateVariantButton = ({ className, variant }: Props) => {

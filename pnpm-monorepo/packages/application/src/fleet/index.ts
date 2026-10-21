@@ -1,6 +1,51 @@
 /** The use cases of the fleet group */
+export {
+  findManagedManufacturer,
+  findManagedSeriesWithManufacturer,
+  findManagedVariant,
+  findManufacturerSeriesRows,
+  findSeriesVariantRows,
+  type ManagedManufacturer,
+  type ManagedSeries,
+  type ManagedSeriesManufacturer,
+  type ManagedVariant,
+  type ManufacturerSeriesRow,
+  type SeriesVariantRow,
+} from "./catalogManagementRows.js";
+export {
+  findManufacturerRows,
+  findVariantCatalog,
+  findVariantLinkOptions,
+  type ManufacturerRow,
+  type VariantCatalogManufacturer,
+  type VariantCatalogVariant,
+  type VariantLinkOption,
+} from "./catalogRows.js";
+export { countShips, type CountShipsOutput } from "./countShips.js";
+export {
+  createManufacturer,
+  createManufacturerInputSchema,
+  type ManufacturerOutput,
+} from "./createManufacturer.js";
+export {
+  createSeries,
+  createSeriesInputSchema,
+  type SeriesOutput,
+} from "./createSeries.js";
 export { createShip, createShipInputSchema } from "./createShip.js";
+export { createVariant, createVariantInputSchema } from "./createVariant.js";
+export {
+  deleteManufacturer,
+  deleteManufacturerInputSchema,
+} from "./deleteManufacturer.js";
+export { deleteSeries, deleteSeriesInputSchema } from "./deleteSeries.js";
 export { deleteShip, deleteShipInputSchema } from "./deleteShip.js";
+export {
+  deleteVariant,
+  deleteVariantInputSchema,
+  type DeleteVariantOutput,
+} from "./deleteVariant.js";
+export { FleetCatalogErrorMessage } from "./fleetCatalogErrors.js";
 export { listCitizenShips } from "./listCitizenShips.js";
 export { listMyShips, listMyShipsInputSchema } from "./listMyShips.js";
 export {
@@ -23,6 +68,13 @@ export {
   type SearchShipVariantsOutput,
 } from "./searchShipVariants.js";
 export {
+  ShipChangeFilter,
+  ShipChangeType,
+  findShipChangePage,
+  type ShipChangePage,
+  type ShipChangeRow,
+} from "./shipChangePage.js";
+export {
   FlightReadyFilter,
   SHIP_VARIANT_SELECT,
   ShipVariantStatus,
@@ -31,3 +83,28 @@ export {
   type ShipVariantOutput,
   type VariantTagOutput,
 } from "./shipVariant.js";
+export {
+  updateManufacturer,
+  updateManufacturerInputSchema,
+  type UpdateManufacturerOutput,
+} from "./updateManufacturer.js";
+export { updateSeries, updateSeriesInputSchema } from "./updateSeries.js";
+export { updateVariant, updateVariantInputSchema } from "./updateVariant.js";
+export {
+  findVariantBacklinks,
+  findVariantDetail,
+  type VariantBacklinkRow,
+  type VariantDetailRow,
+} from "./variantDetail.js";
+export { canViewVariantPages } from "./variantPageAccess.js";
+export {
+  findVariantShipPage,
+  type VariantShipPage,
+  type VariantShipRow,
+} from "./variantShipPage.js";
+export {
+  findCitizenFleetVariantTags,
+  findOrgFleetVariantTags,
+  findOwnFleetVariantTags,
+} from "./variantTagRows.js";
+export type { VariantOutput } from "./variantWrites.js";

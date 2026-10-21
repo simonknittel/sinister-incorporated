@@ -1,25 +1,22 @@
-import { prisma } from "@/db";
-import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { type Manufacturer, type Series } from "@sam-monorepo/database/client";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
+import { findManagedSeriesWithManufacturer } from "@sam-monorepo/application";
 import { cache } from "react";
 
+/** See `findManagedSeriesWithManufacturer()` */
 export const getSeriesAndManufacturerById = cache(
-  withTrace(
-    "getSeriesAndManufacturerById",
-    async (seriesId: Series["id"], manufacturerId: Manufacturer["id"]) => {
-      return Promise.all([
-        prisma.series.findUnique({
-          where: {
-            id: seriesId,
-          },
-        }),
-
-        prisma.manufacturer.findUnique({
-          where: {
-            id: manufacturerId,
-          },
-        }),
-      ]);
-    },
-  ),
+  async (seriesId: string, manufacturerId: string) => {
+    try {
+      return await findManagedSeriesWithManufacturer(
+        getApplicationContext(),
+        await getRequestActor(),
+        { seriesId, manufacturerId },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  },
 );

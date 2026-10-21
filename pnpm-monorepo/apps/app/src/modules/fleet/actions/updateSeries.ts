@@ -1,86 +1,18 @@
 "use server";
 
-import { prisma } from "@/db";
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { refresh } from "next/cache";
-import * as z from "zod";
+import { createUseCaseAction } from "@/modules/application";
+import {
+  updateSeriesInputSchema,
+  updateSeries as updateSeriesUseCase,
+} from "@sam-monorepo/application";
 
-const schema = z.object({
-  id: z.cuid(),
-  name: z.string().trim().min(1).optional(),
+export const updateSeries = createUseCaseAction({
+  name: "updateSeries",
+  schema: updateSeriesInputSchema,
+  useCase: updateSeriesUseCase,
+  parseFormData: (formData) => ({
+    series_id: formData.get("id"),
+    name: formData.get("name"),
+  }),
+  success: (t) => t("Common.successfullySaved"),
 });
-
-export const updateSeries = createAuthenticatedAction(
-  "updateSeries",
-  schema,
-  async (formData, authentication, data, t) => {
-    if (
-      !(await authentication.authorize(
-        "manufacturersSeriesAndVariants",
-        "manage",
-      ))
-    )
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Update
-     */
-    const { id, ...updateData } = data;
-
-    const existingSeries = await prisma.series.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        name: true,
-      },
-    });
-    if (!existingSeries) {
-      /**
-       * A different user deleted the series before, and the page must show it
-       */
-      return rejectConflict(t("Common.notFound"), formData);
-    }
-
-    const updatedItem = await prisma.series.update({
-      where: {
-        id,
-      },
-      data: updateData,
-    });
-
-    refresh();
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.SERIES_UPDATED,
-        data: {
-          seriesId: updatedItem.id,
-          manufacturerId: updatedItem.manufacturerId,
-          previousName: existingSeries.name,
-          newName: updatedItem.name,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
-    return {
-      success: t("Common.successfullySaved"),
-    };
-  },
-  {
-    parseFormData: (formData) => ({
-      id: formData.get("id"),
-      name: formData.get("name"),
-    }),
-  },
-);

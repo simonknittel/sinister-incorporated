@@ -2,6 +2,7 @@ import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import { TRow } from "@/modules/common/components/Table";
 import { formatDate } from "@/modules/common/utils/formatDate";
 import type { ShipChangeRow as Change } from "@/modules/fleet/queries/getShipChanges";
+import { ShipChangeType } from "@sam-monorepo/application";
 import { clsx } from "clsx";
 import { VariantWithLogo } from "./VariantWithLogo";
 
@@ -16,11 +17,13 @@ export const ShipChangeRow = ({ change }: Props) => {
 
       <td
         className={clsx("font-mono uppercase", {
-          "text-green-400": change.changeType === "creation",
-          "text-red-400": change.changeType === "deletion",
+          "text-green-400": change.changeType === ShipChangeType.Creation,
+          "text-red-400": change.changeType === ShipChangeType.Deletion,
         })}
       >
-        {change.changeType === "creation" ? "Erstellt" : "Gelöscht"}
+        {change.changeType === ShipChangeType.Creation
+          ? "Erstellt"
+          : "Gelöscht"}
       </td>
 
       <td className="overflow-hidden">
@@ -39,8 +42,8 @@ export const ShipChangeRow = ({ change }: Props) => {
           <CitizenLink
             citizen={{
               id: change.actorId,
-              handle: change.actorHandle ?? null,
-              deletedAt: change.actorDeletedAt ?? null,
+              handle: change.actorHandle,
+              deletedAt: change.actorDeletedAt,
             }}
             className="block rounded-secondary p-2 hover:bg-white/10 hover:no-underline! focus-visible:bg-white/10"
           />

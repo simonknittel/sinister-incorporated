@@ -4,7 +4,8 @@ import {
   TableTile,
   type TableColumn,
 } from "@/modules/common/components/TableTile";
-import { parseAsStringLiteral, type SearchParams } from "nuqs/server";
+import { ShipChangeFilter } from "@sam-monorepo/application";
+import { parseAsStringEnum, type SearchParams } from "nuqs/server";
 import { getShipChanges } from "../queries/getShipChanges";
 import { ShipChangeRow } from "./ShipChangeRow";
 
@@ -17,11 +18,9 @@ const COLUMNS: TableColumn[] = [
 ];
 
 const loadSearchParams = createCursorPaginationLoader({
-  changeType: parseAsStringLiteral([
-    "both",
-    "creation",
-    "deletion",
-  ]).withDefault("both"),
+  changeType: parseAsStringEnum(Object.values(ShipChangeFilter)).withDefault(
+    ShipChangeFilter.Both,
+  ),
 });
 
 interface Props {

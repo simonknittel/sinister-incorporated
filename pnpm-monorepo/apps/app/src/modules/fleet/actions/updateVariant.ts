@@ -1,202 +1,34 @@
 "use server";
 
-import { prisma } from "@/db";
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
+import { createUseCaseAction } from "@/modules/application";
 import {
-  getAccessibleWikiPage,
-  WikiPageAccessTier,
+  updateVariantInputSchema,
+  updateVariant as updateVariantUseCase,
 } from "@sam-monorepo/application";
-import { VariantStatus } from "@sam-monorepo/database/client";
-import { refresh } from "next/cache";
-import * as z from "zod";
-import { ExternalService } from "../types";
-import { createAndReturnTags } from "../utils/createAndReturnTags";
-import {
-  syncVariantExternalLinks,
-  type IncomingLink,
-} from "../utils/syncVariantExternalLinks";
 
-const schema = z.object({
-  id: z.cuid(),
-  name: z.string().trim().min(1).max(255).optional(),
-  status: z
-    .enum([VariantStatus.FLIGHT_READY, VariantStatus.NOT_FLIGHT_READY])
-    .optional(),
-  tagKeys: z.array(z.string().trim()).max(50).optional(),
-  tagValues: z.array(z.string().trim()).max(50).optional(),
-  linkServiceNames: z
-    .array(
-      z.enum([
-        ExternalService.SPVIEWER,
-        ExternalService.RSI,
-        ExternalService.FLEETYARDS,
-      ]),
-    )
-    .max(50)
-    .nullish(),
-  linkUrls: z.array(z.httpUrl()).max(50).nullish(),
-  wikiPageId: z.union([z.cuid2(), z.literal("")]).optional(),
+export const updateVariant = createUseCaseAction({
+  name: "updateVariant",
+  schema: updateVariantInputSchema,
+  useCase: updateVariantUseCase,
+  parseFormData: (formData) => ({
+    variant_id: formData.get("id"),
+    name: formData.get("name"),
+    status: formData.get("status"),
+    wiki_page_id: formData.has("wikiPageId")
+      ? formData.get("wikiPageId")
+      : undefined,
+    tag_keys: formData.has("tagKeys[]")
+      ? formData.getAll("tagKeys[]")
+      : undefined,
+    tag_values: formData.has("tagValues[]")
+      ? formData.getAll("tagValues[]")
+      : undefined,
+    link_service_names: formData.has("linkServiceNames[]")
+      ? formData.getAll("linkServiceNames[]")
+      : undefined,
+    link_urls: formData.has("linkUrls[]")
+      ? formData.getAll("linkUrls[]")
+      : undefined,
+  }),
+  success: (t) => t("Common.successfullySaved"),
 });
-
-export const updateVariant = createAuthenticatedAction(
-  "updateVariant",
-  schema,
-  async (formData, authentication, data, t) => {
-    if (
-      !(await authentication.authorize(
-        "manufacturersSeriesAndVariants",
-        "manage",
-      )) ||
-      !authentication.session.entity
-    )
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    const existingVariant = await prisma.variant.findUnique({
-      where: {
-        id: data.id,
-      },
-      select: {
-        name: true,
-        status: true,
-        wikiPageId: true,
-        externalLinks: {
-          select: {
-            serviceName: true,
-            url: true,
-          },
-        },
-      },
-    });
-    if (!existingVariant) {
-      /**
-       * A different user deleted the variant before, and the page must show it
-       */
-      return rejectConflict(t("Common.notFound"), formData);
-    }
-
-    /**
-     * A changed link must point at a readable page of the global wiki. One
-     * generic error for unknown, trashed and unreadable pages alike, so
-     * page existence never leaks. Keeping the unchanged value is exempt:
-     * a manager who cannot read the currently linked page must still be
-     * able to save the other fields without unlinking it.
-     */
-    const incomingWikiPageId =
-      data.wikiPageId === undefined
-        ? undefined
-        : data.wikiPageId === ""
-          ? null
-          : data.wikiPageId;
-    if (
-      incomingWikiPageId &&
-      incomingWikiPageId !== existingVariant.wikiPageId
-    ) {
-      const wikiContext = await getWikiContext();
-      if (
-        !wikiContext ||
-        !getAccessibleWikiPage(
-          wikiContext,
-          incomingWikiPageId,
-          WikiPageAccessTier.Read,
-        )
-      )
-        return {
-          error: t("Common.badRequest"),
-          requestPayload: formData,
-        };
-    }
-
-    /**
-     * Update variant
-     */
-    const tagsToConnect = await createAndReturnTags(
-      data.tagKeys,
-      data.tagValues,
-      authentication.session.entity.id,
-    );
-
-    const updatedItem = await prisma.variant.update({
-      where: {
-        id: data.id,
-      },
-      data: {
-        name: data.name,
-        status: data.status,
-        wikiPageId: incomingWikiPageId,
-        tags: {
-          set: tagsToConnect.map((tagId) => ({ id: tagId })),
-        },
-      },
-    });
-
-    const incomingLinks = data.linkServiceNames
-      ?.map((serviceName, index) => ({
-        serviceName,
-        url: data.linkUrls?.[index],
-      }))
-      .filter((link) => Boolean(link.serviceName && link.url)) as
-      IncomingLink[] | undefined;
-    await syncVariantExternalLinks(
-      updatedItem.id,
-      incomingLinks,
-      authentication.session.entity.id,
-    );
-
-    refresh();
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.VARIANT_UPDATED_V3,
-        data: {
-          variantId: updatedItem.id,
-          seriesId: updatedItem.seriesId,
-          previousName: existingVariant.name,
-          newName: updatedItem.name,
-          previousStatus: existingVariant.status,
-          newStatus: updatedItem.status,
-          previousLinks: existingVariant.externalLinks,
-          newLinks: incomingLinks ?? [],
-          previousWikiPageId: existingVariant.wikiPageId,
-          newWikiPageId: updatedItem.wikiPageId,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
-    return {
-      success: t("Common.successfullySaved"),
-    };
-  },
-  {
-    parseFormData: (formData) => ({
-      id: formData.get("id"),
-      name: formData.get("name"),
-      status: formData.get("status"),
-      wikiPageId: formData.has("wikiPageId")
-        ? formData.get("wikiPageId")
-        : undefined,
-      tagKeys: formData.has("tagKeys[]")
-        ? formData.getAll("tagKeys[]")
-        : undefined,
-      tagValues: formData.has("tagValues[]")
-        ? formData.getAll("tagValues[]")
-        : undefined,
-      linkServiceNames: formData.has("linkServiceNames[]")
-        ? formData.getAll("linkServiceNames[]")
-        : undefined,
-      linkUrls: formData.has("linkUrls[]")
-        ? formData.getAll("linkUrls[]")
-        : undefined,
-    }),
-  },
-);

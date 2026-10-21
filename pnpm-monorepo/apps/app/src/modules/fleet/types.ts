@@ -1,8 +1,4 @@
-export enum ExternalService {
-  SPVIEWER = "SPVIEWER",
-  RSI = "RSI",
-  FLEETYARDS = "FLEETYARDS",
-}
+import { ExternalService } from "@sam-monorepo/domain";
 
 export const ExternalServiceDisplayNames: Record<ExternalService, string> = {
   [ExternalService.SPVIEWER]: "SPViewer",

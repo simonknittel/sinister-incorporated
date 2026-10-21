@@ -3,9 +3,10 @@
 import Button from "@/modules/common/components/Button";
 import { createId } from "@paralleldrive/cuid2";
 import { type VariantExternalLink } from "@sam-monorepo/database/browser";
+import { ExternalService } from "@sam-monorepo/domain";
 import { useState } from "react";
 import { FaPlus, FaTrash } from "react-icons/fa";
-import { ExternalService, ExternalServiceDisplayNames } from "../types";
+import { ExternalServiceDisplayNames } from "../types";
 
 type ExternalLinkFields = Pick<
   VariantExternalLink,

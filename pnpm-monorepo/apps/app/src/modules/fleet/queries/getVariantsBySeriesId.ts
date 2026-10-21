@@ -1,32 +1,23 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { type Series } from "@sam-monorepo/database/client";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
+import { findSeriesVariantRows } from "@sam-monorepo/application";
+import { cache } from "react";
 
-export const getVariantsBySeriesId = withTrace(
-  "getVariantsBySeriesId",
-  async (seriesId: Series["id"]) => {
-    return prisma.variant.findMany({
-      where: {
-        seriesId,
-      },
-      include: {
-        _count: {
-          select: {
-            ships: {
-              where: {
-                deletedAt: null,
-                owner: ACTIVE_CITIZEN_WHERE,
-              },
-            },
-          },
-        },
-        tags: true,
-        externalLinks: true,
-      },
-      orderBy: {
-        name: "asc",
-      },
-    });
-  },
+/** See `findSeriesVariantRows()` */
+export const getVariantsBySeriesId = cache(
+  withTrace("getVariantsBySeriesId", async (seriesId: string) => {
+    try {
+      return await findSeriesVariantRows(
+        getApplicationContext(),
+        await getRequestActor(),
+        { seriesId },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  }),
 );

@@ -1,173 +1,35 @@
 "use server";
 
-import { prisma } from "@/db";
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { getWikiContext } from "@/modules/wiki/queries/getWikiContext";
+import { createUseCaseAction } from "@/modules/application";
 import {
-  getAccessibleWikiPage,
-  WikiPageAccessTier,
+  createVariantInputSchema,
+  createVariant as createVariantUseCase,
 } from "@sam-monorepo/application";
-import { VariantStatus } from "@sam-monorepo/database/client";
-import { refresh } from "next/cache";
-import * as z from "zod";
-import { ExternalService } from "../types";
-import { createAndReturnTags } from "../utils/createAndReturnTags";
-import {
-  syncVariantExternalLinks,
-  type IncomingLink,
-} from "../utils/syncVariantExternalLinks";
 
-const schema = z.object({
-  seriesId: z.string(),
-  name: z.string().trim().min(1).max(255),
-  status: z
-    .enum([VariantStatus.FLIGHT_READY, VariantStatus.NOT_FLIGHT_READY])
-    .optional(),
-  tagKeys: z.array(z.string().trim()).max(50).optional(),
-  tagValues: z.array(z.string().trim()).max(50).optional(),
-  linkServiceNames: z
-    .array(
-      z.enum([
-        ExternalService.SPVIEWER,
-        ExternalService.RSI,
-        ExternalService.FLEETYARDS,
-      ]),
-    )
-    .max(50)
-    .nullish(),
-  linkUrls: z.array(z.httpUrl()).max(50).nullish(),
-  wikiPageId: z.union([z.cuid2(), z.literal("")]).optional(),
+/** The hidden field `manufacturerId` of the form is not an input */
+export const createVariant = createUseCaseAction({
+  name: "createVariant",
+  schema: createVariantInputSchema,
+  useCase: createVariantUseCase,
+  parseFormData: (formData) => ({
+    series_id: formData.get("seriesId"),
+    name: formData.get("name"),
+    status: formData.has("status") ? formData.get("status") : undefined,
+    wiki_page_id: formData.has("wikiPageId")
+      ? formData.get("wikiPageId")
+      : undefined,
+    tag_keys: formData.has("tagKeys[]")
+      ? formData.getAll("tagKeys[]")
+      : undefined,
+    tag_values: formData.has("tagValues[]")
+      ? formData.getAll("tagValues[]")
+      : undefined,
+    link_service_names: formData.has("linkServiceNames[]")
+      ? formData.getAll("linkServiceNames[]")
+      : undefined,
+    link_urls: formData.has("linkUrls[]")
+      ? formData.getAll("linkUrls[]")
+      : undefined,
+  }),
+  success: (t) => t("Common.successfullySaved"),
 });
-
-export const createVariant = createAuthenticatedAction(
-  "createVariant",
-  schema,
-  async (formData, authentication, data, t) => {
-    if (
-      !(await authentication.authorize(
-        "manufacturersSeriesAndVariants",
-        "manage",
-      )) ||
-      !authentication.session.entity
-    )
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    const series = await prisma.series.findUnique({
-      where: { id: data.seriesId },
-      select: { id: true },
-    });
-    if (!series) {
-      /**
-       * A different user deleted the series before, and the page must show it
-       */
-      return rejectConflict(t("Common.notFound"), formData);
-    }
-
-    /**
-     * The linked page must be a readable page of the global wiki. One
-     * generic error for unknown, trashed and unreadable pages alike, so
-     * page existence never leaks.
-     */
-    const wikiPageId = data.wikiPageId ? data.wikiPageId : null;
-    if (wikiPageId) {
-      const wikiContext = await getWikiContext();
-      if (
-        !wikiContext ||
-        !getAccessibleWikiPage(wikiContext, wikiPageId, WikiPageAccessTier.Read)
-      )
-        return {
-          error: t("Common.badRequest"),
-          requestPayload: formData,
-        };
-    }
-
-    /**
-     * Create variant
-     */
-    const tagsToConnect = await createAndReturnTags(
-      data.tagKeys,
-      data.tagValues,
-      authentication.session.entity.id,
-    );
-
-    const createdVariant = await prisma.variant.create({
-      data: {
-        seriesId: data.seriesId,
-        name: data.name,
-        status: data.status,
-        wikiPageId,
-        ...(tagsToConnect &&
-          tagsToConnect.length > 0 && {
-            tags: {
-              connect: tagsToConnect.map((tagId) => ({ id: tagId })),
-            },
-          }),
-      },
-    });
-
-    const incomingLinks = data.linkServiceNames
-      ?.map((serviceName, index) => ({
-        serviceName,
-        url: data.linkUrls?.[index],
-      }))
-      .filter((link) => Boolean(link.serviceName && link.url)) as
-      IncomingLink[] | undefined;
-    await syncVariantExternalLinks(
-      createdVariant.id,
-      incomingLinks,
-      authentication.session.entity.id,
-    );
-
-    refresh();
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.VARIANT_CREATED_V3,
-        data: {
-          variantId: createdVariant.id,
-          seriesId: createdVariant.seriesId,
-          name: createdVariant.name,
-          status: createdVariant.status,
-          links: incomingLinks ?? [],
-          wikiPageId: createdVariant.wikiPageId,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
-    return {
-      success: t("Common.successfullySaved"),
-    };
-  },
-  {
-    parseFormData: (formData) => ({
-      seriesId: formData.get("seriesId"),
-      name: formData.get("name"),
-      status: formData.has("status") ? formData.get("status") : undefined,
-      wikiPageId: formData.has("wikiPageId")
-        ? formData.get("wikiPageId")
-        : undefined,
-      tagKeys: formData.has("tagKeys[]")
-        ? formData.getAll("tagKeys[]")
-        : undefined,
-      tagValues: formData.has("tagValues[]")
-        ? formData.getAll("tagValues[]")
-        : undefined,
-      linkServiceNames: formData.has("linkServiceNames[]")
-        ? formData.getAll("linkServiceNames[]")
-        : undefined,
-      linkUrls: formData.has("linkUrls[]")
-        ? formData.getAll("linkUrls[]")
-        : undefined,
-    }),
-  },
-);

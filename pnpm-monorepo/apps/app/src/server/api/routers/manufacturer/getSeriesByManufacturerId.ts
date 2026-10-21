@@ -1,20 +1,32 @@
+import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  findManufacturerSeriesRows,
+  ForbiddenError,
+  idSchema,
+} from "@sam-monorepo/application";
+import { TRPCError } from "@trpc/server";
 import * as z from "zod";
-import { protectedProcedure } from "../../trpc";
+import { protectedProcedure, toTrpcError } from "../../trpc";
 
 export const getSeriesByManufacturerId = protectedProcedure
-  .input(
-    z.object({
-      manufacturerId: z.cuid(),
-    }),
-  )
+  .input(z.object({ manufacturerId: idSchema }))
   .query(async ({ ctx, input }) => {
-    const series = await ctx.prisma.series.findMany({
-      where: {
-        manufacturerId: input.manufacturerId,
-      },
-      orderBy: {
-        name: "asc",
-      },
-    });
-    return series;
+    try {
+      const series = await findManufacturerSeriesRows(
+        getApplicationContext(),
+        await toActor(ctx.session),
+        { manufacturerId: input.manufacturerId },
+      );
+
+      return series.map(({ id, name, manufacturerId }) => ({
+        id,
+        name,
+        manufacturerId,
+      }));
+    } catch (error) {
+      if (error instanceof ForbiddenError)
+        throw new TRPCError({ code: "FORBIDDEN", message: error.message });
+
+      throw toTrpcError(error, "Failed to load the series");
+    }
   });

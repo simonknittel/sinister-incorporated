@@ -1,6 +1,8 @@
-import { prisma } from "@/db";
-import { authenticate } from "@/modules/auth/server";
-import { canViewVariantPages } from "../utils/canViewVariantPages";
+import {
+  getApplicationContext,
+  getOptionalRequestActor,
+} from "@/modules/application";
+import { findVariantBacklinks } from "@sam-monorepo/application";
 import { VariantWithLogo } from "./VariantWithLogo";
 
 interface Props {
@@ -15,28 +17,11 @@ interface Props {
  * nothing, like the section they could not open.
  */
 export const VariantWikiBacklinks = async ({ pageId }: Props) => {
-  const authentication = await authenticate();
-  if (!authentication) return null;
+  const actor = await getOptionalRequestActor();
+  if (!actor) return null;
 
-  if (!(await canViewVariantPages(authentication))) return null;
-
-  const variants = await prisma.variant.findMany({
-    where: { wikiPageId: pageId },
-    select: {
-      id: true,
-      name: true,
-      series: {
-        select: {
-          manufacturer: {
-            select: {
-              name: true,
-              image: { select: { id: true, mimeType: true } },
-            },
-          },
-        },
-      },
-    },
-    orderBy: { name: "asc" },
+  const variants = await findVariantBacklinks(getApplicationContext(), actor, {
+    pageId,
   });
   if (variants.length === 0) return null;
 

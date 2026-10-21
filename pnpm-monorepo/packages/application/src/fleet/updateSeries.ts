@@ -1,0 +1,66 @@
+import { AuditEventType } from "@sam-monorepo/domain";
+import * as z from "zod";
+import { requirePermission, type Actor } from "../actor.js";
+import type { ApplicationContext } from "../context.js";
+import { NotFoundError, rethrowRecordNotFound } from "../errors.js";
+import { idSchema } from "../pagination.js";
+import { withSpan } from "../withSpan.js";
+import {
+  SERIES_OUTPUT_SELECT,
+  toSeriesOutput,
+  type SeriesOutput,
+} from "./createSeries.js";
+import { FleetCatalogErrorMessage } from "./fleetCatalogErrors.js";
+
+export const updateSeriesInputSchema = z.object({
+  series_id: idSchema,
+  /** An absent name stays */
+  name: z.string().trim().min(1).optional(),
+});
+
+/**
+ * Changes the name of a series. A name that a different series has already
+ * fails with the unique constraint of the names.
+ *
+ * @throws NotFoundError when the series does not exist
+ */
+export const updateSeries = (
+  context: ApplicationContext,
+  actor: Actor,
+  input: z.infer<typeof updateSeriesInputSchema>,
+): Promise<SeriesOutput> =>
+  withSpan(context, "updateSeries", async () => {
+    requirePermission(actor, "manufacturersSeriesAndVariants", "manage");
+
+    const existingSeries = await context.prisma.series.findUnique({
+      where: { id: input.series_id },
+      select: { name: true },
+    });
+    if (!existingSeries)
+      throw new NotFoundError(FleetCatalogErrorMessage.SeriesNotFound);
+
+    const series = await rethrowRecordNotFound(
+      () =>
+        context.prisma.series.update({
+          where: { id: input.series_id },
+          data: { name: input.name },
+          select: SERIES_OUTPUT_SELECT,
+        }),
+      FleetCatalogErrorMessage.SeriesNotFound,
+    );
+
+    await context.audit.create([
+      {
+        type: AuditEventType.SERIES_UPDATED,
+        data: {
+          seriesId: series.id,
+          manufacturerId: series.manufacturerId,
+          previousName: existingSeries.name,
+          newName: series.name,
+        },
+        createdById: actor.userId,
+      },
+    ]);
+
+    return toSeriesOutput(series);
+  });

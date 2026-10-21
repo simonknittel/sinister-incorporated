@@ -1,25 +1,11 @@
-import { prisma } from "@/db";
+import { getApplicationContext } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { findManufacturerRows } from "@sam-monorepo/application";
+import { cache } from "react";
 
-export const getManufacturers = withTrace("getManufacturers", async () => {
-  return prisma.manufacturer.findMany({
-    select: {
-      id: true,
-      imageId: true,
-      image: { select: { id: true, mimeType: true } },
-      name: true,
-      series: {
-        select: {
-          id: true,
-          name: true,
-        },
-        orderBy: {
-          name: "asc",
-        },
-      },
-    },
-    orderBy: {
-      name: "asc",
-    },
-  });
-});
+/** See `findManufacturerRows()` */
+export const getManufacturers = cache(
+  withTrace("getManufacturers", async () =>
+    findManufacturerRows(getApplicationContext()),
+  ),
+);

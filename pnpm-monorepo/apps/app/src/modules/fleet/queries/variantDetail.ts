@@ -1,53 +1,23 @@
-import { prisma } from "@/db";
-import { requireAuthentication } from "@/modules/auth/server";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
-import { forbidden } from "next/navigation";
+import { findVariantDetail } from "@sam-monorepo/application";
 import { cache } from "react";
-import { canViewVariantPages } from "../utils/canViewVariantPages";
 
+/** See `findVariantDetail()` */
 export const getVariantDetail = cache(
-  withTrace(
-    "getVariantDetail",
-    async (variantId: string, requireOtherShipsRead = false) => {
-      const authentication = await requireAuthentication();
-
-      if (!(await canViewVariantPages(authentication))) forbidden();
-
-      if (requireOtherShipsRead) {
-        const hasOtherShipsRead = await authentication.authorize(
-          "otherShips",
-          "read",
-        );
-        if (!hasOtherShipsRead) forbidden();
-      }
-
-      return prisma.variant.findUnique({
-        where: { id: variantId },
-        include: {
-          series: {
-            include: {
-              manufacturer: {
-                include: {
-                  image: { select: { id: true, mimeType: true } },
-                },
-              },
-            },
-          },
-          tags: true,
-          externalLinks: true,
-          _count: {
-            select: {
-              ships: {
-                where: {
-                  deletedAt: null,
-                  owner: ACTIVE_CITIZEN_WHERE,
-                },
-              },
-            },
-          },
-        },
-      });
-    },
-  ),
+  withTrace("getVariantDetail", async (variantId: string) => {
+    try {
+      return await findVariantDetail(
+        getApplicationContext(),
+        await getRequestActor(),
+        { variantId },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  }),
 );

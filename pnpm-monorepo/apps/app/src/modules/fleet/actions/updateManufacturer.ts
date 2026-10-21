@@ -1,91 +1,19 @@
 "use server";
 
-import { prisma } from "@/db";
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { refresh } from "next/cache";
-import * as z from "zod";
+import { createUseCaseAction } from "@/modules/application";
+import {
+  updateManufacturer,
+  updateManufacturerInputSchema,
+} from "@sam-monorepo/application";
 
-const schema = z.object({
-  id: z.cuid(),
-  name: z.string().trim().min(1).optional(),
-  imageId: z.string().trim().min(1).max(255).optional(),
+export const updateManufacturerAction = createUseCaseAction({
+  name: "updateManufacturerAction",
+  schema: updateManufacturerInputSchema,
+  useCase: updateManufacturer,
+  parseFormData: (formData) => ({
+    manufacturer_id: formData.get("id"),
+    name: formData.has("name") ? formData.get("name") : undefined,
+    image_id: formData.has("imageId") ? formData.get("imageId") : undefined,
+  }),
+  success: (t) => t("Common.successfullySaved"),
 });
-
-export const updateManufacturerAction = createAuthenticatedAction(
-  "updateManufacturerAction",
-  schema,
-  async (formData, authentication, data, t) => {
-    if (
-      !(await authentication.authorize(
-        "manufacturersSeriesAndVariants",
-        "manage",
-      ))
-    )
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    /**
-     * Update
-     */
-    const { id, ...updateData } = data;
-
-    const existingManufacturer = await prisma.manufacturer.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        name: true,
-        imageId: true,
-      },
-    });
-    if (!existingManufacturer) {
-      /**
-       * A different user deleted the manufacturer before, and the page must
-       * show it
-       */
-      return rejectConflict(t("Common.notFound"), formData);
-    }
-
-    const updatedManufacturer = await prisma.manufacturer.update({
-      where: {
-        id,
-      },
-      data: updateData,
-    });
-
-    refresh();
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.MANUFACTURER_UPDATED,
-        data: {
-          manufacturerId: updatedManufacturer.id,
-          previousName: existingManufacturer.name,
-          newName: updatedManufacturer.name,
-          previousImageId: existingManufacturer.imageId || null,
-          newImageId: updatedManufacturer.imageId,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    /**
-     * Respond with the result
-     */
-    return {
-      success: t("Common.successfullySaved"),
-    };
-  },
-  {
-    parseFormData: (formData) => ({
-      id: formData.get("id"),
-      name: formData.has("name") ? formData.get("name") : undefined,
-      imageId: formData.has("imageId") ? formData.get("imageId") : undefined,
-    }),
-  },
-);

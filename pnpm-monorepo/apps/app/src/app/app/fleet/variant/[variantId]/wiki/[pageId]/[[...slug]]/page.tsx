@@ -1,8 +1,8 @@
+import { getRequestActor } from "@/modules/application";
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
 import { VariantDetailFrame } from "@/modules/fleet/components/VariantDetailFrame";
 import { getVariantDetail } from "@/modules/fleet/queries/variantDetail";
-import { canViewVariantPages } from "@/modules/fleet/utils/canViewVariantPages";
 import { VariantWikiPageContent } from "@/modules/wiki/components/VariantWikiPageContent";
 import { getVariantWikiContext } from "@/modules/wiki/queries/getVariantWikiContext";
 import {
@@ -10,6 +10,7 @@ import {
   getVariantWikiRootPath,
 } from "@/modules/wiki/utils/wikiPageHref";
 import {
+  canViewVariantPages,
   getAccessibleWikiPage,
   WikiPageAccessTier,
 } from "@sam-monorepo/application";
@@ -47,7 +48,7 @@ export default async function Page(
   );
 
   /** The same 403 behavior as the variant page this route extends */
-  if (!(await canViewVariantPages(authentication))) {
+  if (!canViewVariantPages(await getRequestActor())) {
     await authentication.authorizePage("ship", "manage");
   }
 
