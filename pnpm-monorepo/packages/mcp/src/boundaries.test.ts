@@ -4,17 +4,19 @@ import { expect, test } from "vitest";
 
 /**
  * A later MCP service uses this package without Next.js and without React.
- * Thus the package must not import them, the modules of the app (`@/…`) or
- * `server-only` (a marker of Next.js).
+ * Thus the package must not import them, the modules of the app (`@/…`),
+ * `server-only` (a marker of Next.js) or a host. The host gives the
+ * application context, thus the package must not import `infrastructure`,
+ * the implementations of the ports, either.
  */
 const FORBIDDEN_IMPORT =
-  /^(?:next|next\/.*|react|react\/.*|react-dom|react-dom\/.*|server-only|@\/.*)$/;
+  /^(?:next|next\/.*|react|react\/.*|react-dom|react-dom\/.*|server-only|@\/.*|@sam-monorepo\/(?:app|lambda|collab|scripts|playwright|infrastructure)(?:\/.*)?)$/;
 
 /** Static imports, re-exports, side-effect imports and dynamic imports */
 const IMPORT_SPECIFIER =
   /(?:\bfrom\s*|\bimport\s*\(?\s*|\brequire\s*\(\s*)["']([^"']+)["']/g;
 
-test("the package does not import Next.js, React or the app", async () => {
+test("the package does not import Next.js, React, a host or the infrastructure", async () => {
   const fileNames = (await readdir(import.meta.dirname, { recursive: true }))
     .filter((fileName) => fileName.endsWith(".ts"))
     .sort();

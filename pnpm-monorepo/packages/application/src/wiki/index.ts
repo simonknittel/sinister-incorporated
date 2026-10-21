@@ -271,7 +271,6 @@ export { findWikiRoleCitizens } from "./wikiRoleCitizens.js";
 export {
   buildBriefingWikiContext,
   findReadableWikiScope,
-  loadWikiScopeOfPage,
   toWikiScopeTarget,
   wikiScopeInputSchema,
   type WikiPageScope,

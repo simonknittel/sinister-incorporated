@@ -8,6 +8,7 @@ import {
   FlowRoleAccessType,
 } from "@sam-monorepo/database/client";
 import { AuditEventType } from "@sam-monorepo/domain";
+import { randomUUID } from "node:crypto";
 import { beforeEach, expect, test } from "vitest";
 import {
   createTestActor,
@@ -23,10 +24,14 @@ beforeEach(async () => {
 });
 
 /** A flow, a role with the access tier on it, and an actor with the role */
-const createFlowWithAccess = async (type: FlowRoleAccessType) => {
+const createFlowWithAccess = async (
+  type: FlowRoleAccessType,
+  { flowId }: { readonly flowId?: string } = {},
+) => {
   const role = await prisma.role.create({ data: { name: "Academy" } });
   const flow = await prisma.flow.create({
     data: {
+      id: flowId,
       name: "Academy",
       slug: "academy",
       roleAccess: { create: { roleId: role.id, type } },
@@ -108,6 +113,27 @@ test("refuses a save of an actor whose role can only read the flow", async () =>
   ).rejects.toBeInstanceOf(ForbiddenError);
   expect(await findAllNodes()).toEqual(nodesBefore);
   expect(auditEvents).toEqual([]);
+});
+
+test("saves a flow that keeps the UUID of the migration of 2026-08-21", async () => {
+  const { flow, actor } = await createFlowWithAccess(
+    FlowRoleAccessType.UPDATE,
+    { flowId: randomUUID() },
+  );
+  const { context, auditEvents } = createTestApplicationContext();
+
+  const input = updateFlowInputSchema.parse({
+    flow_id: flow.id,
+    nodes: [],
+    edges: [],
+  });
+
+  expect(await updateFlow(context, actor, input)).toEqual({
+    flow_id: flow.id,
+    node_count: 0,
+    edge_count: 0,
+  });
+  expect(auditEvents).toHaveLength(1);
 });
 
 test("replaces the diagram with one node of each type and one edge", async () => {

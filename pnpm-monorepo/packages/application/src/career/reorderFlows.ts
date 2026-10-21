@@ -3,16 +3,16 @@ import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ConflictError } from "../errors.js";
-import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { CareerErrorMessage } from "./careerErrors.js";
+import { flowIdSchema } from "./flowContext.js";
 
 /** The limit against a crafted payload. The list has far fewer flows. */
 const MAXIMUM_REORDERED_FLOWS = 250;
 
 export const reorderFlowsInputSchema = z.object({
   /** All live flows in the new order */
-  flow_ids: z.array(idSchema).min(1).max(MAXIMUM_REORDERED_FLOWS),
+  flow_ids: z.array(flowIdSchema).min(1).max(MAXIMUM_REORDERED_FLOWS),
 });
 
 export type ReorderFlowsInput = z.infer<typeof reorderFlowsInputSchema>;

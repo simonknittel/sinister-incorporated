@@ -3,13 +3,13 @@ import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError, rethrowRecordNotFound } from "../errors.js";
-import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { CareerErrorMessage } from "./careerErrors.js";
-import type { FlowOutput } from "./createFlow.js";
+import { FLOW_OUTPUT_SELECT, type FlowOutput } from "./createFlow.js";
+import { flowIdSchema } from "./flowContext.js";
 
 export const deleteFlowInputSchema = z.object({
-  flow_id: idSchema,
+  flow_id: flowIdSchema,
 });
 
 export type DeleteFlowInput = z.infer<typeof deleteFlowInputSchema>;
@@ -28,12 +28,11 @@ export const deleteFlow = (
   withSpan(context, "deleteFlow", async () => {
     requirePermission(actor, "career", "manage");
 
-    const flow = await context.prisma.flow.findUnique({
-      where: { id: input.flow_id },
-      select: { id: true, name: true, slug: true, deletedAt: true },
+    const flow = await context.prisma.flow.findFirst({
+      where: { id: input.flow_id, deletedAt: null },
+      select: FLOW_OUTPUT_SELECT,
     });
-    if (!flow || flow.deletedAt)
-      throw new NotFoundError(CareerErrorMessage.FlowNotFound);
+    if (!flow) throw new NotFoundError(CareerErrorMessage.FlowNotFound);
 
     const citizenId = actor.citizen?.id ?? null;
 
@@ -64,5 +63,5 @@ export const deleteFlow = (
       },
     ]);
 
-    return { id: flow.id, name: flow.name, slug: flow.slug };
+    return flow;
   });

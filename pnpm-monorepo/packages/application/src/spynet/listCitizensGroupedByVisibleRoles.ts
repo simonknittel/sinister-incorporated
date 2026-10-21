@@ -1,5 +1,6 @@
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { loadVisibleRoleIds } from "../roles/roleVisibility.js";
 import { withSpan } from "../withSpan.js";
@@ -39,9 +40,7 @@ export const listCitizensGroupedByVisibleRoles = (
       },
       orderBy: { handle: "asc" },
       select: {
-        id: true,
-        handle: true,
-        deletedAt: true,
+        ...CITIZEN_REFERENCE_SELECT,
         roleAssignments: {
           where: { roleId: { in: visibleRoleIds } },
           select: { roleId: true },

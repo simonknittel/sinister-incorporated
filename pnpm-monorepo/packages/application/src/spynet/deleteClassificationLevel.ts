@@ -6,6 +6,10 @@ import { rethrowRecordNotFound } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { deletePermissionStringsReferencing } from "../roles/deletePermissionStringsReferencing.js";
 import { NoteClassificationErrorMessage } from "./noteClassificationErrors.js";
+import {
+  NOTE_CLASSIFICATION_SELECT,
+  type NoteClassificationRow,
+} from "./noteClassificationRows.js";
 
 export const deleteClassificationLevelInputSchema = z.object({
   classification_level_id: idSchema,
@@ -15,15 +19,9 @@ export type DeleteClassificationLevelInput = z.infer<
   typeof deleteClassificationLevelInputSchema
 >;
 
-/** The classification level before the delete */
-export interface DeleteClassificationLevelOutput {
-  readonly id: string;
-  readonly name: string;
-}
-
 /**
- * Deletes a classification level, and the permission strings that refer to it. Requires
- * `classificationLevel;manage`.
+ * Deletes a classification level, and the permission strings that refer to
+ * it. Requires `classificationLevel;manage`.
  *
  * @throws NotFoundError when the classification level does not exist
  */
@@ -31,7 +29,7 @@ export const deleteClassificationLevel = async (
   context: ApplicationContext,
   actor: Actor,
   input: DeleteClassificationLevelInput,
-): Promise<DeleteClassificationLevelOutput> => {
+): Promise<NoteClassificationRow> => {
   requirePermission(actor, "classificationLevel", "manage");
 
   /**
@@ -43,7 +41,7 @@ export const deleteClassificationLevel = async (
       context.prisma.$transaction([
         context.prisma.classificationLevel.delete({
           where: { id: input.classification_level_id },
-          select: { id: true, name: true },
+          select: NOTE_CLASSIFICATION_SELECT,
         }),
         deletePermissionStringsReferencing(
           context.prisma,

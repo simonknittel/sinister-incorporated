@@ -1,23 +1,15 @@
 import type { Prisma } from "@sam-monorepo/database/client";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ForbiddenError } from "../errors.js";
+import {
+  ACTIVE_OWNER_SHIP_WHERE,
+  VARIANT_EXTERNAL_LINK_SELECT,
+  VARIANT_LINK_SELECT,
+  VARIANT_MANUFACTURER_SELECT,
+} from "./catalogRows.js";
 import { VARIANT_TAG_SELECT } from "./shipVariant.js";
 import { canViewVariantPages } from "./variantPageAccess.js";
-
-const VARIANT_MANUFACTURER_SELECT = {
-  series: {
-    select: {
-      manufacturer: {
-        select: {
-          name: true,
-          image: { select: { id: true, mimeType: true } },
-        },
-      },
-    },
-  },
-} as const satisfies Prisma.VariantSelect;
 
 const VARIANT_DETAIL_SELECT = {
   id: true,
@@ -25,12 +17,8 @@ const VARIANT_DETAIL_SELECT = {
   status: true,
   ...VARIANT_MANUFACTURER_SELECT,
   tags: { select: VARIANT_TAG_SELECT },
-  externalLinks: { select: { id: true, serviceName: true, url: true } },
-  _count: {
-    select: {
-      ships: { where: { deletedAt: null, owner: ACTIVE_CITIZEN_WHERE } },
-    },
-  },
+  externalLinks: { select: VARIANT_EXTERNAL_LINK_SELECT },
+  _count: { select: { ships: { where: ACTIVE_OWNER_SHIP_WHERE } } },
 } as const satisfies Prisma.VariantSelect;
 
 /**
@@ -41,10 +29,6 @@ export type VariantDetailRow = Prisma.VariantGetPayload<{
   select: typeof VARIANT_DETAIL_SELECT;
 }>;
 
-export interface FindVariantDetailInput {
-  readonly variantId: string;
-}
-
 /**
  * The variant of the variant page and of its embedded wiki, or null when it
  * does not exist
@@ -54,7 +38,7 @@ export interface FindVariantDetailInput {
 export const findVariantDetail = async (
   context: Pick<ApplicationContext, "prisma">,
   actor: Actor,
-  { variantId }: FindVariantDetailInput,
+  { variantId }: { readonly variantId: string },
 ): Promise<VariantDetailRow | null> => {
   if (!canViewVariantPages(actor))
     throw new ForbiddenError(
@@ -67,20 +51,10 @@ export const findVariantDetail = async (
   });
 };
 
-const VARIANT_BACKLINK_SELECT = {
-  id: true,
-  name: true,
-  ...VARIANT_MANUFACTURER_SELECT,
-} as const satisfies Prisma.VariantSelect;
-
 /** A variant that embeds a wiki page */
 export type VariantBacklinkRow = Prisma.VariantGetPayload<{
-  select: typeof VARIANT_BACKLINK_SELECT;
+  select: typeof VARIANT_LINK_SELECT;
 }>;
-
-export interface FindVariantBacklinksInput {
-  readonly pageId: string;
-}
 
 /**
  * The variants that embed the wiki page as their root page (not as an
@@ -90,13 +64,13 @@ export interface FindVariantBacklinksInput {
 export const findVariantBacklinks = async (
   context: Pick<ApplicationContext, "prisma">,
   actor: Actor,
-  { pageId }: FindVariantBacklinksInput,
+  { pageId }: { readonly pageId: string },
 ): Promise<VariantBacklinkRow[]> => {
   if (!canViewVariantPages(actor)) return [];
 
   return context.prisma.variant.findMany({
     where: { wikiPageId: pageId },
-    select: VARIANT_BACKLINK_SELECT,
+    select: VARIANT_LINK_SELECT,
     orderBy: { name: "asc" },
   });
 };

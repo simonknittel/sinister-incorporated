@@ -1,14 +1,13 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
 import { CitizenErrorMessage } from "../spynet/citizenErrors.js";
 
 const SILC_BALANCE_ROW_SELECT = {
-  id: true,
-  handle: true,
-  deletedAt: true,
+  ...CITIZEN_REFERENCE_SELECT,
   silcBalance: true,
   totalEarnedSilc: true,
 } as const satisfies Prisma.CitizenSelect;

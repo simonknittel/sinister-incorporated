@@ -1,4 +1,5 @@
 import type { Prisma } from "@sam-monorepo/database/client";
+import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
 
 // The catalog of the fleet is not secret, and its callers have different
@@ -6,10 +7,37 @@ import type { ApplicationContext } from "../context.js";
 // wiki editor). Thus the helpers of this file take no actor and check no
 // permission: the callers check it.
 
-const UPLOAD_IMAGE_SELECT = {
+/** An uploaded image, for example the logo of a manufacturer */
+export const UPLOAD_IMAGE_SELECT = {
   id: true,
   mimeType: true,
 } as const satisfies Prisma.UploadSelect;
+
+/** The name and the logo of the manufacturer of a variant */
+export const VARIANT_MANUFACTURER_SELECT = {
+  series: {
+    select: {
+      manufacturer: {
+        select: { name: true, image: { select: UPLOAD_IMAGE_SELECT } },
+      },
+    },
+  },
+} as const satisfies Prisma.VariantSelect;
+
+export const VARIANT_EXTERNAL_LINK_SELECT = {
+  id: true,
+  serviceName: true,
+  url: true,
+} as const satisfies Prisma.VariantExternalLinkSelect;
+
+/**
+ * The ships that the counts of a variant include: the ships of the active
+ * citizens that are not deleted
+ */
+export const ACTIVE_OWNER_SHIP_WHERE = {
+  deletedAt: null,
+  owner: ACTIVE_CITIZEN_WHERE,
+} as const satisfies Prisma.ShipWhereInput;
 
 const MANUFACTURER_ROW_SELECT = {
   id: true,
@@ -53,10 +81,11 @@ export type VariantCatalogVariant =
   VariantCatalogManufacturer["series"][number]["variants"][number];
 
 /**
- * Every manufacturer with its variants, for the ship and required-variant
- * pickers. The pickers group by manufacturer name and offer variants by id
- * and name, so nothing else is fetched — the catalog is unbounded and is
- * serialized into a client component wherever it is used.
+ * All manufacturers with their variants, for the pickers of the ships and of
+ * the required variants. The pickers group the variants by the name of the
+ * manufacturer and show the id and the name of each variant. The catalog has
+ * no limit and goes into a client component on each page that uses it, thus
+ * the select has only these fields.
  */
 export const findVariantCatalog = (
   context: Pick<ApplicationContext, "prisma">,
@@ -67,13 +96,7 @@ export const findVariantCatalog = (
 export const VARIANT_LINK_SELECT = {
   id: true,
   name: true,
-  series: {
-    select: {
-      manufacturer: {
-        select: { name: true, image: { select: UPLOAD_IMAGE_SELECT } },
-      },
-    },
-  },
+  ...VARIANT_MANUFACTURER_SELECT,
 } as const satisfies Prisma.VariantSelect;
 
 /** A variant that a wiki page can link to */

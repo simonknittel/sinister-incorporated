@@ -35,13 +35,11 @@ export {
   createClassificationLevel,
   createClassificationLevelInputSchema,
   type CreateClassificationLevelInput,
-  type CreateClassificationLevelOutput,
 } from "./createClassificationLevel.js";
 export {
   createNoteType,
   createNoteTypeInputSchema,
   type CreateNoteTypeInput,
-  type CreateNoteTypeOutput,
 } from "./createNoteType.js";
 export {
   deleteCitizen,
@@ -59,13 +57,11 @@ export {
   deleteClassificationLevel,
   deleteClassificationLevelInputSchema,
   type DeleteClassificationLevelInput,
-  type DeleteClassificationLevelOutput,
 } from "./deleteClassificationLevel.js";
 export {
   deleteNoteType,
   deleteNoteTypeInputSchema,
   type DeleteNoteTypeInput,
-  type DeleteNoteTypeOutput,
 } from "./deleteNoteType.js";
 export {
   findCitizenNoteTabs,
@@ -142,10 +138,9 @@ export {
 } from "./listUpcomingBirthdays.js";
 export { NoteClassificationErrorMessage } from "./noteClassificationErrors.js";
 export {
+  filterCreatableClassificationLevels,
   findClassificationLevels,
-  findCreatableClassificationLevels,
   findNoteTypes,
-  type CreatableClassificationLevelsInput,
   type NoteClassificationRow,
 } from "./noteClassificationRows.js";
 export { getNotePermissionAttributes } from "./notePermissions.js";
@@ -165,7 +160,6 @@ export {
   updateClassificationLevel,
   updateClassificationLevelInputSchema,
   type UpdateClassificationLevelInput,
-  type UpdateClassificationLevelOutput,
 } from "./updateClassificationLevel.js";
 export {
   updateNote,
@@ -177,7 +171,6 @@ export {
   updateNoteType,
   updateNoteTypeInputSchema,
   type UpdateNoteTypeInput,
-  type UpdateNoteTypeOutput,
 } from "./updateNoteType.js";
 export {
   updateOwnProfile,

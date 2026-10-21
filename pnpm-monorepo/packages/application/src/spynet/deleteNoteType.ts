@@ -6,18 +6,16 @@ import { rethrowRecordNotFound } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { deletePermissionStringsReferencing } from "../roles/deletePermissionStringsReferencing.js";
 import { NoteClassificationErrorMessage } from "./noteClassificationErrors.js";
+import {
+  NOTE_CLASSIFICATION_SELECT,
+  type NoteClassificationRow,
+} from "./noteClassificationRows.js";
 
 export const deleteNoteTypeInputSchema = z.object({
   note_type_id: idSchema,
 });
 
 export type DeleteNoteTypeInput = z.infer<typeof deleteNoteTypeInputSchema>;
-
-/** The note type before the delete */
-export interface DeleteNoteTypeOutput {
-  readonly id: string;
-  readonly name: string;
-}
 
 /**
  * Deletes a note type, and the permission strings that refer to it. Requires
@@ -29,7 +27,7 @@ export const deleteNoteType = async (
   context: ApplicationContext,
   actor: Actor,
   input: DeleteNoteTypeInput,
-): Promise<DeleteNoteTypeOutput> => {
+): Promise<NoteClassificationRow> => {
   requirePermission(actor, "noteType", "manage");
 
   /**
@@ -41,7 +39,7 @@ export const deleteNoteType = async (
       context.prisma.$transaction([
         context.prisma.noteType.delete({
           where: { id: input.note_type_id },
-          select: { id: true, name: true },
+          select: NOTE_CLASSIFICATION_SELECT,
         }),
         deletePermissionStringsReferencing(
           context.prisma,

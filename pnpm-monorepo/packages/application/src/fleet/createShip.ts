@@ -5,6 +5,7 @@ import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { FleetCatalogErrorMessage } from "./fleetCatalogErrors.js";
 import { SHIP_SELECT, toShipOutput, type ShipOutput } from "./ownerShips.js";
 import { shipNameSchema } from "./ownShip.js";
 
@@ -27,7 +28,8 @@ export const createShip = (
       where: { id: input.variant_id },
       select: { id: true },
     });
-    if (!variant) throw new NotFoundError("The variant does not exist");
+    if (!variant)
+      throw new NotFoundError(FleetCatalogErrorMessage.VariantNotFound);
 
     const ship = await context.prisma.ship.create({
       data: {

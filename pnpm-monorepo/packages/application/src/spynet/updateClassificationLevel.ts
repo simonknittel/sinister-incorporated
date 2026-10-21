@@ -7,6 +7,10 @@ import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { NoteClassificationErrorMessage } from "./noteClassificationErrors.js";
 import { noteClassificationNameSchema } from "./noteClassificationName.js";
+import {
+  NOTE_CLASSIFICATION_SELECT,
+  type NoteClassificationRow,
+} from "./noteClassificationRows.js";
 
 export const updateClassificationLevelInputSchema = z.object({
   classification_level_id: idSchema,
@@ -17,11 +21,6 @@ export type UpdateClassificationLevelInput = z.infer<
   typeof updateClassificationLevelInputSchema
 >;
 
-export interface UpdateClassificationLevelOutput {
-  readonly id: string;
-  readonly name: string;
-}
-
 /**
  * Renames a classification level. Requires `classificationLevel;manage`.
  *
@@ -31,7 +30,7 @@ export const updateClassificationLevel = (
   context: ApplicationContext,
   actor: Actor,
   input: UpdateClassificationLevelInput,
-): Promise<UpdateClassificationLevelOutput> =>
+): Promise<NoteClassificationRow> =>
   withSpan(context, "updateClassificationLevel", async () => {
     requirePermission(actor, "classificationLevel", "manage");
 
@@ -50,7 +49,7 @@ export const updateClassificationLevel = (
         context.prisma.classificationLevel.update({
           where: { id: input.classification_level_id },
           data: { name: input.name },
-          select: { id: true, name: true },
+          select: NOTE_CLASSIFICATION_SELECT,
         }),
       NoteClassificationErrorMessage.ClassificationLevelNotFound,
     );

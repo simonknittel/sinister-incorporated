@@ -9,7 +9,10 @@ import {
   type ResolvedEventTemplatePermissions,
 } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
-import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
+import {
+  CITIZEN_REFERENCE_SELECT,
+  type CitizenReferenceRow,
+} from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { TEMPLATE_POSITION_TREE_INCLUDE } from "../lineup/positionTreeInclude.js";
 import {
@@ -169,11 +172,7 @@ export const findEventTemplateListRows = async (
   });
 };
 
-export interface EventTemplateOwner {
-  readonly id: string;
-  readonly handle: string | null;
-  readonly deletedAt: Date | null;
-}
+export type EventTemplateOwner = CitizenReferenceRow;
 
 /**
  * The distinct owners of the templates, for the owner filter of the list.

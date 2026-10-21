@@ -1,15 +1,11 @@
-import {
-  AuditEventType,
-  createFlowPermissionResolver,
-} from "@sam-monorepo/domain";
+import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ForbiddenError, NotFoundError, ValidationError } from "../errors.js";
-import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { CareerErrorMessage } from "./careerErrors.js";
-import { toFlowViewer } from "./flowContext.js";
+import { flowIdSchema, resolveFlowPermissionsOfActor } from "./flowContext.js";
 import {
   MAXIMUM_FLOW_EDGES,
   MAXIMUM_FLOW_NODES,
@@ -19,7 +15,7 @@ import {
 } from "./flowNodes.js";
 
 export const updateFlowInputSchema = z.object({
-  flow_id: idSchema,
+  flow_id: flowIdSchema,
   nodes: z.array(flowNodeSchema).max(MAXIMUM_FLOW_NODES),
   edges: z.array(flowEdgeSchema).max(MAXIMUM_FLOW_EDGES),
 });
@@ -61,9 +57,7 @@ export const updateFlow = (
         roleAccess: { select: { roleId: true, type: true } },
       },
     });
-    const permissions =
-      flow &&
-      createFlowPermissionResolver([flow], toFlowViewer(actor)).get(flow.id);
+    const permissions = flow && resolveFlowPermissionsOfActor(actor, flow);
     /**
      * A deleted flow grants nothing. A flow that the actor cannot read gets
      * the same answer as an unknown one, thus the answer does not show which

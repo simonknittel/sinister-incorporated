@@ -1,13 +1,10 @@
-import type { Prisma } from "@sam-monorepo/database/client";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { VARIANT_TAG_SELECT, type VariantTagOutput } from "./shipVariant.js";
-
-/** The order of the tags in the fleet filters */
-const TAG_ORDER = [
-  { key: "asc" },
-  { value: "asc" },
-] satisfies Prisma.VariantTagOrderByWithRelationInput[];
+import {
+  VARIANT_TAG_ORDER,
+  VARIANT_TAG_SELECT,
+  type VariantTagOutput,
+} from "./shipVariant.js";
 
 /** All variant tags, for the filter of the fleet of the organization */
 export const findOrgFleetVariantTags = async (
@@ -17,7 +14,7 @@ export const findOrgFleetVariantTags = async (
   requirePermission(actor, "orgFleet", "read");
 
   return context.prisma.variantTag.findMany({
-    orderBy: TAG_ORDER,
+    orderBy: VARIANT_TAG_ORDER,
     select: VARIANT_TAG_SELECT,
   });
 };
@@ -31,7 +28,7 @@ const findOwnerFleetVariantTags = (
     where: {
       variants: { some: { ships: { some: { ownerId, deletedAt: null } } } },
     },
-    orderBy: TAG_ORDER,
+    orderBy: VARIANT_TAG_ORDER,
     select: VARIANT_TAG_SELECT,
   });
 
@@ -50,15 +47,11 @@ export const findOwnFleetVariantTags = async (
   return findOwnerFleetVariantTags(context, actor.citizen.id);
 };
 
-export interface FindCitizenFleetVariantTagsInput {
-  readonly citizenId: string;
-}
-
 /** The tags of the variants of the ships of a citizen, for its fleet page */
 export const findCitizenFleetVariantTags = async (
   context: Pick<ApplicationContext, "prisma">,
   actor: Actor,
-  { citizenId }: FindCitizenFleetVariantTagsInput,
+  { citizenId }: { readonly citizenId: string },
 ): Promise<VariantTagOutput[]> => {
   requirePermission(actor, "otherShips", "read");
 

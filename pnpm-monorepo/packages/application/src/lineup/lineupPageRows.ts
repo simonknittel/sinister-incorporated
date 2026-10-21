@@ -1,6 +1,7 @@
 import type { Citizen, Prisma, Ship } from "@sam-monorepo/database/client";
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { requirePermission, type Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { ForbiddenError } from "../errors.js";
 import { isLineupVisible } from "../events/eventManageRules.js";
@@ -91,9 +92,7 @@ export const findEventLineupCitizens = async (
       ...ACTIVE_CITIZEN_WHERE,
     },
     select: {
-      id: true,
-      handle: true,
-      deletedAt: true,
+      ...CITIZEN_REFERENCE_SELECT,
       ships: {
         where: buildRequiredVariantShipWhere(event.id),
         select: { variantId: true },

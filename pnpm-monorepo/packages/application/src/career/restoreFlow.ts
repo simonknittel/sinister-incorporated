@@ -7,14 +7,18 @@ import {
   rethrowRecordNotFound,
   rethrowUniqueConstraintFailed,
 } from "../errors.js";
-import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { CareerErrorMessage } from "./careerErrors.js";
-import { createFlowInputSchema, type FlowOutput } from "./createFlow.js";
+import {
+  FLOW_OUTPUT_SELECT,
+  createFlowInputSchema,
+  type FlowOutput,
+} from "./createFlow.js";
+import { flowIdSchema } from "./flowContext.js";
 import { getNextFlowPosition, requireUsableFlowSlug } from "./flowSlugs.js";
 
 export const restoreFlowInputSchema = z.object({
-  flow_id: idSchema,
+  flow_id: flowIdSchema,
   slug: createFlowInputSchema.shape.slug,
 });
 
@@ -69,7 +73,7 @@ export const restoreFlow = (
                 position,
                 updatedById: actor.citizen?.id ?? null,
               },
-              select: { id: true, name: true, slug: true },
+              select: FLOW_OUTPUT_SELECT,
             }),
           CareerErrorMessage.SlugTaken,
         ),

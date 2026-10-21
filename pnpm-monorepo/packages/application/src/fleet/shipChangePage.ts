@@ -1,8 +1,13 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import { requirePermission, type Actor } from "../actor.js";
+import {
+  CITIZEN_REFERENCE_SELECT,
+  type CitizenReferenceRow,
+} from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { paginateByCursor, type PageOptions } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { VARIANT_MANUFACTURER_SELECT } from "./catalogRows.js";
 
 /** The page size of the table of the ship changes */
 const SHIP_CHANGES_PAGE_SIZE = 100;
@@ -24,24 +29,13 @@ const CHANGED_SHIP_SELECT = {
   id: true,
   name: true,
   createdAt: true,
-  createdById: true,
   deletedAt: true,
-  deletedById: true,
   variant: {
     select: {
       id: true,
       name: true,
       status: true,
-      series: {
-        select: {
-          manufacturer: {
-            select: {
-              name: true,
-              image: { select: { id: true, mimeType: true } },
-            },
-          },
-        },
-      },
+      ...VARIANT_MANUFACTURER_SELECT,
     },
   },
 } as const satisfies Prisma.ShipSelect;
@@ -50,10 +44,8 @@ export interface ShipChangeRow {
   readonly changeDate: Date;
   readonly changeType: ShipChangeType;
   readonly ship: Prisma.ShipGetPayload<{ select: typeof CHANGED_SHIP_SELECT }>;
-  /** The citizen that created or deleted the ship */
-  readonly actorId: string | null;
-  readonly actorHandle: string | null;
-  readonly actorDeletedAt: Date | null;
+  /** The citizen who created or deleted the ship */
+  readonly actor: CitizenReferenceRow | null;
 }
 
 export interface ShipChangePage {
@@ -61,17 +53,6 @@ export interface ShipChangePage {
   readonly nextCursor: string | null;
   readonly prevCursor: string | null;
 }
-
-export interface FindShipChangePageInput {
-  readonly changeType: ShipChangeFilter;
-  /** The id of a ship and the type of its change, see `getChangeCursor()` */
-  readonly cursor?: string | null;
-}
-
-const ACTOR_SELECT = {
-  handle: true,
-  deletedAt: true,
-} as const satisfies Prisma.CitizenSelect;
 
 const getChangeCursor = (change: ShipChangeRow) =>
   `${change.ship.id}:${change.changeType}`;
@@ -83,19 +64,26 @@ const getChangeCursor = (change: ShipChangeRow) =>
 export const findShipChangePage = (
   context: Pick<ApplicationContext, "prisma" | "tracer">,
   actor: Actor,
-  { changeType, cursor }: FindShipChangePageInput,
+  {
+    changeType,
+    cursor,
+  }: {
+    readonly changeType: ShipChangeFilter;
+    /** The id of a ship and the type of its change, see `getChangeCursor()` */
+    readonly cursor?: string | null;
+  },
   { direction, unknownCursor }: PageOptions = {},
 ): Promise<ShipChangePage> =>
   withSpan(context, "findShipChangePage", async () => {
     requirePermission(actor, "otherShips", "read");
 
     /**
-     * Without a cursor the answer is the newest page of the merged
-     * streams, and a row can only reach it by being among the newest
-     * page of its own stream — so each query stops there. A cursor page
-     * can sit arbitrarily deep in either stream, and the composite
-     * cursor (`shipId:changeType`) addresses the merged list rather than
-     * one stream, so those still merge the full set in memory.
+     * Without a cursor, the answer is the newest page of the merged streams.
+     * A row can be on this page only when it is on the newest page of its
+     * own stream, thus each query stops there. A page with a cursor can be
+     * at any depth of each stream, and the cursor (`shipId:changeType`)
+     * points into the merged list, not into one stream. Thus such a page
+     * merges all rows in memory.
      */
     const streamTake = cursor ? undefined : SHIP_CHANGES_PAGE_SIZE + 1;
 
@@ -115,7 +103,7 @@ export const findShipChangePage = (
             take: streamTake,
             select: {
               ...CHANGED_SHIP_SELECT,
-              createdBy: { select: ACTOR_SELECT },
+              createdBy: { select: CITIZEN_REFERENCE_SELECT },
             },
           }),
       changeType === ShipChangeFilter.Creation
@@ -126,7 +114,7 @@ export const findShipChangePage = (
             take: streamTake,
             select: {
               ...CHANGED_SHIP_SELECT,
-              deletedBy: { select: ACTOR_SELECT },
+              deletedBy: { select: CITIZEN_REFERENCE_SELECT },
             },
           }),
     ]);
@@ -143,9 +131,7 @@ export const findShipChangePage = (
                 changeDate: ship.createdAt,
                 changeType: ShipChangeType.Creation,
                 ship,
-                actorId: ship.createdById,
-                actorHandle: createdBy?.handle ?? null,
-                actorDeletedAt: createdBy?.deletedAt ?? null,
+                actor: createdBy,
               },
             ]
           : [],
@@ -157,9 +143,7 @@ export const findShipChangePage = (
                 changeDate: ship.deletedAt,
                 changeType: ShipChangeType.Deletion,
                 ship,
-                actorId: ship.deletedById,
-                actorHandle: deletedBy?.handle ?? null,
-                actorDeletedAt: deletedBy?.deletedAt ?? null,
+                actor: deletedBy,
               },
             ]
           : [],

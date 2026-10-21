@@ -1,14 +1,13 @@
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { requirePermission, type Actor } from "../actor.js";
-import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
+import {
+  CITIZEN_REFERENCE_SELECT,
+  type CitizenReferenceRow,
+} from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 
 /** A citizen as the pickers of the app offer it */
-export interface PickableCitizen {
-  readonly id: string;
-  readonly handle: string | null;
-  readonly deletedAt: Date | null;
-}
+export type PickableCitizen = CitizenReferenceRow;
 
 /**
  * Each active citizen as the pickers offer them: the combobox searches the

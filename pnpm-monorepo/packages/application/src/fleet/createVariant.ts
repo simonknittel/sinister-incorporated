@@ -5,10 +5,10 @@ import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { catalogNameSchema } from "./catalogName.js";
 import { FleetCatalogErrorMessage } from "./fleetCatalogErrors.js";
 import {
   findOrCreateVariantTagIds,
-  MAXIMUM_VARIANT_NAME_LENGTH,
   requireReadableGlobalWikiPage,
   syncVariantExternalLinks,
   toVariantLinks,
@@ -21,7 +21,7 @@ import {
 
 export const createVariantInputSchema = z.object({
   series_id: idSchema,
-  name: z.string().trim().min(1).max(MAXIMUM_VARIANT_NAME_LENGTH),
+  name: catalogNameSchema,
   ...variantFieldsInputShape,
 });
 
@@ -68,9 +68,7 @@ export const createVariant = (
           name: input.name,
           status: input.status,
           wikiPageId,
-          ...(tagIds.length > 0 && {
-            tags: { connect: tagIds.map((id) => ({ id })) },
-          }),
+          tags: { connect: tagIds.map((id) => ({ id })) },
         },
         select: VARIANT_OUTPUT_SELECT,
       });

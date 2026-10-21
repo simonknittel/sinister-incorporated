@@ -7,6 +7,7 @@ import { NotFoundError, ValidationError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { CareerErrorMessage } from "./careerErrors.js";
+import { flowIdSchema } from "./flowContext.js";
 
 /** The limit of each tier against a crafted payload */
 const MAXIMUM_FLOW_ACCESS_ROLES = 250;
@@ -14,7 +15,7 @@ const MAXIMUM_FLOW_ACCESS_ROLES = 250;
 const roleIdsSchema = z.array(idSchema).max(MAXIMUM_FLOW_ACCESS_ROLES);
 
 export const updateFlowRoleAccessInputSchema = z.object({
-  flow_id: idSchema,
+  flow_id: flowIdSchema,
   /** The roles that can read the flow */
   read_role_ids: roleIdsSchema,
   /** The roles that can read and edit the flow */
@@ -46,12 +47,11 @@ export const updateFlowRoleAccess = (
   withSpan(context, "updateFlowRoleAccess", async () => {
     requirePermission(actor, "career", "manage");
 
-    const flow = await context.prisma.flow.findUnique({
-      where: { id: input.flow_id },
-      select: { id: true, deletedAt: true },
+    const flow = await context.prisma.flow.findFirst({
+      where: { id: input.flow_id, deletedAt: null },
+      select: { id: true },
     });
-    if (!flow || flow.deletedAt)
-      throw new NotFoundError(CareerErrorMessage.FlowNotFound);
+    if (!flow) throw new NotFoundError(CareerErrorMessage.FlowNotFound);
 
     /**
      * UPDATE includes READ, thus a role in both tiers gets exactly one row

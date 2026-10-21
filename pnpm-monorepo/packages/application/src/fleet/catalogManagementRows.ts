@@ -1,38 +1,35 @@
 import type { Prisma } from "@sam-monorepo/database/client";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
+import {
+  ACTIVE_OWNER_SHIP_WHERE,
+  UPLOAD_IMAGE_SELECT,
+  VARIANT_EXTERNAL_LINK_SELECT,
+} from "./catalogRows.js";
 import { VARIANT_TAG_SELECT } from "./shipVariant.js";
 
 // The rows of the settings pages of the catalog and of the modals of these
 // pages. Each helper requires `manufacturersSeriesAndVariants;manage`.
 
-const requireCatalogManagement = (actor: Actor) =>
-  requirePermission(actor, "manufacturersSeriesAndVariants", "manage");
-
 const MANAGED_MANUFACTURER_SELECT = {
   id: true,
   name: true,
   imageId: true,
-  image: { select: { id: true, mimeType: true } },
+  image: { select: UPLOAD_IMAGE_SELECT },
 } as const satisfies Prisma.ManufacturerSelect;
 
 export type ManagedManufacturer = Prisma.ManufacturerGetPayload<{
   select: typeof MANAGED_MANUFACTURER_SELECT;
 }>;
 
-export interface FindManagedManufacturerInput {
-  readonly manufacturerId: string;
-}
-
 /** The manufacturer of the settings page, or null when it does not exist */
 export const findManagedManufacturer = async (
   context: Pick<ApplicationContext, "prisma">,
   actor: Actor,
-  { manufacturerId }: FindManagedManufacturerInput,
+  { manufacturerId }: { readonly manufacturerId: string },
 ): Promise<ManagedManufacturer | null> => {
-  requireCatalogManagement(actor);
+  requirePermission(actor, "manufacturersSeriesAndVariants", "manage");
 
   return context.prisma.manufacturer.findUnique({
     where: { id: manufacturerId },
@@ -52,11 +49,6 @@ export interface ManagedSeriesManufacturer {
   readonly imageId: string | null;
 }
 
-export interface FindManagedSeriesWithManufacturerInput {
-  readonly seriesId: string;
-  readonly manufacturerId: string;
-}
-
 /**
  * The series and the manufacturer of the settings page of a series, each
  * null when it does not exist. The helper does not check that the series
@@ -65,10 +57,13 @@ export interface FindManagedSeriesWithManufacturerInput {
 export const findManagedSeriesWithManufacturer = (
   context: Pick<ApplicationContext, "prisma" | "tracer">,
   actor: Actor,
-  { seriesId, manufacturerId }: FindManagedSeriesWithManufacturerInput,
+  {
+    seriesId,
+    manufacturerId,
+  }: { readonly seriesId: string; readonly manufacturerId: string },
 ): Promise<[ManagedSeries | null, ManagedSeriesManufacturer | null]> =>
   withSpan(context, "findManagedSeriesWithManufacturer", async () => {
-    requireCatalogManagement(actor);
+    requirePermission(actor, "manufacturersSeriesAndVariants", "manage");
 
     return Promise.all([
       context.prisma.series.findUnique({
@@ -93,17 +88,13 @@ export type ManufacturerSeriesRow = Prisma.SeriesGetPayload<{
   select: typeof MANUFACTURER_SERIES_ROW_SELECT;
 }>;
 
-export interface FindManufacturerSeriesRowsInput {
-  readonly manufacturerId: string;
-}
-
 /** The series of a manufacturer with the names of their variants, by name */
 export const findManufacturerSeriesRows = async (
   context: Pick<ApplicationContext, "prisma">,
   actor: Actor,
-  { manufacturerId }: FindManufacturerSeriesRowsInput,
+  { manufacturerId }: { readonly manufacturerId: string },
 ): Promise<ManufacturerSeriesRow[]> => {
-  requireCatalogManagement(actor);
+  requirePermission(actor, "manufacturersSeriesAndVariants", "manage");
 
   return context.prisma.series.findMany({
     where: { manufacturerId },
@@ -112,23 +103,13 @@ export const findManufacturerSeriesRows = async (
   });
 };
 
-const VARIANT_EXTERNAL_LINK_SELECT = {
-  id: true,
-  serviceName: true,
-  url: true,
-} as const satisfies Prisma.VariantExternalLinkSelect;
-
 const SERIES_VARIANT_ROW_SELECT = {
   id: true,
   name: true,
   status: true,
   tags: { select: VARIANT_TAG_SELECT },
   externalLinks: { select: VARIANT_EXTERNAL_LINK_SELECT },
-  _count: {
-    select: {
-      ships: { where: { deletedAt: null, owner: ACTIVE_CITIZEN_WHERE } },
-    },
-  },
+  _count: { select: { ships: { where: ACTIVE_OWNER_SHIP_WHERE } } },
 } as const satisfies Prisma.VariantSelect;
 
 /**
@@ -139,17 +120,13 @@ export type SeriesVariantRow = Prisma.VariantGetPayload<{
   select: typeof SERIES_VARIANT_ROW_SELECT;
 }>;
 
-export interface FindSeriesVariantRowsInput {
-  readonly seriesId: string;
-}
-
 /** The variants of a series, by name */
 export const findSeriesVariantRows = async (
   context: Pick<ApplicationContext, "prisma">,
   actor: Actor,
-  { seriesId }: FindSeriesVariantRowsInput,
+  { seriesId }: { readonly seriesId: string },
 ): Promise<SeriesVariantRow[]> => {
-  requireCatalogManagement(actor);
+  requirePermission(actor, "manufacturersSeriesAndVariants", "manage");
 
   return context.prisma.variant.findMany({
     where: { seriesId },
@@ -171,10 +148,6 @@ export type ManagedVariant = Prisma.VariantGetPayload<{
   select: typeof MANAGED_VARIANT_SELECT;
 }>;
 
-export interface FindManagedVariantInput {
-  readonly variantId: string;
-}
-
 /**
  * The variant for the update modal, or null when it does not exist. The
  * permission keeps the internal fields (for example the linked wiki page)
@@ -183,9 +156,9 @@ export interface FindManagedVariantInput {
 export const findManagedVariant = async (
   context: Pick<ApplicationContext, "prisma">,
   actor: Actor,
-  { variantId }: FindManagedVariantInput,
+  { variantId }: { readonly variantId: string },
 ): Promise<ManagedVariant | null> => {
-  requireCatalogManagement(actor);
+  requirePermission(actor, "manufacturersSeriesAndVariants", "manage");
 
   return context.prisma.variant.findUnique({
     where: { id: variantId },

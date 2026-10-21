@@ -14,14 +14,17 @@ import { buildWikiContext } from "../wiki/wikiContext.js";
 import { FleetCatalogErrorMessage } from "./fleetCatalogErrors.js";
 import { VARIANT_TAG_SELECT } from "./shipVariant.js";
 
-/** The length of the name field of the variant forms */
-export const MAXIMUM_VARIANT_NAME_LENGTH = 255;
-
 /**
  * The tag rows and the link rows of one variant form. A variant has few tags,
  * and one link for each external service.
  */
 const MAXIMUM_VARIANT_FORM_ROWS = 50;
+
+/**
+ * A practical cap of the browsers for the length of a URL. A link of a
+ * variant to an external service is much shorter.
+ */
+const MAXIMUM_VARIANT_LINK_URL_LENGTH = 2048;
 
 const formRowsSchema = z
   .array(z.string().trim())
@@ -42,7 +45,10 @@ export const variantFieldsInputShape = {
     .array(z.enum(ExternalService))
     .max(MAXIMUM_VARIANT_FORM_ROWS)
     .nullish(),
-  link_urls: z.array(z.httpUrl()).max(MAXIMUM_VARIANT_FORM_ROWS).nullish(),
+  link_urls: z
+    .array(z.httpUrl().max(MAXIMUM_VARIANT_LINK_URL_LENGTH))
+    .max(MAXIMUM_VARIANT_FORM_ROWS)
+    .nullish(),
   /** An empty value removes the link to the wiki page */
   wiki_page_id: z.union([idSchema, z.literal("")]).optional(),
 };

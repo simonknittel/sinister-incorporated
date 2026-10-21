@@ -5,6 +5,7 @@ import type { ApplicationContext } from "../context.js";
 import { NotFoundError, rethrowRecordNotFound } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { catalogNameSchema } from "./catalogName.js";
 import {
   SERIES_OUTPUT_SELECT,
   toSeriesOutput,
@@ -15,7 +16,7 @@ import { FleetCatalogErrorMessage } from "./fleetCatalogErrors.js";
 export const updateSeriesInputSchema = z.object({
   series_id: idSchema,
   /** An absent name stays */
-  name: z.string().trim().min(1).optional(),
+  name: catalogNameSchema.optional(),
 });
 
 /**

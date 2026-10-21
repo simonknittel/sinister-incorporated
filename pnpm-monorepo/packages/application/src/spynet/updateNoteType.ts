@@ -7,6 +7,10 @@ import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { NoteClassificationErrorMessage } from "./noteClassificationErrors.js";
 import { noteClassificationNameSchema } from "./noteClassificationName.js";
+import {
+  NOTE_CLASSIFICATION_SELECT,
+  type NoteClassificationRow,
+} from "./noteClassificationRows.js";
 
 export const updateNoteTypeInputSchema = z.object({
   note_type_id: idSchema,
@@ -14,11 +18,6 @@ export const updateNoteTypeInputSchema = z.object({
 });
 
 export type UpdateNoteTypeInput = z.infer<typeof updateNoteTypeInputSchema>;
-
-export interface UpdateNoteTypeOutput {
-  readonly id: string;
-  readonly name: string;
-}
 
 /**
  * Renames a note type. Requires `noteType;manage`.
@@ -29,7 +28,7 @@ export const updateNoteType = (
   context: ApplicationContext,
   actor: Actor,
   input: UpdateNoteTypeInput,
-): Promise<UpdateNoteTypeOutput> =>
+): Promise<NoteClassificationRow> =>
   withSpan(context, "updateNoteType", async () => {
     requirePermission(actor, "noteType", "manage");
 
@@ -45,7 +44,7 @@ export const updateNoteType = (
         context.prisma.noteType.update({
           where: { id: input.note_type_id },
           data: { name: input.name },
-          select: { id: true, name: true },
+          select: NOTE_CLASSIFICATION_SELECT,
         }),
       NoteClassificationErrorMessage.NoteTypeNotFound,
     );

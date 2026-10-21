@@ -2,6 +2,7 @@ import { Prisma } from "@sam-monorepo/database/client";
 import { CAN_LOGIN_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
 import { getNextBirthday, type NextBirthday } from "./birthdays.js";
@@ -66,9 +67,7 @@ export const listUpcomingBirthdays = (
         ],
       },
       select: {
-        id: true,
-        handle: true,
-        deletedAt: true,
+        ...CITIZEN_REFERENCE_SELECT,
         birthdayDay: true,
         birthdayMonth: true,
       },

@@ -17,9 +17,8 @@ export {
   toDateColumnValue,
 } from "./calendarDate.js";
 export {
-  FLOW_NAME_MAX_LENGTH,
-  FlowSlugProblem,
-  findFlowSlugProblem,
+  FLOW_NAME_MAXIMUM_LENGTH,
+  MAXIMUM_FLOW_MARKDOWN_LENGTH,
 } from "./career/flowRules.js";
 export { ACTIVE_CITIZEN_WHERE } from "./citizen/activeCitizen.js";
 export {
@@ -331,6 +330,9 @@ export {
 } from "./wiki/wikiPageTree.js";
 export {
   GLOBAL_WIKI_BASE_PATH,
+  GLOBAL_WIKI_HREF_BASE,
+  createBriefingWikiHrefBase,
+  createVariantWikiHrefBase,
   getBriefingPath,
   getVariantWikiBasePath,
   getVariantWikiRootPath,

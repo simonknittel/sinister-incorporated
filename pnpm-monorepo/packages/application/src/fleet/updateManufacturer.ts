@@ -5,13 +5,14 @@ import type { ApplicationContext } from "../context.js";
 import { NotFoundError, rethrowRecordNotFound } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { catalogNameSchema } from "./catalogName.js";
 import type { ManufacturerOutput } from "./createManufacturer.js";
 import { FleetCatalogErrorMessage } from "./fleetCatalogErrors.js";
 
 export const updateManufacturerInputSchema = z.object({
   manufacturer_id: idSchema,
   /** An absent name stays */
-  name: z.string().trim().min(1).optional(),
+  name: catalogNameSchema.optional(),
   /** An absent logo stays */
   image_id: idSchema.optional(),
 });

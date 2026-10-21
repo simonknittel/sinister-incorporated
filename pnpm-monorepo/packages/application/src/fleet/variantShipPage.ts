@@ -5,7 +5,10 @@ import { listActiveOrganizationMemberships } from "../organizations/organization
 import { paginateByCursor, type PageOptions } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 
-/** The page size of the ship table of the variant page */
+/**
+ * The page size of the ship table of the variant page. It is the same as the
+ * page size of the fleet tables of the app (`FLEET_PAGE_SIZE`).
+ */
 const VARIANT_SHIPS_PAGE_SIZE = 100;
 
 export interface VariantShipRow {
@@ -28,12 +31,6 @@ export interface VariantShipPage {
   readonly variantName: string | null;
 }
 
-export interface FindVariantShipPageInput {
-  readonly variantId: string;
-  /** The id of a ship */
-  readonly cursor?: string | null;
-}
-
 /**
  * One page of the ships of a variant that the members of the organization
  * own, sorted by the handle of the owner. The members are the members that
@@ -42,7 +39,14 @@ export interface FindVariantShipPageInput {
 export const findVariantShipPage = (
   context: Pick<ApplicationContext, "prisma" | "tracer">,
   actor: Actor,
-  { variantId, cursor }: FindVariantShipPageInput,
+  {
+    variantId,
+    cursor,
+  }: {
+    readonly variantId: string;
+    /** The id of a ship */
+    readonly cursor?: string | null;
+  },
   { direction, unknownCursor }: PageOptions = {},
 ): Promise<VariantShipPage> =>
   withSpan(context, "findVariantShipPage", async () => {

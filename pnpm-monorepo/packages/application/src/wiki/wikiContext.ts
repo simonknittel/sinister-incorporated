@@ -4,6 +4,7 @@ import {
   type WikiPageAccessType,
 } from "@sam-monorepo/database/client";
 import {
+  GLOBAL_WIKI_HREF_BASE,
   resolveWikiPagePermissions,
   WikiScopeKind,
   type ResolvedWikiPagePermissions,
@@ -14,7 +15,6 @@ import type { WikiPageHrefBase } from "@sam-monorepo/wiki-editor/helpers";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
-import { GLOBAL_WIKI_HREF_BASE } from "./wikiPagePath.js";
 
 /**
  * Page fields both context flavors load — everything the shared

@@ -1,5 +1,5 @@
 import type { Prisma } from "@sam-monorepo/database/client";
-import { FLOW_NAME_MAX_LENGTH } from "@sam-monorepo/domain";
+import { FLOW_NAME_MAXIMUM_LENGTH } from "@sam-monorepo/domain";
 import { requirePermission, type Actor } from "../actor.js";
 import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
@@ -39,7 +39,7 @@ export type ManageableFlowRow = Prisma.FlowGetPayload<{
  * A longer search text matches no name and no slug, thus the helper cuts the
  * search text of the URL to this length.
  */
-const MAXIMUM_FLOW_QUERY_LENGTH = FLOW_NAME_MAX_LENGTH;
+const MAXIMUM_FLOW_QUERY_LENGTH = FLOW_NAME_MAXIMUM_LENGTH;
 
 const deletedAtFilter = (status: FlowStatus): Prisma.FlowWhereInput => {
   switch (status) {

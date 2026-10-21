@@ -7,14 +7,18 @@ import {
   rethrowRecordNotFound,
   rethrowUniqueConstraintFailed,
 } from "../errors.js";
-import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { CareerErrorMessage } from "./careerErrors.js";
-import { createFlowInputSchema, type FlowOutput } from "./createFlow.js";
+import {
+  FLOW_OUTPUT_SELECT,
+  createFlowInputSchema,
+  type FlowOutput,
+} from "./createFlow.js";
+import { flowIdSchema } from "./flowContext.js";
 import { requireUsableFlowSlug } from "./flowSlugs.js";
 
 export const renameFlowInputSchema = z.object({
-  flow_id: idSchema,
+  flow_id: flowIdSchema,
   name: createFlowInputSchema.shape.name,
   slug: createFlowInputSchema.shape.slug,
 });
@@ -36,12 +40,11 @@ export const renameFlow = (
   withSpan(context, "renameFlow", async () => {
     requirePermission(actor, "career", "manage");
 
-    const flow = await context.prisma.flow.findUnique({
-      where: { id: input.flow_id },
-      select: { id: true, name: true, slug: true, deletedAt: true },
+    const flow = await context.prisma.flow.findFirst({
+      where: { id: input.flow_id, deletedAt: null },
+      select: FLOW_OUTPUT_SELECT,
     });
-    if (!flow || flow.deletedAt)
-      throw new NotFoundError(CareerErrorMessage.FlowNotFound);
+    if (!flow) throw new NotFoundError(CareerErrorMessage.FlowNotFound);
 
     await requireUsableFlowSlug(context.prisma, input.slug, {
       exceptFlowId: flow.id,
@@ -62,7 +65,7 @@ export const renameFlow = (
                 slug: input.slug,
                 updatedById: actor.citizen?.id ?? null,
               },
-              select: { id: true, name: true, slug: true },
+              select: FLOW_OUTPUT_SELECT,
             }),
           CareerErrorMessage.SlugTaken,
         ),

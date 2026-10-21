@@ -1,8 +1,7 @@
 import type { FlowEdge, FlowNode } from "@sam-monorepo/database/client";
-import { createFlowPermissionResolver } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { toFlowViewer } from "./flowContext.js";
+import { resolveFlowPermissionsOfActor } from "./flowContext.js";
 
 /** A node of the diagram with its outgoing (`sources`) and incoming edges */
 export type FlowDiagramNode = FlowNode & {
@@ -38,11 +37,7 @@ export const findReadableFlowDiagram = async (
   if (!flow) return null;
 
   /** A deleted flow grants nothing, thus it is not readable */
-  const permissions = createFlowPermissionResolver(
-    [flow],
-    toFlowViewer(actor),
-  ).get(flow.id);
-  if (!permissions?.canRead) return null;
+  if (!resolveFlowPermissionsOfActor(actor, flow)?.canRead) return null;
 
   return { id: flow.id, nodes: flow.nodes };
 };

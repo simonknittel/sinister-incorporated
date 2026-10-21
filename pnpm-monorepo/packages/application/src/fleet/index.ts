@@ -40,11 +40,7 @@ export {
 } from "./deleteManufacturer.js";
 export { deleteSeries, deleteSeriesInputSchema } from "./deleteSeries.js";
 export { deleteShip, deleteShipInputSchema } from "./deleteShip.js";
-export {
-  deleteVariant,
-  deleteVariantInputSchema,
-  type DeleteVariantOutput,
-} from "./deleteVariant.js";
+export { deleteVariant, deleteVariantInputSchema } from "./deleteVariant.js";
 export { FleetCatalogErrorMessage } from "./fleetCatalogErrors.js";
 export { listCitizenShips } from "./listCitizenShips.js";
 export { listMyShips, listMyShipsInputSchema } from "./listMyShips.js";

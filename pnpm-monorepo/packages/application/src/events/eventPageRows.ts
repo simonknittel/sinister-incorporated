@@ -2,6 +2,10 @@ import { VariantStatus } from "@sam-monorepo/database/browser";
 import type { Prisma, RoleAssignment } from "@sam-monorepo/database/client";
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { requirePermission, type Actor } from "../actor.js";
+import {
+  CITIZEN_REFERENCE_SELECT,
+  type CitizenReferenceRow,
+} from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { SHIP_VARIANT_SELECT } from "../fleet/shipVariant.js";
 import { EVENT_PAGE_RELATIONS_SELECT } from "./eventSelects.js";
@@ -67,10 +71,7 @@ export type EventParticipantRow = Prisma.EventParticipantGetPayload<{
 }>;
 
 /** A participating citizen as the participants page and its tiles show it */
-export interface ResolvedEventParticipantCitizen {
-  readonly id: string;
-  readonly handle: string | null;
-  readonly deletedAt: Date | null;
+export interface ResolvedEventParticipantCitizen extends CitizenReferenceRow {
   readonly discordId: string | null;
   readonly roleAssignments: Pick<RoleAssignment, "roleId" | "currentLevel">[];
 }
@@ -104,9 +105,7 @@ export const findResolvedEventParticipants = async (
   const citizens = await context.prisma.citizen.findMany({
     where: buildParticipantCitizenWhere(participants),
     select: {
-      id: true,
-      handle: true,
-      deletedAt: true,
+      ...CITIZEN_REFERENCE_SELECT,
       discordId: true,
       roleAssignments: { select: { roleId: true, currentLevel: true } },
     },

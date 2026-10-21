@@ -5,6 +5,7 @@ import {
   FlowNodeType,
   type Prisma,
 } from "@sam-monorepo/database/client";
+import { MAXIMUM_FLOW_MARKDOWN_LENGTH } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { idSchema } from "../pagination.js";
 
@@ -19,9 +20,6 @@ export const MAXIMUM_FLOW_EDGES = 250;
  * their handles: about 70 characters.
  */
 const MAXIMUM_FLOW_EDGE_ID_LENGTH = 255;
-
-/** Arbitrary cap of the text of a markdown node */
-const MAXIMUM_MARKDOWN_LENGTH = 5000;
 
 /** The fields of the box of each node type */
 const flowNodeBoxShape = {
@@ -44,7 +42,7 @@ const markdownFlowNodeSchema = z.object({
   type: z.literal(FlowNodeType.MARKDOWN),
   ...flowNodeBoxShape,
   data: z.object({
-    markdown: z.string().max(MAXIMUM_MARKDOWN_LENGTH),
+    markdown: z.string().max(MAXIMUM_FLOW_MARKDOWN_LENGTH),
     markdownPosition: z.enum(FlowNodeMarkdownPosition),
     ...flowNodeBackgroundShape,
   }),

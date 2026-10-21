@@ -5,14 +5,14 @@ import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError, rethrowUniqueConstraintFailed } from "../errors.js";
-import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
 import { CareerErrorMessage } from "./careerErrors.js";
-import { createFlowInputSchema } from "./createFlow.js";
+import { FLOW_OUTPUT_SELECT, createFlowInputSchema } from "./createFlow.js";
+import { flowIdSchema } from "./flowContext.js";
 import { requireUsableFlowSlug } from "./flowSlugs.js";
 
 export const duplicateFlowInputSchema = z.object({
-  source_flow_id: idSchema,
+  source_flow_id: flowIdSchema,
   name: createFlowInputSchema.shape.name,
   slug: createFlowInputSchema.shape.slug,
 });
@@ -120,7 +120,7 @@ export const duplicateFlow = (
               createdById: citizenId,
               updatedById: citizenId,
             },
-            select: { id: true, name: true, slug: true },
+            select: FLOW_OUTPUT_SELECT,
           });
 
           await transaction.flowNode.createMany({

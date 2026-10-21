@@ -1,6 +1,7 @@
+import type { Prisma } from "@sam-monorepo/database/client";
 import {
   AuditEventType,
-  FLOW_NAME_MAX_LENGTH,
+  FLOW_NAME_MAXIMUM_LENGTH,
   SLUG_MAX_LENGTH,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
@@ -12,7 +13,7 @@ import { CareerErrorMessage } from "./careerErrors.js";
 import { getNextFlowPosition, requireUsableFlowSlug } from "./flowSlugs.js";
 
 export const createFlowInputSchema = z.object({
-  name: z.string().trim().min(1).max(FLOW_NAME_MAX_LENGTH),
+  name: z.string().trim().min(1).max(FLOW_NAME_MAXIMUM_LENGTH),
   slug: z.string().trim().min(1).max(SLUG_MAX_LENGTH),
 });
 
@@ -24,6 +25,12 @@ export interface FlowOutput {
   readonly name: string;
   readonly slug: string;
 }
+
+export const FLOW_OUTPUT_SELECT = {
+  id: true,
+  name: true,
+  slug: true,
+} as const satisfies Prisma.FlowSelect;
 
 /**
  * Creates an empty flow at the end of the list. Only the managers can read
@@ -58,7 +65,7 @@ export const createFlow = (
             createdById: citizenId,
             updatedById: citizenId,
           },
-          select: { id: true, name: true, slug: true },
+          select: FLOW_OUTPUT_SELECT,
         }),
       CareerErrorMessage.SlugTaken,
     );

@@ -1,5 +1,6 @@
 import { WikiPageNamespace } from "@sam-monorepo/database/client";
 import {
+  createBriefingWikiHrefBase,
   eventContainerColumns,
   resolveEventWikiPagePermissions,
   toTemplateContainer,
@@ -16,7 +17,6 @@ import {
   pickEventWikiRootPage,
   type EventWikiContext,
 } from "./eventWikiContext.js";
-import { createBriefingWikiHrefBase } from "./wikiPagePath.js";
 
 /**
  * The briefing of an event template. The template is a blueprint: the event

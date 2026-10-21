@@ -3,6 +3,10 @@ import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { noteClassificationNameSchema } from "./noteClassificationName.js";
+import {
+  NOTE_CLASSIFICATION_SELECT,
+  type NoteClassificationRow,
+} from "./noteClassificationRows.js";
 
 export const createClassificationLevelInputSchema = z.object({
   name: noteClassificationNameSchema,
@@ -12,22 +16,17 @@ export type CreateClassificationLevelInput = z.infer<
   typeof createClassificationLevelInputSchema
 >;
 
-export interface CreateClassificationLevelOutput {
-  readonly id: string;
-  readonly name: string;
-}
-
 /** Creates a classification level. Requires `classificationLevel;manage`. */
 export const createClassificationLevel = async (
   context: ApplicationContext,
   actor: Actor,
   input: CreateClassificationLevelInput,
-): Promise<CreateClassificationLevelOutput> => {
+): Promise<NoteClassificationRow> => {
   requirePermission(actor, "classificationLevel", "manage");
 
   const classificationLevel = await context.prisma.classificationLevel.create({
     data: { name: input.name },
-    select: { id: true, name: true },
+    select: NOTE_CLASSIFICATION_SELECT,
   });
 
   await context.audit.create([

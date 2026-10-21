@@ -3,10 +3,11 @@ import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { rethrowUniqueConstraintFailed } from "../errors.js";
+import { catalogNameSchema } from "./catalogName.js";
 import { FleetCatalogErrorMessage } from "./fleetCatalogErrors.js";
 
 export const createManufacturerInputSchema = z.object({
-  name: z.string().trim().min(1),
+  name: catalogNameSchema,
 });
 
 export interface ManufacturerOutput {

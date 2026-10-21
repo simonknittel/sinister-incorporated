@@ -2,6 +2,7 @@ import { VariantStatus } from "@sam-monorepo/database/browser";
 import type { Prisma } from "@sam-monorepo/database/client";
 import * as z from "zod";
 import { idSchema } from "../pagination.js";
+import { UPLOAD_IMAGE_SELECT } from "./catalogRows.js";
 
 /** The filter of the fleet lists by the status of the variant */
 export enum FlightReadyFilter {
@@ -101,6 +102,12 @@ export const VARIANT_TAG_SELECT = {
   value: true,
 } as const satisfies Prisma.VariantTagSelect;
 
+/** The order of the tags in the badges and in the fleet filters */
+export const VARIANT_TAG_ORDER = [
+  { key: "asc" },
+  { value: "asc" },
+] satisfies Prisma.VariantTagOrderByWithRelationInput[];
+
 /**
  * A variant as the fleet lists show it. The fleet lists read every ship or
  * variant and paginate in memory, thus each column here is multiplied by the
@@ -118,15 +125,12 @@ export const SHIP_VARIANT_SELECT = {
         select: {
           id: true,
           name: true,
-          image: { select: { id: true, mimeType: true } },
+          image: { select: UPLOAD_IMAGE_SELECT },
         },
       },
     },
   },
-  tags: {
-    select: VARIANT_TAG_SELECT,
-    orderBy: [{ key: "asc" }, { value: "asc" }],
-  },
+  tags: { select: VARIANT_TAG_SELECT, orderBy: VARIANT_TAG_ORDER },
 } as const satisfies Prisma.VariantSelect;
 
 type ShipVariantRow = Prisma.VariantGetPayload<{

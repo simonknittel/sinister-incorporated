@@ -1,33 +1,27 @@
 import { EventActivityType } from "@sam-monorepo/database/browser";
 import type { Prisma } from "@sam-monorepo/database/client";
-import {
-  buildCursorConditions,
-  cursorOrderBy,
-  type MergedCursorSourceInput,
-} from "@sam-monorepo/domain";
+import { buildCursorConditions, cursorOrderBy } from "@sam-monorepo/domain";
 import * as z from "zod";
+import {
+  toActivityFilterWhere,
+  type ActivitySourceInput,
+} from "../activitySources.js";
 import type { Actor } from "../actor.js";
-import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
+import {
+  CITIZEN_REFERENCE_SELECT,
+  type CitizenReferenceRow,
+} from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { requireVisibleEvent } from "./findVisibleEvent.js";
 
 /** A citizen as the activity table links it */
-export interface EventActivityCitizen {
-  readonly id: string;
-  readonly handle: string | null;
-  readonly deletedAt: Date | null;
-}
+export type EventActivityCitizen = CitizenReferenceRow;
 
 /** One page request of the activity source of an event */
-export interface EventActivityRowsInput extends MergedCursorSourceInput {
+export interface EventActivityRowsInput extends ActivitySourceInput {
   readonly eventId: string;
-  /** The key of the source in the merged cursor */
-  readonly sourceKey: string;
   /** Only these types. Null: all types. */
   readonly types: readonly EventActivityType[] | null;
-  /** Only the entries of these citizens. Null or nothing: all citizens. */
-  readonly actorIds?: readonly string[] | null;
-  readonly createdAt?: { readonly gte?: Date; readonly lt?: Date };
 }
 
 export interface EventActivityRow {
@@ -77,17 +71,9 @@ const getAffectedCitizenId = (activity: {
 export const findEventActivityRows = async (
   context: ApplicationContext,
   actor: Actor,
-  {
-    eventId,
-    sourceKey,
-    types,
-    actorIds,
-    createdAt,
-    position,
-    direction,
-    take,
-  }: EventActivityRowsInput,
+  input: EventActivityRowsInput,
 ): Promise<EventActivityRow[]> => {
+  const { eventId, sourceKey, types, position, direction, take } = input;
   const event = await requireVisibleEvent(context, actor, eventId);
 
   const activities = await context.prisma.eventActivity.findMany({
@@ -96,10 +82,7 @@ export const findEventActivityRows = async (
         {
           eventId: event.id,
           ...(types ? { type: { in: [...types] } } : {}),
-          ...(actorIds ? { citizenId: { in: [...actorIds] } } : {}),
-          ...(createdAt && Object.keys(createdAt).length > 0
-            ? { createdAt }
-            : {}),
+          ...toActivityFilterWhere(input, "citizenId"),
         },
         ...buildCursorConditions(position, sourceKey, direction, "createdAt"),
       ],

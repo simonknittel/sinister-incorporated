@@ -1,11 +1,22 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import {
+  createFlowPermissionResolver,
   resolveFlowPermissions,
+  type FlowPermissionSource,
   type FlowViewer,
   type ResolvedFlowPermissions,
 } from "@sam-monorepo/domain";
+import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { idSchema } from "../pagination.js";
+
+/**
+ * The id of a flow. The flows before the migration of 2026-08-21
+ * (`20260821100000_career_flow_management`) keep the UUID that the migration
+ * gave them. The flows after it have a cuid2.
+ */
+export const flowIdSchema = z.union([idSchema, z.uuid()]);
 
 const FLOW_CONTEXT_SELECT = {
   id: true,
@@ -30,12 +41,8 @@ export type FlowContextFlow = Prisma.FlowGetPayload<{
 }>;
 
 export interface FlowContext {
-  viewer: FlowViewer;
-  /** All flows, also the soft-deleted ones, in display order */
-  allFlows: FlowContextFlow[];
   /** The flows that are not soft-deleted, in display order */
   flows: FlowContextFlow[];
-  flowsById: Map<string, FlowContextFlow>;
   /**
    * Only the flows that are not deleted: a deleted flow releases its slug,
    * thus a slug identifies at most one live flow but any number of deleted
@@ -47,7 +54,7 @@ export interface FlowContext {
 }
 
 /** The viewer of the flow permission rules of the domain package */
-export const toFlowViewer = (actor: Actor): FlowViewer => ({
+const toFlowViewer = (actor: Actor): FlowViewer => ({
   roleIds: actor.roleIds,
   /**
    * The admin mode is part of `authorize()`, thus it also gives
@@ -56,6 +63,12 @@ export const toFlowViewer = (actor: Actor): FlowViewer => ({
    */
   hasCareerManage: actor.authorize("career", "manage"),
 });
+
+/** The effective permissions of the actor for one flow */
+export const resolveFlowPermissionsOfActor = (
+  actor: Actor,
+  flow: FlowPermissionSource,
+) => createFlowPermissionResolver([flow], toFlowViewer(actor)).get(flow.id);
 
 /**
  * Loads all career flows and resolves the effective permissions of the
@@ -71,16 +84,12 @@ export const loadFlowContext = async (
     orderBy: [{ position: "asc" }, { name: "asc" }],
   });
 
-  const viewer = toFlowViewer(actor);
   const flows = allFlows.filter((flow) => flow.deletedAt === null);
 
   return {
-    viewer,
-    allFlows,
     flows,
-    flowsById: new Map(allFlows.map((flow) => [flow.id, flow])),
     flowsBySlug: new Map(flows.map((flow) => [flow.slug, flow])),
-    permissions: resolveFlowPermissions(allFlows, viewer),
+    permissions: resolveFlowPermissions(allFlows, toFlowViewer(actor)),
   };
 };
 

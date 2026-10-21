@@ -70,9 +70,8 @@ export const createOrganizationMembership = (
       actor.authorize("organizationMembership", "confirm");
 
     /**
-     * On the page of a citizen, the user enters the id of the organization.
-     * Organizations cannot be deleted, thus an unknown id is an input error,
-     * and the page needs no refresh.
+     * On the page of a citizen, the user enters the id of the organization
+     * (see `OrganizationErrorMessage.OrganizationNotFound`)
      */
     const organization = await context.prisma.organization.findUnique({
       where: { id: input.organization_id },

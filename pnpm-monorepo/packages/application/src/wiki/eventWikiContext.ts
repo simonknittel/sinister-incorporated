@@ -5,6 +5,7 @@ import {
 } from "@sam-monorepo/database/client";
 import {
   collectPositionScopeIdsForCitizen,
+  createBriefingWikiHrefBase,
   resolveEventWikiPagePermissions,
   toEventContainer,
   WikiScopeKind,
@@ -22,7 +23,6 @@ import {
 import { canActorSeeEvent } from "../events/eventVisibility.js";
 import { withSpan } from "../withSpan.js";
 import type { WikiSharedContextPage } from "./wikiContext.js";
-import { createBriefingWikiHrefBase } from "./wikiPagePath.js";
 
 /**
  * The shared page shape (so the tree, breadcrumb and sidebar utilities work

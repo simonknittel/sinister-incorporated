@@ -1,5 +1,8 @@
 import type { Actor } from "../actor.js";
-import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
+import {
+  CITIZEN_REFERENCE_SELECT,
+  type CitizenReferenceRow,
+} from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import {
   requireLogAnalyzerAccess,
@@ -30,11 +33,7 @@ export interface SharedLogAnalyzerEntry {
   readonly rawLine: string;
   readonly eventAt: Date;
   /** Null after the citizen was deleted */
-  readonly createdBy: {
-    readonly id: string;
-    readonly handle: string | null;
-    readonly deletedAt: Date | null;
-  } | null;
+  readonly createdBy: CitizenReferenceRow | null;
 }
 
 export interface SharedLogAnalyzerEntries {

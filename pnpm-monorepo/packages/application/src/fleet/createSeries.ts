@@ -8,11 +8,12 @@ import {
   rethrowUniqueConstraintFailed,
 } from "../errors.js";
 import { idSchema } from "../pagination.js";
+import { catalogNameSchema } from "./catalogName.js";
 import { FleetCatalogErrorMessage } from "./fleetCatalogErrors.js";
 
 export const createSeriesInputSchema = z.object({
   manufacturer_id: idSchema,
-  name: z.string().trim().min(1),
+  name: catalogNameSchema,
 });
 
 export interface SeriesOutput {
