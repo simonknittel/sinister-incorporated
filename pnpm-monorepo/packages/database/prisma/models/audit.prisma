@@ -1,10 +1,11 @@
 model AuditEvent {
-  id          String   @id @default(cuid(2))
-  createdAt   DateTime @default(now()) @db.Timestamptz(3)
-  createdBy   User?    @relation("createdBy", fields: [createdById], references: [id])
-  createdById String?
-  type        String
-  data        Json
+  id              String   @id @default(cuid(2))
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  createdBy       User?    @relation("createdBy", fields: [createdById], references: [id])
+  createdById     String?
+  type            String
+  data            Json
+  triggeredViaMcp Boolean  @default(false)
 
   // The system log always sorts by (createdAt, id) and optionally narrows by
   // type and/or creator, so both filters are indexed together with the full
@@ -13,4 +14,7 @@ model AuditEvent {
   @@index([createdAt, id])
   @@index([type, createdAt, id])
   @@index([createdById, createdAt, id])
+  // The system log can also narrow by the origin (through the MCP server or
+  // not), thus this filter uses the same pattern
+  @@index([triggeredViaMcp, createdAt, id])
 }
