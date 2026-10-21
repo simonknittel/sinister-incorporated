@@ -1,8 +1,9 @@
 import {
   LOG_ANALYZER_ENTRY_PATTERNS,
   LogAnalyzerEntryType,
+  MAXIMUM_LOG_ANALYZER_RAW_LINE_LENGTH,
 } from "@sam-monorepo/domain";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { findPrecedingIsoDate } from "./findPrecedingIsoDate";
 import { createLogFileReader } from "./logFileReader";
 import { SAMPLE_CRASH_FILE_END, SAMPLE_LINES } from "./sampleLines";
@@ -133,5 +134,25 @@ describe("createLogFileReader", () => {
     expect(
       toMatchKeys(await readLogFiles([createLogFile(otherContent, 3)], false)),
     ).toEqual(toMatchKeys(matchWholeText(otherContent)));
+  });
+
+  test("skips a line above the length limit of the server and counts it", async () => {
+    const readLogFiles = createLogFileReader();
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const joinPuLine = SAMPLE_LINES[LogAnalyzerEntryType.JoinPu];
+    const overlongLine = joinPuLine.padEnd(
+      MAXIMUM_LOG_ANALYZER_RAW_LINE_LENGTH + 1,
+      "x",
+    );
+    const validLine = joinPuLine.replace("2025-06-22", "2026-09-02");
+
+    const matches = await readLogFiles(
+      [createLogFile([overlongLine, validLine].join("\n"), 1)],
+      false,
+    );
+
+    expect(matches.map((match) => match.fullMatch)).toEqual([validLine]);
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn).toHaveBeenCalledWith(expect.stringMatching(/: 1$/));
   });
 });

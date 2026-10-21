@@ -1,6 +1,7 @@
 import {
   LOG_ANALYZER_ENTRY_PATTERNS,
   LogAnalyzerEntryType,
+  MAXIMUM_LOG_ANALYZER_RAW_LINE_LENGTH,
 } from "@sam-monorepo/domain";
 import { findPrecedingIsoDate } from "./findPrecedingIsoDate";
 import type { LogFile, RawMatch } from "./types";
@@ -82,11 +83,19 @@ const readNewBytes = async (
   return { position: FILE_START, bytes: await readBytes(file, 0) };
 };
 
+/**
+ * Adds the matches of the text to `matches` and returns how many it skipped.
+ * The server refuses a whole upload request when one raw line is longer than
+ * its limit. A line above the limit is therefore not an entry, so that it
+ * does not stop the upload of the other lines.
+ */
 const collectMatches = (
   text: string,
   isoDateBeforeText: string | null,
   matches: RawMatch[],
 ) => {
+  let skippedOverlongLineCount = 0;
+
   for (const type of Object.values(LogAnalyzerEntryType)) {
     const { regex, takesTimeOfPrecedingLine } =
       LOG_ANALYZER_ENTRY_PATTERNS[type];
@@ -99,6 +108,11 @@ const collectMatches = (
         : match.groups.isoDate;
       if (!isoDate) continue;
 
+      if (match[0].length > MAXIMUM_LOG_ANALYZER_RAW_LINE_LENGTH) {
+        skippedOverlongLineCount += 1;
+        continue;
+      }
+
       matches.push({
         type,
         isoDate,
@@ -107,10 +121,12 @@ const collectMatches = (
       });
     }
   }
+
+  return skippedOverlongLineCount;
 };
 
 const readFile = async (
-  file: File,
+  { path, file }: LogFile,
   state: FileState | undefined,
   matches: RawMatch[],
 ): Promise<FileState> => {
@@ -118,7 +134,16 @@ const readFile = async (
   const decoder = position.offset === 0 ? DECODER_AT_FILE_START : DECODER;
   const text = decoder.decode(bytes);
 
-  collectMatches(text, position.isoDateBeforeOffset, matches);
+  const skippedOverlongLineCount = collectMatches(
+    text,
+    position.isoDateBeforeOffset,
+    matches,
+  );
+  if (skippedOverlongLineCount > 0) {
+    console.warn(
+      `[Log Analyzer] Skipped lines longer than ${MAXIMUM_LOG_ANALYZER_RAW_LINE_LENGTH} characters in ${path}: ${skippedOverlongLineCount}`,
+    );
+  }
 
   /**
    * The next read starts at the last complete line again. A match spans two
@@ -168,13 +193,14 @@ export const createLogFileReader = () => {
 
     const matches: RawMatch[] = [];
 
-    for (const { path, file } of files) {
+    for (const logFile of files) {
+      const { path, file } = logFile;
       const state = states.get(path);
       if (state?.size === file.size && state.lastModified === file.lastModified)
         continue;
 
       try {
-        states.set(path, await readFile(file, state, matches));
+        states.set(path, await readFile(logFile, state, matches));
       } catch (error) {
         /** The state stays, thus the next read tries the same lines again */
         console.error(`[Log Analyzer] Error reading ${path}:`, error);
