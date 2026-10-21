@@ -1,20 +1,13 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { createUseCaseAction } from "@/modules/application";
 import {
   createTaskInputSchema,
   createTask as createTaskUseCase,
   toTaskRewardKind,
   toTaskVisibilityKind,
-  type CreateTaskOutput,
 } from "@sam-monorepo/application";
 import { TaskRewardType, TaskVisibility } from "@sam-monorepo/database/client";
-import { refresh } from "next/cache";
 import { TASK_ERROR_TEXTS } from "../utils/taskErrorTexts";
 
 /**
@@ -52,33 +45,13 @@ const parseCreateTaskForm = (formData: FormData) => {
   };
 };
 
-export const createTask = createAuthenticatedAction(
-  "createTask",
-  createTaskInputSchema,
-  async (formData, authentication, data, t) => {
-    let result: CreateTaskOutput;
-    try {
-      result = await createTaskUseCase(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        data,
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, {
-        formData,
-        t,
-        texts: TASK_ERROR_TEXTS,
-      });
-    }
-
-    refresh();
-
-    return {
-      success: "Erfolgreich gespeichert.",
-      ...(result.notifications_sent
-        ? {}
-        : { warning: t("Common.notificationsFailed") }),
-    };
-  },
-  { parseFormData: parseCreateTaskForm },
-);
+export const createTask = createUseCaseAction({
+  name: "createTask",
+  schema: createTaskInputSchema,
+  useCase: createTaskUseCase,
+  parseFormData: parseCreateTaskForm,
+  texts: TASK_ERROR_TEXTS,
+  success: () => "Erfolgreich gespeichert.",
+  warning: (t, result) =>
+    result.notifications_sent ? undefined : t("Common.notificationsFailed"),
+});

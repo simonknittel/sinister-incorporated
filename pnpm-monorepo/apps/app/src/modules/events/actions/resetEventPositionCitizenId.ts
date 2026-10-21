@@ -1,46 +1,20 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { createUseCaseAction } from "@/modules/application";
 import {
   assignEventPosition,
   assignEventPositionInputSchema,
 } from "@sam-monorepo/application";
-import { refresh } from "next/cache";
 import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
-export const resetEventPositionCitizenId = createAuthenticatedAction(
-  "resetEventPositionCitizenId",
-  assignEventPositionInputSchema,
-  async (formData, authentication, data, t) => {
-    try {
-      await assignEventPosition(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        data,
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, {
-        formData,
-        t,
-        texts: EVENT_ERROR_TEXTS,
-      });
-    }
-
-    refresh();
-
-    return {
-      success: t("Common.successfullySaved"),
-    };
-  },
-  {
-    parseFormData: (formData) => ({
-      position_id: formData.get("positionId"),
-      citizen_id: null,
-    }),
-  },
-);
+export const resetEventPositionCitizenId = createUseCaseAction({
+  name: "resetEventPositionCitizenId",
+  schema: assignEventPositionInputSchema,
+  useCase: assignEventPosition,
+  parseFormData: (formData) => ({
+    position_id: formData.get("positionId"),
+    citizen_id: null,
+  }),
+  texts: EVENT_ERROR_TEXTS,
+  success: (t) => t("Common.successfullySaved"),
+});

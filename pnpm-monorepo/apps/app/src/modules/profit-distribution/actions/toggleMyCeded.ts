@@ -1,16 +1,10 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { createUseCaseAction } from "@/modules/application";
 import {
   setOwnParticipationInputSchema,
   setOwnShareCeded,
 } from "@sam-monorepo/application";
-import { refresh } from "next/cache";
 import * as z from "zod";
 import { getProfitDistributionErrorTexts } from "../utils/profitDistributionErrorTexts";
 
@@ -19,34 +13,16 @@ const schema = setOwnParticipationInputSchema.extend({
   enabled: z.stringbool(),
 });
 
-export const toggleMyCeded = createAuthenticatedAction(
-  "toggleMyCeded",
+export const toggleMyCeded = createUseCaseAction({
+  name: "toggleMyCeded",
   schema,
-  async (formData, authentication, data, t) => {
-    try {
-      await setOwnShareCeded(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        data,
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, {
-        formData,
-        t,
-        texts: getProfitDistributionErrorTexts(t),
-      });
-    }
+  useCase: setOwnShareCeded,
+  parseFormData: (formData) => {
+    // The last entry of each field, see `ToggleMyCededButton`
+    const { id, value } = Object.fromEntries(formData);
 
-    refresh();
-
-    return { success: t("Common.successfullySaved") };
+    return { cycle_id: id, enabled: value };
   },
-  {
-    parseFormData: (formData) => {
-      // The last entry of each field, see `ToggleMyCededButton`
-      const { id, value } = Object.fromEntries(formData);
-
-      return { cycle_id: id, enabled: value };
-    },
-  },
-);
+  texts: getProfitDistributionErrorTexts,
+  success: (t) => t("Common.successfullySaved"),
+});

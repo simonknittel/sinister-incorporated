@@ -1,17 +1,11 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { createUseCaseAction } from "@/modules/application";
 import {
   reorderLineup,
   reorderLineupInputSchema,
   type LineupOrderNode,
 } from "@sam-monorepo/application";
-import { refresh } from "next/cache";
 import {
   EVENT_CONTAINER_ID_FIELD,
   EVENT_CONTAINER_KIND_FIELD,
@@ -39,41 +33,21 @@ const toLineupOrder = (positions: MappedPosition[]): LineupOrderNode[] =>
   }));
 
 /** The lineup editor also reorders the lineup of an event template */
-export const updateEventLineupOrder = createAuthenticatedAction(
-  "updateEventLineupOrder",
-  reorderLineupInputSchema,
-  async (formData, authentication, data, t) => {
-    try {
-      await reorderLineup(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        data,
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, {
-        formData,
-        t,
-        texts: EVENT_ERROR_TEXTS,
-      });
-    }
-
-    refresh();
-
-    return {
-      success: "Erfolgreich gespeichert.",
-    };
-  },
-  {
-    /**
-     * An order that is not valid JSON or that has a different shape throws
-     * here, and the action answers with a bad request
-     */
-    parseFormData: (formData) => ({
-      container_kind: formData.get(EVENT_CONTAINER_KIND_FIELD),
-      container_id: formData.get(EVENT_CONTAINER_ID_FIELD),
-      positions: toLineupOrder(
-        JSON.parse(formData.get("order") as string) as MappedPosition[],
-      ),
-    }),
-  },
-);
+export const updateEventLineupOrder = createUseCaseAction({
+  name: "updateEventLineupOrder",
+  schema: reorderLineupInputSchema,
+  useCase: reorderLineup,
+  /**
+   * An order that is not valid JSON or that has a different shape throws
+   * here, and the action answers with a bad request
+   */
+  parseFormData: (formData) => ({
+    container_kind: formData.get(EVENT_CONTAINER_KIND_FIELD),
+    container_id: formData.get(EVENT_CONTAINER_ID_FIELD),
+    positions: toLineupOrder(
+      JSON.parse(formData.get("order") as string) as MappedPosition[],
+    ),
+  }),
+  texts: EVENT_ERROR_TEXTS,
+  success: () => "Erfolgreich gespeichert.",
+});

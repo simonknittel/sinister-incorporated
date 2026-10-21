@@ -1,16 +1,10 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { createUseCaseAction } from "@/modules/application";
 import {
   setOwnParticipationInputSchema,
   setOwnPayoutAccepted,
 } from "@sam-monorepo/application";
-import { refresh } from "next/cache";
 import * as z from "zod";
 import { getProfitDistributionErrorTexts } from "../utils/profitDistributionErrorTexts";
 
@@ -19,34 +13,16 @@ const schema = setOwnParticipationInputSchema.extend({
   enabled: z.stringbool(),
 });
 
-export const toggleMyAccepted = createAuthenticatedAction(
-  "toggleMyAccepted",
+export const toggleMyAccepted = createUseCaseAction({
+  name: "toggleMyAccepted",
   schema,
-  async (formData, authentication, data, t) => {
-    try {
-      await setOwnPayoutAccepted(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        data,
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, {
-        formData,
-        t,
-        texts: getProfitDistributionErrorTexts(t),
-      });
-    }
+  useCase: setOwnPayoutAccepted,
+  parseFormData: (formData) => {
+    // The last entry of each field, see `ToggleMyAcceptedButton`
+    const { id, value } = Object.fromEntries(formData);
 
-    refresh();
-
-    return { success: t("Common.successfullySaved") };
+    return { cycle_id: id, enabled: value };
   },
-  {
-    parseFormData: (formData) => {
-      // The last entry of each field, see `ToggleMyAcceptedButton`
-      const { id, value } = Object.fromEntries(formData);
-
-      return { cycle_id: id, enabled: value };
-    },
-  },
-);
+  texts: getProfitDistributionErrorTexts,
+  success: (t) => t("Common.successfullySaved"),
+});

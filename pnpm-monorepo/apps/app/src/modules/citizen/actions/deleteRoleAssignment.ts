@@ -1,44 +1,20 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { createUseCaseAction } from "@/modules/application";
 import { getRoleErrorTexts } from "@/modules/roles/utils/roleErrorTexts";
 import {
   deleteRoleAssignmentInputSchema,
   deleteRoleAssignment as deleteRoleAssignmentUseCase,
 } from "@sam-monorepo/application";
-import { refresh } from "next/cache";
 
-export const deleteRoleAssignment = createAuthenticatedAction(
-  "deleteRoleAssignment",
-  deleteRoleAssignmentInputSchema,
-  async (formData, authentication, data, t) => {
-    try {
-      await deleteRoleAssignmentUseCase(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        data,
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, {
-        formData,
-        t,
-        texts: getRoleErrorTexts(t),
-      });
-    }
-
-    refresh();
-
-    return { success: t("Common.successfullySaved") };
-  },
-  {
-    parseFormData: (formData) => ({
-      citizen_id: formData.get("citizenId"),
-      role_id: formData.get("roleId"),
-    }),
-  },
-);
+export const deleteRoleAssignment = createUseCaseAction({
+  name: "deleteRoleAssignment",
+  schema: deleteRoleAssignmentInputSchema,
+  useCase: deleteRoleAssignmentUseCase,
+  parseFormData: (formData) => ({
+    citizen_id: formData.get("citizenId"),
+    role_id: formData.get("roleId"),
+  }),
+  texts: getRoleErrorTexts,
+  success: (t) => t("Common.successfullySaved"),
+});

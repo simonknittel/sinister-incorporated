@@ -1,53 +1,27 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { createUseCaseAction } from "@/modules/application";
 import {
   subscribeWebPushInputSchema,
   subscribeWebPush as subscribeWebPushUseCase,
-  type SubscribeWebPushOutput,
 } from "@sam-monorepo/application";
-import { refresh } from "next/cache";
 
-export const subscribeWebPush = createAuthenticatedAction(
-  "subscribeWebPush",
-  subscribeWebPushInputSchema,
-  async (formData, authentication, data, t) => {
-    let result: SubscribeWebPushOutput;
-    try {
-      result = await subscribeWebPushUseCase(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        data,
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, { formData, t });
-    }
-
-    refresh();
+export const subscribeWebPush = createUseCaseAction({
+  name: "subscribeWebPush",
+  schema: subscribeWebPushInputSchema,
+  useCase: subscribeWebPushUseCase,
+  // A text that is not JSON gives the answer to a bad request
+  parseFormData: (formData) => {
+    const subscription = formData.get("subscription");
 
     return {
-      success: t("Common.successfullySaved"),
-      ...(result.notifications_sent
-        ? {}
-        : { warning: t("Common.notificationsFailed") }),
+      subscription:
+        typeof subscription === "string"
+          ? (JSON.parse(subscription) as unknown)
+          : null,
     };
   },
-  {
-    // A text that is not JSON gives the answer to a bad request
-    parseFormData: (formData) => {
-      const subscription = formData.get("subscription");
-
-      return {
-        subscription:
-          typeof subscription === "string"
-            ? (JSON.parse(subscription) as unknown)
-            : null,
-      };
-    },
-  },
-);
+  success: (t) => t("Common.successfullySaved"),
+  warning: (t, result) =>
+    result.notifications_sent ? undefined : t("Common.notificationsFailed"),
+});

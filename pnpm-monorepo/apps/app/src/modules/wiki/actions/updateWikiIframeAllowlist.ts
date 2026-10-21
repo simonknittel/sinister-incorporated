@@ -1,42 +1,18 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { createUseCaseAction } from "@/modules/application";
 import {
   updateWikiIframeAllowlistInputSchema,
   updateWikiIframeAllowlist as updateWikiIframeAllowlistUseCase,
 } from "@sam-monorepo/application";
-import { refresh } from "next/cache";
 import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
 
-export const updateWikiIframeAllowlist = createAuthenticatedAction(
-  "updateWikiIframeAllowlist",
-  updateWikiIframeAllowlistInputSchema,
-  async (formData, authentication, data, t) => {
-    try {
-      await updateWikiIframeAllowlistUseCase(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        data,
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, {
-        formData,
-        t,
-        texts: WIKI_ERROR_TEXTS,
-      });
-    }
-
-    refresh();
-
-    return { success: t("Common.successfullySaved") };
-  },
-  {
-    /** One `domain` field for each hostname */
-    parseFormData: (formData) => ({ domains: formData.getAll("domain") }),
-  },
-);
+export const updateWikiIframeAllowlist = createUseCaseAction({
+  name: "updateWikiIframeAllowlist",
+  schema: updateWikiIframeAllowlistInputSchema,
+  useCase: updateWikiIframeAllowlistUseCase,
+  /** One `domain` field for each hostname */
+  parseFormData: (formData) => ({ domains: formData.getAll("domain") }),
+  texts: WIKI_ERROR_TEXTS,
+  success: (t) => t("Common.successfullySaved"),
+});

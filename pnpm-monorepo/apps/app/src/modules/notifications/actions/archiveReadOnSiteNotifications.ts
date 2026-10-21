@@ -1,29 +1,15 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { ActionRefresh, createUseCaseAction } from "@/modules/application";
 import { archiveReadOnSiteNotifications as archiveReadOnSiteNotificationsUseCase } from "@sam-monorepo/application";
 import * as z from "zod";
 
 const schema = z.object({});
 
-export const archiveReadOnSiteNotifications = createAuthenticatedAction(
-  "archiveReadOnSiteNotifications",
+export const archiveReadOnSiteNotifications = createUseCaseAction({
+  name: "archiveReadOnSiteNotifications",
   schema,
-  async (formData, authentication, data, t) => {
-    try {
-      await archiveReadOnSiteNotificationsUseCase(
-        getApplicationContext(),
-        await toActor(authentication.session),
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, { formData, t });
-    }
-
-    return { success: "Gelesene archiviert" };
-  },
-);
+  useCase: archiveReadOnSiteNotificationsUseCase,
+  refresh: ActionRefresh.Never,
+  success: () => "Gelesene archiviert",
+});

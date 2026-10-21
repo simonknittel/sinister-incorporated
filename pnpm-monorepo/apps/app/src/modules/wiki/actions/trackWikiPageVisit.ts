@@ -1,11 +1,6 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { ActionRefresh, createUseCaseAction } from "@/modules/application";
 import {
   trackWikiPageVisitInputSchema,
   trackWikiPageVisit as trackWikiPageVisitUseCase,
@@ -18,27 +13,12 @@ import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
  * that the user never visits — while a navigation served from the prefetch
  * cache produces no server render at all.
  */
-export const trackWikiPageVisit = createAuthenticatedAction(
-  "trackWikiPageVisit",
-  trackWikiPageVisitInputSchema,
-  async (formData, authentication, data, t) => {
-    try {
-      await trackWikiPageVisitUseCase(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        data,
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, {
-        formData,
-        t,
-        texts: WIKI_ERROR_TEXTS,
-      });
-    }
-
-    return { success: "Seitenbesuch gespeichert." };
-  },
-  {
-    parseFormData: (formData) => ({ page_id: formData.get("pageId") }),
-  },
-);
+export const trackWikiPageVisit = createUseCaseAction({
+  name: "trackWikiPageVisit",
+  schema: trackWikiPageVisitInputSchema,
+  useCase: trackWikiPageVisitUseCase,
+  parseFormData: (formData) => ({ page_id: formData.get("pageId") }),
+  texts: WIKI_ERROR_TEXTS,
+  refresh: ActionRefresh.Never,
+  success: () => "Seitenbesuch gespeichert.",
+});

@@ -1,16 +1,10 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { createUseCaseAction } from "@/modules/application";
 import {
   updateOwnProfile,
   updateOwnProfileInputSchema,
 } from "@sam-monorepo/application";
-import { refresh } from "next/cache";
 import { CITIZEN_ERROR_TEXTS } from "../utils/citizenErrorTexts";
 
 /**
@@ -26,35 +20,15 @@ const toOptionalValue = <Value>(
   return typeof value === "string" ? transform(value) : value;
 };
 
-export const updateMyProfile = createAuthenticatedAction(
-  "updateMyProfile",
-  updateOwnProfileInputSchema,
-  async (formData, authentication, data, t) => {
-    try {
-      await updateOwnProfile(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        data,
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, {
-        formData,
-        t,
-        texts: CITIZEN_ERROR_TEXTS,
-      });
-    }
-
-    refresh();
-
-    return {
-      success: t("Common.successfullySaved"),
-    };
-  },
-  {
-    parseFormData: (formData) => ({
-      timezone: toOptionalValue(formData.get("timezone"), String),
-      birthday_day: toOptionalValue(formData.get("birthdayDay"), Number),
-      birthday_month: toOptionalValue(formData.get("birthdayMonth"), Number),
-    }),
-  },
-);
+export const updateMyProfile = createUseCaseAction({
+  name: "updateMyProfile",
+  schema: updateOwnProfileInputSchema,
+  useCase: updateOwnProfile,
+  parseFormData: (formData) => ({
+    timezone: toOptionalValue(formData.get("timezone"), String),
+    birthday_day: toOptionalValue(formData.get("birthdayDay"), Number),
+    birthday_month: toOptionalValue(formData.get("birthdayMonth"), Number),
+  }),
+  texts: CITIZEN_ERROR_TEXTS,
+  success: (t) => t("Common.successfullySaved"),
+});
