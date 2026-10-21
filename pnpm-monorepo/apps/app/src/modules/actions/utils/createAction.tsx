@@ -36,7 +36,7 @@ type Authentication = Exclude<
   false
 >;
 
-type Translations = Awaited<ReturnType<typeof getTranslations>>;
+export type Translations = Awaited<ReturnType<typeof getTranslations>>;
 
 /** The check an action runs on the session before it validates the request */
 export enum ActionGate {

@@ -1,44 +1,20 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import {
-  getApplicationContext,
-  mapApplicationErrorToActionResponse,
-  toActor,
-} from "@/modules/application";
+import { createUseCaseAction } from "@/modules/application";
 import {
   renameWikiPageInputSchema,
   renameWikiPage as renameWikiPageUseCase,
 } from "@sam-monorepo/application";
-import { refresh } from "next/cache";
 import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
 
-export const renameWikiPage = createAuthenticatedAction(
-  "renameWikiPage",
-  renameWikiPageInputSchema,
-  async (formData, authentication, data, t) => {
-    try {
-      await renameWikiPageUseCase(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        data,
-      );
-    } catch (error) {
-      return mapApplicationErrorToActionResponse(error, {
-        formData,
-        t,
-        texts: WIKI_ERROR_TEXTS,
-      });
-    }
-
-    refresh();
-
-    return { success: t("Common.successfullySaved") };
-  },
-  {
-    parseFormData: (formData) => ({
-      page_id: formData.get("id"),
-      title: formData.get("title"),
-    }),
-  },
-);
+export const renameWikiPage = createUseCaseAction({
+  name: "renameWikiPage",
+  schema: renameWikiPageInputSchema,
+  useCase: renameWikiPageUseCase,
+  parseFormData: (formData) => ({
+    page_id: formData.get("id"),
+    title: formData.get("title"),
+  }),
+  texts: WIKI_ERROR_TEXTS,
+  success: (t) => t("Common.successfullySaved"),
+});
