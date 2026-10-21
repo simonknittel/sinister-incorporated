@@ -4,9 +4,9 @@ import type {
 } from "@sam-monorepo/application";
 
 /**
- * Browsers apply the EXIF orientation when displaying
- * (`image-orientation: from-image`), so the persisted dimensions must be the
- * displayed ones (`autoOrient`), not the stored ones.
+ * A browser applies the EXIF orientation when it shows an image
+ * (`image-orientation: from-image`). Thus the saved dimensions must be the
+ * shown dimensions (`autoOrient`), not the stored dimensions.
  */
 const readDisplayedDimensions = async (
   bytes: Uint8Array,
@@ -19,8 +19,8 @@ const readDisplayedDimensions = async (
 };
 
 /**
- * Reads the displayed dimensions from the first bytes of an image. If sharp
- * can't read them from this part, it reads them from all bytes. Without
+ * Reads the shown dimensions from the first bytes of an image. When sharp
+ * cannot read them from these bytes, it reads them from all bytes. Without
  * `readAllBytes`, the first bytes must be the full image.
  */
 export const readImageDimensions = async (

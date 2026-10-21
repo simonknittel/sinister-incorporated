@@ -7,7 +7,7 @@ export const UPLOAD_TO_PARAM = "to";
 export const UPLOAD_QUERY_PARAM = "q";
 export const UPLOAD_AUTHOR_PARAM = "createdById";
 
-export const uploadUsageParser = parseAsArrayOf(
+const uploadUsageParser = parseAsArrayOf(
   parseAsStringEnum(Object.values(UploadUsageType)),
 );
 

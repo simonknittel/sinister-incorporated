@@ -22,6 +22,14 @@ const RATE_LIMIT_MAX_RETRIES = 3;
 const RATE_LIMIT_DEFAULT_DELAY_MS = 1_000;
 
 /**
+ * The socket of one push request can be idle for at most this time (the
+ * `timeout` of web-push is an idle timeout, not a limit of the whole
+ * request). A push service that does not answer must not keep the batch of
+ * the router busy until the time limit of the Lambda function.
+ */
+export const WEB_PUSH_TIMEOUT_MILLISECONDS = 10_000;
+
+/**
  * web-push gives the headers of the Node.js response, and Node.js writes all
  * header names in lowercase.
  */
@@ -74,6 +82,7 @@ export const publishWebPushNotifications = async (
           {
             TTL: options?.TTL ?? 60 * 60 * 24, // 1 day
             urgency: options?.urgency,
+            timeout: WEB_PUSH_TIMEOUT_MILLISECONDS,
           },
         );
         break;
@@ -82,7 +91,7 @@ export const publishWebPushNotifications = async (
           error instanceof WebPushError &&
           (error.statusCode === 410 || error.statusCode === 404)
         ) {
-          subscriptionsToRemove.push(subscription.endpoint);
+          subscriptionsToRemove.push(subscription.id);
           break;
         }
 
@@ -123,7 +132,7 @@ export const publishWebPushNotifications = async (
     count: subscriptionsToRemove.length,
   });
   await pruneWebPushSubscriptions(context, {
-    endpoints: subscriptionsToRemove,
+    subscriptionIds: subscriptionsToRemove,
     reason: WebPushPruneReason.Expired,
   });
 };

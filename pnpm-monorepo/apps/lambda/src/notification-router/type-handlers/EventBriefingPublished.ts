@@ -7,15 +7,15 @@ import { publishNotifications } from "../publish.js";
 
 type Payload = {
   eventId: Event["id"];
-  /** Snapshot of the root page's new read scope at publish time */
+  /** At the time of the publication */
   readScope: "PARTICIPANTS" | "POSITION" | "ALL";
   readScopePositionId: string | null;
 };
 
 /**
- * Fired once per event when the briefing's read scope first leaves the
- * managers. Recipients are exactly the audience of the new scope, so
- * nobody hears about a briefing they can't open.
+ * The app sends this notification one time for each event: when the read
+ * scope of the briefing first opens it to more citizens than the managers.
+ * See `findEventBriefingPublishedRecipients()` for the recipients.
  */
 export const EventBriefingPublishedHandler = async (
   context: ApplicationContext,

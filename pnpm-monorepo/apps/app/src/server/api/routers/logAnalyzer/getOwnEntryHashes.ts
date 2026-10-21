@@ -1,14 +1,17 @@
 import { getApplicationContext, toActor } from "@/modules/application";
 import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
 import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
-import { findOwnLogAnalyzerEntryHashes } from "@sam-monorepo/application";
+import {
+  findOwnLogAnalyzerEntryHashes,
+  ForbiddenError,
+} from "@sam-monorepo/application";
 import {
   LOG_ANALYZER_ENTRY_HASH_PATTERN,
   MAXIMUM_LOG_ANALYZER_DAYS_TO_LOAD,
 } from "@sam-monorepo/domain";
+import { TRPCError } from "@trpc/server";
 import * as z from "zod";
-import { protectedProcedure } from "../../trpc";
-import { toLogAnalyzerTrpcError } from "./toLogAnalyzerTrpcError";
+import { protectedProcedure, toTrpcError } from "../../trpc";
 
 /**
  * The hashes of the entries the signed-in citizen already shared. The client
@@ -38,9 +41,9 @@ export const getOwnEntryHashes = protectedProcedure
         },
       );
     } catch (error) {
-      throw toLogAnalyzerTrpcError(
-        error,
-        "Failed to fetch own log analyzer entry hashes",
-      );
+      if (error instanceof ForbiddenError)
+        throw new TRPCError({ code: "FORBIDDEN", message: error.message });
+
+      throw toTrpcError(error, "Failed to fetch own log analyzer entry hashes");
     }
   });

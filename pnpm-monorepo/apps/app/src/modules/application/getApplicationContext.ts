@@ -4,14 +4,12 @@ import { prisma } from "@/db";
 import { env } from "@/env";
 import { listChangelogEntriesAsMarkdown } from "@/modules/changelog/utils/listChangelogEntriesAsMarkdown";
 import { listTrackedChangelogEntries } from "@/modules/changelog/utils/listTrackedChangelogEntries";
-import { createS3Client } from "@/modules/common/utils/createS3Client";
 import { getPublicUploadBaseUrl } from "@/modules/common/utils/getPublicUploadUrl";
 import { EMBED_TOKEN_ALGORITHM } from "@/modules/embed-authentication/utils/constants";
 import { getEmbedSigningKey } from "@/modules/embed-authentication/utils/getEmbedSigningKey";
 import { emitEvents } from "@/modules/eventbridge/utils";
 import { log } from "@/modules/logging";
 import { getTracer } from "@/modules/tracing/utils/getTracer";
-import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
   createApplicationUrls,
   type ApplicationContext,
@@ -20,26 +18,46 @@ import {
   createCollabClient,
   createDiscordGateway,
   createEventBridgeEmailRequester,
+  createEventBridgeNotificationTrigger,
   createPrismaAuditWriter,
+  createS3Client,
   createS3Storage,
+  type S3ClientOptions,
 } from "@sam-monorepo/infrastructure";
-import { triggerNotifications } from "./notificationTrigger";
 import { sharpImageReader } from "./sharpImageReader";
 
-/** The S3 client needs one of the two. Without them, the app has no bucket. */
-const hasS3Endpoint = () =>
-  env.S3_ENDPOINT !== undefined || Boolean(env.S3_ACCOUNT_ID);
+/**
+ * An explicit S3_ENDPOINT (for example the local RustFS container) takes
+ * precedence over the account of Cloudflare R2. Without one of the two, the
+ * app has no bucket.
+ */
+const createStorage = (): ApplicationContext["storage"] => {
+  const credentials = {
+    accessKeyId: env.S3_ACCESS_KEY_ID,
+    secretAccessKey: env.S3_SECRET_ACCESS_KEY,
+  };
+  let clientOptions: S3ClientOptions;
+  if (env.S3_ENDPOINT !== undefined)
+    clientOptions = { endpoint: env.S3_ENDPOINT, credentials };
+  else if (env.S3_ACCOUNT_ID)
+    clientOptions = { accountId: env.S3_ACCOUNT_ID, credentials };
+  else return null;
 
+  return createS3Storage({
+    client: createS3Client(clientOptions),
+    bucketName: env.S3_BUCKET_NAME,
+  });
+};
+
+// The emitter has its own span, thus the two ports need no span of their own
 const createApplicationContext = (): ApplicationContext => ({
   prisma,
   audit: createPrismaAuditWriter({ prisma, log }),
-  notifications: { trigger: triggerNotifications },
-  email: {
-    request: withTrace(
-      "requestEmail",
-      createEventBridgeEmailRequester({ emitEvents, source: "App" }).request,
-    ),
-  },
+  notifications: createEventBridgeNotificationTrigger({
+    emitEvents,
+    source: "App",
+  }),
+  email: createEventBridgeEmailRequester({ emitEvents, source: "App" }),
   log,
   tracer: getTracer(),
   now: () => new Date(),
@@ -72,12 +90,7 @@ const createApplicationContext = (): ApplicationContext => ({
     log,
     tracer: getTracer(),
   }),
-  storage: hasS3Endpoint()
-    ? createS3Storage({
-        client: createS3Client(),
-        bucketName: env.S3_BUCKET_NAME,
-      })
-    : null,
+  storage: createStorage(),
   images: sharpImageReader,
   urls: createApplicationUrls({
     baseUrl: env.NEXT_PUBLIC_BASE_URL,

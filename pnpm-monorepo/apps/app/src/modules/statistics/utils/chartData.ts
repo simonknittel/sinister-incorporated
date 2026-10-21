@@ -1,3 +1,4 @@
+import type { StatisticCreationRows } from "@sam-monorepo/application";
 import {
   getLocalDate,
   getLocalDateKey,
@@ -211,6 +212,38 @@ export const buildTotalAndDeltaChart = (
       },
     ],
   } satisfies StatisticChartData;
+};
+
+/**
+ * A total line from the creation rows: the count before the first chart day,
+ * plus the creations of each chart day. A creation without a time counts
+ * only in the baseline. See `buildTotalAndDeltaChart()` for the change to
+ * the day before.
+ */
+export const buildRunningTotalChart = (
+  rows: StatisticCreationRows<Date | null>,
+  options: NormalizedOptions,
+  seriesId: string,
+  seriesName: string,
+): StatisticChartData => {
+  const creationsByDate = Map.groupBy(rows.createdAts, (createdAt) =>
+    createdAt ? getLocalDateKey(createdAt, ORGANIZATION_TIMEZONE) : null,
+  );
+
+  let runningTotal = rows.baselineCount;
+  const orderedTotals = options.axisPoints.map(({ key, timestamp }) => {
+    runningTotal += creationsByDate.get(key)?.length ?? 0;
+
+    return { createdAt: new Date(timestamp), count: runningTotal };
+  });
+
+  return buildTotalAndDeltaChart(
+    orderedTotals,
+    options,
+    seriesId,
+    seriesName,
+    {},
+  );
 };
 
 export const buildChartData = (

@@ -11,7 +11,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import {
   hasBirthdayTodaySafely,
   linkCitizenOfSignedInUser,
-  requestEmailConfirmationOfNewUser,
+  sendEmailConfirmation,
 } from "@sam-monorepo/application";
 import {
   UserRole,
@@ -444,8 +444,9 @@ export const authOptions: NextAuthOptions = {
     createUser: async (user: AdapterUser) => {
       const createdUser = await adapter.createUser!(user);
 
+      // Guards the sign-in against a programming error: the helper never throws
       try {
-        await requestEmailConfirmationOfNewUser(getApplicationContext(), {
+        await sendEmailConfirmation(getApplicationContext(), {
           userId: createdUser.id,
           email: user.email,
         });

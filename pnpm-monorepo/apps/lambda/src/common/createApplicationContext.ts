@@ -6,11 +6,12 @@ import {
 } from "@sam-monorepo/application";
 import { prisma } from "@sam-monorepo/database";
 import {
+  createEventBridgeClient,
   createEventBridgeEmailRequester,
+  createEventBridgeEmitter,
   createEventBridgeNotificationTrigger,
   createPrismaAuditWriter,
 } from "@sam-monorepo/infrastructure";
-import { emitEventsOrThrow } from "./eventbridge";
 import { log } from "./logger";
 
 /**
@@ -47,26 +48,28 @@ export const createApplicationContext = ({
   publicUploadBaseUrl,
   discord = null,
   storage = null,
-}: ApplicationContextOptions): ApplicationContext => ({
-  prisma,
-  audit: createPrismaAuditWriter({ prisma, log }),
-  notifications: createEventBridgeNotificationTrigger({
-    emitEvents: emitEventsOrThrow,
-    source,
-  }),
-  email: createEventBridgeEmailRequester({
-    emitEvents: emitEventsOrThrow,
-    source,
-  }),
-  log,
-  tracer,
-  now: () => new Date(),
-  changelog: null,
-  collab: null,
-  discord,
-  storage,
-  images: null,
-  urls: createApplicationUrls({ baseUrl, publicUploadBaseUrl }),
-  signingKey: async () => null,
-  allowInsecureLoopbackClientIds: false,
-});
+}: ApplicationContextOptions): ApplicationContext => {
+  const emitEvents = createEventBridgeEmitter({
+    client: createEventBridgeClient(),
+    eventBusArn: process.env.AWS_EVENT_BUS_ARN,
+    log,
+  });
+
+  return {
+    prisma,
+    audit: createPrismaAuditWriter({ prisma, log }),
+    notifications: createEventBridgeNotificationTrigger({ emitEvents, source }),
+    email: createEventBridgeEmailRequester({ emitEvents, source }),
+    log,
+    tracer,
+    now: () => new Date(),
+    changelog: null,
+    collab: null,
+    discord,
+    storage,
+    images: null,
+    urls: createApplicationUrls({ baseUrl, publicUploadBaseUrl }),
+    signingKey: async () => null,
+    allowInsecureLoopbackClientIds: false,
+  };
+};

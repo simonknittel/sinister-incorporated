@@ -1,6 +1,6 @@
-import { authenticate } from "@/modules/auth/server";
-import { satisfiesAnyPermissionString } from "@/modules/auth/utils/satisfiesAnyPermissionString";
+import { getOptionalRequestActor } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { satisfiesAnyPermissionString } from "@sam-monorepo/application";
 import { cache } from "react";
 import { externalApps } from "../externalApps";
 import { INTEGRATED_APPS } from "../INTEGRATED_APPS";
@@ -12,17 +12,17 @@ import type { App, RedactedApp } from "../types";
  */
 export const getAppLinks = cache(
   withTrace("getAppLinks", async () => {
-    const authentication = await authenticate();
-    if (!authentication) return null;
+    const actor = await getOptionalRequestActor();
+    if (!actor) return null;
 
     // TODO: Implement fetching apps from database
 
     const integratedApps = await Promise.all(
       INTEGRATED_APPS.map(async ({ hasAccess, ...app }) => {
-        let redacted = !(await satisfiesAnyPermissionString(
-          authentication,
+        let redacted = !satisfiesAnyPermissionString(
+          actor,
           app.permissionStrings,
-        ));
+        );
 
         /**
          * The callback is stripped above so it never reaches a client

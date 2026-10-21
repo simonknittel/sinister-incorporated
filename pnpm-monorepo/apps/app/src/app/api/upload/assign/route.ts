@@ -2,7 +2,6 @@ import {
   getApplicationContext,
   isApplicationError,
   mapApplicationErrorToRouteResponse,
-  RouteNotFoundResponse,
   toActor,
 } from "@/modules/application";
 import { requireAuthenticationApi } from "@/modules/auth/server";
@@ -24,6 +23,7 @@ import {
   idSchema,
   linkWikiPageUpload,
   linkWikiPageUploadInputSchema,
+  NotFoundError,
   RoleImageAttribute,
   type Actor,
   type ApplicationContext,
@@ -214,10 +214,13 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json(warning ? { warning } : {});
   } catch (error) {
+    // The route refuses a target or an upload that does not exist as a bad
+    // request
+    if (error instanceof NotFoundError)
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+
     if (isApplicationError(error))
-      return mapApplicationErrorToRouteResponse(error, {
-        notFound: RouteNotFoundResponse.BadRequest,
-      });
+      return mapApplicationErrorToRouteResponse(error);
 
     return apiErrorHandler(error);
   }

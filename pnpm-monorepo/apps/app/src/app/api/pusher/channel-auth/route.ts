@@ -1,5 +1,6 @@
 import {
   getApplicationContext,
+  isApplicationError,
   mapApplicationErrorToRouteResponse,
   toActor,
 } from "@/modules/application";
@@ -10,7 +11,6 @@ import { channelsClient } from "@/modules/pusher/utils/channelsClient";
 import {
   authorizeRealtimeChannel,
   authorizeRealtimeChannelInputSchema,
-  ValidationError,
 } from "@sam-monorepo/application";
 import { NextResponse } from "next/server";
 import * as z from "zod";
@@ -22,17 +22,11 @@ const postBodySchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    /**
-     * Authenticate and authorize the request
-     */
     const authentication = await requireAuthenticationApi(
-      "/api/pusher/user-auth",
+      "/api/pusher/channel-auth",
       "POST",
     );
 
-    /**
-     * Validate the request body
-     */
     const body = await request.formData();
     const data = postBodySchema.parse({
       socket_id: body.get("socket_id"),
@@ -42,9 +36,6 @@ export async function POST(request: Request) {
       channel_name: data.channel_name,
     });
 
-    /**
-     * Do the thing
-     */
     if (!channelsClient) {
       log.warn("[Pusher] Channels client not initialized.");
       return NextResponse.json(
@@ -53,33 +44,18 @@ export async function POST(request: Request) {
       );
     }
 
-    try {
-      await authorizeRealtimeChannel(
-        getApplicationContext(),
-        await toActor(authentication.session),
-        input,
-      );
-    } catch (error) {
-      // The only validation error of the use case:
-      // `NotificationErrorMessage.RealtimeChannelUnknown`
-      if (error instanceof ValidationError)
-        return NextResponse.json(
-          { error: "Invalid channel name" },
-          { status: 400 },
-        );
-
-      return mapApplicationErrorToRouteResponse(error);
-    }
-
-    const authResponse = channelsClient.authorizeChannel(
-      data.socket_id,
-      input.channel_name,
+    await authorizeRealtimeChannel(
+      getApplicationContext(),
+      await toActor(authentication.session),
+      input,
     );
-    return NextResponse.json(authResponse);
+
+    return NextResponse.json(
+      channelsClient.authorizeChannel(data.socket_id, input.channel_name),
+    );
   } catch (error) {
-    /**
-     * Respond with an error
-     */
-    return apiErrorHandler(error);
+    return isApplicationError(error)
+      ? mapApplicationErrorToRouteResponse(error)
+      : apiErrorHandler(error);
   }
 }

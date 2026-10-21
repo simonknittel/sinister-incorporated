@@ -310,15 +310,16 @@ const ONBOARDING_STEP_CONTENT: Record<
   },
 };
 
-export const ONBOARDING_TASKS: readonly OnboardingTask[] =
-  ONBOARDING_TASK_RULES.map((rule) => ({
+const ONBOARDING_TASKS: readonly OnboardingTask[] = ONBOARDING_TASK_RULES.map(
+  (rule) => ({
     key: rule.key,
     ...ONBOARDING_TASK_CONTENT[rule.key],
     steps: rule.steps.map((step) => ({
       key: step.key,
       ...ONBOARDING_STEP_CONTENT[step.key],
     })),
-  }));
+  }),
+);
 
 export const getOnboardingTaskByKey = (taskKey: OnboardingTaskKey) =>
   ONBOARDING_TASKS.find((task) => task.key === taskKey);

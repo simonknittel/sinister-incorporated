@@ -5,9 +5,6 @@ export {
   mapApplicationErrorToActionResponse,
   type ApplicationErrorTexts,
 } from "./mapApplicationErrorToActionResponse";
-export {
-  RouteNotFoundResponse,
-  mapApplicationErrorToRouteResponse,
-} from "./mapApplicationErrorToRouteResponse";
+export { mapApplicationErrorToRouteResponse } from "./mapApplicationErrorToRouteResponse";
 export { throwApplicationErrorForPage } from "./throwApplicationErrorForPage";
 export { toActor } from "./toActor";

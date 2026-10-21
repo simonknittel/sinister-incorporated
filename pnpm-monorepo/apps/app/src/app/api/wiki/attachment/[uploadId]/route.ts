@@ -13,10 +13,10 @@ import * as z from "zod";
 const paramsSchema = z.object({ uploadId: idSchema });
 
 /**
- * Permission-checked download of a wiki page attachment. Unlike images
- * (public by unguessable URL), attachments are only served to users who can
- * see a page containing the upload — via a redirect to a short-lived
- * presigned URL (see `createWikiAttachmentDownloadUrl()`).
+ * Downloads an attachment of a wiki page. An image is public (nobody can
+ * guess its URL), but an attachment goes only to a user who can see a page
+ * with the upload. The route redirects to a presigned URL with a short
+ * lifetime (see `createWikiAttachmentDownloadUrl()`).
  */
 export async function GET(
   _request: Request,
@@ -40,10 +40,9 @@ export async function GET(
 
     return NextResponse.redirect(url, 307);
   } catch (error) {
-    /**
-     * Invisible pages (and uploads outside the wiki) 404 instead of 403 to
-     * avoid leaking their existence. Without a bucket, the route answers 500.
-     */
+    // A page that the user cannot see and an upload outside the wiki give
+    // 404, not 403: the answer must not show that they exist. Without a
+    // bucket, the route answers 500.
     if (error instanceof NotFoundError)
       return NextResponse.json({ error: "Not Found" }, { status: 404 });
 

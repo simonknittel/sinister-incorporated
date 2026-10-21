@@ -10,8 +10,6 @@ setContextMissingStrategy(
     : "LOG_ERROR",
 );
 
-export * from "aws-xray-sdk-core";
-
 // @ts-expect-error
 export const captureAsyncFunc: typeof _captureAsyncFunc = (name, callback) => {
   return _captureAsyncFunc(name, async (subsegment) => {

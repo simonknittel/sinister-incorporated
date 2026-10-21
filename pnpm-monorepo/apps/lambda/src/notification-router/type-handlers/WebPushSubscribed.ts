@@ -9,6 +9,7 @@ import { sendNotification, setVapidDetails, WebPushError } from "web-push";
 import { log } from "../../common/logger";
 import { env } from "../setup";
 import { toLoggableWebPushError } from "../toLoggableWebPushError";
+import { WEB_PUSH_TIMEOUT_MILLISECONDS } from "../web-push";
 
 setVapidDetails(env.BASE_URL, env.PUBLIC_VAPID_KEY, env.PRIVATE_VAPID_KEY);
 
@@ -31,10 +32,8 @@ export const WebPushSubscribedHandler = async (
     return;
   }
 
-  /**
-   * Send a test notification directly to the newly subscribed device
-   * This bypasses the notification settings check since it's a confirmation notification
-   */
+  // A confirmation goes directly to the new device. The notification
+  // settings do not apply to it.
   const notificationPayload = JSON.stringify({
     title: "Browser-Benachrichtigungen aktiviert | SAM",
     body: "Du erhältst ab sofort Benachrichtigungen auf diesem Gerät.",
@@ -42,17 +41,12 @@ export const WebPushSubscribedHandler = async (
 
   try {
     await sendNotification(
-      {
-        endpoint: subscription.endpoint,
-        keys: {
-          p256dh: subscription.keys.p256dh,
-          auth: subscription.keys.auth,
-        },
-      },
+      { endpoint: subscription.endpoint, keys: subscription.keys },
       notificationPayload,
       {
         TTL: 60 * 60 * 24, // 1 day
         urgency: "high",
+        timeout: WEB_PUSH_TIMEOUT_MILLISECONDS,
       },
     );
 

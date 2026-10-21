@@ -39,7 +39,7 @@ const createStorage = () => {
 
   return createS3Storage({
     client: createS3Client({
-      endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+      accountId,
       credentials: { accessKeyId, secretAccessKey },
     }),
     bucketName,
