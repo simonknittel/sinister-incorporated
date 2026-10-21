@@ -1,5 +1,10 @@
 import { createCitizen, ONE_DAY_MS } from "../fixtures/factories";
-import { dateParam, fillUntilUrl } from "../fixtures/interactions";
+import {
+  clickUntilUrl,
+  dateParam,
+  fillUntilUrl,
+  toggleLabel,
+} from "../fixtures/interactions";
 import { expect, test } from "../fixtures/test";
 
 /**
@@ -40,18 +45,39 @@ test("the log renders its events and the filters narrow the table", async ({
         data: { roleId: role.role.id, name: "Aufklärer" },
         createdById: admin.user.id,
       },
+      // An action through the MCP server
+      {
+        type: "TASK_CREATED",
+        data: {
+          taskIds: ["aufgabe-1"],
+          visibility: "PUBLIC",
+          rewardType: "TEXT",
+        },
+        createdById: admin.user.id,
+        triggeredViaMcp: true,
+      },
     ],
   });
+
+  const rowOfType = (type: string) =>
+    page.getByRole("row").filter({ hasText: type });
 
   await signIn(admin.user);
   await page.goto("/app/system-log");
 
-  // Both events render with their type and their human-readable message
+  // The events render with their type and their human-readable message
   await expect(page.getByText('Role created: "Aufklärer"')).toBeVisible();
   await expect(
     page.getByText("Manufacturer Drake created (hersteller-1)"),
   ).toBeVisible();
   await expect(page.getByText("MANUFACTURER_CREATED")).toBeVisible();
+
+  // Only the row of the action through the MCP server has the mark
+  const mcpMark = (type: string) =>
+    rowOfType(type).getByRole("cell", { name: "Ja", exact: true });
+  await expect(mcpMark("TASK_CREATED")).toHaveCount(1);
+  await expect(mcpMark("ROLE_CREATED")).toHaveCount(0);
+  await expect(mcpMark("MANUFACTURER_CREATED")).toHaveCount(0);
 
   // The time-range filter drops the old event
   const fromDate = dateParam(new Date(Date.now() - 5 * ONE_DAY_MS));
@@ -79,4 +105,28 @@ test("the log renders its events and the filters narrow the table", async ({
     page.getByText("Manufacturer Drake created (hersteller-1)"),
   ).toBeVisible();
   await expect(page.getByText('Role created: "Aufklärer"')).toHaveCount(0);
+
+  // The origin filter splits the events by the MCP server
+  await page.goto("/app/system-log?origin=mcp");
+  await expect(rowOfType("TASK_CREATED")).toBeVisible();
+  await expect(rowOfType("ROLE_CREATED")).toHaveCount(0);
+  await expect(rowOfType("MANUFACTURER_CREATED")).toHaveCount(0);
+
+  await page.goto("/app/system-log?origin=without_mcp");
+  await expect(rowOfType("ROLE_CREATED")).toBeVisible();
+  await expect(rowOfType("MANUFACTURER_CREATED")).toBeVisible();
+  await expect(rowOfType("TASK_CREATED")).toHaveCount(0);
+
+  // The radio of the sidebar sets the same filter
+  await page.goto("/app/system-log");
+  await clickUntilUrl(
+    page,
+    toggleLabel(
+      page.getByRole("radiogroup", { name: "QUELLE" }),
+      /^MCP-Server$/,
+    ),
+    /origin=mcp/,
+  );
+  await expect(rowOfType("TASK_CREATED")).toBeVisible();
+  await expect(rowOfType("ROLE_CREATED")).toHaveCount(0);
 });

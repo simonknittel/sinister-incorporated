@@ -68,10 +68,11 @@ test.describe("the task write tools of the MCP server", () => {
     expect(
       await prisma.auditEvent.findFirstOrThrow({
         where: { type: "TASK_CREATED" },
-        select: { createdById: true, data: true },
+        select: { createdById: true, triggeredViaMcp: true, data: true },
       }),
     ).toEqual({
       createdById: creator.user.id,
+      triggeredViaMcp: true,
       data: { taskIds: [task.id], visibility: "PUBLIC", rewardType: "SILC" },
     });
   });
