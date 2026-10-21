@@ -15,6 +15,7 @@ export {
 export * from "./apps/index.js";
 export * from "./audit/index.js";
 export * from "./auth/index.js";
+export * from "./career/index.js";
 export * from "./changelog/index.js";
 export type { CitizenReference } from "./citizenReference.js";
 export {
@@ -50,6 +51,7 @@ export {
   NotFoundError,
   ValidationError,
   rethrowRecordNotFound,
+  rethrowUniqueConstraintFailed,
 } from "./errors.js";
 export * from "./events/index.js";
 export * from "./eventTemplates/index.js";
@@ -65,6 +67,7 @@ export { triggerNotificationsAfterSave } from "./notifications.js";
 export * from "./notifications/index.js";
 export * from "./oauth/index.js";
 export * from "./onboarding/index.js";
+export * from "./organizations/index.js";
 export {
   DEFAULT_PAGE_LIMIT,
   MAXIMUM_PAGE_LIMIT,

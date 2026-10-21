@@ -1,4 +1,4 @@
-/** The use cases of the Spynet: citizens, their notes and organizations */
+/** The use cases of the Spynet: citizens, their notes and the search */
 export { hasBirthdayTodaySafely } from "./birthdays.js";
 export { requireCitizenReadAccess } from "./citizenAccess.js";
 export {
@@ -85,11 +85,6 @@ export {
   type GetLastSeenAtInput,
 } from "./getLastSeenAt.js";
 export {
-  getOrganization,
-  getOrganizationInputSchema,
-  type GetOrganizationOutput,
-} from "./getOrganization.js";
-export {
   getOwnProfileSettings,
   type OwnProfileSettings,
 } from "./getOwnProfileSettings.js";
@@ -135,13 +130,6 @@ export {
   getNotePermissionAttributes,
   type NotePermissionSubject,
 } from "./notePermissions.js";
-export {
-  MembershipVisibility,
-  listActiveOrganizationMemberships,
-  listOrganizationMembershipsOfCitizen,
-  type CitizenMembershipOutput,
-  type OrganizationMemberOutput,
-} from "./organizationMemberships.js";
 export {
   getReadableCitizenLogWhere,
   type CitizenLogTableType,

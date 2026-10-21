@@ -63,3 +63,23 @@ export const rethrowRecordNotFound = async <Result>(
     throw error;
   }
 };
+
+/**
+ * Runs a write of Prisma. A write fails with P2002 when a different record
+ * already has the value of a unique column, for example a name that must be
+ * unique: then the function throws a `ValidationError` with the message. It
+ * throws all other errors again.
+ */
+export const rethrowUniqueConstraintFailed = async <Result>(
+  write: () => Promise<Result>,
+  message: string,
+): Promise<Result> => {
+  try {
+    return await write();
+  } catch (error) {
+    if (isPrismaError(error, PrismaErrorCode.UniqueConstraintFailed))
+      throw new ValidationError(message, { cause: error });
+
+    throw error;
+  }
+};

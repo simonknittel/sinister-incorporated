@@ -3,6 +3,10 @@ import * as z from "zod";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
+import {
+  listOrganizationMembershipsOfCitizen,
+  type CitizenMembershipOutput,
+} from "../organizations/organizationMemberships.js";
 import { idSchema } from "../pagination.js";
 import { isRoleVisible } from "../roles/roleVisibility.js";
 import { withSpan } from "../withSpan.js";
@@ -12,10 +16,6 @@ import {
   getVisiblePenaltyPointSum,
   getVisibleShipCount,
 } from "./citizenMetrics.js";
-import {
-  listOrganizationMembershipsOfCitizen,
-  type CitizenMembershipOutput,
-} from "./organizationMemberships.js";
 
 export const getCitizenInputSchema = z.object({
   citizen_id: idSchema,

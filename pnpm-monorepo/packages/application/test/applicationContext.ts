@@ -87,15 +87,21 @@ interface TestActorOptions {
   /** The citizen must exist in the database when a use case writes its id */
   readonly citizen?: ActorCitizen | null;
   readonly permissionStrings?: readonly string[];
+  /** The ids of the effective roles of the actor */
+  readonly roleIds?: readonly string[];
   /** Gives the actor the admin role with admin mode */
   readonly adminMode?: boolean;
 }
 
-/** An actor with a confirmed email address and the given permission strings */
+/**
+ * An actor with a confirmed email address, the given permission strings and
+ * the given effective roles
+ */
 export const createTestActor = ({
   userId,
   citizen = null,
   permissionStrings = [],
+  roleIds = [],
   adminMode = false,
 }: TestActorOptions): Actor =>
   createActor({
@@ -103,7 +109,7 @@ export const createTestActor = ({
     userRole: adminMode ? UserRole.ADMIN : null,
     emailConfirmedAt: TEST_NOW,
     citizen,
-    roleIds: new Set(),
+    roleIds: new Set(roleIds),
     discordUserId: null,
     permissionSets: permissionStrings.map(
       transformPermissionStringToPermissionSet,

@@ -2,13 +2,13 @@ import { ORG_ID } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { listActiveOrganizationMemberships } from "../organizations/organizationMemberships.js";
 import {
   cursorSchema,
   pageLimitSchema,
   paginateByCursor,
   type PageOptions,
 } from "../pagination.js";
-import { listActiveOrganizationMemberships } from "../spynet/organizationMemberships.js";
 import { withSpan } from "../withSpan.js";
 import {
   buildVariantFilterWhere,

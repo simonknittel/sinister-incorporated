@@ -16,6 +16,12 @@ export {
   getYesterdayDateColumnValue,
   toDateColumnValue,
 } from "./calendarDate.js";
+export {
+  FLOW_NAME_MAX_LENGTH,
+  FlowSlugProblem,
+  RESERVED_FLOW_SLUGS,
+  findFlowSlugProblem,
+} from "./career/flowRules.js";
 export { ACTIVE_CITIZEN_WHERE } from "./citizen/activeCitizen.js";
 export {
   BIRTHDAY_DAY_MAX,
@@ -98,6 +104,7 @@ export {
   getSubtreeSize,
   type PositionSubtree,
 } from "./events/positionTree.js";
+export { ExternalService } from "./fleet/externalService.js";
 export { HIGH_VOLUME_AUDIT_EVENT_TYPES } from "./highVolumeAuditEventTypes.js";
 export { MAX_HUMAN_RESOURCES_ROLES } from "./iam/humanResourcesRoles.js";
 export { isAllowedWebPushEndpointUrl } from "./isAllowedWebPushEndpointUrl.js";
