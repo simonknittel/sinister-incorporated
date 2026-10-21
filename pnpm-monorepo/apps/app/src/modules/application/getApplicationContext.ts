@@ -112,6 +112,7 @@ const createApplicationContext = (): ApplicationContext => ({
  * serves all requests. The key of `signingKey` loads on its first call.
  */
 let context: ApplicationContext | undefined;
+let mcpContext: ApplicationContext | undefined;
 
 /**
  * The only place in the app that knows how the application context is
@@ -119,3 +120,14 @@ let context: ApplicationContext | undefined;
  */
 export const getApplicationContext = () =>
   (context ??= createApplicationContext());
+
+/**
+ * The context of the MCP endpoint. Its audit writer marks each event as an
+ * action through the MCP server. The OAuth endpoints and the consent page use
+ * `getApplicationContext()`.
+ */
+export const getMcpApplicationContext = () =>
+  (mcpContext ??= {
+    ...getApplicationContext(),
+    audit: createPrismaAuditWriter({ prisma, log, triggeredViaMcp: true }),
+  });

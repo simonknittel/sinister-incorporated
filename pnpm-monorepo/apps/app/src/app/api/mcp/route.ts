@@ -1,4 +1,4 @@
-import { getApplicationContext } from "@/modules/application";
+import { getMcpApplicationContext } from "@/modules/application";
 import { handleMcpRequest } from "@/modules/mcp/utils/handleMcpRequest";
 import { withCorsHeaders } from "@/modules/mcp/utils/withCorsHeaders";
 import { isMcpServerDisabled } from "@/modules/oauth/utils/isMcpServerDisabled";
@@ -15,7 +15,7 @@ export const POST = async (request: Request) => {
   if (await isMcpServerDisabled()) return temporarilyUnavailableResponse();
 
   return withCorsHeaders(
-    await handleMcpRequest(getApplicationContext(), request),
+    await handleMcpRequest(getMcpApplicationContext(), request),
   );
 };
 

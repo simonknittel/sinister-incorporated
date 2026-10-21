@@ -8,8 +8,10 @@ import {
 } from "../utils/AuditEventTypes";
 import {
   SYSTEM_LOG_FROM_PARAM,
+  SYSTEM_LOG_ORIGIN_PARAM,
   SYSTEM_LOG_TO_PARAM,
   SYSTEM_LOG_VOLUME_PARAM,
+  SystemLogOrigin,
   SystemLogVolume,
 } from "../utils/systemLogFilterParams";
 
@@ -65,6 +67,27 @@ export const SystemLogFilters = ({ creators }: Props) => {
           {
             value: SystemLogVolume.All,
             label: "Alle",
+          },
+        ]}
+        resetCursorPagination
+      />
+
+      <RadioFilter
+        name={SYSTEM_LOG_ORIGIN_PARAM}
+        label="QUELLE"
+        items={[
+          {
+            value: SystemLogOrigin.All,
+            label: "Alle",
+            default: true,
+          },
+          {
+            value: SystemLogOrigin.Mcp,
+            label: "MCP-Server",
+          },
+          {
+            value: SystemLogOrigin.WithoutMcp,
+            label: "Ohne MCP-Server",
           },
         ]}
         resetCursorPagination

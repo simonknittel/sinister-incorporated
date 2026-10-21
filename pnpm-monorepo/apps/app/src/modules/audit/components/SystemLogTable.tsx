@@ -11,8 +11,11 @@ import { getAuditEvents } from "../queries/getAuditEvents";
 import { getAuditEventMessage } from "../utils/getAuditEventMessage";
 import {
   SYSTEM_LOG_FROM_PARAM,
+  SYSTEM_LOG_ORIGIN_PARAM,
   SYSTEM_LOG_TO_PARAM,
   SYSTEM_LOG_VOLUME_PARAM,
+  SystemLogOrigin,
+  systemLogOriginParser,
   systemLogVolumeParser,
 } from "../utils/systemLogFilterParams";
 
@@ -20,13 +23,17 @@ const COLUMNS: TableColumn[] = [
   { key: "date", label: "Date", track: "150px", minWidth: 150 },
   { key: "type", label: "Type", track: "250px", minWidth: 250 },
   { key: "user", label: "User", track: "150px", minWidth: 150 },
+  { key: "origin", label: "MCP", track: "70px", minWidth: 70 },
   { key: "message", label: "Message", track: "1fr", minWidth: 226 },
 ];
+
+const MCP_CELL_TITLE = "Über den MCP-Server ausgelöst";
 
 const loadSearchParams = createCursorPaginationLoader({
   type: parseAsArrayOf(parseAsString),
   createdById: parseAsArrayOf(parseAsString),
   [SYSTEM_LOG_VOLUME_PARAM]: systemLogVolumeParser,
+  [SYSTEM_LOG_ORIGIN_PARAM]: systemLogOriginParser,
   [SYSTEM_LOG_FROM_PARAM]: parseAsString,
   [SYSTEM_LOG_TO_PARAM]: parseAsString,
 });
@@ -37,7 +44,7 @@ interface Props {
 }
 
 export const SystemLogTable = async ({ className, searchParams }: Props) => {
-  const { type, createdById, cursor, direction, volume, from, to } =
+  const { type, createdById, cursor, direction, volume, origin, from, to } =
     await loadSearchParams(searchParams);
 
   const { events, nextCursor, prevCursor } = await getAuditEvents(
@@ -46,6 +53,7 @@ export const SystemLogTable = async ({ className, searchParams }: Props) => {
     cursor,
     direction,
     volume,
+    origin,
     from,
     to,
   );
@@ -54,6 +62,7 @@ export const SystemLogTable = async ({ className, searchParams }: Props) => {
   const hasActiveFilters = Boolean(
     (type && type.length > 0) ||
     (createdById && createdById.length > 0) ||
+    origin !== SystemLogOrigin.All ||
     from ||
     to,
   );
@@ -101,6 +110,10 @@ export const SystemLogTable = async ({ className, searchParams }: Props) => {
 
             <td title={createdBy} className="truncate">
               {createdBy}
+            </td>
+
+            <td title={event.triggered_via_mcp ? MCP_CELL_TITLE : undefined}>
+              {event.triggered_via_mcp ? "Ja" : null}
             </td>
 
             <td title={message} className="truncate">

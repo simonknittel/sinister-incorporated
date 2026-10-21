@@ -11,9 +11,28 @@ import {
   UnknownCursorBehavior,
 } from "@sam-monorepo/application";
 import { cache } from "react";
-import { SystemLogVolume } from "../utils/systemLogFilterParams";
+import {
+  SystemLogOrigin,
+  SystemLogVolume,
+} from "../utils/systemLogFilterParams";
 
 const AUDIT_EVENTS_PAGE_SIZE = 50;
+
+const getTriggeredViaMcp = (origin: SystemLogOrigin) => {
+  switch (origin) {
+    case SystemLogOrigin.All:
+      return undefined;
+
+    case SystemLogOrigin.Mcp:
+      return true;
+
+    case SystemLogOrigin.WithoutMcp:
+      return false;
+
+    default:
+      throw new Error(`Unknown origin: ${origin satisfies never}`);
+  }
+};
 
 export const getAuditEvents = cache(
   withTrace(
@@ -24,6 +43,7 @@ export const getAuditEvents = cache(
       cursor?: string | null,
       direction: CursorDirection = CursorDirection.Next,
       volume: SystemLogVolume = SystemLogVolume.WithoutHighVolume,
+      origin: SystemLogOrigin = SystemLogOrigin.All,
       from?: string | null,
       to?: string | null,
     ) => {
@@ -39,6 +59,7 @@ export const getAuditEvents = cache(
             from: gte,
             to: lt,
             include_high_volume: volume === SystemLogVolume.All,
+            triggered_via_mcp: getTriggeredViaMcp(origin),
             limit: AUDIT_EVENTS_PAGE_SIZE,
             cursor: cursor ?? undefined,
           },
