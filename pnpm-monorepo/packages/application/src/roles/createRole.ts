@@ -1,9 +1,8 @@
-import { isPrismaError, PrismaErrorCode } from "@sam-monorepo/database/client";
 import { AuditEventType } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ValidationError } from "../errors.js";
+import { rethrowUniqueConstraintFailed } from "../errors.js";
 import { withSpan } from "../withSpan.js";
 import { RoleErrorMessage } from "./roleErrors.js";
 import { roleNameSchema } from "./roleInputSchemas.js";
@@ -34,20 +33,14 @@ export const createRole = (
   withSpan(context, "createRole", async () => {
     requirePermission(actor, "role", "manage");
 
-    let role;
-    try {
-      role = await context.prisma.role.create({
-        data: { name: input.name },
-        select: { id: true, name: true },
-      });
-    } catch (error) {
-      if (isPrismaError(error, PrismaErrorCode.UniqueConstraintFailed))
-        throw new ValidationError(RoleErrorMessage.NameTaken, {
-          cause: error,
-        });
-
-      throw error;
-    }
+    const role = await rethrowUniqueConstraintFailed(
+      () =>
+        context.prisma.role.create({
+          data: { name: input.name },
+          select: { id: true, name: true },
+        }),
+      RoleErrorMessage.NameTaken,
+    );
 
     await context.audit.create([
       {
