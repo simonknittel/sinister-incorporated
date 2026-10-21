@@ -6,7 +6,7 @@ import type { ApplicationContext } from "../context.js";
 import { idSchema, paginateByDatabaseCursor } from "../pagination.js";
 
 /** The notifications of one page of the notification center */
-export const ON_SITE_NOTIFICATION_PAGE_SIZE = 25;
+const ON_SITE_NOTIFICATION_PAGE_SIZE = 25;
 
 export const listOwnOnSiteNotificationsInputSchema = z.object({
   tab: z.enum(OnSiteNotificationTab),

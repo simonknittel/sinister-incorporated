@@ -7,6 +7,7 @@ export {
   createActor,
   requireCitizen,
   requirePermission,
+  satisfiesAnyPermissionString,
   type Actor,
   type ActorCitizen,
   type ActorFields,

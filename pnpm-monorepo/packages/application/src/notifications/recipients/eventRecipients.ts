@@ -1,8 +1,5 @@
 import type { Prisma } from "@sam-monorepo/database/client";
-import {
-  buildEventRecipientWhere,
-  NOTIFIABLE_CITIZEN_WHERE,
-} from "@sam-monorepo/domain";
+import { NOTIFIABLE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../../context.js";
 import type { Recipient } from "./recipient.js";
 
@@ -12,30 +9,13 @@ export interface EventNotificationRecipients {
   readonly recipients: Recipient[];
 }
 
-/**
- * Loads an event and gives the recipient filter of
- * `buildEventRecipientWhere()` for it. Gives null when the event does not
- * exist.
- */
-export const loadEventRecipientWhere = async (
-  context: ApplicationContext,
-  eventId: string,
-): Promise<Prisma.CitizenWhereInput | null> => {
-  const event = await context.prisma.event.findUnique({
-    where: {
-      id: eventId,
-    },
-    select: {
-      visibility: true,
-      createdById: true,
-      managers: { select: { id: true } },
-      visibilityRoles: { select: { roleId: true } },
-    },
-  });
-  if (!event) return null;
-
-  return buildEventRecipientWhere(event);
-};
+/** The fields of an event that `buildEventRecipientWhere()` reads */
+export const EVENT_RECIPIENT_SELECT = {
+  visibility: true,
+  createdById: true,
+  managers: { select: { id: true } },
+  visibilityRoles: { select: { roleId: true } },
+} satisfies Prisma.EventSelect;
 
 /**
  * The citizens that match the filter and that the event notifications can

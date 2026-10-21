@@ -1,6 +1,6 @@
-import { findCitizenIdsWithPermissions } from "../../auth/effectivePermissionsOfCitizens.js";
+import { isCitizenWithPermissions } from "../../auth/effectivePermissionsOfCitizens.js";
 import type { ApplicationContext } from "../../context.js";
-import type { Recipient } from "./recipient.js";
+import { LOGIN_MANAGE_PERMISSION_SET, type Recipient } from "./recipient.js";
 
 export interface FindPenaltyEntryRecipientInput {
   readonly penaltyEntryId: string;
@@ -34,19 +34,17 @@ export const findPenaltyEntryRecipient = async (
   });
   if (!penaltyEntry) return null;
 
-  const recipientIds = await findCitizenIdsWithPermissions(
+  const isRecipient = await isCitizenWithPermissions(
     context,
-    { id: penaltyEntry.citizenId },
+    penaltyEntry.citizenId,
     [
-      { resource: "login", operation: "manage" },
+      LOGIN_MANAGE_PERMISSION_SET,
       { resource: "ownPenaltyEntry", operation: "read" },
     ],
   );
 
   return {
     penaltyEntry: { points: penaltyEntry.points, reason: penaltyEntry.reason },
-    recipients: recipientIds.has(penaltyEntry.citizenId)
-      ? [{ citizenId: penaltyEntry.citizenId }]
-      : [],
+    recipients: isRecipient ? [{ citizenId: penaltyEntry.citizenId }] : [],
   };
 };

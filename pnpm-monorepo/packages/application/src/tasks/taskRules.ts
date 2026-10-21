@@ -1,4 +1,4 @@
-import type { Task } from "@sam-monorepo/database/client";
+import type { Role, Task } from "@sam-monorepo/database/client";
 import type { Actor } from "../actor.js";
 
 export enum TaskStatus {
@@ -14,6 +14,17 @@ export const isAllowedToManageTask = (
   task: Pick<Task, "createdById">,
 ) =>
   task.createdById === actor.citizen?.id || actor.authorize("task", "manage");
+
+/**
+ * A task with required roles is only for the citizens who have one of them as
+ * an effective role. A task without required roles is for each citizen.
+ */
+export const hasRequiredRole = (
+  requiredRoles: readonly Pick<Role, "id">[],
+  roleIds: ReadonlySet<string>,
+) =>
+  requiredRoles.length === 0 ||
+  requiredRoles.some((role) => roleIds.has(role.id));
 
 /** Only an open task can change */
 export const isTaskUpdatable = (

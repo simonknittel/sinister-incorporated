@@ -2,6 +2,7 @@ import { prisma } from "@sam-monorepo/database";
 import { AuditEventType } from "@sam-monorepo/domain";
 import { beforeEach, expect, test } from "vitest";
 import { createTestApplicationContext } from "../../test/applicationContext.js";
+import { createCitizenWithPermissions } from "../../test/citizensWithPermissions.js";
 import { truncateAllTables } from "../../test/database.js";
 import { sendBirthdayGreetings } from "./sendBirthdayGreetings.js";
 import { sendNewYearGreetings } from "./sendNewYearGreetings.js";
@@ -13,39 +14,32 @@ beforeEach(async () => {
   await truncateAllTables();
 });
 
-const createCitizenWhoCanLogin = async (data: {
-  handle: string;
-  timezone?: string;
-  birthdayDay?: number;
-  birthdayMonth?: number;
-}) => {
-  const role = await prisma.role.create({
-    data: {
-      name: `${data.handle}-role`,
-      permissionStrings: { create: [{ permissionString: "login;manage" }] },
-    },
-  });
-
-  return prisma.citizen.create({
-    data: { ...data, roleAssignments: { create: { roleId: role.id } } },
-  });
-};
+/** The greetings go only to the citizens who can log in */
+const LOGIN_PERMISSION_STRINGS = ["login;manage"];
 
 test("greets a citizen once on the birthday in their own time zone", async () => {
   // 2026-12-25 00:05 in Pacific/Kiritimati (UTC+14), 2026-12-24 11:05 in Berlin
   const now = new Date("2026-12-24T10:05:00Z");
-  const celebrant = await createCitizenWhoCanLogin({
-    handle: "kiritimati",
-    timezone: "Pacific/Kiritimati",
-    birthdayDay: 25,
-    birthdayMonth: 12,
-  });
-  const sameDayInBerlin = await createCitizenWhoCanLogin({
-    handle: "berlin",
-    timezone: "Europe/Berlin",
-    birthdayDay: 25,
-    birthdayMonth: 12,
-  });
+  const celebrant = await createCitizenWithPermissions(
+    "kiritimati",
+    LOGIN_PERMISSION_STRINGS,
+    [],
+    {
+      timezone: "Pacific/Kiritimati",
+      birthdayDay: 25,
+      birthdayMonth: 12,
+    },
+  );
+  const sameDayInBerlin = await createCitizenWithPermissions(
+    "berlin",
+    LOGIN_PERMISSION_STRINGS,
+    [],
+    {
+      timezone: "Europe/Berlin",
+      birthdayDay: 25,
+      birthdayMonth: 12,
+    },
+  );
 
   const { context, notifications, auditEvents } = createTestApplicationContext({
     now,
@@ -89,7 +83,10 @@ test("greets a citizen once on the birthday in their own time zone", async () =>
 
 test("greets a citizen at the start of January 1 in their time zone", async () => {
   const now = new Date("2027-01-01T00:05:00+01:00");
-  const citizen = await createCitizenWhoCanLogin({ handle: "berlin" });
+  const citizen = await createCitizenWithPermissions(
+    "berlin",
+    LOGIN_PERMISSION_STRINGS,
+  );
 
   const { context, notifications, auditEvents } = createTestApplicationContext({
     now,
@@ -113,6 +110,33 @@ test("greets a citizen at the start of January 1 in their time zone", async () =
       createdById: null,
     },
   ]);
+  await expect(
+    prisma.citizen.findUniqueOrThrow({ where: { id: citizen.id } }),
+  ).resolves.toMatchObject({ newYearGreetingSentAt: now });
+});
+
+test("keeps the markers without an audit event when the notifications fail", async () => {
+  const now = new Date("2027-01-01T00:05:00+01:00");
+  const citizen = await createCitizenWithPermissions(
+    "berlin",
+    LOGIN_PERMISSION_STRINGS,
+  );
+
+  const { context, auditEvents } = createTestApplicationContext({
+    now,
+    notifications: {
+      trigger: async () => {
+        throw new Error("EventBridge is not available");
+      },
+    },
+  });
+
+  await expect(sendNewYearGreetings(context)).resolves.toEqual({
+    candidateCount: 1,
+    greetedCount: 1,
+    notificationsSent: false,
+  });
+  expect(auditEvents).toEqual([]);
   await expect(
     prisma.citizen.findUniqueOrThrow({ where: { id: citizen.id } }),
   ).resolves.toMatchObject({ newYearGreetingSentAt: now });

@@ -1,6 +1,6 @@
-import { findCitizenIdsWithPermissions } from "../../auth/effectivePermissionsOfCitizens.js";
+import { isCitizenWithPermissions } from "../../auth/effectivePermissionsOfCitizens.js";
 import type { ApplicationContext } from "../../context.js";
-import type { Recipient } from "./recipient.js";
+import { LOGIN_MANAGE_PERMISSION_SET, type Recipient } from "./recipient.js";
 
 export interface FindRoleAddedRecipientInput {
   readonly citizenId: string;
@@ -21,15 +21,15 @@ export const findRoleAddedRecipient = async (
   context: ApplicationContext,
   input: FindRoleAddedRecipientInput,
 ): Promise<RoleAddedRecipients | null> => {
-  const [role, recipientIds] = await Promise.all([
+  const [role, isRecipient] = await Promise.all([
     context.prisma.role.findUnique({
       where: { id: input.roleId },
       select: {
         name: true,
       },
     }),
-    findCitizenIdsWithPermissions(context, { id: input.citizenId }, [
-      { resource: "login", operation: "manage" },
+    isCitizenWithPermissions(context, input.citizenId, [
+      LOGIN_MANAGE_PERMISSION_SET,
       {
         resource: "otherRole",
         operation: "read",
@@ -41,8 +41,6 @@ export const findRoleAddedRecipient = async (
 
   return {
     role: { id: input.roleId, name: role.name },
-    recipients: recipientIds.has(input.citizenId)
-      ? [{ citizenId: input.citizenId }]
-      : [],
+    recipients: isRecipient ? [{ citizenId: input.citizenId }] : [],
   };
 };

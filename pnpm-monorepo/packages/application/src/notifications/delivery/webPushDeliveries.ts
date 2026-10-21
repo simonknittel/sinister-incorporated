@@ -62,7 +62,8 @@ export const findWebPushDeliveries = async <
           notificationType: true,
         },
       },
-      // The keys are omitted globally, so the send path selects them back in.
+      // The Prisma client leaves out the keys of a subscription by default,
+      // thus the delivery selects them explicitly
       webPushSubscriptions: {
         select: {
           id: true,
@@ -137,27 +138,20 @@ export const findWebPushSubscription = async (
 };
 
 export interface PruneWebPushSubscriptionsInput {
-  readonly endpoints?: readonly string[];
-  readonly subscriptionIds?: readonly string[];
+  readonly subscriptionIds: readonly string[];
   readonly reason: WebPushPruneReason;
 }
 
 /**
- * Deletes the subscriptions with one of the endpoints or ids, and writes the
- * audit event with the number of deleted rows (also 0, when the rows were
- * gone)
+ * Deletes the subscriptions, and writes the audit event with the number of
+ * deleted rows (also 0, when the rows were gone)
  */
 export const pruneWebPushSubscriptions = async (
   context: ApplicationContext,
   input: PruneWebPushSubscriptionsInput,
 ): Promise<{ readonly count: number }> => {
   const { count } = await context.prisma.webPushSubscription.deleteMany({
-    where: {
-      OR: [
-        { endpoint: { in: [...(input.endpoints ?? [])] } },
-        { id: { in: [...(input.subscriptionIds ?? [])] } },
-      ],
-    },
+    where: { id: { in: [...input.subscriptionIds] } },
   });
 
   await context.audit.create([

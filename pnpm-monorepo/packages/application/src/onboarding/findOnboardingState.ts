@@ -4,9 +4,8 @@ import {
   type OnboardingStepKey,
   type OnboardingTaskKey,
 } from "@sam-monorepo/domain";
-import type { Actor } from "../actor.js";
+import { satisfiesAnyPermissionString, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { satisfiesAnyPermissionString } from "./onboardingPermissions.js";
 
 /**
  * A task the citizen is allowed to see, reduced to the keys of the task and
@@ -33,16 +32,14 @@ export interface OnboardingState {
 
 /**
  * The onboarding tasks the actor is allowed to see, together with the
- * progress. A task without a permitted step is left out. Null for an actor
- * without a citizen: such an actor never sees the onboarding.
+ * progress of the citizen of the actor. A task without a permitted step is
+ * left out.
  */
-export const findOnboardingState = async (
+export const loadOnboardingState = async (
   context: ApplicationContext,
   actor: Actor,
-): Promise<OnboardingState | null> => {
-  const citizenId = actor.citizen?.id;
-  if (!citizenId) return null;
-
+  citizenId: string,
+): Promise<OnboardingState> => {
   const eligibleTasks = ONBOARDING_TASK_RULES.flatMap(
     (rule): EligibleOnboardingTask[] => {
       if (!satisfiesAnyPermissionString(actor, rule.requiredPermissionStrings))
@@ -78,3 +75,13 @@ export const findOnboardingState = async (
     ),
   };
 };
+
+/**
+ * `loadOnboardingState()`, or null for an actor without a citizen: such an
+ * actor never sees the onboarding
+ */
+export const findOnboardingState = async (
+  context: ApplicationContext,
+  actor: Actor,
+): Promise<OnboardingState | null> =>
+  actor.citizen ? loadOnboardingState(context, actor, actor.citizen.id) : null;

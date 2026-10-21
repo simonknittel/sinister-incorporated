@@ -4,16 +4,12 @@ import {
   takesTimeOfPrecedingLine,
   type LogAnalyzerEntryType,
 } from "@sam-monorepo/domain";
+import type * as z from "zod";
+import type { shareLogAnalyzerEntriesInputSchema } from "./shareLogAnalyzerEntries.js";
 
-export interface LogAnalyzerEntryCandidate {
-  readonly type: LogAnalyzerEntryType;
-  readonly raw_line: string;
-  /**
-   * The time of the event, only for a type whose lines carry no time of
-   * their own. See `takesTimeOfPrecedingLine`.
-   */
-  readonly event_at?: string | undefined;
-}
+type LogAnalyzerEntryCandidate = z.infer<
+  typeof shareLogAnalyzerEntriesInputSchema
+>["entries"][number];
 
 export interface ValidatedLogAnalyzerEntry {
   readonly type: LogAnalyzerEntryType;

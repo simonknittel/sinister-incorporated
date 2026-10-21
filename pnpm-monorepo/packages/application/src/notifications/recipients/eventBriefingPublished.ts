@@ -1,9 +1,14 @@
 import { WikiPageEventScope } from "@sam-monorepo/database/browser";
+import {
+  buildEventRecipientWhere,
+  collectPositionScopeIdsForCitizen,
+} from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../../context.js";
+import { findEventCreatedRecipients } from "./eventCreated.js";
 import { findEventParticipantRecipients } from "./eventParticipants.js";
 import {
+  EVENT_RECIPIENT_SELECT,
   findNotifiableRecipients,
-  loadEventRecipientWhere,
   type EventNotificationRecipients,
 } from "./eventRecipients.js";
 
@@ -36,13 +41,15 @@ export const findEventBriefingPublishedRecipients = async (
       });
 
     case WikiPageEventScope.POSITION: {
-      if (!input.readScopePositionId) return null;
+      const scopePositionId = input.readScopePositionId;
+      if (!scopePositionId) return null;
 
       const event = await context.prisma.event.findUnique({
         where: { id: input.eventId },
         select: {
           id: true,
           name: true,
+          ...EVENT_RECIPIENT_SELECT,
           positions: {
             select: {
               id: true,
@@ -54,63 +61,31 @@ export const findEventBriefingPublishedRecipients = async (
       });
       if (!event) return null;
 
-      /**
-       * Citizens assigned anywhere in the subtree of the referenced position:
-       * the same membership rule as the permission resolver of the app
-       */
-      const childrenByParent = Map.groupBy(
-        event.positions,
-        (position) => position.parentPositionId,
-      );
-
-      const subtreeIds = new Set<string>();
-      const queue = [input.readScopePositionId];
-      while (queue.length > 0) {
-        const currentId = queue.pop()!;
-        if (subtreeIds.has(currentId)) continue;
-        subtreeIds.add(currentId);
-        queue.push(
-          ...(childrenByParent.get(currentId) ?? []).map((child) => child.id),
-        );
-      }
-
+      // The rule of the briefing gate: a citizen with a position in the
+      // subtree of the scope position
       const citizenIds = [
         ...new Set(
-          event.positions
-            .filter(
-              (position) => position.citizenId && subtreeIds.has(position.id),
-            )
-            .map((position) => position.citizenId!),
+          event.positions.flatMap((position) =>
+            position.citizenId ? [position.citizenId] : [],
+          ),
         ),
-      ];
+      ].filter((citizenId) =>
+        collectPositionScopeIdsForCitizen(event.positions, citizenId).has(
+          scopePositionId,
+        ),
+      );
       if (citizenIds.length <= 0) return null;
-
-      const recipientWhere = await loadEventRecipientWhere(context, event.id);
-      if (!recipientWhere) return null;
 
       return {
         event: { id: event.id, name: event.name },
         recipients: await findNotifiableRecipients(context, {
-          AND: [{ id: { in: citizenIds } }, recipientWhere],
+          AND: [{ id: { in: citizenIds } }, buildEventRecipientWhere(event)],
         }),
       };
     }
 
-    case WikiPageEventScope.ALL: {
-      const event = await context.prisma.event.findUnique({
-        where: { id: input.eventId },
-        select: { id: true, name: true },
-      });
-      if (!event) return null;
-
-      const recipientWhere = await loadEventRecipientWhere(context, event.id);
-      if (!recipientWhere) return null;
-
-      return {
-        event,
-        recipients: await findNotifiableRecipients(context, recipientWhere),
-      };
-    }
+    case WikiPageEventScope.ALL:
+      return findEventCreatedRecipients(context, { eventId: input.eventId });
 
     default:
       throw new Error(`Unknown read scope: ${input.readScope satisfies never}`);

@@ -53,7 +53,7 @@ describe("isBirthdayToday", () => {
     );
   });
 
-  test("moves a February 29 birthday to March 1 of a common year", () => {
+  test("moves a February 29 birthday to March 1 only in a common year", () => {
     const leapBirthday = { timezone: null, birthdayDay: 29, birthdayMonth: 2 };
 
     expect(
@@ -65,6 +65,9 @@ describe("isBirthdayToday", () => {
     expect(
       isBirthdayToday(leapBirthday, new Date("2028-02-29T12:00:00Z")),
     ).toBe(true);
+    expect(
+      isBirthdayToday(leapBirthday, new Date("2028-03-01T12:00:00Z")),
+    ).toBe(false);
   });
 
   test("stays silent for a citizen without a birthday", () => {

@@ -10,7 +10,11 @@ import { isRoleVisible } from "../roles/roleVisibility.js";
 import { findNewTaskIds } from "./findNewTaskIds.js";
 import { TASK_DETAILS_INCLUDE, type TaskDetailsRow } from "./taskListSelect.js";
 import { toTaskListItem, type TaskListItem } from "./taskOutput.js";
-import { isAllowedToManageTask, isTaskUpdatable } from "./taskRules.js";
+import {
+  hasRequiredRole,
+  isAllowedToManageTask,
+  isTaskUpdatable,
+} from "./taskRules.js";
 
 export interface TaskRoleReference {
   readonly id: string;
@@ -65,9 +69,10 @@ export const toVisibleTask = (
   task: TaskDetailsRow,
 ): VisibleTask => ({
   ...task,
-  hasCurrentUserRequiredRole:
-    task.requiredRoles.length === 0 ||
-    task.requiredRoles.some((role) => actor.roleIds.has(role.id)),
+  hasCurrentUserRequiredRole: hasRequiredRole(
+    task.requiredRoles,
+    actor.roleIds,
+  ),
 });
 
 /**

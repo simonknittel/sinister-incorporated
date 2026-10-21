@@ -1,9 +1,10 @@
-import { requirePermission, type Actor } from "../actor.js";
+import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ForbiddenError } from "../errors.js";
-import { LogAnalyzerErrorMessage } from "./logAnalyzerErrors.js";
+import {
+  requireLogAnalyzerAccess,
+  type LogAnalyzerSharingOptions,
+} from "./logAnalyzerAccess.js";
 import { getEventAtWindow } from "./logAnalyzerWindow.js";
-import type { LogAnalyzerSharingOptions } from "./shareLogAnalyzerEntries.js";
 
 /**
  * The upper limit of one response. A viewer who joins late gets the entries
@@ -52,10 +53,7 @@ export const findSharedLogAnalyzerEntries = async (
   input: FindSharedLogAnalyzerEntriesInput,
   options: LogAnalyzerSharingOptions,
 ): Promise<SharedLogAnalyzerEntries> => {
-  requirePermission(actor, "logAnalyzer", "read");
-
-  if (options.isSharingDisabled)
-    throw new ForbiddenError(LogAnalyzerErrorMessage.SharingDisabled);
+  requireLogAnalyzerAccess(actor, options);
 
   const isIncremental = Boolean(input.cursorId);
   const direction = isIncremental ? "asc" : "desc";

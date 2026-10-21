@@ -10,32 +10,38 @@ const CONNECTION_TIMEOUT_MILLISECONDS = 5_000;
  */
 const REQUEST_TIMEOUT_MILLISECONDS = 30_000;
 
-export interface S3ClientOptions {
-  /**
-   * The endpoint of the S3-compatible provider, for example
-   * `https://<account>.r2.cloudflarestorage.com` for Cloudflare R2
-   */
-  readonly endpoint: string;
-  /**
-   * Path-style addressing, for a provider without a domain for each bucket
-   * (for example the local RustFS container)
-   */
-  readonly forcePathStyle?: boolean;
-  readonly credentials: {
-    readonly accessKeyId: string;
-    readonly secretAccessKey: string;
-  };
+/** The domain of the S3 endpoints of Cloudflare R2 */
+const R2_ENDPOINT_DOMAIN = "r2.cloudflarestorage.com";
+
+interface S3Credentials {
+  readonly accessKeyId: string;
+  readonly secretAccessKey: string;
 }
 
-export const createS3Client = ({
-  endpoint,
-  forcePathStyle = false,
-  credentials,
-}: S3ClientOptions): S3Client =>
+export type S3ClientOptions =
+  | {
+      /** The account of Cloudflare R2. Its endpoint has a domain for each bucket. */
+      readonly accountId: string;
+      readonly credentials: S3Credentials;
+    }
+  | {
+      /**
+       * The endpoint of an S3-compatible provider without a domain for each
+       * bucket (for example the local RustFS container). The client uses
+       * path-style addressing.
+       */
+      readonly endpoint: string;
+      readonly credentials: S3Credentials;
+    };
+
+export const createS3Client = (options: S3ClientOptions): S3Client =>
   new S3Client({
     region: "auto",
-    endpoint,
-    forcePathStyle,
+    endpoint:
+      "accountId" in options
+        ? new URL(`https://${options.accountId}.${R2_ENDPOINT_DOMAIN}`).origin
+        : options.endpoint,
+    forcePathStyle: "endpoint" in options,
     /*
      * Since the data integrity protections of the SDK (3.729.0), presigned
      * PUT URLs embed a CRC32 checksum of the empty command body. R2 ignores
@@ -46,7 +52,7 @@ export const createS3Client = ({
      */
     requestChecksumCalculation: "WHEN_REQUIRED",
     responseChecksumValidation: "WHEN_REQUIRED",
-    credentials,
+    credentials: options.credentials,
     requestHandler: {
       connectionTimeout: CONNECTION_TIMEOUT_MILLISECONDS,
       requestTimeout: REQUEST_TIMEOUT_MILLISECONDS,

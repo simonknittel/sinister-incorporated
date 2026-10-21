@@ -19,10 +19,6 @@ export type AuthorizeRealtimeChannelInput = z.output<
   typeof authorizeRealtimeChannelInputSchema
 >;
 
-export interface AuthorizeRealtimeChannelOutput {
-  readonly channel_name: string;
-}
-
 /**
  * Restricted and soft-deleted events must stay invisible: a subscription to
  * their channel gets the same answer as an event that does not exist.
@@ -63,18 +59,15 @@ export const authorizeRealtimeChannel = async (
   context: ApplicationContext,
   actor: Actor,
   input: AuthorizeRealtimeChannelInput,
-): Promise<AuthorizeRealtimeChannelOutput> => {
+): Promise<void> => {
   const channelName = input.channel_name;
 
-  if (channelName.startsWith(EVENT_CHANNEL_PREFIX)) {
-    await requireVisibleEvent(
+  if (channelName.startsWith(EVENT_CHANNEL_PREFIX))
+    return requireVisibleEvent(
       context,
       actor,
       channelName.slice(EVENT_CHANNEL_PREFIX.length),
     );
-
-    return { channel_name: channelName };
-  }
 
   if (channelName.startsWith(CITIZEN_CHANNEL_PREFIX)) {
     if (channelName.slice(CITIZEN_CHANNEL_PREFIX.length) !== actor.citizen?.id)
@@ -82,7 +75,7 @@ export const authorizeRealtimeChannel = async (
         NotificationErrorMessage.RealtimeChannelForbidden,
       );
 
-    return { channel_name: channelName };
+    return;
   }
 
   throw new ValidationError(NotificationErrorMessage.RealtimeChannelUnknown);

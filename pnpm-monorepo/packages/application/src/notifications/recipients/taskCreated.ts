@@ -1,6 +1,7 @@
 import { TaskVisibility } from "@sam-monorepo/database/browser";
 import { findCitizensWithPermissions } from "../../auth/effectivePermissionsOfCitizens.js";
 import type { ApplicationContext } from "../../context.js";
+import { hasRequiredRole } from "../../tasks/taskRules.js";
 import type { Recipient } from "./recipient.js";
 import { TASK_RECEIVER_PERMISSION_SETS } from "./taskRecipients.js";
 
@@ -25,10 +26,9 @@ export interface FindTaskCreatedRecipientsInput {
 /**
  * One group for each new task that is not deleted. A personalized or group
  * task notifies its assignees. A public task has no assignees yet: it
- * notifies each citizen who can take it on, except its creator. With required
- * roles, the effective roles of the citizen must include one of them (the
- * same rule as `hasCurrentUserRequiredRole` of the app), also when the task
- * is visible for other roles. `task;manage` shows all tasks, but it gives no
+ * notifies each citizen who can take it on, except its creator: the citizen
+ * must have a required role (`hasRequiredRole()`), also when the task is
+ * visible for other roles. `task;manage` shows all tasks, but it gives no
  * notification.
  */
 export const findTaskCreatedRecipients = async (
@@ -79,8 +79,7 @@ export const findTaskCreatedRecipients = async (
             .filter(
               ([citizenId, { roleIds }]) =>
                 citizenId !== task.createdById &&
-                (task.requiredRoles.length === 0 ||
-                  task.requiredRoles.some((role) => roleIds.has(role.id))),
+                hasRequiredRole(task.requiredRoles, roleIds),
             )
             .map(([citizenId]) => ({ citizenId })),
         };

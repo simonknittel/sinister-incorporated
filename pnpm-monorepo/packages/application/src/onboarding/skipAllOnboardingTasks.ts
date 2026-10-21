@@ -2,9 +2,8 @@ import { OnboardingTaskCompletionMethod } from "@sam-monorepo/database/browser";
 import { AuditEventType, type OnboardingTaskKey } from "@sam-monorepo/domain";
 import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ForbiddenError } from "../errors.js";
 import { withSpan } from "../withSpan.js";
-import { findOnboardingState } from "./findOnboardingState.js";
+import { loadOnboardingState } from "./findOnboardingState.js";
 
 export interface SkipAllOnboardingTasksOutput {
   /** The tasks that were open before, in the order of the rules */
@@ -25,8 +24,7 @@ export const skipAllOnboardingTasks = (
   withSpan(context, "skipAllOnboardingTasks", async () => {
     const citizenId = requireCitizen(actor).id;
 
-    const state = await findOnboardingState(context, actor);
-    if (!state) throw new ForbiddenError("The user has no citizen");
+    const state = await loadOnboardingState(context, actor, citizenId);
 
     const completedTaskKeys = new Set(state.completedTaskKeys);
     const openTaskKeys = state.eligibleTasks

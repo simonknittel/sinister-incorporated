@@ -20,9 +20,11 @@ export type LinkWikiPageUploadInput = z.infer<
 
 export interface LinkWikiPageUploadOutput {
   readonly page_id: string;
-  readonly upload_id: string;
-  /** The image whose dimensions the host probes after the response */
-  readonly probe_upload_id: string | null;
+  /**
+   * The linked upload. The host probes its dimensions after the response
+   * (the probe skips an upload that is not an image).
+   */
+  readonly probe_upload_id: string;
 }
 
 /**
@@ -92,9 +94,5 @@ export const linkWikiPageUpload = (
       skipDuplicates: true,
     });
 
-    return {
-      page_id: page.id,
-      upload_id: upload.id,
-      probe_upload_id: isImage ? upload.id : null,
-    };
+    return { page_id: page.id, probe_upload_id: upload.id };
   });

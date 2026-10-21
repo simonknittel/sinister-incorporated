@@ -1,6 +1,7 @@
 import { UserRole } from "@sam-monorepo/database/browser";
 import {
   comparePermissionSets,
+  transformPermissionStringToPermissionSet,
   type PermissionSet,
 } from "@sam-monorepo/domain";
 import { ForbiddenError } from "./errors.js";
@@ -87,6 +88,29 @@ export const requirePermission = (
     throw new ForbiddenError(
       `The permission ${resource};${operation} is missing`,
     );
+};
+
+/**
+ * Whether the actor has at least one of the permission strings. An absent or
+ * empty list means that no permission is necessary. The app catalog and the
+ * onboarding read their required permissions as permission strings.
+ */
+export const satisfiesAnyPermissionString = (
+  actor: Actor,
+  permissionStrings: readonly string[] | undefined,
+): boolean => {
+  if (!permissionStrings || permissionStrings.length === 0) return true;
+
+  return permissionStrings.some((permissionString) => {
+    const permissionSet =
+      transformPermissionStringToPermissionSet(permissionString);
+
+    return actor.authorize(
+      permissionSet.resource,
+      permissionSet.operation,
+      permissionSet.attributes,
+    );
+  });
 };
 
 /**

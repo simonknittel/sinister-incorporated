@@ -29,8 +29,8 @@ export interface DeleteUnusedUploadsOutput {
  * foreign key, and the delete of a resource only sets it to null. Without
  * the sweep, the previous upload would stay forever.
  *
- * The rule of the upload usage is `UPLOAD_USAGE_RELATIONS` of the domain
- * package.
+ * The rule of the upload usage is `UPLOAD_USAGE_RELATION_BY_TYPE` of the
+ * domain package.
  *
  * Then the sweep deletes the objects of the bucket without a row, which the
  * database cannot find: for example the object of an upload whose delete in

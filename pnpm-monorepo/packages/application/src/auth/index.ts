@@ -17,6 +17,11 @@ export {
   type DeleteOwnSessionOutput,
 } from "./deleteOwnSession.js";
 export {
+  sendEmailConfirmation,
+  type SendEmailConfirmationInput,
+  type SendEmailConfirmationOutput,
+} from "./emailConfirmationRequest.js";
+export {
   findDevelopmentLoginUser,
   findDevelopmentLoginUserInputSchema,
   type FindDevelopmentLoginUserInput,
@@ -55,11 +60,7 @@ export {
   requestEmailConfirmation,
   type RequestEmailConfirmationOutput,
 } from "./requestEmailConfirmation.js";
-export {
-  requestEmailConfirmationOfNewUser,
-  type RequestEmailConfirmationOfNewUserInput,
-  type RequestEmailConfirmationOfNewUserOutput,
-} from "./requestEmailConfirmationOfNewUser.js";
+
 export {
   startAssumingUser,
   startAssumingUserInputSchema,

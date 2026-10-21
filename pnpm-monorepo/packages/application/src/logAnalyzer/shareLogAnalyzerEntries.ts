@@ -5,10 +5,14 @@ import {
   MAXIMUM_LOG_ANALYZER_UPLOAD_ENTRIES,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
-import { requireCitizen, requirePermission, type Actor } from "../actor.js";
+import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ForbiddenError, ValidationError } from "../errors.js";
+import { ValidationError } from "../errors.js";
 import { withSpan } from "../withSpan.js";
+import {
+  requireLogAnalyzerAccess,
+  type LogAnalyzerSharingOptions,
+} from "./logAnalyzerAccess.js";
 import { LogAnalyzerErrorMessage } from "./logAnalyzerErrors.js";
 import { validateLogAnalyzerEntries } from "./validateLogAnalyzerEntries.js";
 
@@ -23,6 +27,10 @@ export const shareLogAnalyzerEntriesInputSchema = z.object({
          * pattern covers the whole text.
          */
         raw_line: z.string().min(1).max(MAXIMUM_LOG_ANALYZER_RAW_LINE_LENGTH),
+        /**
+         * The time of the event, only for a type whose lines carry no time
+         * of their own. See `takesTimeOfPrecedingLine`.
+         */
         event_at: z.iso.datetime().optional(),
       }),
     )
@@ -34,11 +42,6 @@ export interface ShareLogAnalyzerEntriesOutput {
   readonly entry_count: number;
   /** The entries that the citizen did not share before */
   readonly new_entry_count: number;
-}
-
-/** The kill switch of the sharing is a flag of the host (Unleash) */
-export interface LogAnalyzerSharingOptions {
-  readonly isSharingDisabled: boolean;
 }
 
 /**
@@ -57,10 +60,7 @@ export const shareLogAnalyzerEntries = (
   options: LogAnalyzerSharingOptions,
 ): Promise<ShareLogAnalyzerEntriesOutput> =>
   withSpan(context, "shareLogAnalyzerEntries", async () => {
-    requirePermission(actor, "logAnalyzer", "read");
-
-    if (options.isSharingDisabled)
-      throw new ForbiddenError(LogAnalyzerErrorMessage.SharingDisabled);
+    requireLogAnalyzerAccess(actor, options);
 
     const citizen = requireCitizen(actor);
 

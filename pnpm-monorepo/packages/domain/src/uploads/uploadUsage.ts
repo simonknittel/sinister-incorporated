@@ -1,10 +1,12 @@
+import type { Prisma } from "@sam-monorepo/database/client";
+
 /**
  * Where an upload is referenced. `Unused` is not a usage: it is the absence
  * of all usages. `listUploadUsages` never gives it. Only the usage filter and
  * the badge of an upload without a reference use it.
  *
- * Each other type is one usage relation of the `Upload` model. The rule of
- * the upload usage is `UPLOAD_USAGE_RELATIONS` (`uploadUsageRelations.ts`).
+ * Each other type is one usage relation of the `Upload` model, see
+ * `UPLOAD_USAGE_RELATION_BY_TYPE`.
  */
 export enum UploadUsageType {
   RoleIcon = "roleIcon",
@@ -17,6 +19,37 @@ export enum UploadUsageType {
   WikiPageSnapshot = "wikiPageSnapshot",
   Unused = "unused",
 }
+
+/**
+ * The rule of upload usage: an upload is in use while one of these
+ * relations of the `Upload` model references it. The nightly cleanup
+ * deletes each other upload (`UNUSED_UPLOAD_WHERE`), and the upload manager
+ * of the app shows the usage type of each relation.
+ *
+ * The wiki relations are link tables that follow the content: the collab
+ * server replaces the links of a page at each store, and each new snapshot
+ * links the uploads of its content. Thus no check searches the content.
+ *
+ * `wikiReports` is the one deliberate omission: report evidence is meant to
+ * expire with its upload, and the report keeps a `uploadFileName` snapshot.
+ *
+ * A relation that is in the model but not in this record silently deletes
+ * uploads that are in use (as happened to `eventCovers`). Thus add each new
+ * relation of the model here, with a usage type.
+ */
+export const UPLOAD_USAGE_RELATION_BY_TYPE = {
+  [UploadUsageType.RoleIcon]: "roleIcons",
+  [UploadUsageType.RoleThumbnail]: "roleThumbnails",
+  [UploadUsageType.ManufacturerLogo]: "manufacturers",
+  [UploadUsageType.EventCover]: "eventCovers",
+  [UploadUsageType.EventTemplateCover]: "eventTemplateCovers",
+  [UploadUsageType.WikiPageIcon]: "wikiPageIcons",
+  [UploadUsageType.WikiPageAttachment]: "wikiPageLinks",
+  [UploadUsageType.WikiPageSnapshot]: "wikiPageSnapshotLinks",
+} as const satisfies Record<
+  Exclude<UploadUsageType, UploadUsageType.Unused>,
+  keyof Prisma.UploadCountOutputTypeSelect
+>;
 
 /**
  * The labels of the upload manager. The audit event of a deleted upload
@@ -94,6 +127,15 @@ export type UploadUsageLocation = UploadUsageLocationFields &
       }
   );
 
+/** The usage types whose relation gives a resource with a name */
+const NAMED_RESOURCE_USAGE_TYPES = [
+  UploadUsageType.RoleIcon,
+  UploadUsageType.RoleThumbnail,
+  UploadUsageType.ManufacturerLogo,
+  UploadUsageType.EventCover,
+  UploadUsageType.EventTemplateCover,
+] as const;
+
 /**
  * The snapshots of a page often use the same upload many times. The usage is
  * the page, one time.
@@ -114,40 +156,14 @@ const getSnapshotPages = (
 export const listUploadUsages = (
   upload: UploadUsageSource,
 ): UploadUsageLocation[] => [
-  ...upload.roleIcons.map((role) => ({
-    type: UploadUsageType.RoleIcon as const,
-    key: `${UploadUsageType.RoleIcon}:${role.id}`,
-    label: role.name,
-    resource: { id: role.id },
-  })),
-
-  ...upload.roleThumbnails.map((role) => ({
-    type: UploadUsageType.RoleThumbnail as const,
-    key: `${UploadUsageType.RoleThumbnail}:${role.id}`,
-    label: role.name,
-    resource: { id: role.id },
-  })),
-
-  ...upload.manufacturers.map((manufacturer) => ({
-    type: UploadUsageType.ManufacturerLogo as const,
-    key: `${UploadUsageType.ManufacturerLogo}:${manufacturer.id}`,
-    label: manufacturer.name,
-    resource: { id: manufacturer.id },
-  })),
-
-  ...upload.eventCovers.map((event) => ({
-    type: UploadUsageType.EventCover as const,
-    key: `${UploadUsageType.EventCover}:${event.id}`,
-    label: event.name,
-    resource: { id: event.id },
-  })),
-
-  ...upload.eventTemplateCovers.map((template) => ({
-    type: UploadUsageType.EventTemplateCover as const,
-    key: `${UploadUsageType.EventTemplateCover}:${template.id}`,
-    label: template.name,
-    resource: { id: template.id },
-  })),
+  ...NAMED_RESOURCE_USAGE_TYPES.flatMap((type) =>
+    upload[UPLOAD_USAGE_RELATION_BY_TYPE[type]].map((resource) => ({
+      type,
+      key: `${type}:${resource.id}`,
+      label: resource.name,
+      resource: { id: resource.id },
+    })),
+  ),
 
   ...upload.wikiPageIcons.map((page) => ({
     type: UploadUsageType.WikiPageIcon as const,

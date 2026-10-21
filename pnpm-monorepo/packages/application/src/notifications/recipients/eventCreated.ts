@@ -1,7 +1,8 @@
+import { buildEventRecipientWhere } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../../context.js";
 import {
+  EVENT_RECIPIENT_SELECT,
   findNotifiableRecipients,
-  loadEventRecipientWhere,
   type EventNotificationRecipients,
 } from "./eventRecipients.js";
 
@@ -24,15 +25,16 @@ export const findEventCreatedRecipients = async (
     select: {
       id: true,
       name: true,
+      ...EVENT_RECIPIENT_SELECT,
     },
   });
   if (!event) return null;
 
-  const recipientWhere = await loadEventRecipientWhere(context, event.id);
-  if (!recipientWhere) return null;
-
   return {
-    event,
-    recipients: await findNotifiableRecipients(context, recipientWhere),
+    event: { id: event.id, name: event.name },
+    recipients: await findNotifiableRecipients(
+      context,
+      buildEventRecipientWhere(event),
+    ),
   };
 };

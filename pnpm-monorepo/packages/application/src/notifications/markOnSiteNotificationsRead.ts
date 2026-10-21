@@ -8,7 +8,7 @@ import { idSchema } from "../pagination.js";
  * The read-on-view tracking of the notification center sends the ids of the
  * viewed notifications in small batches. The limit bounds one write.
  */
-export const MAXIMUM_ON_SITE_NOTIFICATIONS_PER_READ = 100;
+const MAXIMUM_ON_SITE_NOTIFICATIONS_PER_READ = 100;
 
 export const markOnSiteNotificationsReadInputSchema = z.object({
   notification_ids: z

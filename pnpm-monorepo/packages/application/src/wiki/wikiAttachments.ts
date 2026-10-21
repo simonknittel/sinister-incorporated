@@ -15,33 +15,26 @@ import { loadWikiScopeOfPage } from "./wikiScope.js";
 /** The time that the browser has to start the download */
 const ATTACHMENT_DOWNLOAD_URL_EXPIRY_SECONDS = 5 * 60;
 
-/** The upload as the download route needs it */
-export interface WikiAttachmentDownload {
-  readonly id: string;
-  readonly fileName: string;
-  readonly mimeType: string;
-}
-
 /**
- * The upload of an attachment that the actor may download. Unlike images
- * (public by unguessable URL), attachments are only for the actors who can
- * read a page that contains the upload.
+ * The upload of an attachment that the actor may download. An image is
+ * public (nobody can guess its URL), but an attachment is only for an actor
+ * who can read a page with the upload.
  *
- * An upload can be linked to several pages (`Upload.wikiPageLinks`, for
- * example after a page duplication or a cross-page copy-paste). Any readable
- * linked page grants the download. A link of each kind counts, as with the
- * former link table, which also held the images.
+ * An upload can have links to more than one page (`Upload.wikiPageLinks`,
+ * for example after a duplication of a page or a copy between pages). Each
+ * linked page that the actor can read gives the download. A link of each
+ * kind counts, also the link of an image.
  *
  * @throws NotFoundError when the upload does not exist, when no wiki page
- * links it, or when the actor cannot read any of its pages: invisible pages
- * and uploads outside the wiki look the same, thus their existence never
- * leaks
+ * links it, or when the actor cannot read one of its pages. A page that the
+ * actor cannot see and an upload outside the wiki give the same answer, thus
+ * the answer does not show that they exist.
  */
-export const findWikiAttachmentDownload = async (
+const findDownloadableAttachment = async (
   context: ApplicationContext,
   actor: Actor,
-  { uploadId }: { readonly uploadId: string },
-): Promise<WikiAttachmentDownload> => {
+  uploadId: string,
+) => {
   const upload = await context.prisma.upload.findUnique({
     where: { id: uploadId },
     select: {
@@ -63,11 +56,7 @@ export const findWikiAttachmentDownload = async (
       scope &&
       getAccessibleWikiPage(scope, pageId, WikiPageAccessTier.Read) !== null
     )
-      return {
-        id: upload.id,
-        fileName: upload.fileName,
-        mimeType: upload.mimeType,
-      };
+      return upload;
   }
 
   throw new NotFoundError(WikiErrorMessage.AttachmentNotFound);
@@ -88,7 +77,7 @@ export interface CreateWikiAttachmentDownloadUrlOutput {
 
 /**
  * The download URL of an attachment that the actor may download (see
- * `findWikiAttachmentDownload()`). The response of the URL makes the browser
+ * `findDownloadableAttachment()`). The response of the URL makes the browser
  * save the file with its name and does not show it inline.
  *
  * @throws NotFoundError `WikiErrorMessage.AttachmentNotFound`
@@ -100,9 +89,11 @@ export const createWikiAttachmentDownloadUrl = (
   input: CreateWikiAttachmentDownloadUrlInput,
 ): Promise<CreateWikiAttachmentDownloadUrlOutput> =>
   withSpan(context, "createWikiAttachmentDownloadUrl", async () => {
-    const upload = await findWikiAttachmentDownload(context, actor, {
-      uploadId: input.upload_id,
-    });
+    const upload = await findDownloadableAttachment(
+      context,
+      actor,
+      input.upload_id,
+    );
 
     if (!context.storage)
       throw new ConflictError(UploadErrorMessage.StorageNotConfigured);

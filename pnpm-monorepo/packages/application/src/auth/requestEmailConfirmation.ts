@@ -28,30 +28,24 @@ export const requestEmailConfirmation = (
         email: true,
       },
     });
-    if (!user?.email) {
-      context.log.warn("The user has no email address to confirm", {
-        userId: actor.userId,
-      });
+    const email = user?.email ?? "";
 
-      return { notifications_sent: false };
-    }
-
-    const emailRequested = await sendEmailConfirmation(context, {
+    const { requested } = await sendEmailConfirmation(context, {
       userId: actor.userId,
-      email: user.email,
+      email,
     });
 
-    if (emailRequested)
+    if (requested)
       await context.audit.create([
         {
           type: AuditEventType.EMAIL_CONFIRMATION_REQUESTED,
           data: {
             userId: actor.userId,
-            email: user.email,
+            email,
           },
           createdById: actor.userId,
         },
       ]);
 
-    return { notifications_sent: emailRequested };
+    return { notifications_sent: requested };
   });

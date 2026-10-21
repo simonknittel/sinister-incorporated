@@ -1,6 +1,6 @@
 import { findCitizenIdsWithPermissions } from "../../auth/effectivePermissionsOfCitizens.js";
 import type { ApplicationContext } from "../../context.js";
-import type { Recipient } from "./recipient.js";
+import { LOGIN_MANAGE_PERMISSION_SET, type Recipient } from "./recipient.js";
 
 export interface FindSilcTransactionRecipientsInput {
   readonly transactionIds: readonly string[];
@@ -40,7 +40,7 @@ export const findSilcTransactionRecipients = async (
     context,
     { id: { in: transactions.map((transaction) => transaction.receiverId) } },
     [
-      { resource: "login", operation: "manage" },
+      LOGIN_MANAGE_PERMISSION_SET,
       { resource: "silcTransactionOfCurrentCitizen", operation: "read" },
     ],
   );

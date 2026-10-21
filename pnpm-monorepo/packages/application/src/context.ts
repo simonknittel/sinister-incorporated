@@ -5,10 +5,18 @@ import type {
   GuildScheduledEventChange,
   GuildScheduledEventContent,
   GuildScheduledEventTarget,
-  PermissionSet,
 } from "@sam-monorepo/domain";
 import type { JWK } from "jose";
 import type { KeyObject } from "node:crypto";
+import type { ChangelogSource } from "./ports/changelog.js";
+import type { EmailRequester } from "./ports/email.js";
+import type { ImageReader } from "./ports/images.js";
+import type { FileStorage } from "./ports/storage.js";
+
+export * from "./ports/changelog.js";
+export * from "./ports/email.js";
+export * from "./ports/images.js";
+export * from "./ports/storage.js";
 
 export interface Notification {
   readonly type: string;
@@ -22,29 +30,6 @@ export interface Logger {
   readonly info: (message: string, args?: LogArguments) => void;
   readonly warn: (message: string, args?: LogArguments) => void;
   readonly error: (message: string, args?: LogArguments) => void;
-}
-
-/** One changelog entry with its body as Markdown */
-export interface ChangelogEntrySource {
-  readonly key: string;
-  /** ISO date (`YYYY-MM-DD`) */
-  readonly date: string;
-  readonly title: string;
-  readonly tags: string[];
-  readonly isTracked: boolean;
-  /** The permission that a reader must have, or null for all readers */
-  readonly requiresAuth: {
-    readonly resource: PermissionSet["resource"];
-    readonly operation: PermissionSet["operation"];
-  } | null;
-  readonly markdown: string;
-}
-
-/** A changelog entry that the app shows as new until the citizen saw it */
-export interface TrackedChangelogEntry {
-  readonly key: string;
-  /** ISO date (`YYYY-MM-DD`) */
-  readonly date: string;
 }
 
 export interface WikiPageContentReplacement {
@@ -137,114 +122,6 @@ export interface DiscordGateway {
   ) => Promise<DiscordResult<null>>;
 }
 
-/** One object of the bucket */
-export interface StoredObject {
-  readonly key: string;
-  readonly lastModified: Date;
-}
-
-/** A key that a delete did not remove, with the error code of the storage */
-export interface StorageDeleteFailure {
-  readonly key: string;
-  readonly code: string | null;
-}
-
-/** The limit of one S3 `DeleteObjects` request */
-export const MAXIMUM_STORAGE_DELETE_KEYS = 1_000;
-
-/** The object storage of the uploads. Throws on a storage error. */
-export interface FileStorage {
-  /**
-   * The bytes, or null when the object is empty or larger than
-   * `maximumBytes`
-   */
-  readonly readObject: (
-    key: string,
-    options: {
-      readonly maximumBytes: number;
-      /**
-       * Only these bytes (both inclusive). `maximumBytes` applies to the size
-       * of the whole object.
-       */
-      readonly byteRange?: { readonly first: number; readonly last: number };
-      /** Default 10 000 (an interactive save waits for the read) */
-      readonly timeoutMilliseconds?: number;
-    },
-  ) => Promise<Uint8Array | null>;
-  readonly copyObject: (copy: {
-    readonly sourceKey: string;
-    readonly targetKey: string;
-    readonly contentType: string;
-  }) => Promise<void>;
-  /**
-   * The size in bytes, or null when the storage gives no size. Throws when
-   * the object does not exist.
-   */
-  readonly getObjectSize: (key: string) => Promise<number | null>;
-  /**
-   * All objects, all pages. The list leaves out the entries without a key or
-   * a modification time.
-   */
-  readonly listObjects: () => Promise<StoredObject[]>;
-  /**
-   * Deletes at most `MAXIMUM_STORAGE_DELETE_KEYS` keys, and throws a
-   * `RangeError` for more. Gives the keys that the storage did not delete.
-   */
-  readonly deleteObjects: (
-    keys: readonly string[],
-  ) => Promise<{ readonly failures: StorageDeleteFailure[] }>;
-  /**
-   * A presigned PUT URL. The upload must send exactly this `Content-Type`,
-   * because it is part of the signature.
-   */
-  readonly createUploadUrl: (upload: {
-    readonly key: string;
-    readonly contentType: string;
-    readonly expiresInSeconds: number;
-  }) => Promise<string>;
-  /** A presigned GET URL that sets the headers of the response */
-  readonly createDownloadUrl: (download: {
-    readonly key: string;
-    readonly contentType: string;
-    readonly contentDisposition: string;
-    readonly expiresInSeconds: number;
-  }) => Promise<string>;
-}
-
-export enum EmailTemplate {
-  /** The value is the contract with the email function (its request schema) */
-  EmailConfirmation = "emailConfirmation",
-}
-
-export interface EmailMessage {
-  readonly to: string;
-  /** The template replaces `%recipient.<name>%` with these values */
-  readonly templateProps: Readonly<Record<string, string>>;
-}
-
-export interface EmailRequest {
-  readonly template: EmailTemplate;
-  readonly messages: readonly EmailMessage[];
-}
-
-/**
- * The displayed size (after the EXIF orientation). A value is absent when the
- * decoder does not give it.
- */
-export interface ImageDimensions {
-  readonly width?: number;
-  readonly height?: number;
-}
-
-/**
- * The probe reads this many bytes first. PNG, JPEG and AVIF usually keep
- * their dimensions in the first bytes of the file. The decoder cannot read
- * WebP, GIF, TIFF, an AVIF with EXIF data or a JPEG with large metadata
- * segments (EXIF, ICC, XMP) from a part of the file. For these, the probe
- * reads the full object.
- */
-export const FIRST_IMAGE_BYTES_LENGTH = 64 * 1024;
-
 /**
  * The services that the use cases get from the app that runs them. Each app
  * builds one context in its composition root.
@@ -261,25 +138,12 @@ export interface ApplicationContext {
   readonly notifications: {
     readonly trigger: (notifications: Notification[]) => Promise<void>;
   };
-  /**
-   * Requests emails from the email function. When the host has no event
-   * bus, the implementation logs this and sends nothing.
-   */
-  readonly email: {
-    readonly request: (request: EmailRequest) => Promise<void>;
-  };
+  readonly email: EmailRequester;
   readonly log: Logger;
   readonly tracer: Tracer;
   readonly now: () => Date;
-  /**
-   * Null when the host has no changelog entries. The entries are React code
-   * of the Next.js app, thus the Lambda functions give null.
-   */
-  readonly changelog: {
-    readonly list: () => Promise<ChangelogEntrySource[]>;
-    /** Without the Markdown: the shell of the app reads it on each page */
-    readonly listTrackedEntries: () => readonly TrackedChangelogEntry[];
-  } | null;
+  /** Null when the host has no changelog entries (the Lambda functions) */
+  readonly changelog: ChangelogSource | null;
   /**
    * The collab server of the wiki editor. Null when the collab server is not
    * configured: then the wiki content is read-only and the app does not
@@ -314,18 +178,8 @@ export interface ApplicationContext {
    * `deleteUpload`) skip with a warning.
    */
   readonly storage: FileStorage | null;
-  /**
-   * Null when the host cannot decode images (the Lambda functions). Reads
-   * the dimensions from the first bytes. When the decoder cannot read them
-   * from the first bytes, it reads them from all bytes. Without
-   * `readAllBytes`, the first bytes are the whole image.
-   */
-  readonly images: {
-    readonly readDimensions: (
-      firstBytes: Uint8Array,
-      readAllBytes?: () => Promise<Uint8Array | null>,
-    ) => Promise<ImageDimensions | null>;
-  } | null;
+  /** Null when the host cannot decode images (the Lambda functions) */
+  readonly images: ImageReader | null;
   readonly urls: {
     readonly baseUrl: URL;
     /** The base URL without the trailing slash */

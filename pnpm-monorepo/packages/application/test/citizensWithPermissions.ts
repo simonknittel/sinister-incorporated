@@ -1,4 +1,5 @@
 import { prisma } from "@sam-monorepo/database";
+import type { Prisma } from "@sam-monorepo/database/client";
 
 /**
  * Test fixtures for citizens with permissions, also for the two parts of the
@@ -15,15 +16,17 @@ const createPermissionStrings = (permissionStrings: readonly string[]) => ({
 
 /**
  * The citizen has one role that grants the permission strings directly, and
- * in addition the given roles.
+ * in addition the given roles. `data` gives the other fields of the citizen.
  */
 export const createCitizenWithPermissions = async (
   handle: string,
   permissionStrings: readonly string[],
   additionalRoleIds: readonly string[] = [],
+  data: Omit<Prisma.CitizenCreateInput, "handle" | "roleAssignments"> = {},
 ) =>
   prisma.citizen.create({
     data: {
+      ...data,
       handle,
       roleAssignments: {
         create: [

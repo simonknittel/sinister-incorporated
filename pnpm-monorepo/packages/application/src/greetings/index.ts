@@ -1,8 +1,3 @@
-export {
-  sendBirthdayGreetings,
-  type SendBirthdayGreetingsOutput,
-} from "./sendBirthdayGreetings.js";
-export {
-  sendNewYearGreetings,
-  type SendNewYearGreetingsOutput,
-} from "./sendNewYearGreetings.js";
+export type { GreetingRunOutput } from "./greetCitizens.js";
+export { sendBirthdayGreetings } from "./sendBirthdayGreetings.js";
+export { sendNewYearGreetings } from "./sendNewYearGreetings.js";

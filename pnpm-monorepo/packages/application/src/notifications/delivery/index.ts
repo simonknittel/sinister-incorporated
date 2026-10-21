@@ -6,7 +6,6 @@
 export {
   storeOnSiteNotifications,
   type OnSiteNotificationDraft,
-  type StoreOnSiteNotificationsOutput,
   type StoredOnSiteNotification,
 } from "./onSiteNotificationStore.js";
 export {

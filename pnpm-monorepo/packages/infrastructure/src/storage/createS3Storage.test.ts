@@ -41,7 +41,7 @@ type Send = (
  */
 const createStorage = (...outputs: object[]) => {
   const client = createS3Client({
-    endpoint: "https://account.r2.cloudflarestorage.com",
+    accountId: "account",
     credentials: {
       accessKeyId: "test-access-key-id",
       secretAccessKey: "test-secret-access-key",
@@ -192,6 +192,19 @@ describe("listObjects", () => {
       ),
     ).toEqual([undefined, "token-1", "token-2"]);
   });
+
+  test("throws when a continuation token comes again", async () => {
+    const { storage, send } = createStorage(
+      { NextContinuationToken: "token-a" },
+      { NextContinuationToken: "token-b" },
+      { NextContinuationToken: "token-a" },
+    );
+
+    await expect(storage.listObjects()).rejects.toThrow(
+      "The storage gave the same continuation token again",
+    );
+    expect(send).toHaveBeenCalledTimes(3);
+  });
 });
 
 describe("deleteObjects", () => {
@@ -253,6 +266,7 @@ describe("presigned URLs", () => {
       }),
     );
 
+    expect(url.host).toBe(`${BUCKET_NAME}.account.r2.cloudflarestorage.com`);
     expect(url.pathname).toBe("/upload-1");
     expect(url.searchParams.get("X-Amz-Expires")).toBe(
       String(UPLOAD_URL_EXPIRY_SECONDS),

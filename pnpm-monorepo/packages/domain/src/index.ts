@@ -299,10 +299,7 @@ export {
 export * from "./uploads/uploadConstraints.js";
 export { decodeUploadFileName } from "./uploads/uploadFileName.js";
 export * from "./uploads/uploadUsage.js";
-export {
-  UNUSED_UPLOAD_WHERE,
-  UPLOAD_USAGE_RELATIONS,
-} from "./uploadUsageRelations.js";
+export { UNUSED_UPLOAD_WHERE } from "./uploads/uploadUsageRelations.js";
 export { ASSUMABLE_USER_WHERE } from "./users/assumableUser.js";
 export { BAN_REASON_MAXIMUM_LENGTH } from "./users/userLimits.js";
 export {

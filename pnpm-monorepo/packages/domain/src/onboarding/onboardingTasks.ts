@@ -1,3 +1,4 @@
+/** The order is the order in which the app shows the tasks */
 export enum OnboardingTaskKey {
   Events = "events",
   Fleet = "fleet",
@@ -35,13 +36,14 @@ export interface OnboardingTaskRule {
 }
 
 /**
- * The tasks of the onboarding with their steps and their permissions, in
- * the order in which the app shows them. A step belongs to one task. The
- * texts and the contents of the tasks are in the app.
+ * The tasks of the onboarding with their steps and their permissions. A step
+ * belongs to one task. The texts and the contents of the tasks are in the
+ * app.
  */
-export const ONBOARDING_TASK_RULES: readonly OnboardingTaskRule[] = [
-  {
-    key: OnboardingTaskKey.Events,
+const ONBOARDING_TASK_RULE_FIELDS: Readonly<
+  Record<OnboardingTaskKey, Omit<OnboardingTaskRule, "key">>
+> = {
+  [OnboardingTaskKey.Events]: {
     requiredPermissionStrings: ["event;read"],
     steps: [
       { key: OnboardingStepKey.EventsCalendar },
@@ -50,8 +52,7 @@ export const ONBOARDING_TASK_RULES: readonly OnboardingTaskRule[] = [
       { key: OnboardingStepKey.EventsLineup },
     ],
   },
-  {
-    key: OnboardingTaskKey.Fleet,
+  [OnboardingTaskKey.Fleet]: {
     requiredPermissionStrings: ["ship;manage"],
     steps: [
       { key: OnboardingStepKey.FleetIntroduction },
@@ -62,30 +63,33 @@ export const ONBOARDING_TASK_RULES: readonly OnboardingTaskRule[] = [
       },
     ],
   },
-  {
-    key: OnboardingTaskKey.BrowserNotifications,
+  [OnboardingTaskKey.BrowserNotifications]: {
     steps: [
       { key: OnboardingStepKey.NotificationsIntroduction },
       { key: OnboardingStepKey.NotificationsEnable },
     ],
   },
-  {
-    key: OnboardingTaskKey.AvatarCreator,
+  [OnboardingTaskKey.AvatarCreator]: {
     steps: [
       { key: OnboardingStepKey.AvatarCreatorIntroduction },
       { key: OnboardingStepKey.AvatarCreatorCreate },
     ],
   },
-  {
-    key: OnboardingTaskKey.Profile,
+  [OnboardingTaskKey.Profile]: {
     steps: [{ key: OnboardingStepKey.ProfileComplete }],
   },
-];
+};
 
 export const getOnboardingTaskRule = (
   taskKey: OnboardingTaskKey,
-): OnboardingTaskRule | undefined =>
-  ONBOARDING_TASK_RULES.find((rule) => rule.key === taskKey);
+): OnboardingTaskRule => ({
+  key: taskKey,
+  ...ONBOARDING_TASK_RULE_FIELDS[taskKey],
+});
+
+/** The rules of all tasks, in the order of `OnboardingTaskKey` */
+export const ONBOARDING_TASK_RULES: readonly OnboardingTaskRule[] =
+  Object.values(OnboardingTaskKey).map(getOnboardingTaskRule);
 
 /**
  * One string for a completed step, so a client can hold the completed steps

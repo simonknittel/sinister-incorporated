@@ -1,60 +1,78 @@
 import { createId } from "@paralleldrive/cuid2";
 import { EmailTemplate, type ApplicationContext } from "../context.js";
+import { withSpan } from "../withSpan.js";
 
 /** The link in the email is valid for one day */
 const EMAIL_CONFIRMATION_TOKEN_LIFETIME_MILLISECONDS = 24 * 60 * 60 * 1000;
 
-interface EmailConfirmationRecipient {
+export interface SendEmailConfirmationInput {
   readonly userId: string;
+  /** An empty value sends no email */
   readonly email: string;
 }
 
+export interface SendEmailConfirmationOutput {
+  /** False when the user has no email address or the request failed */
+  readonly requested: boolean;
+}
+
 /**
- * Saves a new confirmation token and requests the email with the link.
- * Gives false when the save or the request failed. Never throws, thus a
- * caller in the sign-in cannot stop it. The token never goes into a log.
+ * Saves a new confirmation token and requests the email with the link. It
+ * needs no actor: the sign-in also calls it for a user that it just
+ * created, before the first session. It writes no audit event and never
+ * throws, thus it cannot stop the sign-in. The token never goes into a log.
  */
-export const sendEmailConfirmation = async (
+export const sendEmailConfirmation = (
   context: ApplicationContext,
-  { userId, email }: EmailConfirmationRecipient,
-): Promise<boolean> => {
-  try {
-    // `confirmEmailWithToken` accepts only a cuid2 as the token
-    const token = createId();
-
-    await context.prisma.emailConfirmationToken.create({
-      data: {
-        token,
-        email,
+  { userId, email }: SendEmailConfirmationInput,
+): Promise<SendEmailConfirmationOutput> =>
+  withSpan(context, "sendEmailConfirmation", async () => {
+    // The type does not stop a sign-in provider that gives no email address
+    if (!email) {
+      context.log.warn("The user has no email address to confirm", {
         userId,
-        expires: new Date(
-          context.now().getTime() +
-            EMAIL_CONFIRMATION_TOKEN_LIFETIME_MILLISECONDS,
-        ),
-      },
-    });
+      });
 
-    await context.email.request({
-      template: EmailTemplate.EmailConfirmation,
-      messages: [
-        {
-          to: email,
-          templateProps: {
-            baseUrl: context.urls.issuer,
-            host: context.urls.baseUrl.host,
-            token,
-          },
+      return { requested: false };
+    }
+
+    try {
+      // `confirmEmailWithToken` accepts only a cuid2 as the token
+      const token = createId();
+
+      await context.prisma.emailConfirmationToken.create({
+        data: {
+          token,
+          email,
+          userId,
+          expires: new Date(
+            context.now().getTime() +
+              EMAIL_CONFIRMATION_TOKEN_LIFETIME_MILLISECONDS,
+          ),
         },
-      ],
-    });
+      });
 
-    return true;
-  } catch (error) {
-    context.log.error("Failed to request the confirmation email", {
-      userId,
-      error,
-    });
+      await context.email.request({
+        template: EmailTemplate.EmailConfirmation,
+        messages: [
+          {
+            to: email,
+            templateProps: {
+              baseUrl: context.urls.issuer,
+              host: context.urls.baseUrl.host,
+              token,
+            },
+          },
+        ],
+      });
 
-    return false;
-  }
-};
+      return { requested: true };
+    } catch (error) {
+      context.log.error("Failed to request the confirmation email", {
+        userId,
+        error,
+      });
+
+      return { requested: false };
+    }
+  });

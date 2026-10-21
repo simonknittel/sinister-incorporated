@@ -22,7 +22,7 @@ beforeEach(async () => {
 });
 
 describe("storeOnSiteNotifications", () => {
-  test("writes nothing for a deleted receiver and leaves it out of the active receivers", async () => {
+  test("writes nothing for a deleted receiver", async () => {
     const activeReceiver = await prisma.citizen.create({
       data: { handle: "active" },
     });
@@ -31,10 +31,10 @@ describe("storeOnSiteNotifications", () => {
     });
     const { context, auditEvents } = createTestApplicationContext();
 
-    const { rows, activeReceiverIds } = await storeOnSiteNotifications(
-      context,
-      [createDraft(activeReceiver.id), createDraft(deletedReceiver.id)],
-    );
+    const rows = await storeOnSiteNotifications(context, [
+      createDraft(activeReceiver.id),
+      createDraft(deletedReceiver.id),
+    ]);
 
     const onSiteNotifications = await prisma.onSiteNotification.findMany({
       select: { citizenId: true },
@@ -43,7 +43,6 @@ describe("storeOnSiteNotifications", () => {
     expect(rows).toEqual([
       expect.objectContaining({ citizenId: activeReceiver.id }),
     ]);
-    expect([...activeReceiverIds]).toEqual([activeReceiver.id]);
     expect(auditEvents).toEqual([
       {
         type: AuditEventType.ON_SITE_NOTIFICATIONS_CREATED,
@@ -59,14 +58,12 @@ describe("storeOnSiteNotifications", () => {
     });
     const { context, auditEvents } = createTestApplicationContext();
 
-    const { rows, activeReceiverIds } = await storeOnSiteNotifications(
-      context,
-      [createDraft(deletedReceiver.id)],
-    );
+    const rows = await storeOnSiteNotifications(context, [
+      createDraft(deletedReceiver.id),
+    ]);
 
     expect(await prisma.onSiteNotification.count()).toBe(0);
     expect(rows).toEqual([]);
-    expect(activeReceiverIds.size).toBe(0);
     expect(auditEvents).toEqual([]);
   });
 });

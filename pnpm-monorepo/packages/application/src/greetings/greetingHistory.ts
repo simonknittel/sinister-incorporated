@@ -17,10 +17,10 @@ const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
 const MINIMUM_HOURS_BETWEEN_GREETINGS = 50;
 
 /**
- * True while the marker of a greeting counts as "already sent this year".
- * Every greeting goes out once for each local year of the
- * citizen, thus the rule belongs to none of them alone. Throws for a time
- * zone the runtime does not know.
+ * True while the marker of a greeting counts as "already sent in this year".
+ * Each greeting goes out one time in each local year of the citizen, thus
+ * all greetings share this rule. Throws for a time zone that the runtime
+ * does not know.
  */
 export const hasGreetingInLocalYear = (
   greetingSentAt: Date | null,

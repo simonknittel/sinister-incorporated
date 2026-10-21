@@ -83,3 +83,20 @@ export const findCitizenIdsWithPermissions = async (
       await findCitizensWithPermissions(context, where, requiredPermissionSets)
     ).keys(),
   );
+
+/**
+ * Whether the citizen is not deleted and has each of the required permission
+ * sets (see `findCitizensWithPermissions()`)
+ */
+export const isCitizenWithPermissions = async (
+  context: Pick<ApplicationContext, "prisma">,
+  citizenId: string,
+  requiredPermissionSets: readonly PermissionSet[],
+): Promise<boolean> =>
+  (
+    await findCitizenIdsWithPermissions(
+      context,
+      { id: citizenId },
+      requiredPermissionSets,
+    )
+  ).has(citizenId);

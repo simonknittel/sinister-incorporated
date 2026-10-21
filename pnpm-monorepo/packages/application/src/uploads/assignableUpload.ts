@@ -22,22 +22,37 @@ export const findAssignableUpload = (
       })
     : Promise.resolve(null);
 
+interface OwnedUpload {
+  readonly createdById: string | null;
+  readonly mimeType: string;
+}
+
 /** Whether the stored MIME type is the type of an image */
-export const isImageUpload = (upload: { readonly mimeType: string }) =>
+export const isImageUpload = (upload: Pick<OwnedUpload, "mimeType">) =>
   upload.mimeType.startsWith("image/");
 
+const isOwnUpload = (upload: OwnedUpload, citizenId: string) =>
+  upload.createdById === citizenId;
+
 /**
- * The icon and the cover image take only an image that the citizen of the
- * actor uploaded
+ * The rule of the images that a citizen assigns (an icon, a cover image): an
+ * image that the citizen uploaded. Nobody can assign the upload of a
+ * different citizen.
+ */
+export const isOwnImageUpload = (upload: OwnedUpload, citizenId: string) =>
+  isOwnUpload(upload, citizenId) && isImageUpload(upload);
+
+/**
+ * `isOwnImageUpload()` with an error for each failed part
  *
  * @throws ForbiddenError `UploadErrorMessage.NotOwnUpload`
  * @throws ValidationError `UploadErrorMessage.NotAnImage`
  */
 export const requireOwnImageUpload = (
-  upload: { readonly createdById: string | null; readonly mimeType: string },
+  upload: OwnedUpload,
   citizen: ActorCitizen,
 ) => {
-  if (upload.createdById !== citizen.id)
+  if (!isOwnUpload(upload, citizen.id))
     throw new ForbiddenError(UploadErrorMessage.NotOwnUpload);
 
   if (!isImageUpload(upload))

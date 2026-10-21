@@ -4,11 +4,14 @@ import {
   OnboardingTaskKey,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
-import { requireCitizen, type Actor } from "../actor.js";
+import {
+  requireCitizen,
+  satisfiesAnyPermissionString,
+  type Actor,
+} from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ForbiddenError, NotFoundError } from "../errors.js";
 import { OnboardingErrorMessage } from "./onboardingErrors.js";
-import { satisfiesAnyPermissionString } from "./onboardingPermissions.js";
 
 export const completeOnboardingStepInputSchema = z.object({
   task_key: z.enum(OnboardingTaskKey),
@@ -32,8 +35,7 @@ export interface CompleteOnboardingStepOutput {
  *
  * @throws ForbiddenError for a user without a citizen, or without the
  * permission of the task or of the step
- * @throws NotFoundError when the task does not exist or the step does not
- * belong to the task
+ * @throws NotFoundError when the step does not belong to the task
  */
 export const completeOnboardingStep = async (
   context: ApplicationContext,
@@ -43,7 +45,6 @@ export const completeOnboardingStep = async (
   const citizenId = requireCitizen(actor).id;
 
   const rule = getOnboardingTaskRule(input.task_key);
-  if (!rule) throw new NotFoundError(OnboardingErrorMessage.TaskNotFound);
 
   const step = rule.steps.find(
     (stepCandidate) => stepCandidate.key === input.step_key,
@@ -54,7 +55,7 @@ export const completeOnboardingStep = async (
     !satisfiesAnyPermissionString(actor, rule.requiredPermissionStrings) ||
     !satisfiesAnyPermissionString(actor, step.requiredPermissionStrings)
   )
-    throw new ForbiddenError("The onboarding step is not open to the actor");
+    throw new ForbiddenError(OnboardingErrorMessage.StepNotOpen);
 
   const completedAt = context.now();
 

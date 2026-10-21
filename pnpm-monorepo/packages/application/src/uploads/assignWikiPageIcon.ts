@@ -28,8 +28,10 @@ export type AssignWikiPageIconInput = z.infer<
 
 export interface AssignWikiPageIconOutput {
   readonly page_id: string;
-  readonly icon_upload_id: string | null;
-  /** The image whose dimensions the host probes after the response */
+  /**
+   * The new icon (null when the input removes the icon). The host probes
+   * its dimensions after the response.
+   */
   readonly probe_upload_id: string | null;
 }
 
@@ -91,9 +93,5 @@ export const assignWikiPageIcon = (
       },
     ]);
 
-    return {
-      page_id: page.id,
-      icon_upload_id: input.upload_id,
-      probe_upload_id: input.upload_id,
-    };
+    return { page_id: page.id, probe_upload_id: input.upload_id };
   });

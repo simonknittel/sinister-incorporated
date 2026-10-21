@@ -1,5 +1,6 @@
 import { findCitizenIdsWithPermissions } from "../../auth/effectivePermissionsOfCitizens.js";
 import type { ApplicationContext } from "../../context.js";
+import { isTaskUpdatable } from "../../tasks/taskRules.js";
 import type { Recipient } from "./recipient.js";
 import { TASK_RECEIVER_PERMISSION_SETS } from "./taskRecipients.js";
 
@@ -41,15 +42,9 @@ export const findTaskDeletedRecipients = async (
   });
   if (!task?.deletedAt) return null;
 
-  /**
-   * The deletion of a closed task only cleans up, thus it notifies nobody.
-   * The rule of `isTaskUpdatable()` of the app, at the time of the deletion.
-   */
-  if (
-    task.completedAt ||
-    task.cancelledAt ||
-    (task.expiresAt && task.expiresAt < task.deletedAt)
-  )
+  // The deletion of a closed task only cleans up, thus it notifies nobody.
+  // The rule reads the task as it was at the time of the deletion.
+  if (!isTaskUpdatable({ ...task, deletedAt: null }, task.deletedAt))
     return null;
 
   const assigneeIds = task.assignments

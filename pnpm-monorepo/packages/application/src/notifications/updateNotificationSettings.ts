@@ -9,7 +9,9 @@ import {
 import * as z from "zod";
 import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { findOptOutChanges } from "../optOutChanges.js";
 import { withSpan } from "../withSpan.js";
+import { findOwnNotificationSettings } from "./ownNotificationReads.js";
 
 /**
  * The longest input name has 36 characters. The limit bounds the input.
@@ -43,11 +45,19 @@ export interface UpdateNotificationSettingsOutput {
   readonly disabled: NotificationSettingChange[];
 }
 
-interface SettingChange {
+interface NotificationSettingKey {
   readonly notificationType: NotificationSettingType;
   readonly channel: NotificationChannel;
-  readonly enabled: boolean;
 }
+
+/** Each notification type for each channel, in the order of the settings page */
+const ALL_NOTIFICATION_SETTINGS: readonly NotificationSettingKey[] =
+  Object.values(NotificationChannel).flatMap((channel) =>
+    NOTIFICATION_SETTING_TYPES.map((notificationType) => ({
+      notificationType,
+      channel,
+    })),
+  );
 
 /**
  * Saves the notification settings of the citizen of the actor. The input
@@ -64,86 +74,66 @@ export const updateNotificationSettings = (
   withSpan(context, "updateNotificationSettings", async () => {
     const citizenId = requireCitizen(actor).id;
 
-    const currentSettings = await context.prisma.notificationSetting.findMany({
-      where: {
-        citizenId,
-      },
-      select: {
-        notificationType: true,
-        channel: true,
-      },
-    });
+    const switchedOffSettings =
+      (await findOwnNotificationSettings(context, actor)) ?? [];
+    const enabledInputNames = new Set(input.enabled_input_names);
 
-    const changes: SettingChange[] = [];
-    for (const channel of Object.values(NotificationChannel)) {
-      for (const notificationType of NOTIFICATION_SETTING_TYPES) {
-        const isEnabled = input.enabled_input_names.includes(
-          getNotificationSettingInputName(channel, notificationType),
-        );
+    const { enabled, disabled } = findOptOutChanges(
+      ALL_NOTIFICATION_SETTINGS,
+      new Set(
+        ALL_NOTIFICATION_SETTINGS.filter(({ channel, notificationType }) =>
+          enabledInputNames.has(
+            getNotificationSettingInputName(channel, notificationType),
+          ),
+        ),
+      ),
+      new Set(
+        ALL_NOTIFICATION_SETTINGS.filter((setting) =>
+          switchedOffSettings.some(
+            (row) =>
+              row.notificationType === setting.notificationType &&
+              row.channel === setting.channel,
+          ),
+        ),
+      ),
+    );
 
-        // Opt-out model: the existence of a row means the notification type
-        // is disabled.
-        const isCurrentlyEnabled = !currentSettings.some(
-          (setting) =>
-            setting.notificationType === notificationType &&
-            setting.channel === channel,
-        );
-
-        if (isEnabled !== isCurrentlyEnabled)
-          changes.push({ notificationType, channel, enabled: isEnabled });
-      }
-    }
-
-    const enabledChanges = changes.filter((change) => change.enabled);
-    const disabledChanges = changes.filter((change) => !change.enabled);
-
-    if (changes.length > 0) {
+    if (enabled.length > 0 || disabled.length > 0) {
       const now = context.now();
 
-      await context.prisma.$transaction(
-        changes.map((change) => {
-          if (change.enabled)
-            // deleteMany instead of delete so overlapping debounced submits
-            // don't throw when the row is already gone
-            return context.prisma.notificationSetting.deleteMany({
-              where: {
-                citizenId,
-                notificationType: change.notificationType,
-                channel: change.channel,
-              },
-            });
-
-          return context.prisma.notificationSetting.upsert({
+      await context.prisma.$transaction([
+        ...enabled.map(({ notificationType, channel }) =>
+          // deleteMany instead of delete: two overlapping saves must not
+          // throw when the row is already gone
+          context.prisma.notificationSetting.deleteMany({
+            where: { citizenId, notificationType, channel },
+          }),
+        ),
+        ...disabled.map(({ notificationType, channel }) =>
+          context.prisma.notificationSetting.upsert({
             where: {
               citizenId_notificationType_channel: {
                 citizenId,
-                notificationType: change.notificationType,
-                channel: change.channel,
+                notificationType,
+                channel,
               },
             },
-            update: {
-              disabledAt: now,
-            },
-            create: {
-              citizenId,
-              notificationType: change.notificationType,
-              channel: change.channel,
-              disabledAt: now,
-            },
-          });
-        }),
-      );
+            update: { disabledAt: now },
+            create: { citizenId, notificationType, channel, disabledAt: now },
+          }),
+        ),
+      ]);
 
       await context.audit.create([
         {
           type: AuditEventType.NOTIFICATION_SETTINGS_UPDATED,
           data: {
             citizenId,
-            enabled: enabledChanges.map(({ notificationType, channel }) => ({
+            enabled: enabled.map(({ notificationType, channel }) => ({
               notificationType,
               channel,
             })),
-            disabled: disabledChanges.map(({ notificationType, channel }) => ({
+            disabled: disabled.map(({ notificationType, channel }) => ({
               notificationType,
               channel,
             })),
@@ -156,13 +146,13 @@ export const updateNotificationSettings = (
     const toOutput = ({
       notificationType,
       channel,
-    }: SettingChange): NotificationSettingChange => ({
+    }: NotificationSettingKey): NotificationSettingChange => ({
       notification_type: notificationType,
       channel,
     });
 
     return {
-      enabled: enabledChanges.map(toOutput),
-      disabled: disabledChanges.map(toOutput),
+      enabled: enabled.map(toOutput),
+      disabled: disabled.map(toOutput),
     };
   });

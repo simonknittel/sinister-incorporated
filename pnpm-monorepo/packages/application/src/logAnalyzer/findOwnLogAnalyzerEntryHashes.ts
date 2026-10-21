@@ -1,10 +1,10 @@
 import type { Actor } from "../actor.js";
-import { requirePermission } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ForbiddenError } from "../errors.js";
-import { LogAnalyzerErrorMessage } from "./logAnalyzerErrors.js";
+import {
+  requireLogAnalyzerAccess,
+  type LogAnalyzerSharingOptions,
+} from "./logAnalyzerAccess.js";
 import { getEventAtWindow } from "./logAnalyzerWindow.js";
-import type { LogAnalyzerSharingOptions } from "./shareLogAnalyzerEntries.js";
 
 /**
  * The upper limit of one response. A citizen with a longer history pages
@@ -45,10 +45,7 @@ export const findOwnLogAnalyzerEntryHashes = async (
   input: FindOwnLogAnalyzerEntryHashesInput,
   options: LogAnalyzerSharingOptions,
 ): Promise<OwnLogAnalyzerEntryHashes> => {
-  requirePermission(actor, "logAnalyzer", "read");
-
-  if (options.isSharingDisabled)
-    throw new ForbiddenError(LogAnalyzerErrorMessage.SharingDisabled);
+  requireLogAnalyzerAccess(actor, options);
 
   /** Without a linked citizen the upload refuses the entries too */
   if (!actor.citizen) return { hashes: [], cursorHash: null };

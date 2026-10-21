@@ -5,11 +5,14 @@ import {
   OnboardingTaskKey,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
-import { requireCitizen, type Actor } from "../actor.js";
+import {
+  requireCitizen,
+  satisfiesAnyPermissionString,
+  type Actor,
+} from "../actor.js";
 import type { ApplicationContext } from "../context.js";
-import { ForbiddenError, NotFoundError } from "../errors.js";
+import { ForbiddenError } from "../errors.js";
 import { OnboardingErrorMessage } from "./onboardingErrors.js";
-import { satisfiesAnyPermissionString } from "./onboardingPermissions.js";
 
 export const completeOnboardingTaskInputSchema = z.object({
   task_key: z.enum(OnboardingTaskKey),
@@ -32,7 +35,6 @@ export interface CompleteOnboardingTaskOutput {
  *
  * @throws ForbiddenError for a user without a citizen, or without the
  * permission of the task
- * @throws NotFoundError when the task does not exist
  */
 export const completeOnboardingTask = async (
   context: ApplicationContext,
@@ -42,10 +44,9 @@ export const completeOnboardingTask = async (
   const citizenId = requireCitizen(actor).id;
 
   const rule = getOnboardingTaskRule(input.task_key);
-  if (!rule) throw new NotFoundError(OnboardingErrorMessage.TaskNotFound);
 
   if (!satisfiesAnyPermissionString(actor, rule.requiredPermissionStrings))
-    throw new ForbiddenError("The onboarding task is not open to the actor");
+    throw new ForbiddenError(OnboardingErrorMessage.TaskNotOpen);
 
   const completedAt = context.now();
 

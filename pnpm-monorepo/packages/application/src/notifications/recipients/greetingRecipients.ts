@@ -1,7 +1,7 @@
 import { CAN_LOGIN_CITIZEN_WHERE } from "@sam-monorepo/domain";
-import { findCitizenIdsWithPermissions } from "../../auth/effectivePermissionsOfCitizens.js";
+import { isCitizenWithPermissions } from "../../auth/effectivePermissionsOfCitizens.js";
 import type { ApplicationContext } from "../../context.js";
-import type { Recipient } from "./recipient.js";
+import { LOGIN_MANAGE_PERMISSION_SET, type Recipient } from "./recipient.js";
 
 export interface FindGreetingRecipientInput {
   readonly citizenId: string;
@@ -45,12 +45,10 @@ export const findWelcomeGreetingRecipient = async (
   context: ApplicationContext,
   input: FindGreetingRecipientInput,
 ): Promise<Recipient | null> => {
-  const recipientIds = await findCitizenIdsWithPermissions(
-    context,
-    { id: input.citizenId },
-    [{ resource: "login", operation: "manage" }],
-  );
-  if (!recipientIds.has(input.citizenId)) return null;
+  const canLogIn = await isCitizenWithPermissions(context, input.citizenId, [
+    LOGIN_MANAGE_PERMISSION_SET,
+  ]);
+  if (!canLogIn) return null;
 
   return { citizenId: input.citizenId };
 };

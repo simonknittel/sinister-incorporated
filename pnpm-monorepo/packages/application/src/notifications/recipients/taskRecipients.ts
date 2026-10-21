@@ -1,4 +1,5 @@
 import type { PermissionSet } from "@sam-monorepo/domain";
+import { LOGIN_MANAGE_PERMISSION_SET } from "./recipient.js";
 
 /**
  * The receiver of a task notification must be able to log in and to open
@@ -6,6 +7,6 @@ import type { PermissionSet } from "@sam-monorepo/domain";
  * only the roles.
  */
 export const TASK_RECEIVER_PERMISSION_SETS = [
-  { resource: "login", operation: "manage" },
+  LOGIN_MANAGE_PERMISSION_SET,
   { resource: "task", operation: "read" },
 ] as const satisfies readonly PermissionSet[];

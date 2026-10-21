@@ -1,7 +1,8 @@
+import { buildEventRecipientWhere } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../../context.js";
 import {
+  EVENT_RECIPIENT_SELECT,
   findNotifiableRecipients,
-  loadEventRecipientWhere,
   type EventNotificationRecipients,
 } from "./eventRecipients.js";
 
@@ -25,6 +26,7 @@ export const findEventParticipantRecipients = async (
     select: {
       id: true,
       name: true,
+      ...EVENT_RECIPIENT_SELECT,
       participants: {
         where: { cancelledAt: null },
         select: {
@@ -35,9 +37,6 @@ export const findEventParticipantRecipients = async (
     },
   });
   if (!event || event.participants.length <= 0) return null;
-
-  const recipientWhere = await loadEventRecipientWhere(context, event.id);
-  if (!recipientWhere) return null;
 
   const discordUserIds = event.participants
     .map((participant) => participant.discordUserId)
@@ -51,7 +50,7 @@ export const findEventParticipantRecipients = async (
       {
         OR: [{ discordId: { in: discordUserIds } }, { id: { in: citizenIds } }],
       },
-      recipientWhere,
+      buildEventRecipientWhere(event),
     ],
   });
 

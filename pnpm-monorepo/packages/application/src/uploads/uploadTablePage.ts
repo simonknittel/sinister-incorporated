@@ -1,11 +1,19 @@
 import type { Prisma } from "@sam-monorepo/database/client";
-import { UNUSED_UPLOAD_WHERE, UploadUsageType } from "@sam-monorepo/domain";
+import {
+  UNUSED_UPLOAD_WHERE,
+  UPLOAD_USAGE_RELATION_BY_TYPE,
+  UploadUsageType,
+} from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { paginateByDatabaseCursor, type PageOptions } from "../pagination.js";
 import { MAXIMUM_UPLOAD_FILE_NAME_LENGTH } from "./createUpload.js";
 import { UPLOAD_USAGE_SELECT } from "./uploadUsageSelect.js";
 
+/**
+ * The uploads of one page of the uploads table. Each row also loads its
+ * usages, thus a page is smaller than a page of a list without relations.
+ */
 const UPLOAD_TABLE_PAGE_SIZE = 50;
 
 /**
@@ -60,39 +68,10 @@ export interface UploadTablePage {
   readonly prevCursor: string | null;
 }
 
-const getUsageWhere = (usage: UploadUsageType): Prisma.UploadWhereInput => {
-  switch (usage) {
-    case UploadUsageType.RoleIcon:
-      return { roleIcons: { some: {} } };
-
-    case UploadUsageType.RoleThumbnail:
-      return { roleThumbnails: { some: {} } };
-
-    case UploadUsageType.ManufacturerLogo:
-      return { manufacturers: { some: {} } };
-
-    case UploadUsageType.EventCover:
-      return { eventCovers: { some: {} } };
-
-    case UploadUsageType.EventTemplateCover:
-      return { eventTemplateCovers: { some: {} } };
-
-    case UploadUsageType.WikiPageIcon:
-      return { wikiPageIcons: { some: {} } };
-
-    case UploadUsageType.WikiPageAttachment:
-      return { wikiPageLinks: { some: {} } };
-
-    case UploadUsageType.WikiPageSnapshot:
-      return { wikiPageSnapshotLinks: { some: {} } };
-
-    case UploadUsageType.Unused:
-      return UNUSED_UPLOAD_WHERE;
-
-    default:
-      throw new Error(`Unknown upload usage: ${usage satisfies never}`);
-  }
-};
+const getUsageWhere = (usage: UploadUsageType): Prisma.UploadWhereInput =>
+  usage === UploadUsageType.Unused
+    ? UNUSED_UPLOAD_WHERE
+    : { [UPLOAD_USAGE_RELATION_BY_TYPE[usage]]: { some: {} } };
 
 /**
  * The file names are stored URI-encoded, thus a search for "Mein Bild" must

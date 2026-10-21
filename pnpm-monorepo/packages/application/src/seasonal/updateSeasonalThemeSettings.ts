@@ -2,6 +2,7 @@ import { AuditEventType, SeasonalEventKey } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requireCitizen, type Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
+import { findOptOutChanges } from "../optOutChanges.js";
 import { withSpan } from "../withSpan.js";
 import { findOwnSeasonalThemeSettings } from "./findOwnSeasonalThemeSettings.js";
 
@@ -10,7 +11,7 @@ import { findOwnSeasonalThemeSettings } from "./findOwnSeasonalThemeSettings.js"
  * more keys than the calendar has events. The limit keeps the loops of the
  * use case bounded even if the schema becomes more permissive later.
  */
-export const MAXIMUM_SEASONAL_THEME_SETTING_INPUTS = 20;
+const MAXIMUM_SEASONAL_THEME_SETTING_INPUTS = 20;
 
 export const updateSeasonalThemeSettingsInputSchema = z.object({
   enabled_event_keys: z
@@ -32,11 +33,6 @@ export interface UpdateSeasonalThemeSettingsOutput {
   readonly disabled: SeasonalEventKey[];
 }
 
-interface SeasonalThemeSettingChange {
-  readonly eventKey: SeasonalEventKey;
-  readonly enabled: boolean;
-}
-
 /**
  * Sets which seasonal events show their theme for the actor. A checked
  * switch names its event, a cleared switch is absent. Only the events that
@@ -52,57 +48,35 @@ export const updateSeasonalThemeSettings = (
   withSpan(context, "updateSeasonalThemeSettings", async () => {
     const citizenId = requireCitizen(actor).id;
 
-    const currentSettings = await findOwnSeasonalThemeSettings(context, actor);
+    const switchedOffSettings =
+      (await findOwnSeasonalThemeSettings(context, actor)) ?? [];
 
-    // Opt-out model: the existence of a row means the event is switched off.
-    const switchedOffEventKeys = new Set(
-      currentSettings?.map((setting) => setting.eventKey) ?? [],
+    const { enabled, disabled } = findOptOutChanges<SeasonalEventKey>(
+      Object.values(SeasonalEventKey),
+      new Set(input.enabled_event_keys),
+      new Set(switchedOffSettings.map((setting) => setting.eventKey)),
     );
 
-    const enabledEventKeys = new Set(input.enabled_event_keys);
+    if (enabled.length > 0 || disabled.length > 0) {
+      const disabledAt = context.now();
 
-    const changes: SeasonalThemeSettingChange[] = Object.values(
-      SeasonalEventKey,
-    )
-      .map((eventKey) => ({
-        eventKey,
-        enabled: enabledEventKeys.has(eventKey),
-      }))
-      .filter((change) => {
-        const currentlyEnabled = !switchedOffEventKeys.has(change.eventKey);
+      await context.prisma.$transaction([
+        ...enabled.map((eventKey) =>
+          // deleteMany instead of delete: two overlapping saves must not
+          // throw when the row is already gone
+          context.prisma.seasonalThemeSetting.deleteMany({
+            where: { citizenId, eventKey },
+          }),
+        ),
+        ...disabled.map((eventKey) =>
+          context.prisma.seasonalThemeSetting.upsert({
+            where: { citizenId_eventKey: { citizenId, eventKey } },
+            update: { disabledAt },
+            create: { citizenId, eventKey, disabledAt },
+          }),
+        ),
+      ]);
 
-        return change.enabled !== currentlyEnabled;
-      });
-
-    const disabledAt = context.now();
-
-    await context.prisma.$transaction(
-      changes.map((change) => {
-        if (change.enabled)
-          // deleteMany instead of delete so overlapping debounced submits
-          // do not throw when the row is already gone
-          return context.prisma.seasonalThemeSetting.deleteMany({
-            where: { citizenId, eventKey: change.eventKey },
-          });
-
-        return context.prisma.seasonalThemeSetting.upsert({
-          where: {
-            citizenId_eventKey: { citizenId, eventKey: change.eventKey },
-          },
-          update: { disabledAt },
-          create: { citizenId, eventKey: change.eventKey, disabledAt },
-        });
-      }),
-    );
-
-    const enabled = changes
-      .filter((change) => change.enabled)
-      .map((change) => change.eventKey);
-    const disabled = changes
-      .filter((change) => !change.enabled)
-      .map((change) => change.eventKey);
-
-    if (changes.length > 0)
       await context.audit.create([
         {
           type: AuditEventType.SEASONAL_THEME_SETTINGS_UPDATED,
@@ -110,6 +84,7 @@ export const updateSeasonalThemeSettings = (
           createdById: actor.userId,
         },
       ]);
+    }
 
     return { enabled, disabled };
   });

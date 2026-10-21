@@ -10,11 +10,7 @@ Each use case has this signature:
 (context: ApplicationContext, actor: Actor, input: Input) => Promise<Output>;
 ```
 
-- `context` gives the services of the app that runs the use case (the ports, `src/context.ts`): `prisma`, `audit`, `notifications`, `email`, `log`, `tracer`, `now`, `changelog`, `collab`, `discord`, `storage`, `images`, `urls`, `signingKey` and `allowInsecureLoopbackClientIds`. `changelog`, `collab`, `discord`, `storage` and `images` can be null. A use case that needs `changelog`, `collab` or the copy, a presigned URL or the list of `storage` then throws a `ConflictError`. A background step without `storage` or `images` skips with a warning. A null `discord` behaves like a Discord that cannot be reached: the result of the Discord step is Failed. The port `collab` has two calls: `replaceContent` replaces the content of a wiki page through the collab server, and `createSessionToken` signs the short-lived token of one editor connection. The shared implementations of the ports are in [`packages/infrastructure`](../infrastructure/README.md). The calls of `storage`, `email`, `images` and `changelog`:
-  - `storage` reads an object (all bytes or a byte range), copies an object, gives the size of an object (`getObjectSize`), lists all objects (`listObjects`), deletes at most `MAXIMUM_STORAGE_DELETE_KEYS` objects in one call (`deleteObjects`) and makes the presigned upload and download URLs (`createUploadUrl`, `createDownloadUrl`).
-  - `email` sends an `EmailRequest` (a template and its messages) to the email function (`request`).
-  - `images` reads the displayed dimensions of an image from its first bytes, or from all bytes when the decoder needs them (`readDimensions`, `FIRST_IMAGE_BYTES_LENGTH`).
-  - `changelog` gives the entries with their Markdown (`list`), and the keys and dates of the tracked entries without the Markdown (`listTrackedEntries`).
+- `context` gives the services of the app that runs the use case (the ports, `src/context.ts`): `prisma`, `audit`, `notifications`, `email`, `log`, `tracer`, `now`, `changelog`, `collab`, `discord`, `storage`, `images`, `urls`, `signingKey` and `allowInsecureLoopbackClientIds`. `changelog`, `collab`, `discord`, `storage` and `images` can be null. A use case that needs `changelog`, `collab` or the copy, a presigned URL or the list of `storage` then throws a `ConflictError`. A background step without `storage` or `images` skips with a warning. A null `discord` behaves like a Discord that cannot be reached: the result of the Discord step is Failed. The port `collab` has two calls: `replaceContent` replaces the content of a wiki page through the collab server, and `createSessionToken` signs the short-lived token of one editor connection. The types of the ports `storage`, `email`, `images` and `changelog` are in `src/ports/` ([`FileStorage`](src/ports/storage.ts), [`EmailRequester`](src/ports/email.ts), [`ImageReader`](src/ports/images.ts) and [`ChangelogSource`](src/ports/changelog.ts)). Their doc comments describe the calls. The shared implementations of the ports are in [`packages/infrastructure`](../infrastructure/README.md).
 - `actor` is the user for whom the use case runs (`src/actor.ts`). The Next.js app builds it from the session, the MCP server from the access token.
 - A use case without a user, for example the public token endpoint of the OAuth server, takes `(context, input)`.
 - The use cases of a feature live in `src/<feature>/` with a barrel `index.ts` that the package index re-exports.
@@ -68,12 +64,14 @@ export const renameShip = async (
 
 ```
 src/
-  actor.ts                 Actor, createActor(), requirePermission(), requireCitizen()
+  actor.ts                 Actor, createActor(), requirePermission(), requireCitizen(), satisfiesAnyPermissionString()
   context.ts               ApplicationContext, its ports and createApplicationUrls()
+  ports/                   the types of the ports storage, email, images and changelog
   errors.ts                the typed errors and rethrowRecordNotFound()
   pagination.ts            the shared page size, cursor and id schemas, paginateByCursor(), paginateByDatabaseCursor()
   dateTime.ts              the shared date-time input schema
   notifications.ts         triggerNotificationsAfterSave()
+  optOutChanges.ts         the changes of a save of opt-out settings
   mcpAccess.ts             the permission that gates the MCP server
   citizenReference.ts      the citizen in the outputs
   withSpan.ts              the span helper
@@ -113,7 +111,7 @@ These use cases run without an actor. No MCP tool calls them:
 - `confirmEmailWithToken` is public: the token is the proof.
 - The Human Resources reads of the clearance page (`getHumanResourcesRoleIds` and `listHumanResourcesContacts`) run for users who have no clearance yet.
 - The recipient rules (`notifications/recipients`) and the delivery store (`notifications/delivery`) belong to the notification router of the Lambda functions. A recipient rule is the check of the receivers of one notification type, and the store writes the on-site rows and reads and prunes the web push subscriptions. The transports (the realtime channel, the push service) and the wording stay in the Lambda function.
-- `requestEmailConfirmationOfNewUser` sends the confirmation email to a user that the sign-in just created, before the first session. It writes no audit event and never throws.
+- `sendEmailConfirmation` sends the confirmation email without an actor: the sign-in calls it for a user that it just created, before the first session. It writes no audit event and never throws. `requestEmailConfirmation` calls it for the actor and writes the audit event.
 - `findSeasonalTheme` and `isWelcomeDayOfCitizen` take the citizen id from the host (`findSeasonalTheme` accepts null for a viewer without a citizen). `isWelcomeDayOfCitizen` never throws.
 - `probeUploadImageDimensions` runs after the response of an upload (the host schedules it): it reads the first bytes of the object and saves the dimensions and the size of the object.
 
@@ -121,7 +119,7 @@ These use cases run without an actor. No MCP tool calls them:
 
 Write unit tests (Vitest, `*.test.ts` next to the file) only for complex or critical logic. Test the behavior through the end-to-end tests of the apps.
 
-The integration tests (`*.integration.test.ts`) run against a Postgres testcontainer (`test/postgres.ts`, Docker must run). The package also holds the helper that empties the database (`test/database.ts`) and the helper that makes two sessions wait for the same locks (`test/locks.ts`). The test factory of the context (`createTestApplicationContext()` in `test/applicationContext.ts`) records the audit events, the notifications and the email requests. `createTestStorage()` (`test/storage.ts`) gives an object storage that records the deletes and the presigned URLs. `test/citizensWithPermissions.ts` gives citizens with permission strings for the tests of the recipient rules. The Lambda functions use the same helpers through `@sam-monorepo/application/test/*` until their tests move into this package.
+The integration tests (`*.integration.test.ts`) run against a Postgres testcontainer (`test/postgres.ts`, Docker must run). The package also holds the helper that empties the database (`test/database.ts`) and the helper that makes two sessions wait for the same locks (`test/locks.ts`). The test factory of the context (`createTestApplicationContext()` in `test/applicationContext.ts`) records the audit events, the notifications and the email requests. `createTestStorage()` (`test/storage.ts`) gives an object storage that lists its objects and records the deletes. `test/citizensWithPermissions.ts` gives citizens with permission strings for the tests of the recipient rules. The Lambda functions use the same helpers through `@sam-monorepo/application/test/*` until their tests move into this package.
 
 ## Add a feature
 

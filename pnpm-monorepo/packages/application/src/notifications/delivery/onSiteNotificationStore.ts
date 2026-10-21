@@ -22,27 +22,19 @@ export interface StoredOnSiteNotification {
   readonly createdAt: Date;
 }
 
-export interface StoreOnSiteNotificationsOutput {
-  readonly rows: StoredOnSiteNotification[];
-  /**
-   * The receivers that are not deleted. The other channels send only to
-   * these receivers.
-   */
-  readonly activeReceiverIds: ReadonlySet<string>;
-}
-
 /**
  * Writes one on-site notification for each draft of an active receiver. A
  * deleted citizen gets no notification on any channel. This is the only
- * filter for this rule, thus the recipient rules and the channels do not
- * filter deleted receivers again. On-site is always on, thus the settings of
- * the citizen do not filter the rows (they filter only web push).
+ * filter for this rule: the recipient rules do not filter deleted receivers
+ * again, and the other channels send only to the receivers of the written
+ * rows. On-site is always on, thus the settings of the citizen do not filter
+ * the rows (they filter only web push).
  */
 export const storeOnSiteNotifications = async (
   context: ApplicationContext,
   drafts: readonly OnSiteNotificationDraft[],
-): Promise<StoreOnSiteNotificationsOutput> => {
-  if (drafts.length <= 0) return { rows: [], activeReceiverIds: new Set() };
+): Promise<StoredOnSiteNotification[]> => {
+  if (drafts.length <= 0) return [];
 
   const activeReceivers = await context.prisma.citizen.findMany({
     where: {
@@ -60,7 +52,7 @@ export const storeOnSiteNotifications = async (
   const activeDrafts = drafts.filter((draft) =>
     activeReceiverIds.has(draft.receiverId),
   );
-  if (activeDrafts.length <= 0) return { rows: [], activeReceiverIds };
+  if (activeDrafts.length <= 0) return [];
 
   const rows = await context.prisma.onSiteNotification.createManyAndReturn({
     data: activeDrafts.map((draft) => ({
@@ -95,5 +87,5 @@ export const storeOnSiteNotifications = async (
     },
   ]);
 
-  return { rows, activeReceiverIds };
+  return rows;
 };

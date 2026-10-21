@@ -31,6 +31,13 @@ const HEAD_TIMEOUT_MILLISECONDS = 10_000;
 const LIST_PAGE_TIMEOUT_MILLISECONDS = 10_000;
 
 /**
+ * 10 000 pages of at most 1 000 keys are 10 million objects, much more than
+ * the bucket of the uploads holds. A storage that gives pages without an end
+ * stops the list at this limit.
+ */
+const MAXIMUM_STORAGE_LIST_PAGES = 10_000;
+
+/**
  * One delete request. A request with 1 000 keys takes longer than a usual
  * request.
  */
@@ -160,9 +167,17 @@ export const createS3Storage = ({
   // A loop, not the paginator of the SDK: each page needs its own timeout
   listObjects: async () => {
     const objects: StoredObject[] = [];
+    const seenContinuationTokens = new Set<string>();
     let continuationToken: string | undefined;
+    let pageCount = 0;
 
     do {
+      pageCount += 1;
+      if (pageCount > MAXIMUM_STORAGE_LIST_PAGES)
+        throw new Error(
+          `The list of the storage has more than ${MAXIMUM_STORAGE_LIST_PAGES} pages`,
+        );
+
       const page = await client.send(
         new ListObjectsV2Command({
           Bucket: bucketName,
@@ -180,14 +195,15 @@ export const createS3Storage = ({
           });
       }
 
-      // The same token again would request the same page without an end
-      if (
-        page.NextContinuationToken !== undefined &&
-        page.NextContinuationToken === continuationToken
-      )
-        throw new Error("The storage gave the same continuation token again");
-
       continuationToken = page.NextContinuationToken;
+
+      // A token that comes again would request the same pages without an end
+      if (continuationToken !== undefined) {
+        if (seenContinuationTokens.has(continuationToken))
+          throw new Error("The storage gave the same continuation token again");
+
+        seenContinuationTokens.add(continuationToken);
+      }
     } while (continuationToken);
 
     return objects;
