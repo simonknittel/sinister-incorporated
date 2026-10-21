@@ -83,11 +83,7 @@ export const SystemLogFilters = ({ creators }: Props) => {
           },
           {
             value: SystemLogOrigin.Mcp,
-            label: "MCP-Server",
-          },
-          {
-            value: SystemLogOrigin.WithoutMcp,
-            label: "Ohne MCP-Server",
+            label: "MCP",
           },
         ]}
         resetCursorPagination

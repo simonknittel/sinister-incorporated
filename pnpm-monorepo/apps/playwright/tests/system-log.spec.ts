@@ -106,25 +106,17 @@ test("the log renders its events and the filters narrow the table", async ({
   ).toBeVisible();
   await expect(page.getByText('Role created: "Aufklärer"')).toHaveCount(0);
 
-  // The origin filter splits the events by the MCP server
+  // The origin filter keeps only the events of actions through the MCP server
   await page.goto("/app/system-log?origin=mcp");
   await expect(rowOfType("TASK_CREATED")).toBeVisible();
   await expect(rowOfType("ROLE_CREATED")).toHaveCount(0);
   await expect(rowOfType("MANUFACTURER_CREATED")).toHaveCount(0);
 
-  await page.goto("/app/system-log?origin=without_mcp");
-  await expect(rowOfType("ROLE_CREATED")).toBeVisible();
-  await expect(rowOfType("MANUFACTURER_CREATED")).toBeVisible();
-  await expect(rowOfType("TASK_CREATED")).toHaveCount(0);
-
   // The radio of the sidebar sets the same filter
   await page.goto("/app/system-log");
   await clickUntilUrl(
     page,
-    toggleLabel(
-      page.getByRole("radiogroup", { name: "QUELLE" }),
-      /^MCP-Server$/,
-    ),
+    toggleLabel(page.getByRole("radiogroup", { name: "QUELLE" }), /^MCP$/),
     /origin=mcp/,
   );
   await expect(rowOfType("TASK_CREATED")).toBeVisible();

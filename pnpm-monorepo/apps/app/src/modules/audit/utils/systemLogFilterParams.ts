@@ -8,7 +8,6 @@ export enum SystemLogVolume {
 export enum SystemLogOrigin {
   All = "all",
   Mcp = "mcp",
-  WithoutMcp = "without_mcp",
 }
 
 export const SYSTEM_LOG_VOLUME_PARAM = "volume";

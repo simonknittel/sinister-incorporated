@@ -26,9 +26,6 @@ const getTriggeredViaMcp = (origin: SystemLogOrigin) => {
     case SystemLogOrigin.Mcp:
       return true;
 
-    case SystemLogOrigin.WithoutMcp:
-      return false;
-
     default:
       throw new Error(`Unknown origin: ${origin satisfies never}`);
   }
