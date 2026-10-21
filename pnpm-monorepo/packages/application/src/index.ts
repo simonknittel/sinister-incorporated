@@ -73,8 +73,6 @@ export {
   MAXIMUM_PAGE_LIMIT,
   UnknownCursorBehavior,
   idSchema,
-  paginateByCursor,
-  type CursorPage,
   type PageOptions,
 } from "./pagination.js";
 export * from "./penaltyPoints/index.js";

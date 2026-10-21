@@ -805,8 +805,8 @@ const LETTERS = "abcdefghijklmnopqrstuvwxyz";
 const ALPHANUMERICS = `${LETTERS}0123456789`;
 
 /**
- * Career node ids have to pass the update action's `z.cuid2()` check —
- * a seeded flow whose ids look different could never be saved again.
+ * Career node ids have to pass the `idSchema` check of the `updateFlow` use
+ * case — a seeded flow whose ids look different could never be saved again.
  */
 const cuid2Like = () =>
   Array.from(randomBytes(CUID2_LENGTH), (byte, index) =>

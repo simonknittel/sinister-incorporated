@@ -10,7 +10,7 @@ export const FLOW_NAME_MAX_LENGTH = 128;
  * Static segments under `/app/career`. The router matches them before
  * `[flowSlug]`, so a flow taking one would be unreachable.
  */
-export const RESERVED_FLOW_SLUGS: readonly string[] = ["settings"];
+const RESERVED_FLOW_SLUGS: readonly string[] = ["settings"];
 
 /** Why a flow cannot use a slug */
 export enum FlowSlugProblem {

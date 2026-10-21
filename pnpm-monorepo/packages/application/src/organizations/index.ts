@@ -43,7 +43,6 @@ export {
 export { OrganizationErrorMessage } from "./organizationErrors.js";
 export {
   MembershipVisibility,
-  listActiveOrganizationMemberships,
   listOrganizationMembershipsOfCitizen,
   type CitizenMembershipOutput,
   type OrganizationMemberOutput,

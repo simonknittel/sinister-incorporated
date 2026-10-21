@@ -20,7 +20,6 @@ export {
   type CreateRoleInput,
   type CreateRoleOutput,
 } from "./createRole.js";
-export { deletePermissionStringsReferencing } from "./deletePermissionStringsReferencing.js";
 export {
   deleteRole,
   deleteRoleInputSchema,
@@ -76,7 +75,7 @@ export {
 } from "./roleBadges.js";
 export { RoleAssignmentErrorMessage, RoleErrorMessage } from "./roleErrors.js";
 export type { RoleOutput } from "./roleOutput.js";
-export { canSeeAnyRole, isRoleVisible } from "./roleVisibility.js";
+export { canSeeAnyRole } from "./roleVisibility.js";
 export {
   setRoleInheritance,
   setRoleInheritanceInputSchema,

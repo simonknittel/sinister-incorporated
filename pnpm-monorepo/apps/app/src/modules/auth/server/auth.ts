@@ -1,4 +1,3 @@
-import { prisma } from "@/db";
 import { env } from "@/env";
 import { getApplicationContext } from "@/modules/application/getApplicationContext";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
@@ -13,6 +12,7 @@ import {
   linkCitizenOfSignedInUser,
   sendEmailConfirmation,
 } from "@sam-monorepo/application";
+import { prisma } from "@sam-monorepo/database";
 import {
   UserRole,
   type Citizen,

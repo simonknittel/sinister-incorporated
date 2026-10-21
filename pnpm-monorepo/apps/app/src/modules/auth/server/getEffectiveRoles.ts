@@ -1,6 +1,6 @@
-import { prisma } from "@/db";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import { getEffectiveRolesOfCitizen } from "@sam-monorepo/application";
+import { prisma } from "@sam-monorepo/database";
 import type { Citizen } from "@sam-monorepo/database/client";
 import { cache } from "react";
 

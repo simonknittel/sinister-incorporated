@@ -3,7 +3,6 @@
  * note types and the classification levels, and the search
  */
 export { hasBirthdayTodaySafely } from "./birthdays.js";
-export { requireCitizenReadAccess } from "./citizenAccess.js";
 export {
   CitizenErrorMessage,
   CitizenLogErrorMessage,
@@ -12,10 +11,6 @@ export type {
   CitizenLogTablePageOptions,
   CitizenLogTableRow,
 } from "./citizenLogTablePage.js";
-export {
-  getVisiblePenaltyPointSum,
-  getVisibleShipCount,
-} from "./citizenMetrics.js";
 export type { CitizenNoteRow } from "./citizenNoteRow.js";
 export { linkCitizenOfSignedInUser } from "./citizenUserLink.js";
 export {
@@ -102,15 +97,10 @@ export {
 } from "./getCitizen.js";
 export {
   getCitizenProfile,
-  getCitizenProfileInputSchema,
   type CitizenProfile,
   type GetCitizenProfileInput,
 } from "./getCitizenProfile.js";
-export {
-  getLastSeenAt,
-  getLastSeenAtInputSchema,
-  type GetLastSeenAtInput,
-} from "./getLastSeenAt.js";
+export { getLastSeenAt, type GetLastSeenAtInput } from "./getLastSeenAt.js";
 export {
   getOwnProfileSettings,
   type OwnProfileSettings,
@@ -147,7 +137,6 @@ export {
 export {
   UPCOMING_BIRTHDAYS_HANDLE_QUERY_MAXIMUM_LENGTH,
   listUpcomingBirthdays,
-  listUpcomingBirthdaysInputSchema,
   type ListUpcomingBirthdaysInput,
   type UpcomingBirthday,
 } from "./listUpcomingBirthdays.js";
@@ -159,16 +148,7 @@ export {
   type CreatableClassificationLevelsInput,
   type NoteClassificationRow,
 } from "./noteClassificationRows.js";
-export {
-  canReadNote,
-  canReadNoteRedacted,
-  getNotePermissionAttributes,
-  type NotePermissionSubject,
-} from "./notePermissions.js";
-export {
-  getReadableCitizenLogWhere,
-  type CitizenLogTableType,
-} from "./readableCitizenLogWhere.js";
+export { getNotePermissionAttributes } from "./notePermissions.js";
 export {
   searchCitizensAndOrganizations,
   searchCitizensAndOrganizationsInputSchema,

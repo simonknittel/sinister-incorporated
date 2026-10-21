@@ -79,7 +79,6 @@ export {
   SHIP_VARIANT_SELECT,
   ShipVariantStatus,
   VARIANT_TAG_SELECT,
-  buildVariantFilterWhere,
   type ShipVariantOutput,
   type VariantTagOutput,
 } from "./shipVariant.js";

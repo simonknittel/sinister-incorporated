@@ -7,9 +7,9 @@ export enum OrganizationErrorMessage {
   /** A `ValidationError` */
   SpectrumIdTaken = "An organization with this Spectrum ID exists already",
   /**
-   * A `ValidationError`, not a `NotFoundError`: organizations cannot be
-   * deleted, thus an unknown id is an input error, and the page needs no
-   * refresh
+   * A `ValidationError` in a write, not a `NotFoundError`: organizations
+   * cannot be deleted, thus an unknown id is an input error, and the page
+   * needs no refresh. `getOrganization` throws a `NotFoundError`.
    */
   OrganizationNotFound = "The organization does not exist",
   /** A `NotFoundError` */

@@ -5,6 +5,7 @@ import type { ApplicationContext } from "../context.js";
 import { NotFoundError } from "../errors.js";
 import { idSchema } from "../pagination.js";
 import { withSpan } from "../withSpan.js";
+import { OrganizationErrorMessage } from "./organizationErrors.js";
 import {
   listActiveOrganizationMemberships,
   type OrganizationMemberOutput,
@@ -49,7 +50,7 @@ export const getOrganization = async (
         : [],
     ]);
     if (!organization)
-      throw new NotFoundError("The organization does not exist");
+      throw new NotFoundError(OrganizationErrorMessage.OrganizationNotFound);
 
     return {
       id: organization.id,

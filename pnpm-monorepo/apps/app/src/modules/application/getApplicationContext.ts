@@ -1,6 +1,5 @@
 import "server-only";
 
-import { prisma } from "@/db";
 import { env } from "@/env";
 import { listChangelogEntriesAsMarkdown } from "@/modules/changelog/utils/listChangelogEntriesAsMarkdown";
 import { listTrackedChangelogEntries } from "@/modules/changelog/utils/listTrackedChangelogEntries";
@@ -14,6 +13,7 @@ import {
   createApplicationUrls,
   type ApplicationContext,
 } from "@sam-monorepo/application";
+import { prisma } from "@sam-monorepo/database";
 import {
   createCollabClient,
   createDiscordGateway,
