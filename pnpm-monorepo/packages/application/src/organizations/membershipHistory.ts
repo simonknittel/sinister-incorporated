@@ -1,24 +1,10 @@
-import { prisma } from "@/db";
 import {
   ConfirmationStatus,
   OrganizationMembershipType,
-  type Citizen,
-  type Organization,
-  type Prisma,
-} from "@sam-monorepo/database/client";
+} from "@sam-monorepo/database/browser";
+import type { Prisma } from "@sam-monorepo/database/client";
 import { lockCitizen } from "@sam-monorepo/domain";
-
-/**
- * Thrown inside the callback of `changeMembershipHistory()` to reject a
- * change. It rolls the transaction back, thus the rejected change writes
- * nothing. The constructor makes the message necessary, because it is the
- * error for the user.
- */
-export class RejectedChangeError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
-}
+import type { ApplicationContext } from "../context.js";
 
 /**
  * Writes a change to the membership history of a citizen. The active
@@ -26,35 +12,28 @@ export class RejectedChangeError extends Error {
  * transaction replays them. Use this function for each write to the
  * membership history.
  *
- * Returns the message of a `RejectedChangeError` of the change, or null
- * after a written change.
+ * A typed error that `change` throws rolls the transaction back, thus a
+ * rejected change writes nothing and the replay does not run.
  */
-export const changeMembershipHistory = async (
-  citizenId: Citizen["id"],
+export const changeMembershipHistory = (
+  context: Pick<ApplicationContext, "prisma">,
+  citizenId: string,
   change: (transaction: Prisma.TransactionClient) => Promise<void>,
-): Promise<string | null> => {
-  try {
-    await prisma.$transaction(async (transaction) => {
-      /**
-       * Else a replay does not see a parallel change, and the active
-       * memberships stay incorrect.
-       */
-      await lockCitizen(transaction, citizenId);
+): Promise<void> =>
+  context.prisma.$transaction(async (transaction) => {
+    /**
+     * Else a replay does not see a parallel change, and the active
+     * memberships stay incorrect.
+     */
+    await lockCitizen(transaction, citizenId);
 
-      await change(transaction);
-      await replayActiveMemberships(transaction, citizenId);
-    });
-  } catch (error) {
-    if (error instanceof RejectedChangeError) return error.message;
-    throw error;
-  }
-
-  return null;
-};
+    await change(transaction);
+    await replayActiveMemberships(transaction, citizenId);
+  });
 
 const replayActiveMemberships = async (
   transaction: Prisma.TransactionClient,
-  citizenId: Citizen["id"],
+  citizenId: string,
 ) => {
   const confirmedHistoryEntries =
     await transaction.organizationMembershipHistoryEntry.findMany({
@@ -73,7 +52,7 @@ const replayActiveMemberships = async (
     });
 
   const activeMemberships = new Map<
-    Organization["id"],
+    string,
     Prisma.ActiveOrganizationMembershipCreateManyInput
   >();
 

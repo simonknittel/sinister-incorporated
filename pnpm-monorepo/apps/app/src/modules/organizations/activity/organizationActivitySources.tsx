@@ -1,21 +1,20 @@
-import { prisma } from "@/db";
 import type { ActivitySource } from "@/modules/activity/utils/activityEntry";
 import type { ActivityFilters } from "@/modules/activity/utils/activityFilterParams";
-import { requireAuthentication } from "@/modules/auth/server";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { CitizenLink } from "@/modules/common/components/CitizenLink";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import {
-  ConfirmationStatus,
+  findOrganizationCreatedRows,
+  findOrganizationMembershipRows,
+  findOrganizationRenamedRows,
+  type OrganizationActivityInput,
+} from "@sam-monorepo/application";
+import {
   OrganizationMembershipType,
-  OrganizationMembershipVisibility,
   type Citizen,
   type Organization,
 } from "@sam-monorepo/database/client";
-import {
-  buildCursorConditions,
-  cursorOrderBy,
-  type MergedCursorSourceInput,
-} from "@sam-monorepo/domain";
+import type { MergedCursorSourceInput } from "@sam-monorepo/domain";
 import { ConfirmMembership } from "../components/ConfirmMembership";
 import { OrganizationLink } from "../components/OrganizationLink";
 import { OrganizationActivitySourceKey } from "./organizationActivityTypes";
@@ -36,84 +35,33 @@ interface Input {
   readonly filters?: ActivityFilters;
 }
 
-const buildDateAndActorConditions = (filters?: ActivityFilters) => ({
-  ...(filters?.actorIds ? { createdById: { in: filters.actorIds } } : {}),
-  ...(filters && Object.keys(filters.createdAt).length > 0
-    ? { createdAt: filters.createdAt }
-    : {}),
+const toActivityInput = (
+  { organizationId, filters }: Input,
+  sourceKey: OrganizationActivitySourceKey,
+  sourceInput: MergedCursorSourceInput,
+): OrganizationActivityInput => ({
+  ...sourceInput,
+  sourceKey,
+  organizationId,
+  actorIds: filters?.actorIds,
+  createdAt: filters?.createdAt,
 });
-
-/**
- * Which confirmation states this context may see. Everywhere but the
- * organization page only confirmed entries exist as far as readers are
- * concerned.
- */
-const getConfirmationFilter = async (withConfirmation?: boolean) => {
-  if (!withConfirmation) return { confirmed: ConfirmationStatus.CONFIRMED };
-
-  const authentication = await requireAuthentication();
-  const canConfirm = await authentication.authorize(
-    "organizationMembership",
-    "confirm",
-  );
-
-  return canConfirm ? {} : { confirmed: ConfirmationStatus.CONFIRMED };
-};
 
 export const createOrganizationCreatedSource = (
   input: Input = {},
 ): ActivitySource =>
   withTrace(
     "organizationCreatedActivitySource",
-    async ({ position, direction, take }: MergedCursorSourceInput) => {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("organization", "read"))) return [];
-
-      const organizations = await prisma.organization.findMany({
-        where: {
-          AND: [
-            {
-              ...(input.organizationId ? { id: input.organizationId } : {}),
-              ...buildDateAndActorConditions(input.filters),
-            },
-            ...buildCursorConditions(
-              position,
-              OrganizationActivitySourceKey.Created,
-              direction,
-              "createdAt",
-            ),
-          ],
-        },
-        orderBy: cursorOrderBy(direction, "createdAt"),
-        take,
-        select: {
-          id: true,
-          name: true,
-          logo: true,
-          createdAt: true,
-          createdBy: {
-            select: {
-              id: true,
-              handle: true,
-              deletedAt: true,
-            },
-          },
-          /** The name the organization was created under */
-          attributeHistoryEntries: {
-            where: {
-              attributeKey: "name",
-              oldValue: null,
-            },
-            orderBy: {
-              createdAt: "asc",
-            },
-            take: 1,
-            select: {
-              newValue: true,
-            },
-          },
-        },
-      });
+    async (sourceInput: MergedCursorSourceInput) => {
+      const organizations = await findOrganizationCreatedRows(
+        getApplicationContext(),
+        await getRequestActor(),
+        toActivityInput(
+          input,
+          OrganizationActivitySourceKey.Created,
+          sourceInput,
+        ),
+      );
 
       return organizations.map((organization) => ({
         sourceKey: OrganizationActivitySourceKey.Created,
@@ -126,10 +74,7 @@ export const createOrganizationCreatedSource = (
         message: (
           <p>
             Erstellt unter dem Namen{" "}
-            <em>
-              {organization.attributeHistoryEntries[0]?.newValue ??
-                organization.name}
-            </em>
+            <em>{organization.initialName ?? organization.name}</em>
           </p>
         ),
       }));
@@ -145,58 +90,16 @@ export const createOrganizationRenamedSource = (
 ): ActivitySource =>
   withTrace(
     "organizationRenamedActivitySource",
-    async ({ position, direction, take }: MergedCursorSourceInput) => {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("organization", "read"))) return [];
-
-      const entries = await prisma.organizationAttributeHistoryEntry.findMany({
-        where: {
-          AND: [
-            {
-              ...(input.organizationId
-                ? { organizationId: input.organizationId }
-                : {}),
-              ...buildDateAndActorConditions(input.filters),
-              /**
-               * The row recording the name an organization was created under
-               * is told by the creation entry instead.
-               */
-              NOT: {
-                attributeKey: "name",
-                oldValue: null,
-              },
-            },
-            ...buildCursorConditions(
-              position,
-              OrganizationActivitySourceKey.Renamed,
-              direction,
-              "createdAt",
-            ),
-          ],
-        },
-        orderBy: cursorOrderBy(direction, "createdAt"),
-        take,
-        select: {
-          id: true,
-          attributeKey: true,
-          newValue: true,
-          createdAt: true,
-          createdBy: {
-            select: {
-              id: true,
-              handle: true,
-              deletedAt: true,
-            },
-          },
-          organization: {
-            select: {
-              id: true,
-              name: true,
-              logo: true,
-            },
-          },
-        },
-      });
+    async (sourceInput: MergedCursorSourceInput) => {
+      const entries = await findOrganizationRenamedRows(
+        getApplicationContext(),
+        await getRequestActor(),
+        toActivityInput(
+          input,
+          OrganizationActivitySourceKey.Renamed,
+          sourceInput,
+        ),
+      );
 
       return entries.map((entry) => {
         switch (entry.attributeKey) {
@@ -228,74 +131,20 @@ export const createOrganizationMembershipSource = (
 ): ActivitySource =>
   withTrace(
     "organizationMembershipActivitySource",
-    async ({ position, direction, take }: MergedCursorSourceInput) => {
-      const authentication = await requireAuthentication();
-      if (!(await authentication.authorize("organization", "read"))) return [];
-
-      const alsoVisibilityRedacted = await authentication.authorize(
-        "organizationMembership",
-        "read",
-        [
-          {
-            key: "alsoVisibilityRedacted",
-            value: true,
-          },
-        ],
+    async (sourceInput: MergedCursorSourceInput) => {
+      const entries = await findOrganizationMembershipRows(
+        getApplicationContext(),
+        await getRequestActor(),
+        {
+          ...toActivityInput(
+            input,
+            OrganizationActivitySourceKey.Membership,
+            sourceInput,
+          ),
+          citizenId: input.citizenId,
+          withConfirmation: input.withConfirmation,
+        },
       );
-
-      const entries = await prisma.organizationMembershipHistoryEntry.findMany({
-        where: {
-          AND: [
-            {
-              ...(input.organizationId
-                ? { organizationId: input.organizationId }
-                : {}),
-              ...(input.citizenId ? { citizenId: input.citizenId } : {}),
-              ...buildDateAndActorConditions(input.filters),
-              ...(await getConfirmationFilter(input.withConfirmation)),
-              visibility: {
-                in: alsoVisibilityRedacted
-                  ? [
-                      OrganizationMembershipVisibility.PUBLIC,
-                      OrganizationMembershipVisibility.REDACTED,
-                    ]
-                  : [OrganizationMembershipVisibility.PUBLIC],
-              },
-            },
-            ...buildCursorConditions(
-              position,
-              OrganizationActivitySourceKey.Membership,
-              direction,
-              "createdAt",
-            ),
-          ],
-        },
-        orderBy: cursorOrderBy(direction, "createdAt"),
-        take,
-        include: {
-          organization: {
-            select: {
-              id: true,
-              name: true,
-              logo: true,
-            },
-          },
-          citizen: {
-            select: {
-              id: true,
-              handle: true,
-              deletedAt: true,
-            },
-          },
-          createdBy: {
-            select: {
-              id: true,
-              handle: true,
-              deletedAt: true,
-            },
-          },
-        },
-      });
 
       return entries.map((entry) => ({
         sourceKey: OrganizationActivitySourceKey.Membership,

@@ -1,47 +1,14 @@
 "use server";
 
-import { prisma } from "@/db";
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { refresh } from "next/cache";
-import * as z from "zod";
+import { createUseCaseAction } from "@/modules/application";
+import {
+  createClassificationLevelInputSchema,
+  createClassificationLevel as createClassificationLevelUseCase,
+} from "@sam-monorepo/application";
 
-const schema = z.object({
-  name: z.string().trim().min(1).max(255),
+export const createClassificationLevel = createUseCaseAction({
+  name: "createClassificationLevel",
+  schema: createClassificationLevelInputSchema,
+  useCase: createClassificationLevelUseCase,
+  success: () => "Erfolgreich hinzugefügt",
 });
-
-export const createClassificationLevel = createAuthenticatedAction(
-  "createClassificationLevel",
-  schema,
-  async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("classificationLevel", "manage")))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    const classificationLevel = await prisma.classificationLevel.create({
-      data: {
-        name: data.name,
-      },
-    });
-
-    refresh();
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.CLASSIFICATION_LEVEL_CREATED,
-        data: {
-          classificationLevelId: classificationLevel.id,
-          name: classificationLevel.name,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    return {
-      success: "Erfolgreich hinzugefügt",
-    };
-  },
-);

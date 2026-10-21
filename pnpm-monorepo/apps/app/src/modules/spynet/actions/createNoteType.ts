@@ -1,47 +1,14 @@
 "use server";
 
-import { prisma } from "@/db";
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { refresh } from "next/cache";
-import * as z from "zod";
+import { createUseCaseAction } from "@/modules/application";
+import {
+  createNoteTypeInputSchema,
+  createNoteType as createNoteTypeUseCase,
+} from "@sam-monorepo/application";
 
-const schema = z.object({
-  name: z.string().trim().min(1).max(255),
+export const createNoteType = createUseCaseAction({
+  name: "createNoteType",
+  schema: createNoteTypeInputSchema,
+  useCase: createNoteTypeUseCase,
+  success: () => "Erfolgreich hinzugefügt",
 });
-
-export const createNoteType = createAuthenticatedAction(
-  "createNoteType",
-  schema,
-  async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("noteType", "manage")))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-
-    const noteType = await prisma.noteType.create({
-      data: {
-        name: data.name,
-      },
-    });
-
-    refresh();
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.NOTE_TYPE_CREATED,
-        data: {
-          noteTypeId: noteType.id,
-          name: noteType.name,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    return {
-      success: "Erfolgreich hinzugefügt",
-    };
-  },
-);

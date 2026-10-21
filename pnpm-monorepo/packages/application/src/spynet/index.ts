@@ -1,4 +1,7 @@
-/** The use cases of the Spynet: citizens, their notes and the search */
+/**
+ * The use cases of the Spynet: citizens, their notes, the settings of the
+ * note types and the classification levels, and the search
+ */
 export { hasBirthdayTodaySafely } from "./birthdays.js";
 export { requireCitizenReadAccess } from "./citizenAccess.js";
 export {
@@ -34,6 +37,18 @@ export {
   type CreateCitizenLogOutput,
 } from "./createCitizenLog.js";
 export {
+  createClassificationLevel,
+  createClassificationLevelInputSchema,
+  type CreateClassificationLevelInput,
+  type CreateClassificationLevelOutput,
+} from "./createClassificationLevel.js";
+export {
+  createNoteType,
+  createNoteTypeInputSchema,
+  type CreateNoteTypeInput,
+  type CreateNoteTypeOutput,
+} from "./createNoteType.js";
+export {
   deleteCitizen,
   deleteCitizenInputSchema,
   type DeleteCitizenInput,
@@ -45,6 +60,18 @@ export {
   type DeleteCitizenLogInput,
   type DeleteCitizenLogOutput,
 } from "./deleteCitizenLog.js";
+export {
+  deleteClassificationLevel,
+  deleteClassificationLevelInputSchema,
+  type DeleteClassificationLevelInput,
+  type DeleteClassificationLevelOutput,
+} from "./deleteClassificationLevel.js";
+export {
+  deleteNoteType,
+  deleteNoteTypeInputSchema,
+  type DeleteNoteTypeInput,
+  type DeleteNoteTypeOutput,
+} from "./deleteNoteType.js";
 export {
   findCitizenNoteTabs,
   type CitizenNoteTab,
@@ -124,6 +151,14 @@ export {
   type ListUpcomingBirthdaysInput,
   type UpcomingBirthday,
 } from "./listUpcomingBirthdays.js";
+export { NoteClassificationErrorMessage } from "./noteClassificationErrors.js";
+export {
+  findClassificationLevels,
+  findCreatableClassificationLevels,
+  findNoteTypes,
+  type CreatableClassificationLevelsInput,
+  type NoteClassificationRow,
+} from "./noteClassificationRows.js";
 export {
   canReadNote,
   canReadNoteRedacted,
@@ -143,11 +178,27 @@ export {
   type SpynetSearchHit,
 } from "./searchCitizensAndOrganizations.js";
 export {
+  findSpynetActivityActors,
+  type SpynetActivityActor,
+} from "./spynetActivityActors.js";
+export {
+  updateClassificationLevel,
+  updateClassificationLevelInputSchema,
+  type UpdateClassificationLevelInput,
+  type UpdateClassificationLevelOutput,
+} from "./updateClassificationLevel.js";
+export {
   updateNote,
   updateNoteInputSchema,
   type UpdateNoteInput,
   type UpdateNoteOutput,
 } from "./updateNote.js";
+export {
+  updateNoteType,
+  updateNoteTypeInputSchema,
+  type UpdateNoteTypeInput,
+  type UpdateNoteTypeOutput,
+} from "./updateNoteType.js";
 export {
   updateOwnProfile,
   updateOwnProfileInputSchema,

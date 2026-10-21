@@ -1,108 +1,22 @@
 "use server";
 
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { ConfirmationStatus } from "@sam-monorepo/database/client";
-import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
-import { refresh } from "next/cache";
-import * as z from "zod";
+import { createUseCaseAction } from "@/modules/application";
 import {
-  changeMembershipHistory,
-  RejectedChangeError,
-} from "../utils/changeMembershipHistory";
+  confirmOrganizationMembershipInputSchema,
+  confirmOrganizationMembership as confirmOrganizationMembershipUseCase,
+} from "@sam-monorepo/application";
+import { getOrganizationErrorTexts } from "../utils/organizationErrorTexts";
 
-const ALREADY_CONFIRMED_ERROR = "Der Eintrag wurde bereits bestätigt.";
-
-const schema = z.object({
-  id: z.cuid(),
-  organizationId: z.cuid(),
-  citizenId: z.cuid(),
-  confirmed: z.enum([
-    ConfirmationStatus.CONFIRMED,
-    ConfirmationStatus.FALSE_REPORT,
-  ]),
+export const confirmOrganizationMembership = createUseCaseAction({
+  name: "confirmOrganizationMembership",
+  schema: confirmOrganizationMembershipInputSchema,
+  useCase: confirmOrganizationMembershipUseCase,
+  parseFormData: (formData) => ({
+    history_entry_id: formData.get("id"),
+    organization_id: formData.get("organizationId"),
+    citizen_id: formData.get("citizenId"),
+    confirmed: formData.get("confirmed"),
+  }),
+  texts: getOrganizationErrorTexts,
+  success: (t) => t("Common.successfullySaved"),
 });
-
-export const confirmOrganizationMembership = createAuthenticatedAction(
-  "confirmOrganizationMembership",
-  schema,
-  async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    if (!(await authentication.authorize("organizationMembership", "confirm")))
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
-    const entityId = authentication.session.entity.id;
-
-    /**
-     * Set the new confirmation status. The replay adds or removes the active
-     * membership.
-     */
-    const rejection = await changeMembershipHistory(
-      data.citizenId,
-      async (transaction) => {
-        const entry =
-          await transaction.organizationMembershipHistoryEntry.findUnique({
-            where: {
-              id: data.id,
-              organizationId: data.organizationId,
-              citizenId: data.citizenId,
-              /** A deleted citizen gets the same answer as an unknown entry */
-              citizen: ACTIVE_CITIZEN_WHERE,
-            },
-            select: {
-              id: true,
-            },
-          });
-        if (!entry) throw new RejectedChangeError(t("Common.notFound"));
-
-        /**
-         * Only an entry without a confirmation changes. Thus a second
-         * confirmation changes nothing and writes no second audit event.
-         */
-        const { count } =
-          await transaction.organizationMembershipHistoryEntry.updateMany({
-            where: {
-              id: entry.id,
-              confirmedAt: null,
-            },
-            data: {
-              confirmed: data.confirmed,
-              confirmedAt: new Date(),
-              confirmedById: entityId,
-            },
-          });
-        if (count === 0) throw new RejectedChangeError(ALREADY_CONFIRMED_ERROR);
-      },
-    );
-    if (rejection !== null) return rejectConflict(rejection, formData);
-
-    refresh();
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.ORGANIZATION_MEMBERSHIP_CONFIRMED,
-        data: {
-          historyEntryId: data.id,
-          citizenId: data.citizenId,
-          confirmed: data.confirmed,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    return {
-      success: t("Common.successfullySaved"),
-    };
-  },
-);
