@@ -1,62 +1,43 @@
 "use server";
 
-import { prisma } from "@/db";
 import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
+import {
+  getApplicationContext,
+  mapApplicationErrorToActionResponse,
+  toActor,
+} from "@/modules/application";
+import {
+  deleteFlowInputSchema,
+  deleteFlow as deleteFlowUseCase,
+} from "@sam-monorepo/application";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
-import * as z from "zod";
-
-const schema = z.object({
-  flowId: z.string(),
-});
+import { CAREER_ERROR_TEXTS } from "../utils/careerErrorTexts";
 
 export const deleteFlow = createAuthenticatedAction(
   "deleteFlow",
-  schema,
+  deleteFlowInputSchema,
   async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("career", "manage")))
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    const flow = await prisma.flow.findUnique({
-      where: { id: data.flowId },
-      select: { id: true, name: true, slug: true, deletedAt: true },
-    });
-    if (!flow || flow.deletedAt) {
-      /** A different user deleted the flow before, and the page must show it */
-      return rejectConflict(t("Common.notFound"), formData);
+    try {
+      await deleteFlowUseCase(
+        getApplicationContext(),
+        await toActor(authentication.session),
+        data,
+      );
+    } catch (error) {
+      return mapApplicationErrorToActionResponse(error, {
+        formData,
+        t,
+        texts: CAREER_ERROR_TEXTS,
+      });
     }
-
-    /**
-     * Soft delete only: nodes, edges and role access stay in place, which is
-     * what makes a restore possible.
-     */
-    await prisma.flow.update({
-      where: { id: flow.id },
-      data: {
-        deletedAt: new Date(),
-        deletedById: authentication.session.entity?.id ?? null,
-        updatedById: authentication.session.entity?.id ?? null,
-      },
-    });
 
     refresh();
 
-    await createAuditEvents([
-      {
-        type: AuditEventType.CAREER_FLOW_DELETED,
-        data: {
-          flowId: flow.id,
-          name: flow.name,
-          slug: flow.slug,
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
     /** The detail page is gone with the flow; the list is where a restore starts */
     redirect("/app/career/settings");
+  },
+  {
+    parseFormData: (formData) => ({ flow_id: formData.get("flowId") }),
   },
 );

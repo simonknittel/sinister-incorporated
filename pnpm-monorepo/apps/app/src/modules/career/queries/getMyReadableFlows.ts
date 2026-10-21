@@ -1,4 +1,5 @@
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { listReadableFlows } from "@sam-monorepo/application";
 import { cache } from "react";
 import { getFlowContext } from "./getFlowContext";
 
@@ -10,9 +11,7 @@ export const getMyReadableFlows = cache(
     const context = await getFlowContext();
     if (!context) return [];
 
-    return context.flows.filter(
-      (flow) => context.permissions.get(flow.id)?.canRead,
-    );
+    return listReadableFlows(context);
   }),
 );
 

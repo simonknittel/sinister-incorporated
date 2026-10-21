@@ -1,26 +1,16 @@
-import { prisma } from "@/db";
+import { getApplicationContext, getRequestActor } from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
+import { findReadableFlowDiagram } from "@sam-monorepo/application";
 import { cache } from "react";
 
 /**
- * The diagram of one flow. Deliberately not part of the flow context, which
- * every career page loads: only the page rendering a flow needs its nodes and
- * edges. Carries no permission check — the caller resolves access through the
- * context first.
+ * The diagram of one flow, or null when the flow does not exist, is deleted
+ * or the user cannot read it (see `findReadableFlowDiagram()`)
  */
 export const getFlowWithNodes = cache(
   withTrace("getFlowWithNodes", async (flowId: string) =>
-    prisma.flow.findUnique({
-      where: { id: flowId },
-      select: {
-        id: true,
-        nodes: {
-          include: {
-            sources: true,
-            targets: true,
-          },
-        },
-      },
+    findReadableFlowDiagram(getApplicationContext(), await getRequestActor(), {
+      flowId,
     }),
   ),
 );

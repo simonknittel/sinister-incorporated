@@ -1,9 +1,9 @@
+import { FlowStatus } from "@sam-monorepo/application";
 import { createLoader, type SearchParams } from "nuqs/server";
 import { getManageableFlows } from "../queries/getManageableFlows";
 import {
   FLOW_QUERY_PARAM,
   FLOW_STATUS_PARAM,
-  FlowStatus,
   flowFilterParsers,
 } from "../utils/flowFilterParams";
 import { FlowsTableClient } from "./FlowsTableClient";

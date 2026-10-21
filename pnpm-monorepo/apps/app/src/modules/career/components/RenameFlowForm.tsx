@@ -4,11 +4,10 @@ import { useAction } from "@/modules/actions/utils/useAction";
 import { TextInput } from "@/modules/common/components/form/TextInput";
 import Note from "@/modules/common/components/Note";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
-import { SLUG_MAX_LENGTH } from "@sam-monorepo/domain";
+import { FLOW_NAME_MAX_LENGTH, SLUG_MAX_LENGTH } from "@sam-monorepo/domain";
 import { useState } from "react";
 import { FaSave } from "react-icons/fa";
 import { renameFlow } from "../actions/renameFlow";
-import { FLOW_NAME_MAX_LENGTH } from "../utils/flowSlug";
 
 interface Props {
   readonly flowId: string;

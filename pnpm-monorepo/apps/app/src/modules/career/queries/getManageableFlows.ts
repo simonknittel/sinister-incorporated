@@ -1,74 +1,51 @@
-import { prisma } from "@/db";
+import {
+  getApplicationContext,
+  getRequestActor,
+  throwApplicationErrorForPage,
+} from "@/modules/application";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
-import type { Prisma } from "@sam-monorepo/database/client";
+import {
+  findManageableFlow,
+  findManageableFlows,
+  type FlowStatus,
+  type ManageableFlowRow,
+} from "@sam-monorepo/application";
 import { cache } from "react";
-import { FlowStatus } from "../utils/flowFilterParams";
 
-/** Everything the management list and the management detail page show */
-const MANAGEABLE_FLOW_SELECT = {
-  id: true,
-  name: true,
-  slug: true,
-  position: true,
-  createdAt: true,
-  updatedAt: true,
-  deletedAt: true,
-  createdBy: { select: { id: true, handle: true, deletedAt: true } },
-  updatedBy: { select: { id: true, handle: true, deletedAt: true } },
-  deletedBy: { select: { id: true, handle: true, deletedAt: true } },
-  roleAccess: { select: { roleId: true, type: true } },
-  _count: { select: { nodes: true } },
-} satisfies Prisma.FlowSelect;
+export type ManageableFlow = ManageableFlowRow;
 
-const deletedAtFilter = (status: FlowStatus): Prisma.FlowWhereInput => {
-  switch (status) {
-    case FlowStatus.Active:
-      return { deletedAt: null };
-    case FlowStatus.Deleted:
-      return { deletedAt: { not: null } };
-    case FlowStatus.All:
-      return {};
-    default:
-      throw new Error(`Unexpected flow status: ${status satisfies never}`);
-  }
-};
-
-/**
- * The flows of the management list. Carries no permission check of its own —
- * every caller is gated on `career;manage`, which reads every flow.
- */
+/** The flows of the management list (`career;manage`) */
 export const getManageableFlows = cache(
   withTrace(
     "getManageableFlows",
-    async (status: FlowStatus, query: string | null) =>
-      prisma.flow.findMany({
-        where: {
-          ...deletedAtFilter(status),
-          ...(query
-            ? {
-                OR: [
-                  { name: { contains: query, mode: "insensitive" } },
-                  { slug: { contains: query, mode: "insensitive" } },
-                ],
-              }
-            : {}),
-        },
-        select: MANAGEABLE_FLOW_SELECT,
-        orderBy: [{ position: "asc" }, { name: "asc" }],
-      }),
+    async (status: FlowStatus, query: string | null) => {
+      try {
+        return await findManageableFlows(
+          getApplicationContext(),
+          await getRequestActor(),
+          { status, query },
+        );
+      } catch (error) {
+        return throwApplicationErrorForPage(error);
+      }
+    },
   ),
 );
 
-/** One flow for the management detail page. See getManageableFlows on gating. */
+/**
+ * One flow for the management detail page, or null when it does not exist
+ * (`career;manage`)
+ */
 export const getManageableFlow = cache(
-  withTrace("getManageableFlow", async (flowId: string) =>
-    prisma.flow.findUnique({
-      where: { id: flowId },
-      select: MANAGEABLE_FLOW_SELECT,
-    }),
-  ),
+  withTrace("getManageableFlow", async (flowId: string) => {
+    try {
+      return await findManageableFlow(
+        getApplicationContext(),
+        await getRequestActor(),
+        { flowId },
+      );
+    } catch (error) {
+      return throwApplicationErrorForPage(error);
+    }
+  }),
 );
-
-export type ManageableFlow = Awaited<
-  ReturnType<typeof getManageableFlows>
->[number];

@@ -1,10 +1,7 @@
 import { RadioFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/RadioFilter";
 import { TextSearchFilter } from "@/modules/common/components/layouts/SidebarLayout/Filters/TextSearchFilter";
-import {
-  FLOW_QUERY_PARAM,
-  FLOW_STATUS_PARAM,
-  FlowStatus,
-} from "../utils/flowFilterParams";
+import { FlowStatus } from "@sam-monorepo/application";
+import { FLOW_QUERY_PARAM, FLOW_STATUS_PARAM } from "../utils/flowFilterParams";
 
 export const FlowsFilters = () => {
   return (

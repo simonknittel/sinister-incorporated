@@ -1,102 +1,21 @@
 "use server";
 
-import { prisma } from "@/db";
-import { createAuthenticatedAction } from "@/modules/actions/utils/createAction";
-import { rejectConflict } from "@/modules/actions/utils/rejectConflict";
-import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
-import { FlowRoleAccessType } from "@sam-monorepo/database/client";
-import { refresh } from "next/cache";
-import * as z from "zod";
+import { createUseCaseAction } from "@/modules/application";
+import {
+  updateFlowRoleAccessInputSchema,
+  updateFlowRoleAccess as updateFlowRoleAccessUseCase,
+} from "@sam-monorepo/application";
+import { CAREER_ERROR_TEXTS } from "../utils/careerErrorTexts";
 
-// Arbitrary (untested) limits to prevent DDoS
-const roleIdsSchema = z.array(z.cuid()).max(250);
-
-const schema = z.object({
-  flowId: z.string(),
-  readRoleIds: roleIdsSchema,
-  updateRoleIds: roleIdsSchema,
+export const updateFlowRoleAccess = createUseCaseAction({
+  name: "updateFlowRoleAccess",
+  schema: updateFlowRoleAccessInputSchema,
+  useCase: updateFlowRoleAccessUseCase,
+  parseFormData: (formData) => ({
+    flow_id: formData.get("flowId"),
+    read_role_ids: formData.getAll("readRoleId[]"),
+    update_role_ids: formData.getAll("updateRoleId[]"),
+  }),
+  texts: CAREER_ERROR_TEXTS,
+  success: (t) => t("Common.successfullySaved"),
 });
-
-export const updateFlowRoleAccess = createAuthenticatedAction(
-  "updateFlowRoleAccess",
-  schema,
-  async (formData, authentication, data, t) => {
-    if (!(await authentication.authorize("career", "manage")))
-      return { error: t("Common.forbidden"), requestPayload: formData };
-
-    const flow = await prisma.flow.findUnique({
-      where: { id: data.flowId },
-      select: { id: true, deletedAt: true },
-    });
-    if (!flow || flow.deletedAt) {
-      /** A different user deleted the flow before, and the page must show it */
-      return rejectConflict(t("Common.notFound"), formData);
-    }
-
-    /**
-     * UPDATE implies READ, so a role listed in both tiers gets exactly one
-     * row with the higher one.
-     */
-    const updateRoleIds = new Set(data.updateRoleIds);
-    const readRoleIds = new Set(
-      data.readRoleIds.filter((roleId) => !updateRoleIds.has(roleId)),
-    );
-
-    const roleIds = [...readRoleIds, ...updateRoleIds];
-    const existingRoles = await prisma.role.count({
-      where: { id: { in: roleIds } },
-    });
-    if (existingRoles !== roleIds.length)
-      return { error: t("Common.badRequest"), requestPayload: formData };
-
-    await prisma.$transaction([
-      prisma.flowRoleAccess.deleteMany({ where: { flowId: flow.id } }),
-
-      prisma.flowRoleAccess.createMany({
-        data: [
-          ...[...readRoleIds].map((roleId) => ({
-            flowId: flow.id,
-            roleId,
-            type: FlowRoleAccessType.READ,
-          })),
-          ...[...updateRoleIds].map((roleId) => ({
-            flowId: flow.id,
-            roleId,
-            type: FlowRoleAccessType.UPDATE,
-          })),
-        ],
-      }),
-
-      prisma.flow.update({
-        where: { id: flow.id },
-        data: { updatedById: authentication.session.entity?.id ?? null },
-      }),
-    ]);
-
-    refresh();
-
-    await createAuditEvents([
-      {
-        type: AuditEventType.CAREER_FLOW_ROLE_ACCESS_UPDATED,
-        data: {
-          flowId: flow.id,
-          readRoleIds: [...readRoleIds],
-          updateRoleIds: [...updateRoleIds],
-        },
-        createdById: authentication.session.user.id,
-      },
-    ]);
-
-    return {
-      success: t("Common.successfullySaved"),
-    };
-  },
-  {
-    parseFormData: (formData) => ({
-      flowId: formData.get("flowId"),
-      readRoleIds: formData.getAll("readRoleId[]"),
-      updateRoleIds: formData.getAll("updateRoleId[]"),
-    }),
-  },
-);
