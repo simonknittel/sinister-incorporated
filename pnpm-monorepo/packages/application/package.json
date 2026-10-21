@@ -7,8 +7,7 @@
     "./dist/*"
   ],
   "exports": {
-    ".": "./dist/index.js",
-    "./test/*": "./test/*.ts"
+    ".": "./dist/index.js"
   },
   "scripts": {
     "postinstall": "tsc -p tsconfig.build.json",

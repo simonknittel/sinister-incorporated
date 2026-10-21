@@ -4,6 +4,7 @@ import {
   archiveIrrelevantOnSiteNotifications,
   autoAssignInactiveRoles,
   countCitizensPerRole,
+  countShips,
   countUniqueLogins,
   deleteUnusedUploads,
   disburseRoleSalaries,
@@ -20,7 +21,6 @@ import type { ScheduledHandler } from "aws-lambda";
 import { createApplicationContext } from "./common/createApplicationContext";
 import { createJobFactory } from "./common/createJob";
 import { runJobsInIsolation } from "./common/runJobsInIsolation";
-import { countShips } from "./midnight-automations/countShips";
 
 /**
  * The S3 parameters are optional: without them, the context has no storage
@@ -63,7 +63,7 @@ export const handler: ScheduledHandler = async () =>
     autoAssignInactiveRoles: createJob(autoAssignInactiveRoles),
     countCitizensPerRole: createJob(countCitizensPerRole),
     disburseRoleSalaries: createJob(disburseRoleSalaries),
-    countShips,
+    countShips: createJob(countShips),
     countUniqueLogins: createJob(countUniqueLogins),
     purgeTrashedWikiPages: createJob(purgeTrashedWikiPages),
     purgeOrphanedWikiTags: createJob(purgeOrphanedWikiTags),
