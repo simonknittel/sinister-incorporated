@@ -144,8 +144,9 @@ const buildWhere = (
   ...(input.created_by_citizen_ids && input.created_by_citizen_ids.length > 0
     ? { createdBy: { citizen: { id: { in: input.created_by_citizen_ids } } } }
     : {}),
-  // Prisma ignores `undefined`, thus without the filter all events match
-  triggeredViaMcp: input.triggered_via_mcp,
+  ...(input.triggered_via_mcp === undefined
+    ? {}
+    : { triggeredViaMcp: input.triggered_via_mcp }),
   ...(input.from || input.to
     ? {
         createdAt: {

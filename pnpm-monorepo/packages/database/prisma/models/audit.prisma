@@ -14,7 +14,7 @@ model AuditEvent {
   @@index([createdAt, id])
   @@index([type, createdAt, id])
   @@index([createdById, createdAt, id])
-  // The system log can also narrow by the origin (through the MCP server or
-  // not), thus this filter uses the same pattern
-  @@index([triggeredViaMcp, createdAt, id])
+  // Almost all events are not through the MCP server, thus only the filter for
+  // the MCP events needs an index. The other filter uses the (createdAt, id) index.
+  @@index([createdAt, id], map: "AuditEvent_triggeredViaMcp_createdAt_id_idx", where: { triggeredViaMcp: true })
 }

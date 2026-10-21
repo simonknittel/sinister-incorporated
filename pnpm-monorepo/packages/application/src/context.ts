@@ -124,7 +124,7 @@ export interface DiscordGateway {
 
 /**
  * The services that the use cases get from the app that runs them. Each app
- * builds one context in its composition root.
+ * builds its contexts in its composition root.
  */
 export interface ApplicationContext {
   readonly prisma: PrismaClientType;

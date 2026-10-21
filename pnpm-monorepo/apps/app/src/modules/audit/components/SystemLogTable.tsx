@@ -27,8 +27,6 @@ const COLUMNS: TableColumn[] = [
   { key: "message", label: "Message", track: "1fr", minWidth: 226 },
 ];
 
-const MCP_CELL_TITLE = "Über den MCP-Server ausgelöst";
-
 const loadSearchParams = createCursorPaginationLoader({
   type: parseAsArrayOf(parseAsString),
   createdById: parseAsArrayOf(parseAsString),
@@ -112,9 +110,7 @@ export const SystemLogTable = async ({ className, searchParams }: Props) => {
               {createdBy}
             </td>
 
-            <td title={event.triggered_via_mcp ? MCP_CELL_TITLE : undefined}>
-              {event.triggered_via_mcp ? "Ja" : null}
-            </td>
+            <td>{event.triggered_via_mcp && "Ja"}</td>
 
             <td title={message} className="truncate">
               {message}

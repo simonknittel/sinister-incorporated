@@ -108,8 +108,8 @@ const createApplicationContext = (): ApplicationContext => ({
 });
 
 /**
- * The environment does not change while the process runs, thus one context
- * serves all requests. The key of `signingKey` loads on its first call.
+ * The environment does not change while the process runs, thus the contexts
+ * are built one time. The key of `signingKey` loads on its first call.
  */
 let context: ApplicationContext | undefined;
 let mcpContext: ApplicationContext | undefined;
