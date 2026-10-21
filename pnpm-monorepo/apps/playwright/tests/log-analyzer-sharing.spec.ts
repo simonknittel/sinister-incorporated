@@ -1,9 +1,9 @@
 import type { Locator, Page } from "@playwright/test";
+import { LogAnalyzerEntryType } from "@sam-monorepo/domain";
 import {
   createCitizen,
   createLogAnalyzerEntry,
   createUserWithoutCitizen,
-  LogAnalyzerEntryType,
 } from "../fixtures/factories";
 import { clickUntilVisible, toggleLabel } from "../fixtures/interactions";
 import { expect, test } from "../fixtures/test";

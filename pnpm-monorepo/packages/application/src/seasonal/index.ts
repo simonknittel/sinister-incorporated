@@ -8,7 +8,6 @@ export {
   type SeasonalThemeResult,
 } from "./findSeasonalTheme.js";
 export {
-  MAXIMUM_SEASONAL_THEME_SETTING_INPUTS,
   updateSeasonalThemeSettings,
   updateSeasonalThemeSettingsInputSchema,
   type UpdateSeasonalThemeSettingsInput,

@@ -4,12 +4,8 @@ import {
   isAttachmentMimeType,
   MAXIMUM_ATTACHMENT_SIZE_BYTES,
   MAXIMUM_IMAGE_SIZE_BYTES,
+  UploadCategory,
 } from "@sam-monorepo/domain";
-
-export enum WikiUploadKind {
-  Image = "image",
-  Attachment = "attachment",
-}
 
 interface UploadedWikiPageFile {
   readonly uploadId: string;
@@ -43,10 +39,10 @@ const resolveWikiFileMimeType = (file: File): string => {
   return MIME_TYPES_BY_EXTENSION[extension] ?? "";
 };
 
-export const getWikiUploadKind = (file: File): WikiUploadKind | null => {
+export const getWikiUploadKind = (file: File): UploadCategory | null => {
   const mimeType = resolveWikiFileMimeType(file);
-  if (mimeType.startsWith("image/")) return WikiUploadKind.Image;
-  if (isAttachmentMimeType(mimeType)) return WikiUploadKind.Attachment;
+  if (mimeType.startsWith("image/")) return UploadCategory.Image;
+  if (isAttachmentMimeType(mimeType)) return UploadCategory.Attachment;
   return null;
 };
 
@@ -62,10 +58,10 @@ export const getWikiImageUrl = (uploadId: string) =>
 export const uploadWikiPageFile = async (
   file: File,
   pageId: string,
-  kind: WikiUploadKind,
+  kind: UploadCategory,
 ): Promise<UploadedWikiPageFile> => {
   const maximumSizeBytes =
-    kind === WikiUploadKind.Attachment
+    kind === UploadCategory.Attachment
       ? MAXIMUM_ATTACHMENT_SIZE_BYTES
       : MAXIMUM_IMAGE_SIZE_BYTES;
   if (file.size > maximumSizeBytes)

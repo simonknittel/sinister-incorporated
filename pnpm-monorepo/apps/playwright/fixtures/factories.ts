@@ -27,6 +27,7 @@ import {
   WikiPageUploadKind,
   WikiPageVisibility,
 } from "@sam-monorepo/database/client";
+import type { LogAnalyzerEntryType } from "@sam-monorepo/domain";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 
 export const ONE_MINUTE_MS = 60 * 1000;
@@ -993,21 +994,6 @@ export const createEventTemplate = async (
 
   return { template, rootPage, positions, briefingPages };
 };
-
-/**
- * The types of the Log Analyzer, stored as text. They mirror the `EntryType`
- * enum of the app, which the database keeps verbatim — this package cannot
- * import it, thus the values live here a second time.
- */
-export enum LogAnalyzerEntryType {
-  JoinPu = "joinPu",
-  OwnDeath = "ownDeath",
-  BlueprintReceivedNotification = "blueprintReceivedNotification",
-  ContractAcceptedNotification = "contractAcceptedNotification",
-  ContractCompleteNotification = "contractCompleteNotification",
-  ContractFailedNotification = "contractFailedNotification",
-  Disconnection = "disconnection",
-}
 
 interface CreateLogAnalyzerEntryOptions {
   readonly type: LogAnalyzerEntryType;

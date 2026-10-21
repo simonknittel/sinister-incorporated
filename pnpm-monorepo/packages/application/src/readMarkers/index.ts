@@ -8,8 +8,3 @@ export {
   type MarkItemAsReadOutput,
 } from "./markItemAsRead.js";
 export { ReadMarkerErrorMessage } from "./readMarkerErrors.js";
-export {
-  READ_MARKER_TRACKED_SINCE,
-  buildUnreadWhere,
-  type UnreadWhere,
-} from "./unreadWhere.js";

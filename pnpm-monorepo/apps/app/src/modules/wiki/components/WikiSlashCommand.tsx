@@ -1,5 +1,6 @@
 "use client";
 
+import { UploadCategory } from "@sam-monorepo/domain";
 import {
   getWikiSelectionRestrictions,
   type WikiTextRestrictions,
@@ -31,7 +32,6 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { getWikiNodeTypeLabel } from "../utils/getWikiNodeTypeLabel";
-import { WikiUploadKind } from "../utils/uploadWikiPageFile";
 import { getWikiCopiedBlock, type WikiCopiedBlock } from "./wikiBlockClipboard";
 import {
   insertWikiFile,
@@ -83,7 +83,7 @@ export interface WikiSlashCommandItem {
    * The upload kind the entry starts — entries of a kind the viewer may
    * not upload are shown disabled (applyWikiUploadRestrictions).
    */
-  readonly uploadKind?: WikiUploadKind;
+  readonly uploadKind?: UploadCategory;
   /** Shown muted and inert; run is never called (WikiSuggestionMenu) */
   readonly disabled?: boolean;
   /** Secondary line under the title (the disabled entries' hint) */
@@ -229,7 +229,7 @@ export const WIKI_SLASH_COMMAND_ITEMS: readonly WikiSlashCommandItem[] = [
     title: "Bild",
     icon: <FaImage />,
     keywords: ["bild", "image", "foto", "img"],
-    uploadKind: WikiUploadKind.Image,
+    uploadKind: UploadCategory.Image,
     run: (editor, range, options) => {
       editor.chain().focus().deleteRange(range).run();
       pickWikiFiles(WIKI_IMAGE_ACCEPT, (files) => {
@@ -242,7 +242,7 @@ export const WIKI_SLASH_COMMAND_ITEMS: readonly WikiSlashCommandItem[] = [
     title: "Dateianhang",
     icon: <FaPaperclip />,
     keywords: ["datei", "anhang", "attachment", "file", "pdf", "upload"],
-    uploadKind: WikiUploadKind.Attachment,
+    uploadKind: UploadCategory.Attachment,
     run: (editor, range, options) => {
       editor.chain().focus().deleteRange(range).run();
       pickWikiFiles(WIKI_ATTACHMENT_ACCEPT, (files) => {

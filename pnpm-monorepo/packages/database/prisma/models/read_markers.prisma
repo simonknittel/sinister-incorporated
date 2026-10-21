@@ -10,8 +10,9 @@
 /// To add a subject type in the database: add a nullable column with its
 /// relation (named `readMarkers` on the subject model) and a unique
 /// constraint of the column together with `citizenId`, and extend the CHECK
-/// constraint in a new migration. The steps in the app are documented at
-/// `READ_MARKER_SUBJECTS` in the `read-markers` module.
+/// constraint in a new migration. The steps in the code are documented at
+/// `READ_MARKER_SUBJECT_RULES` in
+/// `packages/application/src/readMarkers/readMarkerSubjects.ts`.
 model ReadMarker {
   id        String   @id @default(cuid(2))
   citizenId String

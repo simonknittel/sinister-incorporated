@@ -33,7 +33,6 @@ export {
   type DropTaskInput,
   type DropTaskOutput,
 } from "./dropTask.js";
-export { findNewTaskIds } from "./findNewTaskIds.js";
 export {
   findVisibleTask,
   getTask,
@@ -77,7 +76,6 @@ export {
   isAllowedToManageTask,
   isTaskUpdatable,
 } from "./taskRules.js";
-export { getOpenTasksWhere, getVisibleTasksWhere } from "./taskWhere.js";
 export {
   updateTask,
   updateTaskInputSchema,

@@ -7,11 +7,12 @@
 /// the whole history at once.
 model LogAnalyzerEntry {
   id        String   @id @default(cuid(2))
-  /// A value of the `EntryType` enum of the app, for example "joinPu". The
-  /// types come from the static pattern config of the Log Analyzer and are not
-  /// an enum of the database, so that a new pattern needs no migration. A
-  /// value which no longer belongs to a pattern is ignored when read, but
-  /// kept, in case the pattern returns.
+  /// A value of the `LogAnalyzerEntryType` enum of the domain package
+  /// (`packages/domain/src/logAnalyzer/logAnalyzerEntries.ts`), for example
+  /// "joinPu". The types come from the static pattern config of the Log
+  /// Analyzer and are not an enum of the database, so that a new pattern
+  /// needs no migration. A value which no longer belongs to a pattern is
+  /// ignored when read, but kept, in case the pattern returns.
   type      String
   /// The full log line the regex matched. Contains data of other players
   /// (nicknames, IP addresses), thus it must never be written to the logs.

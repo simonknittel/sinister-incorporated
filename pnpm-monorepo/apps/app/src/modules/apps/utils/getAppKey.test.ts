@@ -1,7 +1,7 @@
 import { createElement } from "react";
 import { describe, expect, test } from "vitest";
-import { findAppByKey, getAppKey } from "./getAppKey";
-import type { App, ExternalApp, IntegratedApp, RedactedApp } from "./types";
+import { getAppKey } from "./getAppKey";
+import type { ExternalApp, IntegratedApp, RedactedApp } from "./types";
 
 const integratedApp = (slug: string, name = slug): IntegratedApp => ({
   name,
@@ -41,25 +41,5 @@ describe("getAppKey", () => {
     expect(getAppKey(integratedApp("tasks"))).not.toBe(
       getAppKey(externalApp("tasks")),
     );
-  });
-});
-
-describe("findAppByKey", () => {
-  const apps: App[] = [
-    integratedApp("tasks", "Tasks"),
-    externalApp("tasks", "External Tasks"),
-    redactedApp("Redacted"),
-  ];
-
-  test("resolves a key to the app of the matching namespace", () => {
-    expect(findAppByKey(apps, "external:tasks")?.name).toBe("External Tasks");
-  });
-
-  test("returns nothing for a key that no longer resolves to an app", () => {
-    expect(findAppByKey(apps, "integrated:removed-app")).toBeUndefined();
-  });
-
-  test("returns nothing when there are no apps", () => {
-    expect(findAppByKey(null, "integrated:tasks")).toBeUndefined();
   });
 });

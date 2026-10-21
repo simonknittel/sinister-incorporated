@@ -43,7 +43,6 @@ export {
   discordPublishFieldsShape,
   publishEventToDiscord,
   publishEventToDiscordInputSchema,
-  syncEventDiscordPublication,
   unpublishEventFromDiscord,
   unpublishEventFromDiscordInputSchema,
   type DiscordSyncResult,
@@ -52,7 +51,6 @@ export {
   type UnpublishEventFromDiscordInput,
 } from "./eventDiscordPublication.js";
 export { EventErrorMessage } from "./eventErrors.js";
-export { EVENT_MANAGE_GUARD_SELECT } from "./eventManageGuard.js";
 export {
   isAllowedToManageEvent,
   isAllowedToManagePositions,
@@ -111,7 +109,6 @@ export {
   notifyEventsStartingSoon,
   type NotifyEventsStartingSoonOutput,
 } from "./notifyEventsStartingSoon.js";
-export { findNewEventIds, getOpenEventsWhere } from "./openEvents.js";
 export {
   findOwnEventParticipation,
   type AssignedEventPosition,

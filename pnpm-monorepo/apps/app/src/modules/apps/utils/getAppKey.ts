@@ -11,6 +11,3 @@ export const getAppKey = (app: App): string | undefined => {
   if ("defaultPage" in app) return `${AppKeyNamespace.External}:${app.slug}`;
   return undefined;
 };
-
-export const findAppByKey = (apps: App[] | null, appKey: string) =>
-  apps?.find((app) => getAppKey(app) === appKey);

@@ -1,6 +1,9 @@
 "use client";
 
-import { ATTACHMENT_APPLICATION_MIME_TYPES } from "@sam-monorepo/domain";
+import {
+  ATTACHMENT_APPLICATION_MIME_TYPES,
+  UploadCategory,
+} from "@sam-monorepo/domain";
 import type { Editor } from "@tiptap/core";
 import { FileHandler } from "@tiptap/extension-file-handler";
 import { NodeSelection } from "@tiptap/pm/state";
@@ -9,7 +12,6 @@ import {
   getWikiImageUrl,
   getWikiUploadKind,
   uploadWikiPageFile,
-  WikiUploadKind,
 } from "../utils/uploadWikiPageFile";
 
 export const WIKI_IMAGE_ACCEPT = "image/*";
@@ -47,17 +49,17 @@ export interface WikiUploadPermissions {
 }
 
 export const isWikiUploadKindAllowed = (
-  kind: WikiUploadKind,
+  kind: UploadCategory,
   permissions: WikiUploadPermissions,
 ) =>
-  kind === WikiUploadKind.Image
+  kind === UploadCategory.Image
     ? permissions.canUploadImages
     : permissions.canUploadAttachments;
 
-const UPLOAD_BLOCKED_MESSAGES: Record<WikiUploadKind, string> = {
-  [WikiUploadKind.Image]:
+const UPLOAD_BLOCKED_MESSAGES: Record<UploadCategory, string> = {
+  [UploadCategory.Image]:
     "Bilder dürfen auf dieser Seite nur Manager hochladen.",
-  [WikiUploadKind.Attachment]:
+  [UploadCategory.Attachment]:
     "Dateianhänge dürfen auf dieser Seite nur Manager hochladen.",
 };
 
@@ -92,7 +94,7 @@ export const insertWikiFile = async (
     const uploaded = await uploadWikiPageFile(file, pageId, kind);
 
     const content =
-      kind === WikiUploadKind.Image
+      kind === UploadCategory.Image
         ? {
             type: "image",
             attrs: {
@@ -164,7 +166,7 @@ export const createWikiFileHandler = (
   permissions: WikiUploadPermissions,
 ) => {
   const handleFiles = (editor: Editor, files: File[], position?: number) => {
-    const blockedKinds = new Set<WikiUploadKind>();
+    const blockedKinds = new Set<UploadCategory>();
     for (const file of files) {
       const kind = getWikiUploadKind(file);
       if (kind && !isWikiUploadKindAllowed(kind, permissions)) {

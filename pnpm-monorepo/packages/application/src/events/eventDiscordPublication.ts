@@ -325,8 +325,8 @@ export const createDiscordEventPublication = async (
  * published event. A no-op for events that were never published, so every
  * mutation path can call it unconditionally.
  *
- * No permission check: the caller checked that the actor can manage the
- * event (the upload route of the cover image, until it moves to a use case).
+ * No permission check: the callers (`updateEvent` and
+ * `assignEventCoverImage`) check that the actor can manage the event.
  */
 export const syncEventDiscordPublication = (
   context: ApplicationContext,

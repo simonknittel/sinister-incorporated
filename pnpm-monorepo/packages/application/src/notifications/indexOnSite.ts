@@ -23,7 +23,6 @@ export {
   type AuthorizeRealtimeChannelOutput,
 } from "./authorizeRealtimeChannel.js";
 export {
-  ON_SITE_NOTIFICATION_PAGE_SIZE,
   listOwnOnSiteNotifications,
   listOwnOnSiteNotificationsInputSchema,
   type ListOwnOnSiteNotificationsInput,
@@ -35,7 +34,6 @@ export {
   type MarkAllOnSiteNotificationsReadOutput,
 } from "./markAllOnSiteNotificationsRead.js";
 export {
-  MAXIMUM_ON_SITE_NOTIFICATIONS_PER_READ,
   markOnSiteNotificationsRead,
   markOnSiteNotificationsReadInputSchema,
   type MarkOnSiteNotificationsReadInput,
