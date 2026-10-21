@@ -3,6 +3,7 @@ import { HIGH_VOLUME_AUDIT_EVENT_TYPES } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import {
+  CITIZEN_REFERENCE_SELECT,
   toCitizenReference,
   type CitizenReference,
 } from "../citizenReference.js";
@@ -104,7 +105,7 @@ const AUDIT_EVENT_SELECT = {
     select: {
       id: true,
       name: true,
-      citizen: { select: { id: true, handle: true, deletedAt: true } },
+      citizen: { select: CITIZEN_REFERENCE_SELECT },
     },
   },
 } as const satisfies Prisma.AuditEventSelect;

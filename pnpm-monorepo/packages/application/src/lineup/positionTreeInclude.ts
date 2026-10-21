@@ -1,4 +1,5 @@
 import type { Prisma } from "@sam-monorepo/database/client";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 
 /**
  * The variant catalog of one position, down to the manufacturer logo the
@@ -35,10 +36,10 @@ const REQUIRED_VARIANTS_INCLUDE = {
 const POSITION_INCLUDE = {
   applications: {
     include: {
-      citizen: { select: { id: true, handle: true, deletedAt: true } },
+      citizen: { select: CITIZEN_REFERENCE_SELECT },
     },
   },
-  citizen: { select: { id: true, handle: true, deletedAt: true } },
+  citizen: { select: CITIZEN_REFERENCE_SELECT },
   requiredVariants: REQUIRED_VARIANTS_INCLUDE,
 } satisfies Prisma.EventPositionInclude;
 

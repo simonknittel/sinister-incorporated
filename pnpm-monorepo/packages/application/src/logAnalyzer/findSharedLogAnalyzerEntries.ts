@@ -1,4 +1,5 @@
 import type { Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import {
   requireLogAnalyzerAccess,
@@ -75,11 +76,7 @@ export const findSharedLogAnalyzerEntries = async (
       rawLine: true,
       eventAt: true,
       createdBy: {
-        select: {
-          id: true,
-          handle: true,
-          deletedAt: true,
-        },
+        select: CITIZEN_REFERENCE_SELECT,
       },
     },
   });

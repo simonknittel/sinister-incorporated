@@ -1,4 +1,5 @@
 import type { Prisma } from "@sam-monorepo/database/client";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 
 /** The columns of a cycle that `getCurrentPhase()` reads */
 export const CYCLE_PHASE_SELECT = {
@@ -45,19 +46,10 @@ export const CYCLE_DETAILS_SELECT = {
     select: {
       ...PARTICIPANT_STATE_SELECT,
       citizen: {
-        select: {
-          id: true,
-          handle: true,
-          deletedAt: true,
-          silcBalance: true,
-        },
+        select: { ...CITIZEN_REFERENCE_SELECT, silcBalance: true },
       },
       disbursedBy: {
-        select: {
-          id: true,
-          handle: true,
-          deletedAt: true,
-        },
+        select: CITIZEN_REFERENCE_SELECT,
       },
     },
   },

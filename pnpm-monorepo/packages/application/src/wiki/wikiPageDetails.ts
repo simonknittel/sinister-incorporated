@@ -1,7 +1,8 @@
 import type { Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
-import { WIKI_CITIZEN_SELECT, type WikiCitizen } from "./wikiCitizen.js";
+import { type WikiCitizen } from "./wikiCitizen.js";
 import { buildWikiContext, type WikiContext } from "./wikiContext.js";
 import { requireAccessibleWikiPage } from "./wikiScope.js";
 
@@ -25,7 +26,7 @@ export const findWikiPageOwner = async (
 
   return context.prisma.citizen.findUnique({
     where: { id: effectiveOwnerId },
-    select: WIKI_CITIZEN_SELECT,
+    select: CITIZEN_REFERENCE_SELECT,
   });
 };
 
@@ -68,8 +69,8 @@ export const findWikiPageDetails = async (
     context.prisma.wikiPage.findUnique({
       where: { id: page.id },
       select: {
-        createdBy: { select: WIKI_CITIZEN_SELECT },
-        updatedBy: { select: WIKI_CITIZEN_SELECT },
+        createdBy: { select: CITIZEN_REFERENCE_SELECT },
+        updatedBy: { select: CITIZEN_REFERENCE_SELECT },
       },
     }),
     findWikiPageOwner(context, scope, page.id),

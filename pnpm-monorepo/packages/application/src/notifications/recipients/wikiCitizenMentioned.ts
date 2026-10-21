@@ -1,4 +1,5 @@
 import { getCitizenDisplayName } from "@sam-monorepo/domain";
+import { CITIZEN_REFERENCE_SELECT } from "../../citizenReference.js";
 import type { ApplicationContext } from "../../context.js";
 import type { Recipient } from "./recipient.js";
 
@@ -30,7 +31,7 @@ export const findWikiCitizenMentionedRecipient = async (
     where: { id: input.mentionId },
     select: {
       citizenId: true,
-      createdBy: { select: { id: true, handle: true, deletedAt: true } },
+      createdBy: { select: CITIZEN_REFERENCE_SELECT },
       page: {
         select: { id: true, title: true, eventId: true, deletedAt: true },
       },

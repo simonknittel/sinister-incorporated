@@ -4,6 +4,7 @@ import {
   ConfirmationValue,
   toConfirmationStatus,
 } from "@sam-monorepo/domain";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 
 /**
@@ -26,7 +27,7 @@ export const CITIZEN_LOG_TABLE_SELECT = {
   noteType: { select: { id: true, name: true } },
   classificationLevelId: true,
   classificationLevel: { select: { id: true, name: true } },
-  citizen: { select: { id: true, handle: true, deletedAt: true } },
+  citizen: { select: CITIZEN_REFERENCE_SELECT },
   submittedBy: { select: { name: true } },
 } as const satisfies Prisma.CitizenLogSelect;
 

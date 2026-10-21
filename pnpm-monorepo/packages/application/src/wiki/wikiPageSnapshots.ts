@@ -1,7 +1,8 @@
 import type { WikiPageSnapshotKind } from "@sam-monorepo/database/client";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
-import { WIKI_CITIZEN_SELECT, type WikiCitizen } from "./wikiCitizen.js";
+import { type WikiCitizen } from "./wikiCitizen.js";
 import { requireAccessibleWikiPage, type WikiScope } from "./wikiScope.js";
 
 /** A row of the snapshot list of a page */
@@ -39,7 +40,7 @@ export const findWikiPageSnapshotRows = (
       kind: true,
       name: true,
       createdAt: true,
-      createdBy: { select: WIKI_CITIZEN_SELECT },
+      createdBy: { select: CITIZEN_REFERENCE_SELECT },
     },
   });
 };

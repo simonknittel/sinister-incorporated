@@ -1,5 +1,6 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import { requirePermission, type Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 
 /** The values are the values of the URL */
@@ -37,11 +38,7 @@ const USER_LIST_SELECT = {
   bannedReason: true,
   role: true,
   bannedBy: {
-    select: {
-      id: true,
-      handle: true,
-      deletedAt: true,
-    },
+    select: CITIZEN_REFERENCE_SELECT,
   },
   accounts: {
     select: {

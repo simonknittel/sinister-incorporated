@@ -1,5 +1,6 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { ForbiddenError } from "../errors.js";
 import { paginateByDatabaseCursor, type PageOptions } from "../pagination.js";
@@ -15,9 +16,9 @@ const SILC_TRANSACTION_TABLE_SELECT = {
   value: true,
   description: true,
   deletedAt: true,
-  receiver: { select: { id: true, handle: true, deletedAt: true } },
-  createdBy: { select: { id: true, handle: true, deletedAt: true } },
-  updatedBy: { select: { id: true, handle: true, deletedAt: true } },
+  receiver: { select: CITIZEN_REFERENCE_SELECT },
+  createdBy: { select: CITIZEN_REFERENCE_SELECT },
+  updatedBy: { select: CITIZEN_REFERENCE_SELECT },
 } as const satisfies Prisma.SilcTransactionSelect;
 
 /** A row of the SILC transaction table */

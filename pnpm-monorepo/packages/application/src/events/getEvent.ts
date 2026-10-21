@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { requireCitizen, requirePermission, type Actor } from "../actor.js";
 import {
+  CITIZEN_REFERENCE_SELECT,
   toCitizenReference,
   toCitizenReferences,
   type CitizenReference,
@@ -73,7 +74,7 @@ const getParticipantEntries = async (
 ): Promise<EventParticipantEntry[]> => {
   const citizens = await context.prisma.citizen.findMany({
     where: buildParticipantCitizenWhere(participants),
-    select: { id: true, handle: true, deletedAt: true, discordId: true },
+    select: { ...CITIZEN_REFERENCE_SELECT, discordId: true },
   });
 
   return participants

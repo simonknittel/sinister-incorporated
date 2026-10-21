@@ -1,17 +1,11 @@
 import type { Prisma } from "@sam-monorepo/database/client";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 
 /*
  * Event pages serialize these shapes into the browser, so a full Citizen or
  * Upload row here would ship a citizen's Discord id, Teamspeak id and SILC
  * balances with every event.
  */
-
-/** A citizen as the event surfaces render them: a `CitizenLink`, no more */
-const EVENT_CITIZEN_SELECT = {
-  id: true,
-  handle: true,
-  deletedAt: true,
-} as const satisfies Prisma.CitizenSelect;
 
 /** A cover image as `getPublicUploadUrl()` and `next/image` need it */
 const EVENT_COVER_IMAGE_SELECT = {
@@ -37,7 +31,7 @@ export const EVENT_PAGE_RELATIONS_SELECT = {
     where: { cancelledAt: null },
     select: EVENT_PARTICIPANT_SELECT,
   },
-  managers: { select: EVENT_CITIZEN_SELECT },
+  managers: { select: CITIZEN_REFERENCE_SELECT },
   coverImage: { select: EVENT_COVER_IMAGE_SELECT },
 } as const satisfies Prisma.EventSelect;
 
@@ -48,7 +42,7 @@ export const EVENT_PAGE_RELATIONS_SELECT = {
 export const EVENT_DETAILS_INCLUDE = {
   ...EVENT_PAGE_RELATIONS_SELECT,
   visibilityRoles: { select: { roleId: true } },
-  createdBy: { select: EVENT_CITIZEN_SELECT },
+  createdBy: { select: CITIZEN_REFERENCE_SELECT },
 } as const satisfies Prisma.EventInclude;
 
 export type EventDetails = Prisma.EventGetPayload<{

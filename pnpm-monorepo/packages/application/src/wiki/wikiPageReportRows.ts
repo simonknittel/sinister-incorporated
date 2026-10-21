@@ -1,7 +1,7 @@
 import type { Prisma } from "@sam-monorepo/database/client";
 import { requirePermission, type Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
-import { WIKI_CITIZEN_SELECT } from "./wikiCitizen.js";
 
 const WIKI_PAGE_REPORT_SELECT = {
   id: true,
@@ -9,9 +9,9 @@ const WIKI_PAGE_REPORT_SELECT = {
   uploadId: true,
   uploadFileName: true,
   createdAt: true,
-  createdBy: { select: WIKI_CITIZEN_SELECT },
+  createdBy: { select: CITIZEN_REFERENCE_SELECT },
   resolvedAt: true,
-  resolvedBy: { select: WIKI_CITIZEN_SELECT },
+  resolvedBy: { select: CITIZEN_REFERENCE_SELECT },
   resolutionComment: true,
   page: {
     select: {

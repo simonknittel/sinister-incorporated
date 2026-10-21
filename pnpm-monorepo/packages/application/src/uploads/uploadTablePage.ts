@@ -5,6 +5,7 @@ import {
   UploadUsageType,
 } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { paginateByDatabaseCursor, type PageOptions } from "../pagination.js";
 import { MAXIMUM_UPLOAD_FILE_NAME_LENGTH } from "./createUpload.js";
@@ -37,7 +38,7 @@ const UPLOAD_TABLE_SELECT = {
    * Selected in both scopes, but only the scope of the managers shows it:
    * without the permission, each row belongs to the actor
    */
-  createdBy: { select: { id: true, handle: true, deletedAt: true } },
+  createdBy: { select: CITIZEN_REFERENCE_SELECT },
   ...UPLOAD_USAGE_SELECT,
 } satisfies Prisma.UploadSelect;
 

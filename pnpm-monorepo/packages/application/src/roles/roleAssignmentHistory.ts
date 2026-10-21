@@ -9,6 +9,7 @@ import {
   type MergedCursorSourceInput,
 } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { loadVisibleRoleIds } from "./roleVisibility.js";
 
@@ -17,8 +18,8 @@ const ROLE_ASSIGNMENT_CHANGE_SELECT = {
   roleId: true,
   type: true,
   createdAt: true,
-  citizen: { select: { id: true, handle: true, deletedAt: true } },
-  createdBy: { select: { id: true, handle: true, deletedAt: true } },
+  citizen: { select: CITIZEN_REFERENCE_SELECT },
+  createdBy: { select: CITIZEN_REFERENCE_SELECT },
 } as const satisfies Prisma.RoleAssignmentChangeSelect;
 
 /** One page request of an activity source of the role history */

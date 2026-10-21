@@ -1,10 +1,5 @@
 import type { Prisma } from "@sam-monorepo/database/client";
-
-const CITIZEN_SELECT = {
-  id: true,
-  handle: true,
-  deletedAt: true,
-} as const satisfies Prisma.CitizenSelect;
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 
 /**
  * What a task list row of the app needs: the fields the `Task` component
@@ -25,7 +20,7 @@ export const TASK_LIST_SELECT = {
   assignments: {
     select: {
       citizenId: true,
-      citizen: { select: CITIZEN_SELECT },
+      citizen: { select: CITIZEN_REFERENCE_SELECT },
     },
   },
   completionists: {
@@ -51,7 +46,7 @@ export const TASK_LIST_ITEM_SELECT = {
   rewardSilcValue: true,
   rewardTypeTextValue: true,
   visibility: true,
-  createdBy: { select: CITIZEN_SELECT },
+  createdBy: { select: CITIZEN_REFERENCE_SELECT },
 } as const satisfies Prisma.TaskSelect;
 
 export type TaskListItemRow = Prisma.TaskGetPayload<{
@@ -89,12 +84,12 @@ export const TASK_DETAILS_INCLUDE = {
     select: {
       id: true,
       citizenId: true,
-      citizen: { select: CITIZEN_SELECT },
+      citizen: { select: CITIZEN_REFERENCE_SELECT },
     },
   },
   requiredRoles: { select: { id: true } },
-  completionists: { select: CITIZEN_SELECT },
-  createdBy: { select: CITIZEN_SELECT },
+  completionists: { select: CITIZEN_REFERENCE_SELECT },
+  createdBy: { select: CITIZEN_REFERENCE_SELECT },
 } as const satisfies Prisma.TaskInclude;
 
 export type TaskDetailsRow = Prisma.TaskGetPayload<{

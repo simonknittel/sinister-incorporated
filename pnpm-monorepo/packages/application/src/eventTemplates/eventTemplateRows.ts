@@ -9,6 +9,7 @@ import {
   type ResolvedEventTemplatePermissions,
 } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { TEMPLATE_POSITION_TREE_INCLUDE } from "../lineup/positionTreeInclude.js";
 import {
@@ -28,12 +29,6 @@ import {
  * browser, thus a citizen is only what a `CitizenLink` needs.
  */
 
-const EVENT_TEMPLATE_CITIZEN_SELECT = {
-  id: true,
-  handle: true,
-  deletedAt: true,
-} as const satisfies Prisma.CitizenSelect;
-
 const DETAIL_SELECT = {
   id: true,
   name: true,
@@ -46,13 +41,13 @@ const DETAIL_SELECT = {
   visibilityRoles: { select: { roleId: true } },
   roleAccess: { select: { roleId: true, type: true } },
   createdAt: true,
-  createdBy: { select: EVENT_TEMPLATE_CITIZEN_SELECT },
+  createdBy: { select: CITIZEN_REFERENCE_SELECT },
   updatedAt: true,
-  updatedBy: { select: EVENT_TEMPLATE_CITIZEN_SELECT },
+  updatedBy: { select: CITIZEN_REFERENCE_SELECT },
   ownedById: true,
-  ownedBy: { select: EVENT_TEMPLATE_CITIZEN_SELECT },
+  ownedBy: { select: CITIZEN_REFERENCE_SELECT },
   deletedAt: true,
-  deletedBy: { select: EVENT_TEMPLATE_CITIZEN_SELECT },
+  deletedBy: { select: CITIZEN_REFERENCE_SELECT },
 } as const satisfies Prisma.EventTemplateSelect;
 
 export type EventTemplateDetails = Prisma.EventTemplateGetPayload<{
@@ -97,8 +92,8 @@ const LIST_SELECT = {
   updatedAt: true,
   deletedAt: true,
   ownedById: true,
-  ownedBy: { select: EVENT_TEMPLATE_CITIZEN_SELECT },
-  updatedBy: { select: EVENT_TEMPLATE_CITIZEN_SELECT },
+  ownedBy: { select: CITIZEN_REFERENCE_SELECT },
+  updatedBy: { select: CITIZEN_REFERENCE_SELECT },
   roleAccess: { select: { roleId: true, type: true } },
 } as const satisfies Prisma.EventTemplateSelect;
 
@@ -193,7 +188,7 @@ export const findEventTemplateOwners = async (
 
   return context.prisma.citizen.findMany({
     where: { ...ACTIVE_CITIZEN_WHERE, ownedEventTemplates: { some: {} } },
-    select: EVENT_TEMPLATE_CITIZEN_SELECT,
+    select: CITIZEN_REFERENCE_SELECT,
     orderBy: { handle: "asc" },
   });
 };

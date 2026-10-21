@@ -1,4 +1,8 @@
 import type { Prisma } from "@sam-monorepo/database/client";
+import {
+  CITIZEN_REFERENCE_SELECT,
+  type CitizenReferenceRow,
+} from "../citizenReference.js";
 
 export interface PenaltyEntryCitizenOutput {
   readonly id: string;
@@ -20,12 +24,6 @@ export interface PenaltyEntryOutput {
   readonly deleted_at: string | null;
 }
 
-const CITIZEN_SELECT = {
-  id: true,
-  handle: true,
-  deletedAt: true,
-} as const satisfies Prisma.CitizenSelect;
-
 /** The columns of a penalty entry for `toPenaltyEntryOutput()` */
 export const PENALTY_ENTRY_SELECT = {
   id: true,
@@ -34,12 +32,12 @@ export const PENALTY_ENTRY_SELECT = {
   createdAt: true,
   expiresAt: true,
   deletedAt: true,
-  citizen: { select: CITIZEN_SELECT },
-  createdBy: { select: CITIZEN_SELECT },
+  citizen: { select: CITIZEN_REFERENCE_SELECT },
+  createdBy: { select: CITIZEN_REFERENCE_SELECT },
 } as const satisfies Prisma.PenaltyEntrySelect;
 
 const toCitizenOutput = (
-  citizen: Prisma.CitizenGetPayload<{ select: typeof CITIZEN_SELECT }>,
+  citizen: CitizenReferenceRow,
 ): PenaltyEntryCitizenOutput => ({
   id: citizen.id,
   handle: citizen.deletedAt ? null : citizen.handle,

@@ -7,14 +7,9 @@ import {
 } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { requireVisibleEvent } from "./findVisibleEvent.js";
-
-const EVENT_ACTIVITY_CITIZEN_SELECT = {
-  id: true,
-  handle: true,
-  deletedAt: true,
-} as const satisfies Prisma.CitizenSelect;
 
 /** A citizen as the activity table links it */
 export interface EventActivityCitizen {
@@ -116,7 +111,7 @@ export const findEventActivityRows = async (
       type: true,
       createdAt: true,
       payload: true,
-      citizen: { select: EVENT_ACTIVITY_CITIZEN_SELECT },
+      citizen: { select: CITIZEN_REFERENCE_SELECT },
     },
   });
 
@@ -127,7 +122,7 @@ export const findEventActivityRows = async (
     affectedCitizenIds.length > 0
       ? await context.prisma.citizen.findMany({
           where: { id: { in: affectedCitizenIds } },
-          select: EVENT_ACTIVITY_CITIZEN_SELECT,
+          select: CITIZEN_REFERENCE_SELECT,
         })
       : [];
   const affectedCitizenById = new Map(
@@ -173,7 +168,7 @@ export const findEventActivityActors = async (
     },
     distinct: ["citizenId"],
     select: {
-      citizen: { select: EVENT_ACTIVITY_CITIZEN_SELECT },
+      citizen: { select: CITIZEN_REFERENCE_SELECT },
     },
   });
 

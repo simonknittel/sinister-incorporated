@@ -1,9 +1,10 @@
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { collectWikiRoleCitizensRoleIds } from "@sam-monorepo/wiki-editor";
 import type { Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 import { findVisibleRoleBadges, type RoleBadge } from "../roles/roleBadges.js";
-import { WIKI_CITIZEN_SELECT, type WikiCitizen } from "./wikiCitizen.js";
+import { type WikiCitizen } from "./wikiCitizen.js";
 
 /** Citizens without a handle go last: the citizen link shows their id */
 const compareWikiRoleCitizens = (first: WikiCitizen, second: WikiCitizen) => {
@@ -46,7 +47,7 @@ const resolveWikiRoleCitizens = async (
         },
       },
     },
-    select: WIKI_CITIZEN_SELECT,
+    select: CITIZEN_REFERENCE_SELECT,
   });
 
   return citizens.toSorted(compareWikiRoleCitizens);

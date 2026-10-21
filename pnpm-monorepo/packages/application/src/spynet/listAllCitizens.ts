@@ -1,5 +1,6 @@
 import { ACTIVE_CITIZEN_WHERE } from "@sam-monorepo/domain";
 import { requirePermission, type Actor } from "../actor.js";
+import { CITIZEN_REFERENCE_SELECT } from "../citizenReference.js";
 import type { ApplicationContext } from "../context.js";
 
 /** A citizen as the pickers of the app offer it */
@@ -23,6 +24,6 @@ export const listAllCitizens = async (
 
   return context.prisma.citizen.findMany({
     where: ACTIVE_CITIZEN_WHERE,
-    select: { id: true, handle: true, deletedAt: true },
+    select: CITIZEN_REFERENCE_SELECT,
   });
 };

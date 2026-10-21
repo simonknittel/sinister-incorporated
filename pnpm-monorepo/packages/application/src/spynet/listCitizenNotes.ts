@@ -10,6 +10,7 @@ import {
 import * as z from "zod";
 import { requirePermission, type Actor } from "../actor.js";
 import {
+  CITIZEN_REFERENCE_SELECT,
   toCitizenReference,
   type CitizenReference,
 } from "../citizenReference.js";
@@ -182,7 +183,7 @@ export const listCitizenNotes = async (
         classificationLevel: { select: { id: true, name: true } },
         submittedBy: {
           select: {
-            citizen: { select: { id: true, handle: true, deletedAt: true } },
+            citizen: { select: CITIZEN_REFERENCE_SELECT },
           },
         },
       },

@@ -1,5 +1,6 @@
 import { getCitizenDisplayName } from "@sam-monorepo/domain";
 import { findCitizenIdsWithPermissions } from "../../auth/effectivePermissionsOfCitizens.js";
+import { CITIZEN_REFERENCE_SELECT } from "../../citizenReference.js";
 import type { ApplicationContext } from "../../context.js";
 import type { Recipient } from "./recipient.js";
 
@@ -39,11 +40,7 @@ export const findWikiPageReportedRecipients = async (
         },
       },
       createdBy: {
-        select: {
-          id: true,
-          handle: true,
-          deletedAt: true,
-        },
+        select: CITIZEN_REFERENCE_SELECT,
       },
     },
   });
