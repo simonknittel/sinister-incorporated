@@ -1,11 +1,10 @@
-import { getRequestActor } from "@/modules/application";
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
 import { VariantDetailFrame } from "@/modules/fleet/components/VariantDetailFrame";
 import { getVariantDetail } from "@/modules/fleet/queries/variantDetail";
 import { VariantWikiPageContent } from "@/modules/wiki/components/VariantWikiPageContent";
 import { getVariantWikiContext } from "@/modules/wiki/queries/getVariantWikiContext";
-import { canViewVariantPages } from "@sam-monorepo/application";
+
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -24,15 +23,10 @@ export default async function Page({
   params,
   searchParams,
 }: PageProps<"/app/fleet/variant/[variantId]">) {
-  const authentication = await requireAuthenticationPage(
-    "/app/fleet/variant/[variantId]",
-  );
-
-  if (!canViewVariantPages(await getRequestActor())) {
-    await authentication.authorizePage("ship", "manage");
-  }
+  await requireAuthenticationPage("/app/fleet/variant/[variantId]");
 
   const variantId = (await params).variantId;
+  /** Without access to the variant pages, the read answers with a 403 */
   const variant = await getVariantDetail(variantId);
   if (!variant) notFound();
 

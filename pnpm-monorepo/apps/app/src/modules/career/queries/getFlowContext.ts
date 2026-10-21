@@ -6,8 +6,6 @@ import { withTrace } from "@/modules/tracing/utils/withTrace";
 import { loadFlowContext, type FlowContext } from "@sam-monorepo/application";
 import { cache } from "react";
 
-export type { FlowContext, FlowContextFlow } from "@sam-monorepo/application";
-
 /**
  * Loads all career flows and resolves the effective permissions of the
  * current viewer one time for each request (see `loadFlowContext()`).

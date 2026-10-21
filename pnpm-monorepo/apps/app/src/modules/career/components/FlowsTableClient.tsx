@@ -22,10 +22,10 @@ import {
   arrayMove,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import type { ManageableFlowRow } from "@sam-monorepo/application";
 import { startTransition, useOptimistic, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { reorderFlows } from "../actions/reorderFlows";
-import type { ManageableFlow } from "../queries/getManageableFlows";
 import { CreateFlowModal, type DuplicationSource } from "./CreateFlowModal";
 import { FlowRow } from "./FlowRow";
 
@@ -56,7 +56,7 @@ const COLUMNS: TableColumn[] = [
 ];
 
 interface Props {
-  readonly flows: readonly ManageableFlow[];
+  readonly flows: readonly ManageableFlowRow[];
   readonly canReorder: boolean;
   readonly emptyMessage: string;
 }

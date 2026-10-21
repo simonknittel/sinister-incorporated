@@ -8,17 +8,17 @@ import { formatDate } from "@/modules/common/utils/formatDate";
 import { SORTABLE_HANDLE_ATTRIBUTES } from "@/modules/common/utils/useSortableList";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import type { ManageableFlowRow } from "@sam-monorepo/application";
 import { getCitizenDisplayName } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { FaGripVertical, FaRegCopy } from "react-icons/fa";
-import type { ManageableFlow } from "../queries/getManageableFlows";
 import { RestoreFlowButton } from "./RestoreFlowButton";
 
 interface Props {
-  readonly flow: ManageableFlow;
+  readonly flow: ManageableFlowRow;
   /** Renders the drag handle and makes the row sortable */
   readonly isSortable: boolean;
-  readonly onDuplicate: (flow: ManageableFlow) => void;
+  readonly onDuplicate: (flow: ManageableFlowRow) => void;
 }
 
 export const FlowRow = ({ flow, isSortable, onDuplicate }: Props) => {

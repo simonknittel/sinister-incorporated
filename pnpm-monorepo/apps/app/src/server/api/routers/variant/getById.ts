@@ -1,10 +1,5 @@
 import { getApplicationContext, toActor } from "@/modules/application";
-import {
-  findManagedVariant,
-  ForbiddenError,
-  idSchema,
-} from "@sam-monorepo/application";
-import { TRPCError } from "@trpc/server";
+import { findManagedVariant, idSchema } from "@sam-monorepo/application";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
@@ -19,9 +14,6 @@ export const getById = protectedProcedure
         { variantId: input.id },
       );
     } catch (error) {
-      if (error instanceof ForbiddenError)
-        throw new TRPCError({ code: "FORBIDDEN", message: error.message });
-
       throw toTrpcError(error, "Failed to load the variant");
     }
   });

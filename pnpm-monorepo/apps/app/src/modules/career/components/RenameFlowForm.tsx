@@ -4,7 +4,10 @@ import { useAction } from "@/modules/actions/utils/useAction";
 import { TextInput } from "@/modules/common/components/form/TextInput";
 import Note from "@/modules/common/components/Note";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
-import { FLOW_NAME_MAX_LENGTH, SLUG_MAX_LENGTH } from "@sam-monorepo/domain";
+import {
+  FLOW_NAME_MAXIMUM_LENGTH,
+  SLUG_MAX_LENGTH,
+} from "@sam-monorepo/domain";
 import { useState } from "react";
 import { FaSave } from "react-icons/fa";
 import { renameFlow } from "../actions/renameFlow";
@@ -41,7 +44,7 @@ export const RenameFlowForm = ({ flowId, name, slug }: Props) => {
         label="Name"
         value={currentName}
         onChange={(event) => setCurrentName(event.target.value)}
-        maxLength={FLOW_NAME_MAX_LENGTH}
+        maxLength={FLOW_NAME_MAXIMUM_LENGTH}
         required
       />
 

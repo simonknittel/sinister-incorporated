@@ -10,6 +10,7 @@ import { authorize, getServerAuthSession } from "@/modules/auth/server";
 import { requireConfirmedEmailForTrpc } from "@/modules/auth/utils/emailConfirmation";
 import { isAdminBehindSession } from "@/modules/auth/utils/isAdminBehindSession";
 import { log } from "@/modules/logging";
+import { ForbiddenError } from "@sam-monorepo/application";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 
@@ -116,12 +117,17 @@ export const adminProcedure = trpc.procedure.use(async ({ ctx, next }) => {
 
 /**
  * Shared catch-block tail for procedures: deliberate TRPCErrors pass
- * through untouched, anything else is logged and replaced with an opaque
- * INTERNAL_SERVER_ERROR carrying the given message. Usage:
+ * through untouched, the `ForbiddenError` of a use case becomes FORBIDDEN
+ * with its message, anything else is logged and replaced with an opaque
+ * INTERNAL_SERVER_ERROR carrying the given message. A procedure with a
+ * different answer for a typed error checks it before. Usage:
  * `throw toTrpcError(error, "...")`.
  */
 export const toTrpcError = (error: unknown, message: string): TRPCError => {
   if (error instanceof TRPCError) return error;
+
+  if (error instanceof ForbiddenError)
+    return new TRPCError({ code: "FORBIDDEN", message: error.message });
 
   log.error(message, {
     error,

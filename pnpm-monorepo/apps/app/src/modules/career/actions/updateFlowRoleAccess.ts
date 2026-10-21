@@ -5,7 +5,6 @@ import {
   updateFlowRoleAccessInputSchema,
   updateFlowRoleAccess as updateFlowRoleAccessUseCase,
 } from "@sam-monorepo/application";
-import { CAREER_ERROR_TEXTS } from "../utils/careerErrorTexts";
 
 export const updateFlowRoleAccess = createUseCaseAction({
   name: "updateFlowRoleAccess",
@@ -16,6 +15,5 @@ export const updateFlowRoleAccess = createUseCaseAction({
     read_role_ids: formData.getAll("readRoleId[]"),
     update_role_ids: formData.getAll("updateRoleId[]"),
   }),
-  texts: CAREER_ERROR_TEXTS,
   success: (t) => t("Common.successfullySaved"),
 });

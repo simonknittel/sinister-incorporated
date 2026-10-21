@@ -1,6 +1,9 @@
 "use server";
 
-import { createUseCaseAction } from "@/modules/application";
+import {
+  createUseCaseAction,
+  notificationsFailedWarning,
+} from "@/modules/application";
 import {
   endCollectionPhaseInputSchema,
   endCollectionPhase as endCollectionPhaseUseCase,
@@ -14,6 +17,5 @@ export const endCollectionPhase = createUseCaseAction({
   parseFormData: (formData) => ({ cycle_id: formData.get("id") }),
   texts: getProfitDistributionErrorTexts,
   success: (t) => t("Common.successfullySaved"),
-  warning: (t, result) =>
-    result.notifications_sent ? undefined : t("Common.notificationsFailed"),
+  warning: notificationsFailedWarning,
 });

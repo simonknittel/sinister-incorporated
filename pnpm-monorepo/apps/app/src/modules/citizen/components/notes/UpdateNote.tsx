@@ -1,6 +1,6 @@
 import { getAllClassificationLevels } from "@/modules/spynet/queries/getAllClassificationLevels";
 import { getAllNoteTypes } from "@/modules/spynet/queries/getAllNoteTypes";
-import { getCreatableClassificationLevelsDeduped } from "@/modules/spynet/utils/getAllClassificationLevels";
+import { getCreatableClassificationLevels } from "@/modules/spynet/queries/getCreatableClassificationLevels";
 import type { CitizenNoteRow } from "@sam-monorepo/application";
 import { UpdateNoteModal } from "./UpdateNoteModal";
 
@@ -53,7 +53,7 @@ export const UpdateNote = async ({ note, withBullet = false }: Props) => {
         noteType,
         classificationLevels: getOptions(
           allClassificationLevels,
-          await getCreatableClassificationLevelsDeduped(noteType.id),
+          await getCreatableClassificationLevels(noteType.id),
           noteType.id === noteTypeId ? classificationLevelId : null,
         ),
       })),

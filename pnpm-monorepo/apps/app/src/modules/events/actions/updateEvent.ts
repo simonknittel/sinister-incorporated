@@ -4,6 +4,7 @@ import { createAuthenticatedAction } from "@/modules/actions/utils/createAction"
 import {
   getApplicationContext,
   mapApplicationErrorToActionResponse,
+  notificationsFailedWarning,
   toActor,
 } from "@/modules/application";
 import {
@@ -53,8 +54,8 @@ export const updateEvent = createAuthenticatedAction(
         (result.discord?.staysVisibleOnDiscord
           ? "Das Event bleibt auf Discord für alle Mitglieder des Servers sichtbar. Entferne es dort, wenn das nicht gewollt ist."
           : null),
-      result.notifications_sent ? null : t("Common.notificationsFailed"),
-    ].filter((warning) => warning !== null);
+      notificationsFailedWarning(t, result),
+    ].filter((warning) => typeof warning === "string");
 
     /**
      * Respond with the result

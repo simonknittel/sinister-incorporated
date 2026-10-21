@@ -10,6 +10,5 @@ export const updateRequiredRoles = createTaskUpdateAction(
       required_role_ids: formData.getAll("requiredRole[]"),
       hidden_for_other_roles: formData.has("hiddenForOtherRoles"),
     }),
-    successMessage: "Erfolgreich gespeichert.",
   },
 );

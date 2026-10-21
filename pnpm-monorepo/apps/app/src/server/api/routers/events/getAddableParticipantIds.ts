@@ -2,7 +2,6 @@ import { getApplicationContext, toActor } from "@/modules/application";
 import {
   ConflictError,
   findAddableEventParticipantIds,
-  ForbiddenError,
   idSchema,
   NotFoundError,
 } from "@sam-monorepo/application";
@@ -26,9 +25,6 @@ export const getAddableParticipantIds = protectedProcedure
         { eventId: input.eventId },
       );
     } catch (error) {
-      if (error instanceof ForbiddenError)
-        throw new TRPCError({ code: "FORBIDDEN", message: error.message });
-
       // An event that ended counts as gone for the picker
       if (error instanceof NotFoundError || error instanceof ConflictError)
         throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });

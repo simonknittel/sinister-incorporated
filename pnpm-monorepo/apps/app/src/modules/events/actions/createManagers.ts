@@ -20,5 +20,5 @@ export const createManagers = createUseCaseAction({
       ),
   }),
   texts: EVENT_ERROR_TEXTS,
-  success: () => "Erfolgreich gespeichert.",
+  success: (t) => t("Common.successfullySaved"),
 });

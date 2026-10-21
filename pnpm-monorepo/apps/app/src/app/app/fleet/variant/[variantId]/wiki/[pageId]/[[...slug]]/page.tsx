@@ -1,4 +1,3 @@
-import { getRequestActor } from "@/modules/application";
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
 import { VariantDetailFrame } from "@/modules/fleet/components/VariantDetailFrame";
@@ -6,7 +5,6 @@ import { getVariantDetail } from "@/modules/fleet/queries/variantDetail";
 import { VariantWikiPageContent } from "@/modules/wiki/components/VariantWikiPageContent";
 import { getVariantWikiContext } from "@/modules/wiki/queries/getVariantWikiContext";
 import {
-  canViewVariantPages,
   getAccessibleWikiPage,
   WikiPageAccessTier,
 } from "@sam-monorepo/application";
@@ -43,16 +41,12 @@ export const generateMetadata = async (
 export default async function Page(
   props: PageProps<"/app/fleet/variant/[variantId]/wiki/[pageId]/[[...slug]]">,
 ) {
-  const authentication = await requireAuthenticationPage(
+  await requireAuthenticationPage(
     "/app/fleet/variant/[variantId]/wiki/[pageId]/[[...slug]]",
   );
 
-  /** The same 403 behavior as the variant page this route extends */
-  if (!canViewVariantPages(await getRequestActor())) {
-    await authentication.authorizePage("ship", "manage");
-  }
-
   const { variantId, slug } = await props.params;
+  /** Without access to the variant pages, the read answers with a 403 */
   const variant = await getVariantDetail(variantId);
   if (!variant) notFound();
 

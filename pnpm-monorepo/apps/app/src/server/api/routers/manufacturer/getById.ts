@@ -1,10 +1,5 @@
 import { getApplicationContext, toActor } from "@/modules/application";
-import {
-  findManagedManufacturer,
-  ForbiddenError,
-  idSchema,
-} from "@sam-monorepo/application";
-import { TRPCError } from "@trpc/server";
+import { findManagedManufacturer, idSchema } from "@sam-monorepo/application";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
@@ -26,9 +21,6 @@ export const getManufacturerById = protectedProcedure
         }
       );
     } catch (error) {
-      if (error instanceof ForbiddenError)
-        throw new TRPCError({ code: "FORBIDDEN", message: error.message });
-
       throw toTrpcError(error, "Failed to load the manufacturer");
     }
   });

@@ -1,8 +1,6 @@
 import type { EVENT_PAGE_RELATIONS_SELECT } from "@sam-monorepo/application";
 import type { Prisma } from "@sam-monorepo/database/client";
 
-/** The wiki module imports it from here until it moves to the use cases */
-
 /*
  * The prop types every event surface states, derived from the relation
  * shapes that the event detail query and the event list query share (see

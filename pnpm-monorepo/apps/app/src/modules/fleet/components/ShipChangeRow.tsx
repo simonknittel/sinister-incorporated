@@ -38,13 +38,9 @@ export const ShipChangeRow = ({ change }: Props) => {
       </td>
 
       <td>
-        {change.actorId && (
+        {change.actor && (
           <CitizenLink
-            citizen={{
-              id: change.actorId,
-              handle: change.actorHandle,
-              deletedAt: change.actorDeletedAt,
-            }}
+            citizen={change.actor}
             className="block rounded-secondary p-2 hover:bg-white/10 hover:no-underline! focus-visible:bg-white/10"
           />
         )}

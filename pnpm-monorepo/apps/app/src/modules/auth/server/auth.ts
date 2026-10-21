@@ -1,7 +1,6 @@
 import { env } from "@/env";
 import { getApplicationContext } from "@/modules/application/getApplicationContext";
 import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
-import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { DEVELOPMENT_SESSION_TOKEN_COOKIE } from "@/modules/auth/utils/sessionTokenCookie";
 import { getDiscordAvatar } from "@/modules/discord/utils/getDiscordAvatar";
 import { getGuildMember } from "@/modules/discord/utils/getGuildMember";
@@ -182,7 +181,7 @@ const welcomeCitizen = async (
         });
       }
 
-      await createAuditEvents([
+      await getApplicationContext().audit.create([
         {
           type: AuditEventType.CITIZEN_WELCOMED,
           data: { citizenId },
@@ -265,7 +264,7 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
-          await createAuditEvents([
+          await getApplicationContext().audit.create([
             {
               type: AuditEventType.USER_FIRST_VISIT_OF_THE_DAY_V2,
               data: {
@@ -353,7 +352,7 @@ export const authOptions: NextAuthOptions = {
             userId: user.id,
           });
 
-          await createAuditEvents([
+          await getApplicationContext().audit.create([
             {
               type: AuditEventType.USER_LOGIN_BLOCKED,
               data: {
@@ -510,7 +509,7 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      await createAuditEvents([
+      await getApplicationContext().audit.create([
         {
           type: AuditEventType.USER_LOGIN_V2,
           data: {
@@ -534,7 +533,7 @@ export const authOptions: NextAuthOptions = {
         userId: string;
       };
 
-      await createAuditEvents([
+      await getApplicationContext().audit.create([
         {
           type: AuditEventType.USER_LOGOUT,
           data: {

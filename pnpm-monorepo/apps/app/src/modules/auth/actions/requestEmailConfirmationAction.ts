@@ -4,7 +4,11 @@ import {
   ActionGate,
   createAuthenticatedAction,
 } from "@/modules/actions/utils/createAction";
-import { getApplicationContext, toActor } from "@/modules/application";
+import {
+  getApplicationContext,
+  notificationsFailedWarning,
+  toActor,
+} from "@/modules/application";
 import { requestEmailConfirmation } from "@sam-monorepo/application";
 import { redirect } from "next/navigation";
 import * as z from "zod";
@@ -17,16 +21,14 @@ export const requestEmailConfirmationAction = createAuthenticatedAction(
   async (formData, authentication, data, t) => {
     if (authentication.session.user.emailVerified) redirect("/clearance");
 
-    const { notifications_sent } = await requestEmailConfirmation(
+    const output = await requestEmailConfirmation(
       getApplicationContext(),
       await toActor(authentication.session),
     );
 
     return {
       success: "Bestätigungs-E-Mail angefordert.",
-      ...(notifications_sent
-        ? {}
-        : { warning: t("Common.notificationsFailed") }),
+      warning: notificationsFailedWarning(t, output),
     };
   },
   {

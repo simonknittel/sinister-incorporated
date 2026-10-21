@@ -1,10 +1,11 @@
 import type { EventContainer } from "@/modules/events/utils/eventContainer";
 import {
+  createBriefingWikiHrefBase,
+  createVariantWikiHrefBase,
   getBriefingPath,
   getEventContainerOfRow,
-  getVariantWikiBasePath,
-  getVariantWikiRootPath,
   GLOBAL_WIKI_BASE_PATH,
+  GLOBAL_WIKI_HREF_BASE,
   WikiScopeKind,
 } from "@sam-monorepo/domain";
 
@@ -17,14 +18,14 @@ import {
 export interface WikiPageHrefMode {
   readonly scope: WikiScopeKind;
   /**
-   * The owning event or template in the Event scope, so client components
+   * The owning event or template in the Briefing scope, so client components
    * can scope their queries (tags, search, page targets) without a parallel
    * prop; null for the other scopes
    */
   readonly container: EventContainer | null;
   /**
    * The embedding variant in the Variant scope, the query-scoping key like
-   * `eventId` above; null for the other scopes
+   * `container` above; null for the other scopes
    */
   readonly variantId: string | null;
   /** Route prefix all page URLs live under */
@@ -48,9 +49,7 @@ export const GLOBAL_WIKI_HREF_MODE: WikiPageHrefMode = {
   scope: WikiScopeKind.Wiki,
   container: null,
   variantId: null,
-  basePath: GLOBAL_WIKI_BASE_PATH,
-  rootPageId: null,
-  rootHref: null,
+  ...GLOBAL_WIKI_HREF_BASE,
 };
 
 export const createEventWikiHrefMode = (
@@ -60,9 +59,7 @@ export const createEventWikiHrefMode = (
   scope: WikiScopeKind.Briefing,
   container,
   variantId: null,
-  basePath: getBriefingPath(container),
-  rootPageId,
-  rootHref: null,
+  ...createBriefingWikiHrefBase(container, rootPageId),
 });
 
 export const createVariantWikiHrefMode = (
@@ -72,9 +69,7 @@ export const createVariantWikiHrefMode = (
   scope: WikiScopeKind.Variant,
   container: null,
   variantId,
-  basePath: getVariantWikiBasePath(variantId),
-  rootPageId,
-  rootHref: getVariantWikiRootPath(variantId),
+  ...createVariantWikiHrefBase(variantId, rootPageId),
 });
 
 /** Takes a `WikiPageHrefMode`; the MCP server shares the rule */

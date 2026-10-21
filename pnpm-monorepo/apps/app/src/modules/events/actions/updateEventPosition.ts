@@ -26,5 +26,5 @@ export const updateEventPosition = createUseCaseAction({
     text_color: formData.has("textColor") ? formData.get("textColor") : null,
   }),
   texts: EVENT_ERROR_TEXTS,
-  success: () => "Erfolgreich gespeichert.",
+  success: (t) => t("Common.successfullySaved"),
 });

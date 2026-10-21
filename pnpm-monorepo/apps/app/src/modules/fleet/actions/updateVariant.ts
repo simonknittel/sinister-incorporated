@@ -5,6 +5,7 @@ import {
   updateVariantInputSchema,
   updateVariant as updateVariantUseCase,
 } from "@sam-monorepo/application";
+import { parseVariantFieldsFormData } from "../utils/parseVariantFieldsFormData";
 
 export const updateVariant = createUseCaseAction({
   name: "updateVariant",
@@ -14,21 +15,7 @@ export const updateVariant = createUseCaseAction({
     variant_id: formData.get("id"),
     name: formData.get("name"),
     status: formData.get("status"),
-    wiki_page_id: formData.has("wikiPageId")
-      ? formData.get("wikiPageId")
-      : undefined,
-    tag_keys: formData.has("tagKeys[]")
-      ? formData.getAll("tagKeys[]")
-      : undefined,
-    tag_values: formData.has("tagValues[]")
-      ? formData.getAll("tagValues[]")
-      : undefined,
-    link_service_names: formData.has("linkServiceNames[]")
-      ? formData.getAll("linkServiceNames[]")
-      : undefined,
-    link_urls: formData.has("linkUrls[]")
-      ? formData.getAll("linkUrls[]")
-      : undefined,
+    ...parseVariantFieldsFormData(formData),
   }),
   success: (t) => t("Common.successfullySaved"),
 });

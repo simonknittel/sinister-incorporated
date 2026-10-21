@@ -4,6 +4,7 @@ import { createAuthenticatedAction } from "@/modules/actions/utils/createAction"
 import {
   getApplicationContext,
   mapApplicationErrorToActionResponse,
+  notificationsFailedWarning,
   toActor,
 } from "@/modules/application";
 import {
@@ -45,8 +46,8 @@ export const deleteEvent = createAuthenticatedAction(
       result.discord?.outcome === DiscordSyncOutcome.Failed
         ? "Das Event konnte nicht von Discord entfernt werden und muss dort von Hand gelöscht werden."
         : null,
-      result.notifications_sent ? null : t("Common.notificationsFailed"),
-    ].filter((warning) => warning !== null);
+      notificationsFailedWarning(t, result),
+    ].filter((warning) => typeof warning === "string");
 
     return {
       success: "Das Event wurde gelöscht.",

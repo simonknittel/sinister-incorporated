@@ -1,6 +1,9 @@
 "use server";
 
-import { createUseCaseAction } from "@/modules/application";
+import {
+  createUseCaseAction,
+  notificationsFailedWarning,
+} from "@/modules/application";
 import {
   deleteTaskInputSchema,
   deleteTask as deleteTaskUseCase,
@@ -14,6 +17,5 @@ export const deleteTask = createUseCaseAction({
   parseFormData: (formData) => ({ task_id: formData.get("id") }),
   texts: TASK_ERROR_TEXTS,
   success: (t) => t("Common.successfullyDeleted"),
-  warning: (t, result) =>
-    result.notifications_sent ? undefined : t("Common.notificationsFailed"),
+  warning: notificationsFailedWarning,
 });

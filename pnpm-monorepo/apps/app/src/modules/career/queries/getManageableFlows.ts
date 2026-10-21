@@ -8,11 +8,8 @@ import {
   findManageableFlow,
   findManageableFlows,
   type FlowStatus,
-  type ManageableFlowRow,
 } from "@sam-monorepo/application";
 import { cache } from "react";
-
-export type ManageableFlow = ManageableFlowRow;
 
 /** The flows of the management list (`career;manage`) */
 export const getManageableFlows = cache(

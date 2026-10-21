@@ -1,6 +1,9 @@
 "use server";
 
-import { createUseCaseAction } from "@/modules/application";
+import {
+  createUseCaseAction,
+  notificationsFailedWarning,
+} from "@/modules/application";
 import {
   completeTaskInputSchema,
   completeTask as completeTaskUseCase,
@@ -17,6 +20,5 @@ export const completeTask = createUseCaseAction({
   }),
   texts: TASK_ERROR_TEXTS,
   success: () => "Erfolgreich abgeschlossen.",
-  warning: (t, result) =>
-    result.notifications_sent ? undefined : t("Common.notificationsFailed"),
+  warning: notificationsFailedWarning,
 });

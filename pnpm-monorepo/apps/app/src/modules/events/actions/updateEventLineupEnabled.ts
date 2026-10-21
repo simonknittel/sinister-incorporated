@@ -1,6 +1,9 @@
 "use server";
 
-import { createUseCaseAction } from "@/modules/application";
+import {
+  createUseCaseAction,
+  notificationsFailedWarning,
+} from "@/modules/application";
 import { updateEvent, updateEventInputSchema } from "@sam-monorepo/application";
 import { EVENT_ERROR_TEXTS } from "../utils/eventErrorTexts";
 
@@ -15,6 +18,5 @@ export const updateEventLineupEnabled = createUseCaseAction({
   }),
   texts: EVENT_ERROR_TEXTS,
   success: (t) => t("Common.successfullySaved"),
-  warning: (t, result) =>
-    result.notifications_sent ? undefined : t("Common.notificationsFailed"),
+  warning: notificationsFailedWarning,
 });

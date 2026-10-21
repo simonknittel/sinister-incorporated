@@ -3,11 +3,9 @@ import { getUnleashFlag } from "@/modules/common/utils/getUnleashFlag";
 import { UNLEASH_FLAG } from "@/modules/common/utils/UNLEASH_FLAG";
 import {
   findSharedLogAnalyzerEntries,
-  ForbiddenError,
   idSchema,
 } from "@sam-monorepo/application";
 import { MAXIMUM_LOG_ANALYZER_DAYS_TO_LOAD } from "@sam-monorepo/domain";
-import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
@@ -37,9 +35,6 @@ export const getSharedEntries = protectedProcedure
         },
       );
     } catch (error) {
-      if (error instanceof ForbiddenError)
-        throw new TRPCError({ code: "FORBIDDEN", message: error.message });
-
       throw toTrpcError(error, "Failed to fetch shared log analyzer entries");
     }
   });

@@ -15,6 +15,5 @@ export const updateTaskAssignments = createTaskUpdateAction(
         assignee_ids: formData.getAll("assignedToId[]"),
       };
     },
-    successMessage: "Erfolgreich gespeichert.",
   },
 );

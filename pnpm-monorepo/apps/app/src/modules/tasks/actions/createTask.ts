@@ -1,6 +1,9 @@
 "use server";
 
-import { createUseCaseAction } from "@/modules/application";
+import {
+  createUseCaseAction,
+  notificationsFailedWarning,
+} from "@/modules/application";
 import {
   createTaskInputSchema,
   createTask as createTaskUseCase,
@@ -51,7 +54,6 @@ export const createTask = createUseCaseAction({
   useCase: createTaskUseCase,
   parseFormData: parseCreateTaskForm,
   texts: TASK_ERROR_TEXTS,
-  success: () => "Erfolgreich gespeichert.",
-  warning: (t, result) =>
-    result.notifications_sent ? undefined : t("Common.notificationsFailed"),
+  success: (t) => t("Common.successfullySaved"),
+  warning: notificationsFailedWarning,
 });

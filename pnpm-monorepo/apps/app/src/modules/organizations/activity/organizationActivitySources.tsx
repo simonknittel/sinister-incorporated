@@ -26,11 +26,7 @@ interface Input {
   readonly citizenId?: Citizen["id"];
   /** Whether the entry's subject gets its own column. */
   readonly withTarget?: boolean;
-  /**
-   * Whether this context runs the confirmation workflow. Only there do
-   * entries awaiting confirmation show up at all — and only for those who
-   * may confirm them.
-   */
+  /** See `OrganizationMembershipActivityInput.withConfirmation` */
   readonly withConfirmation?: boolean;
   readonly filters?: ActivityFilters;
 }
@@ -81,10 +77,7 @@ export const createOrganizationCreatedSource = (
     },
   );
 
-/**
- * Renames never go through the confirmation workflow — nothing writes an
- * unconfirmed one — so they carry no confirmation status either.
- */
+/** Without a confirmation status, see `findOrganizationRenamedRows()` */
 export const createOrganizationRenamedSource = (
   input: Input = {},
 ): ActivitySource =>

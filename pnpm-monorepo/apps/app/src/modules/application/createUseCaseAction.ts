@@ -5,7 +5,8 @@ import {
 } from "@/modules/actions/utils/createAction";
 import type { Actor, ApplicationContext } from "@sam-monorepo/application";
 import { refresh } from "next/cache";
-import type * as z from "zod";
+import { redirect } from "next/navigation";
+import * as z from "zod";
 import { getApplicationContext } from "./getApplicationContext";
 import {
   mapApplicationErrorToActionResponse,
@@ -19,10 +20,13 @@ export enum ActionRefresh {
   Never = "never",
 }
 
-export interface UseCaseActionDefinition<Schema extends z.ZodTypeAny, Output> {
+const EMPTY_INPUT_SCHEMA = z.object({});
+
+interface UseCaseActionOptions<Schema extends z.ZodTypeAny, Output> {
   /** The name of the action in the traces and in the logs */
   readonly name: string;
-  readonly schema: Schema;
+  /** `z.object({})` by default, for a use case that takes no input */
+  readonly schema?: Schema;
   readonly useCase: (
     context: ApplicationContext,
     actor: Actor,
@@ -37,26 +41,50 @@ export interface UseCaseActionDefinition<Schema extends z.ZodTypeAny, Output> {
     ApplicationErrorTexts | ((t: Translations) => ApplicationErrorTexts);
   /** `ActionRefresh.Always` by default */
   readonly refresh?: ActionRefresh;
-  readonly success: (t: Translations, output: Output) => string;
-  /**
-   * For example `t("Common.notificationsFailed")` when `notifications_sent`
-   * is false
-   */
-  readonly warning?: (t: Translations, output: Output) => string | undefined;
 }
+
+/** The answer after a successful use case: a text, or a different page */
+type UseCaseActionResult<Output> =
+  | {
+      readonly success: (t: Translations, output: Output) => string;
+      /** For example `notificationsFailedWarning()` */
+      readonly warning?: (
+        t: Translations,
+        output: Output,
+      ) => string | undefined;
+      readonly redirect?: never;
+    }
+  | {
+      /** The path of the page that the action opens */
+      readonly redirect: (output: Output) => string;
+      readonly success?: never;
+      readonly warning?: never;
+    };
+
+type UseCaseActionDefinition<
+  Schema extends z.ZodTypeAny,
+  Output,
+> = UseCaseActionOptions<Schema, Output> & UseCaseActionResult<Output>;
 
 /**
  * A server action that runs one use case for the user of the session: the
- * standard shape of the thin action wrappers. An action that does more (a
- * redirect, a cookie, an app-only option, a refresh on a condition) calls
+ * standard shape of the thin action wrappers. After the use case, the action
+ * refreshes the page (see `refresh`) and answers with the texts of `success`
+ * and `warning`, or opens the page of `redirect`. The redirect is outside of
+ * the error mapping, because `redirect()` throws. An action that does more
+ * (a cookie, an app-only option, a refresh on a condition) calls
  * `createAuthenticatedAction()` itself.
  */
-export const createUseCaseAction = <Schema extends z.ZodTypeAny, Output>(
+export const createUseCaseAction = <
+  Schema extends z.ZodTypeAny = typeof EMPTY_INPUT_SCHEMA,
+  Output = unknown,
+>(
   definition: UseCaseActionDefinition<Schema, Output>,
 ) =>
   createAuthenticatedAction(
     definition.name,
-    definition.schema,
+    /** Without a schema, `Schema` is its default, the type of the fallback */
+    (definition.schema ?? EMPTY_INPUT_SCHEMA) as Schema,
     async (formData, authentication, data, t) => {
       let output: Output;
       try {
@@ -77,6 +105,8 @@ export const createUseCaseAction = <Schema extends z.ZodTypeAny, Output>(
       }
 
       if (definition.refresh !== ActionRefresh.Never) refresh();
+
+      if (definition.redirect) redirect(definition.redirect(output));
 
       const warning = definition.warning?.(t, output);
 

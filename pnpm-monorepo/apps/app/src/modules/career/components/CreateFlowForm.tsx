@@ -5,7 +5,7 @@ import { useAction } from "@/modules/actions/utils/useAction";
 import { TextInput } from "@/modules/common/components/form/TextInput";
 import { SubmitButton } from "@/modules/common/components/SubmitButton";
 import {
-  FLOW_NAME_MAX_LENGTH,
+  FLOW_NAME_MAXIMUM_LENGTH,
   SLUG_MAX_LENGTH,
   slugify,
 } from "@sam-monorepo/domain";
@@ -78,7 +78,7 @@ export const CreateFlowForm = ({ className, onSuccess, source }: Props) => {
         label="Name"
         value={name}
         onChange={(event) => handleNameChange(event.target.value)}
-        maxLength={FLOW_NAME_MAX_LENGTH}
+        maxLength={FLOW_NAME_MAXIMUM_LENGTH}
         required
         autoFocus
       />

@@ -2,10 +2,8 @@ import { getApplicationContext, toActor } from "@/modules/application";
 import { eventContainerSchema } from "@/modules/events/utils/eventContainerSchema";
 import {
   findWikiScopeTags,
-  ForbiddenError,
   toWikiScopeTarget,
 } from "@sam-monorepo/application";
-import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 
@@ -23,9 +21,6 @@ export const getTags = protectedProcedure
         toWikiScopeTarget(input ?? {}),
       );
     } catch (error) {
-      if (error instanceof ForbiddenError)
-        throw new TRPCError({ code: "FORBIDDEN", message: error.message });
-
       throw toTrpcError(error, "Failed to load wiki tags");
     }
   });

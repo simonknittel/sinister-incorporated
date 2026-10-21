@@ -1,6 +1,6 @@
 import { requireAuthentication } from "@/modules/auth/server";
 import TabPanel from "@/modules/common/components/tabs/TabPanel";
-import { getCreatableClassificationLevelsDeduped } from "@/modules/spynet/utils/getAllClassificationLevels";
+import { getCreatableClassificationLevels } from "@/modules/spynet/queries/getCreatableClassificationLevels";
 import type { CitizenNoteTabEntry } from "@sam-monorepo/application";
 import { type Citizen, type NoteType } from "@sam-monorepo/database/client";
 import { AddNote } from "./AddNote";
@@ -16,7 +16,7 @@ interface Props {
 export const NoteTypePanel = async ({ noteType, notes, entityId }: Props) => {
   const [authentication, classificationLevels] = await Promise.all([
     requireAuthentication(),
-    getCreatableClassificationLevelsDeduped(noteType.id),
+    getCreatableClassificationLevels(noteType.id),
   ]);
 
   const showAddNote = await authentication.authorize("note", "create", [
