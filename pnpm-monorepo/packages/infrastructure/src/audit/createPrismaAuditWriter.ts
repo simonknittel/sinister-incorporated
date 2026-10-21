@@ -4,6 +4,11 @@ import type { PrismaClientType } from "@sam-monorepo/database";
 export interface PrismaAuditWriterOptions {
   readonly prisma: Pick<PrismaClientType, "auditEvent">;
   readonly log: Logger;
+  /**
+   * Marks each event as an action through the MCP server. The context of the
+   * MCP endpoint sets it, thus the use cases do not know about it.
+   */
+  readonly triggeredViaMcp?: boolean;
 }
 
 /**
@@ -15,6 +20,7 @@ export interface PrismaAuditWriterOptions {
 export const createPrismaAuditWriter = ({
   prisma,
   log,
+  triggeredViaMcp = false,
 }: PrismaAuditWriterOptions): ApplicationContext["audit"] => ({
   create: async (events) => {
     if (events.length === 0) return;
@@ -25,6 +31,7 @@ export const createPrismaAuditWriter = ({
           type: event.type,
           data: event.data,
           createdById: event.createdById ?? null,
+          triggeredViaMcp,
         })),
       });
     } catch (error) {

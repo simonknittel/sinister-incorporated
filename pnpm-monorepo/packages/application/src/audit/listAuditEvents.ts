@@ -58,6 +58,12 @@ export const listAuditEventsInputSchema = z.object({
     .describe(
       `Only the events before this time. ${DATE_TIME_INPUT_DESCRIPTION}`,
     ),
+  triggered_via_mcp: z
+    .boolean()
+    .optional()
+    .describe(
+      "true: only the events of the actions through the MCP server. false: only the other events. Without this filter: all events.",
+    ),
   include_high_volume: z
     .boolean()
     .default(false)
@@ -83,6 +89,8 @@ export interface AuditEventOutput {
   readonly created_at: string;
   /** Null for an event without a user (for example an automation run) */
   readonly created_by: AuditEventCreatorOutput | null;
+  /** True for an event of an action through the MCP server */
+  readonly triggered_via_mcp: boolean;
   /**
    * The payload as the app stored it. Older rows store it JSON-encoded as a
    * string.
@@ -101,6 +109,7 @@ const AUDIT_EVENT_SELECT = {
   type: true,
   createdAt: true,
   data: true,
+  triggeredViaMcp: true,
   createdBy: {
     select: {
       id: true,
@@ -135,6 +144,8 @@ const buildWhere = (
   ...(input.created_by_citizen_ids && input.created_by_citizen_ids.length > 0
     ? { createdBy: { citizen: { id: { in: input.created_by_citizen_ids } } } }
     : {}),
+  // Prisma ignores `undefined`, thus without the filter all events match
+  triggeredViaMcp: input.triggered_via_mcp,
   ...(input.from || input.to
     ? {
         createdAt: {
@@ -156,6 +167,7 @@ const toAuditEventOutput = (
     name: event.createdBy.name,
     citizen: toCitizenReference(event.createdBy.citizen),
   },
+  triggered_via_mcp: event.triggeredViaMcp,
   data: event.data,
 });
 

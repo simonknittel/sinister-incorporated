@@ -1,11 +1,14 @@
-import { AuditEventType } from "@sam-monorepo/domain";
+import { AuditEventType, type AuditEventInput } from "@sam-monorepo/domain";
 import { describe, expect, test, vi } from "vitest";
 import {
   createPrismaAuditWriter,
   type PrismaAuditWriterOptions,
 } from "./createPrismaAuditWriter.js";
 
-const createWriter = (createMany: () => Promise<unknown>) => {
+const createWriter = (
+  createMany: () => Promise<unknown>,
+  options: Pick<PrismaAuditWriterOptions, "triggeredViaMcp"> = {},
+) => {
   const log = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
   const prisma = {
     auditEvent: { createMany: vi.fn(createMany) },
@@ -13,6 +16,7 @@ const createWriter = (createMany: () => Promise<unknown>) => {
   const writer = createPrismaAuditWriter({
     prisma: prisma as unknown as PrismaAuditWriterOptions["prisma"],
     log,
+    ...options,
   });
 
   return { writer, prisma, log };
@@ -40,13 +44,32 @@ describe("createPrismaAuditWriter", () => {
           type: AuditEventType.BIRTHDAY_GREETINGS_SENT,
           data: { citizenCount: 2 },
           createdById: null,
+          triggeredViaMcp: false,
         },
         {
           type: AuditEventType.NEW_YEAR_GREETINGS_SENT,
           data: { citizenCount: 3 },
           createdById: "user",
+          triggeredViaMcp: false,
         },
       ],
+    });
+  });
+
+  test("marks the events of the MCP context", async () => {
+    const { writer, prisma } = createWriter(async () => ({ count: 1 }), {
+      triggeredViaMcp: true,
+    });
+    const event: AuditEventInput = {
+      type: AuditEventType.NEW_YEAR_GREETINGS_SENT,
+      data: { citizenCount: 3 },
+      createdById: "user",
+    };
+
+    await writer.create([event]);
+
+    expect(prisma.auditEvent.createMany).toHaveBeenCalledExactlyOnceWith({
+      data: [{ ...event, triggeredViaMcp: true }],
     });
   });
 

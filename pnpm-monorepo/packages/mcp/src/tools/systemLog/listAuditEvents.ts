@@ -30,6 +30,11 @@ const auditEventOutputSchema = z.strictObject({
     .describe(
       "The user who did the action. Null for an event without a user, for example an automation run.",
     ),
+  triggered_via_mcp: z
+    .boolean()
+    .describe(
+      "True when the user did the action through the MCP server. False for the actions in the web app and for the automation runs.",
+    ),
   // `z.json()` would need a cast: the use case gives the JSON column as
   // `unknown`. The column holds only JSON, thus `z.unknown()` is sufficient.
   data: z
@@ -44,7 +49,7 @@ export const listAuditEventsTool = defineTool({
   group: ToolGroup.SystemLog,
   title: "List the audit events",
   description:
-    "Gives the system log of SAM, the newest first: the audited user actions and automation runs with their type, their time, the user who did it and the payload. Filter by the types, by the users (created_by_user_ids) or their citizens (created_by_citizen_ids) and by a time range. The list hides the high-volume types, unless a type filter is set or include_high_volume is true.",
+    "Gives the system log of SAM, the newest first: the audited user actions and automation runs with their type, their time, the user who did it and the payload. Filter by the types, by the users (created_by_user_ids) or their citizens (created_by_citizen_ids), by a time range and by the actions through the MCP server (triggered_via_mcp). The list hides the high-volume types, unless a type filter is set or include_high_volume is true.",
   annotations: READ_ONLY_TOOL_ANNOTATIONS,
   inputSchema: listAuditEventsInputSchema,
   outputSchema: z.strictObject({
