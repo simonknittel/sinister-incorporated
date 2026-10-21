@@ -1,7 +1,6 @@
-import { collectWikiPageAncestors } from "@sam-monorepo/domain";
+import { collectWikiPageAncestors, WikiScopeKind } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
 import type { WikiPageScope } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * The linked page of the fleet variant when the page lies in the embed of

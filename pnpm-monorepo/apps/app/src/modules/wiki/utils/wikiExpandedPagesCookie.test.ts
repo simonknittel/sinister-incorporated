@@ -1,3 +1,4 @@
+import { WikiScopeKind } from "@sam-monorepo/domain";
 import { describe, expect, test } from "vitest";
 import {
   EVENT_WIKI_EXPANDED_PAGES_COOKIE,
@@ -11,13 +12,15 @@ import {
   WIKI_EXPANDED_PAGES_COOKIE,
   type WikiExpansionState,
 } from "./wikiExpandedPagesCookie";
-import { WikiScope } from "./wikiPageHref";
 
 /** Page ids are 24 character cuid2s, of which only the last 8 are stored */
 const pageId = (key: string) => `prefix0000000000${key}`;
 
 const cookieValue = (state: WikiExpansionState) => {
-  const serialized = serializeWikiExpandedPagesCookie(state, WikiScope.Wiki);
+  const serialized = serializeWikiExpandedPagesCookie(
+    state,
+    WikiScopeKind.Wiki,
+  );
 
   return serialized.slice(
     `${WIKI_EXPANDED_PAGES_COOKIE}=`.length,
@@ -75,7 +78,7 @@ describe("serializeWikiExpandedPagesCookie", () => {
 
   test("expires the cookie when everything is collapsed", () => {
     expect(
-      serializeWikiExpandedPagesCookie(WIKI_ALL_COLLAPSED, WikiScope.Wiki),
+      serializeWikiExpandedPagesCookie(WIKI_ALL_COLLAPSED, WikiScopeKind.Wiki),
     ).toContain("max-age=0");
   });
 
@@ -93,14 +96,16 @@ describe("serializeWikiExpandedPagesCookie", () => {
   test("uses one cookie name and path per scope", () => {
     const state = expandWikiPages(WIKI_ALL_COLLAPSED, [pageId("a1b2c3d4")]);
 
-    expect(serializeWikiExpandedPagesCookie(state, WikiScope.Wiki)).toContain(
-      `${WIKI_EXPANDED_PAGES_COOKIE}=a1b2c3d4; path=/app/wiki;`,
-    );
-    expect(serializeWikiExpandedPagesCookie(state, WikiScope.Event)).toContain(
+    expect(
+      serializeWikiExpandedPagesCookie(state, WikiScopeKind.Wiki),
+    ).toContain(`${WIKI_EXPANDED_PAGES_COOKIE}=a1b2c3d4; path=/app/wiki;`);
+    expect(
+      serializeWikiExpandedPagesCookie(state, WikiScopeKind.Briefing),
+    ).toContain(
       `${EVENT_WIKI_EXPANDED_PAGES_COOKIE}=a1b2c3d4; path=/app/events;`,
     );
     expect(
-      serializeWikiExpandedPagesCookie(state, WikiScope.Variant),
+      serializeWikiExpandedPagesCookie(state, WikiScopeKind.Variant),
     ).toContain(
       `${VARIANT_WIKI_EXPANDED_PAGES_COOKIE}=a1b2c3d4; path=/app/fleet/variant;`,
     );

@@ -2,6 +2,7 @@ import { Prisma } from "@sam-monorepo/database/client";
 import {
   AuditEventType,
   collectWikiPageDescendants,
+  WikiScopeKind,
   type AuditEventInput,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
@@ -19,7 +20,6 @@ import {
   WikiPagePlacement,
 } from "./wikiPagePlacement.js";
 import type { WikiPageScope } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * The reparent rules of a move and of a drop in the sidebar tree: a page

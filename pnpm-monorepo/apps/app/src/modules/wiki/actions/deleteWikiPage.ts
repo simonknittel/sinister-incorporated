@@ -6,21 +6,21 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
-import { getBriefingPath } from "@/modules/events/utils/eventContainer";
 import {
   deleteWikiPageInputSchema,
   deleteWikiPage as deleteWikiPageUseCase,
   idSchema,
   type DeleteWikiPageOutput,
 } from "@sam-monorepo/application";
-import { getEventContainerOfRow } from "@sam-monorepo/domain";
+import {
+  getBriefingPath,
+  getEventContainerOfRow,
+  getVariantWikiRootPath,
+} from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { WIKI_ERROR_TEXTS } from "../utils/wikiErrorTexts";
-import {
-  GLOBAL_WIKI_HREF_MODE,
-  getVariantWikiRootPath,
-} from "../utils/wikiPageHref";
+import { GLOBAL_WIKI_HREF_MODE } from "../utils/wikiPageHref";
 
 /**
  * The use case takes the page. The variant is only for the redirect back to

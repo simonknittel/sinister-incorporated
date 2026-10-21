@@ -1,8 +1,12 @@
+import type { EventContainer } from "@/modules/events/utils/eventContainer";
 import {
   getBriefingPath,
-  type EventContainer,
-} from "@/modules/events/utils/eventContainer";
-import { getEventContainerOfRow } from "@sam-monorepo/domain";
+  getEventContainerOfRow,
+  getVariantWikiBasePath,
+  getVariantWikiRootPath,
+  GLOBAL_WIKI_BASE_PATH,
+  WikiScopeKind,
+} from "@sam-monorepo/domain";
 
 /**
  * The wiki UI serves three homes: the global wiki app, the briefing wikis of
@@ -10,14 +14,8 @@ import { getEventContainerOfRow } from "@sam-monorepo/domain";
  * variant pages. Shared components derive page URLs and the active page from
  * this mode instead of hardcoding the global paths.
  */
-export enum WikiScope {
-  Wiki = "wiki",
-  Event = "event",
-  Variant = "variant",
-}
-
 export interface WikiPageHrefMode {
-  readonly scope: WikiScope;
+  readonly scope: WikiScopeKind;
   /**
    * The owning event or template in the Event scope, so client components
    * can scope their queries (tags, search, page targets) without a parallel
@@ -47,10 +45,10 @@ export interface WikiPageHrefMode {
 }
 
 export const GLOBAL_WIKI_HREF_MODE: WikiPageHrefMode = {
-  scope: WikiScope.Wiki,
+  scope: WikiScopeKind.Wiki,
   container: null,
   variantId: null,
-  basePath: "/app/wiki",
+  basePath: GLOBAL_WIKI_BASE_PATH,
   rootPageId: null,
   rootHref: null,
 };
@@ -59,7 +57,7 @@ export const createEventWikiHrefMode = (
   container: EventContainer,
   rootPageId: string | null,
 ): WikiPageHrefMode => ({
-  scope: WikiScope.Event,
+  scope: WikiScopeKind.Briefing,
   container,
   variantId: null,
   basePath: getBriefingPath(container),
@@ -67,17 +65,11 @@ export const createEventWikiHrefMode = (
   rootHref: null,
 });
 
-export const getVariantWikiRootPath = (variantId: string) =>
-  `/app/fleet/variant/${variantId}`;
-
-export const getVariantWikiBasePath = (variantId: string) =>
-  `${getVariantWikiRootPath(variantId)}/wiki`;
-
 export const createVariantWikiHrefMode = (
   variantId: string,
   rootPageId: string,
 ): WikiPageHrefMode => ({
-  scope: WikiScope.Variant,
+  scope: WikiScopeKind.Variant,
   container: null,
   variantId,
   basePath: getVariantWikiBasePath(variantId),
@@ -112,11 +104,11 @@ export const getActiveWikiPageId = (
  */
 export const buildWikiTagHref = (mode: WikiPageHrefMode, tagId: string) => {
   switch (mode.scope) {
-    case WikiScope.Wiki:
-    case WikiScope.Variant:
-      return `/app/wiki/tags/${tagId}`;
+    case WikiScopeKind.Wiki:
+    case WikiScopeKind.Variant:
+      return `${GLOBAL_WIKI_BASE_PATH}/tags/${tagId}`;
 
-    case WikiScope.Event:
+    case WikiScopeKind.Briefing:
       return `${mode.basePath}/tags/${tagId}`;
 
     default:
@@ -153,5 +145,5 @@ export const getWikiPageRouteHref = (page: {
 
   return container
     ? `${getBriefingPath(container)}/${page.id}/${page.slug}`
-    : `/app/wiki/${page.id}/${page.slug}`;
+    : `${GLOBAL_WIKI_BASE_PATH}/${page.id}/${page.slug}`;
 };

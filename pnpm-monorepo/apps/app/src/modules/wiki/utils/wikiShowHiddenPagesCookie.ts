@@ -1,4 +1,4 @@
-import { WikiScope } from "./wikiPageHref";
+import { WikiScopeKind } from "@sam-monorepo/domain";
 
 /**
  * Persists the sidebar's "show sidebar-hidden pages" toggle. Read on the
@@ -27,21 +27,21 @@ const VARIANT_WIKI_SHOW_HIDDEN_PAGES_COOKIE_PATH = "/app/fleet/variant";
 
 const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365;
 
-const getWikiShowHiddenPagesCookieNameAndPath = (scope: WikiScope) => {
+const getWikiShowHiddenPagesCookieNameAndPath = (scope: WikiScopeKind) => {
   switch (scope) {
-    case WikiScope.Wiki:
+    case WikiScopeKind.Wiki:
       return [
         WIKI_SHOW_HIDDEN_PAGES_COOKIE,
         WIKI_SHOW_HIDDEN_PAGES_COOKIE_PATH,
       ] as const;
 
-    case WikiScope.Event:
+    case WikiScopeKind.Briefing:
       return [
         EVENT_WIKI_SHOW_HIDDEN_PAGES_COOKIE,
         EVENT_WIKI_SHOW_HIDDEN_PAGES_COOKIE_PATH,
       ] as const;
 
-    case WikiScope.Variant:
+    case WikiScopeKind.Variant:
       return [
         VARIANT_WIKI_SHOW_HIDDEN_PAGES_COOKIE,
         VARIANT_WIKI_SHOW_HIDDEN_PAGES_COOKIE_PATH,
@@ -52,12 +52,12 @@ const getWikiShowHiddenPagesCookieNameAndPath = (scope: WikiScope) => {
   }
 };
 
-export const getWikiShowHiddenPagesCookieName = (scope: WikiScope) =>
+export const getWikiShowHiddenPagesCookieName = (scope: WikiScopeKind) =>
   getWikiShowHiddenPagesCookieNameAndPath(scope)[0];
 
 export const serializeWikiShowHiddenPagesCookie = (
   showHidden: boolean,
-  scope: WikiScope,
+  scope: WikiScopeKind,
 ) => {
   const [name, path] = getWikiShowHiddenPagesCookieNameAndPath(scope);
 

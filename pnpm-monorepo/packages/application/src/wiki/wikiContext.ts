@@ -5,6 +5,7 @@ import {
 } from "@sam-monorepo/database/client";
 import {
   resolveWikiPagePermissions,
+  WikiScopeKind,
   type ResolvedWikiPagePermissions,
   type WikiPageTierPermissions,
   type WikiPageViewer,
@@ -14,7 +15,6 @@ import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { withSpan } from "../withSpan.js";
 import { GLOBAL_WIKI_HREF_BASE } from "./wikiPagePath.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * Page fields both context flavors load — everything the shared

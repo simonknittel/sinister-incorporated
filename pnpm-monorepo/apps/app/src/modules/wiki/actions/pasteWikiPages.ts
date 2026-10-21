@@ -7,14 +7,13 @@ import {
   mapApplicationErrorToActionResponse,
   toActor,
 } from "@/modules/application";
-import { getBriefingPath } from "@/modules/events/utils/eventContainer";
 import {
   idSchema,
   pasteWikiPagesInputSchema,
   pasteWikiPages as pasteWikiPagesUseCase,
   type PasteWikiPagesOutput,
 } from "@sam-monorepo/application";
-import { getEventContainerOfRow } from "@sam-monorepo/domain";
+import { getBriefingPath, getEventContainerOfRow } from "@sam-monorepo/domain";
 import { refresh } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";

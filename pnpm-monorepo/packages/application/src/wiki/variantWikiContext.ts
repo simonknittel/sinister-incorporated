@@ -1,6 +1,7 @@
 import type { Variant } from "@sam-monorepo/database/client";
 import {
   collectWikiPageDescendants,
+  WikiScopeKind,
   type ResolvedWikiPagePermissions,
   type WikiPageViewer,
 } from "@sam-monorepo/domain";
@@ -19,7 +20,6 @@ import {
   type WikiContextPage,
 } from "./wikiContext.js";
 import { createVariantWikiHrefBase } from "./wikiPagePath.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * The subtree of the global wiki that a fleet variant embeds: one of the

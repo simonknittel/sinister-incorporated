@@ -1,12 +1,12 @@
 import {
   wikiContainerColumns,
+  WikiScopeKind,
   type EventContainer,
 } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ForbiddenError } from "../errors.js";
 import { findReadableWikiScope, type WikiScopeTarget } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 export interface WikiScopeTag {
   readonly id: string;

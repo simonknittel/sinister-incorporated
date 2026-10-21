@@ -1,6 +1,7 @@
 /**
  * The kinds of the wiki scopes. A scope is the set of pages that a request
- * works on, with the permissions of the actor (see `wikiScope.ts`).
+ * works on, with the permissions of the actor. The hrefs of the wiki use the
+ * kind too.
  */
 export enum WikiScopeKind {
   /** The global wiki with the role-based permissions */

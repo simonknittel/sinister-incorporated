@@ -5,6 +5,7 @@ import {
 import {
   AuditEventType,
   EventWikiScopeTier,
+  WikiScopeKind,
   getEffectiveEventWikiScope,
   isEventWikiRootPage,
   isEventWikiScopeSubset,
@@ -25,7 +26,6 @@ import { withSpan } from "../withSpan.js";
 import { WikiPageAccessTier } from "./getAccessibleWikiPage.js";
 import { WikiErrorMessage } from "./wikiErrors.js";
 import { isWikiScopeFrozen, requireWikiPageOfScope } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 export const updateEventWikiPagePermissionsInputSchema = z.object({
   page_id: idSchema,

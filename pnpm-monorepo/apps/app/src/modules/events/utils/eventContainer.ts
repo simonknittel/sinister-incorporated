@@ -9,22 +9,6 @@ export {
   type EventContainer,
 } from "@sam-monorepo/domain";
 
-/** Where the container's briefing is rendered */
-export const getBriefingPath = (container: EventContainer) => {
-  switch (container.kind) {
-    case EventContainerKind.Event:
-      return `/app/events/${container.id}/briefing`;
-
-    case EventContainerKind.Template:
-      return `/app/events/templates/${container.id}/briefing`;
-
-    default:
-      throw new Error(
-        `Unknown event container kind: ${container.kind satisfies never}`,
-      );
-  }
-};
-
 /** Where the container's lineup is rendered */
 export const getLineupPath = (container: EventContainer) => {
   switch (container.kind) {

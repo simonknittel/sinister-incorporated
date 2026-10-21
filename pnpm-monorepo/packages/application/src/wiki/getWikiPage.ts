@@ -1,4 +1,4 @@
-import { EventContainerKind } from "@sam-monorepo/domain";
+import { EventContainerKind, WikiScopeKind } from "@sam-monorepo/domain";
 import { collectWikiPageLinkIds } from "@sam-monorepo/wiki-editor";
 import {
   buildWikiPageHref,
@@ -29,7 +29,6 @@ import {
   loadWikiScopeOfPage,
   type WikiPageScope,
 } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 export const getWikiPageInputSchema = z.object({
   page_id: idSchema,

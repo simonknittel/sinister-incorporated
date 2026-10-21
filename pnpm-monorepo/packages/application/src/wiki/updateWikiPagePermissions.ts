@@ -8,6 +8,7 @@ import {
   collectWikiPageDescendants,
   createWikiPagePermissionResolver,
   resolveWikiPageReadRoleIds,
+  WikiScopeKind,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
 import type { Actor } from "../actor.js";
@@ -32,7 +33,6 @@ import {
   toWikiPageViewerOfCitizen,
 } from "./wikiPermissionRoles.js";
 import { requireWikiPageOfScope } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /** Where the owner of a page comes from */
 export enum WikiPageOwnerMode {

@@ -4,7 +4,10 @@ import {
   WikiPageUploadability,
   type Prisma,
 } from "@sam-monorepo/database/client";
-import { collectWikiPageDescendants } from "@sam-monorepo/domain";
+import {
+  collectWikiPageDescendants,
+  WikiScopeKind,
+} from "@sam-monorepo/domain";
 import type { EventWikiContextPage } from "./eventWikiContext.js";
 import type { WikiContextPage } from "./wikiContext.js";
 import {
@@ -12,7 +15,6 @@ import {
   INHERITED_WIKI_PAGE_PERMISSIONS,
 } from "./wikiPageDefaults.js";
 import type { WikiPageScope } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 type MoveResetClient = Pick<
   PrismaClientType,

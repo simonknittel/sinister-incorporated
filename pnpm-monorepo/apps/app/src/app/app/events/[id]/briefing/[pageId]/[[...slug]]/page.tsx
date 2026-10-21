@@ -1,15 +1,13 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { SuspenseWithErrorBoundaryTile } from "@/modules/common/components/SuspenseWithErrorBoundaryTile";
-import {
-  getBriefingPath,
-  toEventContainer,
-} from "@/modules/events/utils/eventContainer";
+import { toEventContainer } from "@/modules/events/utils/eventContainer";
 import { EventWikiPageContent } from "@/modules/wiki/components/EventWikiPageContent";
 import { getEventWikiContext } from "@/modules/wiki/queries/getEventWikiContext";
 import {
   getAccessibleWikiPage,
   WikiPageAccessTier,
 } from "@sam-monorepo/application";
+import { getBriefingPath } from "@sam-monorepo/domain";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 

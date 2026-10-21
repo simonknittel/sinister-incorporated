@@ -1,6 +1,6 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { getVariantWikiContext } from "@/modules/wiki/queries/getVariantWikiContext";
-import { getVariantWikiRootPath } from "@/modules/wiki/utils/wikiPageHref";
+import { getVariantWikiRootPath } from "@sam-monorepo/domain";
 import { notFound, redirect } from "next/navigation";
 
 /**

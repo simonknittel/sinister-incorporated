@@ -8,8 +8,8 @@ import {
   idSchema,
   toWikiScopeTarget,
   wikiScopeInputSchema,
-  WikiScopeKind,
 } from "@sam-monorepo/application";
+import { WikiScopeKind } from "@sam-monorepo/domain";
 import * as z from "zod";
 import { protectedProcedure, toTrpcError } from "../../trpc";
 

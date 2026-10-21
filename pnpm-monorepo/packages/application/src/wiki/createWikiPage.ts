@@ -4,6 +4,7 @@ import {
   slugifyWikiPageTitle,
   WIKI_PAGE_CONTENT_JSON_MAXIMUM_LENGTH,
   WIKI_PAGE_TITLE_MAXIMUM_LENGTH,
+  WikiScopeKind,
 } from "@sam-monorepo/domain";
 import { parseMarkdownToWikiContent } from "@sam-monorepo/wiki-editor/markdown";
 import * as z from "zod";
@@ -25,7 +26,6 @@ import {
 import { requireWikiPagePlacement } from "./wikiPagePlacement.js";
 import { requireCollab } from "./wikiPageSafetySnapshot.js";
 import type { WikiPageScope } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * About 3,000 words. The parser (marked) needs time that grows with the

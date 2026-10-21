@@ -3,12 +3,12 @@ import {
   EventContainerKind,
   WIKI_SEARCH_MARK_END,
   WIKI_SEARCH_MARK_START,
+  WikiScopeKind,
   type EventContainer,
 } from "@sam-monorepo/domain";
 import type { ApplicationContext } from "../context.js";
 import type { WikiSharedContextPage } from "./wikiContext.js";
 import type { WikiScope } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 interface WikiSearchScopeFilters {
   /** The part of the WHERE clause that limits the WikiTag rows to the scope */

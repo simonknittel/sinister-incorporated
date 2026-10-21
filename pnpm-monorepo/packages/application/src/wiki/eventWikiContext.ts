@@ -7,6 +7,7 @@ import {
   collectPositionScopeIdsForCitizen,
   resolveEventWikiPagePermissions,
   toEventContainer,
+  WikiScopeKind,
   type EventContainer,
   type EventWikiViewer,
   type ResolvedEventWikiPagePermissions,
@@ -22,7 +23,6 @@ import { canActorSeeEvent } from "../events/eventVisibility.js";
 import { withSpan } from "../withSpan.js";
 import type { WikiSharedContextPage } from "./wikiContext.js";
 import { createBriefingWikiHrefBase } from "./wikiPagePath.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * The shared page shape (so the tree, breadcrumb and sidebar utilities work

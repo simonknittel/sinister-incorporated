@@ -1,4 +1,4 @@
-import { isEventWikiRootPage } from "@sam-monorepo/domain";
+import { isEventWikiRootPage, WikiScopeKind } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
 import type { ApplicationContext } from "../context.js";
 import { ConflictError, ValidationError } from "../errors.js";
@@ -10,7 +10,6 @@ import {
   requireWikiPageOfScope,
   type WikiPageScope,
 } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 interface AdministrableWikiPageOptions {
   /** Restore and destroy work on a page in the trash, not on a live page */

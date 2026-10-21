@@ -1,9 +1,9 @@
 import { SubNavigation } from "@/modules/common/components/SubNavigation";
 import {
-  getBriefingPath,
   getLineupPath,
   toTemplateContainer,
 } from "@/modules/events/utils/eventContainer";
+import { getBriefingPath } from "@sam-monorepo/domain";
 import clsx from "clsx";
 import { FaBook, FaHome, FaShareAlt } from "react-icons/fa";
 import { MdWorkspaces } from "react-icons/md";

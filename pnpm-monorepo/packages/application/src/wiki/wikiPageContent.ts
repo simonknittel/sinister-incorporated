@@ -1,3 +1,4 @@
+import { WikiScopeKind } from "@sam-monorepo/domain";
 import {
   collectWikiImageUploadIds,
   collectWikiPageIndexConfigs,
@@ -32,7 +33,6 @@ import {
   type WikiScope,
   type WikiScopeTarget,
 } from "./wikiScope.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /** The size of an uploaded image, for the box that the render keeps free */
 export interface WikiImageDimensions {

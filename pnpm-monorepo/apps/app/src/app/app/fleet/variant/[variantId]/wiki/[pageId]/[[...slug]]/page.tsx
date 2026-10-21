@@ -6,14 +6,14 @@ import { getVariantDetail } from "@/modules/fleet/queries/variantDetail";
 import { VariantWikiPageContent } from "@/modules/wiki/components/VariantWikiPageContent";
 import { getVariantWikiContext } from "@/modules/wiki/queries/getVariantWikiContext";
 import {
-  getVariantWikiBasePath,
-  getVariantWikiRootPath,
-} from "@/modules/wiki/utils/wikiPageHref";
-import {
   canViewVariantPages,
   getAccessibleWikiPage,
   WikiPageAccessTier,
 } from "@sam-monorepo/application";
+import {
+  getVariantWikiBasePath,
+  getVariantWikiRootPath,
+} from "@sam-monorepo/domain";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 

@@ -330,6 +330,13 @@ export {
   type VisibleWikiSubtreeEntry,
 } from "./wiki/wikiPageTree.js";
 export {
+  GLOBAL_WIKI_BASE_PATH,
+  getBriefingPath,
+  getVariantWikiBasePath,
+  getVariantWikiRootPath,
+} from "./wiki/wikiRoutes.js";
+export { WikiScopeKind } from "./wiki/wikiScopeKind.js";
+export {
   WIKI_SEARCH_MARK_END,
   WIKI_SEARCH_MARK_START,
 } from "./wiki/wikiSearch.js";

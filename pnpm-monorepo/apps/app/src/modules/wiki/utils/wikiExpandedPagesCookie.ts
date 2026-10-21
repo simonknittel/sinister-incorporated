@@ -1,4 +1,4 @@
-import { WikiScope } from "./wikiPageHref";
+import { WikiScopeKind } from "@sam-monorepo/domain";
 
 /**
  * Persists which sidebar tree pages are expanded. Read on the server so SSR
@@ -82,21 +82,21 @@ export const parseWikiExpandedPagesCookie = (
   return keys.size > 0 ? keys : WIKI_ALL_COLLAPSED;
 };
 
-const getWikiExpandedPagesCookieNameAndPath = (scope: WikiScope) => {
+const getWikiExpandedPagesCookieNameAndPath = (scope: WikiScopeKind) => {
   switch (scope) {
-    case WikiScope.Wiki:
+    case WikiScopeKind.Wiki:
       return [
         WIKI_EXPANDED_PAGES_COOKIE,
         WIKI_EXPANDED_PAGES_COOKIE_PATH,
       ] as const;
 
-    case WikiScope.Event:
+    case WikiScopeKind.Briefing:
       return [
         EVENT_WIKI_EXPANDED_PAGES_COOKIE,
         EVENT_WIKI_EXPANDED_PAGES_COOKIE_PATH,
       ] as const;
 
-    case WikiScope.Variant:
+    case WikiScopeKind.Variant:
       return [
         VARIANT_WIKI_EXPANDED_PAGES_COOKIE,
         VARIANT_WIKI_EXPANDED_PAGES_COOKIE_PATH,
@@ -107,12 +107,12 @@ const getWikiExpandedPagesCookieNameAndPath = (scope: WikiScope) => {
   }
 };
 
-export const getWikiExpandedPagesCookieName = (scope: WikiScope) =>
+export const getWikiExpandedPagesCookieName = (scope: WikiScopeKind) =>
   getWikiExpandedPagesCookieNameAndPath(scope)[0];
 
 export const serializeWikiExpandedPagesCookie = (
   state: WikiExpansionState,
-  scope: WikiScope,
+  scope: WikiScopeKind,
 ) => {
   // Insertion order makes this drop the least recently expanded pages
   const value = [...state].slice(-MAX_PAGE_KEYS).join(",");

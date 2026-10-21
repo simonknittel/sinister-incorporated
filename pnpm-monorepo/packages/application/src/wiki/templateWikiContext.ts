@@ -3,6 +3,7 @@ import {
   eventContainerColumns,
   resolveEventWikiPagePermissions,
   toTemplateContainer,
+  WikiScopeKind,
   type EventWikiViewer,
 } from "@sam-monorepo/domain";
 import type { Actor } from "../actor.js";
@@ -16,7 +17,6 @@ import {
   type EventWikiContext,
 } from "./eventWikiContext.js";
 import { createBriefingWikiHrefBase } from "./wikiPagePath.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * The briefing of an event template. The template is a blueprint: the event

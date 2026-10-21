@@ -277,7 +277,6 @@ export {
   type WikiPageScope,
   type WikiScope,
 } from "./wikiScope.js";
-export { WikiScopeKind } from "./wikiScopeKind.js";
 export { findWikiScopeTags, type WikiScopeTag } from "./wikiScopeTags.js";
 export {
   findWikiSearchResults,

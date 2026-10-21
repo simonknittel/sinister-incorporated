@@ -10,6 +10,7 @@ import {
   collectWikiPageDescendants,
   getCitizenDisplayName,
   resolveWikiPageReadRoleIds,
+  WikiScopeKind,
   type ResolvedWikiPagePermissions,
 } from "@sam-monorepo/domain";
 import type { ReactNode } from "react";
@@ -31,7 +32,6 @@ import {
   buildWikiPageSnapshotsHref,
   getWikiPageRouteHref,
   GLOBAL_WIKI_HREF_MODE,
-  WikiScope,
   type WikiPageHrefMode,
 } from "../utils/wikiPageHref";
 import { getWikiRoleReadAudienceLabel } from "../utils/wikiReadAudienceLabel";
@@ -85,7 +85,7 @@ export const WikiPageContent = async ({
   staticContent,
   headerExtra,
 }: Props) => {
-  const isVariantScope = hrefMode.scope === WikiScope.Variant;
+  const isVariantScope = hrefMode.scope === WikiScopeKind.Variant;
   const isLockedRoot = page.id === hrefMode.rootPageId;
 
   const [

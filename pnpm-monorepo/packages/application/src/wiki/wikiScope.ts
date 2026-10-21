@@ -2,6 +2,7 @@ import { WikiPageNamespace } from "@sam-monorepo/database/client";
 import {
   EventContainerKind,
   getEventContainerOfRow,
+  WikiScopeKind,
   type EventContainer,
 } from "@sam-monorepo/domain";
 import * as z from "zod";
@@ -31,7 +32,6 @@ import {
   type WikiSharedContextPage,
 } from "./wikiContext.js";
 import { WikiErrorMessage } from "./wikiErrors.js";
-import { WikiScopeKind } from "./wikiScopeKind.js";
 
 /**
  * The pages that a request works on, with the permissions of the actor and
