@@ -84,7 +84,8 @@ audit:
 # here on request: we upgraded before this version was 7 days old. Remove
 # these entries after 2026-10-13.
 minimumReleaseAgeExclude:
-  - next@16.4.0
+  # Renovate security update: next@16.4.1
+  - next@16.4.0 || 16.4.1
   - "@next/env@16.4.0"
   - "@next/eslint-plugin-next@16.4.0"
   - eslint-config-next@16.4.0
