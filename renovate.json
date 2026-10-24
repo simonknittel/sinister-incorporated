@@ -27,13 +27,6 @@
       "pinDigests": false
     },
     {
-      "description": "The @react-email/ui>next override in pnpm-workspace.yaml must stay on the minor version that @react-email/ui pins (see the comment there): a Next.js server of a different minor version cannot read the prebuilt .next directory of the package.",
-      "matchDepNames": [
-        "@react-email/ui>next"
-      ],
-      "allowedVersions": "~16.3.0"
-    },
-    {
       "groupName": "Patch Tuesday",
       "groupSlug": "patch-tuesday",
       "matchUpdateTypes": [
