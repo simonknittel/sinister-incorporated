@@ -1,0 +1,52 @@
+import { readdir, readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { expect, test } from "vitest";
+
+/**
+ * Only the composition root of the Lambda functions uses the Prisma client.
+ * All other files call the use cases of `@sam-monorepo/application`. This is
+ * the rule `use-cases-only` of the ESLint configuration of the Next.js app.
+ * The Lambda functions have no ESLint configuration, thus this test checks the
+ * rule: a file other than the composition root must not mention the client
+ * `prisma`, the class `PrismaClient` or the package `@prisma/client`. A type
+ * import of a model from `@sam-monorepo/database` is permitted.
+ */
+const COMPOSITION_ROOT = join("common", "createApplicationContext.ts");
+
+const PRISMA_CLIENT = /\b(?:prisma|PrismaClient)\b|@prisma\/client/;
+
+const listFileNames = async () =>
+  (await readdir(import.meta.dirname, { recursive: true })).sort();
+
+test("only the composition root uses the Prisma client", async () => {
+  const sourceFileNames = (await listFileNames()).filter(
+    (fileName) =>
+      fileName.endsWith(".ts") &&
+      // This file names the Prisma client in order to forbid it
+      join(import.meta.dirname, fileName) !== import.meta.filename,
+  );
+
+  const fileNamesWithPrismaClient = (
+    await Promise.all(
+      sourceFileNames.map(async (fileName) => {
+        const source = await readFile(join(import.meta.dirname, fileName), {
+          encoding: "utf8",
+        });
+
+        return PRISMA_CLIENT.test(source) ? fileName : null;
+      }),
+    )
+  ).filter((fileName) => fileName !== null);
+
+  // Makes sure that the pattern still finds the Prisma client of the root
+  expect(fileNamesWithPrismaClient).toEqual([COMPOSITION_ROOT]);
+});
+
+test("the Lambda functions have no integration tests", async () => {
+  // The integration tests of the automations are in `packages/application`
+  expect(
+    (await listFileNames()).filter((fileName) =>
+      fileName.endsWith(".integration.test.ts"),
+    ),
+  ).toEqual([]);
+});

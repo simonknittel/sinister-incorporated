@@ -16,6 +16,16 @@ const FORBIDDEN_IMPORT =
 const IMPORT_SPECIFIER =
   /(?:\bfrom\s*|\bimport\s*\(?\s*|\brequire\s*\(\s*)["']([^"']+)["']/g;
 
+/**
+ * The packages of the monorepo that the `package.json` of this package may
+ * list. They are the dependency directions of `docs/architecture.md`.
+ */
+const ALLOWED_PACKAGES = [
+  "@sam-monorepo/database",
+  "@sam-monorepo/domain",
+  "@sam-monorepo/wiki-editor",
+];
+
 test("the package does not import Next.js, React, a host or the layers above it", async () => {
   const fileNames = (await readdir(import.meta.dirname, { recursive: true }))
     .filter((fileName) => fileName.endsWith(".ts"))
@@ -40,4 +50,24 @@ test("the package does not import Next.js, React, a host or the layers above it"
   expect(
     imports.filter(({ specifier }) => FORBIDDEN_IMPORT.test(specifier)),
   ).toEqual([]);
+});
+
+test("the package lists only the allowed packages of the monorepo", async () => {
+  const manifest = JSON.parse(
+    await readFile(join(import.meta.dirname, "..", "package.json"), {
+      encoding: "utf8",
+    }),
+  ) as {
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
+  };
+
+  const listedPackages = Object.keys({
+    ...manifest.dependencies,
+    ...manifest.devDependencies,
+  })
+    .filter((name) => name.startsWith("@sam-monorepo/"))
+    .sort();
+
+  expect(listedPackages).toEqual(ALLOWED_PACKAGES);
 });
