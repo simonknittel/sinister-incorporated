@@ -26,7 +26,7 @@ overrides:
   # `.next/server/preview-props.json`). A rule in renovate.json keeps Renovate
   # on the same minor version. Remove this override when @react-email/ui
   # depends on a patched version.
-  "@react-email/ui>next": 16.3.8
+  "@react-email/ui>next": 16.4.2
   # Migrated from apps/app's former npm `overrides`.
   "@auth/core": 0.41.3
   "@types/react": 19.3.0
@@ -80,19 +80,5 @@ allowBuilds:
 audit:
   level: critical
 # Versions that `pnpm install` can resolve before they reach
-# `minimumReleaseAge`. pnpm appends to this list on its own. Next.js 16.4.0 is
-# here on request: we upgraded before this version was 7 days old. Remove
-# these entries after 2026-10-13.
-minimumReleaseAgeExclude:
-  - next@16.4.0
-  - "@next/env@16.4.0"
-  - "@next/eslint-plugin-next@16.4.0"
-  - eslint-config-next@16.4.0
-  - "@next/swc-darwin-arm64@16.4.0"
-  - "@next/swc-darwin-x64@16.4.0"
-  - "@next/swc-linux-arm64-gnu@16.4.0"
-  - "@next/swc-linux-arm64-musl@16.4.0"
-  - "@next/swc-linux-x64-gnu@16.4.0"
-  - "@next/swc-linux-x64-musl@16.4.0"
-  - "@next/swc-win32-arm64-msvc@16.4.0"
-  - "@next/swc-win32-x64-msvc@16.4.0"
+# `minimumReleaseAge`. pnpm appends to this list on its own.
+minimumReleaseAgeExclude: []
