@@ -35,7 +35,7 @@ A selection of the features:
 
 Next.js, PostgreSQL, Vercel, Tailwind CSS, TypeScript, React, AWS
 
-See [docs/architecture.md](./docs/architecture.md) for the layout of the monorepo and the target architecture.
+See [docs/architecture.md](./docs/architecture.md) for the layout of the monorepo and the rules that keep the direction.
 
 ## License
 
